@@ -31,12 +31,12 @@ D3D12_RESOURCE_BARRIER CreateUAVBarrier(ID3D12Resource* resource) {
 
 }  // namespace
 
-// Static
-std::unique_ptr<CommandRecorder> CommandRecorder::Create(
-    scoped_refptr<CommandQueue> queue,
-    Microsoft::WRL::ComPtr<IDMLDevice> dml_device) {
+// static
+base::expected<std::unique_ptr<CommandRecorder>, HRESULT>
+CommandRecorder::Create(scoped_refptr<CommandQueue> queue,
+                        Microsoft::WRL::ComPtr<IDMLDevice> dml_device) {
   Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator;
-  RETURN_NULL_IF_FAILED(
+  RETURN_UNEXPECTED_IF_FAILED(
       GetD3D12Device(dml_device.Get())
           ->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                    IID_PPV_ARGS(&command_allocator)));
@@ -46,7 +46,7 @@ std::unique_ptr<CommandRecorder> CommandRecorder::Create(
   // to close it right after its creation.
 
   Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder;
-  RETURN_NULL_IF_FAILED(
+  RETURN_UNEXPECTED_IF_FAILED(
       dml_device->CreateCommandRecorder(IID_PPV_ARGS(&command_recorder)));
 
   return base::WrapUnique(new CommandRecorder(

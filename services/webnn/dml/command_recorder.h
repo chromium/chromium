@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
 
 // Windows SDK headers should be included after DirectX headers.
@@ -29,7 +30,7 @@ class CommandQueue;
 // submission.
 class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
  public:
-  static std::unique_ptr<CommandRecorder> Create(
+  static base::expected<std::unique_ptr<CommandRecorder>, HRESULT> Create(
       scoped_refptr<CommandQueue> queue,
       Microsoft::WRL::ComPtr<IDMLDevice> dml_device);
 

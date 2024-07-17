@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/types/expected_macros.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
@@ -241,15 +242,18 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     }
 
     scoped_refptr<dml::Adapter> adapter = adapter_creation_result.value();
-    std::unique_ptr<dml::CommandRecorder> command_recorder =
+
+    ASSIGN_OR_RETURN(
+        auto command_recorder,
         dml::CommandRecorder::Create(adapter->command_queue(),
-                                     adapter->dml_device());
-    if (!command_recorder) {
-      std::move(callback).Run(mojom::CreateContextResult::NewError(
-          dml::CreateError(mojom::Error::Code::kUnknownError,
-                           "Failed to create a WebNN context.")));
-      return;
-    }
+                                     adapter->dml_device()),
+        [](WebNNContextProvider::CreateWebNNContextCallback callback,
+           HRESULT hr) {
+          std::move(callback).Run(mojom::CreateContextResult::NewError(
+              dml::CreateError(mojom::Error::Code::kUnknownError,
+                               "Failed to create a WebNN context.")));
+        },
+        std::move(callback));
 
     context_impl = new dml::ContextImplDml(
         std::move(adapter), std::move(receiver), std::move(client_remote), this,

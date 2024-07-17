@@ -4994,22 +4994,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForWhere(
   return base::ok();
 }
 
-// If graph creation fails, log the error message and report it.
+// If graph creation fails, report the error message via `callback` and let
+// `context` handle the error.
 void HandleGraphCreationFailure(
     const std::string& error_message,
-    WebNNContextImpl::CreateGraphImplCallback callback) {
-  std::move(callback).Run(base::unexpected(
-      CreateError(mojom::Error::Code::kUnknownError, error_message)));
-}
-
-// Similar to the method above, if graph creation fails, report the error
-// message and log it with the system error code `hr`. In addition, log and
-// report the out of memory error message if there is.
-void HandleGraphCreationFailure(
-    const std::string& error_message,
-    HRESULT hr,
     WebNNContextImpl::CreateGraphImplCallback callback,
-    ContextImplDml* context) {
+    ContextImplDml* context,
+    HRESULT hr) {
   std::move(callback).Run(base::unexpected(
       CreateError(mojom::Error::Code::kUnknownError, error_message)));
   context->HandleContextLostOrCrash(error_message, hr);
@@ -5235,12 +5226,9 @@ GraphImplDml::AllocateComputeResources(
   }
 
   // Create a command recorder which may be re-used between compute() calls.
-  std::unique_ptr<CommandRecorder> command_recorder =
-      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device());
-  if (!command_recorder) {
-    LOG(ERROR) << "[WebNN] Failed to create a command recorder.";
-    return base::unexpected(E_FAIL);
-  }
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<CommandRecorder> command_recorder,
+      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device()));
 
   return base::WrapUnique(new ComputeResources(
       std::move(descriptor_heap),
@@ -5408,29 +5396,28 @@ void GraphImplDml::OnCompilationComplete(
     ComPtr<IDMLCompiledOperator> compiled_operator) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnCompilationComplete");
   if (!compiled_operator) {
-    HandleGraphCreationFailure("Failed to compile the graph.",
-                               std::move(callback));
+    std::move(callback).Run(base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError, "Failed to compile the graph.")));
     return;
   }
 
   std::unique_ptr<CommandRecorder> initialization_command_recorder;
   if (adapter->IsNPU()) {
-    initialization_command_recorder = CommandRecorder::Create(
-        adapter->init_command_queue_for_npu(), adapter->dml_device());
-    if (!initialization_command_recorder) {
-      HandleGraphCreationFailure(
-          "Failed to create command recorder for graph initialization.",
-          std::move(callback));
-      return;
-    }
+    ASSIGN_OR_RETURN(
+        initialization_command_recorder,
+        CommandRecorder::Create(adapter->init_command_queue_for_npu(),
+                                adapter->dml_device()),
+        &HandleGraphCreationFailure,
+        "Failed to create command recorder for graph initialization.",
+        std::move(callback), context.get());
   } else {
     initialization_command_recorder = std::move(inference_command_recorder);
   }
 
   HRESULT hr = initialization_command_recorder->Open();
   if (FAILED(hr)) {
-    HandleGraphCreationFailure("Failed to open the command recorder.", hr,
-                               std::move(callback), context.get());
+    HandleGraphCreationFailure("Failed to open the command recorder.",
+                               std::move(callback), context.get(), hr);
     return;
   }
 
@@ -5454,9 +5441,9 @@ void GraphImplDml::OnCompilationComplete(
         aligned_byte_length_of_constants =
             CalculateAlignedByteLength(constant_id_to_buffer_map);
     if (!aligned_byte_length_of_constants) {
-      HandleGraphCreationFailure(
-          "Failed to calculate the aligned byte length of constants.",
-          std::move(callback));
+      std::move(callback).Run(base::unexpected(CreateError(
+          mojom::Error::Code::kUnknownError,
+          "Failed to calculate the aligned byte length of constants.")));
       return;
     }
 
@@ -5475,8 +5462,8 @@ void GraphImplDml::OnCompilationComplete(
           L"WebNN_Custom_Upload_Buffer_Constants", cpu_buffer);
       if (FAILED(hr)) {
         HandleGraphCreationFailure(
-            "Failed to create custom upload buffer for constants.", hr,
-            std::move(callback), context.get());
+            "Failed to create custom upload buffer for constants.",
+            std::move(callback), context.get(), hr);
         return;
       }
       buffer_variant = std::move(cpu_buffer);
@@ -5489,8 +5476,8 @@ void GraphImplDml::OnCompilationComplete(
                               L"WebNN_Upload_Buffer_Constants", upload_buffer);
       if (FAILED(hr)) {
         HandleGraphCreationFailure(
-            "Failed to create upload buffer for constants.", hr,
-            std::move(callback), context.get());
+            "Failed to create upload buffer for constants.",
+            std::move(callback), context.get(), hr);
         return;
       }
       // Create the default heap that only can be accessed by GPU not provide
@@ -5501,8 +5488,8 @@ void GraphImplDml::OnCompilationComplete(
           L"WebNN_Default_Buffer_Constants", default_buffer);
       if (FAILED(hr)) {
         HandleGraphCreationFailure(
-            "Failed to create default input buffer for constants.", hr,
-            std::move(callback), context.get());
+            "Failed to create default input buffer for constants.",
+            std::move(callback), context.get(), hr);
         return;
       }
       buffer_variant =
@@ -5514,8 +5501,9 @@ void GraphImplDml::OnCompilationComplete(
         initialization_command_recorder.get(), constant_id_to_buffer_map,
         aligned_byte_length_of_constants.value(), std::move(buffer_variant));
     if (!constant_buffer_binding) {
-      HandleGraphCreationFailure("Failed to upload constant weight data.",
-                                 std::move(callback));
+      std::move(callback).Run(base::unexpected(
+          CreateError(mojom::Error::Code::kUnknownError,
+                      "Failed to upload constant weight data.")));
       return;
     }
     // The constant tensor must be bound to the binding table during operator
@@ -5551,8 +5539,8 @@ void GraphImplDml::OnCompilationComplete(
                              persistent_buffer);
     if (FAILED(hr)) {
       HandleGraphCreationFailure(
-          "Failed to create the default buffer for persistent resource.", hr,
-          std::move(callback), context.get());
+          "Failed to create the default buffer for persistent resource.",
+          std::move(callback), context.get(), hr);
       return;
     }
 
@@ -5566,15 +5554,15 @@ void GraphImplDml::OnCompilationComplete(
       compiled_operator.Get(), input_buffer_binding_desc,
       persistent_buffer_binding_desc);
   if (FAILED(hr)) {
-    HandleGraphCreationFailure("Failed to initialize the operator.", hr,
-                               std::move(callback), context.get());
+    HandleGraphCreationFailure("Failed to initialize the operator.",
+                               std::move(callback), context.get(), hr);
     return;
   }
 
   hr = initialization_command_recorder->Close();
   if (FAILED(hr)) {
-    HandleGraphCreationFailure("Failed to close the command list.", hr,
-                               std::move(callback), context.get());
+    HandleGraphCreationFailure("Failed to close the command list.",
+                               std::move(callback), context.get(), hr);
     return;
   }
 
@@ -5596,8 +5584,8 @@ void GraphImplDml::OnCompilationComplete(
 
   hr = initialization_command_recorder->Execute();
   if (FAILED(hr)) {
-    HandleGraphCreationFailure("Failed to execute the command list.", hr,
-                               std::move(callback), context.get());
+    HandleGraphCreationFailure("Failed to execute the command list.",
+                               std::move(callback), context.get(), hr);
     return;
   }
 
@@ -5625,8 +5613,8 @@ void GraphImplDml::OnInitializationComplete(
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnInitializationComplete");
   if (FAILED(hr)) {
     HandleGraphCreationFailure(
-        "Failed to wait for the initialization to complete.", hr,
-        std::move(callback), context.get());
+        "Failed to wait for the initialization to complete.",
+        std::move(callback), context.get(), hr);
     return;
   }
 
@@ -5641,10 +5629,9 @@ void GraphImplDml::OnInitializationComplete(
       compute_resources_allocation_result = AllocateComputeResources(
           adapter.get(), compiled_operator.Get(), compute_resource_info);
   if (!compute_resources_allocation_result.has_value()) {
-    HandleGraphCreationFailure(
-        "Failed to allocate compute resource.",
-        std::move(compute_resources_allocation_result.error()),
-        std::move(callback), context.get());
+    HandleGraphCreationFailure("Failed to allocate compute resource.",
+                               std::move(callback), context.get(),
+                               compute_resources_allocation_result.error());
     return;
   }
   std::unique_ptr<ComputeResources> compute_resources =
@@ -5656,29 +5643,27 @@ void GraphImplDml::OnInitializationComplete(
                             graph_buffer_binding_info);
   if (FAILED(hr)) {
     HandleGraphCreationFailure(
-        "Failed to record commands and bind resources for execution.", hr,
-        std::move(callback), context.get());
+        "Failed to record commands and bind resources for execution.",
+        std::move(callback), context.get(), hr);
     return;
   }
 
   if (!context) {
-    HandleGraphCreationFailure(
-        "Failed to create graph because the context was destroyed.",
-        std::move(callback));
+    std::move(callback).Run(base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "Failed to create graph because the context was destroyed.")));
     return;
   }
 
   // Create a new command recorder and pass it to `GraphImplDml` for
   // `dispatch()`. For `compute()`, a separate command recorder is created by
   // `AllocateComputeResources()` and stored in `compute_resources`.
-  std::unique_ptr<CommandRecorder> command_recorder_for_dispatch =
-      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device());
-  if (!command_recorder_for_dispatch) {
-    HandleGraphCreationFailure(
-        "Failed to create the command recorder for dispatch.",
-        std::move(callback));
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<CommandRecorder> command_recorder_for_dispatch,
+      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device()),
+      &HandleGraphCreationFailure,
+      "Failed to create the command recorder for dispatch.",
+      std::move(callback), context.get());
 
   // The receiver bound to GraphImplDml.
   std::move(callback).Run(base::WrapUnique(new GraphImplDml(
@@ -5698,13 +5683,11 @@ void GraphImplDml::CreateAndBuild(
     const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
   // `CommandRecorder` would keep reference of command queue and DML device.
-  std::unique_ptr<CommandRecorder> command_recorder =
-      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device());
-  if (!command_recorder) {
-    HandleGraphCreationFailure("Failed to create the command recorder.",
-                               std::move(callback));
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<CommandRecorder> command_recorder,
+      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device()),
+      &HandleGraphCreationFailure, "Failed to create the command recorder.",
+      std::move(callback), context.get());
 
   GraphBuilderDml graph_builder(adapter->dml_device());
   IdToNodeOutputMap id_to_node_output_map;
@@ -6088,8 +6071,9 @@ void GraphImplDml::CreateAndBuild(
     // using graph input as output.
     if ((output->GetNode().GetType() == Node::Type::kInput) &&
         ((output = AppendIdentityNode(graph_builder, output)) == nullptr)) {
-      HandleGraphCreationFailure("Failed to create identity operator.",
-                                 std::move(callback));
+      std::move(callback).Run(
+          base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                       "Failed to create identity operator.")));
       return;
     }
 
@@ -6297,12 +6281,11 @@ void GraphImplDml::DispatchImpl(
   }
 
   if (!command_recorder_) {
-    command_recorder_ = CommandRecorder::Create(adapter_->command_queue(),
-                                                adapter_->dml_device());
-    if (!command_recorder_) {
-      LOG(ERROR) << "[WebNN] Failed to create the command recorder.";
-      return;
-    }
+    ASSIGN_OR_RETURN(command_recorder_,
+                     CommandRecorder::Create(adapter_->command_queue(),
+                                             adapter_->dml_device()),
+                     &GraphImplDml::HandleDispatchFailure, this,
+                     "Failed to create the command recorder.");
     is_command_recording_needed = true;
   }
 

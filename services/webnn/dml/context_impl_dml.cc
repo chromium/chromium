@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
+#include "base/types/expected_macros.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/buffer_impl_dml.h"
@@ -351,12 +352,9 @@ HRESULT ContextImplDml::StartRecordingIfNecessary() {
   // not executed would remain alive until this context gets destroyed and
   // this context would be prevented from recording new commands.
   if (!command_recorder_) {
-    command_recorder_ = CommandRecorder::Create(adapter_->command_queue(),
-                                                adapter_->dml_device());
-    if (!command_recorder_) {
-      LOG(ERROR) << "[WebNN] Failed to create the command recorder.";
-      return E_FAIL;
-    }
+    ASSIGN_OR_RETURN(command_recorder_,
+                     CommandRecorder::Create(adapter_->command_queue(),
+                                             adapter_->dml_device()));
   }
 
   CHECK(command_recorder_);
