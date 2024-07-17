@@ -1630,8 +1630,14 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
   base::HistogramTester histogram_tester_;
 };
 
+// TODO(crbug.com/353234554): Flaky on linux-lacros-tester-rel.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_Show DISABLED_Show
+#else
+#define MAYBE_Show Show
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
-                       Show) {
+                       MAYBE_Show) {
   CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
   ExpectPresentationFeedback(TabSwitchResult::kSuccess);
