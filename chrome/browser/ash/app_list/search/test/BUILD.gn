@@ -24,7 +24,7 @@ source_set("unit_tests") {
     "test_search_provider.h",
   ]
 
-  public_deps = [
+  deps = [
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",

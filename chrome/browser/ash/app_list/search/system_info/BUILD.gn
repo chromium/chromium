@@ -6,6 +6,48 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+static_library("system_info") {
+  sources = [
+    "battery_answer_result.cc",
+    "battery_answer_result.h",
+    "cpu_answer_result.cc",
+    "cpu_answer_result.h",
+    "memory_answer_result.cc",
+    "memory_answer_result.h",
+    "system_info_answer_result.cc",
+    "system_info_answer_result.h",
+    "system_info_card_provider.cc",
+    "system_info_card_provider.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//ash/webui/diagnostics_ui:url_constants",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/vector_icons",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/common:channel_info",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/launcher_search",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/ash/components/system_info",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/dbus/power",
+    "//components/strings:components_strings",
+    "//components/version_info",
+    "//components/version_info:version_string",
+    "//dbus",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -15,6 +57,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":system_info",
     "//ash/components/arc/session",
     "//ash/public/cpp",
     "//base",
