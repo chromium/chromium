@@ -15,15 +15,22 @@ export function getHtml(this: RelatedWebsiteSetsListContainerElement) {
     ${this.expandCollapseButtonText_()}
   </cr-button>
 </div>
-<div id="descriptionLabel" class="cr-secondary-text">
+<div id="descriptionLabel" class="cr-secondary-text"
+    ?hidden="${!this.errorMessage}">
+  <p>${this.getDisplayedError()}</p>
+</div>
+<div id="descriptionLabel" class="cr-secondary-text"
+    ?hidden="${this.errorMessage}">
   <p>RWS explanation string.
     <a href="https://developers.google.com/privacy-sandbox/3pcd/related-website-sets" target="_blank" rel="noopener noreferrer">Learn more.</a>
   </p>
 </div>
-<div id="related-website-sets" class="card" role="list">
-  ${this.relatedWebsiteSets.map((item) => html`
+<div id="related-website-sets" class="card" role="list"
+    ?hidden="${this.errorMessage}">
+  ${this.relatedWebsiteSets.map(item => html`
     <related-website-set-list-item id=${item.primarySite}
-        .primarySite=${item.primarySite} .memberSites=${item.memberSites}
+        .primarySite="${item.primarySite}" .memberSites="${item.memberSites}"
+        .managedByEnterprise="${item.managedByEnterprise}"
         @expanded-toggled="${this.onExpandedToggled_}">
     </related-website-set-list-item>
   `)}

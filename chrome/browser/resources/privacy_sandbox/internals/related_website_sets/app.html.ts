@@ -17,7 +17,8 @@ export function getHtml(this: RelatedWebsiteSetsAppElement) {
   </related-website-sets-sidebar>
   <div id="content">
     <related-website-sets-list-container id="rws-list-container"
-        class="cr-centered-card-container">
+        class="cr-centered-card-container" .errorMessage="${this.errorMessage_}"
+        .relatedWebsiteSets="${this.relatedWebsiteSets_}">
     </related-website-sets-list-container>
   </div>
   <div id="space-holder" ?hidden="${this.narrow_}"></div>

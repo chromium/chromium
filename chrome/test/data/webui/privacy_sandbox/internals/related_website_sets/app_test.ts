@@ -5,13 +5,20 @@
 import 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 
 import type {RelatedWebsiteSetsAppElement} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
+import {RelatedWebsiteSetsApiBrowserProxyImpl} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestRelatedWebsiteSetsApiBrowserProxy} from './test_api_proxy.js';
+
 suite('AppTest', () => {
   let app: RelatedWebsiteSetsAppElement;
+  let testProxy: TestRelatedWebsiteSetsApiBrowserProxy;
 
   setup(async () => {
+    testProxy = new TestRelatedWebsiteSetsApiBrowserProxy();
+    RelatedWebsiteSetsApiBrowserProxyImpl.setInstance(testProxy);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('related-website-sets-app');
     document.body.appendChild(app);
@@ -19,7 +26,8 @@ suite('AppTest', () => {
     await microtasksFinished();
   });
 
-  test('check layout', async () => {
+  test('check initial state', async () => {
+    assertEquals(1, testProxy.handler.getCallCount('getRelatedWebsiteSets'));
     assertTrue(isVisible(app.$.toolbar));
     assertTrue(isVisible(app.$.sidebar));
   });

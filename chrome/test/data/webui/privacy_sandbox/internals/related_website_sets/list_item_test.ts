@@ -18,7 +18,8 @@ suite('ListItemTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     item = document.createElement('related-website-set-list-item');
     document.body.appendChild(item);
-    item.setItemForTesting(sampleSet);
+    item.primarySite = sampleSet.primarySite;
+    item.memberSites = sampleSet.memberSites;
     await microtasksFinished();
   });
 

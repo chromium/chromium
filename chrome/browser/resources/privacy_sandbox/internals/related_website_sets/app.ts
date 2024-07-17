@@ -12,6 +12,9 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import type {RelatedWebsiteSet} from './related_website_sets.mojom-webui.js';
+import type {RelatedWebsiteSetsApiBrowserProxy} from './related_website_sets_api_proxy.js';
+import {RelatedWebsiteSetsApiBrowserProxyImpl} from './related_website_sets_api_proxy.js';
 import type {RelatedWebsiteSetsSidebarElement} from './sidebar.js';
 import type {RelatedWebsiteSetsToolbarElement} from './toolbar.js';
 
@@ -41,8 +44,20 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
       pageTitle_: {type: String},
       narrow_: {type: Boolean},
       isDrawerOpen_: {type: Boolean},
+      relatedWebsiteSets_: {type: Array},
+      errorMessage_: {type: String},
     };
   }
+
+  // TODO (b/330877132): Add Localization once UI stable
+  protected pageTitle_: string = 'Related Website Sets';
+  protected narrow_: boolean = true;
+  protected isDrawerOpen_: boolean = false;
+  protected relatedWebsiteSets_: RelatedWebsiteSet[] = [];
+  protected errorMessage_: string = '';
+
+  private apiProxy_: RelatedWebsiteSetsApiBrowserProxy =
+      RelatedWebsiteSetsApiBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -50,6 +65,16 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
         'cr-toolbar-menu-click', this.onMenuButtonClick_ as EventListener);
     this.addEventListener(
         'narrow-changed', this.onNarrowChanged_ as EventListener);
+
+    this.apiProxy_.handler.getRelatedWebsiteSets().then(
+        ({relatedWebsiteSetsInfo}) => {
+          if (relatedWebsiteSetsInfo.errorMessage !== undefined) {
+            this.errorMessage_ = relatedWebsiteSetsInfo.errorMessage;
+          } else if (relatedWebsiteSetsInfo.relatedWebsiteSets !== undefined) {
+            this.relatedWebsiteSets_ =
+                relatedWebsiteSetsInfo.relatedWebsiteSets;
+          }
+        });
   }
 
   override disconnectedCallback() {
@@ -59,10 +84,6 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
         'narrow-changed', this.onNarrowChanged_ as EventListener);
     super.disconnectedCallback();
   }
-
-  protected pageTitle_: string = 'Related Website Sets';
-  protected narrow_: boolean = true;
-  protected isDrawerOpen_: boolean = false;
 
   protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
     this.narrow_ = e.detail.value;

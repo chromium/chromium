@@ -25,7 +25,9 @@ export function getHtml(this: RelatedWebsiteSetListItemElement) {
         <site-favicon id="favicon" domain="chrome://favicon2"
             aria-hidden="true">
         </site-favicon>
-        <div class="cr-secondary-text">${item.site} - ${item.type}</div>
+        <div class="cr-secondary-text">
+          ${item.site} - ${this.getSiteType_(item.type)}
+        </div>
       </div>`)}
   </cr-collapse>`;
 }

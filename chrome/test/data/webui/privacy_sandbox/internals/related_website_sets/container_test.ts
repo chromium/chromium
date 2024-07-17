@@ -18,7 +18,7 @@ suite('ContainerTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     container = document.createElement('related-website-sets-list-container');
     document.body.appendChild(container);
-    container.setRelatedWebsiteSetsForTesting(sampleSets);
+    container.relatedWebsiteSets = sampleSets;
     await microtasksFinished();
   });
 

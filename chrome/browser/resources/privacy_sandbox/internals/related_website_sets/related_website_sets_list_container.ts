@@ -8,7 +8,6 @@ import './related_website_set_list_item.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {RelatedWebsiteSetListItemElement} from 'related_website_set_list_item.js';
 
 import type {RelatedWebsiteSet} from './related_website_sets.mojom-webui.js';
 import {getCss} from './related_website_sets_list_container.css.js';
@@ -37,11 +36,13 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
     return {
       relatedWebsiteSets: {type: Array},
       isAnyRowCollapsed: {type: Boolean},
+      errorMessage: {type: String},
     };
   }
 
-  protected relatedWebsiteSets: RelatedWebsiteSet[] = [];
+  relatedWebsiteSets: RelatedWebsiteSet[] = [];
   protected isAnyRowCollapsed: boolean = true;
+  errorMessage: string = '';
 
   private rowExpandedStates_: Map<string, boolean> = new Map();
 
@@ -55,9 +56,9 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
   protected onClick_() {
     const rows =
         this.shadowRoot!.querySelectorAll('related-website-set-list-item');
-    rows.forEach(
-        (row: RelatedWebsiteSetListItemElement) =>
-            row.setExpanded(this.isAnyRowCollapsed));
+    for (const row of rows) {
+      row.expanded = this.isAnyRowCollapsed;
+    }
   }
 
   protected onExpandedToggled_(e: CustomEvent<{
@@ -72,8 +73,8 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
     return this.isAnyRowCollapsed ? 'Expand All' : 'Collapse All';
   }
 
-  setRelatedWebsiteSetsForTesting(sets: RelatedWebsiteSet[]) {
-    this.relatedWebsiteSets = sets;
+  protected getDisplayedError(): string {
+    return this.errorMessage.replace('Error', '');
   }
 }
 

@@ -12,7 +12,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './related_website_set_list_item.css.js';
 import {getHtml} from './related_website_set_list_item.html.js';
-import type {Member, RelatedWebsiteSet} from './related_website_sets.mojom-webui.js';
+import type {Member} from './related_website_sets.mojom-webui.js';
+import {SiteType} from './related_website_sets.mojom-webui.js';
 
 export interface RelatedWebsiteSetListItemElement {
   $: {
@@ -39,12 +40,14 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
       expanded: {type: Boolean},
       primarySite: {type: String},
       memberSites: {type: Array},
+      managedByEnterprise: {type: Boolean},
     };
   }
 
-  protected expanded: boolean = false;
-  protected primarySite: string = '';
-  protected memberSites: Member[] = [];
+  expanded: boolean = false;
+  primarySite: string = '';
+  memberSites: Member[] = [];
+  managedByEnterprise: boolean = false;
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded = e.detail.value;
@@ -53,13 +56,17 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
         {detail: {id: this.primarySite, expanded: this.expanded}}));
   }
 
-  setExpanded(value: boolean) {
-    this.expanded = value;
-  }
-
-  setItemForTesting(set: RelatedWebsiteSet) {
-    this.primarySite = set.primarySite;
-    this.memberSites = set.memberSites;
+  protected getSiteType_(type: SiteType): string {
+    switch (type) {
+      case SiteType.kPrimary:
+        return 'Primary';
+      case SiteType.kAssociated:
+        return 'Associated';
+      case SiteType.kService:
+        return 'Service';
+      default:
+        throw new Error(`Unexpected site type ${type}`);
+    }
   }
 }
 
