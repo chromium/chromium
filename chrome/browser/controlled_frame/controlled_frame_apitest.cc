@@ -184,26 +184,6 @@ const content::EvalJsResult VerifyBackgroundColorIsRed(
   )");
 }
 
-[[nodiscard]] bool IsControlledFramePresent(content::RenderFrameHost* app_frame,
-                                            const GURL& src) {
-  static std::string kIsControlledFramePresent = R"(
-      new Promise((resolve, reject) => {
-        const controlledframe = document.createElement('controlledframe');
-        if (!('src' in controlledframe)) {
-          // Tag is undefined or generates a malformed response.
-          reject('FAIL');
-          return;
-        }
-        controlledframe.setAttribute('src', $1);
-        controlledframe.addEventListener('loadstop', resolve);
-        controlledframe.addEventListener('loadabort', reject);
-        document.body.appendChild(controlledframe);
-      });
-  )";
-
-  return ExecJs(app_frame, content::JsReplace(kIsControlledFramePresent, src));
-}
-
 // TODO(odejesush): Add tests for the rest of the Promise API methods.
 const char* kControlledFramePromiseApiMethods[]{"back", "forward", "go"};
 
@@ -990,7 +970,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameNotAvailableChannelTest, Test) {
   content::WebContents* app_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_FALSE(IsControlledFramePresent(
+  ASSERT_FALSE(CreateControlledFrame(
       app_contents->GetPrimaryMainFrame(),
       embedded_https_test_server().GetURL("/index.html")));
 }
