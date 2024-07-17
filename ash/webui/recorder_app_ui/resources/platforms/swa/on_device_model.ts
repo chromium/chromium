@@ -120,7 +120,7 @@ export class OnDeviceModel implements Model {
         maxTokens: null,
         tokenOffset: null,
         maxOutputTokens: null,
-        safetyInterval: null,
+        unusedSafetyInterval: null,
         topK: 1,
         temperature: 0,
       },

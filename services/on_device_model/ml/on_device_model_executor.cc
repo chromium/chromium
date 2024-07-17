@@ -133,7 +133,6 @@ class Responder final {
             task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
                const ChromeMLExecutionOutput* output) {
       std::optional<std::string> text;
-      std::optional<std::vector<float>> class_scores;
       switch (output->status) {
         case ChromeMLExecutionStatus::kInProgress:
           CHECK(output->text);
@@ -144,20 +143,14 @@ class Responder final {
           break;
       }
 
-      if (output->ts_scores) {
-        class_scores.emplace(output->ts_scores,
-                             output->ts_scores + output->num_ts_scores);
-      }
-
       task_runner->PostTask(
-          FROM_HERE, base::BindOnce(&Responder::OnOutput, weak_ptr,
-                                    std::move(text), std::move(class_scores)));
+          FROM_HERE,
+          base::BindOnce(&Responder::OnOutput, weak_ptr, std::move(text)));
     };
   }
 
  private:
-  void OnOutput(std::optional<std::string> text,
-                std::optional<std::vector<float>> class_scores) {
+  void OnOutput(std::optional<std::string> text) {
     if (text) {
       num_tokens_++;
       output_so_far_ += *text;
@@ -167,7 +160,6 @@ class Responder final {
 
       auto chunk = on_device_model::mojom::ResponseChunk::New();
       chunk->text = *text;
-      chunk->safety_info = CreateSafetyInfo(output_so_far_, class_scores);
       responder_->OnResponse(std::move(chunk));
     } else {
       // Empty text means the output is finished. Delete the session immediately
@@ -185,7 +177,6 @@ class Responder final {
       }
 
       auto summary = on_device_model::mojom::ResponseSummary::New();
-      summary->safety_info = CreateSafetyInfo(output_so_far_, class_scores);
       responder_->OnComplete(std::move(summary));
       if (!on_complete_.is_null()) {
         std::move(on_complete_).Run();
@@ -384,18 +375,13 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
       *responder_->GetCancelFn() =
           cloned_raw->Execute(std::move(input), output_fn, nullptr);
     } else {
-      int32_t ts_interval = -1;
-      if (input->safety_interval.has_value()) {
-        ts_interval =
-            base::saturated_cast<int32_t>(input->safety_interval.value());
-      }
       ChromeMLExecuteOptions options{
           .prompt = input->text.c_str(),
           .context_mode = GetContextMode(*input),
           .max_tokens = *input->max_tokens,
           .token_offset = input->token_offset.value_or(0),
           .max_output_tokens = input->max_output_tokens.value_or(0),
-          .score_ts_interval = ts_interval,
+          .score_ts_interval = -1,
           .execution_output_fn = &output_fn,
           .top_k = input->top_k.value_or(1),
           .temperature = input->temperature.value_or(0),

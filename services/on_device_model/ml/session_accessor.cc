@@ -128,16 +128,12 @@ void SessionAccessor::ExecuteInternal(
     ChromeMLContextSavedFn context_saved_fn,
     scoped_refptr<Canceler> canceler) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  int32_t ts_interval = -1;
-  if (input->safety_interval.has_value()) {
-    ts_interval = base::saturated_cast<int32_t>(input->safety_interval.value());
-  }
   ChromeMLExecuteOptions options{
       .prompt = input->text.c_str(),
       .max_tokens = input->max_tokens.value_or(0),
       .token_offset = input->token_offset.value_or(0),
       .max_output_tokens = input->max_output_tokens.value_or(0),
-      .score_ts_interval = ts_interval,
+      .score_ts_interval = -1,
       .context_saved_fn = &context_saved_fn,
       .top_k = input->top_k.value_or(1),
       .temperature = input->temperature.value_or(0),

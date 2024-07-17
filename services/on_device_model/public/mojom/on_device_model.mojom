@@ -108,13 +108,8 @@ struct InputOptions {
   // sequence length.
   uint32? max_output_tokens;
 
-  // The interval (in number of tokens) between periodic safety evaluations to
-  // be performed by the service. If this is null, no safety evaluations are
-  // performed and no SafetyInfo results are sent to the client; if 0, safety is
-  // only evaluated during response completion; otherwise for a value of N, a
-  // safety update will be provided after every Nth token, as well as during
-  // response completion.
-  uint32? safety_interval;
+  // DEPRECATED: No longer does anything.
+  uint32? unused_safety_interval;
 
   // These params control the output sampling. Higher `top_k` means more tokens
   // are considered, higher `temperature` means less likely tokens are more
