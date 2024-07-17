@@ -2789,6 +2789,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.IbanUpload.SaveFailed" enum="Boolean"
+    expires_after="2025-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Indicates that an IBAN upload save failed, logged at the time of failure.
+    Records true if the IBAN was able to be saved locally as a fallback, or
+    false if it was not (such as in the case of an existing local IBAN).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.IbanUploadEnabled" enum="IbanUploadEnabledStatus"
     expires_after="2025-07-01">
   <owner>qihuizhao@google.com</owner>

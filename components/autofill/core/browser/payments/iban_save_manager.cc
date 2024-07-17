@@ -376,10 +376,21 @@ void IbanSaveManager::OnDidUploadIban(const Iban& import_candidate,
         iban_save_strike_database_->GetStrikes(partial_iban_hash),
         /*is_upload_save=*/true);
     GetIbanSaveStrikeDatabase()->ClearStrikes(partial_iban_hash);
-  } else if (show_save_prompt) {
+  } else {
+    // If upload save failed, check if the IBAN already exists locally. If not,
+    // automatically save the IBAN locally so that the IBAN is not left unsaved
+    // since the user intended to save it.
+    bool should_local_save = !MatchesExistingLocalIban(import_candidate);
+    if (should_local_save) {
+      payments_data_manager().AddAsLocalIban(import_candidate);
+    }
+    autofill_metrics::LogIbanUploadSaveFailed(should_local_save);
+
     // If the upload failed and the bubble was actually shown (NOT just the
     // icon), count that as a strike against offering upload in the future.
-    GetIbanSaveStrikeDatabase()->AddStrike(partial_iban_hash);
+    if (show_save_prompt) {
+      GetIbanSaveStrikeDatabase()->AddStrike(partial_iban_hash);
+    }
   }
   if (observer_for_testing_) {
     if (result == PaymentsRpcResult::kSuccess) {

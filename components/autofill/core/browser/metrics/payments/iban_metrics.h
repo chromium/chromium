@@ -184,6 +184,11 @@ void LogIbanSaveAcceptedCountry(std::string_view country_code);
 // Logs that an IBAN was selected to be filled for the given country.
 void LogIbanSelectedCountry(std::string_view country_code);
 
+// Logs whether an IBAN was saved locally after a server save failure.
+// If `iban_saved_locally` is true, a new IBAN was saved locally. Otherwise, it
+// indicates that an existing local IBAN was not saved again.
+void LogIbanUploadSaveFailed(bool iban_saved_locally);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_

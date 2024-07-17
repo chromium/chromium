@@ -945,6 +945,66 @@ TEST_F(IbanSaveManagerTest, Metric_CountryOfSaveAccepted_ServerIban) {
                                       Iban::IbanSupportedCountry::kFR, 1);
 }
 
+// Tests that the `RanLocalSaveFallback` metric records that a new IBAN was
+// saved during the local IBAN save fallback for a server upload failure.
+TEST_F(IbanSaveManagerTest,
+       Metrics_OnUploadIban_FallbackToLocalSave_NewIbanAdded) {
+  base::HistogramTester histogram_tester;
+  Iban iban;
+  iban.set_value(std::u16string(test::kIbanValue16));
+  ASSERT_TRUE(personal_data().payments_data_manager().GetLocalIbans().empty());
+  GetIbanSaveManager().OnDidUploadIbanForTesting(
+      iban, /*show_save_prompt=*/true,
+      AutofillClient::PaymentsRpcResult::kPermanentFailure);
+
+  histogram_tester.ExpectUniqueSample("Autofill.IbanUpload.SaveFailed", true,
+                                      1);
+  EXPECT_EQ(personal_data().payments_data_manager().GetLocalIbans().size(), 1U);
+}
+
+// Tests that the `RanLocalSaveFallback` metric records that an existing local
+// IBAN was not saved during the local IBAN save fallback for a server upload
+// failure.
+TEST_F(IbanSaveManagerTest,
+       Metrics_OnUploadIban_FallbackToLocalSave_LocalIbanNotAdded) {
+  base::HistogramTester histogram_tester;
+  Iban iban;
+  iban.set_value(std::u16string(test::kIbanValue16));
+  personal_data().payments_data_manager().AddAsLocalIban(iban);
+  ASSERT_EQ(personal_data().payments_data_manager().GetLocalIbans().size(), 1U);
+  GetIbanSaveManager().OnDidUploadIbanForTesting(
+      iban, /*show_save_prompt=*/true,
+      AutofillClient::PaymentsRpcResult::kPermanentFailure);
+
+  histogram_tester.ExpectUniqueSample("Autofill.IbanUpload.SaveFailed", false,
+                                      1);
+  EXPECT_EQ(personal_data().payments_data_manager().GetLocalIbans().size(), 1U);
+}
+
+// Tests that the `RanLocalSaveFallback` metric records that a matched local
+// IBAN (same IBAN value but different nickname) was not saved during the local
+// IBAN save fallback for a server upload failure.
+TEST_F(
+    IbanSaveManagerTest,
+    Metrics_OnUploadIban_FallbackToLocalSave_LocalIbanWithDifferentNicknameNotAdded) {
+  base::HistogramTester histogram_tester;
+  Iban iban;
+  iban.set_value(std::u16string(test::kIbanValue16));
+  personal_data().payments_data_manager().AddAsLocalIban(iban);
+  ASSERT_EQ(personal_data().payments_data_manager().GetLocalIbans().size(), 1U);
+  iban.set_nickname(u"new nickname");
+  GetIbanSaveManager().OnDidUploadIbanForTesting(
+      iban, /*show_save_prompt=*/true,
+      AutofillClient::PaymentsRpcResult::kPermanentFailure);
+
+  histogram_tester.ExpectUniqueSample("Autofill.IbanUpload.SaveFailed", false,
+                                      1);
+  EXPECT_EQ(personal_data().payments_data_manager().GetLocalIbans().size(), 1U);
+  EXPECT_EQ(
+      personal_data().payments_data_manager().GetLocalIbans()[0]->nickname(),
+      u"");
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill

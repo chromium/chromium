@@ -185,4 +185,9 @@ void LogIbanSelectedCountry(std::string_view country_code) {
                                 Iban::GetIbanSupportedCountry(country_code));
 }
 
+void LogIbanUploadSaveFailed(bool iban_saved_locally) {
+  base::UmaHistogramBoolean("Autofill.IbanUpload.SaveFailed",
+                            iban_saved_locally);
+}
+
 }  // namespace autofill::autofill_metrics

@@ -75,6 +75,7 @@ class IbanSaveManager {
   // the save prompt manually.
   [[nodiscard]] bool AttemptToOfferSave(Iban& import_candidate);
 
+  // TODO(b/352643261): Add TestApi for below ForTesting methods.
   void OnUserDidDecideOnLocalSaveForTesting(
       const Iban& import_candidate,
       payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
@@ -113,6 +114,13 @@ class IbanSaveManager {
   TypeOfOfferToSave DetermineHowToSaveIbanForTesting(
       const Iban& import_candidate) {
     return DetermineHowToSaveIban(import_candidate);
+  }
+
+  void OnDidUploadIbanForTesting(
+      const Iban& import_candidate,
+      bool show_save_prompt,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result) {
+    OnDidUploadIban(import_candidate, show_save_prompt, result);
   }
 
   bool HasContextTokenForTesting() const { return !context_token_.empty(); }
