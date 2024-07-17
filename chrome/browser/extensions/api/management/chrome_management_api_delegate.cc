@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +21,8 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -27,6 +30,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -57,6 +61,7 @@
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/management/management_api_constants.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -627,4 +632,40 @@ GURL ChromeManagementAPIDelegate::GetEffectiveUpdateURL(
   extensions::ExtensionManagement* extension_management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(context);
   return extension_management->GetEffectiveUpdateURL(extension);
+}
+
+void ChromeManagementAPIDelegate::ShowMv2DeprecationReEnableDialog(
+    content::BrowserContext* context,
+    content::WebContents* web_contents,
+    const extensions::Extension& extension,
+    base::OnceCallback<void(bool)> done_callback) const {
+  // Extension should only be disabled due to MV2 deprecation in the "disable"
+  // experiment stage.
+  auto* mv2_experiment_manager =
+      extensions::ManifestV2ExperimentManager::Get(context);
+  CHECK_EQ(mv2_experiment_manager->GetCurrentExperimentStage(),
+           extensions::MV2ExperimentStage::kDisableWithReEnable);
+
+  // Tests can auto confirm the re-enable dialog.
+  auto confirm_value =
+      extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue();
+  switch (confirm_value) {
+    case extensions::ScopedTestDialogAutoConfirm::NONE:
+      // Continue, auto confirm has not been set.
+      break;
+    case extensions::ScopedTestDialogAutoConfirm::CANCEL:
+      CHECK_IS_TEST();
+      std::move(done_callback).Run(/*enable_allowed=*/false);
+      return;
+    case extensions::ScopedTestDialogAutoConfirm::ACCEPT:
+    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
+      CHECK_IS_TEST();
+      std::move(done_callback).Run(/*enable_allowed=*/true);
+      return;
+  }
+
+  gfx::NativeWindow parent =
+      web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+  extensions::ShowMv2DeprecationReEnableDialog(
+      parent, extension.id(), extension.name(), std::move(done_callback));
 }

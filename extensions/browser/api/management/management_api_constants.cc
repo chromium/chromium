@@ -15,6 +15,9 @@ const char kExtensionCreateError[] =
 const char kGestureNeededForEscalationError[] =
     "Re-enabling an extension disabled due to permissions increase "
     "requires a user gesture.";
+const char kGestureNeededForMV2DeprecationReEnableError[] =
+    "Re-enabling an extension disabled due to MV2 deprecation requires a user "
+    "gesture.";
 const char kGestureNeededForUninstallError[] =
     "chrome.management.uninstall requires a user gesture.";
 const char kManifestParseError[] = "Failed to parse manifest.";

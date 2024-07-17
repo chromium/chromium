@@ -125,11 +125,18 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
   void OnRequirementsChecked(const PreloadCheck::Errors& errors);
 
   // Verifies if extension has a permissions increase. When permissions are
-  // checked, finishes the enable checks returning an error if permissions are
-  // not allowed.
+  // checked, finishes the enable checks if there are any errors. Otherwise,
+  // continues with the enable checks.
   // This is only needed when enabling an extension.
   void CheckPermissionsIncrease();
   void OnPermissionsIncreaseChecked(bool permissions_allowed);
+
+  // Verifies if extension was disabled due to the MV2 deprecation. When this is
+  // checked, finishes the enable checks returning an error if `enable_allowed`
+  // is false.
+  // This is only needed when enabling an extension.
+  void CheckManifestV2Deprecation();
+  void OnManifestV2DeprecationChecked(bool enable_allowed);
 
   // Enables the extension if `response_value` is successful, and returns
   // `response_value`.

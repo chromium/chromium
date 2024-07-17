@@ -57,6 +57,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
@@ -874,6 +875,133 @@ TEST_F(ManagementApiUnitTest,
   EXPECT_FALSE(registry()->enabled_extensions().Contains(extension->id()));
 }
 
+// Test suite for cases where the user is in the "disable with re-enable"
+// experiment phase.
+class ManagementApiUnitTestMV2DisableWithReEnableUnitTest
+    : public ManagementApiUnitTest {
+ public:
+  ManagementApiUnitTestMV2DisableWithReEnableUnitTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionManifestV2Disabled);
+  }
+  ~ManagementApiUnitTestMV2DisableWithReEnableUnitTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests the extension is enabled when management.setEnabled is called for
+// enabling an extension disabled due to the MV2 deprecation, and user accepted
+// the dialog.
+TEST_F(ManagementApiUnitTestMV2DisableWithReEnableUnitTest,
+       SetEnabled_MV2Deprecation) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  // Install an extension and disable it due to the MV2 deprecation.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test").SetManifestVersion(2).Build();
+  const ExtensionId& extension_id = extension->id();
+  service()->AddExtension(extension.get());
+  service()->DisableExtension(
+      extension_id, disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+
+  // 1) Deny re-enable prompt without user gesture, expect the extension to
+  // stay disabled.
+  {
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents.get(), extension_id,
+                                         /*use_user_gesture=*/false,
+                                         /*accept_dialog=*/false, &error);
+    EXPECT_FALSE(success);
+    EXPECT_EQ(error,
+              "Re-enabling an extension disabled due to MV2 deprecation "
+              "requires a user gesture.");
+    EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_id));
+  }
+
+  // 2) Deny re-enable prompt with user gesture, expect the extension to
+  // stay disabled.
+  {
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents.get(), extension_id,
+                                         /*use_user_gesture=*/true,
+                                         /*accept_dialog=*/false, &error);
+    EXPECT_FALSE(success);
+    EXPECT_EQ(error, "The user did not accept the re-enable dialog.");
+    EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_id));
+  }
+
+  // 3) Accept re-enable prompt without user gesture, expect the extension to
+  // stay disabled.
+  {
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents.get(), extension_id,
+                                         /*use_user_gesture=*/false,
+                                         /*accept_dialog=*/true, &error);
+    EXPECT_FALSE(success);
+    EXPECT_EQ(error,
+              "Re-enabling an extension disabled due to MV2 deprecation "
+              "requires a user gesture.");
+    EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_id));
+  }
+
+  // 4) Accept re-enable prompt with user gesture, expect the extension to
+  // be enabled.
+  {
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents.get(), extension_id,
+                                         /*use_user_gesture=*/true,
+                                         /*accept_dialog=*/true, &error);
+    EXPECT_TRUE(success);
+    EXPECT_TRUE(error.empty());
+    EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
+  }
+}
+
+// Tests the extension is enabled when management.setEnabled is called for
+// enabling an extension disabled due to the MV2 deprecation and with
+// permissions increase, and user accepted both dialogs shown.
+TEST_F(ManagementApiUnitTestMV2DisableWithReEnableUnitTest,
+       SetEnabled_PermissionsIncreaseAndMV2Deprecation) {
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  base::FilePath base_path = data_dir().AppendASCII("permissions_increase");
+  base::FilePath pem_path = base_path.AppendASCII("permissions.pem");
+  base::FilePath path = base_path.AppendASCII("v1");
+  const Extension* extension = PackAndInstallCRX(path, pem_path, INSTALL_NEW);
+
+  // Save the id, as `extension` will be destroyed during updating.
+  ExtensionId extension_id = extension->id();
+
+  // Update extension to a new version with increased permissions.
+  path = base_path.AppendASCII("v2");
+  PackCRXAndUpdateExtension(extension_id, path, pem_path, DISABLED);
+  EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_id));
+  EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
+
+  // Disable extension due to MV2 deprecation. Since extension is already
+  // disabled, this will add another disable reason.
+  service()->DisableExtension(
+      extension_id, disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+
+  // management.setEnabled will trigger two dialogs (permissions increase and
+  // mv2 deprecation). Since we have tested each individually, this test
+  // only verifies extension is enabled when both dialogs are accepted.
+  {
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents.get(), extension_id,
+                                         /*use_user_gesture=*/true,
+                                         /*accept_dialog=*/true, &error);
+    EXPECT_TRUE(success);
+    EXPECT_TRUE(error.empty());
+    EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
+    EXPECT_FALSE(prefs->DidExtensionEscalatePermissions(extension_id));
+  }
+}
+
 // A delegate that senses when extensions are enabled or disabled.
 class TestManagementAPIDelegate : public ManagementAPIDelegate {
  public:
@@ -955,6 +1083,11 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
                              content::BrowserContext* context) const override {
     return GURL();
   }
+  void ShowMv2DeprecationReEnableDialog(
+      content::BrowserContext* context,
+      content::WebContents* web_contents,
+      const extensions::Extension& extension,
+      base::OnceCallback<void(bool)> done_callback) const override {}
 
   // EnableExtension is const, so this is mutable.
   mutable int enable_count_ = 0;
