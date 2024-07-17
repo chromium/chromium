@@ -176,11 +176,11 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
   base::FilePath nested_file_path = CopyTestFile(nested_file, dir_path);
 
   MigrationCoordinator coordinator(profile());
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>> future;
   // Upload the files.
   coordinator.Run(CloudProvider::kOneDrive, {file_path, nested_file_path},
                   kDestinationDir, future.GetCallback());
-  ASSERT_TRUE(future.Get<bool>());
+  ASSERT_TRUE(future.Get().empty());
 
   // Check that all files have been moved to OneDrive in the correct place.
   CheckPathExistsOnODFS(
@@ -196,15 +196,40 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest,
+                       FailedUpload_IOTaskError) {
+  SetUpMyFiles();
+  SetUpODFS();
+  provided_file_system_->SetCreateFileError(
+      base::File::Error::FILE_ERROR_NO_MEMORY);
+  provided_file_system_->SetReauthenticationRequired(false);
+
+  const std::string file = "video_long.ogv";
+  base::FilePath file_path = CopyTestFile(file, my_files_dir_);
+
+  MigrationCoordinator coordinator(profile());
+  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>> future;
+  // Upload the file.
+  coordinator.Run(CloudProvider::kOneDrive, {file_path}, kDestinationDir,
+                  future.GetCallback());
+  auto errors = future.Get();
+  ASSERT_TRUE(errors.size() == 1u);
+  auto error = errors.find(file_path);
+  ASSERT_NE(error, errors.end());
+  ASSERT_EQ(error->second, MigrationUploadError::kCopyFailed);
+
+  CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(file));
+}
+
 IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, EmptyUrls) {
   SetUpMyFiles();
   SetUpODFS();
 
   MigrationCoordinator coordinator(profile());
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>> future;
   coordinator.Run(CloudProvider::kOneDrive, {}, kDestinationDir,
                   future.GetCallback());
-  ASSERT_TRUE(future.Get<bool>());
+  ASSERT_TRUE(future.Get().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, StopUpload) {

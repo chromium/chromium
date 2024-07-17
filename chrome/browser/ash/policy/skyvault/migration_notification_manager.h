@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_MIGRATION_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_MIGRATION_NOTIFICATION_MANAGER_H_
 
+#include <map>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -41,8 +42,9 @@ class MigrationNotificationManager {
       const base::FilePath& destination_path);
 
   // Shows the migration error notification.
-  void ShowMigrationErrorNotification(CloudProvider provider,
-                                      const std::string& message);
+  void ShowMigrationErrorNotification(
+      CloudProvider provider,
+      std::map<base::FilePath, MigrationUploadError> errors);
 
   // Closes any open notification or dialog.
   void CloseAll();

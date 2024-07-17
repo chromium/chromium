@@ -73,9 +73,10 @@ class MockMigrationCoordinator : public MigrationCoordinator {
               ->GetCurrentDefault()
               ->PostDelayedTask(
                   FROM_HERE,
-                  base::BindOnce(&MockMigrationCoordinator::OnMigrationDone,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 std::move(callback), true),
+                  base::BindOnce(
+                      &MockMigrationCoordinator::OnMigrationDone,
+                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                      std::map<base::FilePath, MigrationUploadError>()),
                   base::Minutes(5));  // Delay 5 minutes
         });
 
@@ -85,9 +86,11 @@ class MockMigrationCoordinator : public MigrationCoordinator {
 
   bool IsRunning() const override { return is_running_; }
 
-  void OnMigrationDone(MigrationDoneCallback callback, bool success) override {
+  void OnMigrationDone(
+      MigrationDoneCallback callback,
+      std::map<base::FilePath, MigrationUploadError> errors) override {
     if (is_running_) {
-      std::move(callback).Run(success);
+      std::move(callback).Run(std::move(errors));
       is_running_ = false;
     }
   }
@@ -325,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                      const std::string& destination_dir,
                      MigrationDoneCallback callback) {
           // Finish without delay.
-          std::move(callback).Run(true);
+          std::move(callback).Run(/*errors=*/{});
         });
   }
 

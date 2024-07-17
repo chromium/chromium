@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 
+#include <memory>
+#include <optional>
+
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -70,10 +73,11 @@ bool MigrationCoordinator::IsRunning() const {
   return uploader_ != nullptr;
 }
 
-void MigrationCoordinator::OnMigrationDone(MigrationDoneCallback callback,
-                                           bool success) {
+void MigrationCoordinator::OnMigrationDone(
+    MigrationDoneCallback callback,
+    std::map<base::FilePath, MigrationUploadError> errors) {
   uploader_.reset();
-  std::move(callback).Run(success);
+  std::move(callback).Run(std::move(errors));
 }
 
 MigrationCloudUploader::MigrationCloudUploader(
@@ -103,13 +107,14 @@ OneDriveMigrationUploader::~OneDriveMigrationUploader() = default;
 void OneDriveMigrationUploader::Run() {
   if (files_.empty()) {
     if (callback_) {
-      std::move(callback_).Run(/*success=*/true);
+      std::move(callback_).Run({});
     }
     return;
   }
   // TODO(aidazolic): Consider if we can start all jobs at the same time, or we
   // need chunking.
   for (const auto& file_path : files_) {
+    // TODO(aidazolic): Ignore files that failed previously.
     base::FilePath my_files_path = GetMyFilesPath(profile_);
     // Append the file's path up to MyFiles to the base destination name.
     base::FilePath target_path = base::FilePath(destination_dir_);
@@ -138,18 +143,25 @@ void OneDriveMigrationUploader::SetEmulateSlowForTesting(bool value) {
   emulate_slow_for_testing_ = value;
 }
 
-void OneDriveMigrationUploader::OnUploadDone(const base::FilePath& file_path,
-                                             bool success,
-                                             storage::FileSystemURL url) {
-  if (!success) {
-    // TODO(b/334008195): Handle errors.
-    return;
+void OneDriveMigrationUploader::OnUploadDone(
+    const base::FilePath& file_path,
+    storage::FileSystemURL url,
+    std::optional<MigrationUploadError> error) {
+  if (error.has_value()) {
+    // TODO(aidazolic): UMA.
+    // TODO(aidazolic): Persist the failed file to memory.
+
+    // If we only failed to delete the file, don't fail the entire migration
+    // because of it.
+    if (error != MigrationUploadError::kDeleteFailed) {
+      errors_.insert({file_path, error.value()});
+    }
   }
 
   uploaders_.erase(file_path);
   // If all files are done, invoke the callback.
   if (ShouldFinish() && callback_) {
-    std::move(callback_).Run(success);
+    std::move(callback_).Run(std::move(errors_));
   }
 }
 
@@ -177,7 +189,7 @@ GoogleDriveMigrationUploader::~GoogleDriveMigrationUploader() = default;
 
 void GoogleDriveMigrationUploader::Run() {
   if (callback_) {
-    std::move(callback_).Run(/*success=*/true);
+    std::move(callback_).Run({});
   }
 }
 

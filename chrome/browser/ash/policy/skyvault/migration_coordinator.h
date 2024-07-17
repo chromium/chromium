@@ -18,7 +18,8 @@
 namespace policy::local_user_files {
 
 // Callback used to signal that all uploads completed (successfully or not).
-using MigrationDoneCallback = base::OnceCallback<void(bool)>;
+using MigrationDoneCallback =
+    base::OnceCallback<void(std::map<base::FilePath, MigrationUploadError>)>;
 
 class MigrationCloudUploader;
 
@@ -51,7 +52,9 @@ class MigrationCoordinator {
 
  private:
   // Called after underlying upload operation completes.
-  virtual void OnMigrationDone(MigrationDoneCallback callback, bool success);
+  virtual void OnMigrationDone(
+      MigrationDoneCallback callback,
+      std::map<base::FilePath, MigrationUploadError> errors);
 
   // Profile for which this instance was created.
   raw_ptr<Profile> profile_;
@@ -85,6 +88,9 @@ class MigrationCloudUploader {
   virtual void Stop(base::OnceClosure stopped_callback) = 0;
 
  protected:
+  // Maps file to their upload errors, if any.
+  std::map<base::FilePath, MigrationUploadError> errors_;
+
   // Profile for which this instance was created.
   const raw_ptr<Profile> profile_;
   // The paths of the files or directories to be uploaded.
@@ -117,8 +123,8 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
  private:
   // Called when one upload operation completes.
   void OnUploadDone(const base::FilePath& file_path,
-                    bool success,
-                    storage::FileSystemURL url);
+                    storage::FileSystemURL url,
+                    std::optional<MigrationUploadError> error);
 
   // Whether MigrationDoneCallback should be run. Can only be false in tests.
   bool ShouldFinish();

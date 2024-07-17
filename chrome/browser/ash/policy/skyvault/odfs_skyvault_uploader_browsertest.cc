@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -178,14 +179,19 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUploadWithTarget) {
   // Start the upload workflow and end the test once the upload upload callback
   // is run.
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
-  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
+  base::test::TestFuture<
+      storage::FileSystemURL,
+      std::optional<policy::local_user_files::MigrationUploadError>>
+      upload_callback;
   EXPECT_CALL(progress_callback, Run(/*bytes_transferred=*/230096));
   OdfsSkyvaultUploader::Upload(
       profile(), source_file_path, OdfsSkyvaultUploader::FileType::kMigration,
       progress_callback.Get(), upload_callback.GetCallback(),
       base::FilePath(target_path));
-  EXPECT_EQ(upload_callback.Get<bool>(), true);
 
+  auto [url, error] = upload_callback.Get();
+  EXPECT_FALSE(error.has_value());
+  EXPECT_TRUE(url.is_valid());
   // Check that the source file has been moved to OneDrive.
   CheckPathExistsOnODFS(
       base::FilePath("/").AppendASCII(target_path).AppendASCII(test_file_name));

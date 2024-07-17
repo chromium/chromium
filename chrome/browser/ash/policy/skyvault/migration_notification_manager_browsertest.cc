@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerTest,
       display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));
 
   MigrationNotificationManager manager(profile());
-  manager.ShowMigrationErrorNotification(CloudProvider(), /*message=*/"");
+  manager.ShowMigrationErrorNotification(CloudProvider(), /*errors=*/{});
   // TODO(aidazolic): Uncomment when finished.
   // EXPECT_TRUE(
   //   display_service_tester.GetNotification(kSkyVaultMigrationNotificationId));

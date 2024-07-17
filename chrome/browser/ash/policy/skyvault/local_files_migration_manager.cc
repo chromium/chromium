@@ -263,14 +263,15 @@ void LocalFilesMigrationManager::StartMigration(
                                    weak_factory_.GetWeakPtr()));
 }
 
-void LocalFilesMigrationManager::OnMigrationDone(bool success) {
+void LocalFilesMigrationManager::OnMigrationDone(
+    std::map<base::FilePath, MigrationUploadError> errors) {
   in_progress_ = false;
-  if (error_.has_value()) {
+  if (!errors.empty()) {
     // TODO(aidazolic): Use error message; add on-click action.
     notification_manager_->ShowMigrationErrorNotification(cloud_provider_,
-                                                          error_.value());
-    // TODO(aidazolic): UMA.
-    LOG(ERROR) << "Local files migration failed: " << error_.value();
+                                                          std::move(errors));
+
+    LOG(ERROR) << "Local files migration failed.";
   } else {
     for (auto& observer : observers_) {
       observer.OnMigrationSucceeded();

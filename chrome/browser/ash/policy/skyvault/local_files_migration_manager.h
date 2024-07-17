@@ -100,7 +100,7 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   void StartMigration(std::vector<base::FilePath> files);
 
   // Handles the completion of the migration process (success or failure).
-  void OnMigrationDone(bool success);
+  void OnMigrationDone(std::map<base::FilePath, MigrationUploadError> errors);
 
   // Stops the migration if currently ongoing.
   void MaybeStopMigration();
@@ -117,9 +117,6 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Cloud provider to which files are uploaded. If not specified, no migration
   // happens.
   CloudProvider cloud_provider_ = CloudProvider::kNotSpecified;
-
-  // Stores any error that occurred during migration.
-  std::optional<std::string> error_;
 
   // Context for which this instance is created.
   raw_ptr<content::BrowserContext> context_;

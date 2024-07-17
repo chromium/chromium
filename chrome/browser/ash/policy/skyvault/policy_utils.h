@@ -30,6 +30,14 @@ enum class CloudProvider {
   kOneDrive,      // Microsoft OneDrive.
 };
 
+// Categories of errors that can occur during the file upload process.
+enum class MigrationUploadError {
+  kServiceUnavailable,  // The cloud provider is not accessible.
+  kCopyFailed,          // Copying the file to the destination failed.
+  kDeleteFailed,        // Deleting the source file after upload failed.
+  kOther,               // An unspecified error occurred.
+};
+
 // Returns whether local user files are enabled on the device by the flag and
 // policy.
 bool LocalUserFilesAllowed();

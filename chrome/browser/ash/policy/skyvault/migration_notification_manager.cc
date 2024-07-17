@@ -132,7 +132,7 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
 
 void MigrationNotificationManager::ShowMigrationErrorNotification(
     CloudProvider provider,
-    const std::string& message) {
+    std::map<base::FilePath, MigrationUploadError> errors) {
   // TODO(aidazolic): Handle different error states.
 }
 
