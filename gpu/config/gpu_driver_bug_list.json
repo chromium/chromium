@@ -112,6 +112,9 @@
       "id": 31,
       "cr_bugs": [154715, 10068, 269829, 294779, 285292, 1018528],
       "description": "The Mali-3xx/4xx/Txxx driver does not guarantee flush ordering",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "ARM.*",
       "gl_renderer": "Mali-[T34].*",
       "features": [
@@ -133,6 +136,9 @@
     {
       "id": 33,
       "description": "Share group-related crashes and poor context switching perf on Imagination drivers",
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "Imagination.*",
       "features": [
         "use_virtualized_gl_contexts"
@@ -508,19 +514,6 @@
       "gl_renderer": ".*Mali-4.*",
       "features": [
         "disable_gl_rgb_format"
-      ]
-    },
-    {
-      "id": 109,
-      "cr_bugs": [449150, 514510],
-      "description": "MakeCurrent is slow on Linux with NVIDIA drivers",
-      "vendor_id": "0x10de",
-      "os": {
-        "type": "linux"
-      },
-      "gl_vendor": "NVIDIA.*",
-      "features": [
-        "use_virtualized_gl_contexts"
       ]
     },
     {
@@ -1016,18 +1009,6 @@
       ]
     },
     {
-      "id": 186,
-      "description": "Rewrite condition in for and while loops for Intel Mac",
-      "cr_bugs": [644669],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "add_and_true_to_loop_condition"
-      ]
-    },
-    {
       "id": 190,
       "description": "Disable partial swaps on Mesa drivers (detected with GL_VERSION)",
       "cr_bugs": [339493],
@@ -1065,6 +1046,9 @@
       "id": 213,
       "description": "The Mali-Gxx driver does not guarantee flush ordering",
       "cr_bugs": [678508],
+      "os": {
+        "type": "android"
+      },
       "gl_vendor": "ARM.*",
       "gl_renderer": "Mali-G.*",
       "features": [
@@ -1474,19 +1458,6 @@
       ]
     },
     {
-      "id": 258,
-      "description": "Shader variable initialization in a loop caused perf regression on Mac Intel.",
-      "cr_bugs": [809422],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x8086",
-      "multi_gpu_category": "any",
-      "features": [
-        "dont_use_loops_to_initialize_variables"
-      ]
-    },
-    {
       "id": 259,
       "description": "8x MSAA is slow for alpha:false WebGL contexts on Mac Intel",
       "cr_bugs": [812071],
@@ -1596,18 +1567,6 @@
       ]
     },
     {
-      "id": 270,
-      "cr_bugs": [859998],
-      "description": "AMD Linux driver crashes when copyTexImage2D is called with PIXEL_UNPACK_BUFFER set to an uninitialized buffer",
-      "os": {
-        "type": "linux"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "clear_pixel_unpack_buffer_before_copyteximage"
-      ]
-    },
-    {
       "id": 272,
       "cr_bugs": [858879],
       "description": "A deleted query id for GL_TIMESTAMP cannot be reused for other query targets",
@@ -1673,38 +1632,6 @@
       },
       "features": [
         "exit_on_context_lost"
-      ]
-    },
-    {
-      "id": 284,
-      "cr_bugs": [913301],
-      "description": "Clamp texture's BASE_LEVEL/MAX_LEVEL for GenerateMipmap",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "clamp_texture_base_level_and_max_level"
-      ]
-    },
-    {
-      "id": 285,
-      "cr_bugs": [914976, 1000113],
-      "description": "Context flush ordering doesn't seem to work on AMD",
-      "vendor_id": "0x1002",
-      "os": {
-        "type": "linux"
-      },
-      "features": [
-        "use_virtualized_gl_contexts"
-      ],
-      "exceptions": [
-        {
-          "driver_vendor": "Mesa",
-          "driver_version": {
-            "op": ">=",
-            "value": "19.0"
-          }
-        }
       ]
     },
     {
@@ -2819,17 +2746,6 @@
       ],
       "features": [
         "disable_skia_reduce_ops_task_splitting"
-      ]
-    },
-    {
-      "id": 393,
-      "description": "GL Contexts heavy / exhaust resources",
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "freedreno",
-      "features": [
-        "use_virtualized_gl_contexts"
       ]
     },
     {
