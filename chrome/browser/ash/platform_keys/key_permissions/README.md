@@ -33,5 +33,5 @@ the first time to build a certification request.
 granted by the user (only when the key is non-corporate and the profile is
 non-managed) or the KeyPermissions policy to allow the extension to use the
 key for signing through the
-[enterprise.platformKeys](https://developer.chrome.com/extensions/enterprise_platformKeys)
+[enterprise.platformKeys](https://developer.chrome.com/extensions/enterprise.platformKeys)
 or [platformKeys](https://developer.chrome.com/extensions/platformKeys) API.
