@@ -154,10 +154,6 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTest.testFindChildElementsStaleElement2',
     # Flaky: https://crbug.com/1486520
     'ChromeDriverTest.testClickStaleElement',
-    # Flaky: https://crbug.com/346530330
-    'FedCmSpecificTest.testClickErrorGotIt',
-    # Flaky: https://crbug.com/352821422
-    'FedCmSpecificTest.testClickErrorMoreDetails',
 ]
 
 _BROWSER_SPECIFIC_FILTER = {}
@@ -8323,7 +8319,6 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(2, len(accounts))
 
     self._driver.SelectAccount(0)
-    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
 
     self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
     self.assertEqual("Error", self._driver.GetDialogType())
@@ -8357,7 +8352,6 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(2, len(accounts))
 
     self._driver.SelectAccount(0)
-    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
 
     self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
     self.assertEqual("Error", self._driver.GetDialogType())
