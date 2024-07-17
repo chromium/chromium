@@ -4,19 +4,19 @@
   <if expr="chrome_root_store_cert_management_ui">
     <!-- TODO(crbug.com/40928765): Make translatable once UI/strings are finalized. -->
     <!-- Certificate Manager V2 Page -->
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TITLE" desc="Label for the title of the certificate manager page." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TITLE" desc="Label for the title of the certificate manager page.">
       Certificate Manager
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES" desc="Label for the client certificates tab in certificate manager." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES" desc="Label for the client certificates tab in certificate manager.">
       Your certificates
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_LOCAL_CERTIFICATES" desc="Label for the local certificates tab in certificate manager." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_LOCAL_CERTIFICATES" desc="Label for the local certificates tab in certificate manager.">
       Local certificates
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES" desc="Label for the Chrome Root Store certificates tab in certificate manager." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES" desc="Label for the Chrome Root Store certificates tab in certificate manager.">
       Chrome Root Store
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST" desc="Label for the hash copied toast message in certificate manager." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST" desc="Label for the hash copied toast message in certificate manager.">
       Hash copied to clipboard
     </message>
 
@@ -74,25 +74,25 @@
       </message>
     </if>
 
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_TITLE" desc="Label for the title of the admin certs subpage." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_TITLE" desc="Label for the title of the admin certs subpage.">
       Installed by your Administrator
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TRUSTED_CERTS_LIST" desc="Label for a list of trusted certificates." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TRUSTED_CERTS_LIST" desc="Label for a list of trusted certificates.">
       Trusted Certificates
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_INTERMEDIATE_CERTS_LIST" desc="Label for a list of certificates that are used for path building." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_INTERMEDIATE_CERTS_LIST" desc="Label for a list of certificates that are used for path building.">
       Intermediate Certificates
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DISTRUSTED_CERTS_LIST" desc="Label for a list of distrusted certificates." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DISTRUSTED_CERTS_LIST" desc="Label for a list of distrusted certificates.">
       Distrusted Certificates
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NO_CERTIFICATES_ROW" desc="Text for an entry indicating that a list of certificates is empty." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NO_CERTIFICATES_ROW" desc="Text for an entry indicating that a list of certificates is empty.">
       No certificates
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL" desc="Label for button that exports a list of certificates." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL" desc="Label for button that exports a list of certificates.">
       Export
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NUM_CERTS" desc="Label describing a number of certificates." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NUM_CERTS" desc="Label describing a number of certificates.">
       {COUNT, plural,
       =0 {No certificates}
       =1 {1 certificate}
@@ -101,17 +101,17 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES_DESCRIPTION" desc="Description of the client certificates section of cert manager." translateable="false">
       Client certificates are certificates that identify you to other servers.
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_LOCAL_CERTIFICATES_DESCRIPTION" desc="Description of the local certificates section of cert manager." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_LOCAL_CERTIFICATES_DESCRIPTION" desc="Description of the local certificates section of cert manager.">
       Local certificates that have been added by your operating system or your administrator.
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES_DESCRIPTION" desc="Description of the Chrome Root Store certificates section of cert manager." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES_DESCRIPTION" desc="Description of the Chrome Root Store certificates section of cert manager.">
       The Chrome Root Store contains certificates from Certificate Authorities trusted by the
       Chrome Root Program, and is continually reviewed on an ongoing basis.
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TOGGLE_LABEL" desc="Label for a toggle controlling if platform certs are imported or not." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TOGGLE_LABEL" desc="Label for a toggle controlling if platform certs are imported or not.">
       Use imported local certificates from your operating system
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CUSTOM_CERTS_TITLE" desc="Title for the Custom certificates section." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CUSTOM_CERTS_TITLE" desc="Title for the Custom certificates section.">
       Custom
     </message>
   </if>
