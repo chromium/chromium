@@ -3537,4 +3537,17 @@ TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
   }
 }
 
+TEST_P(CompositingSimTest, NestedBoxReflectCrash) {
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <div style="-webkit-box-reflect: right">
+      <div style="-webkit-box-reflect: right">
+        <div style="position: absolute">X</div>
+      </div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+  // Passes if no crash.
+}
+
 }  // namespace blink

@@ -454,7 +454,8 @@ ScrollTranslationAction ConversionContext<Result>::SwitchToClip(
       }
       if (!state_stack_.size() || !state_stack_.back().IsClip()) {
         // TODO(crbug.com/40558824): We still have clip hierarchy issues.
-        // See crbug.com/40558824#comment57 for the test case.
+        // See crbug.com/40558824#comment57 and crbug.com/352414643 for the
+        // test cases.
 #if DCHECK_IS_ON()
         DLOG(ERROR) << "Error: Chunk has a clip that escaped its layer's or "
                     << "effect's clip.\ntarget_clip:\n"
@@ -1023,8 +1024,13 @@ void ConversionContext<Result>::Convert(PaintChunkIterator& chunk_it,
       continue;
     }
     if (action.type == ScrollTranslationAction::kEnd) {
-      // Return to the calling EmitDrawScrollingContentsOp().
-      return;
+      if (outer_state_stack_top_) {
+        // Return to the calling EmitDrawScrollingContentsOp().
+        return;
+      } else {
+        // TODO(crbug.com/40558824): This can happen when we encounter a
+        // clip hierarchy issue. We have to continue.
+      }
     }
 
     for (const auto& item : chunk_it.DisplayItems()) {
