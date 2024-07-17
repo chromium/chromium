@@ -69,6 +69,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash:test_support",
+    "//chrome/browser/ui/ash/desks",
     "//chrome/test:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/dbus/power",

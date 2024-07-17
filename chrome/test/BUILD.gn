@@ -4683,7 +4683,6 @@ if (!is_android) {
         "../browser/ui/ash/back_gesture_browsertest.cc",
         "../browser/ui/ash/chrome_new_window_client_browsertest.cc",
         "../browser/ui/ash/clipboard_history_browsertest.cc",
-        "../browser/ui/ash/desks/desks_client_browsertest.cc",
         "../browser/ui/ash/device_scheduled_reboot/reboot_notification_controller_browsertest.cc",
         "../browser/ui/ash/download_status/holding_space_display_client_browsertest.cc",
         "../browser/ui/ash/download_status/notification_display_client_browsertest.cc",
@@ -5168,6 +5167,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/app_list:browser_tests",
         "//chrome/browser/ui/ash/birch:browser_tests",
         "//chrome/browser/ui/ash/capture_mode:browser_tests",
+        "//chrome/browser/ui/ash/desks:browser_tests",
         "//chrome/browser/ui/ash/holding_space:browser_tests",
       ]
     }
@@ -8588,7 +8588,6 @@ test("unit_tests") {
       "../browser/ui/ash/accelerator_metadata_unittest.cc",
       "../browser/ui/ash/app_access_notifier_unittest.cc",
       "../browser/ui/ash/app_icon_color_cache_unittest.cc",
-      "../browser/ui/ash/desks/chrome_saved_desk_delegate_unittest.cc",
       "../browser/ui/ash/device_scheduled_reboot/reboot_notification_controller_unittest.cc",
       "../browser/ui/ash/device_scheduled_reboot/scheduled_reboot_dialog_unittest.cc",
       "../browser/ui/ash/glanceables/glanceables_classroom_client_impl_unittest.cc",
@@ -8898,6 +8897,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/assistant:unit_tests",
       "//chrome/browser/ui/ash/birch:unit_tests",
       "//chrome/browser/ui/ash/calendar:unit_tests",
+      "//chrome/browser/ui/ash/desks:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
@@ -11483,7 +11483,6 @@ if (!is_android && !is_chromeos_device) {
       if (is_chromeos_ash) {
         sources += [
           "../browser/ui/ash/app_list/app_list_interactive_uitest.cc",
-          "../browser/ui/ash/desks/desks_interactive_uitest.cc",
           "../browser/ui/ash/picker/picker_interactive_uitest.cc",
           "../browser/ui/ash/user_education/welcome_tour/welcome_tour_interactive_uitest.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
@@ -11518,6 +11517,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
           "//chrome/browser/ui/ash",
+          "//chrome/browser/ui/ash/desks:interactive_ui_tests",
           "//chrome/test/base/ash/interactive:interactive_ui_tests",
           "//chrome/test/base/ash/interactive:test_support",
           "//chromeos/ash/components/dbus/fwupd",

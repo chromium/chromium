@@ -2343,16 +2343,6 @@ static_library("ui") {
       "ash/auth/cryptohome_pin_engine.h",
       "ash/auth/legacy_fingerprint_engine.cc",
       "ash/auth/legacy_fingerprint_engine.h",
-      "ash/desks/admin_template_service_factory.cc",
-      "ash/desks/admin_template_service_factory.h",
-      "ash/desks/chrome_desks_util.cc",
-      "ash/desks/chrome_desks_util.h",
-      "ash/desks/chrome_saved_desk_delegate.cc",
-      "ash/desks/chrome_saved_desk_delegate.h",
-      "ash/desks/desks_client.cc",
-      "ash/desks/desks_client.h",
-      "ash/desks/desks_templates_app_launch_handler.cc",
-      "ash/desks/desks_templates_app_launch_handler.h",
       "ash/device_scheduled_reboot/reboot_notification_controller.cc",
       "ash/device_scheduled_reboot/reboot_notification_controller.h",
       "ash/device_scheduled_reboot/scheduled_reboot_dialog.cc",
@@ -3619,6 +3609,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/auth",
       "//chrome/browser/ui/ash/birch",
       "//chrome/browser/ui/ash/capture_mode",
+      "//chrome/browser/ui/ash/desks",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -3993,6 +3984,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/birch",
       "//chrome/browser/ui/ash/capture_mode",
+      "//chrome/browser/ui/ash/desks",
     ]
 
     if (is_chrome_branded) {
