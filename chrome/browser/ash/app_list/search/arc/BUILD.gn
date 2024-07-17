@@ -6,6 +6,51 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+static_library("arc") {
+  sources = [
+    "arc_app_shortcut_search_result.cc",
+    "arc_app_shortcut_search_result.h",
+    "arc_app_shortcuts_search_provider.cc",
+    "arc_app_shortcuts_search_provider.h",
+    "arc_playstore_search_provider.cc",
+    "arc_playstore_search_provider.h",
+    "arc_playstore_search_result.cc",
+    "arc_playstore_search_result.h",
+    "fake_recommend_apps_fetcher_delegate.cc",
+    "fake_recommend_apps_fetcher_delegate.h",
+    "recommend_apps_fetcher.cc",
+    "recommend_apps_fetcher.h",
+    "recommend_apps_fetcher_delegate.h",
+    "recommend_apps_fetcher_impl.cc",
+    "recommend_apps_fetcher_impl.h",
+  ]
+
+  deps = [
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/public/cpp",
+    "//ash/public/cpp/app_list/vector_icons",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list/app_service",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/string_matching",
+    "//components/crx_file",
+    "//content/public/browser",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
+    "//services/network/public/mojom:url_loader_base",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -16,6 +61,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":arc",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
