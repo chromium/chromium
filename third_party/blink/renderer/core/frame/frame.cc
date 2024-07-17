@@ -892,8 +892,10 @@ bool Frame::SwapImpl(
         page->SetMainFrame(
             WebFrame::ToCoreFrame(*old_page_placeholder_remote_frame));
 
-        // Take properties from the old page, such as its list of related pages.
-        new_page->TakePropertiesForLocalMainFrameSwap(page);
+        // The old page might be in the middle of closing when this swap
+        // happens. We need to ensure that the closing still happens with the
+        // new page, so also swap the CloseTaskHandlers in the pages.
+        new_page->TakeCloseTaskHandler(page);
 
         // On the new Page, we have a different placeholder main RemoteFrame,
         // which was created when the new Page's WebView was created from

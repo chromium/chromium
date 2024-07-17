@@ -450,7 +450,7 @@ void Page::LinkRelatedPagesIfNeeded() {
   next->prev_related_page_ = this;
 }
 
-void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
+void Page::TakeCloseTaskHandler(Page* old_page) {
   // Setting the CloseTaskHandler using this function should only be done
   // when transferring the CloseTaskHandler from a previous Page to the new
   // Page during LocalFrame <-> LocalFrame swap. The new Page should not have
@@ -460,29 +460,6 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
   old_page->close_task_handler_ = nullptr;
   if (close_task_handler_) {
     close_task_handler_->SetPage(this);
-  }
-
-  // Make the related pages list include `this` in place of `old_page`.
-  CHECK_EQ(opener_, old_page->opener_);
-  CHECK_EQ(prev_related_page_, this);
-  CHECK_EQ(next_related_page_, this);
-  if (old_page->prev_related_page_ != old_page) {
-    prev_related_page_ = old_page->prev_related_page_;
-    prev_related_page_->next_related_page_ = this;
-    old_page->prev_related_page_ = old_page;
-  }
-  if (old_page->next_related_page_ != old_page) {
-    next_related_page_ = old_page->next_related_page_;
-    next_related_page_->prev_related_page_ = this;
-    old_page->next_related_page_ = old_page;
-  }
-
-  // If the previous page is an opener for other pages, make sure that the
-  // openees point to the new page instead.
-  for (auto page : RelatedPages()) {
-    if (page->opener_ == old_page) {
-      page->opener_ = this;
-    }
   }
 }
 
