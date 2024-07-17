@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -734,8 +735,15 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 // Test SRP navigations that are cancelled by a new navigation, at various
 // points during the navigation.
 // TODO(https://crbug.com/347706997): Record the type of the new navigation.
+// TODO(crbug.com/353708981): Test flaky on Linux MSAN
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_SearchCancelledByNewNavigation \
+  DISABLED_SearchCancelledByNewNavigation
+#else
+#define MAYBE_SearchCancelledByNewNavigation SearchCancelledByNewNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
-                       SearchCancelledByNewNavigation) {
+                       MAYBE_SearchCancelledByNewNavigation) {
   for (NavigationMilestone milestone : all_testable_milestones()) {
     for (AbandonReason reason :
          {AbandonReason::kNewReloadNavigation,
