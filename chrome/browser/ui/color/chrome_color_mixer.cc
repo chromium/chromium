@@ -750,6 +750,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarExtensionSeparatorDisabled] = {
       kColorToolbarButtonIconInactive};
   mixer[kColorToolbarSeparator] = {kColorToolbarSeparatorDefault};
+  mixer[kColorToolbarActionItemEngaged] = {ui::kColorSysPrimary};
   mixer[kColorToolbarSeparatorDefault] =
       ui::SetAlpha(kColorToolbarButtonIcon, 0x4D);
   mixer[kColorToolbarText] = {kColorToolbarTextDefault};

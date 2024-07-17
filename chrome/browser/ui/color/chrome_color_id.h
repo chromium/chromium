@@ -773,6 +773,7 @@
   E_CPONLY(kColorToolbarInkDropHover) \
   E_CPONLY(kColorToolbarInkDropRipple) \
   E_CPONLY(kColorToolbarSeparator) \
+  E_CPONLY(kColorToolbarActionItemEngaged) \
   E_CPONLY(kColorToolbarSeparatorDefault) \
   E_CPONLY(kColorToolbarText) \
   E_CPONLY(kColorToolbarTextDefault) \

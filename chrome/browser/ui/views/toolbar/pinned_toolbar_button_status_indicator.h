@@ -28,6 +28,9 @@ class PinnedToolbarButtonStatusIndicator : public views::View {
   // returned status indicator is owned by the |parent|.
   static PinnedToolbarButtonStatusIndicator* Install(View* parent);
 
+  // Returns the status indicator if it is a direct child of the `parent`.
+  static PinnedToolbarButtonStatusIndicator* GetStatusIndicator(View* parent);
+
   void SetColor(SkColor color);
 
   void Show();

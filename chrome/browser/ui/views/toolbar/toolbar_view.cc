@@ -247,8 +247,11 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
 }
 
 ToolbarView::~ToolbarView() {
-  if (display_mode_ != DisplayMode::NORMAL)
+  if (display_mode_ != DisplayMode::NORMAL) {
     return;
+  }
+
+  overflow_button_->set_toolbar_controller(nullptr);
 
   for (const auto& view_and_command : GetViewCommandMap())
     chrome::RemoveCommandObserver(browser_, view_and_command.second, this);
@@ -1001,10 +1004,7 @@ void ToolbarView::InitLayout() {
         ToolbarController::GetDefaultResponsiveElements(browser_),
         ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
         container_view_, overflow_button_, pinned_toolbar_actions_container_);
-
-    overflow_button_->set_create_menu_model_callback(
-        base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,
-                            base::Unretained(toolbar_controller_.get())));
+    overflow_button_->set_toolbar_controller(toolbar_controller_.get());
   }
 
   LayoutCommon();

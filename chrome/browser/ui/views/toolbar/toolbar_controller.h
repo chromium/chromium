@@ -14,14 +14,18 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/actions/action_id.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 
 class Browser;
 
-// Manages toolbar elements' visibility using flex rules.
-class ToolbarController : public ui::SimpleMenuModel::Delegate {
+// Manages toolbar elements' visibility using flex rules. This also owns the
+// overflow menu and the logic to generate the menu model. It also listens to
+// action item changes and updates the menu as required.
+class ToolbarController : public views::MenuDelegate,
+                          public ui::SimpleMenuModel::Delegate {
  public:
   // Manages action-based pinned toolbar elements.
   class PinnedActionsDelegate {
@@ -109,7 +113,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
       const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
       int element_flex_order_start,
       views::View* toolbar_container_view,
-      views::View* overflow_button,
+      OverflowButton* overflow_button,
       PinnedActionsDelegate* PinnedActionsDelegate);
   ToolbarController(const ToolbarController&) = delete;
   ToolbarController& operator=(const ToolbarController&) = delete;
@@ -192,7 +196,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   // Return true if any buttons overflow.
   bool InOverflowMode() const;
 
-  views::View* overflow_button() { return overflow_button_; }
+  OverflowButton* overflow_button() { return overflow_button_; }
 
   const base::flat_map<ui::ElementIdentifier, std::unique_ptr<PopOutState>>&
   pop_out_state_for_testing() const {
@@ -214,6 +218,19 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   static views::View* FindToolbarElementWithId(views::View* view,
                                                ui::ElementIdentifier id);
 
+  // Shows the overflow menu that is anchored to the `overflow_button_`.
+  void ShowMenu();
+
+  bool IsMenuRunning() const;
+
+  const views::MenuItemView* root_menu_item() const {
+    return root_menu_item_.get();
+  }
+
+  const ui::SimpleMenuModel* menu_model_for_testing() const {
+    return menu_model_.get();
+  }
+
  private:
   friend class ToolbarControllerUiTest;
   friend class ToolbarControllerUnitTest;
@@ -227,6 +244,17 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
       const ResponsiveElementInfo& element,
       const views::ProposedLayout* proposed_layout = nullptr) const;
 
+  void PopulateMenu(views::MenuItemView* parent);
+  void CloseMenu();
+
+  // Adds the status indicator to all the menu items and makes it visible if
+  // needed.
+  void ShowStatusIndicator();
+
+  // Listens to changes in `action_item` and updates the visibility of the
+  // status indicator.
+  void ActionItemChanged(actions::ActionItem* action_item);
+
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdEnabled(int command_id) const override;
@@ -237,6 +265,8 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   // match overflow menu top to bottom.
   const std::vector<ResponsiveElementInfo> responsive_elements_;
 
+  std::vector<base::CallbackListSubscription> action_changed_subscription_;
+
   // The starting flex order assigned to the last overflowed element in
   // `responsive_elements_`.
   const int element_flex_order_start_;
@@ -246,7 +276,11 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
   // The button with a chevron icon that indicates at least one element in
   // `responsive_elements_` overflows. Owned by `toolbar_container_view_`.
-  raw_ptr<views::View> overflow_button_;
+  raw_ptr<OverflowButton> overflow_button_;
+
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  raw_ptr<views::MenuItemView> root_menu_item_ = nullptr;
 
   const raw_ptr<PinnedActionsDelegate> pinned_actions_delegate_;
 

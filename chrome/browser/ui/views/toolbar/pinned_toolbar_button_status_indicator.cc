@@ -24,6 +24,16 @@ PinnedToolbarButtonStatusIndicator* PinnedToolbarButtonStatusIndicator::Install(
   return parent->AddChildView(std::move(indicator));
 }
 
+PinnedToolbarButtonStatusIndicator*
+PinnedToolbarButtonStatusIndicator::GetStatusIndicator(View* parent) {
+  for (auto& child : parent->children()) {
+    if (views::IsViewClass<PinnedToolbarButtonStatusIndicator>(child)) {
+      return views::AsViewClass<PinnedToolbarButtonStatusIndicator>(child);
+    }
+  }
+  return nullptr;
+}
+
 PinnedToolbarButtonStatusIndicator::~PinnedToolbarButtonStatusIndicator() =
     default;
 

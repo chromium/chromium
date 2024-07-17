@@ -302,6 +302,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // SetIcon(). MenuItemView takes ownership of |icon_view|.
   void SetIconView(std::unique_ptr<ImageView> icon_view);
 
+  ImageView* icon_view() { return icon_view_; }
+
   // Returns the preferred size of the icon view if any, or gfx::Size() if none.
   gfx::Size GetIconPreferredSize() const;
 

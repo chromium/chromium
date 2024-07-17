@@ -58,6 +58,7 @@ class PinnedToolbarActionsContainer;
 class ToolbarButton;
 class AvatarToolbarButtonBrowserTest;
 class ToolbarController;
+class OverflowButton;
 class PerformanceInterventionButton;
 
 namespace media_router {

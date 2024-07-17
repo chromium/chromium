@@ -328,8 +328,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
     return toolbar_controller_->GetOverflowedElements();
   }
   const ui::SimpleMenuModel* GetOverflowMenu() {
-    return static_cast<OverflowButton*>(overflow_button_)
-        ->menu_model_for_testing();
+    return toolbar_controller_->menu_model_for_testing();
   }
 
  private:
