@@ -30,9 +30,6 @@ public class SafetyHubModuleViewBinder {
             PropertyKey propertyKey) {
         if (SafetyHubModuleProperties.IS_VISIBLE == propertyKey) {
             preference.setVisible(model.get(SafetyHubModuleProperties.IS_VISIBLE));
-        } else if (SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey) {
-            preference.setControlledByPolicy(
-                    model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY));
         }
     }
 
@@ -521,15 +518,20 @@ public class SafetyHubModuleViewBinder {
                         context, R.drawable.ic_checkmark_24dp, R.color.default_green);
             case SafetyHubModuleProperties.ModuleState.INFO:
             case SafetyHubModuleProperties.ModuleState.UNAVAILABLE:
-                return SettingsUtils.getTintedIcon(
-                        context,
-                        R.drawable.btn_info,
-                        R.color.default_icon_color_secondary_tint_list);
+                return managed
+                        ? SettingsUtils.getTintedIcon(
+                                context,
+                                R.drawable.ic_business_small,
+                                R.color.default_icon_color_secondary_tint_list)
+                        : SettingsUtils.getTintedIcon(
+                                context,
+                                R.drawable.btn_info,
+                                R.color.default_icon_color_secondary_tint_list);
             case SafetyHubModuleProperties.ModuleState.WARNING:
                 return managed
                         ? SettingsUtils.getTintedIcon(
                                 context,
-                                R.drawable.btn_info,
+                                R.drawable.ic_business_small,
                                 R.color.default_icon_color_secondary_tint_list)
                         : SettingsUtils.getTintedIcon(
                                 context, R.drawable.ic_error, R.color.default_red);
