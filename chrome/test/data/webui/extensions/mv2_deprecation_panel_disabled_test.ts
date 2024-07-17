@@ -53,9 +53,7 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
   test('header content is always visible', function() {
     assertTrue(isVisible(
         panelElement.shadowRoot!.querySelector('.panel-header-text')));
-    // TODO(crbug.com/339061151): header button should be visible once dismiss
-    // panel for disabled stage is added.
-    assertFalse(
+    assertTrue(
         isVisible(panelElement.shadowRoot!.querySelector('.header-button')));
   });
 
@@ -89,6 +87,20 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
     assertTrue(!!infoB);
     assertEquals('Extension B', infoB.textContent!.trim());
   });
+
+  test(
+      'dismiss button triggers the notice dismissal when clicked',
+      async function() {
+        const dismissButton =
+            panelElement.shadowRoot!.querySelector<CrButtonElement>(
+                '.header-button');
+        assertTrue(!!dismissButton);
+
+        dismissButton.click();
+        await mockDelegate.whenCalled('dismissMv2DeprecationNotice');
+        assertEquals(
+            1, mockDelegate.getCallCount('dismissMv2DeprecationNotice'));
+      });
 
   test('find alternative button for extension is hidden', function() {
     const extension = getExtension();

@@ -276,7 +276,7 @@ suite('ExtensionItemListTest', function() {
     // The length remains at 2.
     assertEquals(2, mv2DeprecationPanel.extensions.length);
 
-    // Panel is hidden if warning has been dismissed.
+    // Panel is hidden if notice has been dismissed.
     itemList.set('isMv2DeprecationNoticeDismissed', true);
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', false);
@@ -330,6 +330,11 @@ suite('ExtensionItemListTest', function() {
     boundTestVisible('extensions-mv2-deprecation-panel', true);
     // Panel has only one extension.
     assertEquals(1, mv2DeprecationPanel.extensions.length);
+
+    // Panel is hidden if notice has been dismissed.
+    itemList.set('isMv2DeprecationNoticeDismissed', true);
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', false);
   });
 
   test('ManifestV2DeprecationPanel_TitleVisibility', function() {

@@ -119,16 +119,6 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Returns whether the dismiss button should be displayed.
-   */
-  private showDismissButton_(): boolean {
-    // Button is only visible for the warning stage.
-    // TODO(crbug.com/339061151): Button should also be visible for the
-    // disabled stage (and have a different callback).
-    return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING;
-  }
-
-  /**
    * Returns whether the extensions find alternative button should be
    * displayed.
    */
@@ -210,12 +200,23 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Triggers the panel dismissal when the dismiss button is clicked.
+   * Triggers the MV2 deprecation notice dismissal when the dismiss button is
+   * clicked.
    */
   private onDismissButtonClick_() {
-    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
-    chrome.metricsPrivate.recordUserAction(
-        'Extensions.Mv2Deprecation.Warning.Dismissed');
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+        assertNotReached();
+      case Mv2ExperimentStage.WARNING:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Warning.Dismissed');
+        break;
+      case Mv2ExperimentStage.WARNING:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Disabled.Dismissed');
+        break;
+    }
+
     this.delegate.dismissMv2DeprecationNotice();
   }
 
