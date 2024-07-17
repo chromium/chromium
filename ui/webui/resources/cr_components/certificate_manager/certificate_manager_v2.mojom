@@ -78,6 +78,15 @@ struct CertManagementMetadata {
   uint8 num_policy_certs;
 };
 
+union ImportResult {
+  // If present, the import failed and will contain an error message about why.
+  string error;
+
+  // TODO(crbug.com/40928765): add message for successful import. (On
+  // successful import the certificate list should be refreshed to show the
+  // newly imported certificate.)
+};
+
 // Calls from TS -> C++  (Renderer -> Browser).
 interface CertificateManagerPageHandler {
   // Get the list of certificates from a given source.
@@ -91,6 +100,16 @@ interface CertificateManagerPageHandler {
 
   // Export all the certificates from a given source.
   ExportCertificates(CertificateSource source);
+
+  // Begin a certificate import process for the specified source. Will display
+  // a file picker and import the chosen file. The result will indicate whether
+  // there was an error and/or whether the certificate list should be refreshed
+  // as a result of the import. The result may be null if no result needs to be
+  // displayed, for example if the import was cancelled or if it was ignored
+  // because an import operation was already in progress.
+  // The name is a little misleading as in the case of client certificates it
+  // actually imports both a certificate and a private key.
+  ImportCertificate(CertificateSource source) => (ImportResult? result);
 
   // Show the platform's native certificate management UI.
   [EnableIf=native_cert_management]

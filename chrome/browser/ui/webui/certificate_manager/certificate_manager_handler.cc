@@ -94,6 +94,13 @@ void CertificateManagerPageHandler::ExportCertificates(
   GetCertSource(source_id).ExportCertificates(web_contents_->GetWeakPtr());
 }
 
+void CertificateManagerPageHandler::ImportCertificate(
+    certificate_manager_v2::mojom::CertificateSource source_id,
+    ImportCertificateCallback callback) {
+  GetCertSource(source_id).ImportCertificate(web_contents_->GetWeakPtr(),
+                                             std::move(callback));
+}
+
 CertificateManagerPageHandler::CertSource::~CertSource() = default;
 
 CertificateManagerPageHandler::CertSource&
@@ -173,3 +180,10 @@ void CertificateManagerPageHandler::ShowNativeManageCertificates() {
   settings_utils::ShowManageSSLCertificates(web_contents_);
 }
 #endif
+
+void CertificateManagerPageHandler::CertSource::ImportCertificate(
+    base::WeakPtr<content::WebContents> web_contents,
+    CertificateManagerPageHandler::ImportCertificateCallback callback) {
+  std::move(callback).Run(
+      certificate_manager_v2::mojom::ImportResult::NewError("not implemented"));
+}

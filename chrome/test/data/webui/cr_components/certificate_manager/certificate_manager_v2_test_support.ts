@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, CertificateSource, CertManagementMetadata, SummaryCertInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
+import type {CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, CertificateSource, CertManagementMetadata, ImportResult, SummaryCertInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificateManagerPageCallbackRouter} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -18,6 +18,13 @@ class FakePageHandler extends TestBrowserProxy implements
     return {certs: []};
   };
 
+  private importCertificateCallback_: (source: CertificateSource) => {
+    result:
+      ImportResult,
+  } = (_) => {
+    return {result: {error: 'default implementation called'}};
+  };
+
   private metadata_: CertManagementMetadata = {
     includeSystemTrustStore: true,
     numUserAddedSystemCerts: 0,
@@ -31,6 +38,7 @@ class FakePageHandler extends TestBrowserProxy implements
       'getCertManagementMetadata',
       'viewCertificate',
       'exportCertificates',
+      'importCertificate',
       'showNativeManageCertificates',
     ]);
   }
@@ -52,6 +60,11 @@ class FakePageHandler extends TestBrowserProxy implements
 
   exportCertificates(source: CertificateSource) {
     this.methodCalled('exportCertificates', source);
+  }
+
+  importCertificate(source: CertificateSource) {
+    this.methodCalled('importCertificate', source);
+    return Promise.resolve(this.importCertificateCallback_(source));
   }
 
   setCertificatesCallback(callbackFn: (source: CertificateSource) => {

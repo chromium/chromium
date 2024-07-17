@@ -141,6 +141,50 @@ suite('CertificateListV2Test', () => {
     assertFalse(isVisible(certList.$.exportCerts));
   });
 
+  test('import click', async () => {
+    testProxy.handler.setCertificatesCallback(() => {
+      return {
+        certs: [
+          {
+            sha256hashHex: 'deadbeef1',
+            displayName: 'cert1',
+          },
+        ],
+      };
+    });
+
+    certList = document.createElement('certificate-list-v2');
+    certList.certSource = CertificateSource.kChromeRootStore;
+    certList.showImport = true;
+    document.body.appendChild(certList);
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertTrue(certList.$.certs.opened, 'list not opened');
+    assertTrue(isVisible(certList.$.importCert));
+
+    certList.$.importCert.click();
+
+    assertEquals(
+        CertificateSource.kChromeRootStore,
+        await testProxy.handler.whenCalled('importCertificate'),
+        'import click provided wrong source');
+
+    await microtasksFinished();
+    // Check that list of certs is still opened after import button click.
+    assertTrue(certList.$.certs.opened, 'list not opened after click');
+  });
+
+  test('import hidden', async () => {
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertFalse(isVisible(certList.$.importCert));
+  });
+
   test('no certs', async () => {
     certList = document.createElement('certificate-list-v2');
     certList.certSource = CertificateSource.kChromeRootStore;

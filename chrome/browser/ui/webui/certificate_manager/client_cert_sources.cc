@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "crypto/crypto_buildflags.h"
@@ -17,6 +20,8 @@
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/browser/ui/crypto_module_delegate_nss.h"
@@ -210,6 +215,96 @@ class ClientCertSource : public CertificateManagerPageHandler::CertSource {
   std::optional<net::CertificateList> certs_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Subclass of ClientCertSource that also allows importing client certificates
+// to the ChromeOS client cert store.
+class CrosClientCertSource : public ClientCertSource,
+                             public ui::SelectFileDialog::Listener {
+ public:
+  explicit CrosClientCertSource(std::unique_ptr<ClientCertStoreLoader> loader)
+      : ClientCertSource(std::move(loader)) {}
+
+  ~CrosClientCertSource() override {
+    if (select_file_dialog_) {
+      select_file_dialog_->ListenerDestroyed();
+    }
+  }
+
+  void ImportCertificate(
+      base::WeakPtr<content::WebContents> web_contents,
+      CertificateManagerPageHandler::ImportCertificateCallback callback)
+      override {
+    // Containing web contents went away (e.g. user navigated away) or dialog
+    // is already open. Don't try to open the dialog.
+    if (!web_contents || select_file_dialog_) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
+    import_callback_ = std::move(callback);
+
+    select_file_dialog_ = ui::SelectFileDialog::Create(
+        this, std::make_unique<ChromeSelectFilePolicy>(web_contents.get()));
+
+    ui::SelectFileDialog::FileTypeInfo file_type_info;
+    file_type_info.extensions = {{FILE_PATH_LITERAL("p12"),
+                                  FILE_PATH_LITERAL("pfx"),
+                                  FILE_PATH_LITERAL("crt")}};
+    file_type_info.include_all_files = true;
+    select_file_dialog_->SelectFile(
+        ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
+        base::FilePath(), &file_type_info,
+        1,  // 1-based index for |file_type_info.extensions| to specify default.
+        FILE_PATH_LITERAL("p12"), web_contents->GetTopLevelNativeWindow(),
+        /*params=*/nullptr);
+  }
+
+  // ui::SelectFileDialog::Listener
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override {
+    select_file_dialog_ = nullptr;
+
+    // Use CONTINUE_ON_SHUTDOWN since this is only for reading a file, if it
+    // doesn't complete before shutdown the file still exists, and even if the
+    // browser blocked on completing this task, the import isn't actually
+    // done yet, so just blocking shutdown on the file read wouldn't accomplish
+    // anything. CONTINUE_ON_SHUTDOWN should be safe as base::ReadFileToBytes
+    // doesn't access any global state.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&base::ReadFileToBytes, file.path()),
+        base::BindOnce(&CrosClientCertSource::FileRead,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void FileSelectionCanceled() override {
+    select_file_dialog_ = nullptr;
+
+    std::move(import_callback_).Run(nullptr);
+  }
+
+  void FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
+    if (!file_bytes) {
+      // TODO(crbug.com/40928765): localize
+      std::move(import_callback_)
+          .Run(certificate_manager_v2::mojom::ImportResult::NewError(
+              "error reading file"));
+    }
+
+    // TODO(crbug.com/40928765): actually do the import
+    std::move(import_callback_)
+        .Run(certificate_manager_v2::mojom::ImportResult::NewError(
+            "not implemented"));
+  }
+
+ private:
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+  CertificateManagerPageHandler::ImportCertificateCallback import_callback_;
+  base::WeakPtrFactory<CrosClientCertSource> weak_ptr_factory_{this};
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_CHROMEOS)
 class ExtensionsClientCertSource
     : public CertificateManagerPageHandler::CertSource {
@@ -267,7 +362,12 @@ class ExtensionsClientCertSource
 
 std::unique_ptr<CertificateManagerPageHandler::CertSource>
 CreatePlatformClientCertSource() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<CrosClientCertSource>(
+      CreatePlatformClientCertLoader());
+#else
   return std::make_unique<ClientCertSource>(CreatePlatformClientCertLoader());
+#endif
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

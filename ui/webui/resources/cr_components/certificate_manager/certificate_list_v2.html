@@ -10,7 +10,7 @@
     align-items: center;
   }
 
-  .certs-export-button {
+  .header-buttons {
     margin-left: auto;
   }
 </style>
@@ -19,11 +19,19 @@
     expanded="{{expanded_}}">
   <div class="header-row">
     [[headerText]]
-    <cr-button class="action-button certs-export-button"
-        hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
-        id="exportCerts" on-click="onExportCertsClick_">
-      [[i18n("certificateManagerV2ExportButtonLabel")]]
-    </cr-button>
+    <div class="header-buttons">
+      <cr-button class="action-button"
+          hidden$="[[!showImport]]" id="importCert" on-click="onImportCertClick_">
+        <!-- TODO(crbug.com/40928765): localize -->
+        Import
+      </cr-button>
+      <!-- TODO(crbug.com/40928765): button for "import and bind" -->
+      <cr-button class="action-button"
+          hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
+          id="exportCerts" on-click="onExportCertsClick_">
+        [[i18n("certificateManagerV2ExportButtonLabel")]]
+      </cr-button>
+    </div>
   </div>
 </cr-expand-button>
 <cr-collapse id="certs" class="cert-list" opened="[[expanded_]]">

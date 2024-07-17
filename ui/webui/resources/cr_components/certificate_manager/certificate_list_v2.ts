@@ -24,7 +24,7 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_list_v2.html.js';
-import type {CertificateSource, SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
+import type {CertificateSource, ImportResult, SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 
 const CertificateListV2ElementBase = I18nMixin(PolymerElement);
@@ -33,6 +33,7 @@ export interface CertificateListV2Element {
   $: {
     certs: CrCollapseElement,
     exportCerts: HTMLElement,
+    importCert: HTMLElement,
     noCertsRow: HTMLElement,
   };
 }
@@ -50,6 +51,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     return {
       certSource: Number,
       headerText: String,
+      showImport: Boolean,
       // True if the export button should be hidden.
       // Export button may also be hidden if there are no certs in the list.
       hideExport: Boolean,
@@ -64,6 +66,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
 
   certSource: CertificateSource;
   headerText: string;
+  showImport: boolean = false;
   hideExport: boolean = false;
   private expanded_: boolean = true;
   private certificates_: SummaryCertInfo[] = [];
@@ -83,6 +86,20 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     e.stopPropagation();
     CertificatesV2BrowserProxy.getInstance().handler.exportCertificates(
         this.certSource);
+  }
+
+  private onImportCertClick_(e: Event) {
+    // Import button click shouldn't collapse the list as well.
+    e.stopPropagation();
+    CertificatesV2BrowserProxy.getInstance()
+        .handler.importCertificate(this.certSource)
+        .then((value: {result: ImportResult|null}) => {
+          // TODO(crbug.com/40928765): on successful import, refresh the
+          // certificate list.
+          this.dispatchEvent(new CustomEvent(
+              'import-result',
+              {composed: true, bubbles: true, detail: value.result}));
+        });
   }
 
   private computeHasCerts_(): boolean {

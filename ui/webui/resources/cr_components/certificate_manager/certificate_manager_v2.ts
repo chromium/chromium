@@ -10,6 +10,7 @@
 
 import './certificate_list_v2.js';
 import './certificate_subpage_v2.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -24,6 +25,7 @@ import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
 
+import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -36,7 +38,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 // './certificate_enterprise_certs_v2.js';
 import type {CertificateListV2Element} from './certificate_list_v2.js';
 import {getTemplate} from './certificate_manager_v2.html.js';
-import type {CertManagementMetadata} from './certificate_manager_v2.mojom-webui.js';
+import type {CertManagementMetadata, ImportResult} from './certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
@@ -63,6 +65,7 @@ export interface CertificateManagerV2Element {
     extensionsClientCerts: CertificateListV2Element,
     // </if>
     toast: CrToastElement,
+    dialog: CrDialogElement,
     importOsCerts: CrToggleElement,
     importOsCertsManagedIcon: HTMLElement,
     viewOsImportedCerts: HTMLElement,
@@ -153,6 +156,9 @@ export class CertificateManagerV2Element extends
       numSystemCertsString_: String,
       numPolicyCertsString_: String,
 
+      dialogTitle_: String,
+      dialogBody_: String,
+
       showSearch_: {
         type: Boolean,
         value: false,
@@ -168,6 +174,8 @@ export class CertificateManagerV2Element extends
         computed: 'computeImportOsCertsManaged_(certManagementMetadata_)',
       },
 
+      showClientCertImport_: Boolean,
+
       certificateSourceEnum_: {
         type: Object,
         value: CertificateSource,
@@ -177,6 +185,8 @@ export class CertificateManagerV2Element extends
 
   private selectedPage_: Page = Page.LOCAL_CERTS;
   private toastMessage_: string;
+  private dialogTitle_: string;
+  private dialogBody_: string;
   private numPolicyCertsString_: string;
   private numSystemCertsString_: string;
   private certManagementMetadata_: CertManagementMetadata;
@@ -184,6 +194,14 @@ export class CertificateManagerV2Element extends
   private importOsCertsEnabledManaged_: boolean;
   private enterpriseSubpageLists_: SubpageCertificateList[];
   private platformSubpageLists_: SubpageCertificateList[];
+  // <if expr="not chromeos_ash">
+  private showClientCertImport_: boolean = false;
+  // </if>
+  // <if expr="chromeos_ash">
+  // TODO(crbug.com/40928765): Import should also be disabled in kiosk mode or
+  // when disabled by policy.
+  private showClientCertImport_: boolean = true;
+  // </if>
 
   override ready() {
     super.ready();
@@ -261,6 +279,27 @@ export class CertificateManagerV2Element extends
   // on<OptionalContext><EventName>_).
   private onNavigateBack_() {
     this.selectedPage_ = Page.LOCAL_CERTS;
+  }
+
+  private onImportResult_(e: CustomEvent<ImportResult|null>) {
+    const result = e.detail;
+    if (result === null) {
+      return;
+    }
+    if (result.error !== undefined) {
+      // TODO(crbug.com/40928765): localize
+      this.showDialog_('import result', result.error);
+    }
+  }
+
+  private showDialog_(title: string, message: string) {
+    this.dialogTitle_ = title;
+    this.dialogBody_ = message;
+    this.$.dialog.showModal();
+  }
+
+  private onDialogClickOk_() {
+    this.$.dialog.close();
   }
 
   private computeImportOsCertsEnabled_(): boolean {
