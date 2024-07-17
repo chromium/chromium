@@ -56,10 +56,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   static get properties() {
     return {
-      textValue_: {
-        type: String,
-        observer: 'updateShouldShowSuggestions_',
-      },
+      textValue_: String,
 
       seaPenQuery_: {
         type: Object,
@@ -109,6 +106,12 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private shouldShowSuggestions_: boolean;
   private innerContainerOriginalHeight_: number;
   private resizeObserver_: ResizeObserver;
+
+  static get observers() {
+    return [
+      'updateShouldShowSuggestions_(textValue_, thumbnailsLoading_)',
+    ];
+  }
 
   override connectedCallback() {
     assert(isSeaPenTextInputEnabled(), 'sea pen text input must be enabled');
@@ -196,6 +199,11 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     this.textValue_ = seaPenQuery?.textQuery ?? '';
   }
 
+  private onTextInputFocused_() {
+    // Show suggestions when there is text input.
+    this.shouldShowSuggestions_ = !!this.textValue_;
+  }
+
   private onClickInputQuerySearchButton_(event: Event) {
     if (!isSelectionEvent(event)) {
       return;
@@ -212,9 +220,6 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     // element, this.onClick_ will be triggered improperly.
     event.preventDefault();
     event.stopPropagation();
-
-    // Hide suggestions when creating thumbnails.
-    this.shouldShowSuggestions_ = false;
   }
 
   private onSuggestionSelected_(event: SeaPenSuggestionSelectedEvent) {
@@ -235,9 +240,23 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     }
   }
 
-  private updateShouldShowSuggestions_() {
-    // Show suggestions when there is text input.
-    this.shouldShowSuggestions_ = !!this.textValue_;
+  private updateShouldShowSuggestions_(
+      textValue: string, thumbnailsLoading: boolean) {
+    // Hide suggestions if thumbnails are loading.
+    if (thumbnailsLoading) {
+      this.shouldShowSuggestions_ = false;
+      return;
+    }
+    // Return and keep the current display state of suggestions if the input
+    // text value is same as the current query. Otherwise, the suggestions will
+    // show due to non empty text value when selecting 'create more' option for
+    // a recent freeform image and overlay the tab strip.
+    if (textValue === this.seaPenQuery_?.textQuery) {
+      return;
+    }
+    // Otherwise, update the display state of suggestions based on the value of
+    // input text.
+    this.onTextInputFocused_();
   }
 }
 customElements.define(SeaPenInputQueryElement.is, SeaPenInputQueryElement);

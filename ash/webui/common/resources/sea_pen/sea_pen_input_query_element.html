@@ -46,13 +46,13 @@
       maxlength="[[maxTextLength_]]"
       placeholder="Describe your wallpaper"
       on-keypress="onClickInputQuerySearchButton_"
-      on-focus="updateShouldShowSuggestions_"
+      on-focus="onTextInputFocused_"
       type="text"
       value="{{textValue_}}">
   </cr-input>
   <div id="innerContainer">
     <template is="dom-if" if="[[shouldShowSuggestions_]]"
-        on-dom-change="onSeaPenSuggestionsDomChanged_">
+        on-dom-change="onSeaPenSuggestionsDomChanged_" restamp>
       <sea-pen-suggestions class="fade-in-200ms"
           on-sea-pen-suggestion-selected="onSuggestionSelected_">
       </sea-pen-suggestions>

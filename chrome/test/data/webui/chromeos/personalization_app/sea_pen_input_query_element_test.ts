@@ -118,12 +118,63 @@ suite('SeaPenInputQueryElementTest', function() {
     seaPenSuggestions =
         seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
             SeaPenSuggestionsElement.is) as HTMLElement;
-    assertEquals(
-        'none', getComputedStyle(seaPenSuggestions).display,
-        'suggestions element should be hidden after hiding text');
+    assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
+  });
+
+  test('displays suggestions based on thumbnails loading state', async () => {
+    const textValue = 'Love looks not with the eyes, but with the mind';
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
+
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+            '#queryInput');
+    assertTrue(!!inputElement, 'textInput should exist');
+
+    // Set input text.
+    inputElement.value = textValue;
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    // Suggestions should not display as thumbnails are loading.
+    let seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
+
+    // Set thumbnails loading completed and update the current Sea Pen query
+    // to match with the textValue.
+    personalizationStore.data.wallpaper.seaPen = {
+        ...personalizationStore.data.wallpaper.seaPen};
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery = {
+      textQuery: textValue,
+    };
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    // No changes in suggestions display state as the current Sea Pen query is
+    // same as the text input.
+    seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
+
+    // Update the text input to be different from the current query.
+    inputElement.value = 'And therefore is winged Cupid painted blind';
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    // Sea Pen suggestions should display now.
+    seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertTrue(!!seaPenSuggestions, 'suggestions element should be shown');
   });
 
   test('hide suggestions after clicking create', async () => {
+    personalizationStore.setReducersEnabled(true);
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     initElement(SeaPenRouterElement, {basePath: '/base'});
@@ -146,7 +197,7 @@ suite('SeaPenInputQueryElementTest', function() {
     assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
   });
 
-  test('focusing does not show suggestions', async () => {
+  test('focusing on empty text input does not show suggestions', async () => {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
     await waitAfterNextRender(seaPenInputQueryElement);
     const inputElement =
@@ -163,10 +214,7 @@ suite('SeaPenInputQueryElementTest', function() {
   });
 
   test(
-      'focusing shows suggestions if there are thumbnails and text',
-      async () => {
-        personalizationStore.data.wallpaper.seaPen.thumbnails =
-            seaPenProvider.thumbnails;
+      'focusing on non-empty text input shows suggestions', async () => {
         seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
         await waitAfterNextRender(seaPenInputQueryElement);
         const inputElement =
