@@ -63,10 +63,6 @@ class HttpStreamPool::Group {
   std::unique_ptr<HttpStream> CreateTextBasedStream(
       std::unique_ptr<StreamSocket> socket);
 
-  // Creates a text-based HttpStream from an existing idle stream. Returns
-  // nullptr when there is no idle stream.
-  std::unique_ptr<HttpStream> CreateTextBasedStreamFromIdleStreamSocket();
-
   // Releases a StreamSocket that was used to create a text-based HttpStream.
   void ReleaseStreamSocket(std::unique_ptr<StreamSocket> socket,
                            int64_t generation);
@@ -77,8 +73,12 @@ class HttpStreamPool::Group {
   // `socket` must not be negotiated to use HTTP/2.
   void AddIdleStreamSocket(std::unique_ptr<StreamSocket> socket);
 
-  // Tries to process pending requests.
-  void ProcessPendingRequests();
+  // Retrieves an existing idle StreamSocket. Returns nullptr when there is no
+  // idle stream.
+  std::unique_ptr<StreamSocket> GetIdleStreamSocket();
+
+  // Tries to process a pending request.
+  void ProcessPendingRequest();
 
   // Closes one idle stream socket. Returns true if it closed a stream.
   bool CloseOneIdleStreamSocket();

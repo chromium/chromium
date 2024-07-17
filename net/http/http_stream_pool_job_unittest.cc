@@ -791,4 +791,53 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimitHighPriorityGroupFirst) {
   ASSERT_TRUE(request_c->completed());
 }
 
+TEST_F(HttpStreamPoolJobTest, RequestStreamIdleStreamSocket) {
+  StreamRequester requester;
+  Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
+  group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+
+  HttpStreamRequest* request = requester.RequestStream(pool());
+  RunUntilIdle();
+  ASSERT_TRUE(request->completed());
+
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolJobTest, UseIdleStreamSocketAfterRelease) {
+  StreamRequester requester;
+  Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
+
+  // Create HttpStreams up to the group's limit.
+  std::vector<std::unique_ptr<HttpStream>> streams;
+  for (size_t i = 0; i < pool().max_stream_sockets_per_group(); ++i) {
+    std::unique_ptr<HttpStream> http_stream =
+        group.CreateTextBasedStream(std::make_unique<FakeStreamSocket>());
+    streams.emplace_back(std::move(http_stream));
+  }
+  ASSERT_EQ(group.ActiveStreamSocketCount(),
+            pool().max_stream_sockets_per_group());
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+
+  // Request a stream. The request should be blocked.
+  resolver()->AddFakeRequest();
+  HttpStreamRequest* request = requester.RequestStream(pool());
+  RunUntilIdle();
+  Job* job = group.GetJobForTesting();
+  ASSERT_FALSE(request->completed());
+  ASSERT_EQ(job->PendingRequestCount(), 1u);
+
+  // Release an active HttpStream. The underlying StreamSocket should be used
+  // to the pending request.
+  std::unique_ptr<HttpStream> released_stream = std::move(streams.back());
+  streams.pop_back();
+
+  released_stream.reset();
+  ASSERT_TRUE(request->completed());
+  ASSERT_EQ(job->PendingRequestCount(), 0u);
+}
+
 }  // namespace net

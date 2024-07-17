@@ -104,6 +104,18 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
   requests_.Insert(std::move(entry), priority);
   MaybeChangeServiceEndpointRequestPriority();
 
+  // Check idle streams first. If found, notify the request that an HttpStream
+  // is ready. Use PostTask() since `delegate` doesn't expect the request
+  // finishes synchronously.
+  std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
+  if (stream_socket) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Job::CreateTextBasedStreamAndNotify,
+                       base::Unretained(this), std::move(stream_socket)));
+    return request;
+  }
+
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
     MaybeAttemptConnection();
   } else {
@@ -132,14 +144,18 @@ void HttpStreamPool::Job::OnServiceEndpointRequestFinished(int rv) {
   MaybeAttemptConnection();
 }
 
-void HttpStreamPool::Job::ProcessPendingRequests() {
+void HttpStreamPool::Job::ProcessPendingRequest() {
   if (PendingRequestCount() == 0) {
     return;
   }
 
-  // TODO(crbug.com/346835898): Support idle sockets.
-  CHECK_EQ(group_->IdleStreamSocketCount(), 0u);
-  MaybeAttemptConnection();
+  std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
+  if (stream_socket) {
+    CreateTextBasedStreamAndNotify(std::move(stream_socket));
+    return;
+  }
+
+  MaybeAttemptConnection(/*max_attempts=*/1);
 }
 
 size_t HttpStreamPool::Job::PendingRequestCount() const {
@@ -219,7 +235,8 @@ void HttpStreamPool::Job::MaybeChangeServiceEndpointRequestPriority() {
   }
 }
 
-void HttpStreamPool::Job::MaybeAttemptConnection() {
+void HttpStreamPool::Job::MaybeAttemptConnection(
+    std::optional<size_t> max_attempts) {
   CHECK_EQ(group_->IdleStreamSocketCount(), 0u);
   // TODO(crbug.com/346835898): Support https scheme.
   CHECK(!UsingTls()) << "https scheme is not supported yet";
@@ -240,6 +257,7 @@ void HttpStreamPool::Job::MaybeAttemptConnection() {
 
   // There might be multiple pending requests. Make attempts as much as needed
   // and allowed.
+  size_t num_attempts = 0;
   while (PendingRequestCount() > 0 && !ReachedMaxStreamLimit()) {
     std::unique_ptr<StreamAttempt> attempt = std::make_unique<TcpStreamAttempt>(
         &attempt_params_, *ip_endpoint, &net_log_);
@@ -255,7 +273,11 @@ void HttpStreamPool::Job::MaybeAttemptConnection() {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&Job::OnInFlightAttemptComplete,
                                     base::Unretained(this), raw_attempt, rv));
-      continue;
+    }
+
+    ++num_attempts;
+    if (max_attempts.has_value() && num_attempts >= *max_attempts) {
+      break;
     }
   }
 }
@@ -309,6 +331,26 @@ void HttpStreamPool::Job::NotifyFailure(int rv) {
   entry->delegate()->OnStreamFailed(rv, net_error_details_, proxy_info_,
                                     resolve_error_info_);
   // `this` may be deleted.
+}
+
+void HttpStreamPool::Job::CreateTextBasedStreamAndNotify(
+    std::unique_ptr<StreamSocket> stream_socket) {
+  NextProto negotiated_protocol = stream_socket->GetNegotiatedProtocol();
+  CHECK_NE(negotiated_protocol, NextProto::kProtoHTTP2);
+
+  std::unique_ptr<HttpStream> http_stream =
+      group_->CreateTextBasedStream(std::move(stream_socket));
+
+  RequestEntry* entry = ExtractFirstRequestToNotify();
+  if (!entry) {
+    // The ownership of the stream will be moved to the group as `http_stream`
+    // is going to be destructed.
+    return;
+  }
+
+  entry->request()->Complete(negotiated_protocol,
+                             ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
+  entry->delegate()->OnStreamReady(proxy_info_, std::move(http_stream));
 }
 
 HttpStreamPool::Job::RequestEntry*
@@ -380,23 +422,9 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
 
   std::unique_ptr<StreamSocket> stream_socket =
       in_flight_attempt->attempt->ReleaseStreamSocket();
-  NextProto negotiated_protocol = stream_socket->GetNegotiatedProtocol();
   // TODO(crbug.com/346835898): Support HTTP/2.
-  CHECK_NE(negotiated_protocol, NextProto::kProtoHTTP2);
-
-  std::unique_ptr<HttpStream> http_stream =
-      group_->CreateTextBasedStream(std::move(stream_socket));
-
-  RequestEntry* entry = ExtractFirstRequestToNotify();
-  if (!entry) {
-    // The ownership of the stream will be moved to the group as `http_stream`
-    // is going to be destructed.
-    return;
-  }
-
-  entry->request()->Complete(negotiated_protocol,
-                             ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
-  entry->delegate()->OnStreamReady(proxy_info_, std::move(http_stream));
+  CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
+  CreateTextBasedStreamAndNotify(std::move(stream_socket));
 }
 
 void HttpStreamPool::Job::MaybeComplete() {

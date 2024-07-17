@@ -84,8 +84,37 @@ std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
                                            /*is_for_get_to_http_proxy=*/false);
 }
 
-std::unique_ptr<HttpStream>
-HttpStreamPool::Group::CreateTextBasedStreamFromIdleStreamSocket() {
+void HttpStreamPool::Group::ReleaseStreamSocket(
+    std::unique_ptr<StreamSocket> socket,
+    int64_t generation) {
+  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
+  CHECK_GT(handed_out_stream_count_, 0u);
+  --handed_out_stream_count_;
+  pool_->DecrementTotalHandedOutStreamCount();
+
+  bool can_reuse = generation == generation_ && socket->IsConnectedAndIdle();
+  if (can_reuse) {
+    AddIdleStreamSocket(std::move(socket));
+    ProcessPendingRequest();
+  } else {
+    socket.reset();
+  }
+
+  pool_->ProcessPendingRequestsInGroups();
+}
+
+void HttpStreamPool::Group::AddIdleStreamSocket(
+    std::unique_ptr<StreamSocket> socket) {
+  CHECK(socket->IsConnectedAndIdle());
+  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
+  CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
+
+  idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
+  pool_->IncrementTotalIdleStreamCount();
+  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
+}
+
+std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
 
   if (idle_stream_sockets_.empty()) {
@@ -118,44 +147,14 @@ HttpStreamPool::Group::CreateTextBasedStreamFromIdleStreamSocket() {
   idle_stream_sockets_.erase(idle_it);
   pool_->DecrementTotalIdleStreamCount();
 
-  return CreateTextBasedStream(std::move(stream_socket));
+  return stream_socket;
 }
 
-void HttpStreamPool::Group::ReleaseStreamSocket(
-    std::unique_ptr<StreamSocket> socket,
-    int64_t generation) {
-  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
-  CHECK_GT(handed_out_stream_count_, 0u);
-  --handed_out_stream_count_;
-  pool_->DecrementTotalHandedOutStreamCount();
-
-  bool can_reuse = generation == generation_ && socket->IsConnectedAndIdle();
-  if (can_reuse) {
-    AddIdleStreamSocket(std::move(socket));
-    ProcessPendingRequests();
-  } else {
-    socket.reset();
-  }
-
-  pool_->ProcessPendingRequestsInGroups();
-}
-
-void HttpStreamPool::Group::AddIdleStreamSocket(
-    std::unique_ptr<StreamSocket> socket) {
-  CHECK(socket->IsConnectedAndIdle());
-  CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
-  CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
-
-  idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
-  pool_->IncrementTotalIdleStreamCount();
-  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
-}
-
-void HttpStreamPool::Group::ProcessPendingRequests() {
+void HttpStreamPool::Group::ProcessPendingRequest() {
   if (!in_flight_job_) {
     return;
   }
-  in_flight_job_->ProcessPendingRequests();
+  in_flight_job_->ProcessPendingRequest();
 }
 
 bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {

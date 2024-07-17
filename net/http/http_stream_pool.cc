@@ -81,7 +81,7 @@ void HttpStreamPool::ProcessPendingRequestsInGroups() {
       }
     }
 
-    group->ProcessPendingRequests();
+    group->ProcessPendingRequest();
   }
 }
 

@@ -55,8 +55,8 @@ class HttpStreamPool::Job
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;
 
-  // Tries to process pending requests.
-  void ProcessPendingRequests();
+  // Tries to process a pending request.
+  void ProcessPendingRequest();
 
   // Returns the number of in-flight attempts.
   size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
@@ -125,13 +125,22 @@ class HttpStreamPool::Job
 
   void MaybeChangeServiceEndpointRequestPriority();
 
-  void MaybeAttemptConnection();
+  // Attempts connections if there are pending requests and IPEndPoints that
+  // haven't failed. If `max_attempts` is given, attempts connections up to
+  // `max_attempts`.
+  void MaybeAttemptConnection(
+      std::optional<size_t> max_attempts = std::nullopt);
 
   std::optional<IPEndPoint> GetIPEndPointToAttempt();
   std::optional<IPEndPoint> FindUnattemptedIPEndPoint(
       const std::vector<IPEndPoint>& ip_endpoints);
 
+  // Notifies a failure to all requests.
   void NotifyFailure(int rv);
+
+  // Creates a text based stream and notifies the highest priority request.
+  void CreateTextBasedStreamAndNotify(
+      std::unique_ptr<StreamSocket> stream_socket);
 
   // Extracts an entry from `requests_` of which priority is highest. The
   // ownership of the entry is moved to `notified_requests_`.

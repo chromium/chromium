@@ -176,23 +176,20 @@ TEST_F(HttpStreamPoolGroupTest, IdleSocketReceivedDataUnexpectedly) {
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
 }
 
-TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStreamFromIdleStream) {
+TEST_F(HttpStreamPoolGroupTest, GetIdleStreamSocket) {
   Group& group = pool().GetOrCreateGroupForTesting(HttpStreamKey());
-  ASSERT_FALSE(group.CreateTextBasedStreamFromIdleStreamSocket());
+  ASSERT_FALSE(group.GetIdleStreamSocket());
 
   auto stream_socket = std::make_unique<FakeStreamSocket>();
   group.AddIdleStreamSocket(std::move(stream_socket));
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
 
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStreamFromIdleStreamSocket();
-  ASSERT_TRUE(stream);
-  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+  std::unique_ptr<StreamSocket> socket = group.GetIdleStreamSocket();
+  ASSERT_TRUE(socket);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
-  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 }
 
-TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStreamFromIdleStreamPreferUsed) {
+TEST_F(HttpStreamPoolGroupTest, GetIdleStreamSocketPreferUsed) {
   Group& group = pool().GetOrCreateGroupForTesting(HttpStreamKey());
 
   // Add 3 idle streams. the first and the third ones are marked as used.
@@ -212,22 +209,19 @@ TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStreamFromIdleStreamPreferUsed) {
   group.AddIdleStreamSocket(std::move(stream_socket3));
   ASSERT_EQ(group.IdleStreamSocketCount(), 3u);
 
-  std::unique_ptr<HttpStream> stream =
-      group.CreateTextBasedStreamFromIdleStreamSocket();
-  ASSERT_TRUE(stream);
-  ASSERT_EQ(group.ActiveStreamSocketCount(), 3u);
+  std::unique_ptr<StreamSocket> socket = group.GetIdleStreamSocket();
+  ASSERT_TRUE(socket);
   ASSERT_EQ(group.IdleStreamSocketCount(), 2u);
-  ASSERT_EQ(pool().TotalActiveStreamCount(), 3u);
 
   IPEndPoint peer;
-  int rv = stream->GetRemoteEndpoint(&peer);
+  int rv = socket->GetPeerAddress(&peer);
   EXPECT_THAT(rv, IsOk());
   EXPECT_THAT(peer, IPEndPoint(IPAddress(192, 0, 2, 3), 80));
 }
 
-TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStreamFromIdleStreamNoStream) {
+TEST_F(HttpStreamPoolGroupTest, GetIdleStreamSocketDisconnectedDuringIdle) {
   Group& group = pool().GetOrCreateGroupForTesting(HttpStreamKey());
-  ASSERT_FALSE(group.CreateTextBasedStreamFromIdleStreamSocket());
+  ASSERT_FALSE(group.GetIdleStreamSocket());
 
   auto stream_socket = std::make_unique<FakeStreamSocket>();
   FakeStreamSocket* raw_stream_socket = stream_socket.get();
@@ -235,11 +229,11 @@ TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStreamFromIdleStreamNoStream) {
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
 
   raw_stream_socket->set_is_connected(false);
-  ASSERT_FALSE(group.CreateTextBasedStreamFromIdleStreamSocket());
+  ASSERT_FALSE(group.GetIdleStreamSocket());
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
 }
 
-TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStreamFromIdleStreamTimedout) {
+TEST_F(HttpStreamPoolGroupTest, GetIdleStreamSocketTimedout) {
   Group& group = pool().GetOrCreateGroupForTesting(HttpStreamKey());
 
   auto stream_socket = std::make_unique<FakeStreamSocket>();
@@ -248,7 +242,7 @@ TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStreamFromIdleStreamTimedout) {
 
   FastForwardBy(HttpStreamPool::Group::kUnusedIdleStreamSocketTimeout);
 
-  ASSERT_FALSE(group.CreateTextBasedStreamFromIdleStreamSocket());
+  ASSERT_FALSE(group.GetIdleStreamSocket());
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
 }
 
