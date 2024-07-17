@@ -11,6 +11,7 @@
 import '../icons.html.js';
 import '../settings_shared.css.js';
 import './input_device_settings_shared.css.js';
+import './per_device_subsection_header.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';

@@ -18,9 +18,11 @@
 <template is="dom-repeat" items="[[graphicsTablets]]"
     as="graphicsTablet" index-as="index" restamp>
     <div class="device" data-evdev-id$="[[graphicsTablet.id]]">
-      <h2 class="subsection-header" id="graphicsTabletName">
-        [[graphicsTablet.name]]
-      </h2>
+      <per-device-subsection-header
+          device-key="[[graphicsTablet.deviceKey]]"
+          name="[[graphicsTablet.name]]"
+          battery-info="[[graphicsTablet.batteryInfo]]">
+      </per-device-subsection-header>
       <div class="subsection">
         <template is="dom-if"
             if="[[showCustomizeTabletButtonsRow(graphicsTablet)]]">
