@@ -8707,6 +8707,7 @@ test("unit_tests") {
       "//chrome/browser/ash/app_list:unit_tests",
       "//chrome/browser/ash/app_list/app_service",
       "//chrome/browser/ash/app_list/arc:unit_tests",
+      "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/app_list/search/ranking:proto",
       "//chrome/browser/ash/app_list/search/test:unit_tests",
       "//chrome/browser/ash/app_list/search/util:proto",
@@ -12237,6 +12238,7 @@ if (!is_android) {
       ]
       deps += [
         "//chrome/browser/ash/app_list/arc",
+        "//chrome/browser/ash/app_list/internal_app",
         "//chrome/browser/ash/app_list/test:test_support",
         "//chrome/browser/ash/crosapi:browser_util",
         "//chrome/browser/ash/sync",
