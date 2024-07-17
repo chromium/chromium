@@ -31,8 +31,6 @@
 namespace ash {
 namespace {
 
-static PowerStatus* g_power_status = nullptr;
-
 std::u16string GetBatteryTimeAccessibilityString(int hour, int min) {
   DCHECK(hour || min);
   if (hour && !min) {
@@ -125,28 +123,30 @@ const int PowerStatus::kMaxBatteryTimeToDisplaySec = 24 * 60 * 60;
 
 const double PowerStatus::kCriticalBatteryChargePercentage = 5;
 
+PowerStatus* PowerStatus::g_power_status_ = nullptr;
+
 // static
 void PowerStatus::Initialize() {
-  CHECK(!g_power_status);
-  g_power_status = new PowerStatus();
+  CHECK(!g_power_status_);
+  g_power_status_ = new PowerStatus();
 }
 
 // static
 void PowerStatus::Shutdown() {
-  CHECK(g_power_status);
-  delete g_power_status;
-  g_power_status = nullptr;
+  CHECK(g_power_status_);
+  delete g_power_status_;
+  g_power_status_ = nullptr;
 }
 
 // static
 bool PowerStatus::IsInitialized() {
-  return g_power_status != nullptr;
+  return g_power_status_ != nullptr;
 }
 
 // static
 PowerStatus* PowerStatus::Get() {
-  CHECK(g_power_status) << "PowerStatus::Get() called before Initialize().";
-  return g_power_status;
+  CHECK(g_power_status_) << "PowerStatus::Get() called before Initialize().";
+  return g_power_status_;
 }
 
 void PowerStatus::AddObserver(Observer* observer) {

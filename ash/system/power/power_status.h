@@ -162,7 +162,7 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   void RequestStatusUpdate();
 
   // Returns true if a battery is present.
-  bool IsBatteryPresent() const;
+  virtual bool IsBatteryPresent() const;
 
   // Returns true if the battery is full. This also implies that a charger
   // is connected.
@@ -181,7 +181,7 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
 
   // Returns the battery's remaining charge as a value in the range [0.0,
   // 100.0].
-  double GetBatteryPercent() const;
+  virtual double GetBatteryPercent() const;
 
   // Returns the battery's remaining charge, rounded to an integer with a
   // maximum value of 100.
@@ -203,14 +203,14 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   std::optional<base::TimeDelta> GetBatteryTimeToFull() const;
 
   // Returns true if line power (including a charger of any type) is connected.
-  bool IsLinePowerConnected() const;
+  virtual bool IsLinePowerConnected() const;
 
   // Returns true if an official, non-USB charger is connected.
   bool IsMainsChargerConnected() const;
 
   // Returns true if a USB charger (which is likely to only support a low
   // charging rate) is connected.
-  bool IsUsbChargerConnected() const;
+  virtual bool IsUsbChargerConnected() const;
 
   // Returns true if the system allows some connected devices to function as
   // either power sources or sinks.
@@ -261,7 +261,7 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   double GetPreferredMinimumPower() const;
 
   // Returns true if battery saver is active.
-  bool IsBatterySaverActive() const;
+  virtual bool IsBatterySaverActive() const;
 
   // TODO(b/327054689): This pointer is needed because some power tests delete
   // PowerStatus without the observers knowing about it, so observers have to
@@ -279,7 +279,12 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   ~PowerStatus() override;
 
  private:
-  // Overriden from PowerManagerClient::Observer.
+  friend class ScopedFakePowerStatus;
+
+  // Global singleton instance of the PowerStatus
+  static PowerStatus* g_power_status_;
+
+  // Overridden from PowerManagerClient::Observer.
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
   void BatterySaverModeStateChanged(
       const power_manager::BatterySaverModeState& state) override;
