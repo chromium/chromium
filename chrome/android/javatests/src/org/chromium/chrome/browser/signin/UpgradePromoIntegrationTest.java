@@ -9,8 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -32,15 +30,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.widget.ProgressBar;
 
-import androidx.annotation.IdRes;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -143,7 +138,7 @@ public class UpgradePromoIntegrationTest {
         // Check that the privacy disclaimer is not displayed.
         onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
         // Refuse sign-in.
-        clickButton(R.id.signin_fre_dismiss_button);
+        onViewWaiting(withId(R.id.signin_fre_dismiss_button)).perform(click());
 
         accountConsistencyHistogram.assertExpected();
         accountStartedHistogram.assertExpected();
@@ -204,7 +199,7 @@ public class UpgradePromoIntegrationTest {
 
         // Verify that the fullscreen sign-in promo is shown and accept.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onView(withId(R.id.signin_fre_continue_button)).perform(click());
+        onViewWaiting(withId(R.id.signin_fre_continue_button)).perform(click());
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
@@ -221,7 +216,7 @@ public class UpgradePromoIntegrationTest {
 
         // Verify that the fullscreen sign-in promo is shown and accept.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onView(withId(R.id.signin_fre_continue_button)).perform(click());
+        onViewWaiting(withId(R.id.signin_fre_continue_button)).perform(click());
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
@@ -298,23 +293,24 @@ public class UpgradePromoIntegrationTest {
     @MediumTest
     @DisabledTest(message = "b/333908211")
     public void testAddAccount() {
-        String secondAccountEmail = "jane.doe@gmail.com";
-        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, secondAccountEmail);
+        mSigninTestRule.setResultForNextAddAccountFlow(
+                Activity.RESULT_OK, AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
 
         launchActivity();
 
         // Verify that the fullscreen sign-in promo is shown with the default account.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()))
+        onViewWaiting(withText(AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail()))
                 .check(matches(isDisplayed()));
 
         // Add the second account.
-        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())).perform(click());
+        onView(withText(AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail())).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
 
         // Verify that the fullscreen sign-in promo is shown with the newly added account.
-        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onView(withText(secondAccountEmail)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        onViewWaiting(withText(AccountManagerTestRule.TEST_ACCOUNT_2.getEmail()))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -375,22 +371,6 @@ public class UpgradePromoIntegrationTest {
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         // Management notice shouldn't be shown in the upgrade promo.
         onView(withId(R.id.fre_browser_managed_by)).check(matches(not(isDisplayed())));
-    }
-
-    // TODO(b/346306121): Use `onViewWaiting` here instead
-    private void clickButton(@IdRes int buttonId) {
-        // Ensure that the button isn't hidden, and is enabled.
-        onView(
-                        Matchers.allOf(
-                                withId(buttonId),
-                                withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-                .check(matches(isEnabled()));
-        // This helps to reduce flakiness on some marshmallow bots in comparison with
-        // espresso click.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivity.findViewById(buttonId).performClick();
-                });
     }
 
     private void launchActivity() {
