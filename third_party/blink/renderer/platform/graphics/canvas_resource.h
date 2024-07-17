@@ -167,7 +167,7 @@ class PLATFORM_EXPORT CanvasResource
   // with the compositor.
   bool PrepareTransferableResource(viz::TransferableResource*,
                                    ReleaseCallback*,
-                                   MailboxSyncMode);
+                                   bool needs_verified_synctoken);
 
   // Issues a wait for this sync token on the context used by this resource for
   // rendering.
@@ -236,7 +236,7 @@ class PLATFORM_EXPORT CanvasResource
   // true.
   bool PrepareAcceleratedTransferableResourceFromClientSI(
       viz::TransferableResource* out_resource,
-      MailboxSyncMode);
+      bool needs_verified_synctoken);
 
   // Prepares GPU TransferableResource for resources for which
   // SupportsAcceleratedCompositing() is true but UsesClientSharedImage()

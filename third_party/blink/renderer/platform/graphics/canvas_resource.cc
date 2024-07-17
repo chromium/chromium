@@ -165,7 +165,7 @@ static void ReleaseFrameResources(
 bool CanvasResource::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     CanvasResource::ReleaseCallback* out_callback,
-    MailboxSyncMode sync_mode) {
+    bool needs_verified_synctoken) {
   DCHECK(IsValid());
 
   DCHECK(out_callback);
@@ -182,7 +182,7 @@ bool CanvasResource::PrepareTransferableResource(
   if (SupportsAcceleratedCompositing()) {
     return UsesClientSharedImage()
                ? PrepareAcceleratedTransferableResourceFromClientSI(
-                     out_resource, sync_mode)
+                     out_resource, needs_verified_synctoken)
                : PrepareAcceleratedTransferableResourceWithoutClientSI(
                      out_resource);
   }
@@ -191,7 +191,7 @@ bool CanvasResource::PrepareTransferableResource(
 
 bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
     viz::TransferableResource* out_resource,
-    MailboxSyncMode sync_mode) {
+    bool needs_verified_synctoken) {
   TRACE_EVENT0("blink",
                "CanvasResource::PrepareAcceleratedTransferableResource");
   // This method should only be called if this instance actually supports
@@ -210,9 +210,8 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
 
   *out_resource = viz::TransferableResource::MakeGpu(
       client_shared_image->mailbox(), client_shared_image->GetTextureTarget(),
-      GetSyncToken(sync_mode == kVerifiedSyncToken), Size(),
-      GetSharedImageFormat(), IsOverlayCandidate(),
-      viz::TransferableResource::ResourceSource::kCanvas);
+      GetSyncToken(needs_verified_synctoken), Size(), GetSharedImageFormat(),
+      IsOverlayCandidate(), viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
   if (NeedsReadLockFences()) {

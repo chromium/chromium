@@ -31,7 +31,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
   viz::TransferableResource resource;
   CanvasResource::ReleaseCallback release_callback;
   bool success = canvas_resource->PrepareTransferableResource(
-      &resource, &release_callback, kUnverifiedSyncToken);
+      &resource, &release_callback, /*needs_verified_synctoken=*/false);
 
   EXPECT_TRUE(success);
   EXPECT_TRUE(resource.is_software);

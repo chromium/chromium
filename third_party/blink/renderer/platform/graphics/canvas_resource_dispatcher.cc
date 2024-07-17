@@ -276,7 +276,8 @@ bool CanvasResourceDispatcher::PrepareFrame(
       canvas_resource->FilterQuality() == cc::PaintFlags::FilterQuality::kNone;
 
   canvas_resource->PrepareTransferableResource(
-      &resource, &frame_resource->release_callback, kVerifiedSyncToken);
+      &resource, &frame_resource->release_callback,
+      /*needs_verified_synctoken=*/true);
   const viz::ResourceId resource_id = next_resource_id;
   resource.id = resource_id;
 

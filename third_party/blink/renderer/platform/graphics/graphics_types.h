@@ -158,12 +158,6 @@ enum class RasterModeHint {
   kPreferCPU,
 };
 
-enum MailboxSyncMode {
-  kVerifiedSyncToken,
-  kUnverifiedSyncToken,
-  kOrderingBarrier,
-};
-
 enum AntiAliasingMode { kNotAntiAliased, kAntiAliased };
 
 enum GradientSpreadMethod {

@@ -233,7 +233,8 @@ void EnsureResourceRecycled(CanvasResourceProvider* provider,
   CanvasResource::ReleaseCallback release_callback;
   auto sync_token = resource->GetSyncToken(/*needs_verified_token=*/false);
   CHECK(resource->PrepareTransferableResource(
-      &transferable_resource, &release_callback, kUnverifiedSyncToken));
+      &transferable_resource, &release_callback,
+      /*needs_verified_synctoken=*/false));
   std::move(release_callback).Run(std::move(resource), sync_token, false);
 }
 
