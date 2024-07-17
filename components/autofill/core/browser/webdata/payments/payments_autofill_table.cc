@@ -545,7 +545,7 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 125:
       *update_compatible_version = true;
       return MigrateToVersion125DeleteFullServerCardsTable();
-    case 128:
+    case 129:
       *update_compatible_version = false;
       return MigrateToVersion129AddGenericPaymentInstrumentsTable();
   }
