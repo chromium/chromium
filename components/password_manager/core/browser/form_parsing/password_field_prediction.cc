@@ -74,6 +74,28 @@ CredentialFieldType DeriveFromFieldType(FieldType type) {
   }
 }
 
+PasswordFieldPrediction::PasswordFieldPrediction(
+    autofill::FieldRendererId renderer_id,
+    autofill::FieldSignature signature,
+    autofill::FieldType type,
+    bool may_use_prefilled_placeholder,
+    bool is_override)
+    : renderer_id(renderer_id),
+      signature(signature),
+      type(ToSafeFieldType(type, FieldType::NO_SERVER_DATA)),
+      may_use_prefilled_placeholder(may_use_prefilled_placeholder),
+      is_override(is_override) {}
+
+PasswordFieldPrediction::PasswordFieldPrediction(
+    const PasswordFieldPrediction&) = default;
+PasswordFieldPrediction& PasswordFieldPrediction::operator=(
+    const PasswordFieldPrediction&) = default;
+PasswordFieldPrediction::PasswordFieldPrediction(PasswordFieldPrediction&&) =
+    default;
+PasswordFieldPrediction& PasswordFieldPrediction::operator=(
+    PasswordFieldPrediction&&) = default;
+PasswordFieldPrediction::~PasswordFieldPrediction() = default;
+
 FormPredictions::FormPredictions() = default;
 FormPredictions::FormPredictions(const FormPredictions&) = default;
 FormPredictions& FormPredictions::operator=(const FormPredictions&) = default;
@@ -129,13 +151,11 @@ FormPredictions ConvertToFormPredictions(
       }
     }
 
-    field_predictions.emplace_back();
-    field_predictions.back().renderer_id = field.renderer_id();
-    field_predictions.back().signature = current_signature;
-    field_predictions.back().type = server_type;
-    field_predictions.back().may_use_prefilled_placeholder =
-        autofill_prediction.may_use_prefilled_placeholder.value_or(false);
-    field_predictions.back().is_override = autofill_prediction.is_override();
+    field_predictions.emplace_back(
+        field.renderer_id(), current_signature, server_type,
+        /*may_use_prefilled_placeholder=*/
+        autofill_prediction.may_use_prefilled_placeholder.value_or(false),
+        /*is_override=*/autofill_prediction.is_override());
   }
 
   FormPredictions result;

@@ -33,11 +33,22 @@ CredentialFieldType DeriveFromFieldType(autofill::FieldType type);
 
 // Contains server predictions for a field.
 struct PasswordFieldPrediction {
+  PasswordFieldPrediction(autofill::FieldRendererId renderer_id,
+                          autofill::FieldSignature signature,
+                          autofill::FieldType type,
+                          bool may_use_prefilled_placeholder,
+                          bool is_override);
+  PasswordFieldPrediction(const PasswordFieldPrediction&);
+  PasswordFieldPrediction& operator=(const PasswordFieldPrediction&);
+  PasswordFieldPrediction(PasswordFieldPrediction&&);
+  PasswordFieldPrediction& operator=(PasswordFieldPrediction&&);
+  ~PasswordFieldPrediction();
+
   autofill::FieldRendererId renderer_id;
   autofill::FieldSignature signature;
   autofill::FieldType type;
-  bool may_use_prefilled_placeholder = false;
-  bool is_override = false;
+  bool may_use_prefilled_placeholder;
+  bool is_override;
 
   friend bool operator==(const PasswordFieldPrediction& lhs,
                          const PasswordFieldPrediction& rhs) = default;

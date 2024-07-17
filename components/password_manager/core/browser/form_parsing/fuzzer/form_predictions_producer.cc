@@ -31,15 +31,13 @@ constexpr FieldType kPasswordRelatedServerTypes[] = {
     autofill::NEW_PASSWORD, autofill::CONFIRMATION_PASSWORD,
     autofill::NOT_PASSWORD};
 
-void SetPredictionType(bool pick_meaningful_type,
-                       FuzzedDataProvider& provider,
-                       PasswordFieldPrediction& prediction) {
+FieldType GeneratePredictionType(bool pick_meaningful_type,
+                                 FuzzedDataProvider& provider) {
   if (pick_meaningful_type) {
-    prediction.type = provider.PickValueInArray(kPasswordRelatedServerTypes);
+    return provider.PickValueInArray(kPasswordRelatedServerTypes);
   } else {
     // Set a random type, probably even invalid.
-    prediction.type =
-        static_cast<FieldType>(provider.ConsumeIntegral<uint8_t>());
+    return static_cast<FieldType>(provider.ConsumeIntegral<uint8_t>());
   }
 }
 
@@ -63,11 +61,10 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
     const bool use_placeholder = bools[2];
 
     if (generate_prediction) {
-      PasswordFieldPrediction field_prediction;
-      SetPredictionType(pick_meaningful_type, provider, field_prediction);
-      field_prediction.may_use_prefilled_placeholder = use_placeholder;
-      field_prediction.renderer_id = field.renderer_id();
-      predictions.fields.push_back(std::move(field_prediction));
+      predictions.fields.emplace_back(
+          field.renderer_id(), autofill::FieldSignature(123),
+          GeneratePredictionType(pick_meaningful_type, provider),
+          use_placeholder, /*is_override=*/false);
     }
   }
 
@@ -78,12 +75,13 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
     const bool pick_meaningful_type = bools[0];
     const bool use_placeholder = bools[1];
 
-    PasswordFieldPrediction field_prediction;
-    SetPredictionType(pick_meaningful_type, provider, field_prediction);
-    field_prediction.may_use_prefilled_placeholder = use_placeholder;
-    field_prediction.renderer_id =
-        autofill::FieldRendererId(provider.ConsumeIntegralInRange(-32, 31));
-    predictions.fields.push_back(std::move(field_prediction));
+    autofill::FieldRendererId renderer_id(
+        provider.ConsumeIntegralInRange(-32, 31));
+    autofill::FieldSignature signature(provider.ConsumeIntegralInRange(0, 500));
+    predictions.fields.emplace_back(
+        renderer_id, signature,
+        GeneratePredictionType(pick_meaningful_type, provider), use_placeholder,
+        /*is_override=*/false);
   }
 
   return predictions;

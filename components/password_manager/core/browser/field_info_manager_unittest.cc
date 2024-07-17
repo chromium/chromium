@@ -44,11 +44,9 @@ FormPredictions CreateTestPredictions(int driver_id,
   predictions.driver_id = driver_id;
   predictions.form_signature = form_signature;
 
-  PasswordFieldPrediction field_prediction;
-  field_prediction.signature = field_signature;
-  field_prediction.renderer_id = renderer_id;
-  field_prediction.type = type;
-  predictions.fields.push_back(field_prediction);
+  predictions.fields.emplace_back(renderer_id, field_signature, type,
+                                  /*may_use_prefilled_placeholder=*/false,
+                                  /*is_override=*/false);
 
   return predictions;
 }
@@ -153,10 +151,10 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
                             kTestFieldSignature, kTestFieldId, kTestFieldType);
 
   // Add another field.
-  PasswordFieldPrediction another_field_prediction;
-  another_field_prediction.renderer_id = kAnotherFieldId;
-  another_field_prediction.type = kAnotherFieldType;
-  form_prediction.fields.push_back(another_field_prediction);
+  form_prediction.fields.emplace_back(kAnotherFieldId, kAnotherFieldSignature,
+                                      kAnotherFieldType,
+                                      /*may_use_prefilled_placeholder=*/false,
+                                      /*is_override=*/false);
 
   predictions[kTestFormSignature] = form_prediction;
 
