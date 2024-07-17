@@ -2825,7 +2825,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SAML.IncorrectAttestation"
-    enum="ChromeOSSamlIncorrectAttestation" expires_after="2024-07-28">
+    enum="ChromeOSSamlIncorrectAttestation" expires_after="2025-07-28">
   <owner>bchikhaoui@google.com</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>Recorded Incorrect Attestation in SamlHandler.</summary>
@@ -2852,7 +2852,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SAML.Provider" enum="ChromeOSSamlProvider"
-    expires_after="2024-07-21">
+    expires_after="2025-07-21">
   <owner>mslus@chromium.org</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>Records SAML provider when SAML login flow is used.</summary>
