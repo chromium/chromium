@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/system/sys_info.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -50,8 +49,7 @@ SharedMemoryRegionWrapper::~SharedMemoryRegionWrapper() = default;
 bool SharedMemoryRegionWrapper::Initialize(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane) {
+    gfx::BufferFormat format) {
   DCHECK(!mapping_.IsValid());
 
   if (!handle.region.IsValid()) {
@@ -96,38 +94,20 @@ bool SharedMemoryRegionWrapper::Initialize(
   size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
   planes_.resize(num_planes);
 
-  if (num_planes > 1 && plane == gfx::BufferPlane::DEFAULT) {
-    // The offset/stride only make sense when GpuMemoryBufferHandle is for a
-    // single plane. Stride should be set as the expected stride for first plane
-    // and offset should always be zero.
-    DCHECK_EQ(static_cast<size_t>(handle.stride),
-              gfx::RowSizeForBufferFormat(size.width(), format, /*plane=*/0));
-    DCHECK_EQ(handle.offset, 0u);
+  // The offset/stride only make sense when GpuMemoryBufferHandle is for a
+  // single plane. Stride should be set as the expected stride for first plane
+  // and offset should always be zero.
+  DCHECK_EQ(static_cast<size_t>(handle.stride),
+            gfx::RowSizeForBufferFormat(size.width(), format, /*plane=*/0));
+  DCHECK_EQ(handle.offset, 0u);
 
-    for (size_t plane_index = 0; plane_index < num_planes; ++plane_index) {
-      const size_t plane_offset =
-          gfx::BufferOffsetForBufferFormat(size, format, plane_index);
-
-      planes_[plane_index].offset = memory_offset + plane_offset;
-      planes_[plane_index].stride =
-          RowSizeForBufferFormat(size.width(), format, plane_index);
-    }
-  } else {
-    // Add plane offset separately so that we map the entire buffer even if
-    // we're accessing an individual plane - this helps with shared memory
-    // overlays on Windows by allowing access via the Y plane shared image only.
-    const size_t plane_index = GetPlaneIndex(plane, format);
+  for (size_t plane_index = 0; plane_index < num_planes; ++plane_index) {
     const size_t plane_offset =
         gfx::BufferOffsetForBufferFormat(size, format, plane_index);
-#if DCHECK_IS_ON()
-    const gfx::Size plane_size = GetPlaneSize(plane, size);
-    const size_t plane_size_bytes =
-        gfx::PlaneSizeForBufferFormat(plane_size, format, plane_index);
-    DCHECK_LE(memory_offset + plane_offset + plane_size_bytes, map_size);
-#endif
 
-    planes_[0].offset = memory_offset + plane_offset;
-    planes_[0].stride = handle.stride;
+    planes_[plane_index].offset = memory_offset + plane_offset;
+    planes_[plane_index].stride =
+        gfx::RowSizeForBufferFormat(size.width(), format, plane_index);
   }
 
   return true;

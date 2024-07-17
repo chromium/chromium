@@ -398,8 +398,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
   DCHECK(IsValidSharedMemoryBufferFormat(size, format));
 
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, ToBufferFormat(format),
-                              gfx::BufferPlane::DEFAULT)) {
+  if (!shm_wrapper.Initialize(handle, size, ToBufferFormat(format))) {
     DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
     return nullptr;
   }
@@ -434,8 +433,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
       gfx::GpuMemoryBufferId(0), size, buffer_format, buffer_usage);
 
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, buffer_format,
-                              gfx::BufferPlane::DEFAULT)) {
+  if (!shm_wrapper.Initialize(handle, size, buffer_format)) {
     DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
     return nullptr;
   }

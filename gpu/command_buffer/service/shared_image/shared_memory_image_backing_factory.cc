@@ -66,8 +66,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle) {
   CHECK(handle.type == gfx::SHARED_MEMORY_BUFFER);
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, ToBufferFormat(format),
-                              gfx::BufferPlane::DEFAULT)) {
+  if (!shm_wrapper.Initialize(handle, size, ToBufferFormat(format))) {
     return nullptr;
   }
   return std::make_unique<SharedMemoryImageBacking>(
@@ -92,8 +91,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
   auto handle = GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
       gfx::GpuMemoryBufferId(0), size, buffer_format, buffer_usage);
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, buffer_format,
-                              gfx::BufferPlane::DEFAULT)) {
+  if (!shm_wrapper.Initialize(handle, size, buffer_format)) {
     return nullptr;
   }
   auto backing = std::make_unique<SharedMemoryImageBacking>(
