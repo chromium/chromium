@@ -29,6 +29,13 @@ namespace {
 
 constexpr char kKeyForTests[] = "test_key_value";
 
+syncer::EntityData MakeEntityData(const sync_pb::CookieSpecifics& specifics) {
+  syncer::EntityData entity_data;
+  entity_data.specifics.mutable_cookie()->CopyFrom(specifics);
+  entity_data.name = specifics.unique_key();
+  return entity_data;
+}
+
 }  // namespace
 
 class FloatingSsoSyncBridgeTest : public testing::Test {
@@ -128,6 +135,78 @@ TEST_F(FloatingSsoSyncBridgeTest, GetDataForDebugging) {
                 base::test::EqualsProto(it->second));
   }
   EXPECT_EQ(batch_size, entries.size());
+}
+
+// Verify that local data doesn't change after applying an incremental change
+// with an empty change list.
+TEST_F(FloatingSsoSyncBridgeTest, ApplyEmptyChange) {
+  auto initial_entries_copy = bridge().CookieSpecificsEntriesForTest();
+  bridge().ApplyIncrementalSyncChanges(
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
+      syncer::EntityChangeList());
+  const auto& current_entries = bridge().CookieSpecificsEntriesForTest();
+  EXPECT_EQ(initial_entries_copy.size(), current_entries.size());
+  for (const auto& [key, specifics] : current_entries) {
+    EXPECT_THAT(specifics,
+                base::test::EqualsProto(initial_entries_copy.at(key)));
+  }
+}
+
+TEST_F(FloatingSsoSyncBridgeTest, IncrementalDeleteAndAdd) {
+  const auto& entries = bridge().CookieSpecificsEntriesForTest();
+  size_t initial_size = entries.size();
+  ASSERT_TRUE(entries.contains(kUniqueKeysForTests[0]));
+
+  // Delete the first entity.
+  syncer::EntityChangeList delete_first;
+  delete_first.push_back(
+      syncer::EntityChange::CreateDelete(kUniqueKeysForTests[0]));
+  bridge().ApplyIncrementalSyncChanges(
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
+      std::move(delete_first));
+  EXPECT_EQ(entries.size(), initial_size - 1);
+  EXPECT_FALSE(entries.contains(kUniqueKeysForTests[0]));
+
+  // Add the entity back.
+  syncer::EntityChangeList add_first;
+  add_first.push_back(syncer::EntityChange::CreateAdd(
+      kUniqueKeysForTests[0], MakeEntityData(CookieSpecificsForTest(0))));
+  bridge().ApplyIncrementalSyncChanges(
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
+      std::move(add_first));
+  EXPECT_EQ(entries.size(), initial_size);
+  EXPECT_TRUE(entries.contains(kUniqueKeysForTests[0]));
+  EXPECT_THAT(entries.at(kUniqueKeysForTests[0]),
+              base::test::EqualsProto(CookieSpecificsForTest(0)));
+}
+
+TEST_F(FloatingSsoSyncBridgeTest, IncrementalUpdate) {
+  auto initial_entries_copy = bridge().CookieSpecificsEntriesForTest();
+  ASSERT_TRUE(initial_entries_copy.contains(kUniqueKeysForTests[0]));
+
+  // Update the first entity.
+  syncer::EntityChangeList update;
+  sync_pb::CookieSpecifics updated_specifics = CookieSpecificsForTest(0);
+  updated_specifics.set_value("UpdatedValue");
+  // Make sure that `updated_specifics` is not equal to the proto we had
+  // initially.
+  ASSERT_THAT(initial_entries_copy.at(kUniqueKeysForTests[0]),
+              testing::Not(base::test::EqualsProto(updated_specifics)));
+  update.push_back(syncer::EntityChange::CreateUpdate(
+      kUniqueKeysForTests[0], MakeEntityData(updated_specifics)));
+  bridge().ApplyIncrementalSyncChanges(
+      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList(),
+      std::move(update));
+
+  // Check that the first entry got updated while others remained the same.
+  const auto& current_entries = bridge().CookieSpecificsEntriesForTest();
+  EXPECT_EQ(initial_entries_copy.size(), current_entries.size());
+  for (const auto& [key, specifics] : current_entries) {
+    EXPECT_THAT(specifics,
+                base::test::EqualsProto(key == kUniqueKeysForTests[0]
+                                            ? updated_specifics
+                                            : initial_entries_copy.at(key)));
+  }
 }
 
 }  // namespace ash::floating_sso

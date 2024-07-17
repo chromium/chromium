@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_base.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -52,6 +53,9 @@ class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
   std::unique_ptr<syncer::DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
+  syncer::ConflictResolution ResolveConflict(
+      const std::string& storage_key,
+      const syncer::EntityData& remote_data) const override;
 
   // Assumes that the `store_` is initialized.
   const CookieSpecificsEntries& CookieSpecificsEntriesForTest() const;
@@ -64,6 +68,7 @@ class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<StoreWithCache> store,
                       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnStoreCommit(const std::optional<syncer::ModelError>& error);
 
   // Whether we finished reading data and metadata from disk on initial bridge
   // creation.

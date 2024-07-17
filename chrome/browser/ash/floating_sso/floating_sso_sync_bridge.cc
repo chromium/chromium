@@ -66,9 +66,28 @@ std::optional<syncer::ModelError>
 FloatingSsoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  // TODO: b/346354109 - implement.
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  // TODO: b/353225533 - send notifications about new and updated cookies, so
+  // that the browser can add them to the cookie jar.
+  std::unique_ptr<StoreWithCache::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    const sync_pb::CookieSpecifics& specifics =
+        change->data().specifics.cookie();
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_ADD:
+      case syncer::EntityChange::ACTION_UPDATE:
+        batch->WriteData(change->storage_key(), specifics);
+        break;
+      case syncer::EntityChange::ACTION_DELETE:
+        batch->DeleteData(change->storage_key());
+        break;
+    }
+  }
+  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+  store_->CommitWriteBatch(std::move(batch),
+                           base::BindOnce(&FloatingSsoSyncBridge::OnStoreCommit,
+                                          weak_ptr_factory_.GetWeakPtr()));
+  return {};
 }
 
 std::string FloatingSsoSyncBridge::GetStorageKey(
@@ -103,6 +122,14 @@ FloatingSsoSyncBridge::GetAllDataForDebugging() {
   return batch;
 }
 
+syncer::ConflictResolution FloatingSsoSyncBridge::ResolveConflict(
+    const std::string& storage_key,
+    const syncer::EntityData& remote_data) const {
+  // TODO: b/353222478 - prefer local SAML cookies if they were acquired
+  // during the most recent ChromeOS sign-in.
+  return syncer::ModelTypeSyncBridge::ResolveConflict(storage_key, remote_data);
+}
+
 const FloatingSsoSyncBridge::CookieSpecificsEntries&
 FloatingSsoSyncBridge::CookieSpecificsEntriesForTest() const {
   return CHECK_DEREF(store_.get()).in_memory_data();
@@ -124,6 +151,13 @@ void FloatingSsoSyncBridge::OnStoreCreated(
   store_ = std::move(store);
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
   is_initial_data_read_finished_ = true;
+}
+
+void FloatingSsoSyncBridge::OnStoreCommit(
+    const std::optional<syncer::ModelError>& error) {
+  if (error) {
+    change_processor()->ReportError(*error);
+  }
 }
 
 }  // namespace ash::floating_sso
