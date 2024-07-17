@@ -1034,8 +1034,6 @@ test("ui_base_unittests") {
     "models/tree_node_iterator_unittest.cc",
     "pointer/touch_ui_controller_unittest.cc",
     "prediction/empty_filter_unittests.cc",
-    "prediction/input_filter_unittest_helpers.cc",
-    "prediction/input_filter_unittest_helpers.h",
     "prediction/input_predictor_unittest_helpers.cc",
     "prediction/input_predictor_unittest_helpers.h",
     "prediction/kalman_predictor_unittest.cc",

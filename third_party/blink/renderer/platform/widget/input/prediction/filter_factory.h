@@ -66,15 +66,17 @@ class PLATFORM_EXPORT FilterFactory {
   static input_prediction::FilterType GetFilterTypeFromName(
       const std::string& filter_name);
 
-  // Returns the filter designed by its type.
-  // Since filters can have different parameters in function of the current
-  // predictor used, it also needs to be given as parameter.
-  std::unique_ptr<ui::InputFilter> CreateFilter(
-      const input_prediction::FilterType filter_type,
-      const input_prediction::PredictorType predictor_type);
+  // Creates and returns a filter. The filter type and params are set when
+  // creating the factory.
+  std::unique_ptr<ui::InputFilter> CreateFilter();
 
  private:
   friend class test::FilterFactoryTest;
+
+  // Predictor type used to decide parameters when creating the filter.
+  input_prediction::PredictorType predictor_type_;
+  // Filter type used to create the filter.
+  input_prediction::FilterType filter_type_;
 
   // Map storing filter parameters for a pair {FilterType, PredictorType}.
   // Currently the map is only storing values from fieldtrials params, but

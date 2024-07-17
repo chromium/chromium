@@ -41,7 +41,7 @@ ScrollPredictor::ScrollPredictor()
         blink::features::kFilteringScrollPrediction, predictor_type,
         filter_type);
 
-    filter_ = filter_factory_->CreateFilter(filter_type, predictor_type);
+    filter_ = filter_factory_->CreateFilter();
   }
 }
 
@@ -161,8 +161,9 @@ bool ScrollPredictor::HasPrediction() const {
 
 void ScrollPredictor::Reset() {
   predictor_->Reset();
-  if (filtering_enabled_)
-    filter_->Reset();
+  if (filtering_enabled_) {
+    filter_ = filter_factory_->CreateFilter();
+  }
   current_event_accumulated_delta_ = gfx::PointF();
   last_predicted_accumulated_delta_ = gfx::PointF();
   metrics_handler_.Reset();

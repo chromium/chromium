@@ -29,10 +29,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) OneEuroFilter : public InputFilter {
 
   const char* GetName() const override;
 
-  InputFilter* Clone() override;
-
-  void Reset() override;
-
   // Default parameters values for the filter
   static constexpr double kDefaultFrequency = 60;
   static constexpr double kDefaultDcutoff = 1.0;

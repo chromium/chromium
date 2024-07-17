@@ -19,10 +19,4 @@ const char* EmptyFilter::GetName() const {
   return features::kFilterNameEmpty;
 }
 
-InputFilter* EmptyFilter::Clone() {
-  return new EmptyFilter();
-}
-
-void EmptyFilter::Reset() {}
-
 }  // namespace ui
