@@ -799,7 +799,7 @@ const FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingMobileMapping[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
-         "0,600;0.0177,900;0.052,950;0.087,1300;1,1500"},
+         "0,590;0.006,790;0.082,1290;0.443,1360;0.464,1400;0.987,1425;1,1530"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1340"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 
