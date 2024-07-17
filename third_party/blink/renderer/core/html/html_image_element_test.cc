@@ -251,6 +251,9 @@ class TransparentPlaceholderImageSimTest
     if (GetParam()) {
       feature_list_.InitAndEnableFeature(
           features::kSimplifyLoadingTransparentPlaceholderImage);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kSimplifyLoadingTransparentPlaceholderImage);
     }
   }
 
