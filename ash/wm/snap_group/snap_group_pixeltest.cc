@@ -50,6 +50,9 @@ class SnapGroupPixelTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
 };
 
+// -----------------------------------------------------------------------------
+// Landscape:
+
 // Visual regression test for divider component (default and hover states).
 TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -203,6 +206,121 @@ TEST_F(SnapGroupPixelTest, WindowCycleView) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_with_snap_group_window_destruction",
       /*revision_number=*/0, updated_window_cycle_widget));
+}
+
+// -----------------------------------------------------------------------------
+// Portrait:
+
+// Visual regression test for divider component in portrait mode (default and
+// hover states).
+TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
+  UpdateDisplay("900x1200");
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
+  auto* w1_widget = views::Widget::GetWidgetForNativeView(w1.get());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
+  auto* w2_widget = views::Widget::GetWidgetForNativeView(w2.get());
+
+  auto* event_generator = GetEventGenerator();
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/false, event_generator);
+
+  auto* divider_widget = snap_group_divider()->divider_widget();
+  ASSERT_TRUE(divider_widget);
+
+  // Verify the snap group divider UI components on default state in portrait
+  // mode.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "snap_group_divider_default_state_in_portrait",
+      /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
+
+  // Move the mouse to the position that is a off the center(divider handler
+  // view).
+  event_generator->MoveMouseTo(
+      snap_group_divider_bounds_in_screen().CenterPoint() +
+      gfx::Vector2d(10, 0));
+
+  // Verify the snap group divider UI components on mouse hover in portrait
+  // mode.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "snap_group_divider_hover_state_in_portrait",
+      /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
+}
+
+// Visual regression test for `OverviewGroupItem` in portrait mode.
+TEST_F(SnapGroupPixelTest, OverviewGroupItemInPortrait) {
+  UpdateDisplay("900x1200");
+
+  ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
+
+  SnapTwoTestWindows(w1.get(), /*window2=*/w2.get(), /*horizontal=*/false,
+                     GetEventGenerator());
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  OverviewItemBase* overview_group_item = GetOverviewItemForWindow(w1.get());
+  ASSERT_TRUE(overview_group_item);
+  auto* group_item_widget = overview_group_item->item_widget();
+  ASSERT_TRUE(group_item_widget);
+
+  // Verify the `OverviewGroupItem` visuals in portrait.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "overviewgroupitem_in_portrait",
+      /*revision_number=*/0, group_item_widget));
+}
+
+// Portrait mode visual regression test for Snap Group visuals in window cycle
+// view.
+TEST_F(SnapGroupPixelTest, WindowCycleViewInPortrait) {
+  UpdateDisplay("900x1200");
+
+  WindowCycleList::SetDisableInitialDelayForTesting(true);
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
+
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/false,
+                     GetEventGenerator());
+
+  // Explicitly activate the primary-snapped window so that it comes before
+  // secondary-snapped window in MRU order, anticipating a future Alt+Tab
+  // revamp.
+  wm::ActivateWindow(w1.get());
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+
+  const WindowCycleView* window_cycle_view =
+      window_cycle_controller->window_cycle_list()->cycle_view();
+  ASSERT_TRUE(window_cycle_view);
+
+  views::Widget* window_cycle_widget =
+      const_cast<views::Widget*>(window_cycle_view->GetWidget());
+  ASSERT_TRUE(window_cycle_widget);
+
+  // Verify the visuals with secondary-snapped window gets focused.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "window_cycle_with_snap_group_secondary_focused_in_portrait",
+      /*revision_number=*/0, window_cycle_widget));
+
+  // Verify the visuals with primary-snapped window gets focused.
+  event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "window_cycle_with_snap_group_primary_focused_in_portrait",
+      /*revision_number=*/0, window_cycle_widget));
 }
 
 }  // namespace ash
