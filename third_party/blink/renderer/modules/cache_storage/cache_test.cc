@@ -274,11 +274,12 @@ class TestCache : public Cache {
   TestCache(
       GlobalFetch::ScopedFetcher* fetcher,
       mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache> remote,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      ExecutionContext* execution_context)
       : Cache(fetcher,
               MakeGarbageCollected<CacheStorageBlobClientList>(),
               std::move(remote),
-              std::move(task_runner)) {}
+              execution_context,
+              TaskType::kInternalTest) {}
 
   bool IsAborted() const {
     return abort_controller_ && abort_controller_->signal()->aborted();
@@ -311,9 +312,8 @@ class CacheStorageTest : public PageTestBase {
     receiver_ = std::make_unique<
         mojo::AssociatedReceiver<mojom::blink::CacheStorageCache>>(
         cache_.get(), cache_remote.BindNewEndpointAndPassDedicatedReceiver());
-    return MakeGarbageCollected<TestCache>(
-        fetcher, cache_remote.Unbind(),
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+    return MakeGarbageCollected<TestCache>(fetcher, cache_remote.Unbind(),
+                                           GetExecutionContext());
   }
 
   ErrorCacheForTests* test_cache() { return cache_.get(); }

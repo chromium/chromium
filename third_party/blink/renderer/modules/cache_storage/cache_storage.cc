@@ -190,8 +190,8 @@ void CacheStorage::OpenImpl(const String& cache_name,
               // See https://bit.ly/2S0zRAS for task types.
               resolver->Resolve(MakeGarbageCollected<Cache>(
                   fetcher, blob_client_list, std::move(result->get_cache()),
-                  resolver->GetExecutionContext()->GetTaskRunner(
-                      blink::TaskType::kMiscPlatformAPI)));
+                  resolver->GetExecutionContext(),
+                  blink::TaskType::kMiscPlatformAPI));
             }
           },
           WrapPersistent(scoped_fetcher_.Get()),
