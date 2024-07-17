@@ -8,11 +8,13 @@ import type {RelatedWebsiteSet, RelatedWebsiteSetListItemElement} from 'chrome:/
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {SAMPLE_RELATED_WEBSITE_SET} from './test_data.js';
+import {SAMPLE_RELATED_WEBSITE_SET, SAMPLE_RELATED_WEBSITE_SET_MANAGED_BY_ENTERPRISE} from './test_data.js';
 
 suite('ListItemTest', () => {
   let item: RelatedWebsiteSetListItemElement;
   const sampleSet: RelatedWebsiteSet = SAMPLE_RELATED_WEBSITE_SET;
+  const sampleManagedByEnterpriseSet: RelatedWebsiteSet =
+      SAMPLE_RELATED_WEBSITE_SET_MANAGED_BY_ENTERPRISE;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -20,12 +22,27 @@ suite('ListItemTest', () => {
     document.body.appendChild(item);
     item.primarySite = sampleSet.primarySite;
     item.memberSites = sampleSet.memberSites;
+    item.managedByEnterprise = sampleSet.managedByEnterprise;
     await microtasksFinished();
   });
 
   test('check layout', async () => {
     assertTrue(isVisible(item));
     assertFalse(item.$.expandedContent.opened);
+    const enterpriseIcon = item.shadowRoot!.querySelector('cr-icon');
+    assertFalse(isVisible(enterpriseIcon));
+  });
+
+  test('check layout with enterprise icon', async () => {
+    item.primarySite = sampleManagedByEnterpriseSet.primarySite;
+    item.memberSites = sampleManagedByEnterpriseSet.memberSites;
+    item.managedByEnterprise = sampleManagedByEnterpriseSet.managedByEnterprise;
+    await microtasksFinished();
+
+    const enterpriseIcon = item.shadowRoot!.querySelector('cr-icon');
+    assertTrue(isVisible(item));
+    assertFalse(item.$.expandedContent.opened);
+    assertTrue(isVisible(enterpriseIcon));
   });
 
   test('check expansion', async () => {

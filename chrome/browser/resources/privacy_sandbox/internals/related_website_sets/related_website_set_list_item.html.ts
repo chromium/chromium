@@ -14,9 +14,10 @@ export function getHtml(this: RelatedWebsiteSetListItemElement) {
     <div id="container">
       <site-favicon id="favicon" domain="chrome://favicon2" aria-hidden="true">
       </site-favicon>
-      <div id="borderPart">
-        <div>${this.primarySite}</div>
-      </div>
+      <div id="borderPart">${this.primarySite}</div>
+      <cr-icon class="icon" icon="cr20:domain"
+          ?hidden="${this.isEnterpriseIconHidden_()}">
+      </cr-icon>
     </div>
   </cr-expand-button>
   <cr-collapse id="expandedContent" ?opened="${this.expanded}">

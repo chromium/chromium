@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './site_favicon.js';
 
@@ -67,6 +68,10 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
       default:
         throw new Error(`Unexpected site type ${type}`);
     }
+  }
+
+  protected isEnterpriseIconHidden_(): boolean {
+    return !this.managedByEnterprise;
   }
 }
 

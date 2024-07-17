@@ -76,6 +76,18 @@ const SAMPLE_RELATED_WEBSITE_SET3: RelatedWebsiteSet = {
   managedByEnterprise: false,
 };
 
+export const SAMPLE_RELATED_WEBSITE_SET_MANAGED_BY_ENTERPRISE:
+    RelatedWebsiteSet = {
+  primarySite: 'set-managed-by-enterprise-primary.example',
+  memberSites: [
+    {
+      site: 'set-managed-by-enterprise--associated1.example',
+      type: SiteType.kAssociated,
+    },
+  ],
+  managedByEnterprise: true,
+};
+
 export const SAMPLE_RELATED_WEBSITE_SETS = [
   SAMPLE_RELATED_WEBSITE_SET,
   SAMPLE_RELATED_WEBSITE_SET2,
