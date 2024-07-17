@@ -297,6 +297,9 @@ bool ChromeUpdateClientConfig::EnabledDeltas() const {
 }
 
 bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
+  if (url_override_.has_value()) {
+    return false;
+  }
   return impl_.EnabledBackgroundDownloader();
 }
 

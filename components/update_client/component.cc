@@ -634,7 +634,6 @@ bool Component::CanDoBackgroundDownload(int64_t size) const {
   // Foreground component updates are always downloaded in foreground.
   bool enabled =
       !is_foreground() &&
-      (crx_component() && crx_component()->allows_background_download) &&
       update_context_->config->EnabledBackgroundDownloader();
 #if BUILDFLAG(IS_MAC)
   enabled &=

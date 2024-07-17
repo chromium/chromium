@@ -102,7 +102,6 @@ void UpdateDataProvider::GetData(
       crx_component->fingerprint = extension_data.pending_fingerprint.value_or(
           extension->DifferentialFingerprint());
     }
-    crx_component->allows_background_download = false;
     bool allow_dev = extension_urls::GetWebstoreUpdateUrl() !=
                      extension_urls::GetDefaultWebstoreUpdateUrl();
     crx_component->requires_network_encryption = !allow_dev;
