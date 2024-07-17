@@ -147,7 +147,7 @@ bool CardboardRenderLoop::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
   // with ANGLE support; if we do so, once we try to launch ARCore (which
   // disables it), we end up hitting a crash. We should investigate if this can
   // be resolved to use ANGLE with Cardboard.
-  gl::init::DisableANGLE();
+  gl::DisableANGLE();
 
   gl::GLDisplay* display = nullptr;
   if (gl::GetGLImplementation() == gl::kGLImplementationNone) {

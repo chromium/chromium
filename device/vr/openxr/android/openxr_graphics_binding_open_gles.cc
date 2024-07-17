@@ -79,7 +79,7 @@ bool OpenXrGraphicsBindingOpenGLES::Initialize(XrInstance instance,
   // None of the other runtimes support ANGLE, so we disable it too for now.
   // TODO(alcooper): Investigate if we can support ANGLE or if we'll run into
   // similar problems as cardboard.
-  gl::init::DisableANGLE();
+  gl::DisableANGLE();
 
   // Everything below is a hacky first pass at making a session and likely needs
   // to be re-written with proper context/surfaces/types.

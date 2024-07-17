@@ -33,6 +33,7 @@ namespace {
 
 // The global set of workarounds.
 GlWorkarounds g_workarounds;
+bool g_is_angle_enabled = true;
 
 int GetIntegerv(unsigned int name) {
   int value = 0;
@@ -81,9 +82,18 @@ base::ScopedFD MergeFDs(base::ScopedFD a, base::ScopedFD b) {
     LOG(ERROR) << "Failed to merge fences.";
   return merged;
 }
+
+void DisableANGLE() {
+  DCHECK_NE(GetGLImplementation(), kGLImplementationEGLANGLE);
+  g_is_angle_enabled = false;
+}
 #endif
 
 bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
+  if (!g_is_angle_enabled) {
+    return false;
+  }
+
   std::string switch_value;
   if (command_line->HasSwitch(switches::kUseCmdDecoder)) {
     switch_value = command_line->GetSwitchValueASCII(switches::kUseCmdDecoder);

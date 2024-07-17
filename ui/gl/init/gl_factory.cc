@@ -30,8 +30,6 @@ namespace init {
 
 namespace {
 
-bool g_is_angle_enabled = true;
-
 bool ShouldFallbackToSoftwareGL() {
   const base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   std::string requested_implementation_gl_name =
@@ -65,7 +63,7 @@ GLImplementationParts GetRequestedGLImplementation(
       GetAllowedGLImplementations();
 
   // If the passthrough command decoder is enabled, put ANGLE first if allowed
-  if (g_is_angle_enabled && UsePassthroughCommandDecoder(cmd)) {
+  if (UsePassthroughCommandDecoder(cmd)) {
     std::vector<GLImplementationParts> angle_impls = {};
     bool software_gl_allowed = false;
     auto iter = allowed_impls.begin();
@@ -260,11 +258,6 @@ void ShutdownGL(GLDisplay* display, bool due_to_fallback) {
 
   UnloadGLNativeLibraries(due_to_fallback);
   SetGLImplementation(kGLImplementationNone);
-}
-
-void DisableANGLE() {
-  DCHECK_NE(GetGLImplementation(), kGLImplementationEGLANGLE);
-  g_is_angle_enabled = false;
 }
 
 }  // namespace init

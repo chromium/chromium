@@ -31,6 +31,9 @@ GL_EXPORT void Hang();
 
 #if BUILDFLAG(IS_ANDROID)
 GL_EXPORT base::ScopedFD MergeFDs(base::ScopedFD a, base::ScopedFD b);
+
+// Disable ANGLE and force to use native or other GL implementation.
+GL_EXPORT void DisableANGLE();
 #endif
 
 GL_EXPORT bool UsePassthroughCommandDecoder(

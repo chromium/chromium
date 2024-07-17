@@ -447,7 +447,7 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
   // ARCore provides the camera image as a native GL texture and doesn't support
   // ANGLE, so disable it.
   // TODO(crbug.com/40744597): support ANGLE with cardboard?
-  gl::init::DisableANGLE();
+  gl::DisableANGLE();
 
   gl::GLDisplay* display = nullptr;
   if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
