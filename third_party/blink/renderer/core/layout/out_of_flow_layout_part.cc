@@ -500,7 +500,6 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
 
 void OutOfFlowLayoutPart::Run() {
   HandleFragmentation();
-  const LayoutObject* current_container = container_builder_->GetLayoutObject();
   if (!container_builder_->HasOutOfFlowPositionedCandidates()) {
     container_builder_
         ->AdjustFixedposContainingBlockForFragmentainerDescendants();
@@ -510,15 +509,12 @@ void OutOfFlowLayoutPart::Run() {
 
   // If the container is display-locked, then we skip the layout of descendants,
   // so we can early out immediately.
-  if (current_container->ChildLayoutBlockedByDisplayLock())
+  if (container_builder_->GetLayoutObject()
+          ->ChildLayoutBlockedByDisplayLock()) {
     return;
+  }
 
-  HeapVector<LogicalOofPositionedNode> candidates;
-  ClearCollectionScope<HeapVector<LogicalOofPositionedNode>> clear_scope(
-      &candidates);
-  container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
-
-  LayoutCandidates(&candidates);
+  LayoutCandidates();
 }
 
 void OutOfFlowLayoutPart::HandleFragmentation() {
@@ -1034,13 +1030,17 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
   }
 }
 
-void OutOfFlowLayoutPart::LayoutCandidates(
-    HeapVector<LogicalOofPositionedNode>* candidates) {
-  while (candidates->size() > 0) {
+void OutOfFlowLayoutPart::LayoutCandidates() {
+  HeapVector<LogicalOofPositionedNode> candidates;
+  ClearCollectionScope<HeapVector<LogicalOofPositionedNode>> clear_scope(
+      &candidates);
+  container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
+
+  while (candidates.size() > 0) {
     if (!has_block_fragmentation_ ||
         container_builder_->IsInitialColumnBalancingPass())
-      ComputeInlineContainingBlocks(*candidates);
-    for (auto& candidate : *candidates) {
+      ComputeInlineContainingBlocks(candidates);
+    for (auto& candidate : candidates) {
       LayoutBox* layout_box = candidate.box;
       if (!container_builder_->IsBlockFragmentationContextRoot())
         SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
@@ -1082,8 +1082,8 @@ void OutOfFlowLayoutPart::LayoutCandidates(
     }
     // Sweep any candidates that might have been added.
     // This happens when an absolute container has a fixed child.
-    candidates->Shrink(0);
-    container_builder_->SwapOutOfFlowPositionedCandidates(candidates);
+    candidates.Shrink(0);
+    container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
   }
 }
 
