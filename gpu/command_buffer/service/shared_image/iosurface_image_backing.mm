@@ -186,7 +186,8 @@ std::vector<skgpu::graphite::BackendTexture> CreateGraphiteMetalTextures(
   graphite_textures.reserve(num_planes);
   for (int plane = 0; plane < num_planes; plane++) {
     SkISize sk_size = gfx::SizeToSkISize(format.GetPlaneSize(plane, size));
-    graphite_textures.emplace_back(sk_size, mtl_textures[plane].get());
+    graphite_textures.emplace_back(skgpu::graphite::BackendTextures::MakeMetal(
+        sk_size, mtl_textures[plane].get()));
   }
   return graphite_textures;
 }
@@ -588,8 +589,8 @@ IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess(
     }
     SkISize sk_size = gfx::SizeToSkISize(format().GetPlaneSize(plane, size()));
 
-    skgpu::graphite::BackendTexture backend_texture(sk_size,
-                                                    mtl_textures_[plane].get());
+    auto backend_texture = skgpu::graphite::BackendTextures::MakeMetal(
+        sk_size, mtl_textures_[plane].get());
     auto surface = SkSurfaces::WrapBackendTexture(
         recorder_, backend_texture, sk_color_type,
         backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),

@@ -150,7 +150,7 @@ skgpu::graphite::TextureInfo GraphiteMetalTextureInfo(
 #endif
   mtl_texture_info.fMipmapped =
       mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
-  return mtl_texture_info;
+  return skgpu::graphite::TextureInfos::MakeMetal(mtl_texture_info);
 }
 #endif
 
