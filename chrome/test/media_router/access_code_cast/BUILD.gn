@@ -41,4 +41,8 @@ static_library("access_code_cast_integration_base") {
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros:lacros" ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ui/ash" ]
+  }
 }

@@ -113,7 +113,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",

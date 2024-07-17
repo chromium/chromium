@@ -20,6 +20,7 @@ static_library("reorder") {
     "//ash/strings",
     "//base",
     "//base:i18n",
+    "//chrome/browser/ui/ash",
     "//components/sync/model",
     "//third_party/icu",
     "//ui/base",

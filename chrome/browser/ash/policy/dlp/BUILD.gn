@@ -97,6 +97,7 @@ source_set("unit_tests") {
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/enterprise/data_controls:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//chromeos/ash/components/disks",

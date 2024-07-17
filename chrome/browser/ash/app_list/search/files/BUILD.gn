@@ -88,6 +88,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/file_suggest",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/disks:test_support",

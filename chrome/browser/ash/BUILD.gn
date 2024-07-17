@@ -3066,6 +3066,7 @@ if (is_chromeos_device) {
       "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/login/session:test_support",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ui/ash",
       "//chrome/test:test_support",
       "//chrome/test/base/ash/interactive:test_support",
       "//components/keyed_service/content",

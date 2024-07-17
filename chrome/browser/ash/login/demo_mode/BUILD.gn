@@ -205,6 +205,8 @@ source_set("unit_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",

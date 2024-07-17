@@ -347,6 +347,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/input_method/ui",
     "//chrome/browser/ash/input_method/ui:unit_tests",
     "//chrome/browser/ui:ash_test_support",
+    "//chrome/browser/ui/ash",
     "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
