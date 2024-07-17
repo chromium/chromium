@@ -37,9 +37,11 @@ function testSpinButtonChangeAndInputEvents(inputType, writingMode, initialValue
     // Move the cursor on the upper button.
     var spinButton = getElementByPseudoId(internals.shadowRoot(testInput), "-webkit-inner-spin-button");
     var rect = spinButton.getBoundingClientRect();
-    if (writingMode == "horizontal-tb") {
+    if (writingMode == 'horizontal-tb' || writingMode == 'sideways-lr') {
+      // Near the top left corner.
       eventSender.mouseMoveTo(rect.left + rect.width / 4, rect.top + rect.height / 4);
     } else {
+      // Near the top right corner.
       eventSender.mouseMoveTo(rect.left + 3 * rect.width / 4, rect.top + rect.height / 4);
     }
     eventSender.mouseDown();

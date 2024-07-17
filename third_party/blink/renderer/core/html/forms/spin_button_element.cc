@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/spin_button_element.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
@@ -234,12 +235,22 @@ void SpinButtonElement::CalculateUpDownStateByMouseLocation(Event& event) {
   gfx::Point local = gfx::ToRoundedPoint(
       box->AbsoluteToLocalPoint(mouse_event->AbsoluteLocation()));
   UpDownState old_up_down_state = up_down_state_;
-  bool is_horizontal =
-      GetComputedStyle() ? GetComputedStyle()->IsHorizontalWritingMode() : true;
-  if (is_horizontal) {
-    up_down_state_ = (local.y() < box->Size().height / 2) ? kUp : kDown;
-  } else {
-    up_down_state_ = (local.x() < box->Size().width / 2) ? kDown : kUp;
+  WritingDirectionMode writing_direction =
+      GetComputedStyle() ? GetComputedStyle()->GetWritingDirection()
+                         : WritingDirectionMode(WritingMode::kHorizontalTb,
+                                                TextDirection::kLtr);
+  switch (writing_direction.LineOver()) {
+    case PhysicalDirection::kUp:
+      up_down_state_ = (local.y() < box->Size().height / 2) ? kUp : kDown;
+      break;
+    case PhysicalDirection::kDown:
+      NOTREACHED_NORETURN();
+    case PhysicalDirection::kLeft:
+      up_down_state_ = (local.x() < box->Size().width / 2) ? kUp : kDown;
+      break;
+    case PhysicalDirection::kRight:
+      up_down_state_ = (local.x() < box->Size().width / 2) ? kDown : kUp;
+      break;
   }
   if (up_down_state_ != old_up_down_state)
     GetLayoutObject()->SetShouldDoFullPaintInvalidation();
