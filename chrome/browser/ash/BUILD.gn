@@ -1365,6 +1365,7 @@ static_library("ash") {
     "//chrome/browser/sync",
     "//chrome/browser/themes",
     "//chrome/browser/ui/ash/assistant",
+    "//chrome/browser/ui/ash/birch",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
