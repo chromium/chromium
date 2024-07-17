@@ -7,7 +7,20 @@ import("//chromeos/features.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
-component("mojo_service_manager") {
+group("mojo_service_manager") {
+  public_deps = [ ":mojo_service_manager_impl" ]
+  if (!use_real_chromeos_services) {
+    public_deps += [ ":fake_mojo_service_manager" ]
+  }
+}
+
+group("test_support") {
+  testonly = true
+  public_deps = [ ":fake_mojo_service_manager" ]
+}
+
+component("mojo_service_manager_impl") {
+  visibility = [ ":*" ]
   sources = [
     "connection.cc",
     "connection.h",
@@ -19,20 +32,13 @@ component("mojo_service_manager") {
   ]
   public_deps = [ "//chromeos/ash/components/mojo_service_manager/mojom" ]
   defines = [ "IS_CHROMEOS_MOJO_SERVICE_MANAGER_IMPL" ]
-
-  if (!use_real_chromeos_services) {
-    sources += [
-      "fake_mojo_service_manager.cc",
-      "fake_mojo_service_manager.h",
-    ]
-  }
 }
 
-static_library("test_support") {
-  testonly = true
+static_library("fake_mojo_service_manager") {
+  visibility = [ ":*" ]
   sources = [
     "fake_mojo_service_manager.cc",
     "fake_mojo_service_manager.h",
   ]
-  public_deps = [ ":mojo_service_manager" ]
+  public_deps = [ ":mojo_service_manager_impl" ]
 }
