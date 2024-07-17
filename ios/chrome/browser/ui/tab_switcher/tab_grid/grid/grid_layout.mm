@@ -22,6 +22,8 @@ constexpr CGFloat kIPhonePortraitSpacing = 16;
 constexpr CGFloat kMinimumSpacing = kIPhonePortraitSpacing;
 // Estimated size of the Inactive Tabs headers.
 constexpr CGFloat kInactiveTabsHeaderEstimatedHeight = 100;
+// Bottom inset of the section containing the inactive tabs button.
+constexpr CGFloat kInactiveTabsSectionBottomInset = 10;
 // Estimated size of the Tab Group headers.
 constexpr CGFloat kTabGroupHeaderEstimatedHeight = 70;
 // Estimated size of the Search headers.
@@ -172,21 +174,21 @@ NSCollectionLayoutBoundarySupplementaryItem* TabGroupHeader() {
 NSCollectionLayoutSection* InactiveTabButtonSection(
     id<NSCollectionLayoutEnvironment> layout_environment,
     NSDirectionalEdgeInsets section_insets) {
-  // TODO(crbug.com/352722446): update the section to have the right size.
+  // Use the same estimated height for the item and the group.
+  NSCollectionLayoutDimension* estimated_height_dimension =
+      EstimatedDimension(kInactiveTabsHeaderEstimatedHeight);
 
   // Configure the layout item.
-  NSCollectionLayoutSize* item_size =
-      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
-                                     heightDimension:FractionalHeight(1.)];
+  NSCollectionLayoutSize* item_size = [NSCollectionLayoutSize
+      sizeWithWidthDimension:FractionalWidth(1.)
+             heightDimension:estimated_height_dimension];
   NSCollectionLayoutItem* item =
       [NSCollectionLayoutItem itemWithLayoutSize:item_size];
 
   // Configure the layout group.
-  NSCollectionLayoutDimension* group_height_dimension =
-      EstimatedDimension(kInactiveTabsHeaderEstimatedHeight);
-  NSCollectionLayoutSize* group_size =
-      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
-                                     heightDimension:group_height_dimension];
+  NSCollectionLayoutSize* group_size = [NSCollectionLayoutSize
+      sizeWithWidthDimension:FractionalWidth(1.)
+             heightDimension:estimated_height_dimension];
   NSCollectionLayoutGroup* group =
       [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
                                                     subitems:@[ item ]];
@@ -197,7 +199,7 @@ NSCollectionLayoutSection* InactiveTabButtonSection(
   const CGFloat spacing = Spacing(layout_environment);
   section_insets.top += spacing;
   section_insets.leading += spacing;
-  section_insets.bottom += spacing;
+  section_insets.bottom += kInactiveTabsSectionBottomInset;
   section_insets.trailing += spacing;
   section.contentInsets = section_insets;
   section.contentInsetsReference = UIContentInsetsReferenceNone;

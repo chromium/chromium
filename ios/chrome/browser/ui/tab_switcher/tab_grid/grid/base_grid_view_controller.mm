@@ -178,6 +178,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - UIViewController
 
 - (void)loadView {
+  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+
   GridLayout* gridLayout = [[GridLayout alloc] initWithTabGridMode:_mode];
   self.gridLayout = gridLayout;
 

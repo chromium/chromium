@@ -14,6 +14,7 @@
 namespace {
 constexpr CGFloat kHorizontalPadding = 16;
 constexpr CGFloat kVerticalPadding = 10;
+constexpr CGFloat kInterTextSpacing = 4;
 constexpr CGFloat kDefaultPadding = 8;
 constexpr CGFloat kCornerRadius = 10;
 }  // namespace
@@ -92,7 +93,7 @@ constexpr CGFloat kCornerRadius = 10;
           constraintEqualToAnchor:contentView.centerYAnchor],
 
       [_subtitleLabel.topAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor
-                                               constant:kDefaultPadding],
+                                               constant:kInterTextSpacing],
     ];
 
     _accessibilityConstraints = @[
@@ -140,6 +141,18 @@ constexpr CGFloat kCornerRadius = 10;
   _subtitleLabel.text =
       l10n_util::GetNSStringF(IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
                               base::NumberToString16(daysThreshold));
+}
+
+#pragma mark - UICollectionViewCell
+
+- (void)setHighlighted:(BOOL)highlighted {
+  [super setHighlighted:highlighted];
+  if (highlighted) {
+    self.backgroundColor = [UIColor systemGray4Color];
+  } else {
+    self.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  }
 }
 
 #pragma mark - UIView
