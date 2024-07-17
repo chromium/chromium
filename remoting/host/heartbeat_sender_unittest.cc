@@ -81,13 +81,15 @@ void ValidateLegacyHeartbeat(
 decltype(auto) DoValidateLegacyHeartbeatAndRespondOk(
     bool expected_is_initial_heartbeat = false,
     const std::string& expected_host_offline_reason = {},
-    bool is_googler = false) {
+    bool is_googler = false,
+    bool use_lite_heartbeat = false) {
   return [=](std::unique_ptr<apis::v1::HeartbeatRequest> request,
              LegacyHeartbeatResponseCallback callback) {
     ValidateLegacyHeartbeat(std::move(request), expected_is_initial_heartbeat,
                             expected_host_offline_reason, is_googler);
     auto response = std::make_unique<apis::v1::HeartbeatResponse>();
     response->set_set_interval_seconds(kGoodIntervalSeconds);
+    response->set_use_lite_heartbeat(use_lite_heartbeat);
     std::move(callback).Run(ProtobufHttpStatus::OK(), std::move(response));
   };
 }
@@ -223,6 +225,25 @@ TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats) {
   signal_strategy_->Connect();
 }
 
+TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats_Lite) {
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true, "", false, true))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(false, "", false, true))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(false, "", false, true));
+  // SendHeartbeat is not called because host keeps reconnecting.
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
+  EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
+  EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
+
+  signal_strategy_->Connect();
+  signal_strategy_->Disconnect();
+  signal_strategy_->Connect();
+  signal_strategy_->Disconnect();
+  signal_strategy_->Connect();
+}
+
 TEST_F(HeartbeatSenderTest, SignalingReconnect_NewHeartbeats_Googler) {
   base::RunLoop run_loop;
 
@@ -267,6 +288,19 @@ TEST_F(HeartbeatSenderTest, Signaling_MultipleHeartbeats_Googler) {
       .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true, "", true))
       .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(false, "", true))
       .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(false, "", true));
+  EXPECT_CALL(*mock_client_, SendHeartbeat(_, _)).Times(0);
+  EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).Times(3);
+  EXPECT_CALL(mock_delegate_, OnFirstHeartbeatSuccessful()).Times(1);
+
+  signal_strategy_->Connect();
+  task_environment_.FastForwardBy(kTestHeartbeatDelay * 2);
+}
+
+TEST_F(HeartbeatSenderTest, Signaling_MultipleHeartbeats_Lite) {
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(*mock_client_, LegacyHeartbeat(_, _))
+      .WillOnce(DoValidateLegacyHeartbeatAndRespondOk(true, "", false, true));
   EXPECT_CALL(*mock_client_, SendHeartbeat(_, _))
       .WillOnce(DoValidateSendHeartbeatAndRespondOk())
       .WillOnce(DoValidateSendHeartbeatAndRespondOk());

@@ -146,7 +146,7 @@ class HeartbeatSender final : public SignalStrategy::Listener {
 
   void ClearHeartbeatTimer();
   void SendFullHeartbeat();
-  void SendLiteHeartbeat();
+  void SendLiteHeartbeat(bool useLiteHeartbeat);
 
   bool CheckHttpStatus(const ProtobufHttpStatus& status);
   base::TimeDelta CalculateDelay(const ProtobufHttpStatus& status,

@@ -286,10 +286,6 @@ void HeartbeatSender::SendFullHeartbeat() {
 
   ClearHeartbeatTimer();
 
-  if (is_googler_) {
-    // TODO: Call UpdateRemoteAccessHost
-  }
-
   client_->LegacyHeartbeat(
       CreateLegacyHeartbeatRequest(),
       base::BindOnce(&HeartbeatSender::OnLegacyHeartbeatResponse,
@@ -297,7 +293,7 @@ void HeartbeatSender::SendFullHeartbeat() {
   observer_->OnHeartbeatSent();
 }
 
-void HeartbeatSender::SendLiteHeartbeat() {
+void HeartbeatSender::SendLiteHeartbeat(bool useLiteHeartbeat) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (signal_strategy_->GetState() != SignalStrategy::State::CONNECTED) {
@@ -310,18 +306,17 @@ void HeartbeatSender::SendLiteHeartbeat() {
 
   ClearHeartbeatTimer();
 
-  if (is_googler_) {
+  if (useLiteHeartbeat) {
     client_->SendHeartbeat(
         CreateSendHeartbeatRequest(),
         base::BindOnce(&HeartbeatSender::OnSendHeartbeatResponse,
                        base::Unretained(this)));
+  } else {
+    client_->LegacyHeartbeat(
+        CreateLegacyHeartbeatRequest(),
+        base::BindOnce(&HeartbeatSender::OnLegacyHeartbeatResponse,
+                       base::Unretained(this)));
   }
-  // Fall through so that both old and new APIs are called for now.
-
-  client_->LegacyHeartbeat(
-      CreateLegacyHeartbeatRequest(),
-      base::BindOnce(&HeartbeatSender::OnLegacyHeartbeatResponse,
-                     base::Unretained(this)));
   observer_->OnHeartbeatSent();
 }
 
@@ -411,12 +406,17 @@ void HeartbeatSender::OnLegacyHeartbeatResponse(
     std::unique_ptr<apis::v1::HeartbeatResponse> response) {
   if (CheckHttpStatus(status)) {
     std::optional<base::TimeDelta> optMinDelay;
+    bool useLiteHeartbeat = false;
     if (status.error_code() == ProtobufHttpStatus::Code::OK) {
       optMinDelay = base::Seconds(response->set_interval_seconds());
+      if (response->use_lite_heartbeat()) {
+        useLiteHeartbeat = true;
+      }
     }
-    heartbeat_timer_.Start(FROM_HERE,
-                           CalculateDelay(status, std::move(optMinDelay)), this,
-                           &HeartbeatSender::SendLiteHeartbeat);
+    heartbeat_timer_.Start(
+        FROM_HERE, CalculateDelay(status, std::move(optMinDelay)),
+        base::BindOnce(&HeartbeatSender::SendLiteHeartbeat,
+                       base::Unretained(this), useLiteHeartbeat));
   }
 }
 
@@ -429,8 +429,9 @@ void HeartbeatSender::OnSendHeartbeatResponse(
       optMinDelay = base::Seconds(response->wait_interval_seconds());
     }
     heartbeat_timer_.Start(FROM_HERE,
-                           CalculateDelay(status, std::move(optMinDelay)), this,
-                           &HeartbeatSender::SendLiteHeartbeat);
+                           CalculateDelay(status, std::move(optMinDelay)),
+                           base::BindOnce(&HeartbeatSender::SendLiteHeartbeat,
+                                          base::Unretained(this), true));
   }
 }
 
