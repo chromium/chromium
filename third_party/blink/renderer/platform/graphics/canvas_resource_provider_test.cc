@@ -231,7 +231,7 @@ void EnsureResourceRecycled(CanvasResourceProvider* provider,
                             scoped_refptr<CanvasResource>&& resource) {
   viz::TransferableResource transferable_resource;
   CanvasResource::ReleaseCallback release_callback;
-  auto sync_token = resource->GetSyncToken();
+  auto sync_token = resource->GetSyncToken(/*needs_verified_token=*/false);
   CHECK(resource->PrepareTransferableResource(
       &transferable_resource, &release_callback, kUnverifiedSyncToken));
   std::move(release_callback).Run(std::move(resource), sync_token, false);
@@ -267,14 +267,15 @@ TEST_F(CanvasResourceProviderTest,
 
   // Same resource and sync token if we query again without updating.
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
-  auto sync_token = resource->GetSyncToken();
+  auto sync_token = resource->GetSyncToken(/*needs_verified_token=*/false);
   ASSERT_TRUE(resource);
   EXPECT_EQ(resource, provider->ProduceCanvasResource(FlushReason::kTesting));
-  EXPECT_EQ(sync_token, resource->GetSyncToken());
+  EXPECT_EQ(sync_token, resource->GetSyncToken(/*needs_verified_token=*/false));
 
   auto new_resource = UpdateResource(provider.get());
   EXPECT_NE(resource, new_resource);
-  EXPECT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+  EXPECT_NE(resource->GetSyncToken(/*needs_verified_token=*/false),
+            new_resource->GetSyncToken(/*needs_verified_token=*/false));
   auto* resource_ptr = resource.get();
 
   EnsureResourceRecycled(provider.get(), std::move(resource));
@@ -282,7 +283,8 @@ TEST_F(CanvasResourceProviderTest,
   provider->Canvas().clear(SkColors::kBlack);
   auto resource_again = provider->ProduceCanvasResource(FlushReason::kTesting);
   EXPECT_EQ(resource_ptr, resource_again);
-  EXPECT_NE(sync_token, resource_again->GetSyncToken());
+  EXPECT_NE(sync_token,
+            resource_again->GetSyncToken(/*needs_verified_token=*/false));
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
@@ -294,7 +296,8 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
-  ASSERT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+  ASSERT_NE(resource->GetSyncToken(/*needs_verified_token=*/false),
+            new_resource->GetSyncToken(/*needs_verified_token=*/false));
 
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
@@ -324,7 +327,8 @@ TEST_F(CanvasResourceProviderTest,
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
-  ASSERT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+  ASSERT_NE(resource->GetSyncToken(/*needs_verified_token=*/false),
+            new_resource->GetSyncToken(/*needs_verified_token=*/false));
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
   EnsureResourceRecycled(provider.get(), std::move(resource));
@@ -345,7 +349,8 @@ TEST_F(CanvasResourceProviderTest,
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
   auto new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
-  ASSERT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+  ASSERT_NE(resource->GetSyncToken(/*needs_verified_token=*/false),
+            new_resource->GetSyncToken(/*needs_verified_token=*/false));
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
   EnsureResourceRecycled(provider.get(), std::move(resource));
@@ -364,7 +369,8 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(0u, provider->CanvasResources().size());
   new_resource = UpdateResource(provider.get());
   ASSERT_NE(resource, new_resource);
-  ASSERT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+  ASSERT_NE(resource->GetSyncToken(/*needs_verified_token=*/false),
+            new_resource->GetSyncToken(/*needs_verified_token=*/false));
 
   EnsureResourceRecycled(provider.get(), std::move(resource));
   EXPECT_EQ(1u, provider->CanvasResources().size());

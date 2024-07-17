@@ -139,11 +139,6 @@ class PLATFORM_EXPORT CanvasResource
   // ExternalCanvasResource either holds ClientSharedImage or is removed.
   virtual bool UsesClientSharedImage() { return false; }
 
-  // For subclasses that do verification of sync tokens (which subclasses do not
-  // by default), indicates whether the sync token needs to be verified before
-  // being handed out to clients.
-  virtual void SetNeedsVerifiedSyncToken(bool needs_verified_synctoken) {}
-
   // The ClientSharedImage containing information on the SharedImage (if any)
   // attached to the resource.
   // NOTE: Valid to call only if UsesClientSharedImage() is true.
@@ -159,8 +154,11 @@ class PLATFORM_EXPORT CanvasResource
   virtual void Transfer() {}
 
   // Returns the sync token to indicate when all writes to the current resource
-  // are finished on the GPU thread.
-  virtual const gpu::SyncToken GetSyncToken() {
+  // are finished on the GPU thread. Note that in some subclasses the token is
+  // not guaranteed to be verified at the time of calling this method. Passing
+  // true for `needs_verified_token` ensures that the returned token will be
+  // verified.
+  virtual const gpu::SyncToken GetSyncToken(bool needs_verified_token) {
     NOTREACHED_IN_MIGRATION();
     return gpu::SyncToken();
   }
@@ -356,7 +354,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool IsLost() const { return owning_thread_data().is_lost; }
   void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image);
   bool UsesClientSharedImage() override { return true; }
-  void SetNeedsVerifiedSyncToken(bool needs_verified_synctoken) override;
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
   const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage() const;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
@@ -377,7 +374,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
     scoped_refptr<gpu::ClientSharedImage> client_shared_image;
     gpu::SyncToken sync_token;
     size_t bitmap_image_read_refs = 0u;
-    bool needs_verified_synctoken = false;
     bool is_lost = false;
 
     // We need to create 2 representations if canvas is operating in single
@@ -397,7 +393,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
-  const gpu::SyncToken GetSyncToken() override;
+  const gpu::SyncToken GetSyncToken(bool needs_verified_token) override;
   bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
 
   CanvasResourceSharedImage(const SkImageInfo&,
@@ -482,7 +478,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
     return transferable_resource_.is_overlay_candidate;
   }
   bool HasGpuMailbox() const;
-  const gpu::SyncToken GetSyncToken() override;
+  const gpu::SyncToken GetSyncToken(bool needs_verified_token) override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
   bool PrepareAcceleratedTransferableResourceWithoutClientSI(
@@ -540,7 +536,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
  private:
   bool IsOverlayCandidate() const final { return true; }
   bool HasGpuMailbox() const;
-  const gpu::SyncToken GetSyncToken() override;
+  const gpu::SyncToken GetSyncToken(bool needs_verified_token) override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
 
