@@ -12,6 +12,7 @@ class CreditCard;
 }
 
 @class CardCoordinator;
+@class ReauthenticationModule;
 
 // Delegate for the coordinator actions.
 @protocol CardCoordinatorDelegate<FallbackCoordinatorDelegate>
@@ -36,6 +37,21 @@ class CreditCard;
 // Any selected card will be sent to the current field in the active web
 // state.
 @interface CardCoordinator : FallbackCoordinator
+
+// Creates a coordinator that uses a `viewController`, `browser` and an
+// `injectionHandler`.
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
+        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                          injectionHandler:
+                              (ManualFillInjectionHandler*)injectionHandler
+    NS_UNAVAILABLE;
 
 // The delegate for this coordinator. Delegate class extends
 // FallbackCoordinatorDelegate, and replaces super class delegate.

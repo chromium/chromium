@@ -13,6 +13,7 @@ enum class ManualFillDataType;
 
 @class ManualFillInjectionHandler;
 @class ExpandedManualFillCoordinator;
+@class ReauthenticationModule;
 
 @protocol AddressCoordinatorDelegate;
 @protocol CardCoordinatorDelegate;
@@ -47,10 +48,11 @@ enum class ManualFillDataType;
 
 // Designated initializer. `dataType` represents the type of manual filling
 // options to show in the expanded manual fill view.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                               forDataType:
-                                   (manual_fill::ManualFillDataType)dataType
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                   forDataType:(manual_fill::ManualFillDataType)dataType
+        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

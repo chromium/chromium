@@ -18,6 +18,7 @@ class PersonalDataManager;
 @protocol ManualFillContentInjector;
 @protocol ManualFillCardConsumer;
 @protocol CardListDelegate;
+@class ReauthenticationModule;
 
 namespace manual_fill {
 extern NSString* const kManagePaymentMethodsAccessibilityIdentifier;
@@ -41,7 +42,9 @@ extern NSString* const kAddPaymentMethodAccessibilityIdentifier;
 
 // The designated initializer. `personalDataManager` must not be nil.
 - (instancetype)initWithPersonalDataManager:
-    (autofill::PersonalDataManager*)personalDataManager
+                    (autofill::PersonalDataManager*)personalDataManager
+                     reauthenticationModule:
+                         (ReauthenticationModule*)reauthenticationModule
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use `initWithCards:`.

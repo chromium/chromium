@@ -10,6 +10,12 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_list_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_full_card_requester.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -19,19 +25,23 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_list_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_full_card_requester.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @interface CardCoordinator () <CardListDelegate> {
   // Opening links on the enrollment bottom sheet is delegated to this
   // dispatcher.
   __weak id<ApplicationCommands> _dispatcher;
+
+  // Reauthentication Module used for re-authentication.
+  ReauthenticationModule* _reauthenticationModule;
+
+  // PersonalDataManager
+  autofill::PersonalDataManager* _personalDataManager;
 }
 
 // The view controller presented above the keyboard where the user can select
@@ -53,25 +63,28 @@
 // FallbackCoordinatorDelegate)
 @dynamic delegate;
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                          injectionHandler:
-                              (ManualFillInjectionHandler*)injectionHandler {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
+        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                           injectionHandler:injectionHandler];
   if (self) {
     _cardViewController = [[CardViewController alloc] init];
+    _reauthenticationModule = reauthenticationModule;
 
     // Service must use regular browser state, even if the Browser has an
     // OTR browser state.
-    autofill::PersonalDataManager* personalDataManager =
+    _personalDataManager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             super.browser->GetBrowserState()->GetOriginalChromeBrowserState());
-    DCHECK(personalDataManager);
+    CHECK(_personalDataManager);
 
     _cardMediator = [[ManualFillCardMediator alloc]
-        initWithPersonalDataManager:personalDataManager];
+        initWithPersonalDataManager:_personalDataManager
+             reauthenticationModule:_reauthenticationModule];
     _cardMediator.navigationDelegate = self;
     _cardMediator.contentInjector = super.injectionHandler;
     _cardMediator.consumer = _cardViewController;
@@ -111,12 +124,26 @@
 
 - (void)openCardDetails:(const autofill::CreditCard*)card
              inEditMode:(BOOL)editMode {
-  __weak __typeof(self) weakSelf = self;
-  [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate cardCoordinator:weakSelf
-             didTriggerOpenCardDetails:card
-                            inEditMode:editMode];
-  }];
+  CHECK(_personalDataManager);
+  if (card->record_type() == autofill::CreditCard::RecordType::kLocalCard &&
+      _personalDataManager->payments_data_manager()
+          .IsPaymentMethodsMandatoryReauthEnabled() &&
+      [_reauthenticationModule canAttemptReauth]) {
+    NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
+    auto completionHandler = ^(ReauthenticationResult result) {
+      if (result != ReauthenticationResult::kFailure) {
+        [self didTriggerOpenCardDetails:card inEditMode:editMode];
+      }
+    };
+
+    [_reauthenticationModule
+        attemptReauthWithLocalizedReason:reason
+                    canReusePreviousAuth:YES
+                                 handler:completionHandler];
+    return;
+  }
+
+  [self didTriggerOpenCardDetails:card inEditMode:editMode];
 }
 
 - (void)openCardSettings {
@@ -150,6 +177,18 @@
                                        inIncognito:self.browser
                                                        ->GetBrowserState()
                                                        ->IsOffTheRecord()]];
+}
+
+#pragma mark - Private
+
+- (void)didTriggerOpenCardDetails:(const autofill::CreditCard*)card
+                       inEditMode:(BOOL)editMode {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakSelf.delegate cardCoordinator:weakSelf
+             didTriggerOpenCardDetails:card
+                            inEditMode:editMode];
+  }];
 }
 
 @end

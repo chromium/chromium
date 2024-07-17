@@ -4,13 +4,14 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_coordinator.h"
 
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -28,14 +29,20 @@ using manual_fill::ManualFillDataType;
 @implementation ExpandedManualFillCoordinator {
   // Initial data type to present in the expanded manual fill view.
   ManualFillDataType _initialDataType;
+
+  // Reauthentication Module used for re-authentication.
+  ReauthenticationModule* _reauthenticationModule;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                               forDataType:(ManualFillDataType)dataType {
+                               forDataType:(ManualFillDataType)dataType
+                    reauthenticationModule:
+                        (ReauthenticationModule*)reauthenticationModule {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _initialDataType = dataType;
+    _reauthenticationModule = reauthenticationModule;
   }
   return self;
 }
@@ -135,7 +142,8 @@ using manual_fill::ManualFillDataType;
   CardCoordinator* cardCoordinator = [[CardCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                injectionHandler:self.injectionHandler];
+                injectionHandler:self.injectionHandler
+          reauthenticationModule:_reauthenticationModule];
   cardCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =

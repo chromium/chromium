@@ -7,9 +7,10 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -1037,6 +1038,10 @@ void DismissPaymentBottomSheet() {
                             @"Accessory Upgrade feature is disabled.")
   }
 
+  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
+  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kSuccess];
+
   // Save a  local card.
   [AutofillAppInterface saveLocalCreditCard];
 
@@ -1067,6 +1072,8 @@ void DismissPaymentBottomSheet() {
   // Tap Done Button.
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
+
+  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 
   // TODO(crbug.com/332956674): Check that the updated suggestion is visible.
 }
@@ -1120,6 +1127,10 @@ void DismissPaymentBottomSheet() {
                             @"Accessory Upgrade feature is disabled.")
   }
 
+  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
+  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kSuccess];
+
   // Save a card.
   [AutofillAppInterface saveLocalCreditCard];
 
@@ -1146,6 +1157,8 @@ void DismissPaymentBottomSheet() {
   // Tap Cancel Button.
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
+
+  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 
   // TODO(crbug.com/332956674): Check that the expanded view is still visible.
 }
@@ -1181,6 +1194,8 @@ void DismissPaymentBottomSheet() {
 
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
+
+  [AutofillAppInterface clearMockReauthenticationModule];
 }
 
 // Tests that the GPay icon is only visible when the Keyboard Accessory Upgrade

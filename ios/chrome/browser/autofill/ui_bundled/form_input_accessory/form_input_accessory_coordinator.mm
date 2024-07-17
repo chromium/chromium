@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_coordinator.h"
@@ -288,7 +289,8 @@ const CGFloat kIPHVerticalOffset = -5;
   CardCoordinator* cardCoordinator = [[CardCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                injectionHandler:self.injectionHandler];
+                injectionHandler:self.injectionHandler
+          reauthenticationModule:self.reauthenticationModule];
   cardCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [cardCoordinator presentFromButton:button];
@@ -324,7 +326,8 @@ const CGFloat kIPHVerticalOffset = -5;
       [[ExpandedManualFillCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
-                         forDataType:dataType];
+                         forDataType:dataType
+              reauthenticationModule:self.reauthenticationModule];
 
   expandedManualFillCoordinator.injectionHandler = self.injectionHandler;
   expandedManualFillCoordinator.invokedOnObfuscatedField =
@@ -619,6 +622,14 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 #pragma mark - Private
+
+// Returns the reauthentication module, which can be an override for testing
+// purposes.
+- (ReauthenticationModule*)reauthenticationModule {
+  id<ReauthenticationProtocol> overrideModule =
+      ScopedFormInputAccessoryReauthModuleOverride::Get();
+  return overrideModule ? overrideModule : _reauthenticationModule;
+}
 
 // Returns the active web state. May return nil.
 - (web::WebState*)activeWebState {
