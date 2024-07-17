@@ -264,6 +264,7 @@ source_set("app_service") {
       "//chrome/browser/image_fetcher",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/resources",
+      "//chrome/browser/ui/ash/calendar",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/components/kiosk:kiosk",
@@ -318,6 +319,7 @@ source_set("app_service") {
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/media_app",
+      "//chrome/browser/ui/ash/calendar",
     ]
   }
 

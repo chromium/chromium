@@ -51,6 +51,7 @@ static_library("birch") {
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/ash/calendar",
     "//chrome/common",
     "//chromeos/ash/components/geolocation",
     "//components/favicon_base",

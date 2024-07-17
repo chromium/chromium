@@ -5518,6 +5518,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/auth",
       "//chrome/browser/ui/ash/birch",
+      "//chrome/browser/ui/ash/calendar",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -5843,6 +5844,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/auth",
       "//chrome/browser/ui/ash/birch",
+      "//chrome/browser/ui/ash/calendar",
     ]
 
     if (is_chrome_branded) {
