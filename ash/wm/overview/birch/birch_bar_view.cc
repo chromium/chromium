@@ -15,7 +15,9 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_settings.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/wm/overview/birch/birch_chip_loader_view.h"
+#include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
@@ -595,7 +597,21 @@ void BirchBarView::OnFadeOutAborted() {
 }
 
 void BirchBarView::OnSetupEnded() {
+  if (state_ == State::kLoading ||
+      state_ == State::kLoadingForInformedRestore) {
+    // Loading is finished, so possibly show a privacy nudge.
+    MaybeShowPrivacyNudge();
+  }
   SetState(State::kNormal);
+}
+
+void BirchBarView::MaybeShowPrivacyNudge() {
+  if (chips_.empty()) {
+    return;
+  }
+  // The nudge is anchored on the first suggestion chip.
+  views::View* anchor_view = chips_[0];
+  Shell::Get()->birch_privacy_nudge_controller()->MaybeShowNudge(anchor_view);
 }
 
 BEGIN_METADATA(BirchBarView)

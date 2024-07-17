@@ -63,6 +63,7 @@
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
+#include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/root_window_layout_manager.h"
@@ -845,6 +846,7 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
       OverviewController::Get()->InOverviewSession() &&
       !split_view_overview_session_) {
     root_window_menu_model_adapter_ = BuildBirchMenuModelAdapter(source_type);
+    BirchPrivacyNudgeController::DidShowContextMenu();
   } else {
     root_window_menu_model_adapter_ = BuildShelfMenuModelAdapter(source_type);
   }

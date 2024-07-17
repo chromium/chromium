@@ -122,6 +122,7 @@ class BackGestureEventHandler;
 class BacklightsForcedOffSetter;
 class BatterySaverController;
 class BirchModel;
+class BirchPrivacyNudgeController;
 class BluetoothDeviceStatusUiHandler;
 class BluetoothNotificationController;
 class BluetoothStateCache;
@@ -462,6 +463,9 @@ class ASH_EXPORT Shell : public SessionObserver,
     return battery_saver_controller_.get();
   }
   BirchModel* birch_model() { return birch_model_.get(); }
+  BirchPrivacyNudgeController* birch_privacy_nudge_controller() {
+    return birch_privacy_nudge_controller_.get();
+  }
   BluetoothStateCache* bluetooth_state_cache() {
     return bluetooth_state_cache_.get();
   }
@@ -1031,6 +1035,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<AutozoomControllerImpl> autozoom_controller_;
   std::unique_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
   std::unique_ptr<BirchModel> birch_model_;
+  std::unique_ptr<BirchPrivacyNudgeController> birch_privacy_nudge_controller_;
   std::unique_ptr<BrightnessControlDelegate> brightness_control_delegate_;
   std::unique_ptr<CalendarController> calendar_controller_;
   std::unique_ptr<CameraEffectsController> camera_effects_controller_;

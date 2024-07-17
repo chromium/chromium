@@ -12,6 +12,7 @@
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
+#include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -152,6 +153,7 @@ void BirchBarController::ShowChipContextMenu(BirchChipButton* chip,
                      weak_ptr_factory_.GetWeakPtr()),
       Shell::Get()->IsInTabletMode());
   chip_menu_model_adapter_->set_close_menu_on_customizing_suggestions(true);
+  BirchPrivacyNudgeController::DidShowContextMenu();
   chip_menu_model_adapter_->Run(gfx::Rect(point, gfx::Size()),
                                 views::MenuAnchorPosition::kBubbleTopRight,
                                 views::MenuRunner::CONTEXT_MENU |

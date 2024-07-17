@@ -2342,6 +2342,18 @@ inline constexpr char kGameDashboardShowToolbar[] =
 static constexpr char kSoftwareScanningEnabled[] =
     "ash.nearby.software_scanning_enabled";
 
+// A boolean pref that tracks whether the Birch context menu has been shown.
+inline constexpr char kBirchContextMenuShown[] = "ash.birch.context_menu_shown";
+
+// An integer pref that tracks the number of times the Birch privacy nudge has
+// been shown.
+inline constexpr char kBirchPrivacyNudgeShownCount[] =
+    "ash.birch.privacy_nudge_shown_count";
+
+// A time pref that stores the time the Birch privacy nudge was last shown.
+inline constexpr char kBirchPrivacyNudgeLastShownTime[] =
+    "ash.birch.privacy_nudge_last_shown";
+
 // A boolean pref indicating whether to show Birch suggestions in Overview mode.
 inline constexpr char kBirchShowSuggestions[] = "ash.birch.show_suggestions";
 

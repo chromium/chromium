@@ -163,6 +163,10 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // Called after chips fading-out animations are done during shutting down.
   void OnShutdownEnded();
 
+  // Possibly show the privacy nudge about context menu options for
+  // controlling suggestion types.
+  void MaybeShowPrivacyNudge();
+
   // Cached chip size.
   const gfx::Size chip_size_;
 

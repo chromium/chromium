@@ -1500,6 +1500,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="31" label="Search Plus Top Row Key Pressed Nudge"/>
   <int value="32" label="Six Pack Key Pressed Nudge"/>
   <int value="33" label="Switch Caps Lock Key Pressed Nudge"/>
+  <int value="34" label="Help Me Read Nudge"/>
+  <int value="35" label="Birch Privacy Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">

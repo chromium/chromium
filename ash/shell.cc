@@ -219,6 +219,7 @@
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
 #include "ash/wm/multi_display/persistent_window_controller.h"
 #include "ash/wm/native_cursor_manager_ash.h"
+#include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/raster_scale/raster_scale_controller.h"
@@ -833,6 +834,7 @@ Shell::~Shell() {
   shelf_controller_->Shutdown();
   shelf_config_->Shutdown();
 
+  birch_privacy_nudge_controller_.reset();
   birch_model_.reset();
 
   // Depends on `app_list_controller_` and `tablet_mode_controller_`.
@@ -1609,6 +1611,8 @@ void Shell::Init(
 
   if (features::IsForestFeatureEnabled()) {
     birch_model_ = std::make_unique<BirchModel>();
+    birch_privacy_nudge_controller_ =
+        std::make_unique<BirchPrivacyNudgeController>();
   }
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
