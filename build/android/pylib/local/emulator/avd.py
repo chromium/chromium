@@ -972,7 +972,8 @@ class _AvdInstance:
             debug_tags=None,
             disk_size=None,
             enable_network=False,
-            require_fast_start=False):
+            require_fast_start=False,
+            retries=0):
     """Starts the emulator running an instance of the given AVD.
 
     Note when ensure_system_settings is True, the program will wait until the
@@ -1053,8 +1054,8 @@ class _AvdInstance:
           emulator_cmd.append('-show-kernel')
 
       emulator_env = {
-          # kill immediately when emulator hang.
-          'ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL': '0',
+          # kill as early as possible when emulator hang.
+          'ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL': '1',
           # Sets the emulator configuration directory
           'ANDROID_EMULATOR_HOME': self._emulator_home,
       }
@@ -1106,7 +1107,7 @@ class _AvdInstance:
         self._emulator_serial = timeout_retry.Run(
             listen_for_serial,
             timeout=120 if is_slow_start else 30,
-            retries=0,
+            retries=retries,
             args=[sock])
         logging.info('%s started', self._emulator_serial)
       except Exception:
@@ -1120,7 +1121,7 @@ class _AvdInstance:
       assert self.device is not None, '`instance.device` not initialized.'
       logging.info('Waiting for device to be fully booted.')
       self.device.WaitUntilFullyBooted(timeout=360 if is_slow_start else 90,
-                                       retries=0)
+                                       retries=retries)
       logging.info('Device fully booted, verifying system settings.')
       _EnsureSystemSettings(self.device)
 
