@@ -31,6 +31,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -3274,7 +3275,7 @@ void View::AddDescendantToNotify(View* view) {
 void View::RemoveDescendantToNotify(View* view) {
   DCHECK(view && descendants_to_notify_);
   auto i = base::ranges::find(*descendants_to_notify_, view);
-  DCHECK(i != descendants_to_notify_->end());
+  CHECK(i != descendants_to_notify_->end(), base::NotFatalUntil::M130);
   descendants_to_notify_->erase(i);
   if (descendants_to_notify_->empty()) {
     descendants_to_notify_.reset();
