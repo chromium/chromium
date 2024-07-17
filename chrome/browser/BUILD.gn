@@ -5323,6 +5323,7 @@ static_library("browser") {
       "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_list/search/arc",
+      "//chrome/browser/ash/app_list/search/essential_search",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/auto_sleep",
       "//chrome/browser/ash/app_mode/web_app",
