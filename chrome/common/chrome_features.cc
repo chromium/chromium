@@ -1695,4 +1695,13 @@ BASE_FEATURE(kEventBasedLogUpload,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// A feature to enable periodic log upload migration. This includes using new
+// mechanism for collecting, exporting and uploading logs. See
+// go/legacy-log-upload-migration.
+BASE_FEATURE(kPeriodicLogUploadMigration,
+             "PeriodicLogUploadMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace features
