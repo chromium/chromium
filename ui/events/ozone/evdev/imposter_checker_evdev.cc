@@ -48,7 +48,8 @@ bool ImposterCheckerEvdev::IsSuspectedKeyboardImposter(
     fake_keyboard_heuristic_metrics_.RecordUsage(false);
   }
 #endif
-  if (!converter->HasKeyboard() || (!converter->HasMouse() && !shared_phys)) {
+  if (!converter->HasKeyboard() || (!converter->HasMouse() && !shared_phys) ||
+      converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL) {
     return false;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
