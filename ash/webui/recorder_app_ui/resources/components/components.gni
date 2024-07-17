@@ -22,6 +22,7 @@ component_files = [
   "mic-selection-menu.ts",
   "onboarding-dialog.ts",
   "recording-file-list.ts",
+  "recording-file-list-item.ts",
   "recording-title-suggestion.ts",
   "recording-title.ts",
   "secondary-button.ts",
