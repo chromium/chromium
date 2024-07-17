@@ -6,6 +6,66 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+static_library("app_service") {
+  sources = [
+    "app_service_app_icon_loader.cc",
+    "app_service_app_icon_loader.h",
+    "app_service_app_item.cc",
+    "app_service_app_item.h",
+    "app_service_app_model_builder.cc",
+    "app_service_app_model_builder.h",
+    "app_service_context_menu.cc",
+    "app_service_context_menu.h",
+    "app_service_promise_app_context_menu.cc",
+    "app_service_promise_app_context_menu.h",
+    "app_service_promise_app_icon_loader.cc",
+    "app_service_promise_app_icon_loader.h",
+    "app_service_promise_app_item.cc",
+    "app_service_promise_app_item.h",
+    "app_service_promise_app_model_builder.cc",
+    "app_service_promise_app_model_builder.h",
+    "app_service_shortcut_context_menu.cc",
+    "app_service_shortcut_context_menu.h",
+    "app_service_shortcut_icon_loader.cc",
+    "app_service_shortcut_icon_loader.h",
+    "app_service_shortcut_item.cc",
+    "app_service_shortcut_item.h",
+    "app_service_shortcut_model_builder.cc",
+    "app_service_shortcut_model_builder.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_icon:util",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/remote_apps",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/constants",
+    "//components/app_constants",
+    "//components/services/app_service",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/color",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -27,6 +87,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_list:test_support",
+    "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/borealis/testing:test_support",
     "//chrome/browser/ash/crostini:test_support",
@@ -63,5 +124,65 @@ source_set("unit_tests") {
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/codec",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "app_service_app_item_browsertest.cc",
+    "app_service_context_menu_browsertest.cc",
+    "app_service_promise_app_item_browsertest.cc",
+  ]
+
+  deps = [
+    ":app_service",
+    "//ash",
+    "//ash:test_support",
+    "//ash/app_list",
+    "//ash/app_list/model:app_list_model",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session:connection_holder",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/constants",
+    "//components/account_id",
+    "//components/services/app_service",
+    "//components/sync:test_support",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//components/webapps/common",
+    "//content/test:test_support",
+    "//net",
+    "//ui/base",
+    "//ui/display",
+    "//ui/events:event_constants",
+    "//ui/views",
+    "//url",
   ]
 }

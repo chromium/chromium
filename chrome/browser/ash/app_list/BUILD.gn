@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/arc",

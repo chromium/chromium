@@ -13,8 +13,6 @@ source_set("unit_tests") {
     "arc_app_metrics_data_unittest.cc",
     "arc_app_metrics_util_unittest.cc",
     "arc_app_sync_metrics_helper_unittest.cc",
-    "arc_app_test.cc",
-    "arc_app_test.h",
     "arc_app_unittest.cc",
     "arc_app_utils_unittest.cc",
     "arc_default_app_list_unittest.cc",
@@ -36,6 +34,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":test_support",
     "//ash/components/arc:arc_base_utils",
     "//ash/components/arc:arc_features",
     "//ash/components/arc:arc_metrics_constants",
@@ -53,6 +52,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service/app_icon:util",
     "//chrome/browser/ash",
     "//chrome/browser/ash/app_list:test_support",
+    "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",

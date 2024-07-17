@@ -2212,6 +2212,7 @@ if (!is_android) {
         "//chrome/browser/ash/accessibility:test_support",
         "//chrome/browser/ash/accessibility/service",
         "//chrome/browser/ash/app_list:test_support",
+        "//chrome/browser/ash/app_list/app_service",
         "//chrome/browser/ash/app_list/arc:test_support",
         "//chrome/browser/ash/app_list/search/test:test_support",
         "//chrome/browser/ash/app_list/test:test_support",
@@ -4557,9 +4558,6 @@ if (!is_android) {
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
         "../browser/ash/app_list/app_list_client_impl_browsertest.cc",
         "../browser/ash/app_list/app_list_sort_browsertest.cc",
-        "../browser/ash/app_list/app_service/app_service_app_item_browsertest.cc",
-        "../browser/ash/app_list/app_service/app_service_context_menu_browsertest.cc",
-        "../browser/ash/app_list/app_service/app_service_promise_app_item_browsertest.cc",
         "../browser/ash/app_list/arc/arc_usb_host_permission_browsertest.cc",
         "../browser/ash/app_list/chrome_app_list_item_browsertest.cc",
         "../browser/ash/app_list/chrome_app_list_model_updater_browsertest.cc",
@@ -8705,6 +8703,7 @@ test("unit_tests") {
       "//chrome/browser/ash:test_support",
       "//chrome/browser/ash:unit_tests",
       "//chrome/browser/ash/app_list:unit_tests",
+      "//chrome/browser/ash/app_list/app_service",
       "//chrome/browser/ash/app_list/arc:unit_tests",
       "//chrome/browser/ash/app_list/search/ranking:proto",
       "//chrome/browser/ash/app_list/search/test:unit_tests",
@@ -11568,6 +11567,7 @@ if (!is_android && !is_chromeos_device) {
     if (is_chromeos_ash) {
       deps += [
         "//ash/constants",
+        "//chrome/browser/ash/app_list/app_service",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/ui/ash/system_web_apps",
