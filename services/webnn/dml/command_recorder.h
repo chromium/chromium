@@ -154,6 +154,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // recording to ensure the CPU can safely use the buffer.
   void OnBufferAccessed(BufferImplDml* buffer);
 
+  void ReferenceCommandResources(Microsoft::WRL::ComPtr<IUnknown> object);
+
  private:
   CommandRecorder(
       scoped_refptr<CommandQueue> command_queue,

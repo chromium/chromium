@@ -312,8 +312,7 @@ UploadAndCreateConstantBufferBinding(
 
   if (absl::holds_alternative<ComPtr<ID3D12Resource>>(buffer_variant)) {
     CHECK(cpu_buffer);
-    command_recorder->command_queue()->ReferenceUntilCompleted(
-        std::move(cpu_buffer));
+    command_recorder->ReferenceCommandResources(std::move(cpu_buffer));
   } else {
     CHECK(default_buffer);
     CHECK(upload_buffer);

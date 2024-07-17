@@ -434,4 +434,9 @@ void CommandRecorder::OnBufferAccessed(BufferImplDml* buffer) {
   command_buffer_impls_.emplace(buffer->buffer(), buffer->AsWeakPtr());
 }
 
+void CommandRecorder::ReferenceCommandResources(
+    Microsoft::WRL::ComPtr<IUnknown> object) {
+  command_resources_.push_back(std::move(object));
+}
+
 }  // namespace webnn::dml
