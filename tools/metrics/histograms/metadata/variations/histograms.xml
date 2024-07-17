@@ -477,7 +477,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeModeCachedFlags.Streak.Crashes" units="crashes"
-    expires_after="2024-07-28">
+    expires_after="never">
+<!-- expires-never: Needed to detect and evaluate severity of before-native crashes behind cached flags. -->
+
   <owner>hnakashima@chromium.org</owner>
   <owner>src/chrome/browser/flags/OWNERS</owner>
   <summary>
@@ -490,7 +492,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeModeCachedFlags.{Event}"
-    enum="VariationsSafeModeCachedFlagsBehavior" expires_after="2024-07-28">
+    enum="VariationsSafeModeCachedFlagsBehavior" expires_after="never">
+<!-- expires-never: Needed to detect and evaluate severity of before-native crashes behind cached flags. -->
+
   <owner>hnakashima@chromium.org</owner>
   <owner>src/chrome/browser/flags/OWNERS</owner>
   <summary>
