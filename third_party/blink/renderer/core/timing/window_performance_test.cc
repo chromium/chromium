@@ -22,6 +22,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
+#include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
@@ -203,7 +204,7 @@ class WindowPerformanceTest : public testing::Test,
   }
 
   void PageVisibilityChanged(base::TimeTicks timestamp) {
-    performance_->last_visibility_change_timestamp_ = timestamp;
+    performance_->PageVisibilityChangedWithTimestamp(timestamp);
   }
 
   test::TaskEnvironment task_environment_;
@@ -955,9 +956,6 @@ TEST_P(WindowPerformanceTest, TapOrClick) {
 }
 
 TEST_P(WindowPerformanceTest, PageVisibilityChanged) {
-  // The page visibility gets changed.
-  PageVisibilityChanged(GetTimeStamp(18));
-
   // Pointerdown
   base::TimeTicks pointerdown_timestamp = GetTimeOrigin();
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
@@ -973,21 +971,24 @@ TEST_P(WindowPerformanceTest, PageVisibilityChanged) {
   base::TimeTicks pointerup_timestamp = GetTimeStamp(3);
   base::TimeTicks processing_start_pointerup = GetTimeStamp(5);
   base::TimeTicks processing_end_pointerup = GetTimeStamp(6);
-  base::TimeTicks presentation_time_pointerup = GetTimeStamp(20);
   RegisterPointerEvent(event_type_names::kPointerup, pointerup_timestamp,
                        processing_start_pointerup, processing_end_pointerup,
                        pointer_id);
-  SimulatePaintAndResolvePresentationPromise(presentation_time_pointerup);
-
   // Click
   base::TimeTicks click_timestamp = GetTimeStamp(13);
   base::TimeTicks processing_start_click = GetTimeStamp(15);
   base::TimeTicks processing_end_click = GetTimeStamp(16);
-  base::TimeTicks presentation_time_click = GetTimeStamp(20);
+  base::TimeTicks presentation_time_pointerup_and_click = GetTimeStamp(20);
   RegisterPointerEvent(event_type_names::kClick, click_timestamp,
                        processing_start_click, processing_end_click,
                        pointer_id);
-  SimulatePaintAndResolvePresentationPromise(presentation_time_click);
+
+  performance_->GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden, true);
+  PageVisibilityChanged(GetTimeStamp(18));
+
+  SimulatePaintAndResolvePresentationPromise(
+      presentation_time_pointerup_and_click);
 
   // Flush UKM logging mojo request.
   RunPendingTasks();
@@ -998,15 +999,16 @@ TEST_P(WindowPerformanceTest, PageVisibilityChanged) {
   EXPECT_EQ(1u, entries.size());
   const ukm::mojom::UkmEntry* ukm_entry = entries[0];
   // The event duration of pointerdown is 5ms, all the way to presentation.
-  // Because the page visibility was changed after pointerup & click were
-  // created, the event durations fall back to processingEnd.  That means
-  // they are become 3ms duration each. So the max duration is 5ms.
+  // The event duration of pointerup is processingEnd 6 - event
+  // creation time 3 = 3.
+  // The event duration of click is page visibility change time 16 - 13 = 3.
+  // So the max duration should be 5 ms.
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 5);
-  // Because there is overlap with pointerdown and pointerup, the
-  // the non overlapping event duration for pointerup is only 1ms (not 3ms),
-  // So the total non-overlapping total is 5 + 1 + 3 = 9ms.
+  // The total duration should be 9ms, which is the sum of time from time 0 of
+  // pointer down creation time to the processingEnd of pointer up 6ms +
+  // duration of click which is 16-13 = 3ms.
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
@@ -1014,6 +1016,8 @@ TEST_P(WindowPerformanceTest, PageVisibilityChanged) {
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 1);
+
+  EXPECT_EQ(1ul, performance_->interactionCount());
 }
 
 TEST_P(WindowPerformanceTest, Drag) {

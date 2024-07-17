@@ -3387,6 +3387,10 @@
       name: "RenderPriorityAttribute",
     },
     {
+      name: "ReportEventTimingAtVisibilityChange",
+      status: "experimental",
+    },
+    {
       // TODO(crbug.com/1500633): Remove this flag when the new CursorAnchorInfo
       // mojo pipe is launched.
       name: "ReportVisibleLineBounds",
