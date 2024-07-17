@@ -22,13 +22,13 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.content_public.browser.WebContentsObserver.ViewportFitType;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.base.WindowAndroid;
@@ -53,6 +53,7 @@ public class EdgeToEdgeControllerImpl
     private final ObserverList<ChangeObserver> mEdgeChangeObservers = new ObserverList<>();
     private final @NonNull TabObserver mTabObserver;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final LayoutManager mLayoutManager;
 
     /** Multiplier to convert from pixels to DPs. */
     private final float mPxToDp;
@@ -61,6 +62,13 @@ public class EdgeToEdgeControllerImpl
 
     private Tab mCurrentTab;
     private WebContentsObserver mWebContentsObserver;
+
+    /**
+     * Whether the system is drawing "toEdge" (i.e. the edge-to-edge wrapper has no bottom padding).
+     * This could be due to the current page being opted into edge-to-edge, or a partial
+     * edge-to-edge with the bottom chin present.
+     */
+    private boolean mIsDrawingToEdge;
 
     /**
      * Whether the edge-to-edge feature is enabled and the current tab content is showing
@@ -87,13 +95,15 @@ public class EdgeToEdgeControllerImpl
      * @param edgeToEdgeOSWrapper An optional wrapper for OS calls for testing etc.
      * @param browserControlsStateProvider Provides the state of the BrowserControls for Totally
      *     Edge to Edge.
+     * @param layoutManager The {@link LayoutManager} for checking the active layout type.
      */
     public EdgeToEdgeControllerImpl(
             Activity activity,
             WindowAndroid windowAndroid,
             ObservableSupplier<Tab> tabObservableSupplier,
             @Nullable EdgeToEdgeOSWrapper edgeToEdgeOSWrapper,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            LayoutManager layoutManager) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mEdgeToEdgeOSWrapper =
@@ -125,6 +135,7 @@ public class EdgeToEdgeControllerImpl
         mInsetObserver = mWindowAndroid.getInsetObserver();
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
+        mLayoutManager = layoutManager;
 
         mWindowInsetsConsumer = this::handleWindowInsets;
         mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
@@ -147,7 +158,8 @@ public class EdgeToEdgeControllerImpl
                 updateWebContentsObserver(tab);
             }
         }
-        maybeDrawToEdge();
+
+        drawToEdge(EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab));
     }
 
     @Override
@@ -176,7 +188,17 @@ public class EdgeToEdgeControllerImpl
 
     @Override
     public int getBottomInset() {
-        return isPageOptedIntoEdgeToEdge() ? (int) Math.ceil(mSystemInsets.bottom * mPxToDp) : 0;
+        return isDrawingToEdge() ? (int) Math.ceil(mSystemInsets.bottom * mPxToDp) : 0;
+    }
+
+    @Override
+    public int getBottomInsetPx() {
+        return isDrawingToEdge() ? mSystemInsets.bottom : 0;
+    }
+
+    @Override
+    public boolean isDrawingToEdge() {
+        return mIsDrawingToEdge;
     }
 
     @Override
@@ -232,7 +254,7 @@ public class EdgeToEdgeControllerImpl
                 new WebContentsObserver(tab.getWebContents()) {
                     @Override
                     public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
-                        maybeDrawToEdge(value);
+                        drawToEdge(EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab, value));
                     }
                 };
         // TODO(https://crbug.com/1482559#c23) remove this logging by end of '23.
@@ -240,38 +262,54 @@ public class EdgeToEdgeControllerImpl
     }
 
     /**
-     * Conditionally draws the given View ToEdge or ToNormal based on {@link
-     * EdgeToEdgeUtils#shouldDrawToEdge(Tab)}
-     */
-    private void maybeDrawToEdge() {
-        drawToEdge(shouldDrawToEdge(mCurrentTab));
-    }
-
-    /**
-     * Conditionally draws the given View ToEdge or ToNormal based on {@link
-     * EdgeToEdgeUtils#shouldDrawToEdge(Tab, int)}.
-     *
-     * @param value A new {@link ViewportFitType} value being applied now.
-     */
-    private void maybeDrawToEdge(@ViewportFitType int value) {
-        drawToEdge(shouldDrawToEdge(mCurrentTab, value));
-    }
-
-    /**
      * Conditionally draws the given View ToEdge or ToNormal based on the {@code toEdge} param.
      *
-     * @param toEdge Whether to draw ToEdge.
+     * @param pageOptedIntoEdgeToEdge Whether the page is opted into edge-to-edge.
      */
     @VisibleForTesting
-    void drawToEdge(boolean toEdge) {
-        if (toEdge == mIsPageOptedIntoEdgeToEdge) return;
+    void drawToEdge(boolean pageOptedIntoEdgeToEdge) {
+        boolean shouldDrawToEdge =
+                shouldDrawToEdge(
+                        pageOptedIntoEdgeToEdge,
+                        mLayoutManager.getActiveLayoutType(),
+                        mSystemInsets.bottom);
 
-        mIsPageOptedIntoEdgeToEdge = toEdge;
-        Log.v(TAG, "Switching %s", (toEdge ? "ToEdge" : "ToNormal"));
-        View contentView = mActivity.findViewById(ROOT_UI_VIEW_ID);
-        assert contentView != null : "Root view for Edge To Edge not found!";
+        boolean changedPageOptedIn = pageOptedIntoEdgeToEdge != mIsPageOptedIntoEdgeToEdge;
+        boolean changedDrawToEdge = shouldDrawToEdge != mIsDrawingToEdge;
+        mIsPageOptedIntoEdgeToEdge = pageOptedIntoEdgeToEdge;
+        mIsDrawingToEdge = shouldDrawToEdge;
 
-        adjustEdges(toEdge, contentView);
+        if (changedPageOptedIn) {
+            Log.v(
+                    TAG,
+                    "Switching %s",
+                    (mIsPageOptedIntoEdgeToEdge
+                            ? "Opted into EdgeToEdge"
+                            : "Not opted into EdgeToEdge"));
+        }
+
+        if (changedDrawToEdge) {
+            Log.v(TAG, "Switching %s", (mIsDrawingToEdge ? "ToEdge" : "ToNormal"));
+
+            View contentView = mActivity.findViewById(ROOT_UI_VIEW_ID);
+            assert contentView != null : "Root view for Edge To Edge not found!";
+
+            adjustEdges(mIsDrawingToEdge, contentView);
+        }
+
+        // Notify observers if either opt-in status or toEdge status have changed, since adjusters
+        // and toEdge observers may need to react to changes in either or both.
+        if (changedPageOptedIn || changedDrawToEdge) {
+            boolean shouldPad = shouldPadAdjusters();
+            for (var adjuster : mPadAdjusters) {
+                adjuster.overrideBottomInset(
+                        shouldPad ? mSystemInsets.bottom : 0,
+                        shouldPad && !mBottomControlsAreVisible ? mSystemInsets.bottom : 0);
+            }
+            for (var observer : mEdgeChangeObservers) {
+                observer.onToEdgeChange(isPageOptedIntoEdgeToEdge() ? mSystemInsets.bottom : 0);
+            }
+        }
     }
 
     @NonNull
@@ -335,16 +373,6 @@ public class EdgeToEdgeControllerImpl
                 mSystemInsets.right,
                 bottomPadding);
 
-        for (var adjuster : mPadAdjusters) {
-            boolean shouldPad = shouldPadAdjusters();
-            adjuster.overrideBottomInset(
-                    shouldPad ? mSystemInsets.bottom : 0,
-                    shouldPad && !mBottomControlsAreVisible ? mSystemInsets.bottom : 0);
-        }
-        for (var observer : mEdgeChangeObservers) {
-            observer.onToEdgeChange(isPageOptedIntoEdgeToEdge() ? mSystemInsets.bottom : 0);
-        }
-
         int bottomInsetOnSaveArea = toEdge ? mSystemInsets.bottom : 0;
         mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSaveArea);
     }
@@ -377,8 +405,12 @@ public class EdgeToEdgeControllerImpl
         return mWebContentsObserver;
     }
 
-    public void setToEdgeForTesting(boolean toEdge) {
+    public void setIsOptedIntoEdgeToEdgeForTesting(boolean toEdge) {
         mIsPageOptedIntoEdgeToEdge = toEdge;
+    }
+
+    public void setIsDrawingToEdgeForTesting(boolean toEdge) {
+        mIsDrawingToEdge = toEdge;
     }
 
     public @Nullable ChangeObserver getAnyChangeObserverForTesting() {

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -64,6 +65,7 @@ public class BottomControlsMediatorTest {
 
     @Mock BottomControlsStacker mBottomControlsStacker;
     @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock LayoutManager mLayoutManager;
     @Mock WindowAndroid mWindowAndroid;
     @Mock TabObscuringHandler mTabObscuringHandler;
     @Mock ObservableSupplier<Boolean> mOverlayPanelVisibilitySupplier;
@@ -151,7 +153,8 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mLayoutManager);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
                         mWindowAndroid,
@@ -179,7 +182,8 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mLayoutManager);
         new BottomControlsMediator(
                 mWindowAndroid,
                 mModel,
@@ -191,7 +195,7 @@ public class BottomControlsMediatorTest {
                 new ObservableSupplierImpl<>(liveEdgeToEdgeController),
                 mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
-        liveEdgeToEdgeController.setToEdgeForTesting(false);
+        liveEdgeToEdgeController.setIsOptedIntoEdgeToEdgeForTesting(false);
         int toNormalHeight = mModel.get(ANDROID_VIEW_HEIGHT);
         // Go to a native page which will go ToEdge due to our enabled Feature for this test case.
         mTabObservableSupplier.set(null);

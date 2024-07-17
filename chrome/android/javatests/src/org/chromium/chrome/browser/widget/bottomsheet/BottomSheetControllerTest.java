@@ -1205,6 +1205,11 @@ public class BottomSheetControllerTest {
         }
 
         @Override
+        public int getBottomInsetPx() {
+            return bottomInset;
+        }
+
+        @Override
         public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {}
 
         @Override
@@ -1218,6 +1223,11 @@ public class BottomSheetControllerTest {
 
         @Override
         public boolean isPageOptedIntoEdgeToEdge() {
+            return bottomInset != 0;
+        }
+
+        @Override
+        public boolean isDrawingToEdge() {
             return bottomInset != 0;
         }
     }

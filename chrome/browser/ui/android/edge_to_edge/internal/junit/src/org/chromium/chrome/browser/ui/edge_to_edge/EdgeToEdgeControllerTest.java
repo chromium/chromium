@@ -58,6 +58,8 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.WebContents;
@@ -117,6 +119,7 @@ public class EdgeToEdgeControllerTest {
 
     @Mock private WindowInsetsCompat mWindowInsetsMock;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private LayoutManager mLayoutManager;
 
     @Implements(EdgeToEdgeControllerFactory.class)
     static class ShadowEdgeToEdgeControllerFactory extends EdgeToEdgeControllerFactory {
@@ -166,7 +169,8 @@ public class EdgeToEdgeControllerTest {
                         mWindowAndroid,
                         mTabProvider,
                         mOsWrapper,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mLayoutManager);
         assertNotNull(mEdgeToEdgeControllerImpl);
         verify(mOsWrapper, times(1)).setDecorFitsSystemWindows(any(), eq(false));
         verify(mInsetObserver, times(1)).addInsetsConsumer(any());
@@ -225,16 +229,17 @@ public class EdgeToEdgeControllerTest {
     @Test
     @SuppressLint("NewApi")
     public void onObservingDifferentTab_changeToWebDisabled() {
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
         // First go ToEdge by invoking the changeToTabSwitcher test logic.
-        mEdgeToEdgeControllerImpl.setToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
 
         // Now test that a Web page causes a transition ToNormal (when Web forcing is disabled).
-        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertFalse(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertToNormalExpectations();
     }
 
@@ -245,6 +250,7 @@ public class EdgeToEdgeControllerTest {
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertToEdgeExpectations();
         assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
     }
@@ -256,6 +262,7 @@ public class EdgeToEdgeControllerTest {
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertToEdgeExpectations();
         assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
     }
@@ -264,24 +271,32 @@ public class EdgeToEdgeControllerTest {
     public void onObservingDifferentTab_viewportFitChanged() {
         // Start with web always-enabled.
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
+        // Enable the bottom chin.
+        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(true);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertTrue(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
         assertToEdgeExpectations();
         assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
 
         // Now switch the viewport-fit value of that page back and forth,
-        // with web NOT always enabled
+        // with web NOT always enabled. The page opt-in should switch with the viewport fit value,
+        // but the page should still draw toEdge to properly show the bottom chin.
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
         mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.AUTO);
         assertFalse(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
 
         mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
         assertTrue(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
 
         mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.AUTO);
         assertFalse(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
     }
 
     /** Test the OSWrapper implementation without mocking it. Native ToNormal. */
@@ -294,9 +309,11 @@ public class EdgeToEdgeControllerTest {
                                 mActivity,
                                 mWindowAndroid,
                                 liveSupplier,
-                                mBrowserControlsStateProvider);
+                                mBrowserControlsStateProvider,
+                                mLayoutManager);
         assertNotNull(liveController);
-        liveController.setToEdgeForTesting(true);
+        liveController.setIsOptedIntoEdgeToEdgeForTesting(true);
+        liveController.setIsDrawingToEdgeForTesting(true);
         liveController.setSystemInsetsForTesting(SYSTEM_INSETS);
         when(mTab.isNativePage()).thenReturn(false);
         liveSupplier.set(mTab);
@@ -310,7 +327,8 @@ public class EdgeToEdgeControllerTest {
     /** Test switching to the Tab Switcher, which uses a null Tab. */
     @Test
     public void onObservingDifferentTab_nullTabSwitcher() {
-        mEdgeToEdgeControllerImpl.setToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.onTabSwitched(null);
         assertFalse(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
@@ -330,11 +348,9 @@ public class EdgeToEdgeControllerTest {
     @Test
     public void onTabSwitched_onWebContentsSwapped() {
         // Standard setup of a Web Tab ToEdge
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
-        assertTrue(mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
 
         // Grab the WebContentsObserver, and setup.
         WebContentsObserver initialWebContentsObserver =
@@ -477,7 +493,8 @@ public class EdgeToEdgeControllerTest {
         verify(mBrowserControlsStateProvider, atLeastOnce())
                 .addObserver(eq(mEdgeToEdgeControllerImpl));
 
-        mEdgeToEdgeControllerImpl.setToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(null);
 

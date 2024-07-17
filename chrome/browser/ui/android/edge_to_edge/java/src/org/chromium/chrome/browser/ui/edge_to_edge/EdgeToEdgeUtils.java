@@ -17,6 +17,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController.SafeAreaInsetsTracker;
@@ -118,24 +119,17 @@ public class EdgeToEdgeUtils {
     }
 
     /**
+     * @param isPageOptedIntoEdgeToEdge Whether the page has opted into edge-to-edge.
+     * @param layoutType The active layout type being shown.
+     * @param bottomInset The bottom inset representing the height of the bottom OS navbar.
      * @return whether we should draw ToEdge based only on the given Tab and the viewport-fit value
      *     from the tracking data of the Display Cutout Controller.
      */
-    public static boolean shouldDrawToEdge(Tab tab) {
-        return shouldDrawToEdge(
-                tab,
-                tab == null
-                        ? ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled()
-                        : getWasViewportFitCover(tab));
-    }
-
-    /**
-     * @return whether we should draw ToEdge based on the given Tab and the given new viewport-fit
-     *     value.
-     */
-    static boolean shouldDrawToEdge(Tab tab, @WebContentsObserver.ViewportFitType int value) {
-        return shouldDrawToEdge(
-                tab, value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT);
+    public static boolean shouldDrawToEdge(
+            boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
+        return isPageOptedIntoEdgeToEdge
+                || (isEdgeToEdgeBottomChinEnabled()
+                        && isBottomChinAllowed(layoutType, bottomInset));
     }
 
     /**
@@ -146,6 +140,49 @@ public class EdgeToEdgeUtils {
         // and whether the Gesture Navigation is appropriately enabled or not.
         if (alwaysDrawToEdgeForTabKind(tab)) return true;
         return wantsToEdge;
+    }
+
+    /**
+     * @param layoutType The active layout type being shown.
+     * @param bottomInset The bottom inset representing the height of the bottom OS navbar.
+     * @return Whether the bottom chin is allowed to be shown.
+     */
+    static boolean isBottomChinAllowed(@LayoutType int layoutType, int bottomInset) {
+        boolean supportedLayoutType =
+                layoutType == LayoutType.BROWSING || layoutType == LayoutType.TOOLBAR_SWIPE;
+
+        // Check that the bottom inset is greater than zero, otherwise there is no space to show the
+        // bottom chin. A zero inset indicates a lack of "dismissable" bottom bar (e.g. fullscreen
+        // mode, 3-button nav).
+        boolean nonZeroEdgeToEdgeBottomInset = bottomInset > 0;
+
+        return supportedLayoutType && nonZeroEdgeToEdgeBottomInset;
+    }
+
+    /**
+     * @return whether the page is opted into edge-to-edge based on the given Tab
+     */
+    public static boolean isPageOptedIntoEdgeToEdge(Tab tab) {
+        if (tab == null || tab.isNativePage()) {
+            return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
+        }
+        if (ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled()) {
+            return true;
+        }
+        // TODO (crbug.com/353724310) Refactor flag check to the E2E web opt-in flag
+        return ChromeFeatureList.sDrawEdgeToEdge.isEnabled() && getWasViewportFitCover(tab);
+    }
+
+    /**
+     * @return whether the page is opted into edge-to-edge based on the given Tab and the given new
+     *     viewport-fit value.
+     */
+    static boolean isPageOptedIntoEdgeToEdge(
+            Tab tab, @WebContentsObserver.ViewportFitType int value) {
+        if (tab == null || tab.isNativePage()) {
+            return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
+        }
+        return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
     }
 
     /**

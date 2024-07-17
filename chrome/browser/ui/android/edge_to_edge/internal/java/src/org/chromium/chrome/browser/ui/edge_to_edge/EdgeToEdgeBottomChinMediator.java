@@ -7,6 +7,7 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinPr
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isBottomChinAllowed;
 
 import android.graphics.Color;
 
@@ -70,19 +71,10 @@ class EdgeToEdgeBottomChinMediator
     }
 
     private void updateVisibility() {
-        boolean supportedLayoutType =
-                mCurrentLayoutType == LayoutType.BROWSING
-                        || mCurrentLayoutType == LayoutType.TOOLBAR_SWIPE;
-
-        // Check that the bottom inset is greater than zero, otherwise there is no space to show the
-        // bottom chin. A zero inset indicates a lack of "dismissable" bottom bar (e.g. fullscreen
-        // mode, 3-button nav).
-        boolean nonZeroEdgeToEdgeBottomInset = mEdgeToEdgeBottomInset > 0;
-
         // TODO(crbug.com/350754745) Check if other bottom browser controls are showing
         // TODO add check for E2E website opt-in
 
-        mModel.set(IS_VISIBLE, supportedLayoutType && nonZeroEdgeToEdgeBottomInset);
+        mModel.set(IS_VISIBLE, isBottomChinAllowed(mCurrentLayoutType, mEdgeToEdgeBottomInset));
     }
 
     // LayoutStateProvider.LayoutStateObserver

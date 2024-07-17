@@ -907,7 +907,8 @@ public class RootUiCoordinator
                 mActivity,
                 mActivityTabProvider,
                 mEdgeToEdgeControllerSupplier,
-                mBrowserControlsManager);
+                mBrowserControlsManager,
+                mLayoutManager);
         initBoardingPassDetector();
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
@@ -1923,12 +1924,17 @@ public class RootUiCoordinator
             Activity activity,
             ActivityTabProvider activityTabProvider,
             ObservableSupplierImpl<EdgeToEdgeController> supplier,
-            BrowserControlsManager browserControlsManager) {
+            BrowserControlsManager browserControlsManager,
+            LayoutManager layoutManager) {
         EdgeToEdgeUtils.recordEligibility(activity);
         if (supportsEdgeToEdge()) {
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
-                            activity, mWindowAndroid, activityTabProvider, browserControlsManager);
+                            activity,
+                            mWindowAndroid,
+                            activityTabProvider,
+                            browserControlsManager,
+                            layoutManager);
             supplier.set(mEdgeToEdgeController);
 
             if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {

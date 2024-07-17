@@ -71,7 +71,7 @@ public class UmaSessionStats {
         if (connectedDevices.contains(InputDevice.SOURCE_MOUSE)) {
             UmaSessionStatsJni.get().recordPageLoadedWithMouse();
         }
-        if (EdgeToEdgeUtils.isEnabled() && EdgeToEdgeUtils.shouldDrawToEdge(tab)) {
+        if (EdgeToEdgeUtils.isEnabled() && EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab)) {
             UmaSessionStatsJni.get().recordPageLoadedWithToEdge();
         }
 

@@ -42,6 +42,7 @@ public class EdgeToEdgeControllerFactory {
      *     changes.
      * @param browserControlsStateProvider Provides the state of the BrowserControls so we can tell
      *     if the Toolbar is changing.
+     * @param layoutManager The {@link LayoutManager} for checking the active layout type.
      * @return An EdgeToEdgeController to control drawing under System Bars, or {@code null} if this
      *     version of Android does not support the APIs needed.
      */
@@ -49,10 +50,16 @@ public class EdgeToEdgeControllerFactory {
             Activity activity,
             WindowAndroid windowAndroid,
             @NonNull ObservableSupplier<Tab> tabObservableSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            LayoutManager layoutManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         return new EdgeToEdgeControllerImpl(
-                activity, windowAndroid, tabObservableSupplier, null, browserControlsStateProvider);
+                activity,
+                windowAndroid,
+                tabObservableSupplier,
+                null,
+                browserControlsStateProvider,
+                layoutManager);
     }
 
     /**
@@ -104,7 +111,8 @@ public class EdgeToEdgeControllerFactory {
 
         boolean atLeastOneE2EFeatureEnabled =
                 EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
-                        || EdgeToEdgeUtils.isFullWebEdgeToEdgeOptInEnabled();
+                        || EdgeToEdgeUtils.isFullWebEdgeToEdgeOptInEnabled()
+                        || EdgeToEdgeUtils.isEnabled();
 
         return atLeastOneE2EFeatureEnabled
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
