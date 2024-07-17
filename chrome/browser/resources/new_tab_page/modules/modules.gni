@@ -45,4 +45,5 @@ modules_css_files = [ "modules/info_dialog.css" ]
 
 if (!is_official_build) {
   modules_web_component_files += dummy_v2_web_component_files
+  modules_css_files += dummy_v2_css_files
 }

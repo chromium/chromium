@@ -7,3 +7,5 @@ dummy_v2_non_web_component_files = [ "modules/v2/dummy/foo_proxy.ts" ]
 
 # List of files that should be passed to html_to_wrapper().
 dummy_v2_web_component_files = [ "modules/v2/dummy/module.ts" ]
+
+dummy_v2_css_files = [ "modules/v2/dummy/module.css" ]
