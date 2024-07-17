@@ -209,3 +209,12 @@ OptionalBool IsAdTaggedCookieForHeuristics(
   return ToOptionalBool(details.cookie_setting_overrides.Has(
       net::CookieSettingOverride::kSkipTPCDHeuristicsGrant));
 }
+
+bool HasCHIPS(const net::CookieAccessResultList& cookie_access_result_list) {
+  for (const auto& cookie_with_access_result : cookie_access_result_list) {
+    if (cookie_with_access_result.cookie.IsPartitioned()) {
+      return true;
+    }
+  }
+  return false;
+}

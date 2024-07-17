@@ -194,6 +194,8 @@ bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url);
 OptionalBool IsAdTaggedCookieForHeuristics(
     const content::CookieAccessDetails& details);
 
+bool HasCHIPS(const net::CookieAccessResultList& cookie_access_result_list);
+
 // Returns `True` iff the `navigation_handle` represents a navigation
 // happening in an iframe of the primary frame tree.
 inline bool IsInPrimaryPageIFrame(

@@ -189,3 +189,20 @@ TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentParam) {
       net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
   EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
 }
+
+TEST(HasCHIPS, TrueOnlyWhenHasAtLeastOnePartitionedCookie) {
+  auto unpartitioned_cookie = net::CanonicalCookie::CreateForTesting(
+      GURL("https://example.com"), "name=value;", base::Time::Now());
+  auto partitioned_cookie = net::CanonicalCookie::CreateForTesting(
+      GURL("https://example.com"), "name=value; Partitioned; Path=/; Secure",
+      base::Time::Now(), std::nullopt,
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://example.org")));
+
+  net::CookieAccessResultList cookie_access_result_list_without_partitioned{
+      {*(unpartitioned_cookie.get())}};
+  EXPECT_FALSE(HasCHIPS(cookie_access_result_list_without_partitioned));
+
+  net::CookieAccessResultList cookie_access_result_list_with_partitioned{
+      {*unpartitioned_cookie.get()}, {*partitioned_cookie.get()}};
+  EXPECT_TRUE(HasCHIPS(cookie_access_result_list_with_partitioned));
+}

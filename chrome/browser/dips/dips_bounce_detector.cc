@@ -673,15 +673,6 @@ void RedirectChainDetector::OnSiteDataAccessed(
 
 void RedirectChainDetector::OnStatefulBounceDetected() {}
 
-bool HasCHIPS(const net::CookieAccessResultList& cookie_access_result_list) {
-  for (const auto& cookie_with_access_result : cookie_access_result_list) {
-    if (cookie_with_access_result.cookie.IsPartitioned()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void RedirectChainDetector::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
