@@ -65,7 +65,6 @@ void FakeSelectFileDialog::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* /* params */,
     const GURL* caller) {
   title_ = title;
   if (file_types)

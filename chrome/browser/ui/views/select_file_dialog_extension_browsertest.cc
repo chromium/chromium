@@ -287,7 +287,7 @@ class BaseSelectFileDialogExtensionBrowserTest
         ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string() /* title */,
         base::FilePath() /* default_path */, nullptr /* file_types */,
         0 /* file_type_index */, FILE_PATH_LITERAL("") /* default_extension */,
-        owning_window, this /* params */);
+        owning_window, nullptr /* params */);
   }
 
   void ClickJsButton(content::RenderFrameHost* frame_host,

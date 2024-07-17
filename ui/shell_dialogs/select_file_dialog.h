@@ -60,20 +60,18 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   class SHELL_DIALOGS_EXPORT Listener {
    public:
     // Notifies the Listener that a file/folder selection has been made. The
-    // file/folder path is in |file|. |params| is the contextual value passed to
-    // SelectFile. |index| specifies the index of the filter passed to the
-    // initial call to SelectFile.
+    // file/folder path is in |file|. |index| specifies the index of the filter
+    // passed to the initial call to SelectFile.
     virtual void FileSelected(const SelectedFileInfo& file, int index) {}
 
     // Notifies the Listener that many files have been selected. The files are
-    // in |files|. |params| is the contextual value passed to SelectFile.
+    // in |files|.
     // Implementing this method is optional if no multi-file selection is ever
     // made, as the default implementation will call NOTREACHED.
     virtual void MultiFilesSelected(const std::vector<SelectedFileInfo>& files);
 
     // Notifies the Listener that the file/folder selection was canceled (via
     // the user canceling or closing the selection dialog box, for example).
-    // |params| is the contextual value passed to SelectFile.
     virtual void FileSelectionCanceled() {}
 
    protected:
@@ -207,8 +205,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   //   you specify this you must also specify |file_types|.
   // |owning_window| is the window the dialog is modal to, or NULL for a
   //   modeless dialog.
-  // |params| is data from the calling context which will be passed through to
-  //   the listener. Can be NULL. Non-NULL values of |params| are deprecated.
+  // |params| must be nullptr and is otherwise ignored.
   // |caller| is the URL of the dialog caller which can be used to check further
   //   policy restrictions, when applicable. Can be NULL. Non-NULL values of
   //   |caller| are deprecated - store the state in the calling object directly.
@@ -244,7 +241,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       int file_type_index,
       const base::FilePath::StringType& default_extension,
       gfx::NativeWindow owning_window,
-      void* params,
       const GURL* caller) = 0;
 
   // The listener to be notified of selection completion.

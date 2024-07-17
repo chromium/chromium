@@ -68,7 +68,6 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
 
  private:
@@ -125,8 +124,6 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
   void MultiFilesSelected(const std::vector<base::FilePath>& files);
 
   // Notifies the listener that no file was chosen (the action was canceled).
-  // Dialog is passed so we can find that |params| pointer that was passed to
-  // us when we were told to show the dialog.
   void FileNotSelected();
 
   void CreateSelectFolderDialog(Type type,
@@ -253,7 +250,6 @@ void SelectFileDialogLinuxKde::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* /* params */,
     const GURL* caller) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   set_type(type);

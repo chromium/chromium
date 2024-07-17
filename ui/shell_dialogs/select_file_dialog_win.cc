@@ -176,7 +176,6 @@ class SelectFileDialogImpl : public ui::SelectFileDialog,
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
 
  private:
@@ -244,7 +243,6 @@ void SelectFileDialogImpl::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* /* params */,
     const GURL* caller) {
   has_multiple_file_type_choices_ =
       file_types ? file_types->extensions.size() > 1 : true;

@@ -105,7 +105,6 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* /* params */,
                       const GURL* caller) override {
     if (selected_path_.empty()) {
       listener_->FileSelectionCanceled();

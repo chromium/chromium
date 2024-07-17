@@ -68,7 +68,6 @@ class SelectFileDialogMacTest : public PlatformTest,
     raw_ptr<SelectFileDialog::FileTypeInfo> file_types = nullptr;
     int file_type_index = 0;
     base::FilePath::StringType default_extension;
-    raw_ptr<void> params = nullptr;
   };
 
   // Helper method to create a dialog with the given `args`. Returns the created
@@ -84,7 +83,7 @@ class SelectFileDialogMacTest : public PlatformTest,
 
     dialog_->SelectFile(args.type, args.title, args.default_path,
                         args.file_types, args.file_type_index,
-                        args.default_extension, parent_window, args.params);
+                        args.default_extension, parent_window, nullptr);
 
     // At this point, the Mojo IPC to show the dialog is queued up. Spin the
     // message loop to get the Mojo IPC to happen.

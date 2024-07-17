@@ -28,7 +28,6 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* /* params */,
                       const GURL* caller) override {
     if (out_params_) {
       out_params_->type = type;
@@ -87,7 +86,6 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* /* params */,
                       const GURL* caller) override {
     if (out_params_) {
       out_params_->type = type;

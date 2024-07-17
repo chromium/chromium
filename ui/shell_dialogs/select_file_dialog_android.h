@@ -43,8 +43,6 @@ class SelectFileDialogImpl : public SelectFileDialog {
   void SetUseMediaCapture(bool use_media_capture) override;
 
   // Called when it is time to display the file picker.
-  // params is expected to be a vector<string16> with accept_types first and
-  // the capture value as the last element of the vector.
   void SelectFileImpl(SelectFileDialog::Type type,
                       const std::u16string& title,
                       const base::FilePath& default_path,
@@ -52,7 +50,6 @@ class SelectFileDialogImpl : public SelectFileDialog {
                       int file_type_index,
                       const std::string& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
 
  protected:

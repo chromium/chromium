@@ -116,7 +116,6 @@ void SelectFileDialogImpl::SelectFileImpl(
     int file_type_index,
     const std::string& default_extension,
     gfx::NativeWindow owning_window,
-    void* /* params */,
     const GURL* caller) {
   JNIEnv* env = base::android::AttachCurrentThread();
 

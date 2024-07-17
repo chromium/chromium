@@ -40,7 +40,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
 
  protected:
   // SelectFileDialog implementation.
-  // |params| is user data we pass back via the Listener interface.
   void SelectFileImpl(Type type,
                       const std::u16string& title,
                       const base::FilePath& default_path,
@@ -48,7 +47,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
 
  private:

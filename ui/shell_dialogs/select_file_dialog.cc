@@ -132,6 +132,7 @@ void SelectFileDialog::SelectFile(
     gfx::NativeWindow owning_window,
     void* params,
     const GURL* caller) {
+  CHECK(!params);
   DCHECK(listener_);
 
   if (select_file_policy_.get() &&
@@ -151,7 +152,7 @@ void SelectFileDialog::SelectFile(
 
   // Call the platform specific implementation of the file selection dialog.
   SelectFileImpl(type, title, path, file_types, file_type_index,
-                 default_extension, owning_window, params, caller);
+                 default_extension, owning_window, caller);
 }
 
 bool SelectFileDialog::HasMultipleFileTypeChoices() {

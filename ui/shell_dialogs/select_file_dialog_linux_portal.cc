@@ -206,7 +206,6 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* /* params */,
     const GURL* caller) {
   info_ = base::MakeRefCounted<DialogInfo>(
       base::BindOnce(&SelectFileDialogLinuxPortal::DialogCreatedOnMainThread,

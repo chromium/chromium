@@ -76,7 +76,6 @@ class FakeFolderSelectionDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* /* params */,
                       const GURL* caller) override {
     dialog_widget_ = views::UniqueWidgetPtr(std::make_unique<views::Widget>());
     views::Widget::InitParams widget_params(

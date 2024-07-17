@@ -82,7 +82,6 @@ void SelectFileDialogImpl::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow gfx_window,
-    void* /* params */,
     const GURL* caller) {
   DCHECK(type == SELECT_FOLDER || type == SELECT_UPLOAD_FOLDER ||
          type == SELECT_EXISTING_FOLDER || type == SELECT_OPEN_FILE ||
