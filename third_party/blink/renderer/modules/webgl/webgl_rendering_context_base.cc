@@ -1893,8 +1893,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     gpu::raster::RasterInterface* raster_interface =
         shared_context_wrapper->ContextProvider()->RasterInterface();
     const gpu::Mailbox& mailbox =
-        resource_provider->GetBackingMailboxForOverwrite(
-            MailboxSyncMode::kOrderingBarrier);
+        resource_provider->GetBackingMailboxForOverwrite();
     GLenum texture_target = resource_provider->GetBackingTextureTarget();
     if (mailbox.IsZero())
       return false;

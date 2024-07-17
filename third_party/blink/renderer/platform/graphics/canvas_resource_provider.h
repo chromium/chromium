@@ -220,8 +220,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
                            int x,
                            int y);
 
-  virtual gpu::Mailbox GetBackingMailboxForOverwrite(
-      MailboxSyncMode sync_mode) {
+  virtual gpu::Mailbox GetBackingMailboxForOverwrite() {
     NOTREACHED_IN_MIGRATION();
     return gpu::Mailbox();
   }

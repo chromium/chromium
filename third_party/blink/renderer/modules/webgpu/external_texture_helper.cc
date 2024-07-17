@@ -390,9 +390,8 @@ ExternalTexture CreateExternalTexture(
     // We don't need to specify a sync token since both CanvasResourceProvider
     // and PaintCanvasVideoRenderer use the SharedGpuContext.
     gpu::MailboxHolder dst_mailbox(
-        resource_provider->GetBackingMailboxForOverwrite(
-            MailboxSyncMode::kUnverifiedSyncToken),
-        gpu::SyncToken(), resource_provider->GetBackingTextureTarget());
+        resource_provider->GetBackingMailboxForOverwrite(), gpu::SyncToken(),
+        resource_provider->GetBackingTextureTarget());
 
     // The returned sync token is from the SharedGpuContext - it's ok to drop it
     // here since WebGPUMailboxTexture::FromCanvasResource will generate a new

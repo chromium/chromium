@@ -790,8 +790,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
     return false;
 
-  const auto dst_mailbox =
-      resource_provider->GetBackingMailboxForOverwrite(kUnverifiedSyncToken);
+  const auto dst_mailbox = resource_provider->GetBackingMailboxForOverwrite();
   if (dst_mailbox.IsZero())
     return false;
 

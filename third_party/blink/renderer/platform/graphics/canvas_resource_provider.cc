@@ -283,15 +283,14 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return shared_image_usage_flags_ &
            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
   }
-  gpu::Mailbox GetBackingMailboxForOverwrite(
-      MailboxSyncMode sync_mode) override {
+  gpu::Mailbox GetBackingMailboxForOverwrite() override {
     DCHECK(is_accelerated_);
 
     if (IsGpuContextLost())
       return gpu::Mailbox();
 
     WillDrawInternal(false);
-    resource_->SetNeedsVerifiedSyncToken(sync_mode == kVerifiedSyncToken);
+    resource_->SetNeedsVerifiedSyncToken(false);
     return resource_->GetClientSharedImage()->mailbox();
   }
 
@@ -318,9 +317,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       return false;
 
     WillDrawInternal(true);
-    RasterInterface()->WritePixels(
-        GetBackingMailboxForOverwrite(kOrderingBarrier), x, y,
-        GetBackingTextureTarget(), SkPixmap(orig_info, pixels, row_bytes));
+    RasterInterface()->WritePixels(GetBackingMailboxForOverwrite(), x, y,
+                                   GetBackingTextureTarget(),
+                                   SkPixmap(orig_info, pixels, row_bytes));
 
     // If the overdraw optimization kicked in, we need to indicate that the
     // pixels do not need to be cleared, otherwise the subsequent
@@ -1431,8 +1430,7 @@ bool CanvasResourceProvider::OverwriteImage(
   if (!raster) {
     return false;
   }
-  gpu::Mailbox dst_mailbox =
-      GetBackingMailboxForOverwrite(MailboxSyncMode::kOrderingBarrier);
+  gpu::Mailbox dst_mailbox = GetBackingMailboxForOverwrite();
   if (dst_mailbox.IsZero()) {
     return false;
   }
