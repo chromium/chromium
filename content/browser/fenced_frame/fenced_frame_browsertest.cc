@@ -174,6 +174,27 @@ class FencedFrameMPArchBrowserTest : public FencedFrameBrowserTestBase {
   void AssertServerStart() override {}
 };
 
+// This is a test class for tests that need to use IsolateAllSiteForTesting()
+// and that will be testing process assignments. It is important that
+// IsolateAllSiteForTesting is enabled early in these cases, otherwise the
+// tests can end up with a main frame where
+// AreOriginKeyedProcessesEnabledByDefault() was false when the main frame was
+// created (and this is stored in the main frame's BrowsingInstance), and then
+// AreOriginKeyedProcessesEnabledByDefault() later returns true due to
+// IsolateAllSiteForTesting() turning on site-per-process. This sequence can
+// lead to inconsistent SiteInfo settings.
+class FencedFrameMPArchBrowserTest_IsolateAllSites
+    : public FencedFrameMPArchBrowserTest {
+ protected:
+  FencedFrameMPArchBrowserTest_IsolateAllSites() = default;
+
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FencedFrameMPArchBrowserTest::SetUpCommandLine(command_line);
+    IsolateAllSitesForTesting(command_line);
+  }
+};
+
 // Tests that the renderer can create a <fencedframe> that results in a
 // browser-side content::FencedFrame also being created.
 IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
@@ -1142,10 +1163,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_SUBFRAME)));
 }
 
-IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest_IsolateAllSites,
                        ProcessAllocationWithFullSiteIsolation) {
   ASSERT_TRUE(https_server()->Start());
-  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(AreAllSitesIsolatedForTesting());
 
   const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
@@ -1186,10 +1206,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
             primary_main_frame_host()->GetProcess());
 }
 
-IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest_IsolateAllSites,
                        CrossSiteFencedFramesShareProcess) {
   ASSERT_TRUE(https_server()->Start());
-  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(AreAllSitesIsolatedForTesting());
 
   const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
@@ -1520,7 +1539,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameWithSiteIsolationDisabledBrowserTest,
 }
 
 class FencedFrameIsolatedSandboxedIframesBrowserTest
-    : public FencedFrameMPArchBrowserTest,
+    : public FencedFrameMPArchBrowserTest_IsolateAllSites,
       public ::testing::WithParamInterface<bool> {
  public:
   FencedFrameIsolatedSandboxedIframesBrowserTest() {
@@ -1553,7 +1572,6 @@ class FencedFrameIsolatedSandboxedIframesBrowserTest
 IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
                        CSP_Mainframe) {
   bool testing_with_isolate_fenced_frames = GetParam();
-  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(AreAllSitesIsolatedForTesting());
   ASSERT_TRUE(https_server()->Start());
 
@@ -1586,7 +1604,6 @@ IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
 IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
                        Non_CSP_Mainframe) {
   bool testing_with_isolate_fenced_frames = GetParam();
-  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(AreAllSitesIsolatedForTesting());
   ASSERT_TRUE(https_server()->Start());
 
@@ -1618,7 +1635,6 @@ IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
 // state of kIsolateSandboxedIframes or kIsolateFencedFrames.
 IN_PROC_BROWSER_TEST_P(FencedFrameIsolatedSandboxedIframesBrowserTest,
                        NoFencedFramesInIsolatedSandboxedIframes) {
-  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(AreAllSitesIsolatedForTesting());
   ASSERT_TRUE(https_server()->Start());
 
