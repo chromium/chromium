@@ -510,9 +510,12 @@ class QuicNetworkTransactionTest
       quic::QuicStreamId data_id,
       bool fin,
       std::string_view data) {
-    return client_maker_->MakeAckDataAndRst(
-        packet_number, stream_id, error_code, largest_received,
-        smallest_received, data_id, fin, data);
+    return client_maker_->Packet(packet_number)
+        .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
+        .AddStreamFrame(data_id, fin, data)
+        .AddStopSendingFrame(stream_id, error_code)
+        .AddRstStreamFrame(stream_id, error_code)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket>
@@ -8209,10 +8212,18 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
     if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
       mock_quic_data.AddWrite(
           SYNCHRONOUS,
-          client_maker.MakeAckDataAndRst(
-              packet_num++, GetNthClientInitiatedBidirectionalStreamId(1),
-              quic::QUIC_STREAM_CANCELLED, 3, 3, GetQpackDecoderStreamId(),
-              false, StreamCancellationQpackDecoderInstruction(1, false)));
+          client_maker.Packet(packet_num++)
+              .AddAckFrame(/*first_received=*/1, /*largest_received=*/3,
+                           /*smallest_received=*/3)
+              .AddStreamFrame(
+                  GetQpackDecoderStreamId(), /*fin=*/false,
+                  StreamCancellationQpackDecoderInstruction(1, false))
+              .AddStopSendingFrame(
+                  GetNthClientInitiatedBidirectionalStreamId(1),
+                  quic::QUIC_STREAM_CANCELLED)
+              .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(1),
+                                 quic::QUIC_STREAM_CANCELLED)
+              .Build());
     } else {
       mock_quic_data.AddWrite(
           SYNCHRONOUS,
