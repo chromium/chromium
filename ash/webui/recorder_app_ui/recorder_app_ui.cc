@@ -12,14 +12,16 @@
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources_map.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
-#include "content/public/browser/on_device_model_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "google_apis/google_api_keys.h"
+#include "services/on_device_model/public/cpp/buildflags.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
@@ -132,13 +134,17 @@ void RecorderAppUI::BindInterface(
   page_receivers_.Add(this, std::move(receiver));
 }
 
-on_device_model::mojom::OnDeviceModelService&
-RecorderAppUI::GetOnDeviceModelService() {
+void RecorderAppUI::EnsureOnDeviceModelService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto& remote = content::GetRemoteOnDeviceModelService();
-  CHECK(remote);
-  return *remote;
+#if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
+  if (!on_device_model_service_) {
+    on_device_model_service_.reset_on_disconnect();
+    ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosOdmlService, std::nullopt,
+        on_device_model_service_.BindNewPipeAndPassReceiver().PassPipe());
+  }
+#endif
 }
 
 void RecorderAppUI::AddModelMonitor(
@@ -147,6 +153,15 @@ void RecorderAppUI::AddModelMonitor(
     AddModelMonitorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  EnsureOnDeviceModelService();
+
+  if (!on_device_model_service_) {
+    std::move(callback).Run(recorder_app::mojom::ModelState{
+        recorder_app::mojom::ModelStateType::kError, std::nullopt}
+                                .Clone());
+    return;
+  }
+
   recorder_app::mojom::ModelState model_state;
 
   auto model_state_iter = model_states_.find(model_id);
@@ -154,7 +169,7 @@ void RecorderAppUI::AddModelMonitor(
     model_state = {recorder_app::mojom::ModelStateType::kUnavailable,
                    std::nullopt};
     model_states_.insert({model_id, model_state});
-    GetOnDeviceModelService().GetPlatformModelState(
+    on_device_model_service_->GetPlatformModelState(
         model_id, base::BindOnce(&RecorderAppUI::GetPlatformModelStateCallback,
                                  weak_ptr_factory_.GetWeakPtr(), model_id));
   } else {
@@ -170,10 +185,17 @@ void RecorderAppUI::LoadModel(
     LoadModelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  EnsureOnDeviceModelService();
+
+  if (!on_device_model_service_) {
+    std::move(callback).Run(
+        on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
+  }
+
   mojo::PendingReceiver<on_device_model::mojom::PlatformModelProgressObserver>
       progress_receiver;
 
-  GetOnDeviceModelService().LoadPlatformModel(
+  on_device_model_service_->LoadPlatformModel(
       uuid, std::move(model), progress_receiver.InitWithNewPipeAndPassRemote(),
       std::move(callback));
 

@@ -12,17 +12,12 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/on_device_model/platform_model_loader.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
 
 #if defined(ENABLE_ML_INTERNAL)
 #include "services/on_device_model/ml/on_device_model_internal.h"  //nogncheck
 #else
 #include "services/on_device_model/on_device_model_fake.h"  //nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "services/on_device_model/platform_model_loader_chromeos.h"
 #endif
 
 namespace on_device_model {
@@ -392,11 +387,7 @@ OnDeviceModelService::OnDeviceModelService(
 OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
     const OnDeviceModelShim* impl)
-    : receiver_(this, std::move(receiver)), impl_(impl) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  platform_model_loader_ = std::make_unique<ChromeosPlatformModelLoader>(*this);
-#endif
-}
+    : receiver_(this, std::move(receiver)), impl_(impl) {}
 
 OnDeviceModelService::~OnDeviceModelService() = default;
 
@@ -426,36 +417,6 @@ void OnDeviceModelService::LoadModel(
                      base::Unretained(this))));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void OnDeviceModelService::LoadPlatformModel(
-    const base::Uuid& uuid,
-    mojo::PendingReceiver<mojom::OnDeviceModel> model,
-    mojo::PendingRemote<mojom::PlatformModelProgressObserver> progress_observer,
-    LoadModelCallback callback) {
-  if (!platform_model_loader_) {
-    LOG(ERROR) << "No valid platform model loader.";
-    std::move(callback).Run(mojom::LoadModelResult::kFailedToLoadLibrary);
-    return;
-  }
-
-  platform_model_loader_->LoadModelWithUuid(uuid, std::move(model),
-                                            std::move(progress_observer),
-                                            std::move(callback));
-}
-
-void OnDeviceModelService::GetPlatformModelState(
-    const base::Uuid& uuid,
-    GetPlatformModelStateCallback callback) {
-  if (!platform_model_loader_) {
-    LOG(ERROR) << "No valid platform model loader.";
-    std::move(callback).Run(mojom::PlatformModelState::kUnknownState);
-    return;
-  }
-
-  platform_model_loader_->IsModelInstalled(uuid, std::move(callback));
-}
-#endif
 
 void OnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {

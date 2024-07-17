@@ -185,10 +185,11 @@ interface OnDeviceModel {
 
 // Classifies the device based on how fast it is estimated to be able to run a
 // model.
+[Stable, Extensible]
 enum PerformanceClass {
   // There was an error running the benchmark. The device is likely not able to
   // run any models.
-  kError,
+  [Default] kError,
   // The GPU was blocked so the benchmark could not run.
   kGpuBlocked,
   // The library failed to load so the benchmark could not run.

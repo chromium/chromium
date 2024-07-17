@@ -206,28 +206,6 @@ void FakeOnDeviceModelService::LoadModel(
   std::move(callback).Run(settings_->load_model_result);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void FakeOnDeviceModelService::LoadPlatformModel(
-    const base::Uuid& uuid,
-    mojo::PendingReceiver<mojom::OnDeviceModel> model,
-    mojo::PendingRemote<mojom::PlatformModelProgressObserver> progress_observer,
-    LoadModelCallback callback) {
-  if (settings_->drop_connection_request) {
-    std::move(callback).Run(settings_->load_model_result);
-    return;
-  }
-  auto test_model = std::make_unique<FakeOnDeviceModel>(settings_);
-  model_receivers_.Add(std::move(test_model), std::move(model));
-  std::move(callback).Run(settings_->load_model_result);
-}
-
-void FakeOnDeviceModelService::GetPlatformModelState(
-    const base::Uuid& uuid,
-    GetPlatformModelStateCallback callback) {
-  std::move(callback).Run(mojom::PlatformModelState::kInstalledOnDisk);
-}
-#endif
-
 void FakeOnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

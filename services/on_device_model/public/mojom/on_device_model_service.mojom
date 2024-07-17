@@ -46,13 +46,15 @@ struct LoadModelParams {
 };
 
 // An observer to report the current platform model loading progress.
+[Stable]
 interface PlatformModelProgressObserver {
   // The progress value is between 0.0 and 1.0.
-  Progress(double progress);
+  Progress@0(double progress);
 };
 
+[Stable, Extensible]
 enum PlatformModelState {
-  kUnknownState,
+  [Default] kUnknownState,
   kInstalledOnDisk,
   kInvalidUuid,
   kInvalidDlcClient,
@@ -74,22 +76,32 @@ interface OnDeviceModelService {
   LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model) =>
       (LoadModelResult result);
 
+  // Returns the performance class based on benchmarks run on the device.
+  GetEstimatedPerformanceClass() => (PerformanceClass performance_class);
+};
+
+// A service which allows loading platform trusted models which are stored
+// on-device and which may process untrustworthy data.
+// This is a ChromeOS specific interface. And the service will be implemented
+// in the ChromeOS platform side instead of the Chrome browser side.
+[Stable]
+interface OnDeviceModelPlatformService {
   // Initializes a new model instance given platform model `uuid`, this can be
   // used on some specific platforms(e.g. ChromeOS). The model can be either
   // a base model or a base model with an adaptation layer. If the model can
   // not be created the model pipe will be reset.
-  [EnableIf=is_chromeos_ash]
-  LoadPlatformModel(
+  LoadPlatformModel@0(
       mojo_base.mojom.Uuid uuid,
       pending_receiver<OnDeviceModel> model,
-      pending_remote<PlatformModelProgressObserver>? progress_observer)
-      => (LoadModelResult result);
+      [MinVersion=1] pending_remote<PlatformModelProgressObserver>?
+          progress_observer) => (LoadModelResult result);
 
   // Gets the platform model state given platform model `uuid`.
-  [EnableIf=is_chromeos_ash]
-  GetPlatformModelState(mojo_base.mojom.Uuid uuid) =>
-      (PlatformModelState result);
+  [MinVersion=1]
+  GetPlatformModelState@1(mojo_base.mojom.Uuid uuid)
+      => (PlatformModelState result);
 
   // Returns the performance class based on benchmarks run on the device.
-  GetEstimatedPerformanceClass() => (PerformanceClass performance_class);
+  [MinVersion=1]
+  GetEstimatedPerformanceClass@2() => (PerformanceClass performance_class);
 };

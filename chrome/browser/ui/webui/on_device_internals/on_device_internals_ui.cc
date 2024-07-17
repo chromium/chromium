@@ -17,14 +17,16 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/on_device_model/public/cpp/buildflags.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "content/public/browser/on_device_model_service_instance.h"
+#if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 #endif
 
 namespace {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
 on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
   // This WebUI currently provides no way to dynamically configure the expected
   // output dimension of the TS model. Since the model is in flux and its output
@@ -65,7 +67,7 @@ void OnDeviceInternalsUI::LoadModel(
     const base::FilePath& model_path,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
   // We treat the file path as a UUID on ChromeOS.
   base::Uuid uuid = base::Uuid::ParseLowercase(model_path.value());
   if (!uuid.is_valid()) {
@@ -87,24 +89,23 @@ void OnDeviceInternalsUI::LoadModel(
 #endif
 }
 
-on_device_model::mojom::OnDeviceModelService&
-OnDeviceInternalsUI::GetService() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const auto& remote = content::GetRemoteOnDeviceModelService();
-  CHECK(remote);
-  return *remote;
-#else
+OnDeviceInternalsUI::Service& OnDeviceInternalsUI::GetService() {
   if (!service_) {
+#if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
+    ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosOdmlService, std::nullopt,
+        service_.BindNewPipeAndPassReceiver().PassPipe());
+#else
     content::ServiceProcessHost::Launch<
         on_device_model::mojom::OnDeviceModelService>(
         service_.BindNewPipeAndPassReceiver(),
         content::ServiceProcessHost::Options()
             .WithDisplayName("On-Device Model Service")
             .Pass());
+#endif
     service_.reset_on_disconnect();
   }
   return *service_.get();
-#endif
 }
 
 void OnDeviceInternalsUI::GetEstimatedPerformanceClass(
@@ -115,6 +116,7 @@ void OnDeviceInternalsUI::GetEstimatedPerformanceClass(
           on_device_model::mojom::PerformanceClass::kError));
 }
 
+#if !BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
 void OnDeviceInternalsUI::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback,
@@ -125,3 +127,4 @@ void OnDeviceInternalsUI::OnModelAssetsLoaded(
   GetService().LoadModel(std::move(params), std::move(model),
                          std::move(callback));
 }
+#endif

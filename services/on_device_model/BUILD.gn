@@ -21,7 +21,6 @@ component("on_device_model_service") {
   sources = [
     "on_device_model_service.cc",
     "on_device_model_service.h",
-    "platform_model_loader.h",
     "pre_sandbox_init.cc",
   ]
   deps = [
@@ -49,19 +48,6 @@ component("on_device_model_service") {
     defines += [ "ENABLE_ML_INTERNAL" ]
   } else {
     deps += [ ":on_device_model_fake" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "platform_model_loader_chromeos.cc",
-      "platform_model_loader_chromeos.h",
-    ]
-    deps += [
-      "//chromeos/ash/components/dbus:dbus",
-      "//chromeos/ash/components/dbus/dlcservice",
-      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
-      "//chromeos/dbus/init:init",
-    ]
   }
 
   if (is_linux || is_chromeos) {

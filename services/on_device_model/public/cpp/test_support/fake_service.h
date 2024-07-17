@@ -144,16 +144,6 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
   void LoadModel(mojom::LoadModelParamsPtr params,
                  mojo::PendingReceiver<mojom::OnDeviceModel> model,
                  LoadModelCallback callback) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void LoadPlatformModel(
-      const base::Uuid& uuid,
-      mojo::PendingReceiver<mojom::OnDeviceModel> model,
-      mojo::PendingRemote<mojom::PlatformModelProgressObserver>
-          progress_observer,
-      LoadModelCallback callback) override;
-  void GetPlatformModelState(const base::Uuid& uuid,
-                             GetPlatformModelStateCallback callback) override;
-#endif
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;
 

@@ -62,7 +62,8 @@ class RecorderAppUI
   static constexpr std::string GetWebUIName() { return "RecorderApp"; }
 
  private:
-  using OnDeviceModelService = on_device_model::mojom::OnDeviceModelService;
+  using OnDeviceModelService =
+      on_device_model::mojom::OnDeviceModelPlatformService;
 
   using MachineLearningService =
       chromeos::machine_learning::mojom::MachineLearningService;
@@ -75,7 +76,7 @@ class RecorderAppUI
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 
-  OnDeviceModelService& GetOnDeviceModelService();
+  void EnsureOnDeviceModelService();
 
   mojo::Remote<MachineLearningService>& GetMlService();
 

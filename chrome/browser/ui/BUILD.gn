@@ -4037,6 +4037,7 @@ static_library("ui") {
       "//chromeos/ash/components/login/auth",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/login/session",
+      "//chromeos/ash/components/mojo_service_manager",
       "//chromeos/ash/components/multidevice",
       "//chromeos/ash/components/multidevice/logging",
       "//chromeos/ash/components/nearby/presence",
