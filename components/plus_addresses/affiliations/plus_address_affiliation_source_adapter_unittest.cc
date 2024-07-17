@@ -42,7 +42,9 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
         identity_test_env_.identity_manager(), &setting_service_,
         std::make_unique<NiceMock<MockPlusAddressHttpClient>>(),
         /*webdata_service=*/nullptr,
-        /*affiliation_service=*/&mock_affiliation_service_);
+        /*affiliation_service=*/
+        &mock_affiliation_service_, /*feature_enabled_for_profile_check=*/
+        base::BindRepeating(&base::FeatureList::IsEnabled));
     adapter_ =
         std::make_unique<PlusAddressAffiliationSourceAdapter>(service_.get());
   }

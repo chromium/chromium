@@ -69,6 +69,7 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::NiceMock;
 using ::testing::UnorderedElementsAre;
 
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
@@ -192,7 +193,10 @@ class PlusAddressServiceTest : public ::testing::Test {
                      std::make_unique<PlusAddressHttpClientImpl>(
                          identity_manager(), shared_loader_factory()),
                      /*webdata_service=*/nullptr,
-                     /*affiliation_service=*/&mock_affiliation_service_);
+                     /*affiliation_service=*/
+                     &mock_affiliation_service_,
+                     /*feature_enabled_for_profile_check=*/
+                     base::BindRepeating(&base::FeatureList::IsEnabled));
   }
 
  private:
@@ -200,8 +204,7 @@ class PlusAddressServiceTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   FakePlusAddressSettingService setting_service_;
-  testing::NiceMock<affiliations::MockAffiliationService>
-      mock_affiliation_service_;
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   data_decoder::test::InProcessDataDecoder decoder_;
@@ -847,7 +850,9 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
             /*identity_manager=*/identity_test_env_.identity_manager(),
             /*url_loader_factory=*/nullptr),
         plus_webdata_service_,
-        /*affiliation_service=*/&mock_affiliation_service_);
+        /*affiliation_service=*/&mock_affiliation_service_,
+        /*feature_enabled_for_profile_check=*/
+        base::BindRepeating(&base::FeatureList::IsEnabled));
   }
 
   PlusAddressService& service() { return *service_; }
@@ -863,8 +868,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
   FakePlusAddressSettingService setting_service_;
   scoped_refptr<WebDatabaseService> webdatabase_service_;
   scoped_refptr<PlusAddressWebDataService> plus_webdata_service_;
-  testing::NiceMock<affiliations::MockAffiliationService>
-      mock_affiliation_service_;
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service_;
   // Except briefly during initialisation, it always has a value.
   std::optional<PlusAddressService> service_;
 };

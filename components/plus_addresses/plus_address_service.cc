@@ -103,7 +103,8 @@ PlusAddressService::PlusAddressService(
     PlusAddressSettingService* setting_service,
     std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
     scoped_refptr<PlusAddressWebDataService> webdata_service,
-    affiliations::AffiliationService* affiliation_service)
+    affiliations::AffiliationService* affiliation_service,
+    FeatureEnabledForProfileCheck feature_enabled_for_profile_check)
     : identity_manager_(CHECK_DEREF(identity_manager)),
       setting_service_(CHECK_DEREF(setting_service)),
       submission_logger_(identity_manager,
@@ -114,6 +115,8 @@ PlusAddressService::PlusAddressService(
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
           plus_address_http_client_.get())),
       plus_address_match_helper_(this, affiliation_service),
+      feature_enabled_for_profile_check_(
+          std::move(feature_enabled_for_profile_check)),
       excluded_sites_(GetAndParseExcludedSites()) {
   if (IsSyncingPlusAddresses() && webdata_service_) {
     webdata_service_observation_.Observe(webdata_service_.get());
@@ -422,7 +425,8 @@ bool PlusAddressService::IsEnabled() const {
       account_is_forbidden_.has_value() && account_is_forbidden_.value()) {
     return false;
   }
-  if (!base::FeatureList::IsEnabled(features::kPlusAddressesEnabled) ||
+  if (!feature_enabled_for_profile_check_.Run(
+          features::kPlusAddressesEnabled) ||
       features::kEnterprisePlusAddressServerUrl.Get().empty()) {
     return false;
   }

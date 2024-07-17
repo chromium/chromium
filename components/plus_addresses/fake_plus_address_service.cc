@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -23,7 +24,9 @@ FakePlusAddressService::FakePlusAddressService(
           setting_service,
           std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
           /*webdata_service=*/nullptr,
-          /*affiliation_service=*/&mock_affiliation_service_) {}
+          /*affiliation_service=*/&mock_affiliation_service_,
+          /*feature_enabled_for_profile_check=*/
+          base::BindRepeating(&base::FeatureList::IsEnabled)) {}
 
 FakePlusAddressService::~FakePlusAddressService() = default;
 

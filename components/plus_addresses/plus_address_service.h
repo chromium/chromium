@@ -67,6 +67,9 @@ class PlusAddressService : public KeyedService,
     virtual void OnPlusAddressServiceShutdown() = 0;
   };
 
+  using FeatureEnabledForProfileCheck =
+      base::RepeatingCallback<bool(const base::Feature&)>;
+
   // Callback to return the list of plus profiles.
   using GetPlusProfilesCallback =
       base::OnceCallback<void(std::vector<PlusProfile>)>;
@@ -80,7 +83,8 @@ class PlusAddressService : public KeyedService,
       PlusAddressSettingService* setting_service,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
       scoped_refptr<PlusAddressWebDataService> webdata_service,
-      affiliations::AffiliationService* affiliation_service);
+      affiliations::AffiliationService* affiliation_service,
+      FeatureEnabledForProfileCheck feature_enabled_for_profile_check);
   ~PlusAddressService() override;
 
   void AddObserver(Observer* o) { observers_.AddObserver(o); }
@@ -256,6 +260,10 @@ class PlusAddressService : public KeyedService,
   // Responsible for supplying a list of plus profiles with domains affiliated
   // to the the originally requested facet.
   PlusAddressAffiliationMatchHelper plus_address_match_helper_;
+
+  // Allows checking whether a group-controlled feature is enabled for the
+  // profile associated with this `KeyedService`.
+  const FeatureEnabledForProfileCheck feature_enabled_for_profile_check_;
 
   // Store set of excluded sites ETLD+1 where PlusAddressService is not
   // supported.
