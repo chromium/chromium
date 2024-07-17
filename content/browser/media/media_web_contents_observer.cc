@@ -166,11 +166,25 @@ void MediaWebContentsObserver::RenderFrameDeleted(
 
   GlobalRenderFrameHostId frame_routing_id = render_frame_host->GetGlobalId();
 
-  base::EraseIf(
-      player_info_map_,
-      [frame_routing_id](const PlayerInfoMap::value_type& id_and_player_info) {
-        return frame_routing_id == id_and_player_info.first.frame_routing_id;
-      });
+  // This cannot just use `base::EraseIf()`, because some observers call back
+  // into `this` and query player info when a PlayerInfo is destroyed (!!).
+  // Re-entering a container while erasing an entry is generally not very safe
+  // or robust.
+  for (auto it = player_info_map_.begin(); it != player_info_map_.end();) {
+    if (it->first.frame_routing_id != frame_routing_id) {
+      ++it;
+      continue;
+    }
+    // Instead, remove entries in a multi-step process:
+    // 1. Move ownership of the PlayerInfo out of the map.
+    // 2. Erase the entry from the map.
+    // 3. Destroy the PlayerInfo (by letting it go out of scope).
+    //    Because the entry is already gone from the map, GetPlayerInfo() will
+    //    return null instead of trying to compare keys that are potentially
+    //    destroyed.
+    auto player_info = std::move(it->second);
+    it = player_info_map_.erase(it);
+  }
 
   base::EraseIf(media_player_hosts_,
                 [frame_routing_id](const MediaPlayerHostImplMap::value_type&
@@ -657,7 +671,22 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
   remote_it.first->second.Bind(std::move(player_remote));
   remote_it.first->second.set_disconnect_handler(base::BindOnce(
       [](MediaWebContentsObserver* observer, const MediaPlayerId& player_id) {
-        observer->player_info_map_.erase(player_id);
+        // This cannot just use `erase()`, because some observers call back
+        // into `this` and query player info when a PlayerInfo is destroyed
+        // (!!).  Re-entering a container while erasing an entry is generally
+        // not very safe or robust.
+        if (auto it = observer->player_info_map_.find(player_id);
+            it != observer->player_info_map_.end()) {
+          // Instead, remove entries in a multi-step process:
+          // 1. Move ownership of the PlayerInfo out of the map.
+          // 2. Erase the entry from the map.
+          // 3. Destroy the PlayerInfo (by letting it go out of scope).
+          //    Because the entry is already gone from the map, GetPlayerInfo()
+          //    will return null instead of trying to compare keys that are
+          //    potentially destroyed.
+          auto player_info = std::move(it->second);
+          observer->player_info_map_.erase(it);
+        }
         observer->media_player_remotes_.erase(player_id);
         observer->session_controllers_manager_->OnEnd(player_id);
         if (observer->fullscreen_player_ &&
