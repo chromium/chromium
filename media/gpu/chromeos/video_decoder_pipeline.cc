@@ -38,7 +38,6 @@
 #include <drm_fourcc.h>
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
 #elif BUILDFLAG(USE_V4L2_CODEC)
-#include "media/gpu/v4l2/stateless/v4l2_stateless_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
 #else
@@ -231,15 +230,10 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 #if BUILDFLAG(USE_VAAPI)
     create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-    if (base::FeatureList::IsEnabled(kV4L2FlatVideoDecoder) ||
-        base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
-      if (IsV4L2DecoderStateful()) {
-        create_decoder_function_cb =
-            base::BindOnce(&V4L2StatefulVideoDecoder::Create);
-      } else {
-        create_decoder_function_cb =
-            base::BindOnce(&V4L2StatelessVideoDecoder::Create);
-      }
+    if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder) &&
+        IsV4L2DecoderStateful()) {
+      create_decoder_function_cb =
+          base::BindOnce(&V4L2StatefulVideoDecoder::Create);
     } else {
       create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
     }
@@ -271,13 +265,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForVDAAdapterForARC(
 #if BUILDFLAG(USE_VAAPI)
   create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-  if (base::FeatureList::IsEnabled(kV4L2FlatVideoDecoder) &&
-      !IsV4L2DecoderStateful()) {
-    create_decoder_function_cb =
-        base::BindOnce(&V4L2StatelessVideoDecoder::Create);
-  } else {
-    create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
-  }
+  create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
 #else
   return nullptr;
 #endif
@@ -302,15 +290,10 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
 #if BUILDFLAG(USE_VAAPI)
   create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-  if (base::FeatureList::IsEnabled(kV4L2FlatVideoDecoder) ||
-      base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
-    if (IsV4L2DecoderStateful()) {
-      create_decoder_function_cb =
-          base::BindOnce(&V4L2StatefulVideoDecoder::Create);
-    } else {
-      create_decoder_function_cb =
-          base::BindOnce(&V4L2StatelessVideoDecoder::Create);
-    }
+  if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder) &&
+      IsV4L2DecoderStateful()) {
+    create_decoder_function_cb =
+        base::BindOnce(&V4L2StatefulVideoDecoder::Create);
   } else {
     create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
   }
