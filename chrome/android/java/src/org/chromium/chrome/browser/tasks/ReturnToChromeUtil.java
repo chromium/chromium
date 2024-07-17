@@ -27,6 +27,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -99,6 +100,16 @@ public final class ReturnToChromeUtil {
     public static final String FAIL_TO_SHOW_HOME_SURFACE_UI_UMA =
             "NewTabPage.FailToShowHomeSurfaceUI";
 
+    // Start return time experiment:
+    // This parameter isn't just used on tablets anymore.
+    public static final String HOME_SURFACE_RETURN_TIME_SECONDS_PARAM =
+            "start_surface_return_time_on_tablet_seconds";
+    public static final IntCachedFieldTrialParameter HOME_SURFACE_RETURN_TIME_SECONDS =
+            ChromeFeatureList.newIntCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_RETURN_TIME,
+                    HOME_SURFACE_RETURN_TIME_SECONDS_PARAM,
+                    28800); // 8 hours
+
     public static void setActivityPresentingOverivewWithOmniboxForTesting(ChromeActivity value) {
         sActivityPresentingOverivewWithOmniboxForTesting = value;
         ResettersForTesting.register(() -> sActivityPresentingOverivewWithOmniboxForTesting = null);
@@ -117,8 +128,7 @@ public final class ReturnToChromeUtil {
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
     public static boolean shouldShowTabSwitcher(final long lastTimeMillis) {
-        long tabSwitcherAfterMillis =
-                getReturnTime(StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS);
+        long tabSwitcherAfterMillis = getReturnTime(HOME_SURFACE_RETURN_TIME_SECONDS);
 
         if (lastTimeMillis == -1) {
             // No last background timestamp set, use control behavior unless "immediate" was set.

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedSystemUiCoordinator;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
@@ -114,7 +115,7 @@ public class ChromeCachedFlags {
                         SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID,
                         ShoppingPersistedTabDataService
                                 .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
-                        StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS,
+                        ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS,
                         StartSurfaceConfiguration.LOGO_POLISH_LARGE_SIZE,
                         StartSurfaceConfiguration.LOGO_POLISH_MEDIUM_SIZE,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,

@@ -24,7 +24,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
@@ -117,7 +117,7 @@ public class HubLayoutPublicTransitTest {
     @LargeTest
     @EnableFeatures({START_SURFACE_RETURN_TIME})
     public void testExitHubOnStartSurfaceAsNtp() {
-        StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
 
         PageStation page = mInitialStateRule.startOnBlankPage();
 
