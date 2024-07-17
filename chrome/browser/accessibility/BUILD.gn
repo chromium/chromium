@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//services/screen_ai/buildflags/features.gni")
 
 if (!is_android) {
   source_set("test_support") {
@@ -42,50 +41,22 @@ source_set("utils") {
   sources = [
     "accessibility_state_utils.cc",
     "accessibility_state_utils.h",
+    "pdf_ocr_metrics.cc",
+    "pdf_ocr_metrics.h",
   ]
 
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//components/prefs",
+    "//services/screen_ai/buildflags",
+  ]
 
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash/accessibility" ]
   } else {
     deps += [ "//content/public/browser" ]
-  }
-}
-
-if (enable_screen_ai_service) {
-  source_set("pdf_ocr_controller") {
-    sources = [
-      "pdf_ocr_controller.cc",
-      "pdf_ocr_controller.h",
-      "pdf_ocr_controller_factory.cc",
-      "pdf_ocr_controller_factory.h",
-      "pdf_ocr_metrics.cc",
-      "pdf_ocr_metrics.h",
-    ]
-
-    deps = [
-      ":utils",
-      "//base",
-      "//build:chromeos_buildflags",
-      "//chrome/browser/pdf:pdf",
-      "//chrome/browser/profiles",
-      "//chrome/browser/screen_ai:screen_ai_install_state",
-      "//chrome/browser/screen_ai:screen_ai_service_router_factory",
-      "//chrome/browser/screen_ai/public:optical_character_recognizer",
-      "//chrome/common",
-      "//components/language/core/browser:browser",
-      "//components/language/core/common:common",
-      "//components/pdf/common:util",
-      "//components/prefs:prefs",
-      "//content/public/browser:browser",
-      "//pdf:features",
-      "//services/screen_ai/buildflags",
-      "//ui/accessibility:ax_base",
-    ]
-
-    if (is_chromeos_ash) {
-      deps += [ "//chrome/browser/ash/accessibility:accessibility" ]
-    }
   }
 }

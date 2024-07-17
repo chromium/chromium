@@ -50,7 +50,7 @@ void ChromeMimeHandlerViewGuestDelegate::RecordLoadMetric(
                           ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
                           : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
 
-  accessibility::RecordPDFOpenedWithA11yFeatureWithPdfOcr(browser_context);
+  accessibility::RecordPDFOpenedWithA11yFeatureWithPdfOcr();
 }
 
 }  // namespace extensions
