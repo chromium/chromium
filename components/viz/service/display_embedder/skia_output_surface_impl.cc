@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -88,6 +89,65 @@
 namespace viz {
 
 namespace {
+
+// Records Viz Graphite memory dumps via a global object that registers and
+// unregisters itself as a memory dump provider as appropriate based on
+// SkiaOutputSurfaceImpl instances beginning and ending their usage of Graphite
+// state.
+class GraphiteVizMemoryDumpProvider
+    : public base::trace_event::MemoryDumpProvider {
+ public:
+  static GraphiteVizMemoryDumpProvider& GetInstance() {
+    static base::NoDestructor<GraphiteVizMemoryDumpProvider> instance;
+    return *instance;
+  }
+
+  void AddClient(skgpu::graphite::Recorder* recorder,
+                 scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    if (num_clients_ == 0) {
+      CHECK(!recorder_);
+      recorder_ = recorder;
+      base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+          this, "GraphiteVizMemoryDumpProvider", std::move(task_runner));
+    }
+    num_clients_++;
+  }
+
+  void RemoveClient() {
+    num_clients_--;
+    if (num_clients_ == 0) {
+      recorder_ = nullptr;
+      base::trace_event::MemoryDumpManager::GetInstance()
+          ->UnregisterDumpProvider(this);
+    }
+  }
+
+ private:
+  friend class base::NoDestructor<GraphiteVizMemoryDumpProvider>;
+
+  GraphiteVizMemoryDumpProvider() = default;
+  ~GraphiteVizMemoryDumpProvider() override = default;
+
+  // MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override {
+    CHECK(recorder_);
+    bool background = args.level_of_detail ==
+                      base::trace_event::MemoryDumpLevelOfDetail::kBackground;
+
+    // TODO(https://crbug.com/330806170): Dump background statistics.
+    if (!background) {
+      skia::SkiaTraceMemoryDumpImpl trace_memory_dump(args.level_of_detail,
+                                                      pmd);
+      recorder_->dumpMemoryStatistics(&trace_memory_dump);
+    }
+
+    return true;
+  }
+
+  raw_ptr<skgpu::graphite::Recorder> recorder_ = nullptr;
+  uint32_t num_clients_ = 0;
+};
 
 // FulfillForPlane is a struct that contains the ImageContext `context` used for
 // fulfilling an GrPromiseImageTexture identified by `plane_index`. The
@@ -326,9 +386,6 @@ SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
         std::make_unique<gpu::SharedImageRepresentationFactory>(manager,
                                                                 nullptr);
   }
-
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "SkiaOutputSurfaceImpl", dependency_->GetClientTaskRunner());
 }
 
 SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
@@ -336,6 +393,10 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
   TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
   current_paint_.reset();
   root_ddl_recorder_.reset();
+
+  if (graphite_recorder_) {
+    GraphiteVizMemoryDumpProvider::GetInstance().RemoveClient();
+  }
 
   if (!render_pass_image_cache_.empty()) {
     std::vector<AggregatedRenderPassId> render_pass_ids;
@@ -358,9 +419,6 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
                  /*need_framebuffer=*/false);
   // Flush GPU tasks and block until all tasks are finished.
   FlushGpuTasksWithImpl(SyncMode::kWaitForTasksFinished, impl_on_gpu);
-
-  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-      this);
 }
 
 gpu::SurfaceHandle SkiaOutputSurfaceImpl::GetSurfaceHandle() const {
@@ -893,25 +951,6 @@ void SkiaOutputSurfaceImpl::ScheduleOutputSurfaceAsOverlay(
                  /*need_framebuffer=*/false);
 }
 
-bool SkiaOutputSurfaceImpl::OnMemoryDump(
-    const base::trace_event::MemoryDumpArgs& args,
-    base::trace_event::ProcessMemoryDump* pmd) {
-  if (graphite_recorder_) {
-    bool background = args.level_of_detail ==
-                      base::trace_event::MemoryDumpLevelOfDetail::kBackground;
-
-    // TODO(https://crbug.com/330806170): Dump background statistics once we've
-    // settled on how we're doing so for SharedContextState.
-    if (!background) {
-      skia::SkiaTraceMemoryDumpImpl trace_memory_dump(args.level_of_detail,
-                                                      pmd);
-      graphite_recorder_->dumpMemoryStatistics(&trace_memory_dump);
-    }
-  }
-
-  return true;
-}
-
 SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     const AggregatedRenderPassId& id,
     const gfx::Size& surface_size,
@@ -1201,6 +1240,8 @@ bool SkiaOutputSurfaceImpl::Initialize() {
   if (graphite_recorder_) {
     graphite_cache_controller_ =
         GetOrCreateGraphiteCacheController(graphite_recorder_);
+    GraphiteVizMemoryDumpProvider::GetInstance().AddClient(
+        graphite_recorder_, dependency_->GetClientTaskRunner());
   }
   return result;
 }

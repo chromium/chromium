@@ -19,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -76,9 +75,7 @@ class SkiaOutputSurfaceImplOnGpu;
 // render into. In SwapBuffers, it detaches a GrDeferredDisplayList from the
 // recorder and plays it back on the framebuffer SkSurface on the GPU thread
 // through SkiaOutputSurfaceImpleOnGpu.
-class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl
-    : public SkiaOutputSurface,
-      public base::trace_event::MemoryDumpProvider {
+class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
  public:
   static std::unique_ptr<SkiaOutputSurface> Create(
       DisplayCompositorMemoryAndTaskController* display_controller,
@@ -129,10 +126,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl
   void ScheduleOutputSurfaceAsOverlay(
       OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane)
       override;
-
-  // MemoryDumpProvider implementation:
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   SkCanvas* BeginPaintRenderPass(const AggregatedRenderPassId& id,
                                  const gfx::Size& surface_size,
