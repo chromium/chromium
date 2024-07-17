@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -2706,7 +2707,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
     *response =
         cbor::Writer::Write(cbor::Value(std::move(response_map))).value();
   } else {
-    DCHECK(set_it != request_map.end());
+    CHECK(set_it != request_map.end(), base::NotFatalUntil::M130);
     const std::vector<uint8_t>& set = set_it->second.GetBytestring();
     if (set.size() > max_fragment_length) {
       return CtapDeviceResponseCode::kCtap1ErrInvalidLength;
