@@ -39,6 +39,8 @@ namespace proto {
 class AttributionReadOnlySourceData;
 }  // namespace proto
 
+class StoredSource;
+
 url::Origin DeserializeOrigin(const std::string& origin);
 
 std::optional<attribution_reporting::mojom::SourceType> DeserializeSourceType(
@@ -85,17 +87,18 @@ std::string SerializeReportMetadata(
 std::string SerializeReportMetadata(
     const AttributionReport::NullAggregatableData&);
 
-[[nodiscard]] bool DeserializeReportMetadata(base::span<const uint8_t>,
-                                             uint32_t& trigger_data,
-                                             int64_t& priority);
+std::optional<int64_t> DeserializeEventLevelPriority(base::span<const uint8_t>);
 
-[[nodiscard]] bool DeserializeReportMetadata(
-    base::span<const uint8_t>,
-    AttributionReport::AggregatableAttributionData&);
+std::optional<AttributionReport::EventLevelData>
+DeserializeEventLevelReportMetadata(base::span<const uint8_t>,
+                                    const StoredSource&);
 
-[[nodiscard]] bool DeserializeReportMetadata(
-    base::span<const uint8_t>,
-    AttributionReport::NullAggregatableData&);
+std::optional<AttributionReport::AggregatableAttributionData>
+DeserializeAggregatableReportMetadata(base::span<const uint8_t>,
+                                      const StoredSource&);
+
+std::optional<AttributionReport::NullAggregatableData>
+    DeserializeNullAggregatableReportMetadata(base::span<const uint8_t>);
 
 }  // namespace content
 

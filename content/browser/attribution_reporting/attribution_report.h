@@ -75,7 +75,6 @@ class CONTENT_EXPORT AttributionReport {
     CommonAggregatableData(std::optional<attribution_reporting::SuitableOrigin>
                                aggregation_coordinator_origin,
                            attribution_reporting::AggregatableTriggerConfig);
-    CommonAggregatableData();
     CommonAggregatableData(const CommonAggregatableData&);
     CommonAggregatableData(CommonAggregatableData&&);
     CommonAggregatableData& operator=(const CommonAggregatableData&);

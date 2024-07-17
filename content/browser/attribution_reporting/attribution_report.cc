@@ -107,8 +107,6 @@ AttributionReport::CommonAggregatableData::CommonAggregatableData(
     : aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
       aggregatable_trigger_config(std::move(aggregatable_trigger_config)) {}
 
-AttributionReport::CommonAggregatableData::CommonAggregatableData() = default;
-
 AttributionReport::CommonAggregatableData::CommonAggregatableData(
     const CommonAggregatableData&) = default;
 

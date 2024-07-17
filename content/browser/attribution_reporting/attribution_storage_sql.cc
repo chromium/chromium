@@ -1065,21 +1065,20 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   int64_t min_priority;
 
   while (min_priority_statement.Step()) {
-    uint32_t trigger_data;
-    int64_t priority;
-    if (base::span<const uint8_t> blob = min_priority_statement.ColumnBlob(0);
-        !DeserializeReportMetadata(blob, trigger_data, priority)) {
+    std::optional<int64_t> priority =
+        DeserializeEventLevelPriority(min_priority_statement.ColumnBlob(0));
+    if (!priority.has_value()) {
       continue;
     }
 
     AttributionReport::Id report_id(min_priority_statement.ColumnInt64(1));
 
     if (!conversion_id_with_min_priority.has_value() ||
-        priority < min_priority ||
-        (priority == min_priority &&
+        *priority < min_priority ||
+        (*priority == min_priority &&
          report_id > *conversion_id_with_min_priority)) {
       conversion_id_with_min_priority = report_id;
-      min_priority = priority;
+      min_priority = *priority;
     }
   }
 
@@ -1619,9 +1618,8 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     std::optional<AttributionReport>& dropped_report,
     std::optional<int>& max_event_level_reports_per_destination,
     std::optional<int64_t>& rate_limits_max_attributions) {
-  auto* event_level_data =
-      absl::get_if<AttributionReport::EventLevelData>(&report.data());
-  DCHECK(event_level_data);
+  DCHECK(absl::holds_alternative<AttributionReport::EventLevelData>(
+      report.data()));
 
   if (source.active_state() ==
       StoredSource::ActiveState::kReachedEventLevelAttributionLimit) {
@@ -1807,15 +1805,10 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
             ReportCorruptionStatus::kSourceDataMissingEventLevel);
         break;
       }
-      uint32_t trigger_data;
-      int64_t priority;
-      if (!DeserializeReportMetadata(metadata, trigger_data, priority)) {
+      data = DeserializeEventLevelReportMetadata(metadata, source_data->source);
+      if (!data.has_value()) {
         corruptions.status_set.Put(ReportCorruptionStatus::kInvalidMetadata);
-        break;
       }
-
-      data = AttributionReport::EventLevelData(trigger_data, priority,
-                                               source_data->source);
       break;
     }
     case AttributionReport::Type::kAggregatableAttribution: {
@@ -1824,13 +1817,9 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
             ReportCorruptionStatus::kSourceDataMissingAggregatable);
         break;
       }
-      data = AttributionReport::AggregatableAttributionData(
-          AttributionReport::CommonAggregatableData(),
-          /*contributions=*/{}, source_data->source);
-      if (!DeserializeReportMetadata(
-              metadata,
-              absl::get<AttributionReport::AggregatableAttributionData>(
-                  *data))) {
+      data =
+          DeserializeAggregatableReportMetadata(metadata, source_data->source);
+      if (!data.has_value()) {
         corruptions.status_set.Put(ReportCorruptionStatus::kInvalidMetadata);
       }
       break;
@@ -1842,12 +1831,8 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
         corruptions.status_set.Put(
             ReportCorruptionStatus::kSourceDataFoundNullAggregatable);
       }
-      data = AttributionReport::NullAggregatableData(
-          AttributionReport::CommonAggregatableData(),
-          /*fake_source_time=*/base::Time());
-      if (!DeserializeReportMetadata(
-              metadata,
-              absl::get<AttributionReport::NullAggregatableData>(*data))) {
+      data = DeserializeNullAggregatableReportMetadata(metadata);
+      if (!data.has_value()) {
         corruptions.status_set.Put(ReportCorruptionStatus::kInvalidMetadata);
       }
       break;
