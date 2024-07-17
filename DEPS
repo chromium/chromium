@@ -5613,7 +5613,8 @@ hooks = [
       'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=20',
+      # TODO(b/353714119): move this back to 20.
+      '--fallback-versions=30',
       '--no-use-remoteexec',
       '--nogn-gen',
       '--no-shell',
@@ -5632,7 +5633,8 @@ hooks = [
       'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=20',
+      # TODO(b/353714119): move this back to 20.
+      '--fallback-versions=30',
       '--no-use-remoteexec',
       '--nogn-gen',
       '--no-shell',
@@ -5650,7 +5652,8 @@ hooks = [
       'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=20',
+      # TODO(b/353714119): move this back to 20.
+      '--fallback-versions=30',
       '--no-use-remoteexec',
       '--nogn-gen',
       '--no-shell',
@@ -5667,7 +5670,8 @@ hooks = [
       'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=20',
+      # TODO(b/353714119): move this back to 20.
+      '--fallback-versions=30',
       '--no-use-remoteexec',
       '--nogn-gen',
       '--no-shell',
@@ -5687,7 +5691,8 @@ hooks = [
       'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=20',
+      # TODO(b/353714119): move this back to 20.
+      '--fallback-versions=30',
       '--no-use-remoteexec',
       '--nogn-gen',
       '--no-shell',
@@ -5707,7 +5712,8 @@ hooks = [
       'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=20',
+      # TODO(b/353714119): move this back to 20.
+      '--fallback-versions=30',
       '--no-use-remoteexec',
       '--nogn-gen',
       '--no-shell',
@@ -5727,7 +5733,8 @@ hooks = [
       'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=20',
+      # TODO(b/353714119): move this back to 20.
+      '--fallback-versions=30',
       '--no-use-remoteexec',
       '--nogn-gen',
       '--no-shell',
@@ -5746,7 +5753,8 @@ hooks = [
       'vpython3',
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
-      '--fallback-versions=20',
+      # TODO(b/353714119): move this back to 20.
+      '--fallback-versions=30',
       '--no-use-remoteexec',
       '--nogn-gen',
       '--no-shell',
