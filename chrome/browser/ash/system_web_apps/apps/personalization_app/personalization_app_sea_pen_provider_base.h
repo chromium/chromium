@@ -138,6 +138,7 @@ class PersonalizationAppSeaPenProviderBase
                              manta::MantaStatusCode status_code);
 
   void OnFetchWallpaperDone(SelectSeaPenThumbnailCallback callback,
+                            const mojom::SeaPenQueryPtr& query,
                             std::optional<SeaPenImage> image);
 
   void OnRecentSeaPenImageSelected(bool success);
@@ -153,6 +154,11 @@ class PersonalizationAppSeaPenProviderBase
 
   void NotifyTextQueryHistoryChanged();
 
+  std::optional<
+      std::pair<mojom::SeaPenQueryPtr,
+                std::map<uint32_t, const SeaPenImage>::const_iterator>>
+  FindImageThumbnail(uint32_t id);
+
   SelectRecentSeaPenImageCallback pending_select_recent_sea_pen_image_callback_;
 
   const std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
@@ -166,8 +172,10 @@ class PersonalizationAppSeaPenProviderBase
   // GetSeaPenThumbnails() is never called.
   mojom::SeaPenQueryPtr last_query_;
 
-  // Stores the previous text queries.
-  std::vector<mojom::TextQueryHistoryEntryPtr> text_query_history_;
+  // Stores the previous text queries. The first element in the pair is the
+  // query string and the second element is a map of image id to image.
+  std::vector<std::pair<std::string, std::map<uint32_t, const SeaPenImage>>>
+      text_query_history_;
 
   // Perform a network request to search/upscale available wallpapers.
   // Constructed lazily at the time of the first request and then persists for

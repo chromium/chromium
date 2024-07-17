@@ -231,6 +231,7 @@
                   data-sea-pen-image
                   aria-description$="[[getAriaDescription_(item, currentSelected_, pendingSelected_)]]"
                   aria-posinset$="[[getAriaIndex_(index)]]"
+                  on-wallpaper-grid-item-selected="onThumbnailSelected_"
                   role="option"
                   selected="[[isThumbnailSelected_(item, currentSelected_, pendingSelected_)]]"
                   src="[[item.image]]"

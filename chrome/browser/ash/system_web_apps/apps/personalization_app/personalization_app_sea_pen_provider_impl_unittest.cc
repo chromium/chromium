@@ -577,6 +577,59 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
                   testing::Pointee(testing::FieldsAre(testing::_, 247))));
 }
 
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       SelectThumbnailFromTextQueryHistory) {
+  base::test::TestFuture<
+      std::optional<
+          std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
+      manta::MantaStatusCode>
+      search_wallpaper_future;
+
+  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  test_wallpaper_controller()->SetCurrentUser(GetTestAccountId());
+
+  auto query = mojom::SeaPenQuery::NewTextQuery("search_query");
+  SetSeaPenFetcherResponse({246}, manta::MantaStatusCode::kOk, query);
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
+      query->Clone(), search_wallpaper_future.GetCallback());
+  ASSERT_EQ(246u, search_wallpaper_future.Get<0>().value().front()->id);
+  search_wallpaper_future.Clear();
+  EXPECT_TRUE(test_sea_pen_observer().GetHistoryEntries()->empty());
+
+  query = mojom::SeaPenQuery::NewTextQuery("search_query_1");
+  SetSeaPenFetcherResponse({247}, manta::MantaStatusCode::kOk, query);
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
+      query->Clone(), search_wallpaper_future.GetCallback());
+  ASSERT_EQ(247u, search_wallpaper_future.Get<0>().value().front()->id);
+  search_wallpaper_future.Clear();
+
+  query = mojom::SeaPenQuery::NewTextQuery("search_query_2");
+  SetSeaPenFetcherResponse({248}, manta::MantaStatusCode::kOk, query);
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
+      query->Clone(), search_wallpaper_future.GetCallback());
+  ASSERT_EQ(248u, search_wallpaper_future.Get<0>().value().front()->id);
+  search_wallpaper_future.Clear();
+
+  query = mojom::SeaPenQuery::NewTextQuery("search_query_3");
+  SetSeaPenFetcherResponse({249}, manta::MantaStatusCode::kOk, query);
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
+      query->Clone(), search_wallpaper_future.GetCallback());
+  ASSERT_EQ(249u, search_wallpaper_future.Get<0>().value().front()->id);
+  search_wallpaper_future.Clear();
+
+  // Selects from `search_query_2`.
+  base::test::TestFuture<bool> select_wallpaper_future;
+  sea_pen_provider_remote()->SelectSeaPenThumbnail(
+      248, select_wallpaper_future.GetCallback());
+  ASSERT_TRUE(select_wallpaper_future.Take());
+  select_wallpaper_future.Clear();
+
+  // Selects from `search_query_1`.
+  sea_pen_provider_remote()->SelectSeaPenThumbnail(
+      247, select_wallpaper_future.GetCallback());
+  ASSERT_TRUE(select_wallpaper_future.Take());
+}
+
 TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImageIds) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
 
