@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
@@ -22,7 +23,13 @@ public class OmniboxAnswerAction extends OmniboxAction {
      */
     public OmniboxAnswerAction(
             long nativeInstance, @NonNull String hint, @NonNull String accessibilityHint) {
-        super(OmniboxActionId.ANSWER_ACTION, nativeInstance, hint, accessibilityHint, NO_ICON);
+        super(
+                OmniboxActionId.ANSWER_ACTION,
+                nativeInstance,
+                hint,
+                accessibilityHint,
+                NO_ICON,
+                R.style.TextAppearance_TextMediumThick_Primary_Baseline);
     }
 
     @Override

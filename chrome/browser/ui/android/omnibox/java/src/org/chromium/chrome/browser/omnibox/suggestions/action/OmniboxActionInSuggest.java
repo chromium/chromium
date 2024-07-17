@@ -39,7 +39,8 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 nativeInstance,
                 hint,
                 accessibilityHint,
-                ICON_MAP.get(actionType, DEFAULT_ICON));
+                ICON_MAP.get(actionType, DEFAULT_ICON),
+                R.style.TextAppearance_ChipText);
         this.actionType = actionType;
         mActionUri = actionUri;
     }

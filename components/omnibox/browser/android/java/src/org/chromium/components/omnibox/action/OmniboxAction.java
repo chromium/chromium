@@ -57,6 +57,8 @@ public abstract class OmniboxAction {
     /** The icon to use to decorate the Action chip. */
     public final @NonNull ChipIcon icon;
 
+    public final int primaryTextAppearance;
+
     /** The corresponding native instance, or 0 if the native instance is not available. */
     private long mNativeInstance;
 
@@ -65,12 +67,14 @@ public abstract class OmniboxAction {
             long nativeInstance,
             @NonNull String hint,
             @NonNull String accessibilityHint,
-            @NonNull ChipIcon icon) {
+            @NonNull ChipIcon icon,
+            int primaryTextAppearance) {
         assert !TextUtils.isEmpty(hint);
         this.actionId = actionId;
         this.hint = hint;
         this.accessibilityHint = accessibilityHint;
         this.icon = icon;
+        this.primaryTextAppearance = primaryTextAppearance;
         mNativeInstance = nativeInstance;
     }
 
