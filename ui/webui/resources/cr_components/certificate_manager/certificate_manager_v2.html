@@ -67,7 +67,6 @@
     </cr-menu-selector>
   </div>
 
-  <!-- TODO(crbug.com/40928765): localize client cert strings -->
   <!-- TODO(crbug.com/40928765): migrate off of iron-pages. See:
     https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md#polymer-iron_paper-elements-alternatives -->
   <iron-pages id="main" attr-for-selected="path" fallback-selection="localcerts"
@@ -81,7 +80,7 @@
         <certificate-list-v2
             id="provisionedClientCerts"
             cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
-            header-text="From your administrator"
+            header-text="[[i18n('certificateManagerV2ClientCertsFromAdmin')]]"
             hide-export
             on-hash-copied="onHashCopied_">
         </certificate-list-v2>
@@ -90,7 +89,7 @@
         <certificate-list-v2
             id="extensionsClientCerts"
             cert-source="[[certificateSourceEnum_.kExtensionsClientCert]]"
-            header-text="From extensions"
+            header-text="[[i18n('certificateManagerV2ClientCertsFromExtension')]]"
             hide-export
             on-hash-copied="onHashCopied_">
         </certificate-list-v2>
@@ -102,7 +101,7 @@
       <certificate-list-v2
           id="platformClientCerts"
           cert-source="[[certificateSourceEnum_.kPlatformClientCert]]"
-          header-text="Client certificates from platform"
+          header-text="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
           show-import="[[showClientCertImport_]]"
           hide-export
           on-import-result="onImportResult_"
@@ -110,7 +109,7 @@
       </certificate-list-v2>
       <if expr="is_win or is_macosx">
         <cr-link-row external id="manageOsImportedClientCerts"
-            label="Manage imported certificates from Windows"
+            label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
             on-click="onManageCertsExternal_">
         </cr-link-row>
       </if>

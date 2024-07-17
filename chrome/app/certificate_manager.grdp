@@ -2,8 +2,6 @@
 <!-- certificate manager v2 strings strings (included from generated_resources.grd). -->
 <grit-part>
   <if expr="chrome_root_store_cert_management_ui">
-    <!-- TODO(crbug.com/40928765): Make translatable once UI/strings are finalized. -->
-    <!-- Certificate Manager V2 Page -->
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TITLE" desc="Label for the title of the certificate manager page.">
       Certificate Manager
     </message>
@@ -98,7 +96,7 @@
       =1 {1 certificate}
       other {{COUNT} certificates}}
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES_DESCRIPTION" desc="Description of the client certificates section of cert manager." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES_DESCRIPTION" desc="Description of the client certificates section of cert manager.">
       Client certificates are certificates that identify you to other servers.
     </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_LOCAL_CERTIFICATES_DESCRIPTION" desc="Description of the local certificates section of cert manager.">
@@ -113,6 +111,15 @@
     </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CUSTOM_CERTS_TITLE" desc="Title for the Custom certificates section.">
       Custom
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES_FROM_PLATFORM" desc="Title of section for client certificates imported from platform.">
+      Client certificates from platform
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES_FROM_ADMIN" desc="Title of section for client certificates imported from admin policy.">
+      From your administrator
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES_FROM_EXTENSION" desc="Title of section for client certificates imported from an extension.">
+      From extensions
     </message>
   </if>
 </grit-part>
