@@ -78,6 +78,10 @@ message ClientDeviceContext {
   // distinguish between variations of a device which have different branding
   // but the same hardware. Only set for devices with custom-label variants.
   optional string custom_label_tag = 7;
+
+  // Instructs the server to bypass any response cache is configured on the
+  // endpoint and always return a fresh response. This is useful for debugging.
+  optional bool bypass_response_cache = 8;
 }
 
 // Context about the user of the client device making this request.
@@ -119,4 +123,13 @@ message ClientUserContext {
 
   // The type of user account making this request.
   optional UserType user_type = 2;
+}
+
+// Wrapper message for ClientDeviceContext and ClientUserContext.
+message ClientContext {
+  // Context about the client device making this request.
+  optional ClientDeviceContext device_context = 1;
+
+  // Context about the user of the client device making this request.
+  optional ClientUserContext user_context = 2;
 }

@@ -6,13 +6,6 @@ import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash)
 
-proto_library("proto") {
-  proto_in_dir = "//"
-  sources = [ "mall_context.proto" ]
-
-  link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
-}
-
 static_library("mall") {
   sources = [
     "chrome_mall_ui_delegate.cc",
@@ -24,10 +17,10 @@ static_library("mall") {
   ]
 
   deps = [
-    ":proto",
     "//ash/webui/mall",
     "//base",
     "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/profiles:profile",
     "//chromeos/constants",
     "//content/public/browser",
@@ -43,7 +36,6 @@ source_set("unit_tests") {
 
   deps = [
     ":mall",
-    ":proto",
     "//base",
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/test:test_support",
