@@ -100,6 +100,31 @@ void UpdateVirtualCardEnrollmentRequest::RespondToDelegate(
   std::move(callback_).Run(result);
 }
 
+std::string UpdateVirtualCardEnrollmentRequest::GetHistogramName() const {
+  switch (request_details_.virtual_card_enrollment_request_type) {
+    case VirtualCardEnrollmentRequestType::kEnroll:
+      return "UpdateVirtualCardEnrollment_Enroll";
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+std::optional<base::TimeDelta> UpdateVirtualCardEnrollmentRequest::GetTimeout()
+    const {
+  if (request_details_.virtual_card_enrollment_request_type !=
+      VirtualCardEnrollmentRequestType::kEnroll) {
+    return std::nullopt;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillVcnEnrollRequestTimeout)) {
+    return std::nullopt;
+  }
+
+  return base::Milliseconds(
+      features::kAutofillVcnEnrollRequestTimeoutMilliseconds.Get());
+}
+
 void UpdateVirtualCardEnrollmentRequest::BuildEnrollRequestDictionary(
     base::Value::Dict* request_dict) {
   DCHECK(request_details_.virtual_card_enrollment_request_type ==

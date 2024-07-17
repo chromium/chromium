@@ -45,6 +45,8 @@ class UpdateVirtualCardEnrollmentRequest : public PaymentsRequest {
   bool IsResponseComplete() override;
   void RespondToDelegate(
       PaymentsAutofillClient::PaymentsRpcResult result) override;
+  std::string GetHistogramName() const override;
+  std::optional<base::TimeDelta> GetTimeout() const override;
 
  private:
   friend class UpdateVirtualCardEnrollmentRequestTest;
