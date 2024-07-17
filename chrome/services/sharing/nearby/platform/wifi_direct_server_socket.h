@@ -14,6 +14,15 @@
 
 namespace nearby::chrome {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WifiDirectServerSocketError {
+  kSocketClosed = 0,
+  kFirewallHoleDisconnected = 1,
+  kSocketFailure = 2,
+  kMaxValue = kSocketFailure,
+};
+
 class WifiDirectServerSocket : public api::WifiDirectServerSocket {
  public:
   explicit WifiDirectServerSocket(

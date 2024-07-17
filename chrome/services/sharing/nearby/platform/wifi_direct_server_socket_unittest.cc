@@ -6,6 +6,7 @@
 
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -18,6 +19,11 @@ namespace {
 constexpr char kTestIPv4Address[] = "127.0.0.1";
 constexpr uint16_t kMinPort = 49152;  // Arbitrary port used for WifiLan.
 constexpr uint16_t kMaxPort = 65535;
+
+constexpr char kAcceptResultMetricName[] =
+    "Nearby.Connections.WifiDirect.ServerSocket.Accept.Result";
+constexpr char kAcceptErrorMetricName[] =
+    "Nearby.Connections.WifiDirect.ServerSocket.Accept.Error";
 
 }  // namespace
 
@@ -74,6 +80,7 @@ class WifiDirectServerSocketTest : public ::testing::Test {
 
   WifiDirectServerSocket* socket() { return server_socket_.get(); }
   uint16_t port() { return port_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   void RunOnTaskRunner(base::OnceClosure task) {
     base::RunLoop run_loop;
@@ -99,6 +106,7 @@ class WifiDirectServerSocketTest : public ::testing::Test {
   std::unique_ptr<WifiDirectServerSocket> server_socket_;
   uint16_t port_;
   std::unique_ptr<net::TCPClientSocket> client_socket_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WifiDirectServerSocketTest, Close) {
@@ -147,6 +155,9 @@ TEST_F(WifiDirectServerSocketTest, GetPort) {
 }
 
 TEST_F(WifiDirectServerSocketTest, Accept_ConnectionBeforeAccept) {
+  histogram_tester().ExpectTotalCount(kAcceptResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kAcceptErrorMetricName, 0);
+
   // Connect to the socket before `Accept` is called to queue up a pending
   // connection.
   ConnectToSocket();
@@ -157,9 +168,17 @@ TEST_F(WifiDirectServerSocketTest, Accept_ConnectionBeforeAccept) {
         EXPECT_TRUE(socket->Accept());
       },
       socket()));
+
+  histogram_tester().ExpectTotalCount(kAcceptResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kAcceptResultMetricName,
+                                       /*bucket:success=*/1, 1);
+  histogram_tester().ExpectTotalCount(kAcceptErrorMetricName, 0);
 }
 
 TEST_F(WifiDirectServerSocketTest, Accept_ConnectionAfterAccept) {
+  histogram_tester().ExpectTotalCount(kAcceptResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kAcceptErrorMetricName, 0);
+
   RunDelayedOnIOThread(
       base::Seconds(1),
       base::BindOnce(&WifiDirectServerSocketTest::ConnectToSocket,
@@ -171,6 +190,11 @@ TEST_F(WifiDirectServerSocketTest, Accept_ConnectionAfterAccept) {
         EXPECT_TRUE(socket->Accept());
       },
       socket()));
+
+  histogram_tester().ExpectTotalCount(kAcceptResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kAcceptResultMetricName,
+                                       /*bucket:true=*/1, 1);
+  histogram_tester().ExpectTotalCount(kAcceptErrorMetricName, 0);
 }
 
 }  // namespace nearby::chrome

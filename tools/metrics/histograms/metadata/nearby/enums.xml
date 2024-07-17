@@ -159,6 +159,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Failed To Listen to Socket"/>
 </enum>
 
+<enum name="NearbyConnectionsWifiDirectSocketError">
+  <int value="0" label="Socket Closed"/>
+  <int value="1" label="Firewall Hole Disconnected"/>
+  <int value="2" label="Socket Failure"/>
+</enum>
+
 <enum name="NearbyConnectionsWifiLanConnectResult">
   <int value="0" label="Success"/>
   <int value="1" label="Canceled"/>

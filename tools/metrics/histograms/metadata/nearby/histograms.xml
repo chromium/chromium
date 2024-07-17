@@ -648,6 +648,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.WifiDirect.ServerSocket.Accept.Error"
+    enum="NearbyConnectionsWifiDirectSocketError" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the error that occured attempting to accept a new Nearby Connection
+    via TCP socket on the connected WiFi Direct interface. Emitted when Nearby
+    Connections encounters an error accepting a connection on the TCP server
+    socket. Cancellations and socket closures do not emit errors because they
+    are expected final states.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.WifiDirect.ServerSocket.Accept.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to accept a new Nearby Connection via TCP
+    socket on the connected WiFi Direct interface. Accept is called once during
+    the initial upgrade process, and again after each incoming connection has
+    been handled. Additionally, a negative value is logged for cancellations and
+    socket closure. This means that each successful WiFi Direct transfer will
+    have both a successful accept result and a failure due to the closing down
+    of the socket when the medium is destructed.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.WifiLan.ConnectResult"
     enum="NearbyConnectionsWifiLanConnectResult" expires_after="2025-04-30">
   <owner>hansenmichael@google.com</owner>

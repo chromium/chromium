@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/services/sharing/nearby/platform/wifi_direct_socket.h"
 #include "net/socket/tcp_client_socket.h"
@@ -48,6 +49,11 @@ int WifiDirectServerSocket::GetPort() const {
 std::unique_ptr<api::WifiDirectSocket> WifiDirectServerSocket::Accept() {
   // Ensure that the socket has not been closed.
   if (!tcp_server_socket_) {
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ServerSocket.Accept.Result", false);
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ServerSocket.Accept.Error",
+        WifiDirectServerSocketError::kSocketClosed);
     return nullptr;
   }
 
@@ -61,6 +67,8 @@ std::unique_ptr<api::WifiDirectSocket> WifiDirectServerSocket::Accept() {
                      &accepted_address, &accepted_socket, &success));
   pending_accept_event_.Wait();
 
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.WifiDirect.ServerSocket.Accept.Result", success);
   if (!success) {
     return nullptr;
   }
@@ -105,14 +113,24 @@ void WifiDirectServerSocket::DoAccept(
     return;
   }
 
-  // Ensure that the socket has not been closed.
-  if (!tcp_server_socket_) {
+  // We cannot accept connections if the firewall hole has disconnected.
+  if (!firewall_hole_ || !firewall_hole_.is_bound()) {
+    // The firewall hole disconnect handler will close the socket, which will in
+    // turn trigger this callback. It is important to check the firewall hole
+    // availability before checking the socket availability, otherwise this
+    // error state will never trigger.
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ServerSocket.Accept.Error",
+        WifiDirectServerSocketError::kFirewallHoleDisconnected);
     pending_accept_event_.Signal();
     return;
   }
 
-  // We cannot accept connections if the firewall hole has disconnected.
-  if (!firewall_hole_ || !firewall_hole_.is_bound()) {
+  // Ensure that the socket has not been closed.
+  if (!tcp_server_socket_) {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ServerSocket.Accept.Error",
+        WifiDirectServerSocketError::kSocketClosed);
     pending_accept_event_.Signal();
     return;
   }
@@ -138,6 +156,11 @@ void WifiDirectServerSocket::OnAccept(bool* did_succeed, int result) {
   }
 
   *did_succeed = (result == net::OK);
+  if (!did_succeed) {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ServerSocket.Accept.Error",
+        WifiDirectServerSocketError::kSocketFailure);
+  }
   pending_accept_event_.Signal();
 }
 
@@ -150,6 +173,9 @@ void WifiDirectServerSocket::CloseSocket(
 }
 
 void WifiDirectServerSocket::OnFirewallHoleDisconnect() {
+  // Reset the remote to indicate that it has been disconnected.
+  firewall_hole_.reset();
+
   // Close the socket so that Nearby Connections knows that there will not be
   // any new incoming connections.
   // Note: This is a callback that is bound to the provided `task_runner`, which
