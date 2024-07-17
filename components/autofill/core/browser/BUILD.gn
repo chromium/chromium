@@ -1219,6 +1219,7 @@ source_set("unit_tests") {
     "payments/legal_message_line_unittest.cc",
     "payments/payments_data_cleaner_unittest.cc",
     "payments/payments_network_interface_unittest.cc",
+    "payments/payments_requests/get_card_upload_details_request_unittest.cc",
     "payments/payments_requests/get_details_for_enrollment_request_unittest.cc",
     "payments/payments_requests/get_iban_upload_details_request_unittest.cc",
     "payments/payments_requests/unmask_card_request_unittest.cc",
