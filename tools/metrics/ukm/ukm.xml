@@ -795,18 +795,16 @@ be describing additional metrics about the same event.
     the auction flow where multiple inputs come together to assess which of
     these inputs most frequently appears on the latency critical path.
   </summary>
-  <metric name="BidGenerationPhaseLatencyInMillis">
+  <metric name="BidGenerationPhaseEndTimeInMillis">
     <summary>
-      The time in milliseconds between the first call to
-      BidderWorklet::GenerateBidIfReady (specifically where that call
-      corresponds to a bidder worklet for which all of its GenerateBid
-      dependencies have been satisfied and it's about to call the ad-tech
-      provided generateBid JavaScript function), and the last call to
-      BidderWorklet::DeliverBidCallbackOnUserThread. This represents the time
-      during which ad-tech provided generateBid JavaScript functions are being
+      The time in milliseconds between the AuctionRunner constructor (the start
+      of the auction) and the last call to
+      BidderWorklet::DeliverBidCallbackOnUserThread (the end of the
+      BidGenerationPhase). The BidGenerationPhase represents the time during
+      which ad-tech provided generateBid JavaScript functions are being
       executed. This is one of a series of metrics representing the duration of
       each phase of the auction, where the phases may overlap or have space
-      between them.
+      between them. This is bucketed in linear buckets of 10 ms.
     </summary>
   </metric>
   <metric name="BidGenerationPhaseStartTimeInMillis">
@@ -816,31 +814,37 @@ be describing additional metrics about the same event.
       (specifically where that call corresponds to a bidder worklet for which
       all of its GenerateBid dependencies have been satisfied and it's about to
       call the ad-tech provided generateBid JavaScript function; the start of
-      the BidGenerationPhase). This is one of a series of metrics representing
-      the duration of each phase of the auction, where the phases may overlap or
-      have space between them. This is bucketed in linear buckets of 25ms.
+      the BidGenerationPhase). The BidGenerationPhase represents the time during
+      which ad-tech provided generateBid JavaScript functions are being
+      executed. This is one of a series of metrics representing the duration of
+      each phase of the auction, where the phases may overlap or have space
+      between them. This is bucketed in linear buckets of 10 ms.
     </summary>
   </metric>
-  <metric name="BidSignalsFetchPhaseLatencyInMillis">
+  <metric name="BidSignalsFetchPhaseEndTimeInMillis">
     <summary>
-      The time in milliseconds between the first call to
-      BidderWorklet::BeginGenerateBid and the last call to
-      BidderWorklet::GenerateBidIfReady. This represents the time during which
-      any bidder worklet is waiting for one or more of the GenerateBid
-      dependencies, notably bidding signals, in anticipation of calling an
-      ad-tech provided generateBid JavaScript function. This is one of a series
-      of metrics representing the duration of each phase of the auction, where
-      the phases may overlap or have space between them.
+      The time in milliseconds between the AuctionRunner constructor (the start
+      of the auction) and the last call to BidderWorklet::GenerateBidIfReady
+      (the end of the BidSignalsFetchPhase). The BidSignalsFetchPhase represents
+      the time during which any bidder worklet is waiting for one or more of the
+      GenerateBid dependencies, notably bidding signals, in anticipation of
+      calling an ad-tech provided generateBid JavaScript function. This is one
+      of a series of metrics representing the duration of each phase of the
+      auction, where the phases may overlap or have space between them. This is
+      bucketed in linear buckets of 10 ms.
     </summary>
   </metric>
   <metric name="BidSignalsFetchPhaseStartTimeInMillis">
     <summary>
       The time in milliseconds between the AuctionRunner constructor (the start
       of the auction) and the first call to BidderWorklet::BeginGenerateBid (the
-      start of the BidSignalsFetchPhase). This is one of a series of metrics
-      representing the duration of each phase of the auction, where the phases
-      may overlap or have space between them. This is bucketed in linear buckets
-      of 25ms.
+      start of the BidSignalsFetchPhase). The BidSignalsFetchPhase represents
+      the time during which any bidder worklet is waiting for one or more of the
+      GenerateBid dependencies, notably bidding signals, in anticipation of
+      calling an ad-tech provided generateBid JavaScript function. This is one
+      of a series of metrics representing the duration of each phase of the
+      auction, where the phases may overlap or have space between them. This is
+      bucketed in linear buckets of 10 ms.
     </summary>
   </metric>
   <metric name="EndToEndLatencyInMillis">
@@ -855,6 +859,20 @@ be describing additional metrics about the same event.
       Indicates the KAnonymityBidMode used for this auction.
     </summary>
   </metric>
+  <metric name="LoadInterestGroupPhaseEndTimeInMillis">
+    <summary>
+      The time in milliseconds between the AuctionRunner constructor (the start
+      of the auction) and the last call to
+      AuctionRunner::OnLoadInterestGroupsComplete (the end of the
+      LoadInterestGroupPhase). This is one of a series of metrics representing
+      the duration of each phase of the auction, where the phases may overlap or
+      have space between them. Unlike other phase metrics, this phase has no
+      associated StartTime metric, since this phase begins at the start of the
+      auction. This is bucketed in linear buckets of 10 ms. This metric is
+      identical to LoadInterestGroupPhaseLatencyInMillis except that this metric
+      uses linear bucketing.
+    </summary>
+  </metric>
   <metric name="LoadInterestGroupPhaseLatencyInMillis">
     <summary>
       The latency in milliseconds between the start of the auction (the
@@ -864,7 +882,7 @@ be describing additional metrics about the same event.
       multi-seller auction, the UMA metric is recorded once per component
       auction and then again for the top-level auction, whereas this metric is
       recorded only once, for the top-level auction. This metric also isn't
-      limited to those cases where there were InterestGroups to load, Since we
+      limited to those cases where there were InterestGroups to load, since we
       can independently filter this based on the value of NumInterestGroups.
     </summary>
   </metric>
@@ -1627,39 +1645,42 @@ be describing additional metrics about the same event.
       outbid the contextual bid, or any other outcome.
     </summary>
   </metric>
-  <metric name="ScoreSignalsFetchPhaseLatencyInMillis">
+  <metric name="ScoreSignalsFetchPhaseEndTimeInMillis">
     <summary>
-      The time in milliseconds between the first call to SellerWorklet::ScoreAd
-      and the last call to SellerWorklet::ScoreAdIfReady. This represents the
-      time during which any seller worklet is waiting for one or more of the
+      The time in milliseconds between the AuctionRunner constructor (the start
+      of the auction) and the last call to SellerWorklet::ScoreAdIfReady (the
+      end of the ScoreSignalsFetchPhase). The ScoreSignalsFetchPhase represents
+      the time during which any seller worklet is waiting for one or more of the
       ScoreAd dependencies, notably scoring signals, in anticipation of calling
       an ad-tech provided scoreAd JavaScript function. This is one of a series
       of metrics representing the duration of each phase of the auction, where
-      the phases may overlap or have space between them.
+      the phases may overlap or have space between them. This is bucketed in
+      linear buckets of 10 ms.
     </summary>
   </metric>
   <metric name="ScoreSignalsFetchPhaseStartTimeInMillis">
     <summary>
       The time in milliseconds between the AuctionRunner constructor (the start
       of the auction) and the first call to SellerWorklet::ScoreAd (the start of
-      the ScoreSignalsFetchPhase). This is one of a series of metrics
-      representing the duration of each phase of the auction, where the phases
-      may overlap or have space between them. This is bucketed in linear buckets
-      of 25ms.
+      the ScoreSignalsFetchPhase). The ScoreSignalsFetchPhase represents the
+      time during which any seller worklet is waiting for one or more of the
+      ScoreAd dependencies, notably scoring signals, in anticipation of calling
+      an ad-tech provided scoreAd JavaScript function. This is one of a series
+      of metrics representing the duration of each phase of the auction, where
+      the phases may overlap or have space between them. This is bucketed in
+      linear buckets of 10 ms.
     </summary>
   </metric>
-  <metric name="ScoringPhaseLatencyInMillis">
+  <metric name="ScoringPhaseEndTimeInMillis">
     <summary>
-      The time in milliseconds between the first call to
-      SellerWorklet::ScoreAdIfReady (specifically where that call corresponds to
-      a seller worklet for which all of its ScoreAd dependencies have been
-      satisfied and it's about to call the ad-tech provided scoreAd JavaScript
-      function), and the last call to
-      SellerWorklet::DeliverScoreAdCallbackOnUserThread. This represents the
-      time during which ad-tech provided scoreAd JavaScript functions are being
-      executed. This is one of a series of metrics representing the duration of
-      each phase of the auction, where the phases may overlap or have space
-      between them.
+      The time in milliseconds between the AuctionRunner constructor (the start
+      of the auction) and the last call to
+      SellerWorklet::DeliverScoreAdCallbackOnUserThread (the end of the
+      ScoringPhase). The ScoringPhase represents the time during which ad-tech
+      provided scoreAd JavaScript functions are being executed. This is one of a
+      series of metrics representing the duration of each phase of the auction,
+      where the phases may overlap or have space between them. This is bucketed
+      in linear buckets of 10 ms.
     </summary>
   </metric>
   <metric name="ScoringPhaseStartTimeInMillis">
@@ -1669,21 +1690,24 @@ be describing additional metrics about the same event.
       (specifically where that call corresponds to a seller worklet for which
       all of its ScoreAd dependencies have been satisfied and it's about to call
       the ad-tech provided scoreAd JavaScript function; the start of the
-      ScoringPhase). This is one of a series of metrics representing the
-      duration of each phase of the auction, where the phases may overlap or
-      have space between them. This is bucketed in linear buckets of 25ms.
+      ScoringPhase). The ScoringPhase represents the time during which ad-tech
+      provided scoreAd JavaScript functions are being executed. This is one of a
+      series of metrics representing the duration of each phase of the auction,
+      where the phases may overlap or have space between them. This is bucketed
+      in linear buckets of 10 ms.
     </summary>
   </metric>
-  <metric name="WorkletCreationPhaseLatencyInMillis">
+  <metric name="WorkletCreationPhaseEndTimeInMillis">
     <summary>
-      The time in milliseconds between the first call to
-      InterestGroupAuction::Request*Worklet and the last call to
-      InterestGroupAuction::On*WorkletReceived. This represents the time during
-      which worklets are being started, and will extend throughout the auction
-      if the maximum number of processes is reached for bidder and/or seller
-      worklets. This is one of a series of metrics representing the duration of
-      each phase of the auction, where the phases may overlap or have space
-      between them.
+      The time in milliseconds between the AuctionRunner constructor (the start
+      of the auction) and the last call to DebuggableAuctionWorklet::OnHavePid
+      (the end of the WorkletCreationPhase). The WorkletCreationPhase represents
+      the time during which worklets are being started, and will extend
+      throughout the auction if the maximum number of processes is reached for
+      bidder and/or seller worklets. This is one of a series of metrics
+      representing the duration of each phase of the auction, where the phases
+      may overlap or have space between them. This is bucketed in linear buckets
+      of 10 ms.
     </summary>
   </metric>
   <metric name="WorkletCreationPhaseStartTimeInMillis">
@@ -1691,9 +1715,12 @@ be describing additional metrics about the same event.
       The time in milliseconds between the AuctionRunner constructor (the start
       of the auction) and the first call to
       InterestGroupAuction::Request*Worklet (the start of the
-      WorkletCreationPhase). This is one of a series of metrics representing the
-      duration of each phase of the auction, where the phases may overlap or
-      have space between them. This is bucketed in linear buckets of 25ms.
+      WorkletCreationPhase). The WorkletCreationPhase represents the time during
+      which worklets are being started, and will extend throughout the auction
+      if the maximum number of processes is reached for bidder and/or seller
+      worklets. This is one of a series of metrics representing the duration of
+      each phase of the auction, where the phases may overlap or have space
+      between them. This is bucketed in linear buckets of 10 ms.
     </summary>
   </metric>
 </event>
