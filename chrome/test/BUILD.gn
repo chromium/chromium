@@ -4563,7 +4563,6 @@ if (!is_android) {
         "../browser/ash/app_list/chrome_app_list_item_browsertest.cc",
         "../browser/ash/app_list/chrome_app_list_model_updater_browsertest.cc",
         "../browser/ash/app_list/launcher_continue_section_browsertest.cc",
-        "../browser/ash/app_list/search/files/drive_search_browsertest.cc",
         "../browser/ash/app_list/search/help_app_search_browsertest.cc",
         "../browser/ash/policy/affiliation/user_affiliation_browsertest.cc",
         "../browser/ash/policy/arc/unaffiliated_arc_allowed_browsertest.cc",

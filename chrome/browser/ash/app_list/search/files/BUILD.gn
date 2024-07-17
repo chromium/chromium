@@ -6,6 +6,57 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+static_library("files") {
+  sources = [
+    "diacritics_checker.cc",
+    "diacritics_checker.h",
+    "drive_search_provider.cc",
+    "drive_search_provider.h",
+    "file_result.cc",
+    "file_result.h",
+    "file_search_provider.cc",
+    "file_search_provider.h",
+    "file_title.cc",
+    "file_title.h",
+    "justifications.cc",
+    "justifications.h",
+    "zero_state_drive_provider.cc",
+    "zero_state_drive_provider.h",
+    "zero_state_file_provider.cc",
+    "zero_state_file_provider.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//base",
+    "//base:i18n",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/ui/base",
+    "//components/drive",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//net",
+    "//skia:skia_core_public_headers",
+    "//storage/browser",
+    "//third_party/re2",
+    "//ui/base",
+    "//ui/chromeos/strings",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -19,6 +70,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":files",
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
@@ -49,5 +101,20 @@ source_set("unit_tests") {
     "//ui/gfx",
     "//ui/gfx:gfx_skia",
     "//ui/gfx:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "drive_search_browsertest.cc" ]
+
+  deps = [
+    "//chrome/browser/ash/app_list/search/test:browser_test_support",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/drive:test_support",
+    "//chrome/browser/ui",
   ]
 }

@@ -32,6 +32,7 @@ static_library("file_suggest") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/search/files",
     "//chrome/browser/ash/app_list/search/ranking:proto",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
@@ -45,6 +46,9 @@ static_library("file_suggest") {
     "//services/data_decoder/public/cpp",
     "//storage/browser",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/app_list/search/files" ]
 }
 
 static_library("test_support") {
