@@ -278,7 +278,7 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
       return false;
     }
 
-    if (!(representation->usage() & gpu::SHARED_IMAGE_USAGE_DISPLAY_READ)) {
+    if (!(representation->usage().Has(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ))) {
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "was not created with DISPLAY_READ usage.";
       return false;

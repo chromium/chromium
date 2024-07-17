@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/gpu/chromeos/frame_resource.h"
@@ -59,7 +60,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
         const gfx::ColorSpace& color_space,
         GrSurfaceOrigin surface_origin,
         SkAlphaType alpha_type,
-        uint32_t usage) = 0;
+        gpu::SharedImageUsageSet usage) = 0;
     virtual std::optional<gpu::SyncToken> UpdateSharedImage(
         const gpu::Mailbox& mailbox) = 0;
     virtual bool WaitOnSyncTokenAndReleaseFrame(

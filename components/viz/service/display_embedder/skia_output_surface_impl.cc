@@ -1787,7 +1787,7 @@ gpu::Mailbox SkiaOutputSurfaceImpl::CreateSharedImage(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     RenderPassAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string_view debug_label,
     gpu::SurfaceHandle surface_handle) {
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -77,7 +78,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
-                         uint32_t usage,
+                         SharedImageUsageSet usage,
                          std::string debug_label);
 
   bool UpdateSharedImage(const Mailbox& mailbox,

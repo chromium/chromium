@@ -14,6 +14,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
@@ -60,7 +61,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     DoCreateSharedImage(si_format, gpu_memory_buffer->GetSize(), color_space,
                         surface_origin, alpha_type, usage,

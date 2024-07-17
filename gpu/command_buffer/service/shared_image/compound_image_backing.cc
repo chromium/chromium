@@ -64,7 +64,7 @@ constexpr bool kAllowShmOverlays = false;
 
 gpu::SharedImageUsageSet GetShmSharedImageUsage(SharedImageUsageSet usage) {
   if (kAllowShmOverlays) {
-    return usage.HasAny(gpu::SHARED_IMAGE_USAGE_SCANOUT)
+    return usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)
                ? SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_SCANOUT
                : SHARED_IMAGE_USAGE_CPU_WRITE;
   }
@@ -479,7 +479,7 @@ CompoundImageBacking::CompoundImageBacking(
   DCHECK_EQ(size, shm_backing->size());
   elements_[0].backing = std::move(shm_backing);
   elements_[0].access_streams = kMemoryStreamSet;
-  if (kAllowShmOverlays && usage.HasAny(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
+  if (kAllowShmOverlays && usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
     elements_[0].access_streams.Put(SharedImageAccessStream::kOverlay);
   }
   elements_[0].content_id_ = latest_content_id_;

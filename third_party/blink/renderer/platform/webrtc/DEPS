@@ -10,6 +10,7 @@ specific_include_rules = {
         "+gpu/command_buffer/client/raster_interface.h",
         "+gpu/command_buffer/client/shared_image_interface.h",
         "+gpu/command_buffer/common/shared_image_capabilities.h",
+        "+gpu/command_buffer/common/shared_image_usage.h",
         "+media/renderers/video_frame_rgba_to_yuva_converter.h",
         "+cc/trees/raster_context_provider_wrapper.h",
     ],

@@ -81,7 +81,7 @@ class GmbVideoFramePoolContext
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     auto client_shared_image = sii_in_process_->CreateSharedImage(
         {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,

@@ -11,7 +11,7 @@ namespace gpu {
 
 SharedImageBackingFactory::SharedImageBackingFactory(
     SharedImageUsageSet valid_usages)
-    : invalid_usages_(~valid_usages) {}
+    : valid_usages_(valid_usages) {}
 
 SharedImageBackingFactory::~SharedImageBackingFactory() = default;
 
@@ -43,7 +43,7 @@ bool SharedImageBackingFactory::CanCreateSharedImage(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  if (invalid_usages_ & usage) {
+  if (!valid_usages_.HasAll(usage)) {
     // This factory doesn't support all the usages.
     return false;
   }

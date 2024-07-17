@@ -594,8 +594,8 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
     scoped_refptr<gpu::ClientSharedImage> client_shared_image =
         sii->CreateSharedImage(
             {multiplanar_si_format, gpu_memory_buffer->GetSize(),
-             video_frame_init_data.ready_buffer->info->color_space, usage,
-             "VideoCaptureFrameBuffer"},
+             video_frame_init_data.ready_buffer->info->color_space,
+             gpu::SharedImageUsageSet(usage), "VideoCaptureFrameBuffer"},
             gpu_memory_buffer->CloneHandle());
 
     CHECK(client_shared_image);

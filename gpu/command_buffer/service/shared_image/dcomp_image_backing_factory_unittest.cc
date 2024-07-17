@@ -538,7 +538,7 @@ class DCompImageBackingFactoryVisualTreeTest
 
   // Create a backing, fill |draw_area| with |draw_color|, and schedule the
   // overlay
-  void ScheduleImageWithOneDraw(uint32_t usage,
+  void ScheduleImageWithOneDraw(gpu::SharedImageUsageSet usage,
                                 viz::SharedImageFormat format,
                                 const gfx::ColorSpace& color_space,
                                 bool has_alpha,
@@ -578,7 +578,7 @@ class DCompImageBackingFactoryVisualTreeTest
 
   // Runs a sanity check test that verifies backings with different color spaces
   // are valid and contain the values we expect.
-  void RunFormatAndColorSpaceTest(uint32_t usage,
+  void RunFormatAndColorSpaceTest(gpu::SharedImageUsageSet usage,
                                   viz::SharedImageFormat format,
                                   gfx::ColorSpace color_space,
                                   bool has_alpha,
@@ -616,7 +616,7 @@ class DCompImageBackingFactoryVisualTreeTest
   // from an uninitialized portion of a SharedImage. Incomplete draws still can
   // happen in valid scenarios, however. E.g. if a client over-allocates the
   // backing, but only reads from the part it draws to.
-  void RunIncompleteFirstDrawTest(uint32_t usage) {
+  void RunIncompleteFirstDrawTest(gpu::SharedImageUsageSet usage) {
     // First draw does not cover full surface
     const SkColor expected_color = SK_ColorGREEN;
     ScheduleImageWithOneDraw(usage, viz::SinglePlaneFormat::kRGBA_8888,

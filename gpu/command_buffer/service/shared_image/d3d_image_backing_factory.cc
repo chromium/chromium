@@ -198,7 +198,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
-                                        uint32_t usage) {
+                                        gpu::SharedImageUsageSet usage) {
   DXGI_FORMAT swap_chain_format;
   if ((format == viz::SinglePlaneFormat::kRGBA_8888) ||
       (format == viz::SinglePlaneFormat::kRGBX_8888) ||
@@ -366,10 +366,10 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   desc.CPUAccessFlags = 0;
   desc.MiscFlags = 0;
 
-  if ((usage & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) &&
+  if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) &&
       format.is_single_plane()) {
-    DCHECK(usage &
-           (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE));
+    DCHECK(usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
+                        SHARED_IMAGE_USAGE_WEBGPU_WRITE));
     // WebGPU can always use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
     if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
         format == viz::SinglePlaneFormat::kRGBA_F16) {
@@ -388,8 +388,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     }
   }
 
-  const bool has_webgpu_usage = usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                         SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+  const bool has_webgpu_usage = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                             SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   const bool has_gl_usage = HasGLES2ReadOrWriteUsage(usage);
   // TODO(crbug.com/40204134): Look into using DXGI handle when MF VEA is used.
   const bool needs_shared_handle =
@@ -574,9 +574,8 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
     return false;
   }
 
-  const bool is_scanout = usage.HasAny(gpu::SHARED_IMAGE_USAGE_SCANOUT);
-  const bool is_video_decode =
-      usage.HasAny(gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE);
+  const bool is_scanout = usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
+  const bool is_video_decode = usage.Has(gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE);
   if (is_scanout) {
     if (!is_video_decode && gmb_type != gfx::DXGI_SHARED_HANDLE) {
       return false;

@@ -125,7 +125,7 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) override {
+      gpu::SharedImageUsageSet usage) override {
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
 
     if (!gpu_channel_) {
@@ -536,7 +536,7 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
 
   // The allocated SharedImages should be usable for the (Display) compositor
   // and, potentially, for overlays (Scanout).
-  uint32_t shared_image_usage =
+  gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   // These SharedImages might also be used for zero-copy import into WebGPU to

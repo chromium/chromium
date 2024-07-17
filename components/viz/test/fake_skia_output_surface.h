@@ -20,6 +20,7 @@
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/gpu/buildflags.h"
 
@@ -113,7 +114,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                                  const gfx::Size& size,
                                  const gfx::ColorSpace& color_space,
                                  RenderPassAlphaType alpha_type,
-                                 uint32_t usage,
+                                 gpu::SharedImageUsageSet usage,
                                  std::string_view debug_label,
                                  gpu::SurfaceHandle surface_handle) override;
   gpu::Mailbox CreateSolidColorSharedImage(

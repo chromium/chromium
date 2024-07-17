@@ -461,16 +461,16 @@ OzoneImageBacking::OzoneImageBacking(
       context_state_(std::move(context_state)),
       workarounds_(workarounds),
       imported_from_exo_(IsExoTexture(this->debug_label())) {
-  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
-                      (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY_READ);
+  bool used_by_skia = usage.HasAny(SHARED_IMAGE_USAGE_RASTER_READ |
+                                   SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                   SHARED_IMAGE_USAGE_DISPLAY_READ);
   bool used_by_gl =
       (HasGLES2ReadOrWriteUsage(usage)) ||
       (used_by_skia && context_state_->gr_context_type() == GrContextType::kGL);
   bool used_by_vulkan = used_by_skia && context_state_->gr_context_type() ==
                                             GrContextType::kVulkan;
-  bool used_by_webgpu = usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                 SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+  bool used_by_webgpu = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                     SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   write_streams_count_ = 0;
   if (used_by_gl)
     write_streams_count_++;  // gl can write
@@ -703,7 +703,7 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
                                     std::vector<gfx::GpuFenceHandle>* fences,
                                     bool& need_end_fence) {
   // Track reads and writes if not being used for concurrent read/writes.
-  if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+  if (!usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
     if (is_write_in_progress_) {
       DLOG(ERROR) << "Unable to begin read or write access because another "
                      "write access is in progress";
@@ -790,7 +790,7 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
     // TODO(crbug.com/41495896): Implement vk fence optimization in the case of
     // raster delegation.
     const bool skip_fence_in_delegation =
-        (usage() & SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
+        usage().Has(SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
         context_state_->GrContextIsGL();
 
     need_end_fence = (write_streams_count_ > 1) || !skip_fence_in_delegation;
@@ -803,7 +803,7 @@ void OzoneImageBacking::EndAccess(bool readonly,
                                   AccessStream access_stream,
                                   gfx::GpuFenceHandle fence) {
   // Track reads and writes if not being used for concurrent read/writes.
-  if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+  if (!usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
     if (readonly) {
       DCHECK_GT(reads_in_progress_, 0u);
       --reads_in_progress_;

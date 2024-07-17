@@ -2917,6 +2917,7 @@ TEST_P(GLES2DecoderTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
   Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  constexpr size_t kEstimatedSize = 0;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
@@ -2924,7 +2925,7 @@ TEST_P(GLES2DecoderTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
               SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ,
                                    SHARED_IMAGE_USAGE_GLES2_WRITE}),
-              /*estimated_size=*/0, kNewServiceId),
+              kEstimatedSize, kNewServiceId),
           &memory_tracker);
 
   auto& cmd = *GetImmediateAs<
@@ -2982,13 +2983,16 @@ TEST_P(GLES2DecoderTest,
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
   Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  constexpr size_t kEstimatedSize = 0;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
               mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0,
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
               SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ,
                                    SHARED_IMAGE_USAGE_GLES2_WRITE}),
+              kEstimatedSize,
+
               kNewServiceId),
           &memory_tracker);
 

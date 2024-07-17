@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/d3d_shared_fence.h"
@@ -39,8 +40,9 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
                                                  holder_, gfx::EMPTY_BUFFER);
 }
 
-uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
-  return 0u;
+SharedImageUsageSet SharedImageInterface::UsageForMailbox(
+    const Mailbox& mailbox) {
+  return SharedImageUsageSet();
 }
 
 scoped_refptr<ClientSharedImage>
@@ -52,7 +54,7 @@ SharedImageInterface::AddReferenceToSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     uint32_t texture_target) {
   return ImportSharedImage(ExportedSharedImage(
       mailbox,
@@ -68,7 +70,7 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
     const gfx::ColorSpace& /*color_space*/,
     GrSurfaceOrigin /*surface_origin*/,
     SkAlphaType /*alpha_type*/,
-    uint32_t /*usage*/) {
+    SharedImageUsageSet /*usage*/) {
   return nullptr;
 }
 
@@ -79,7 +81,7 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
     const gfx::ColorSpace& /*color_space*/,
     GrSurfaceOrigin /*surface_origin*/,
     SkAlphaType /*alpha_type*/,
-    uint32_t /*usage*/,
+    SharedImageUsageSet /*usage*/,
     uint32_t /*texture_target*/) {
   return nullptr;
 }

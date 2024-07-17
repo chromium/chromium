@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -113,7 +114,8 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
           gfx::SkISizeToSize(sk_image_info.dimensions()), color_space,
           (is_origin_top_left) ? kTopLeft_GrSurfaceOrigin
                                : kBottomLeft_GrSurfaceOrigin,
-          sk_image_info.alphaType(), usage, mailbox_holder.texture_target);
+          sk_image_info.alphaType(), gpu::SharedImageUsageSet(usage),
+          mailbox_holder.texture_target);
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.

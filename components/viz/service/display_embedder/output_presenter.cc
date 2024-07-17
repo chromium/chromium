@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
@@ -32,10 +33,11 @@ OutputPresenter::Image::~Image() {
   factory_->DestroySharedImage(mailbox_);
 }
 
-bool OutputPresenter::Image::Initialize(const gfx::Size& size,
-                                        const gfx::ColorSpace& color_space,
-                                        SharedImageFormat format,
-                                        uint32_t shared_image_usage) {
+bool OutputPresenter::Image::Initialize(
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    SharedImageFormat format,
+    gpu::SharedImageUsageSet shared_image_usage) {
   auto mailbox = gpu::Mailbox::Generate();
 
   if (!factory_->CreateSharedImage(

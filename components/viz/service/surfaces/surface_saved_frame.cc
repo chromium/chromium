@@ -203,15 +203,15 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
         display_color_spaces, content_color_usage, has_transparent_background);
 
     if (is_software) {
-      uint32_t flags = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
+      gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
       shared_image =
           shared_image_interface_
               ->CreateSharedImage({image_format, draw_data.size, color_space,
                                    flags, "ViewTransitionTexture"})
               .shared_image;
     } else {
-      uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                       gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+      gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
       shared_image = shared_image_interface_->CreateSharedImage(
           {image_format, draw_data.size, color_space, flags,
            "ViewTransitionTexture"},

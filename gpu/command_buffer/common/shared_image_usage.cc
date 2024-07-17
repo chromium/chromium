@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
+#include <cstdint>
 #include <string>
 #include <utility>
 
@@ -13,19 +14,21 @@ namespace gpu {
 
 const char kExoTextureLabelPrefix[] = "ExoTexture";
 
-bool IsValidClientUsage(uint32_t usage) {
+bool IsValidClientUsage(SharedImageUsageSet usage) {
+  const uint32_t usage_as_int = uint32_t(usage);
   constexpr int32_t kClientMax = (LAST_CLIENT_USAGE << 1) - 1;
-  return 0 < usage && usage <= kClientMax;
+  return 0 < usage_as_int && usage_as_int <= kClientMax;
 }
 
-bool HasGLES2ReadOrWriteUsage(uint32_t usage) {
-  return (usage & SHARED_IMAGE_USAGE_GLES2_READ) ||
-         (usage & SHARED_IMAGE_USAGE_GLES2_WRITE);
+bool HasGLES2ReadOrWriteUsage(SharedImageUsageSet usage) {
+  return usage.HasAny(SHARED_IMAGE_USAGE_GLES2_READ |
+                      SHARED_IMAGE_USAGE_GLES2_WRITE);
 }
 
-std::string CreateLabelForSharedImageUsage(uint32_t usage) {
-  if (!usage)
+std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
+  if (usage.empty()) {
     return {};
+  }
 
   const std::pair<SharedImageUsage, const char*> kUsages[] = {
       {SHARED_IMAGE_USAGE_GLES2_READ, "Gles2Read"},
@@ -59,10 +62,12 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
 
   std::string label;
   for (const auto& [value, name] : kUsages) {
-    if ((value & usage) != value)
+    if (!usage.Has(value)) {
       continue;
-    if (!label.empty())
+    }
+    if (!label.empty()) {
       label.append("|");
+    }
     label.append(name);
   }
 

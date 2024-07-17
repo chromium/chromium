@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -124,7 +125,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       size_t estimated_size,
       bool is_thread_safe,
@@ -137,7 +138,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const gfx::ColorSpace& color_space() const { return color_space_; }
   GrSurfaceOrigin surface_origin() const { return surface_origin_; }
   SkAlphaType alpha_type() const { return alpha_type_; }
-  uint32_t usage() const { return usage_; }
+  SharedImageUsageSet usage() const { return usage_; }
   const Mailbox& mailbox() const { return mailbox_; }
   bool is_thread_safe() const { return !!lock_; }
   bool is_ref_counted() const { return is_ref_counted_; }
@@ -411,7 +412,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const gfx::ColorSpace color_space_;
   const GrSurfaceOrigin surface_origin_;
   const SkAlphaType alpha_type_;
-  const uint32_t usage_;
+  const SharedImageUsageSet usage_;
   const std::string debug_label_;
   size_t estimated_size_ GUARDED_BY(lock_);
 
@@ -452,7 +453,7 @@ class GPU_GLES2_EXPORT ClearTrackingSharedImageBacking
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       size_t estimated_size,
       bool is_thread_safe,

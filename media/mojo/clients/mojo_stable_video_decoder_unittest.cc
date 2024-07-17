@@ -368,7 +368,7 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
                                      const gfx::ColorSpace& color_space,
                                      GrSurfaceOrigin surface_origin,
                                      SkAlphaType alpha_type,
-                                     uint32_t usage));
+                                     gpu::SharedImageUsageSet usage));
   MOCK_METHOD2(PresentSwapChain,
                void(const gpu::SyncToken& sync_token,
                     const gpu::Mailbox& mailbox));

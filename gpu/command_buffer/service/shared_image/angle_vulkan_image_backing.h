@@ -27,7 +27,7 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking {
                           const gfx::ColorSpace& color_space,
                           GrSurfaceOrigin surface_origin,
                           SkAlphaType alpha_type,
-                          uint32_t usage,
+                          gpu::SharedImageUsageSet usage,
                           std::string debug_label);
   ~AngleVulkanImageBacking() override;
 

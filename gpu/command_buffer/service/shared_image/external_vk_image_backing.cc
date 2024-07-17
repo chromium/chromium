@@ -303,7 +303,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     std::optional<gfx::BufferUsage> buffer_usage) {
   if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size,
@@ -359,7 +359,7 @@ ExternalVkImageBacking::CreateWithPixmap(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     gfx::BufferUsage buffer_usage) {
 #if BUILDFLAG(IS_OZONE)
@@ -402,7 +402,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     size_t estimated_size_bytes,
     scoped_refptr<SharedContextState> context_state,

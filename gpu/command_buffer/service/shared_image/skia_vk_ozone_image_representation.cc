@@ -271,7 +271,7 @@ SkiaVkOzoneImageRepresentation::GetEndAccessState() {
   // this set (e.g., if it has any GLES2 usage, including
   // RASTER_OVER_GLES2_ONLY), then it will be accessed beyond the Vulkan device
   // from SharedContextState and hence does not have single-device usage.
-  const uint32_t kSingleDeviceUsage =
+  const SharedImageUsageSet kSingleDeviceUsage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
       SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
       SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
@@ -281,7 +281,7 @@ SkiaVkOzoneImageRepresentation::GetEndAccessState() {
   // same vkDevice, so technically we could transfer between queues instead of
   // jumping to external queue. But currently it's not possible because we
   // create new vkImage each time.
-  if ((ozone_backing()->usage() & ~kSingleDeviceUsage) ||
+  if (!kSingleDeviceUsage.HasAll(ozone_backing()->usage()) ||
       ozone_backing()->is_thread_safe()) {
     uint32_t queue_family_index = vulkan_images_.front()->queue_family_index();
     // All VkImages must be allocated for the same queue family.

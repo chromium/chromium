@@ -281,8 +281,8 @@ void OutputPresenterGL::ScheduleOverlayPlane(
       CHECK_EQ(gpu::GrContextType::kGL,
                dependency_->GetSharedContextState()->gr_context_type());
       CHECK(features::IsDelegatedCompositingEnabled());
-      CHECK(access->representation()->usage() &
-            gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING);
+      CHECK(access->representation()->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING));
     }
 #endif
 

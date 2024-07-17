@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -78,7 +79,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
     if (!sii) {

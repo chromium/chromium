@@ -13,6 +13,7 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/surface_handle.h"
 
 namespace gpu {
@@ -88,13 +89,13 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
-                                        uint32_t usage) override;
+                                        SharedImageUsageSet usage) override;
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
   void DestroySharedImage(
       const SyncToken& sync_token,
       scoped_refptr<ClientSharedImage> client_shared_image) override;
-  uint32_t UsageForMailbox(const Mailbox& mailbox) override;
+  SharedImageUsageSet UsageForMailbox(const Mailbox& mailbox) override;
   scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -102,7 +103,7 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) override;
+      SharedImageUsageSet usage) override;
   scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -110,7 +111,7 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       uint32_t texture_target) override;
 
   scoped_refptr<ClientSharedImage> ImportSharedImage(

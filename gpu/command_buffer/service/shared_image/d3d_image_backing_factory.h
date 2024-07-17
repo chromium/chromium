@@ -80,7 +80,7 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
                                     const gfx::ColorSpace& color_space,
                                     GrSurfaceOrigin surface_origin,
                                     SkAlphaType alpha_type,
-                                    uint32_t usage);
+                                    gpu::SharedImageUsageSet usage);
 
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,

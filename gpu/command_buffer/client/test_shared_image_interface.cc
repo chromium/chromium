@@ -331,7 +331,7 @@ TestSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
                                           const gfx::ColorSpace& color_space,
                                           GrSurfaceOrigin surface_origin,
                                           SkAlphaType alpha_type,
-                                          uint32_t usage) {
+                                          gpu::SharedImageUsageSet usage) {
   auto front_buffer = Mailbox::Generate();
   auto back_buffer = Mailbox::Generate();
   SyncToken sync_token = GenUnverifiedSyncToken();

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -59,7 +60,7 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
         const gfx::ColorSpace& color_space,
         GrSurfaceOrigin surface_origin,
         SkAlphaType alpha_type,
-        uint32_t usage,
+        gpu::SharedImageUsageSet usage,
         gpu::SyncToken& sync_token) = 0;
 
     // Destroy a SharedImage created by this interface.

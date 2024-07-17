@@ -115,33 +115,32 @@ bool EGLImageBackingFactory::IsSupported(SharedImageUsageSet usage,
 
   // Doesn't support contexts other than GL for OOPR Canvas
   if (gr_context_type != GrContextType::kGL &&
-      ((usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
-       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER_WRITE))) {
+      usage.HasAny(
+          SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+          SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE)) {
     return false;
   }
-  constexpr uint32_t kInvalidUsage = SHARED_IMAGE_USAGE_VIDEO_DECODE |
-                                     SHARED_IMAGE_USAGE_SCANOUT |
-                                     SHARED_IMAGE_USAGE_CPU_UPLOAD;
-  if (usage & kInvalidUsage) {
+  constexpr SharedImageUsageSet kInvalidUsage =
+      SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_SCANOUT |
+      SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  if (usage.HasAny(kInvalidUsage)) {
     return false;
   }
 
-  if ((usage &
-       (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE)) &&
+  if ((usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
+                    SHARED_IMAGE_USAGE_WEBGPU_WRITE)) &&
       (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES)) {
     return false;
   }
 
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    constexpr uint32_t kMetalInvalidUsages =
+    constexpr SharedImageUsageSet kMetalInvalidUsages =
         SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
         SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_GLES2_READ |
-        SHARED_IMAGE_USAGE_GLES2_WRITE |
-        SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-    if (usage & kMetalInvalidUsages) {
+        SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_WEBGPU_READ |
+        SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+    if (usage.HasAny(kMetalInvalidUsages)) {
       return false;
     }
   }
@@ -159,7 +158,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     SharedImageUsageSet usage,
     std::string debug_label,
     base::span<const uint8_t> pixel_data) {
-  DCHECK(!(usage & SHARED_IMAGE_USAGE_SCANOUT));
+  DCHECK(!usage.Has(SHARED_IMAGE_USAGE_SCANOUT));
 
   // Calculate SharedImage size in bytes.
   auto estimated_size = format.MaybeEstimatedSizeInBytes(size);

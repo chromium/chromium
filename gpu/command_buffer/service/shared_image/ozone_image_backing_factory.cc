@@ -39,15 +39,15 @@
 namespace gpu {
 namespace {
 
-gfx::BufferUsage GetBufferUsage(uint32_t usage) {
-  if (usage & SHARED_IMAGE_USAGE_PROTECTED_VIDEO) {
+gfx::BufferUsage GetBufferUsage(SharedImageUsageSet usage) {
+  if (usage.Has(SHARED_IMAGE_USAGE_PROTECTED_VIDEO)) {
     return gfx::BufferUsage::PROTECTED_SCANOUT;
-  } else if (usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
-                      SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+  } else if (usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
+                          SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
     // Just use SCANOUT for WebGPU since the memory doesn't need to be linear.
     return gfx::BufferUsage::SCANOUT;
-  } else if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
-    if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+  } else if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
+    if (usage.Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
       // Example usage here is low latency (desynchronized) 2d canvas. Note that
       // this does not imply CPU read/write.
       return gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
@@ -244,19 +244,19 @@ bool OzoneImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (usage & SHARED_IMAGE_USAGE_CPU_WRITE && gmb_type != gfx::NATIVE_PIXMAP) {
+  if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE) &&
+      gmb_type != gfx::NATIVE_PIXMAP) {
     // Only CPU writable when the client provides a NativePixmap.
     return false;
   }
 
-  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
-                      (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  bool used_by_skia = usage.HasAny(
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   bool used_by_vulkan =
       used_by_skia && gr_context_type == GrContextType::kVulkan;
-  bool used_by_webgpu = usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                 SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+  bool used_by_webgpu = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                     SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   bool used_by_gl = (HasGLES2ReadOrWriteUsage(usage)) ||
                     (used_by_skia && gr_context_type == GrContextType::kGL);
   if (used_by_vulkan && !CanImportNativePixmapToVulkan()) {
@@ -283,9 +283,9 @@ bool OzoneImageBackingFactory::IsSupported(
   // If overlays are not supported by the Ozone platform, then only display
   // compositor output images allocated through OzoneImageBacking may use
   // OverlayRepresentation.
-  bool used_by_overlay = (usage & SHARED_IMAGE_USAGE_SCANOUT) &&
+  bool used_by_overlay = usage.Has(SHARED_IMAGE_USAGE_SCANOUT) &&
                          (platform_supports_overlays ||
-                          (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE));
+                          usage.Has(SHARED_IMAGE_USAGE_DISPLAY_WRITE));
   // We may rely on implicit synchronization for GL/Overlay synchronization in
   // case GpuFence support is not available.
   bool gl_overlay_requires_fence_sync =

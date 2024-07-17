@@ -3644,8 +3644,8 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     return;
   }
 
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
   if (requirements.generate_mipmap) {
     DCHECK(!requirements.is_scanout);
     usage |= gpu::SHARED_IMAGE_USAGE_MIPMAP;
@@ -3668,7 +3668,7 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
       usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
 
       // DComp surfaces are write-only, viz cannot sample them.
-      usage &= ~gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+      usage.RemoveAll(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
     } else {
       usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT_DXGI_SWAP_CHAIN;
     }
@@ -3863,7 +3863,7 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
         /*is_root=*/false,
         /*is_scanout=*/true,
         /*scanout_dcomp_surface=*/
-        !!(kOverlayUsage & gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE),
+        kOverlayUsage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE),
     };
   } else {
     overlay_params = *it;

@@ -128,7 +128,7 @@ bool GLTextureImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD) {
+  if (usage.Has(SHARED_IMAGE_USAGE_CPU_UPLOAD)) {
     if (!supports_cpu_upload_ ||
         !GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {
       return false;
@@ -143,12 +143,12 @@ bool GLTextureImageBackingFactory::IsSupported(
     // - Windows can upload pixels directly from shared memory to a D3D swap
     //   chain for overlays.
     // TODO(kylechar): Stop allowing scanout usage here on all platforms.
-    if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
+    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       return false;
     }
 #endif
   } else {
-    if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
+    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       return false;
     }
   }
@@ -159,18 +159,19 @@ bool GLTextureImageBackingFactory::IsSupported(
     if ((gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
          gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) ||
         emulate_using_angle_metal_for_testing_) {
-      uint32_t metal_invalid_usages = SHARED_IMAGE_USAGE_DISPLAY_READ;
+      SharedImageUsageSet metal_invalid_usages =
+          SHARED_IMAGE_USAGE_DISPLAY_READ;
 
       // GLES2 usage is in general not allowed, as WebGL might be on a different
       // GPU than raster/composite. However, if the GLES2 usage is for
       // raster-over-GLES2 only, it is by definition on the same GPU as
       // raster/composite and thus allowable.
-      if (!(usage & SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY)) {
+      if (!usage.Has(SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY)) {
         metal_invalid_usages = metal_invalid_usages |
                                SHARED_IMAGE_USAGE_GLES2_READ |
                                SHARED_IMAGE_USAGE_GLES2_WRITE;
       }
-      if (usage & metal_invalid_usages) {
+      if (usage.HasAny(metal_invalid_usages)) {
         return false;
       }
     }
@@ -181,23 +182,23 @@ bool GLTextureImageBackingFactory::IsSupported(
   // this usages aren't actually relevant but WebGL still adds them so ignore.
   if (gr_context_type != GrContextType::kGL &&
       gr_context_type != GrContextType::kNone) {
-    uint32_t unsupported_usages =
+    SharedImageUsageSet unsupported_usages =
         SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
     // Raster usage is in general not allowed, as described above. However, if
     // this SI is being used in the context of raster-over-GLES2 only, then
     // raster is by definition using GL for the SI and thus allowable.
-    if (!(usage & SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY)) {
+    if (!usage.Has(SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY)) {
       unsupported_usages = unsupported_usages | SHARED_IMAGE_USAGE_RASTER_READ |
                            SHARED_IMAGE_USAGE_RASTER_WRITE;
     }
-    if (usage & unsupported_usages) {
+    if (usage.HasAny(unsupported_usages)) {
       return false;
     }
   }
 
   // Only supports WebGPU usages on Dawn's OpenGLES backend.
-  if (usage & kWebGPUUsages) {
+  if (usage.HasAny(kWebGPUUsages)) {
     if (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES ||
         gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
         gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL) {
@@ -235,10 +236,9 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
   // GLTextureImageBackingFactory supports raster and display usage only for
   // Ganesh-GL, meaning that raster/display write usage implies GL writes
   // within Skia.
-  const bool for_framebuffer_attachment =
-      usage &
-      (SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
-       SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  const bool for_framebuffer_attachment = usage.HasAny(
+      SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 

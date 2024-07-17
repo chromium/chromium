@@ -68,9 +68,9 @@ uint32_t ComputeTextureTargetForSharedImage(
   // Check for IOSurfaces being used.
   // NOTE: WebGPU usage on Mac results in SharedImages being backed by
   // IOSurfaces.
-  uint32_t usages_requiring_native_buffer = SHARED_IMAGE_USAGE_SCANOUT |
-                                            SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                            SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  gpu::SharedImageUsageSet usages_requiring_native_buffer =
+      SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU_READ |
+      SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
   bool uses_native_buffer = GMBIsNative(client_gmb_type) ||
                             (metadata.usage & usages_requiring_native_buffer);
@@ -345,7 +345,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   metadata.color_space = gfx::ColorSpace::CreateSRGB();
   metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
   metadata.alpha_type = kOpaque_SkAlphaType;
-  metadata.usage = 0;
+  metadata.usage = gpu::SharedImageUsageSet();
 
   return ImportUnowned(ExportedSharedImage(Mailbox::Generate(), metadata,
                                            SyncToken(), texture_target));

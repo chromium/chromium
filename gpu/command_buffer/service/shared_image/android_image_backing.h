@@ -21,7 +21,7 @@ class AndroidImageBacking : public ClearTrackingSharedImageBacking {
                       const gfx::ColorSpace& color_space,
                       GrSurfaceOrigin surface_origin,
                       SkAlphaType alpha_type,
-                      uint32_t usage,
+                      gpu::SharedImageUsageSet usage,
                       std::string debug_label,
                       size_t estimated_size,
                       bool is_thread_safe,
@@ -41,7 +41,7 @@ class AndroidImageBacking : public ClearTrackingSharedImageBacking {
 
  protected:
   bool allow_concurrent_read_write() const {
-    return usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+    return usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
   }
 
   // All reads and writes must wait for exiting writes to complete.

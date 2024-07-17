@@ -41,7 +41,7 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageMetadataDataView,
   }
 
   static uint32_t usage(const gpu::SharedImageMetadata& metadata) {
-    return metadata.usage;
+    return uint32_t(metadata.usage);
   }
 
   static bool Read(gpu::mojom::SharedImageMetadataDataView data,
@@ -52,7 +52,7 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageMetadataDataView,
         !data.ReadAlphaType(&out->alpha_type)) {
       return false;
     }
-    out->usage = data.usage();
+    out->usage = gpu::SharedImageUsageSet(data.usage());
     return true;
   }
 };

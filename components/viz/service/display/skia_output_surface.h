@@ -17,6 +17,7 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/render_pass_alpha_type.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/vulkan/buildflags.h"
 #include "media/gpu/buildflags.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -212,7 +213,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                          const gfx::Size& size,
                                          const gfx::ColorSpace& color_space,
                                          RenderPassAlphaType alpha_type,
-                                         uint32_t usage,
+                                         gpu::SharedImageUsageSet usage,
                                          std::string_view debug_label,
                                          gpu::SurfaceHandle surface_handle) = 0;
 

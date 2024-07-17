@@ -106,8 +106,8 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
 
   void OnReuse() const {
     // This is a proxy check for single-buffered overlay.
-    if ((representation_->usage() &
-         gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
+    if (representation_->usage().Has(
+            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
         base::FeatureList::IsEnabled(
             kRestartReadAccessForConcurrentReadWrite)) {
       // If this is a single-buffered overlay, want to restart read access to
@@ -438,8 +438,8 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     std::unique_ptr<gfx::GpuFence> acquire_fence;
     if (context_state_->GrContextIsGL() && access &&
         !overlay_has_been_submitted &&
-        (access->representation()->usage() &
-         gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
+        access->representation()->usage().Has(
+            gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
         gl::GLFence::IsGpuFenceSupported()) {
       DCHECK(features::IsDelegatedCompositingEnabled());
       // Create a single fence that will be duplicated and inserted into each

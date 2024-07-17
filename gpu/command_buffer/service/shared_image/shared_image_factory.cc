@@ -420,7 +420,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
                                            gpu::SurfaceHandle surface_handle,
-                                           uint32_t usage,
+                                           SharedImageUsageSet usage,
                                            std::string debug_label) {
   auto* factory = GetFactoryByUsage(usage, format, size,
                                     /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
@@ -473,7 +473,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
                                            SurfaceHandle surface_handle,
-                                           uint32_t usage,
+                                           SharedImageUsageSet usage,
                                            std::string debug_label,
                                            gfx::BufferUsage buffer_usage) {
   if (!viz::HasEquivalentBufferFormat(format)) {
@@ -546,7 +546,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       if (use_compound) {
         backing = CompoundImageBacking::CreateSharedMemory(
             factory, mailbox, format, size, color_space, surface_origin,
-            alpha_type, SharedImageUsage(usage), debug_label, buffer_usage);
+            alpha_type, usage, debug_label, buffer_usage);
       } else {
         backing = factory->CreateSharedImage(
             mailbox, format, surface_handle, size, color_space, surface_origin,
@@ -572,7 +572,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            const gfx::ColorSpace& color_space,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
-                                           uint32_t usage,
+                                           SharedImageUsageSet usage,
                                            std::string debug_label,
                                            base::span<const uint8_t> data) {
   if (!format.is_single_plane()) {
@@ -615,7 +615,7 @@ bool SharedImageFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   if (format.IsLegacyMultiplanar()) {
@@ -654,13 +654,11 @@ bool SharedImageFactory::CreateSharedImage(
   if (use_compound) {
     backing = CompoundImageBacking::CreateSharedMemory(
         factory, mailbox, std::move(buffer_handle), format, size, color_space,
-        surface_origin, alpha_type, SharedImageUsage(usage),
-        std::move(debug_label));
+        surface_origin, alpha_type, usage, std::move(debug_label));
   } else {
     backing = factory->CreateSharedImage(
-        mailbox, format, size, color_space, surface_origin, alpha_type,
-        SharedImageUsage(usage), std::move(debug_label),
-        std::move(buffer_handle));
+        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+        std::move(debug_label), std::move(buffer_handle));
   }
 
   if (backing) {
@@ -730,7 +728,7 @@ bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                          const gfx::ColorSpace& color_space,
                                          GrSurfaceOrigin surface_origin,
                                          SkAlphaType alpha_type,
-                                         uint32_t usage) {
+                                         gpu::SharedImageUsageSet usage) {
   if (!D3DImageBackingFactory::IsSwapChainSupported(gpu_preferences_)) {
     return false;
   }
@@ -876,39 +874,41 @@ void SharedImageFactory::SetGpuExtraInfo(
   gpu_extra_info_ = gpu_extra_info;
 }
 
-bool SharedImageFactory::IsSharedBetweenThreads(uint32_t usage) {
+bool SharedImageFactory::IsSharedBetweenThreads(
+    gpu::SharedImageUsageSet usage) {
   // Ignore for mipmap usage.
-  usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
+  usage.RemoveAll(SHARED_IMAGE_USAGE_MIPMAP);
   // Ignore for delegated compositing.
-  usage &= ~SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING;
+  usage.RemoveAll(SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING);
 
   // Raw Draw backings will be write accessed on the GPU main thread, and
   // be read accessed on the compositor thread.
-  if (usage & SHARED_IMAGE_USAGE_RAW_DRAW)
+  if (usage.Has(SHARED_IMAGE_USAGE_RAW_DRAW)) {
     return true;
+  }
 
   // DISPLAY is for gpu composition and SCANOUT for overlays.
-  constexpr int kDisplayCompositorUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                          SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                          SHARED_IMAGE_USAGE_SCANOUT;
+  constexpr gpu::SharedImageUsageSet kDisplayCompositorUsage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+      SHARED_IMAGE_USAGE_SCANOUT;
 
   // Image is used on display compositor gpu thread if it's used by display
   // compositor and if display compositor runs on a separate thread. Image is
   // used by display compositor if it has kDisplayCompositorUsage or is being
   // created by display compositor.
   const bool used_by_display_compositor_gpu_thread =
-      ((usage & kDisplayCompositorUsage) || is_for_display_compositor_) &&
+      (usage.HasAny(kDisplayCompositorUsage) || is_for_display_compositor_) &&
       shared_image_manager_->display_context_on_another_thread();
 
   // If it has usage other than kDisplayCompositorUsage OR if it is not created
   // by display compositor, it means that it is used by the gpu main thread.
   const bool used_by_main_gpu_thread =
-      usage & ~kDisplayCompositorUsage || !is_for_display_compositor_;
+      !kDisplayCompositorUsage.HasAll(usage) || !is_for_display_compositor_;
   return used_by_display_compositor_gpu_thread && used_by_main_gpu_thread;
 }
 
 SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     base::span<const uint8_t> pixel_data,
@@ -928,7 +928,7 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   return nullptr;
 }
 
-void SharedImageFactory::LogGetFactoryFailed(uint32_t usage,
+void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                                              viz::SharedImageFormat format,
                                              gfx::GpuMemoryBufferType gmb_type,
                                              const std::string& debug_label) {
@@ -980,10 +980,11 @@ bool SharedImageFactory::AddSecondaryReference(const gpu::Mailbox& mailbox) {
   return true;
 }
 
-uint32_t SharedImageFactory::GetUsageForMailbox(const Mailbox& mailbox) {
+SharedImageUsageSet SharedImageFactory::GetUsageForMailbox(
+    const Mailbox& mailbox) {
   auto iter = shared_images_.find(mailbox);
   if (iter == shared_images_.end()) {
-    return 0;
+    return SharedImageUsageSet();
   }
   return (*iter)->usage();
 }

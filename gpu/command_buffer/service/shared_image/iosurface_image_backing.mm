@@ -88,7 +88,7 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
 }
 
 wgpu::Texture CreateWGPUTexture(wgpu::SharedTextureMemory shared_texture_memory,
-                                uint32_t shared_image_usage,
+                                SharedImageUsageSet shared_image_usage,
                                 const gfx::Size& io_surface_size,
                                 wgpu::TextureFormat wgpu_format,
                                 std::vector<wgpu::TextureFormat> view_formats,
@@ -980,7 +980,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     GLenum gl_target,
     bool framebuffer_attachment_angle,

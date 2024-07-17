@@ -112,7 +112,7 @@ enum SharedImageUsage : uint32_t {
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
 
-class SharedImageUsageSet {
+class GPU_EXPORT SharedImageUsageSet {
  public:
   constexpr SharedImageUsageSet() = default;
   // Permanent nolint to allow for natural conversion from mask to set.
@@ -138,10 +138,25 @@ class SharedImageUsageSet {
     set_storage_ = set_storage_ | static_cast<uint32_t>(set_b);
   }
 
-  // Removes all values in 'set_b' from our set.
+  // Removes all elements of input set from this set.
   inline constexpr void RemoveAll(gpu::SharedImageUsageSet set_b) {
-    set_storage_ = set_storage_ & ~static_cast<uint32_t>(set_b);
+    uint32_t negation_mask = ~set_b.set_storage_;
+    set_storage_ &= negation_mask;
   }
+
+  // Returns true iff our set is empty.
+  constexpr bool empty() const { return set_storage_ == 0; }
+
+  // The semantic expectation here is that 'Has' is for set testing of single
+  // elements.
+  inline constexpr bool Has(gpu::SharedImageUsage set_b) const {
+    return (set_storage_ & set_b) == set_b;
+  }
+
+  // These function are intentionally deleted. Use the 'Has' function as
+  // 'SharedImageUsage' is conceptually not a set.
+  inline constexpr bool HasAll(gpu::SharedImageUsage set_b) const = delete;
+  inline constexpr bool HasAny(gpu::SharedImageUsage set_b) const = delete;
 
   // Test set membership via intersection. Returns true if 'set_b' is a subset.
   inline constexpr bool HasAll(gpu::SharedImageUsageSet set_b) const {
@@ -229,14 +244,15 @@ inline constexpr bool operator==(gpu::SharedImageUsageSet set_a,
 GPU_EXPORT extern const char kExoTextureLabelPrefix[];
 
 // Returns true if usage is a valid client usage.
-GPU_EXPORT bool IsValidClientUsage(uint32_t usage);
+GPU_EXPORT bool IsValidClientUsage(SharedImageUsageSet usage);
 
 // Returns true iff usage includes SHARED_IMAGE_USAGE_GLES2_READ or
 // SHARED_IMAGE_USAGE_GLES2_WRITE.
-GPU_EXPORT bool HasGLES2ReadOrWriteUsage(uint32_t usage);
+GPU_EXPORT bool HasGLES2ReadOrWriteUsage(SharedImageUsageSet usage);
 
 // Create a string to label SharedImageUsage.
-GPU_EXPORT std::string CreateLabelForSharedImageUsage(uint32_t usage);
+GPU_EXPORT std::string CreateLabelForSharedImageUsage(
+    SharedImageUsageSet usage);
 
 }  // namespace gpu
 

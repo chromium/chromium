@@ -110,7 +110,7 @@ class GPU_EXPORT ClientSharedImage
   viz::SharedImageFormat format() const { return metadata_.format; }
   gfx::Size size() const { return metadata_.size; }
   gfx::ColorSpace color_space() const { return metadata_.color_space; }
-  uint32_t usage() { return metadata_.usage; }
+  SharedImageUsageSet usage() { return metadata_.usage; }
 
   bool HasHolder() { return sii_holder_ != nullptr; }
 

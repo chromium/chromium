@@ -63,7 +63,7 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
   // requested format to a supported compatible DXGI format.
   DXGI_FORMAT internal_format = gfx::ColorSpaceWin::GetDXGIFormat(color_space);
 
-  if (usage & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE) {
+  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE)) {
     DCHECK_NE(internal_format, DXGI_FORMAT_R10G10B10A2_UNORM);
     return DCompSurfaceImageBacking::Create(
         mailbox, format, internal_format, size, color_space, surface_origin,

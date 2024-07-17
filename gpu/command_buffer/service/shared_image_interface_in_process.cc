@@ -509,7 +509,8 @@ SharedImageInterface::SharedImageMapping
 SharedImageInterfaceInProcess::CreateSharedImage(
     const SharedImageInfo& si_info) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
-  DCHECK_EQ(si_info.meta.usage, gpu::SHARED_IMAGE_USAGE_CPU_WRITE);
+  DCHECK_EQ(si_info.meta.usage,
+            gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_WRITE));
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   CHECK(!si_info.meta.format.PrefersExternalSampler());
@@ -596,7 +597,7 @@ SharedImageInterfaceInProcess::CreateSwapChain(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
+    gpu::SharedImageUsageSet usage) {
   NOTREACHED_IN_MIGRATION();
   return SharedImageInterface::SwapChainSharedImages(nullptr, nullptr);
 }

@@ -90,7 +90,7 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
 
 bool IsFormatSupported(viz::SharedImageFormat format,
                        gfx::GpuMemoryBufferType gmb_type,
-                       uint32_t usage) {
+                       gpu::SharedImageUsageSet usage) {
   // Accessing via GL does not work with external sampling. Also, see
   // https://crbug.com/1394888.
   // NOTE: At the current time this check is elided on Fuchsia as there is no
@@ -286,7 +286,7 @@ bool ExternalVkImageBackingFactory::IsSupported(
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
-    if (usage & SHARED_IMAGE_USAGE_CPU_WRITE) {
+    if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE)) {
       // Only CPU writable when the client provides a NativePixmap.
       return false;
     }
@@ -305,7 +305,7 @@ bool ExternalVkImageBackingFactory::IsSupported(
 #if BUILDFLAG(IS_ANDROID)
   // Scanout on Android requires explicit fence synchronization which is only
   // supported by the interop factory.
-  if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
+  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
     return false;
   }
 #endif

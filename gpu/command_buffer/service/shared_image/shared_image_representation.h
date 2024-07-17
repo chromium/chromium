@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/gpu_gles2_export.h"
@@ -114,7 +115,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
   const gfx::ColorSpace& color_space() const { return backing_->color_space(); }
   GrSurfaceOrigin surface_origin() const { return backing_->surface_origin(); }
   SkAlphaType alpha_type() const { return backing_->alpha_type(); }
-  uint32_t usage() const { return backing_->usage(); }
+  SharedImageUsageSet usage() const { return backing_->usage(); }
   const gpu::Mailbox& mailbox() const { return backing_->mailbox(); }
   const std::string& debug_label() const { return backing_->debug_label(); }
   const char* backing_name() const { return backing_->GetName(); }

@@ -45,7 +45,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
     virtual bool Initialize(const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             SharedImageFormat format,
-                            uint32_t shared_image_usage);
+                            gpu::SharedImageUsageSet shared_image_usage);
 
     gpu::SkiaImageRepresentation* skia_representation() {
       return skia_representation_.get();

@@ -188,7 +188,8 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithANGLEMetal) {
     bool supported = backing_factory_->CanCreateSharedImage(
         metal_invalid_usage, format, size, /*thread_safe=*/false,
         gfx::EMPTY_BUFFER, GrContextType::kGL, {});
-    EXPECT_TRUE(supported) << metal_invalid_usage;
+    EXPECT_TRUE(supported) << CreateLabelForSharedImageUsage(
+        metal_invalid_usage);
 
     backing_factory()->ForceSetUsingANGLEMetalForTesting(true);
     backing_factory()->EnableSupportForAllMetalUsagesForTesting(false);
@@ -196,7 +197,8 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithANGLEMetal) {
     supported = backing_factory_->CanCreateSharedImage(
         metal_invalid_usage, format, size, /*thread_safe=*/false,
         gfx::EMPTY_BUFFER, GrContextType::kGL, {});
-    EXPECT_FALSE(supported) << metal_invalid_usage;
+    EXPECT_FALSE(supported)
+        << CreateLabelForSharedImageUsage(metal_invalid_usage);
 
     backing_factory()->ForceSetUsingANGLEMetalForTesting(false);
     backing_factory()->EnableSupportForAllMetalUsagesForTesting(true);
@@ -219,7 +221,7 @@ TEST_F(GLTextureImageBackingFactoryTest,
     bool supported = backing_factory_->CanCreateSharedImage(
         gles2_usage | SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY, format, size,
         /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGL, {});
-    EXPECT_TRUE(supported) << gles2_usage;
+    EXPECT_TRUE(supported) << CreateLabelForSharedImageUsage(gles2_usage);
   }
 
   backing_factory()->ForceSetUsingANGLEMetalForTesting(false);
@@ -276,12 +278,14 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithGraphite) {
     bool supported = backing_factory_->CanCreateSharedImage(
         graphite_invalid_usage, format, size, /*thread_safe=*/false,
         gfx::EMPTY_BUFFER, GrContextType::kGL, {});
-    EXPECT_TRUE(supported) << graphite_invalid_usage;
+    EXPECT_TRUE(supported) << CreateLabelForSharedImageUsage(
+        graphite_invalid_usage);
 
     supported = backing_factory_->CanCreateSharedImage(
         graphite_invalid_usage, format, size, /*thread_safe=*/false,
         gfx::EMPTY_BUFFER, GrContextType::kGraphiteDawn, {});
-    EXPECT_FALSE(supported) << graphite_invalid_usage;
+    EXPECT_FALSE(supported)
+        << CreateLabelForSharedImageUsage(graphite_invalid_usage);
   }
 }
 
@@ -300,7 +304,7 @@ TEST_F(GLTextureImageBackingFactoryTest,
         raster_usage | SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY, format, size,
         /*thread_safe=*/false, gfx::EMPTY_BUFFER, GrContextType::kGraphiteDawn,
         {});
-    EXPECT_TRUE(supported) << raster_usage;
+    EXPECT_TRUE(supported) << CreateLabelForSharedImageUsage(raster_usage);
   }
 }
 

@@ -43,7 +43,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label);
 
   DXGISwapChainImageBacking(const DXGISwapChainImageBacking&) = delete;
@@ -79,7 +79,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,

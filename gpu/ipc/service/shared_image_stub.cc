@@ -214,7 +214,7 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
-                                        uint32_t usage,
+                                        SharedImageUsageSet usage,
                                         std::string debug_label) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                size.width(), "height", size.height());
@@ -452,10 +452,11 @@ void SharedImageStub::OnCreateSwapChain(mojom::CreateSwapChainParamsPtr params,
     return;
   }
 
-  if (!factory_->CreateSwapChain(
-          params->front_buffer_mailbox, params->back_buffer_mailbox,
-          params->format, params->size, params->color_space,
-          params->surface_origin, params->alpha_type, params->usage)) {
+  if (!factory_->CreateSwapChain(params->front_buffer_mailbox,
+                                 params->back_buffer_mailbox, params->format,
+                                 params->size, params->color_space,
+                                 params->surface_origin, params->alpha_type,
+                                 SharedImageUsageSet(params->usage))) {
     DLOG(ERROR) << "SharedImageStub: Unable to create swap chain";
     OnError();
     return;

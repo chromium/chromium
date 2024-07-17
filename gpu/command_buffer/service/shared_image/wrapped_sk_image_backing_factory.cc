@@ -182,7 +182,7 @@ bool WrappedSkImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (usage & ~GetSupportedUsage(context_state_.get())) {
+  if (!GetSupportedUsage(context_state_.get()).HasAll(usage)) {
     return false;
   }
 
@@ -218,7 +218,7 @@ bool WrappedSkImageBackingFactory::IsSupported(
              format == viz::SinglePlaneFormat::kBGR_565) {
     // For BGRX_8888/BGR_565 there is no equivalent SkColorType. Skia will use
     // the RGBX_8888/RGB_565 color type on upload so R/B channels are reversed.
-    if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD || !pixel_data.empty()) {
+    if (usage.Has(SHARED_IMAGE_USAGE_CPU_UPLOAD) || !pixel_data.empty()) {
       return false;
     }
   }

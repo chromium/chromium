@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_SHARED_IMAGE_INTERFACE_H_
 #define GPU_COMMAND_BUFFER_CLIENT_SHARED_IMAGE_INTERFACE_H_
 
+#include <cstdint>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -12,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -60,7 +63,7 @@ struct SharedImageMetadata {
   gfx::ColorSpace color_space;
   GrSurfaceOrigin surface_origin;
   SkAlphaType alpha_type;
-  uint32_t usage;
+  SharedImageUsageSet usage;
 };
 
 struct SharedImageInfo {
@@ -69,14 +72,14 @@ struct SharedImageInfo {
                   const gfx::ColorSpace& color_space,
                   GrSurfaceOrigin surface_origin,
                   SkAlphaType alpha_type,
-                  uint32_t usage,
+                  SharedImageUsageSet usage,
                   std::string_view debug_label)
       : meta(format, size, color_space, surface_origin, alpha_type, usage),
         debug_label(debug_label) {}
   SharedImageInfo(const viz::SharedImageFormat& format,
                   gfx::Size size,
                   const gfx::ColorSpace& color_space,
-                  uint32_t usage,
+                  SharedImageUsageSet usage,
                   std::string_view debug_label)
       : meta(format,
              size,
@@ -252,7 +255,7 @@ class GPU_EXPORT SharedImageInterface
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       uint32_t texture_target);
 
   // Imports SharedImage to this interface and returns an owning reference. It
@@ -281,7 +284,7 @@ class GPU_EXPORT SharedImageInterface
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage) = 0;
+      gpu::SharedImageUsageSet usage) = 0;
 
   // Swaps front and back buffer of a swap chain. Back buffer mailbox still
   // refers to the back buffer of the swap chain after calling PresentSwapChain.
@@ -354,7 +357,7 @@ class GPU_EXPORT SharedImageInterface
 
   // Provides the usage flags supported by the given |mailbox|. This must have
   // been created using a SharedImageInterface on the same channel.
-  virtual uint32_t UsageForMailbox(const Mailbox& mailbox);
+  virtual SharedImageUsageSet UsageForMailbox(const Mailbox& mailbox);
 
   // Informs that existing |mailbox| with the specified metadata can be passed
   // to DestroySharedImage().
@@ -365,7 +368,7 @@ class GPU_EXPORT SharedImageInterface
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage);
+      SharedImageUsageSet usage);
   virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -373,7 +376,7 @@ class GPU_EXPORT SharedImageInterface
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       uint32_t texture_target);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;

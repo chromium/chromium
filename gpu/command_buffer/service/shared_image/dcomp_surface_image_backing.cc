@@ -179,7 +179,7 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label) {
   // IDCompositionSurface only supports the following formats:
   // https://learn.microsoft.com/en-us/windows/win32/api/dcomp/nf-dcomp-idcompositiondevice2-createsurface#remarks
@@ -222,7 +222,7 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface)
     : ClearTrackingSharedImageBacking(
@@ -240,9 +240,9 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
           new D3DTextureGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
                                      size))),
       dcomp_surface_(std::move(dcomp_surface)) {
-  const bool has_scanout = !!(usage & SHARED_IMAGE_USAGE_SCANOUT);
-  const bool write_only = !(usage & SHARED_IMAGE_USAGE_DISPLAY_READ) &&
-                          !!(usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  const bool has_scanout = usage.Has(SHARED_IMAGE_USAGE_SCANOUT);
+  const bool write_only = !usage.Has(SHARED_IMAGE_USAGE_DISPLAY_READ) &&
+                          usage.Has(SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   DCHECK(has_scanout);
   DCHECK(write_only);
   DCHECK(dcomp_surface_);

@@ -212,7 +212,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     const GLFormatCaps& gl_format_caps,
@@ -233,7 +233,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
@@ -242,8 +242,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     size_t array_slice,
     bool use_update_subresource1,
     bool is_thread_safe) {
-  const bool has_webgpu_usage = !!(usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                            SHARED_IMAGE_USAGE_WEBGPU_WRITE));
+  const bool has_webgpu_usage = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                             SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
   CHECK(!has_webgpu_usage || dxgi_shared_handle_state);
   auto backing = base::WrapUnique(new D3DImageBacking(
@@ -262,7 +262,7 @@ D3DImageBacking::D3DImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
@@ -724,7 +724,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
   }
   wgpu::SharedTextureMemoryD3DSwapchainBeginState swapchain_begin_state = {};
   swapchain_begin_state.isSwapchain =
-      (usage() & SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE);
+      usage().Has(SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE);
 
   wgpu::SharedTextureMemoryBeginAccessDescriptor desc = {};
   const bool is_clear = ClearedRectInternal() == gfx::Rect(size());

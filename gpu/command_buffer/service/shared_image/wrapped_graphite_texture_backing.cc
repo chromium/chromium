@@ -120,7 +120,7 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     scoped_refptr<SharedContextState> context_state,
     const bool thread_safe)
@@ -169,7 +169,7 @@ WrappedGraphiteTextureBacking::~WrappedGraphiteTextureBacking() {
 
 bool WrappedGraphiteTextureBacking::Initialize() {
   CHECK(!format().IsCompressed());
-  const bool mipmapped = usage() & SHARED_IMAGE_USAGE_MIPMAP;
+  const bool mipmapped = usage().Has(SHARED_IMAGE_USAGE_MIPMAP);
   const int num_planes = format().NumberOfPlanes();
   graphite_textures_.resize(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {

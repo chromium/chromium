@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
@@ -196,7 +197,7 @@ EGLImageBacking::EGLImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     size_t estimated_size,
     const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,

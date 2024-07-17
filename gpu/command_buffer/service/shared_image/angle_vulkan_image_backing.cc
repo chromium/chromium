@@ -222,7 +222,7 @@ AngleVulkanImageBacking::AngleVulkanImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
@@ -280,14 +280,14 @@ bool AngleVulkanImageBacking::Initialize(
     const base::span<const uint8_t>& data) {
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
 
-  const uint32_t usages_needing_color_attachment =
+  constexpr gpu::SharedImageUsageSet usages_needing_color_attachment =
       SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
       SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  if (usage() & usages_needing_color_attachment) {
+  if (usage().HasAny(usages_needing_color_attachment)) {
     vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
     if (format().IsCompressed()) {

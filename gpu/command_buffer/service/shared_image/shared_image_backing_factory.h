@@ -125,7 +125,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
   void InvalidateWeakPtrsForTesting();
 
  private:
-  const SharedImageUsageSet invalid_usages_;
+  const SharedImageUsageSet valid_usages_;
   base::WeakPtrFactory<SharedImageBackingFactory> weak_ptr_factory_{this};
 };
 

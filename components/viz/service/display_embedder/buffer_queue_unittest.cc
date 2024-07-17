@@ -149,7 +149,7 @@ class MockedSkiaOutputSurface : public FakeSkiaOutputSurface {
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             RenderPassAlphaType alpha_type,
-                            uint32_t usage,
+                            gpu::SharedImageUsageSet usage,
                             std::string_view debug_label,
                             gpu::SurfaceHandle surface_handle));
   MOCK_METHOD1(DestroySharedImage, void(const gpu::Mailbox& mailbox));
@@ -165,10 +165,10 @@ TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
     testing::InSequence dummy;
     EXPECT_CALL(*mock_skia_output_surface,
                 CreateSharedImage(_, _, _, _,
-                                  static_cast<uint32_t>(
-                                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
+
+                                  gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE),
+                                      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE,
                                   _, _))
         .WillOnce(Return(expected_mailbox));
     EXPECT_CALL(*mock_skia_output_surface,

@@ -771,7 +771,7 @@ class TestGmbVideoFramePoolContext
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     return context_provider_->SharedImageInterface()->CreateSharedImage(
         {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,

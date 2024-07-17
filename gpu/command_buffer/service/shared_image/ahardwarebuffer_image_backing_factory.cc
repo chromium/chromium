@@ -200,7 +200,7 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
                               const gfx::ColorSpace& color_space,
                               GrSurfaceOrigin surface_origin,
                               SkAlphaType alpha_type,
-                              uint32_t usage,
+                              gpu::SharedImageUsageSet usage,
                               std::string debug_label,
                               base::android::ScopedHardwareBufferHandle handle,
                               size_t estimated_size,
@@ -334,7 +334,7 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     base::android::ScopedHardwareBufferHandle handle,
     size_t estimated_size,
@@ -498,7 +498,7 @@ AHardwareBufferImageBacking::ProduceSkiaGanesh(
   // Skia representation.
   if (context_state->GrContextIsVulkan()) {
     uint32_t queue_family = VK_QUEUE_FAMILY_EXTERNAL;
-    if (usage() & SHARED_IMAGE_USAGE_SCANOUT) {
+    if (usage().Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       // Any Android API that consume or produce buffers (e.g SurfaceControl)
       // requires a foreign queue.
       queue_family = VK_QUEUE_FAMILY_FOREIGN_EXT;
@@ -782,8 +782,9 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   // flags based on the usage params in the current function call.
   hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
                    AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
-  if (usage & SHARED_IMAGE_USAGE_SCANOUT)
+  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
     hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
+  }
 
   // Add WRITE usage as we'll it need to upload data
   if (!pixel_data.empty())
@@ -918,10 +919,9 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
 
   const FormatInfo& format_info = GetFormatInfo(format);
 
-  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
-                      (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  bool used_by_skia = usage.HasAny(
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   bool used_by_gl = (HasGLES2ReadOrWriteUsage(usage)) ||
                     (used_by_skia && gr_context_type == GrContextType::kGL);
 

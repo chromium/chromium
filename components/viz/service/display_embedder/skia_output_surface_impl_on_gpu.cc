@@ -704,8 +704,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   // DComp only allows drawing to a single surface at a time and does not
   // require us to keep the write accesses open through submit.
   const bool is_dcomp_surface =
-      (local_scoped_access->representation()->usage() &
-       gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE) != 0;
+      local_scoped_access->representation()->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE);
   if (is_overlay && !is_dcomp_surface) {
     DCHECK(!overlay_pass_accesses_.contains(mailbox));
     overlay_pass_accesses_.emplace(mailbox, std::move(local_scoped_access));
@@ -825,9 +825,10 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   // that issued that request. Thus, the usage here needs to capture the variety
   // of clients' eventual allowed usages. Note that CopyOutputRequests are not
   // writable via raster (by contract).
-  constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                              gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+  constexpr gpu::SharedImageUsageSet kUsage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   bool result = shared_image_factory_->CreateSharedImage(
@@ -2686,7 +2687,7 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     gpu::SurfaceHandle surface_handle) {
   if (context_is_lost_) {

@@ -36,7 +36,7 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label,
       size_t estimated_size,
       const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_into,

@@ -33,6 +33,7 @@
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "components/viz/service/display_embedder/skia_render_copy_results.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -270,7 +271,7 @@ class SkiaOutputSurfaceImplOnGpu
                          const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
                          SkAlphaType alpha_type,
-                         uint32_t usage,
+                         gpu::SharedImageUsageSet usage,
                          std::string debug_label,
                          gpu::SurfaceHandle surface_handle);
   void CreateSolidColorSharedImage(gpu::Mailbox mailbox,

@@ -36,7 +36,8 @@
 namespace gpu {
 
 namespace {
-bool UsageWillResultInGLWrite(uint32_t usage, GrContextType gr_context_type) {
+bool UsageWillResultInGLWrite(gpu::SharedImageUsageSet usage,
+                              GrContextType gr_context_type) {
   return (usage & SHARED_IMAGE_USAGE_GLES2_WRITE) ||
          ((gr_context_type == GrContextType::kGL) &&
           (usage & (SHARED_IMAGE_USAGE_RASTER_WRITE |
@@ -322,7 +323,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     base::span<const uint8_t> pixel_data) {
   if (!base::Contains(supported_formats_, format)) {
@@ -395,7 +396,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle,
     std::optional<gfx::BufferUsage> buffer_usage) {

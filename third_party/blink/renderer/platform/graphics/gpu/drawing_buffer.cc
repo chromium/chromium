@@ -1959,9 +1959,10 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   SkAlphaType back_buffer_alpha_type = kPremul_SkAlphaType;
   if (using_swap_chain_) {
     gpu::SharedImageInterface::SwapChainSharedImages shared_images =
-        sii->CreateSwapChain(color_buffer_format_, size, color_space_, origin,
-                             back_buffer_alpha_type,
-                             usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
+        sii->CreateSwapChain(
+            color_buffer_format_, size, color_space_, origin,
+            back_buffer_alpha_type,
+            gpu::SharedImageUsageSet(usage | gpu::SHARED_IMAGE_USAGE_SCANOUT));
     back_buffer_shared_image = std::move(shared_images.back_buffer);
     front_buffer_shared_image = std::move(shared_images.front_buffer);
   } else {
@@ -2018,13 +2019,15 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         if (disallow_gmb) {
           client_shared_image = sii->CreateSharedImage(
               {color_buffer_format_, size, color_space_, origin,
-               back_buffer_alpha_type, usage | additional_usage_flags,
+               back_buffer_alpha_type,
+               gpu::SharedImageUsageSet(usage | additional_usage_flags),
                "WebGLDrawingBuffer"},
               gpu::kNullSurfaceHandle);
         } else {
           client_shared_image = sii->CreateSharedImage(
               {color_buffer_format_, size, color_space_, origin,
-               back_buffer_alpha_type, usage | additional_usage_flags,
+               back_buffer_alpha_type,
+               gpu::SharedImageUsageSet(usage | additional_usage_flags),
                "WebGLDrawingBuffer"},
               gpu::kNullSurfaceHandle, buffer_usage);
         }
@@ -2062,7 +2065,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 
       back_buffer_shared_image = sii->CreateSharedImage(
           {color_buffer_format_, size, color_space_, origin,
-           back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
+           back_buffer_alpha_type, gpu::SharedImageUsageSet(usage),
+           "WebGLDrawingBuffer"},
           gpu::kNullSurfaceHandle);
       CHECK(back_buffer_shared_image);
     }

@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -112,7 +113,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
-                                        uint32_t usage) override;
+                                        SharedImageUsageSet usage) override;
   void PresentSwapChain(const SyncToken& sync_token,
                         const Mailbox& mailbox) override;
 #if BUILDFLAG(IS_FUCHSIA)

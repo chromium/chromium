@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 
 namespace gpu {
@@ -69,7 +70,7 @@ class TestSharedImageInterface : public SharedImageInterface {
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
-                                        uint32_t usage) override;
+                                        SharedImageUsageSet usage) override;
   void PresentSwapChain(const SyncToken& sync_token,
                         const Mailbox& mailbox) override;
 

@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -29,7 +30,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       SharedMemoryRegionWrapper wrapper,
       gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle(),

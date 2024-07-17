@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "ui/gl/trace_util.h"
@@ -440,7 +441,7 @@ void SharedImageManager::UpdateExternalFence(
 }
 #endif
 
-std::optional<uint32_t> SharedImageManager::GetUsageForMailbox(
+std::optional<SharedImageUsageSet> SharedImageManager::GetUsageForMailbox(
     const Mailbox& mailbox) {
   AutoLock autolock(this);
 
@@ -449,7 +450,7 @@ std::optional<uint32_t> SharedImageManager::GetUsageForMailbox(
     if (found == images_.end()) {
       return std::nullopt;
     }
-    return std::optional<uint32_t>((*found)->usage());
+    return std::optional<SharedImageUsageSet>((*found)->usage());
   }
 }
 

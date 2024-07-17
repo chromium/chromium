@@ -27,6 +27,7 @@
 #include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "media/gpu/buildflags.h"
@@ -171,7 +172,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                                  const gfx::Size& size,
                                  const gfx::ColorSpace& color_space,
                                  RenderPassAlphaType alpha_type,
-                                 uint32_t usage,
+                                 gpu::SharedImageUsageSet usage,
                                  std::string_view debug_label,
                                  gpu::SurfaceHandle surface_handle) override;
   gpu::Mailbox CreateSolidColorSharedImage(

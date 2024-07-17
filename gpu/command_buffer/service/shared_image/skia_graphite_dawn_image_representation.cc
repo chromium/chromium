@@ -54,7 +54,7 @@ SkiaGraphiteDawnImageRepresentation::Create(
     int array_slice) {
   CHECK(dawn_representation);
   const bool is_dcomp_surface =
-      backing->usage() & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
+      backing->usage().Has(SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE);
   const bool supports_multiplanar_rendering =
       SupportsMultiplanarRendering(context_state.get());
   const bool supports_multiplanar_copy =

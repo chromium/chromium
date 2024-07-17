@@ -54,7 +54,7 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label) {
   if (!d3d11_device) {
     return nullptr;
@@ -147,7 +147,7 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
@@ -167,8 +167,8 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
       dxgi_swap_chain_(std::move(dxgi_swap_chain)),
       buffers_need_alpha_initialization_count_(
           buffers_need_alpha_initialization_count) {
-  const bool has_scanout = !!(usage & SHARED_IMAGE_USAGE_SCANOUT);
-  const bool has_write = !!(usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  const bool has_scanout = usage.Has(SHARED_IMAGE_USAGE_SCANOUT);
+  const bool has_write = usage.Has(SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   DCHECK(has_scanout);
   DCHECK(has_write);
 }
