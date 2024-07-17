@@ -39,6 +39,19 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         print(name, args)
         self.assertEqual(actual_print, expected_print)
 
+  def testBuildCommand(self):
+    actual_input_and_output = [
+        [
+            'build', [],
+            'autoninja -C out/Default captured_sites_interactive_tests'
+        ],
+        [
+            'build', ['-r'],
+            'autoninja -C out/Release captured_sites_interactive_tests'
+        ],
+    ]
+    self.helpCompareInputsToExpected(actual_input_and_output)
+
   def testChromeCommand(self):
     actual_input_and_output = [
         [

@@ -5,6 +5,7 @@
 
   $ tools/captured_sites/control.py [command] [arguments]
 Commands:
+  build   Builds a captured_sites_interactive_tests target
   chrome  Starts a Chrome instance with autofill hooks
   wpr     Starts a WPR server instance to record or replay
   run     Starts a test for a single site or "*" for all sites
@@ -117,6 +118,7 @@ _WPR_CERT_LOOKUP = {
 
 def available_commands():
   commands = {
+      'build': BuildCommand,
       'chrome': ChromeCommand,
       'refresh': RefreshCommand,
       'run': RunCommand,
@@ -259,6 +261,35 @@ class Command():
     ignore_cert_list_arg = '--ignore-certificate-errors-spki-list=' + ','.join(
         hashes)
     return cert_arg, key_arg, ignore_cert_list_arg
+
+
+class BuildCommand(Command):
+
+  def __init__(self, local_environ):
+    super().__init__('Build the test target.', local_environ)
+
+  def build(self, args):
+    super().build(args)
+    self.command_args = [
+        'autoninja', '-C', 'out/' + self.options.binary_folder,
+        'captured_sites_interactive_tests'
+    ]
+
+  def make_process_call(self, args):
+    command_text = ' '.join(args)
+    subprocess.call(command_text, shell=True)
+
+  def add_args(self, parser):
+    super().add_args(parser)
+    parser.add_argument(
+        '-r',
+        '--release',
+        dest='binary_folder',
+        default='Default',
+        const='Release',
+        help=
+        'Start a build of captured_sites_interactive_tests in Release folder.',
+        action='store_const')
 
 
 class ChromeCommand(Command):
