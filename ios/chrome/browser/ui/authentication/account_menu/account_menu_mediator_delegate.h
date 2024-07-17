@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 
-@protocol AccountMenuMediator;
+@class AccountMenuMediator;
 @protocol SystemIdentity;
 
 @protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>

@@ -353,6 +353,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/tips_notifications/model:unit_tests",
     "//ios/chrome/browser/translate/model:unit_tests",
     "//ios/chrome/browser/ui/authentication:unit_tests",
+    "//ios/chrome/browser/ui/authentication/account_menu:unit_tests",
     "//ios/chrome/browser/ui/authentication/cells:unit_tests",
     "//ios/chrome/browser/ui/authentication/history_sync:unit_tests",
     "//ios/chrome/browser/ui/authentication/identity_chooser:unit_tests",

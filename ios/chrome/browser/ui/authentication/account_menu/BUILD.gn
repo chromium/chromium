@@ -92,10 +92,26 @@ source_set("constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  sources = [ "account_menu_mediator_unittests.mm" ]
   deps = [
     ":account_menu",
+    ":account_menu_ui",
     "//base",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

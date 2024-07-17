@@ -255,8 +255,8 @@
   NSArray<id<SystemIdentity>>* allIdentities =
       _accountManagerService->GetAllIdentities();
 
-  NSMutableArray<NSString*>* tablegaiaIDsToRemove = [NSMutableArray array];
-  NSMutableArray<NSString*>* tableIndicesToAdd = [NSMutableArray array];
+  NSMutableArray<NSString*>* gaiaIDsToRemove = [NSMutableArray array];
+  NSMutableArray<NSString*>* gaiaIDsToAdd = [NSMutableArray array];
 
   for (id<SystemIdentity> secondaryIdentity : allIdentities) {
     if (secondaryIdentity == _primaryIdentity) {
@@ -271,7 +271,7 @@
     }
     if (mustAdd) {
       [_identities addObject:secondaryIdentity];
-      [tableIndicesToAdd addObject:secondaryIdentity.gaiaID];
+      [gaiaIDsToAdd addObject:secondaryIdentity.gaiaID];
     }
   }
 
@@ -279,14 +279,14 @@
     id<SystemIdentity> identity = _identities[i];
     if (![allIdentities containsObject:identity] ||
         identity == _primaryIdentity) {
-      [tablegaiaIDsToRemove addObject:identity.gaiaID];
+      [gaiaIDsToRemove addObject:identity.gaiaID];
       [_identities removeObjectAtIndex:i--];
       // There will be a new object at place `i`. So we must decrease `i`.
     }
   }
 
-  [self.consumer updateAccountListWithGaiaIDsToAdd:tableIndicesToAdd
-                                   gaiaIDsToRemove:tablegaiaIDsToRemove];
+  [self.consumer updateAccountListWithGaiaIDsToAdd:gaiaIDsToAdd
+                                   gaiaIDsToRemove:gaiaIDsToRemove];
   // In case the primary account information changed.
   [self.consumer updatePrimaryAccount];
 }
