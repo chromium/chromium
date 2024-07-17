@@ -552,6 +552,11 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
 
+  // Create and register customize chrome entry on unified side panel
+  auto* customize_chrome_side_panel_coordinator =
+      tab_->GetTabFeatures()->customize_chrome_side_panel_controller();
+  customize_chrome_side_panel_coordinator->CreateAndRegisterEntry();
+
   // Populates the load time data with basic info.
   OnColorProviderChanged();
   OnCustomBackgroundImageUpdated();
@@ -571,6 +576,18 @@ NewTabPageUI::~NewTabPageUI() {
         web_ui->GetController()->GetAs<NewTabPageUI>()) {
       return;
     }
+  }
+
+  // It is possible for the TabFeatures to outlive the NewTabPageUI if the user
+  // navigates away from the NTP. The only way for NewTabPageUI to outlive
+  // TabFeatures is during Tab deletion, when TabFeatures is destroyed before
+  // the WebContents, whereas NewTabPageUI is destroyed during WebContents
+  // destruction. Thus, the only time we do a null check for `tab_` is in the
+  // destructor.
+  if (tab_) {
+    auto* customize_chrome_side_panel_coordinator =
+        tab_->GetTabFeatures()->customize_chrome_side_panel_controller();
+    customize_chrome_side_panel_coordinator->DeregisterEntry();
   }
 }
 
@@ -750,14 +767,14 @@ void NewTabPageUI::CreatePageHandler(
         pending_page_handler) {
   DCHECK(pending_page.is_valid());
 
-  auto* side_panel_controller =
+  auto* customize_chrome_side_panel_coordinator =
       tab_->GetTabFeatures()->customize_chrome_side_panel_controller();
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       ntp_custom_background_service_, theme_service_,
       LogoServiceFactory::GetForProfile(profile_), web_contents(),
       std::make_unique<NewTabPageFeaturePromoHelper>(), navigation_start_time_,
-      &module_id_names_, side_panel_controller);
+      &module_id_names_, customize_chrome_side_panel_coordinator);
 }
 
 void NewTabPageUI::CreateBrowserCommandHandler(

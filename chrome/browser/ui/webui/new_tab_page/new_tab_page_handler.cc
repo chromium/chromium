@@ -846,14 +846,9 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
 
 void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
     bool visible,
-    new_tab_page::mojom::CustomizeChromeSection section_mojo) {
-  if (!visible) {
-    customize_chrome_side_panel_controller_->CloseSidePanel();
-    return;
-  }
-
+    new_tab_page::mojom::CustomizeChromeSection section) {
   CustomizeChromeSection section_enum;
-  switch (section_mojo) {
+  switch (section) {
     case new_tab_page::mojom::CustomizeChromeSection::kUnspecified:
       section_enum = CustomizeChromeSection::kUnspecified;
       break;
@@ -873,16 +868,17 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
       section_enum = CustomizeChromeSection::kToolbar;
       break;
   }
+  customize_chrome_side_panel_controller_->SetCustomizeChromeSidePanelVisible(
+      visible, section_enum);
 
-  customize_chrome_side_panel_controller_->OpenSidePanel(
-      SidePanelOpenTrigger::kNewTabPage, section_enum);
-
-  // Record usage for customize chrome promo.
-  auto* tab = web_contents_.get();
-  feature_promo_helper_->RecordFeatureUsage(
-      feature_engagement::events::kCustomizeChromeOpened, tab);
-  feature_promo_helper_->CloseFeaturePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, tab);
+  if (visible) {
+    // Record usage for customize chrome promo.
+    auto* tab = web_contents_.get();
+    feature_promo_helper_->RecordFeatureUsage(
+        feature_engagement::events::kCustomizeChromeOpened, tab);
+    feature_promo_helper_->CloseFeaturePromo(
+        feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, tab);
+  }
 }
 
 void NewTabPageHandler::IncrementCustomizeChromeButtonOpenCount() {

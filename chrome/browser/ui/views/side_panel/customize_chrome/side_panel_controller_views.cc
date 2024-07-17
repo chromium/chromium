@@ -11,18 +11,15 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -34,78 +31,12 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT<CustomizeChromeUI>,
                         SidePanelWebUIViewT)
 END_METADATA
 
-namespace {
-
-constexpr SidePanelEntry::Id kSidePanelEntryId =
-    SidePanelEntry::Id::kCustomizeChrome;
-
-}  // anonymous namespace
-
 namespace customize_chrome {
 
 SidePanelControllerViews::SidePanelControllerViews(tabs::TabInterface& tab)
-    : tab_(tab) {
-  content::WebContentsObserver::Observe(tab_->GetContents());
-  will_discard_contents_callback_subscription_ =
-      tab_->RegisterWillDiscardContents(
-          base::BindRepeating(&SidePanelControllerViews::WillDiscardContents,
-                              base::Unretained(this)));
-}
+    : tab_(tab) {}
 
 SidePanelControllerViews::~SidePanelControllerViews() = default;
-
-bool SidePanelControllerViews::IsCustomizeChromeEntryShowing() const {
-  auto* side_panel_ui = GetSidePanelUI();
-  return side_panel_ui && side_panel_ui->IsSidePanelShowing() &&
-         (side_panel_ui->GetCurrentEntryId() == kSidePanelEntryId);
-}
-
-bool SidePanelControllerViews::IsCustomizeChromeEntryAvailable() const {
-  auto* registry = SidePanelRegistry::Get(tab_->GetContents());
-  return registry ? (registry->GetEntryForKey(
-                         SidePanelEntry::Key(kSidePanelEntryId)) != nullptr)
-                  : false;
-}
-
-void SidePanelControllerViews::OnEntryShown(SidePanelEntry* entry) {
-  if (entry_state_changed_callback_) {
-    entry_state_changed_callback_.Run(true);
-  }
-}
-
-void SidePanelControllerViews::OnEntryHidden(SidePanelEntry* entry) {
-  if (entry_state_changed_callback_) {
-    entry_state_changed_callback_.Run(false);
-  }
-}
-
-bool SidePanelControllerViews::CanShowOnURL(const GURL& url) const {
-  // If toolbar pinning is enabled, then we can always show the sidepanel.
-  if (features::IsToolbarPinningEnabled()) {
-    return true;
-  }
-
-  // Otherwise, the sidepanel can only be shown on the new tab page.
-  return NewTabPageUI::IsNewTabPageOrigin(url);
-}
-
-void SidePanelControllerViews::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // Check the actual navigation entry of the page, this is more proper than the
-  // navigation handles information since the navigation handle can include
-  // several other navigation types.
-  content::NavigationEntry* entry =
-      tab_->GetContents()->GetController().GetLastCommittedEntry();
-  if (!entry) {
-    entry = tab_->GetContents()->GetController().GetVisibleEntry();
-  }
-
-  if (CanShowOnURL(entry->GetURL())) {
-    CreateAndRegisterEntry();
-  } else {
-    DeregisterEntry();
-  }
-}
 
 void SidePanelControllerViews::CreateAndRegisterEntry() {
   auto* registry = SidePanelRegistry::Get(tab_->GetContents());
@@ -114,13 +45,8 @@ void SidePanelControllerViews::CreateAndRegisterEntry() {
     return;
   }
 
-  // If the registry already has an entry then disregard.
-  if (registry->GetEntryForKey(SidePanelEntry::Key(kSidePanelEntryId))) {
-    return;
-  }
-
   auto entry = std::make_unique<SidePanelEntry>(
-      kSidePanelEntryId,
+      SidePanelEntry::Id::kCustomizeChrome,
       base::BindRepeating(
           &SidePanelControllerViews::CreateCustomizeChromeWebView,
           base::Unretained(this)));
@@ -135,44 +61,56 @@ void SidePanelControllerViews::DeregisterEntry() {
     return;
   }
 
-  auto* current_entry =
-      registry->GetEntryForKey(SidePanelEntry::Key(kSidePanelEntryId));
-  if (!current_entry) {
-    return;
+  if (auto* current_entry = registry->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))) {
+    current_entry->RemoveObserver(this);
   }
 
-  current_entry->RemoveObserver(this);
-  registry->Deregister(SidePanelEntry::Key(kSidePanelEntryId));
+  registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
 }
 
-void SidePanelControllerViews::OpenSidePanel(
-    SidePanelOpenTrigger trigger,
-    std::optional<CustomizeChromeSection> section) {
-  SidePanelUI* side_panel_ui = GetSidePanelUI();
+void SidePanelControllerViews::SetCustomizeChromeSidePanelVisible(
+    bool visible,
+    CustomizeChromeSection section) {
+  auto* side_panel_ui = GetSidePanelUI();
   if (!side_panel_ui) {
     return;
   }
-
   DCHECK(IsCustomizeChromeEntryAvailable());
-
-  // SidePanelUI::Show calls into CreateCustomizeChromeWebView which sets up
-  // the customize_chrome_ui_.
-  side_panel_ui->Show(kSidePanelEntryId, trigger);
-  if (customize_chrome_ui_ && section.has_value()) {
-    customize_chrome_ui_->ScrollToSection(section.value());
-    section.reset();
+  if (visible) {
+    side_panel_ui->Show(SidePanelEntry::Id::kCustomizeChrome);
+    if (customize_chrome_ui_) {
+      customize_chrome_ui_->ScrollToSection(section);
+      section_.reset();
+    } else {
+      section_ = section;
+    }
   } else {
-    section_ = section;
+    side_panel_ui->Close();
   }
 }
 
-void SidePanelControllerViews::CloseSidePanel() {
-  // If the CustomizeChromeUI isn't showing already, dont do anything.
-  if (!IsCustomizeChromeEntryShowing()) {
-    return;
-  }
+bool SidePanelControllerViews::IsCustomizeChromeEntryShowing() const {
+  auto* side_panel_ui = GetSidePanelUI();
+  return side_panel_ui && side_panel_ui->IsSidePanelShowing() &&
+         (side_panel_ui->GetCurrentEntryId() ==
+          SidePanelEntry::Id::kCustomizeChrome);
+}
 
-  GetSidePanelUI()->Close();
+bool SidePanelControllerViews::IsCustomizeChromeEntryAvailable() const {
+  auto* registry = SidePanelRegistry::Get(tab_->GetContents());
+  return registry ? (registry->GetEntryForKey(SidePanelEntry::Key(
+                         SidePanelEntry::Id::kCustomizeChrome)) != nullptr)
+                  : false;
+}
+
+void SidePanelControllerViews::OnEntryShown(SidePanelEntry* entry) {
+  entry_state_changed_callback_.Run(true);
+}
+
+void SidePanelControllerViews::OnEntryHidden(SidePanelEntry* entry) {
+  entry_state_changed_callback_.Run(false);
 }
 
 std::unique_ptr<views::View>
@@ -207,13 +145,6 @@ SidePanelUI* SidePanelControllerViews::GetSidePanelUI() const {
 void SidePanelControllerViews::SetEntryChangedCallback(
     StateChangedCallBack callback) {
   entry_state_changed_callback_ = std::move(callback);
-}
-
-void SidePanelControllerViews::WillDiscardContents(
-    tabs::TabInterface* tab,
-    content::WebContents* previous_contents,
-    content::WebContents* new_contents) {
-  content::WebContentsObserver::Observe(new_contents);
 }
 
 }  // namespace customize_chrome

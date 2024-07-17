@@ -1422,7 +1422,6 @@ static_library("ui") {
       "serial/serial_chooser_controller.h",
       "shared_highlighting/shared_highlighting_promo.cc",
       "shared_highlighting/shared_highlighting_promo.h",
-      "side_panel/side_panel_entry_observer.h",
       "signin/cookie_clear_on_exit_migration_notice.cc",
       "signin/cookie_clear_on_exit_migration_notice.h",
       "singleton_tabs.cc",

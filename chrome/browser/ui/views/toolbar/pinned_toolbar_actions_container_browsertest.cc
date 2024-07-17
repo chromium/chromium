@@ -57,31 +57,14 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
-                       CustomizeToolbarCanBeCalledFromNewTabPage) {
+                       CustomizeToolbar) {
   auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
       browser(), actions::kActionCut, container());
   pinned_button->ExecuteCommand(IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR, 0);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("chrome://newtab/")));
   content::WaitForLoadStop(web_contents);
   EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
-  const std::optional<SidePanelEntryId> current_entry =
-      browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
-  EXPECT_TRUE(current_entry.has_value());
-  EXPECT_EQ(SidePanelEntryId::kCustomizeChrome, current_entry.value());
-}
-
-IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
-                       CustomizeToolbarCanBeCalledFromNonNewTabPage) {
-  auto pinned_button = std::make_unique<PinnedActionToolbarButton>(
-      browser(), actions::kActionCut, container());
-  pinned_button->ExecuteCommand(IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR, 0);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::WaitForLoadStop(web_contents);
-  EXPECT_NE(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
   const std::optional<SidePanelEntryId> current_entry =
       browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
   EXPECT_TRUE(current_entry.has_value());

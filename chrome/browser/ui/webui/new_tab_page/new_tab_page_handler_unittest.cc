@@ -204,20 +204,17 @@ class MockCustomizeChromeTabHelper
   ~MockCustomizeChromeTabHelper() override = default;
 
   MOCK_METHOD(bool, IsCustomizeChromeEntryAvailable, (), (const, override));
+  MOCK_METHOD(void, CreateAndRegisterEntry, (), (override));
+  MOCK_METHOD(void, DeregisterEntry, (), (override));
+  MOCK_METHOD(void,
+              SetCustomizeChromeSidePanelVisible,
+              (bool, CustomizeChromeSection),
+              (override));
   MOCK_METHOD(bool, IsCustomizeChromeEntryShowing, (), (const, override));
   MOCK_METHOD(void,
               SetEntryChangedCallback,
               (StateChangedCallBack),
               (override));
-  MOCK_METHOD(void,
-              OpenSidePanel,
-              (SidePanelOpenTrigger, std::optional<CustomizeChromeSection>),
-              (override));
-  MOCK_METHOD(void, CloseSidePanel, (), (override));
-
- protected:
-  MOCK_METHOD(void, CreateAndRegisterEntry, (), (override));
-  MOCK_METHOD(void, DeregisterEntry, (), (override));
 };
 
 class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {
@@ -985,12 +982,13 @@ TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {
   mock_page_.FlushForTesting();
 }
 
-TEST_F(NewTabPageHandlerTest, OpenSidePanel) {
-  SidePanelOpenTrigger trigger;
-  std::optional<CustomizeChromeSection> section;
-  EXPECT_CALL(*mock_customize_chrome_tab_helper_, OpenSidePanel)
+TEST_F(NewTabPageHandlerTest, SetCustomizeChromeSidePanelVisible) {
+  bool visible;
+  CustomizeChromeSection section;
+  EXPECT_CALL(*mock_customize_chrome_tab_helper_,
+              SetCustomizeChromeSidePanelVisible)
       .Times(1)
-      .WillOnce(testing::DoAll(testing::SaveArg<0>(&trigger),
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&visible),
                                testing::SaveArg<1>(&section)));
   EXPECT_CALL(
       *mock_feature_promo_helper_,
@@ -1003,17 +1001,26 @@ TEST_F(NewTabPageHandlerTest, OpenSidePanel) {
       /*visible=*/true,
       new_tab_page::mojom::CustomizeChromeSection::kAppearance);
 
-  EXPECT_EQ(SidePanelOpenTrigger::kNewTabPage, trigger);
+  EXPECT_TRUE(visible);
   EXPECT_EQ(CustomizeChromeSection::kAppearance, section);
 }
 
-TEST_F(NewTabPageHandlerTest, CloseSidePanel) {
-  EXPECT_CALL(*mock_customize_chrome_tab_helper_, CloseSidePanel).Times(1);
+TEST_F(NewTabPageHandlerTest, SetCustomizeChromeSidePanelInvisible) {
+  bool visible;
+  CustomizeChromeSection section;
+  EXPECT_CALL(*mock_customize_chrome_tab_helper_,
+              SetCustomizeChromeSidePanelVisible)
+      .Times(1)
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&visible),
+                               testing::SaveArg<1>(&section)));
   EXPECT_CALL(*mock_feature_promo_helper_, RecordFeatureUsage).Times(0);
   EXPECT_CALL(*mock_feature_promo_helper_, CloseFeaturePromo).Times(0);
 
   handler_->SetCustomizeChromeSidePanelVisible(
       /*visible=*/false, new_tab_page::mojom::CustomizeChromeSection::kModules);
+
+  EXPECT_FALSE(visible);
+  EXPECT_EQ(CustomizeChromeSection::kModules, section);
 }
 
 TEST_F(NewTabPageHandlerTest, IncrementCustomizeChromeButtonOpenCount) {
