@@ -418,8 +418,8 @@ mojom::ResultCode PrintBackendWin::GetPrinterSemanticCapsAndDefaults(
   ScopedPrinterHandle printer_handle = GetPrinterHandle(printer_name);
   if (!printer_handle.IsValid()) {
     logging::SystemErrorCode err = logging::GetLastSystemErrorCode();
-    LOG(WARNING) << "Failed to open printer, error = "
-                 << logging::SystemErrorCodeToString(err);
+    LOG(WARNING) << "Failed to open printer `" << printer_name
+                 << "`, error = " << logging::SystemErrorCodeToString(err);
     return GetResultCodeFromSystemErrorCode(err);
   }
 
