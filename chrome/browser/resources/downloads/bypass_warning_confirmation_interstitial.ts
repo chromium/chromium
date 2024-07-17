@@ -14,8 +14,10 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -123,6 +125,9 @@ export class DownloadsDangerousDownloadInterstitialElement extends
   }
 
   private onDownloadClick_() {
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('screenreaderSavedDangerous'));
+
     this.$.dialog.close(this.selectedRadioOption_);
     assert(!this.$.dialog.open);
     this.dispatchEvent(
