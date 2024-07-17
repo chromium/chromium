@@ -54,6 +54,8 @@
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_OFFERS" file="common/autofill_offers.png" />
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_OFFERS_DARK_CHROME_REFRESH_2023" file="common/autofill_offers_dark_chrome_refresh_2023.png" />
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_OFFERS_LIGHT_CHROME_REFRESH_2023" file="common/autofill_offers_light_chrome_refresh_2023.png" />
+        <structure type="chrome_scaled_image" name="IDR_DISCOUNTS_BUBBLE_HEADER_DARK" file="common/discounts_bubble_header_dark.png" />
+        <structure type="chrome_scaled_image" name="IDR_DISCOUNTS_BUBBLE_HEADER_LIGHT" file="common/discounts_bubble_header_light.png" />
 
       </if>
       <if expr="chromeos_ash">
