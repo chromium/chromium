@@ -1022,6 +1022,13 @@ bool SearchPrefetchService::LoadFromPrefs() {
 
     prefetch_cache_.emplace(navigation_url,
                             std::make_pair(prefetch_url, last_update.value()));
+
+    // The max size of the cache entries can be changed from the previous
+    // session. Stop loading the entries if the limit is reached.
+    // TODO(crbug.com/353628436): We may want to prioritize newer entries.
+    if (prefetch_cache_.size() == SearchPrefetchMaxCacheEntries()) {
+      break;
+    }
   }
   return dictionary.size() > prefetch_cache_.size();
 }

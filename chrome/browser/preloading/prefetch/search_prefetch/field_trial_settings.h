@@ -36,6 +36,10 @@ base::TimeDelta SearchPrefetchErrorBackoffDuration();
 // The max number of stored cached prefetch responses. This is stored as a list
 // of navigation URLs to prefetch URLs.
 size_t SearchPrefetchMaxCacheEntries();
+// Overrides the max cache size for testing. This should be used only when tests
+// need to override the cache size dynamically. Otherwise, the cache size should
+// be set through base::ScopedFeatureList.
+void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_site);
 
 // The amount of time that needs to have elapsed before we consider a prefetch
 // eligible to be served.

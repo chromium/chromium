@@ -221,6 +221,7 @@ class SearchPrefetchService : public KeyedService,
 
  private:
   friend class PrerenderOmniboxSearchSuggestionBrowserTest;
+  friend class SearchPrefetchServiceEnabledBrowserTest;
 
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url,

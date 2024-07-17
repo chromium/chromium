@@ -452,6 +452,20 @@ class SearchPrefetchServiceEnabledBrowserTest
         std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
+  void AddCacheEntry(const GURL& search_url, const GURL& prefetch_url) {
+    GetSearchPrefetchService().AddCacheEntry(search_url, prefetch_url);
+  }
+
+  size_t GetCacheEntriesSize() {
+    return GetSearchPrefetchService().prefetch_cache_.size();
+  }
+
+  void ClearCache() { GetSearchPrefetchService().prefetch_cache_.clear(); }
+
+  SearchPrefetchService& GetSearchPrefetchService() {
+    return *SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  }
+
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
     return test_ukm_recorder_.get();
   }
@@ -2165,6 +2179,69 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
   EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
+}
+
+// Test LoadFromPrefs() when "cache_size" of kSearchPrefetchServicePrefetching
+// is modified. The function should load at most N entries specified by the
+// parameter regardless of the number of the entries actually stored in the
+// prefs.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       SearchPrefetchMaxCacheEntries) {
+  // Set the max cache size to 5.
+  SetSearchPrefetchMaxCacheEntriesForTesting(5);
+  ASSERT_EQ(5u, SearchPrefetchMaxCacheEntries());
+
+  // Prepare 10 search/prefetch URL pairs.
+  std::vector<std::pair<GURL, GURL>> search_and_prefetch_urls;
+  std::string search_terms = "prefetch_content";
+  for (int i = 0; i < 10; ++i) {
+    GURL prefetch_url = GetSearchServerQueryURL(
+        search_terms + base::NumberToString(i) + "&pf=cs");
+    GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+    search_and_prefetch_urls.emplace_back(canonical_search_url, prefetch_url);
+  }
+
+  // 10 entries were added, but only 5 entries should be kept in the cache due
+  // to the limit.
+  for (auto& [search_url, prefetch_url] : search_and_prefetch_urls) {
+    AddCacheEntry(search_url, prefetch_url);
+  }
+  EXPECT_EQ(5u, GetCacheEntriesSize());
+
+  // Restore the cache from the prefs. Only 5 entries should be restored.
+  ClearCache();
+  ASSERT_EQ(0u, GetCacheEntriesSize());
+  GetSearchPrefetchService().LoadFromPrefsForTesting();
+  ASSERT_EQ(5u, GetCacheEntriesSize());
+
+  // Restore the cache from the prefs after changing the max cache size from 5
+  // to 3. Only 3 entries should be restored.
+  ClearCache();
+  ASSERT_EQ(0u, GetCacheEntriesSize());
+  SetSearchPrefetchMaxCacheEntriesForTesting(3);
+  GetSearchPrefetchService().LoadFromPrefsForTesting();
+  ASSERT_EQ(3u, GetCacheEntriesSize());
+
+  // Forcibly save the last 3 entries to the prefs.
+  AddCacheEntry(search_and_prefetch_urls[0].first,
+                search_and_prefetch_urls[0].second);
+
+  // Restore the cache from the prefs after changing the max cache size from 3
+  // to 5, but only 3 entries should be in the cache.
+  ClearCache();
+  ASSERT_EQ(0u, GetCacheEntriesSize());
+  SetSearchPrefetchMaxCacheEntriesForTesting(5);
+  GetSearchPrefetchService().LoadFromPrefsForTesting();
+  ASSERT_EQ(3u, GetCacheEntriesSize());
+
+  // New entries can be added up to 5.
+  for (auto& [search_url, prefetch_url] : search_and_prefetch_urls) {
+    AddCacheEntry(search_url, prefetch_url);
+  }
+  EXPECT_EQ(5u, GetCacheEntriesSize());
+
+  // Reset the max cache size.
+  SetSearchPrefetchMaxCacheEntriesForTesting(0);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,

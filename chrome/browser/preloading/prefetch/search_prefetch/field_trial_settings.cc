@@ -10,6 +10,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 
+namespace {
+size_t g_cache_size_for_testing = 0;
+}  // namespace
+
 BASE_FEATURE(kSearchPrefetchServicePrefetching,
              "SearchPrefetchServicePrefetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -50,8 +54,15 @@ base::TimeDelta SearchPrefetchErrorBackoffDuration() {
 }
 
 size_t SearchPrefetchMaxCacheEntries() {
+  if (g_cache_size_for_testing > 0) {
+    return g_cache_size_for_testing;
+  }
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "cache_size", 10);
+}
+
+void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_size) {
+  g_cache_size_for_testing = cache_size;
 }
 
 base::TimeDelta SearchPrefetchBlockHeadStart() {
