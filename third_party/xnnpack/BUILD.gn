@@ -635,6 +635,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/amalgam/gen/avx256vnni.c",
       "src/src/amalgam/gen/avx512vnni.c",
     ]
 
@@ -668,6 +669,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/amalgam/gen/avx256vnni.c",
       "src/src/amalgam/gen/avx512vnni.c",
     ]
 
@@ -705,6 +707,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/amalgam/gen/avx256vnnigfni.c",
       "src/src/amalgam/gen/avx512vnnigfni.c",
     ]
 
@@ -739,6 +742,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/amalgam/gen/avx256vnnigfni.c",
       "src/src/amalgam/gen/avx512vnnigfni.c",
     ]
 
@@ -1520,15 +1524,18 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/convert.c",
       "src/src/subgraph/convolution-2d.c",
       "src/src/subgraph/copy.c",
+      "src/src/subgraph/copysign.c",
       "src/src/subgraph/deconvolution-2d.c",
       "src/src/subgraph/depth-to-space-2d.c",
       "src/src/subgraph/depthwise-convolution-2d.c",
       "src/src/subgraph/divide.c",
       "src/src/subgraph/elu.c",
       "src/src/subgraph/even-split.c",
+      "src/src/subgraph/exp.c",
       "src/src/subgraph/floor.c",
       "src/src/subgraph/fully-connected-sparse.c",
       "src/src/subgraph/fully-connected.c",
+      "src/src/subgraph/gelu.c",
       "src/src/subgraph/global-average-pooling.c",
       "src/src/subgraph/global-sum-pooling.c",
       "src/src/subgraph/hardswish.c",
@@ -1595,15 +1602,18 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/subgraph/convert.c",
       "src/src/subgraph/convolution-2d.c",
       "src/src/subgraph/copy.c",
+      "src/src/subgraph/copysign.c",
       "src/src/subgraph/deconvolution-2d.c",
       "src/src/subgraph/depth-to-space-2d.c",
       "src/src/subgraph/depthwise-convolution-2d.c",
       "src/src/subgraph/divide.c",
       "src/src/subgraph/elu.c",
       "src/src/subgraph/even-split.c",
+      "src/src/subgraph/exp.c",
       "src/src/subgraph/floor.c",
       "src/src/subgraph/fully-connected-sparse.c",
       "src/src/subgraph/fully-connected.c",
+      "src/src/subgraph/gelu.c",
       "src/src/subgraph/global-average-pooling.c",
       "src/src/subgraph/global-sum-pooling.c",
       "src/src/subgraph/hardswish.c",
@@ -3609,15 +3619,18 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/convert.c",
       "src/src/subgraph/convolution-2d.c",
       "src/src/subgraph/copy.c",
+      "src/src/subgraph/copysign.c",
       "src/src/subgraph/deconvolution-2d.c",
       "src/src/subgraph/depth-to-space-2d.c",
       "src/src/subgraph/depthwise-convolution-2d.c",
       "src/src/subgraph/divide.c",
       "src/src/subgraph/elu.c",
       "src/src/subgraph/even-split.c",
+      "src/src/subgraph/exp.c",
       "src/src/subgraph/floor.c",
       "src/src/subgraph/fully-connected-sparse.c",
       "src/src/subgraph/fully-connected.c",
+      "src/src/subgraph/gelu.c",
       "src/src/subgraph/global-average-pooling.c",
       "src/src/subgraph/global-sum-pooling.c",
       "src/src/subgraph/hardswish.c",
@@ -3684,15 +3697,18 @@ if (current_cpu == "arm64") {
       "src/src/subgraph/convert.c",
       "src/src/subgraph/convolution-2d.c",
       "src/src/subgraph/copy.c",
+      "src/src/subgraph/copysign.c",
       "src/src/subgraph/deconvolution-2d.c",
       "src/src/subgraph/depth-to-space-2d.c",
       "src/src/subgraph/depthwise-convolution-2d.c",
       "src/src/subgraph/divide.c",
       "src/src/subgraph/elu.c",
       "src/src/subgraph/even-split.c",
+      "src/src/subgraph/exp.c",
       "src/src/subgraph/floor.c",
       "src/src/subgraph/fully-connected-sparse.c",
       "src/src/subgraph/fully-connected.c",
+      "src/src/subgraph/gelu.c",
       "src/src/subgraph/global-average-pooling.c",
       "src/src/subgraph/global-sum-pooling.c",
       "src/src/subgraph/hardswish.c",
