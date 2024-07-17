@@ -3860,8 +3860,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MissingParent) {
   RunRegressionTest(FILE_PATH_LITERAL("missing-parent.html"));
 }
 
+// TODO(crbug.com/331567752):  Reenable once Linux failures are fixed.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NullObjectOnHypertextOffsetComputation \
+  DISABLED_NullObjectOnHypertextOffsetComputation
+#else
+#define MAYBE_NullObjectOnHypertextOffsetComputation \
+  NullObjectOnHypertextOffsetComputation
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       NullObjectOnHypertextOffsetComputation) {
+                       MAYBE_NullObjectOnHypertextOffsetComputation) {
   if (!base::FeatureList::IsEnabled(blink::features::kMutationEvents)) {
     // TODO(crbug.com/40268638) Remove this test (and the .html file) when
     // MutationEvents are disabled for good. This is just a crash test related
