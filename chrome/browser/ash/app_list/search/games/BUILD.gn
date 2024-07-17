@@ -6,6 +6,31 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+static_library("games") {
+  sources = [
+    "game_provider.cc",
+    "game_provider.h",
+    "game_result.cc",
+    "game_result.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/apps/app_discovery_service",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources:app_icon_resources",
+    "//chromeos/ash/components/string_matching",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -15,6 +40,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":games",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
