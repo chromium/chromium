@@ -86,6 +86,8 @@ static_library("update_client") {
     "action_runner.cc",
     "action_runner.h",
     "activity_data_service.h",
+    "cancellation.cc",
+    "cancellation.h",
     "command_line_config_policy.cc",
     "command_line_config_policy.h",
     "component.cc",
@@ -261,6 +263,7 @@ bundle_data("recovery_component_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "cancellation_unittest.cc",
     "crx_cache_unittest.cc",
     "persisted_data_unittest.cc",
     "ping_manager_unittest.cc",
