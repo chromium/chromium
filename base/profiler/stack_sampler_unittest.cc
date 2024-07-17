@@ -440,10 +440,13 @@ TEST_F(StackSamplerTest, AuxUnwinderInvokedWhileRecordingStackFrames) {
   CallRecordingUnwinder* aux_unwinder = owned_aux_unwinder.get();
   stack_sampler->AddAuxUnwinder(std::move(owned_aux_unwinder));
 
+  // The definition of this unwinder needs to be outside of the conditional
+  // for the `thread_pool_runner` otherwise we will hit a TSAN failure as
+  // we Record this thread's stack later in `RecordStackFrames`.
+  base::test::TestFuture<void> unwinder_added;
   // If we are running a thread pool we need to wait for the aux unwinder to
   // actually be added before we start recording stack frames.
   if (stack_sampler->thread_pool_runner_) {
-    base::test::TestFuture<void> unwinder_added;
     stack_sampler->thread_pool_runner_->PostTaskAndReply(
         FROM_HERE, base::DoNothing(), unwinder_added.GetCallback());
     ASSERT_TRUE(unwinder_added.Wait());
