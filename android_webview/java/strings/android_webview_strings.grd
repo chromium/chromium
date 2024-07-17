@@ -180,6 +180,15 @@
       <message name="IDS_ACTIONBAR_MANAGE_APPS" desc="Contextual action bar item for managing Text Processing Menu items.">
         Manage apps
       </message>
+      <message name="IDS_CONTEXT_MENU_COPY_LINK_ADDRESS" desc="Context menu item for copying the selected link URL / address. [CHAR_LIMIT=30]">
+        Copy link address
+      </message>
+      <message name="IDS_CONTEXT_MENU_COPY_LINK_TEXT" desc="Context menu item for copying the selected link's text. [CHAR_LIMIT=30]">
+        Copy link text
+      </message>
+      <message name="IDS_CONTEXT_MENU_OPEN_IN_BROWSER" desc="Context menu item to open the selected link in a new tab. [CHAR_LIMIT=30]">
+        Open in browser
+      </message>
     </messages>
   </release>
 </grit>

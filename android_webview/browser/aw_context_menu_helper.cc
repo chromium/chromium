@@ -39,8 +39,7 @@ void AwContextMenuHelper::ShowContextMenu(
       context_menu::BuildJavaContextMenuParams(
           params, render_frame_host.GetProcess()->GetID(),
           render_frame_host.GetFrameToken().value()),
-      render_frame_host.GetJavaRenderFrameHost(), view->GetContainerView(),
-      view->content_offset() * view->GetDipScale());
+      render_frame_host.GetJavaRenderFrameHost(), view->GetContainerView());
 }
 
 void AwContextMenuHelper::DismissContextMenu() {
