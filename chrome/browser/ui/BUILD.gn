@@ -961,6 +961,8 @@ static_library("ui") {
       "javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h",
       "page_info/chrome_page_info_client.cc",
       "page_info/chrome_page_info_client.h",
+      "safety_hub/password_status_check_result_android.cc",
+      "safety_hub/password_status_check_result_android.h",
       "screen_capture_notification_ui_stub.cc",
       "webid/digital_identity_safety_interstitial_bridge_android.cc",
       "webid/digital_identity_safety_interstitial_bridge_android.h",

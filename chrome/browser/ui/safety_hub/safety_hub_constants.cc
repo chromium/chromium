@@ -37,6 +37,11 @@ const char kOrigin[] = "origin";
 const char kUsername[] = "username";
 const char kSafetyHubPasswordCheckOriginsKey[] = "passwordCheckOrigins";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kSafetyHubCompromiedPasswordOriginsCount[] =
+    "passwordCheckCompromisedOriginsNum";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const base::TimeDelta kMinTimeBetweenPasswordChecks = base::Hours(1);
 
 const base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting =

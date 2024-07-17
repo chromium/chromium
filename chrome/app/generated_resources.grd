@@ -17996,6 +17996,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
           =1 {Chrome removed permissions for 1 unused site}
           other {Chrome removed permissions for {NUM_SITES} ununsed sites}}
         </message>
+        <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" translateable="false">
+          {NUM_SITES, plural,
+          =1 {Found 1 compromised password}
+          other {Found {NUM_SITES} compromised passwords}}
+        </message>
     </if>
 
     <!-- Quick Delete elements. -->
