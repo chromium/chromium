@@ -6694,7 +6694,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SupportLibrary.ClientIsCompat"
-    enum="WebViewClientTypeEnum" expires_after="2024-08-23">
+    enum="WebViewClientTypeEnum" expires_after="2025-07-31">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
