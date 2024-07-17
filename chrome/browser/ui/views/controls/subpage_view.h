@@ -19,6 +19,7 @@ class BubbleFrameView;
 }  // namespace views
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSubpageViewId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSubpageBackButtonElementId);
 
 // A sub-page View for the PageSwitcherView in a standard preferred width
 // bubble. This view contains:

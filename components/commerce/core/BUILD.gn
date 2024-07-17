@@ -78,6 +78,8 @@ source_set("feature_list_unittests") {
 
 static_library("metrics") {
   sources = [
+    "metrics/discounts_metric_collector.cc",
+    "metrics/discounts_metric_collector.h",
     "metrics/metrics_utils.cc",
     "metrics/metrics_utils.h",
   ]

@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/views/commerce/discounts_icon_view.h"
 
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -21,7 +25,8 @@ DiscountsIconView::DiscountsIconView(
                          0,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "Discounts") {
+                         "Discounts"),
+      bubble_coordinator_(this) {
   GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT));
@@ -32,15 +37,22 @@ DiscountsIconView::DiscountsIconView(
 DiscountsIconView::~DiscountsIconView() = default;
 
 views::BubbleDialogDelegate* DiscountsIconView::GetBubble() const {
-  // TODO(b/351935350): return discount bubble.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return bubble_coordinator_.GetBubble();
 }
 
 void DiscountsIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  // TODO(b/351935350): Open discount bubble.
-  NOTIMPLEMENTED();
+  MaybeShowBubble(/*from_user=*/true);
+
+  commerce::CommerceUiTabHelper* tab_helper = GetTabHelper();
+
+  if (!tab_helper) {
+    return;
+  }
+
+  commerce::metrics::DiscountsMetricCollector::
+      RecordDiscountsPageActionIconClicked(
+          tab_helper->IsPageActionIconExpanded(PageActionIconType::kDiscounts));
 }
 
 const gfx::VectorIcon& DiscountsIconView::GetVectorIcon() const {
@@ -106,6 +118,7 @@ void DiscountsIconView::AnimationProgressed(const gfx::Animation* animation) {
         FROM_HERE, kLabelPersistDuration,
         base::BindRepeating(&DiscountsIconView::UnpauseAnimation,
                             base::Unretained(this)));
+    MaybeShowBubble(false);
   }
 }
 
@@ -116,6 +129,38 @@ commerce::CommerceUiTabHelper* DiscountsIconView::GetTabHelper() {
   }
 
   return commerce::CommerceUiTabHelper::FromWebContents(web_contents);
+}
+
+void DiscountsIconView::MaybeShowBubble(bool from_user) {
+  commerce::CommerceUiTabHelper* tab_helper = GetTabHelper();
+
+  if (!tab_helper) {
+    return;
+  }
+
+  const std::vector<commerce::DiscountInfo>& discount_infos =
+      tab_helper->GetDiscounts();
+
+  CHECK(!discount_infos.empty());
+
+  // Currently only uses the first discount info.
+  bool should_auto_show = tab_helper->ShouldAutoShowDiscountsBubble(
+      discount_infos[0].id, discount_infos[0].is_merchant_wide);
+  if (!from_user && !should_auto_show) {
+    return;
+  }
+
+  if (animate_out_timer_.IsRunning()) {
+    animate_out_timer_.Stop();
+  }
+
+  bubble_coordinator_.Show(GetWebContents(), discount_infos[0],
+                           base::BindOnce(&DiscountsIconView::UnpauseAnimation,
+                                          weak_ptr_factory_.GetWeakPtr()));
+
+  commerce::metrics::DiscountsMetricCollector::RecordDiscountBubbleShown(
+      should_auto_show,
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
 BEGIN_METADATA(DiscountsIconView)

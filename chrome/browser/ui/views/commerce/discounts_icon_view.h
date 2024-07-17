@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_DISCOUNTS_ICON_VIEW_H_
 
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -42,14 +43,19 @@ class DiscountsIconView : public PageActionIconView {
   void HidePageActionLabel();
   void MaybeShowPageActionLabel();
   commerce::CommerceUiTabHelper* GetTabHelper();
+  void MaybeShowBubble(bool from_user);
+
+  DiscountsBubbleCoordinator bubble_coordinator_;
 
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;
-  // Animates out the price tracking icon label after a fixed period of time.
+  // Animates out the discounts icon label after a fixed period of time.
   // This keeps the label visible for long enough to give users an opportunity
   // to read the label text.
-  base::RetainingOneShotTimer animate_out_timer_;
+  base::OneShotTimer animate_out_timer_;
+
+  base::WeakPtrFactory<DiscountsIconView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_DISCOUNTS_ICON_VIEW_H_

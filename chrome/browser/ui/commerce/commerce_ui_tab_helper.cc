@@ -36,6 +36,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -380,6 +381,12 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
   UpdateDiscountsIconView();
   UpdatePriceTrackingIconView();
   UpdatePriceInsightsIconView();
+
+  if (ShouldShowDiscountsIconView()) {
+    commerce::metrics::DiscountsMetricCollector::
+        RecordDiscountsPageActionIconExpandState(
+            IsPageActionIconExpanded(PageActionIconType::kDiscounts));
+  }
 }
 
 void CommerceUiTabHelper::SetPriceTrackingState(
@@ -669,6 +676,11 @@ bool CommerceUiTabHelper::ShouldExpandPageActionIcon(
     return true;
   }
   return false;
+}
+
+bool CommerceUiTabHelper::IsPageActionIconExpanded(PageActionIconType type) {
+  return page_action_expanded_.has_value() &&
+         type == page_action_expanded_.value();
 }
 
 void CommerceUiTabHelper::OnPriceTrackingIconClicked() {

@@ -27,6 +27,7 @@ constexpr int kBackIconSize = 20;
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSubpageViewId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSubpageBackButtonElementId);
 
 SubpageView::SubpageView(views::Button::PressedCallback callback,
                          views::BubbleFrameView* bubble_frame_view)
@@ -63,6 +64,8 @@ void SubpageView::SetUpSubpageTitle(views::Button::PressedCallback callback) {
   back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back_button->SetProperty(views::kInternalPaddingKey,
                            back_button->GetInsets());
+  back_button->SetProperty(views::kElementIdentifierKey,
+                           kSubpageBackButtonElementId);
   views::InstallCircleHighlightPathGenerator(back_button.get());
   title_view->AddChildView(std::move(back_button));
 

@@ -6901,6 +6901,53 @@ should be able to be added at any place in this file.
   <description>Triggered when the user adds a product to cart.</description>
 </action>
 
+<action name="Commerce.Discounts.DiscountsBubble.AutoShown"
+    not_user_triggered="true">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    This is not triggered by the user, rather it records when the Discounts
+    bubble is shown automatically.
+  </description>
+</action>
+
+<action name="Commerce.Discounts.DiscountsBubbleCopyButtonClicked">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when the user clicks the copy button to copy the coupon code in
+    the Discounts bubble.
+  </description>
+</action>
+
+<action name="Commerce.Discounts.DiscountsPageActionIcon.Clicked">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when user clicks the Discounts page action icon.
+  </description>
+</action>
+
+<action name="Commerce.Discounts.DiscountsPageActionIcon.Expanded"
+    not_user_triggered="true">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    This is not triggered by the user, rather it records when the Discounts page
+    action icon is shown and expanded.
+  </description>
+</action>
+
+<action name="Commerce.Discounts.DiscountsPageActionIcon.NotExpanded"
+    not_user_triggered="true">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    This is not triggered by the user, rather it records when the Discounts page
+    action icon is shown but not expanded.
+  </description>
+</action>
+
 <action name="Commerce.PriceAlertsMessageCard.Dismissed">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

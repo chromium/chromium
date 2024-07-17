@@ -112,6 +112,8 @@ class CommerceUiTabHelper
   // matches the icon that should expand -- the "true" response is only valid
   // once per page load to avoid having the icon expand multiple times.
   virtual bool ShouldExpandPageActionIcon(PageActionIconType type);
+  // Return whether the page action with provided |type| has been expanded.
+  bool IsPageActionIconExpanded(PageActionIconType type);
 
   // A notification that the price tracking icon was clicked.
   void OnPriceTrackingIconClicked();

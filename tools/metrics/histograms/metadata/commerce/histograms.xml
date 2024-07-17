@@ -143,6 +143,49 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Discounts.DiscountsBubbleCouponCodeIsCopied"
+    enum="BooleanYesNo" expires_after="2025-01-15">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the coupon code shown in the Discounts bubble is copied.
+    It's a one-to-one relationship between the Discounts bubble and the copied
+    status. This is recorded during Discounts bubble closing.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Discounts.DiscountsBubbleIsAutoShown"
+    enum="BooleanYesNo" expires_after="2025-01-15">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the Discounts bubble is shown automatically. This is
+    recorded when the bubble is shown.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Discounts.DiscountsPageActionIconIsExpanded"
+    enum="BooleanYesNo" expires_after="2025-01-15">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the Discounts page action icon is expanded. This is recorded
+    when the commerce tab helper finished computing which page action icon to
+    expand.
+  </summary>
+</histogram>
+
+<histogram
+    name="Commerce.Discounts.DiscountsPageActionIconIsExpandedWhenClicked"
+    enum="BooleanYesNo" expires_after="2025-01-15">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the Discounts page action icon has expanded when user clicks
+    the icon.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Discounts.FetchResult"
     enum="ShoppingDiscountsFetchResult" expires_after="2024-06-01">
   <owner>zhiyuancai@chromium.org</owner>
