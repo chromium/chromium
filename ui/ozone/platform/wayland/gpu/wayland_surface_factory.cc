@@ -213,7 +213,6 @@ WaylandSurfaceFactory::GetAllowedGLImplementations() {
     impls.emplace_back(gl::ANGLEImplementation::kOpenGL);
     impls.emplace_back(gl::ANGLEImplementation::kOpenGLES);
     impls.emplace_back(gl::ANGLEImplementation::kSwiftShader);
-    impls.emplace_back(gl::kGLImplementationEGLGLES2);
   }
   return impls;
 }
