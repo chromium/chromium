@@ -107,7 +107,6 @@
 #include "net/base/url_util.h"
 #include "net/net_buildflags.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -286,30 +285,11 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE},
       {"overscrollHistoryNavigationSubtitle",
        IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_SUBTITLE},
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      {"mainNodeAnnotationsDownloadCompleteLabel",
-       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_COMPLETE},
-      {"mainNodeAnnotationsDownloadErrorLabel",
-       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_ERROR},
-      {"mainNodeAnnotationsDownloadProgressLabel",
-       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_PROGRESS},
-      {"mainNodeAnnotationsDownloadingLabel",
-       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOADING},
-      {"mainNodeAnnotationsTitle", IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_TITLE},
-      {"mainNodeAnnotationsSubtitle",
-       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_SUBTITLE},
-#endif  // BULDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)) && \
-    BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  html_source->AddBoolean(
-      "mainNodeAnnotationsEnabled",
-      base::FeatureList::IsEnabled(features::kMainNodeAnnotations));
-#endif
-
+  AddAxAnnotationsSubpageStrings(html_source);
   AddCaptionSubpageStrings(html_source);
 }
 

@@ -518,17 +518,18 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampNearbyShareTestSharingEnabled::DescribeParams);
 
-class OSSettingsRevampOsA11yTestPdfOcrEnabled
+class OSSettingsRevampOsA11yTestMainNodeAnnotationsEnabled
     : public OSSettingsRevampMochaTest {
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kPdfOcr};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kMainNodeAnnotations};
 };
 
 INSTANTIATE_TEST_SUITE_P(
     RevampParameterized,
-    OSSettingsRevampOsA11yTestPdfOcrEnabled,
+    OSSettingsRevampOsA11yTestMainNodeAnnotationsEnabled,
     testing::Bool(),
-    OSSettingsRevampOsA11yTestPdfOcrEnabled::DescribeParams);
+    OSSettingsRevampOsA11yTestMainNodeAnnotationsEnabled::DescribeParams);
 
 class OSSettingsRevampFilesTestCrosComponentsAndJellyEnabled
     : public OSSettingsRevampMochaTest {
@@ -1243,7 +1244,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OncMojoTest) {
   RunSettingsTest("onc_mojo_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampOsA11yTestPdfOcrEnabled, OsA11yPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsA11yPage) {
   RunSettingsTest("os_a11y_page/os_a11y_page_test.js");
 }
 
@@ -1356,9 +1357,14 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("os_a11y_page/switch_access_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampOsA11yTestPdfOcrEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageTextToSpeechSubpage) {
   RunSettingsTest("os_a11y_page/text_to_speech_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampOsA11yTestMainNodeAnnotationsEnabled,
+                       OsA11yPageAxAnnotationsSubpage) {
+  RunSettingsTest("os_a11y_page/ax_annotations_subpage_test.js");
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsA11yPageTtsVoiceSubpage) {

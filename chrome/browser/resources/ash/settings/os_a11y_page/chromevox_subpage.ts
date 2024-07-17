@@ -11,6 +11,7 @@
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
+import './ax_annotations_subpage.js';
 import './bluetooth_braille_display_ui.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
@@ -326,6 +327,12 @@ export class SettingsChromeVoxSubpageElement extends
             'valueInTextFieldChanged',
           ];
         },
+      },
+
+      mainNodeAnnotationsFeatureEnabled_: {
+        type: String,
+        value: loadTimeData.getBoolean('mainNodeAnnotationsEnabled'),
+        readOnly: true,
       },
     };
   }

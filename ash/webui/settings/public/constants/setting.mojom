@@ -329,6 +329,7 @@ enum Setting {
   kOverscrollEnabled = 1547,
   kCaretBrowsing = 1548,
   kMagnifierFollowsChromeVox = 1549,
+  kMainNodeAnnotationsEnabled = 1550,
 
   // Reset section.
   kPowerwash = 1600,

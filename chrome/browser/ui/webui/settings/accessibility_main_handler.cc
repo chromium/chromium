@@ -18,10 +18,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include "ui/accessibility/accessibility_features.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 namespace settings {
 
@@ -39,13 +36,11 @@ void AccessibilityMainHandler::RegisterMessages() {
       base::BindRepeating(
           &AccessibilityMainHandler::HandleCheckAccessibilityImageLabels,
           base::Unretained(this)));
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   web_ui()->RegisterMessageCallback(
       "getScreenAiInstallState",
       base::BindRepeating(
           &AccessibilityMainHandler::HandleGetScreenAIInstallState,
           base::Unretained(this)));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 void AccessibilityMainHandler::OnJavascriptAllowed() {
@@ -56,13 +51,11 @@ void AccessibilityMainHandler::OnJavascriptAllowed() {
           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  if (features::IsPdfOcrEnabled() || features::IsMainNodeAnnotationsEnabled()) {
+  if (features::IsMainNodeAnnotationsEnabled()) {
     CHECK(!component_ready_observer_.IsObserving());
     component_ready_observer_.Observe(
         screen_ai::ScreenAIInstallState::GetInstance());
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 void AccessibilityMainHandler::OnJavascriptDisallowed() {
@@ -70,14 +63,11 @@ void AccessibilityMainHandler::OnJavascriptDisallowed() {
   accessibility_subscription_ = {};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  if (features::IsPdfOcrEnabled() || features::IsMainNodeAnnotationsEnabled()) {
+  if (features::IsMainNodeAnnotationsEnabled()) {
     component_ready_observer_.Reset();
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 void AccessibilityMainHandler::DownloadProgressChanged(double progress) {
   CHECK_GE(progress, 0.0);
   CHECK_LE(progress, 1.0);
@@ -103,7 +93,6 @@ void AccessibilityMainHandler::HandleGetScreenAIInstallState(
   ResolveJavascriptCallback(
       callback_id, base::Value(static_cast<int>(current_install_state)));
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 void AccessibilityMainHandler::HandleGetScreenReaderState(
     const base::Value::List& args) {

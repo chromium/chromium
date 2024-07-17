@@ -179,6 +179,7 @@ build_webui("build") {
     "nearby_share_page/nearby_share_receive_dialog.ts",
     "nearby_share_page/nearby_share_subpage.ts",
     "os_a11y_page/audio_and_captions_page.ts",
+    "os_a11y_page/ax_annotations_subpage.ts",
     "os_a11y_page/bluetooth_braille_display_ui.ts",
     "os_a11y_page/captions_subpage.ts",
     "os_a11y_page/change_dictation_locale_dialog.ts",

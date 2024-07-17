@@ -23,6 +23,7 @@ build_webui("build") {
     "extension_control_browser_proxy.ts",
     "lifetime_browser_proxy.ts",
 
+    "a11y_page/ax_annotations_browser_proxy.ts",
     "a11y_page/captions_browser_proxy.ts",
     "appearance_page/fonts_browser_proxy.ts",
     "controls/cr_policy_pref_mixin.ts",

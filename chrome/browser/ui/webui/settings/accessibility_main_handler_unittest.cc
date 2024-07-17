@@ -67,7 +67,8 @@ class TestAccessibilityMainHandler : public AccessibilityMainHandler {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 class AccessibilityMainHandlerScreenAITest : public testing::Test {
  public:
-  AccessibilityMainHandlerScreenAITest() : features_({features::kPdfOcr}) {}
+  AccessibilityMainHandlerScreenAITest()
+      : features_({features::kMainNodeAnnotations}) {}
 
   AccessibilityMainHandlerScreenAITest(
       const AccessibilityMainHandlerScreenAITest&) = delete;

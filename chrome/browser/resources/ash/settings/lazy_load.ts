@@ -33,6 +33,7 @@ import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
 import './internet_page/passpoint_subpage.js';
 import './kerberos_page/kerberos_accounts_subpage.js';
+import './os_a11y_page/ax_annotations_subpage.js';
 import './os_a11y_page/chromevox_subpage.js';
 import './os_a11y_page/cursor_and_touchpad_page.js';
 import './os_a11y_page/display_and_magnification_subpage.js';
@@ -140,6 +141,7 @@ import './os_reset_page/os_powerwash_dialog.js';
 import './os_reset_page/os_powerwash_dialog_esim_item.js';
 import './os_reset_page/os_sanitize_dialog.js';
 
+export {ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 export {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {NetworkListElement} from 'chrome://resources/ash/common/network/network_list.js';
@@ -225,6 +227,7 @@ export {NearbyShareReceiveDialogElement} from './nearby_share_page/nearby_share_
 export {SettingsNearbyShareSubpageElement} from './nearby_share_page/nearby_share_subpage.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
 export {AudioAndCaptionsPageBrowserProxy, AudioAndCaptionsPageBrowserProxyImpl} from './os_a11y_page/audio_and_captions_page_browser_proxy.js';
+export {SettingsAxAnnotationsSubpageElement} from './os_a11y_page/ax_annotations_subpage.js';
 export {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './os_a11y_page/bluetooth_braille_display_manager.js';
 export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille_display_ui.js';
 export {ChangeDictationLocaleDialog, DictationLocaleOption} from './os_a11y_page/change_dictation_locale_dialog.js';
@@ -244,7 +247,7 @@ export {SettingsSwitchAccessActionAssignmentPaneElement} from './os_a11y_page/sw
 export {SwitchAccessCommand} from './os_a11y_page/switch_access_constants.js';
 export {SettingsSwitchAccessSetupGuideDialogElement} from './os_a11y_page/switch_access_setup_guide_dialog.js';
 export {SettingsSwitchAccessSubpageElement} from './os_a11y_page/switch_access_subpage.js';
-export {ScreenAiInstallStatus, SettingsTextToSpeechSubpageElement} from './os_a11y_page/text_to_speech_subpage.js';
+export {SettingsTextToSpeechSubpageElement} from './os_a11y_page/text_to_speech_subpage.js';
 export {SettingsTtsVoiceSubpageElement} from './os_a11y_page/tts_voice_subpage.js';
 export {SettingsChannelSwitcherDialogElement} from './os_about_page/channel_switcher_dialog.js';
 export {SettingsConsumerAutoUpdateToggleDialogElement} from './os_about_page/consumer_auto_update_toggle_dialog.js';

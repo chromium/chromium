@@ -197,6 +197,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.BOOLEAN,
   },
   // os_a11y_page/text_to_speech_subpage.ts
+  'settings.a11y.enable_main_node_annotation': {
+    setting: Setting.kMainNodeAnnotationsEnabled,
+    type: PrefType.BOOLEAN,
+  },
   'settings.a11y.select_to_speak': {
     setting: Setting.kSelectToSpeak,
     type: PrefType.BOOLEAN,

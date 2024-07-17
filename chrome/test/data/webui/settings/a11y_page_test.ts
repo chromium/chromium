@@ -8,7 +8,6 @@ import 'chrome://settings/lazy_load.js';
 // <if expr="is_win or is_linux or is_macosx">
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsAxAnnotationsSubpageElement} from 'chrome://settings/lazy_load.js';
-import {ScreenAiInstallStatus} from 'chrome://settings/lazy_load.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -29,19 +28,12 @@ import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 
 class TestAccessibilityBrowserProxy extends TestBrowserProxy implements
     AccessibilityBrowserProxy {
-  private screenAIState_: ScreenAiInstallStatus;
-
   constructor() {
     super([
       'openTrackpadGesturesSettings',
       'recordOverscrollHistoryNavigationChanged',
-      // <if expr="is_win or is_linux or is_macosx">
-      'getScreenAiInstallState',
-      // </if>
       'getScreenReaderState',
     ]);
-
-    this.screenAIState_ = ScreenAiInstallStatus.NOT_DOWNLOADED;
   }
 
   openTrackpadGesturesSettings() {
@@ -51,13 +43,6 @@ class TestAccessibilityBrowserProxy extends TestBrowserProxy implements
   recordOverscrollHistoryNavigationChanged(enabled: boolean) {
     this.methodCalled('recordOverscrollHistoryNavigationChanged', enabled);
   }
-
-  // <if expr="is_win or is_linux or is_macosx">
-  getScreenAiInstallState() {
-    this.methodCalled('getScreenAiInstallState');
-    return Promise.resolve(this.screenAIState_);
-  }
-  // </if>
 
   getScreenReaderState() {
     this.methodCalled('getScreenReaderState');

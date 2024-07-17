@@ -84,6 +84,7 @@ import './languages_page/edit_dictionary_page.js';
 // </if>
 
 // <if expr="not is_chromeos">
+export {ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 // </if>
 
@@ -101,20 +102,6 @@ export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 export {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl} from './a11y_page/a11y_browser_proxy.js';
-export {ControlledButtonElement} from './controls/controlled_button.js';
-export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
-export {SettingsSliderElement} from './controls/settings_slider.js';
-export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
-export {SecureDnsResolverType, SettingsSecureDnsElement} from './privacy_page/secure_dns.js';
-// <if expr="chromeos_ash">
-export {SettingsSecureDnsDialogElement} from './privacy_page/secure_dns_dialog.js';
-// </if>
-export {SecureDnsInputElement} from './privacy_page/secure_dns_input.js';
-// clang-format off
-// <if expr="is_win or is_linux or is_macosx">
-export {ScreenAiInstallStatus} from './a11y_page/a11y_browser_proxy.js';
-// </if>
-// clang-format on
 export {SettingsA11yPageElement} from './a11y_page/a11y_page.js';
 // <if expr="is_win or is_linux or is_macosx">
 export {SettingsAxAnnotationsSubpageElement} from './a11y_page/ax_annotations_subpage.js';
@@ -144,7 +131,11 @@ export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearB
 export {SettingsClearBrowsingDataDialogElement} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 export {SettingsHistoryDeletionDialogElement} from './clear_browsing_data_dialog/history_deletion_dialog.js';
 export {SettingsPasswordsDeletionDialogElement} from './clear_browsing_data_dialog/passwords_deletion_dialog.js';
+export {ControlledButtonElement} from './controls/controlled_button.js';
 export {SettingsCheckboxElement} from './controls/settings_checkbox.js';
+export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
+export {SettingsSliderElement} from './controls/settings_slider.js';
+export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
 export {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
 // <if expr="_google_chrome">
@@ -197,6 +188,11 @@ export {PrivacyGuideMsbbFragmentElement} from './privacy_page/privacy_guide/priv
 export {SettingsPrivacyGuidePageElement} from './privacy_page/privacy_guide/privacy_guide_page.js';
 export {PrivacyGuideSafeBrowsingFragmentElement} from './privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.js';
 export {PrivacyGuideWelcomeFragmentElement} from './privacy_page/privacy_guide/privacy_guide_welcome_fragment.js';
+export {SecureDnsResolverType, SettingsSecureDnsElement} from './privacy_page/secure_dns.js';
+// <if expr="chromeos_ash">
+export {SettingsSecureDnsDialogElement} from './privacy_page/secure_dns_dialog.js';
+// </if>
+export {SecureDnsInputElement} from './privacy_page/secure_dns_input.js';
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPhone, SecurityKeysPhonesBrowserProxy, SecurityKeysPhonesBrowserProxyImpl, SecurityKeysPhonesList, SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security_keys_browser_proxy.js';
 export {CredentialManagementDialogPage, SettingsSecurityKeysCredentialManagementDialogElement} from './privacy_page/security_keys_credential_management_dialog.js';

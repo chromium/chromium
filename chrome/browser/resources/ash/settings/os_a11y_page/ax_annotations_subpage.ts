@@ -9,18 +9,17 @@
  * (chrome://settings/accessibility) on Windows, macOS, and Linux.
  */
 
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_shared.css.js';
 
 import type {AxAnnotationsBrowserProxy} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 import {AxAnnotationsBrowserProxyImpl, ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './ax_annotations_subpage.html.js';
 
@@ -31,7 +30,7 @@ const SettingsAxAnnotationsSubpageBaseElement =
 export class SettingsAxAnnotationsSubpageElement extends
     SettingsAxAnnotationsSubpageBaseElement {
   static get is() {
-    return 'settings-ax-annotations-subpage';
+    return 'settings-ax-annotations-subpage' as const;
   }
 
   static get template() {
@@ -40,14 +39,6 @@ export class SettingsAxAnnotationsSubpageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * `screenAIProgress_` stores the downloading progress in percentage of
        * the ScreenAI library, which ranges from 0.0 to 100.0.
@@ -68,14 +59,15 @@ export class SettingsAxAnnotationsSubpageElement extends
   private screenAIProgress_: number;
   private screenAIStatus_: ScreenAiInstallStatus;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     assert(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
 
-    const updateScreenAIState = (screenAIState: ScreenAiInstallStatus) => {
-      this.screenAIStatus_ = screenAIState;
-    };
+    const updateScreenAIState =
+        (screenAIState: ScreenAiInstallStatus): void => {
+          this.screenAIStatus_ = screenAIState;
+        };
     this.browserProxy_.getScreenAiInstallState().then(updateScreenAIState);
     this.addWebUiListener('screen-ai-state-changed', updateScreenAIState);
     this.addWebUiListener(
@@ -107,7 +99,8 @@ export class SettingsAxAnnotationsSubpageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-ax-annotations-subpage': SettingsAxAnnotationsSubpageElement;
+    [SettingsAxAnnotationsSubpageElement.is]:
+        SettingsAxAnnotationsSubpageElement;
   }
 }
 

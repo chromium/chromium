@@ -1,0 +1,12 @@
+<style include="settings-shared">
+  #mainNodeAnnotationsToggle {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: 0;
+  }
+</style>
+<settings-toggle-button id="mainNodeAnnotationsToggle"
+    pref="{{prefs.settings.a11y.enable_main_node_annotations}}"
+    label="$i18n{mainNodeAnnotationsTitle}"
+    sub-label="[[getMainNodeAnnotationsToggleSublabel_(
+        screenAIStatus_, screenAIProgress_)]]">
+</settings-toggle-button>
