@@ -4,7 +4,9 @@
 
 #include "services/webnn/tflite/graph_impl_tflite.h"
 
+#include "base/containers/span.h"
 #include "base/location.h"
+#include "base/memory/aligned_memory.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
@@ -19,8 +21,13 @@
 #include "services/webnn/tflite/op_resolver.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
+#include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter_builder.h"
 #include "third_party/tflite/src/tensorflow/lite/stderr_reporter.h"
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+#include "third_party/xnnpack/src/include/xnnpack.h"
+#endif
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
 #include "third_party/tflite/src/tensorflow/lite/profiling/buffered_profiler.h"
@@ -30,6 +37,8 @@
 namespace webnn::tflite {
 
 namespace {
+
+using AlignedMemoryPtr = std::unique_ptr<void, base::AlignedFreeDeleter>;
 
 std::string_view TfLiteStatusToString(TfLiteStatus status) {
   switch (status) {
@@ -137,6 +146,20 @@ class GraphImplTflite::ComputeResources {
     self->interpreter_->SetProfiler(&self->profiler_);
 #endif
 
+    // In addition to allocating tensors this step does performs graph
+    // initialization steps such as constant folding.
+    status = self->interpreter_->AllocateTensors();
+    if (status != kTfLiteOk) {
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            base::StrCat({"Unable to allocate tensors: ",
+                                          TfLiteStatusToString(status)})));
+    }
+
+    ASSIGN_OR_RETURN(self->custom_allocations_,
+                     self->CreateCustomAllocations());
+
+    // After configuring custom allocations this needs to be called again.
     status = self->interpreter_->AllocateTensors();
     if (status != kTfLiteOk) {
       return base::unexpected(
@@ -196,10 +219,69 @@ class GraphImplTflite::ComputeResources {
   }
 
  private:
+  base::expected<std::vector<AlignedMemoryPtr>, mojom::ErrorPtr>
+  CreateCustomAllocations() {
+    std::vector<AlignedMemoryPtr> buffers;
+    buffers.reserve(interpreter_->inputs().size() +
+                    interpreter_->outputs().size());
+
+    for (int tensor_idx : interpreter_->inputs()) {
+      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
+      ASSIGN_OR_RETURN(AlignedMemoryPtr buffer,
+                       CreateCustomAllocationForTensor(tensor_idx, tensor));
+      buffers.push_back(std::move(buffer));
+    }
+
+    for (int tensor_idx : interpreter_->outputs()) {
+      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
+      if (tensor->allocation_type == kTfLitePersistentRo) {
+        // The initial `AllocateTensors()` call has marked this output as a
+        // constant. It cannot be replaced with a custom allocation.
+        continue;
+      }
+
+      ASSIGN_OR_RETURN(AlignedMemoryPtr buffer,
+                       CreateCustomAllocationForTensor(tensor_idx, tensor));
+      buffers.push_back(std::move(buffer));
+    }
+
+    return buffers;
+  }
+
+  base::expected<AlignedMemoryPtr, mojom::ErrorPtr>
+  CreateCustomAllocationForTensor(int tensor_idx, TfLiteTensor* tensor) {
+    size_t allocation_size = tensor->bytes;
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+    // The XNNPACK delegate may read up to XNN_EXTRA_BYTES beyond the
+    // length of the buffer.
+    allocation_size += XNN_EXTRA_BYTES;
+#endif
+    AlignedMemoryPtr aligned_memory(
+        base::AlignedAlloc(allocation_size, ::tflite::kDefaultTensorAlignment));
+
+    // SAFETY: `aligned_memory` was allocated with at least `tensor->bytes`
+    // bytes.
+    base::span<uint8_t> buffer = UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<uint8_t*>(aligned_memory.get()), tensor->bytes));
+    TfLiteStatus status = interpreter_->SetCustomAllocationForTensor(
+        tensor_idx, {buffer.data(), buffer.size()});
+    if (status != kTfLiteOk) {
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            base::StrCat({"Unable to set custom allocation: ",
+                                          TfLiteStatusToString(status)})));
+    }
+
+    return aligned_memory;
+  }
+
   // `interpreter_` depends on the `FlatBufferModel` owned by `graph_resources_`
   // outliving it.
   scoped_refptr<GraphResources> graph_resources_;
   std::unique_ptr<::tflite::Interpreter> interpreter_;
+
+  // Input and output buffers used for compute().
+  std::vector<AlignedMemoryPtr> custom_allocations_;
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
   ::tflite::profiling::BufferedProfiler profiler_{/*max_num_entries=*/1024};

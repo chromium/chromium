@@ -12,7 +12,6 @@
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/tflite/context_impl_cros.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
-#include "services/webnn/tflite/op_resolver.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 

@@ -11,5 +11,6 @@ include_rules = [
   "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
   "+third_party/microsoft_dxheaders",
   "+third_party/tflite",
+  "+third_party/xnnpack",
   "+ui/gl/gl_switches.h",
 ]
