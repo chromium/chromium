@@ -34978,6 +34978,48 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="9" label="Ignore Action"/>
 </enum>
 
+<enum name="WindowProxyAccessType">
+  <int value="0" label="Location"/>
+  <int value="1" label="Closed"/>
+  <int value="2" label="Length"/>
+  <int value="3" label="Self"/>
+  <int value="4" label="Window"/>
+  <int value="5" label="Frames"/>
+  <int value="6" label="Opener"/>
+  <int value="7" label="Parent"/>
+  <int value="8" label="Top"/>
+  <int value="9" label="PostMessage"/>
+  <int value="10" label="AnonymousIndexedGetter"/>
+  <int value="11" label="Close"/>
+  <int value="12" label="Focus"/>
+  <int value="13" label="Blur"/>
+  <int value="14" label="AnonymousNamedGetter"/>
+</enum>
+
+<enum name="WindowProxyFrameContext">
+  <int value="0" label="TopFrame"/>
+  <int value="1" label="SubFrameSameSite"/>
+  <int value="2" label="SubFrameCrossSite"/>
+</enum>
+
+<enum name="WindowProxyPageContext">
+  <int value="0" label="Window"/>
+  <int value="1" label="Popup"/>
+</enum>
+
+<enum name="WindowProxyStorageKeyComparison">
+  <int value="0" label="SameKey"/>
+  <int value="1" label="SameTopSiteCrossOrigin"/>
+  <int value="3" label="CrossTopSiteSameOrigin"/>
+  <int value="4" label="CrossKey"/>
+</enum>
+
+<enum name="WindowProxyUserActivationState">
+  <int value="0" label="IsActive"/>
+  <int value="1" label="HasBeenActive"/>
+  <int value="2" label="NeverActive"/>
+</enum>
+
 <enum name="WindowSizeRange">
   <summary>The window resize ranges are half-open (low, high].</summary>
   <int value="0" label="(0-800, 0-600)"/>

@@ -323,4 +323,8 @@ void FakeLocalFrameHost::NotifyStorageAccessed(
     blink::mojom::StorageTypeAccessed storageType,
     bool blocked) {}
 
+void FakeLocalFrameHost::RecordWindowProxyUsageMetrics(
+    const blink::FrameToken& target_frame_token,
+    blink::mojom::WindowProxyAccessType access_type) {}
+
 }  // namespace blink

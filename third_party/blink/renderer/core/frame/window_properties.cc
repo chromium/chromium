@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/window_properties.h"
 
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
@@ -63,7 +64,8 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
     window->ReportCoopAccess("named");
     window->RecordWindowProxyAccessMetrics(
         WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
+        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
+        mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter);
     UseCounter::Count(CurrentExecutionContext(isolate),
                       WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
 
@@ -106,7 +108,8 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
   window->ReportCoopAccess("named");
   window->RecordWindowProxyAccessMetrics(
       WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
+      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
+      mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter);
 
   // If we've reached this point, we know that we're accessing an element (or
   // collection of elements) in this window, and that this window is local. Wrap
