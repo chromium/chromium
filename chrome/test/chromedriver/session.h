@@ -22,6 +22,7 @@
 #include "chrome/test/chromedriver/chrome/scoped_temp_dir_with_retry.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "chrome/test/chromedriver/command_listener.h"
+#include "chrome/test/chromedriver/prompt_behavior.h"
 
 // Controls whether ChromeDriver operates in W3C mode (when true) by default
 // or legacy mode (when false).
@@ -31,14 +32,6 @@ class Chrome;
 class Status;
 class WebDriverLog;
 class WebView;
-
-namespace prompt_behavior {
-static const char kAccept[] = "accept";
-static const char kAcceptAndNotify[] = "accept and notify";
-static const char kDismiss[] = "dismiss";
-static const char kDismissAndNotify[] = "dismiss and notify";
-static const char kIgnore[] = "ignore";
-}  // namespace prompt_behavior
 
 struct FrameInfo {
   FrameInfo(const std::string& parent_frame_id,
@@ -159,7 +152,7 @@ struct Session {
   std::vector<std::unique_ptr<CommandListener>> command_listeners;
   bool strict_file_interactability;
 
-  std::string unhandled_prompt_behavior;
+  PromptBehavior unhandled_prompt_behavior = PromptBehavior(kW3CDefault);
   int click_count;
   base::TimeTicks mouse_click_timestamp;
   std::string host;

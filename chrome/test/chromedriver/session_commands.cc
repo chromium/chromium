@@ -211,7 +211,7 @@ base::Value::Dict CreateCapabilities(Session* session,
   caps.Set("strictFileInteractability", session->strict_file_interactability);
   caps.Set(session->w3c_compliant ? "unhandledPromptBehavior"
                                   : "unexpectedAlertBehaviour",
-           session->unhandled_prompt_behavior);
+           session->unhandled_prompt_behavior.CapabilityView());
 
   // Extensions defined by the W3C.
   // See https://w3c.github.io/webauthn/#sctn-automation-webdriver-capability
@@ -411,34 +411,9 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       }
     }
 
-    base::Value::Dict unhandled_prompt_behavior;
-
-    static const std::unordered_map<std::string, std::string>
-        classic_to_bidi_behavior = {
-            // If no capability specified, the default behavior depends on the
-            // W3C compliance mode.
-            {"", session->w3c_compliant ? prompt_behavior::kDismiss
-                                        : prompt_behavior::kIgnore},
-            {prompt_behavior::kDismissAndNotify, prompt_behavior::kDismiss},
-            {prompt_behavior::kDismiss, prompt_behavior::kDismiss},
-            {prompt_behavior::kAcceptAndNotify, prompt_behavior::kAccept},
-            {prompt_behavior::kAccept, prompt_behavior::kAccept},
-            {prompt_behavior::kIgnore, prompt_behavior::kIgnore},
-        };
-
-    if (classic_to_bidi_behavior.contains(session->unhandled_prompt_behavior)) {
-      unhandled_prompt_behavior.Set(
-          "default",
-          classic_to_bidi_behavior.at(session->unhandled_prompt_behavior));
-    } else {
-      return Status(StatusCode::kUnknownError,
-                    "Unexpected unhandled prompt behavior: " +
-                        session->unhandled_prompt_behavior);
-    }
-
     base::Value::Dict mapper_options;
     mapper_options.Set("unhandledPromptBehavior",
-                       std::move(unhandled_prompt_behavior));
+                       session->unhandled_prompt_behavior.MapperOptionsView());
     mapper_options.Set("acceptInsecureCerts",
                        capabilities.accept_insecure_certs);
 
@@ -480,16 +455,11 @@ Status ConfigureSession(Session* session,
   if (status.IsError())
     return status;
 
-  if (capabilities->unhandled_prompt_behavior.length() > 0) {
+  if (capabilities->unhandled_prompt_behavior) {
     session->unhandled_prompt_behavior =
-        capabilities->unhandled_prompt_behavior;
+        std::move(capabilities->unhandled_prompt_behavior).value();
   } else {
-    // W3C spec (https://www.w3.org/TR/webdriver/#dfn-handle-any-user-prompts)
-    // shows the default behavior to be dismiss and notify. For backward
-    // compatibility, in legacy mode default behavior is not handling prompt.
-    session->unhandled_prompt_behavior =
-        session->w3c_compliant ? ::prompt_behavior::kDismissAndNotify
-                               : ::prompt_behavior::kIgnore;
+    session->unhandled_prompt_behavior = PromptBehavior(session->w3c_compliant);
   }
 
   session->implicit_wait = capabilities->implicit_wait_timeout;
@@ -836,25 +806,30 @@ Status ExecuteClose(Session* session,
     if (status.IsError())
       return status;
 
-    // Close the dialog depending on the unexpectedalert behaviour set by user
-    // before returning an error, so that subsequent commands do not fail.
-    const std::string& prompt_behavior = session->unhandled_prompt_behavior;
-
-    if (prompt_behavior == ::prompt_behavior::kAccept ||
-        prompt_behavior == ::prompt_behavior::kAcceptAndNotify) {
-      status = web_view->HandleDialog(true, session->prompt_text);
-    } else if (prompt_behavior == ::prompt_behavior::kDismiss ||
-               prompt_behavior == ::prompt_behavior::kDismissAndNotify) {
-      status = web_view->HandleDialog(false, session->prompt_text);
-    }
-    if (status.IsError())
+    std::string dialog_type;
+    status = web_view->GetTypeOfDialog(dialog_type);
+    if (status.IsError()) {
       return status;
+    }
 
-    // For backward compatibility, in legacy mode we always notify.
-    if (!session->w3c_compliant ||
-        prompt_behavior == ::prompt_behavior::kAcceptAndNotify ||
-        prompt_behavior == ::prompt_behavior::kDismissAndNotify ||
-        prompt_behavior == ::prompt_behavior::kIgnore) {
+    PromptHandlerConfiguration prompt_handler_configuration;
+    status = session->unhandled_prompt_behavior.GetConfiguration(
+        dialog_type, prompt_handler_configuration);
+    if (status.IsError()) {
+      return status;
+    }
+
+    if (prompt_handler_configuration.type == PromptHandlerType::kAccept ||
+        prompt_handler_configuration.type == PromptHandlerType::kDismiss) {
+      status = web_view->HandleDialog(
+          prompt_handler_configuration.type == PromptHandlerType::kAccept,
+          session->prompt_text);
+      if (status.IsError()) {
+        return status;
+      }
+    }
+
+    if (prompt_handler_configuration.notify) {
       return Status(kUnexpectedAlertOpen, "{Alert text : " + alert_text + "}");
     }
   }

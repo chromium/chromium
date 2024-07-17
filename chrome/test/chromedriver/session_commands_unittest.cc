@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/values_test_util.h"
@@ -605,7 +606,8 @@ TEST(SessionCommandsTest, ConfigureSession_allSet) {
   ASSERT_NE(desired_caps_out, nullptr);
   ASSERT_TRUE(capabilities_out.logging_prefs["driver"]);
   // Verify session settings are correct
-  ASSERT_EQ(::prompt_behavior::kAccept, session.unhandled_prompt_behavior);
+  ASSERT_EQ(::prompt_behavior::kAccept,
+            session.unhandled_prompt_behavior.CapabilityView().GetString());
   ASSERT_EQ(base::Seconds(57), session.implicit_wait);
   ASSERT_EQ(base::Seconds(29), session.page_load_timeout);
   ASSERT_EQ(base::Seconds(21), session.script_timeout);
@@ -641,7 +643,7 @@ TEST(SessionCommandsTest, ConfigureSession_defaults) {
   ASSERT_EQ(Log::Level::kWarning, session.driver_log.get()->min_level());
   // w3c values:
   ASSERT_EQ(::prompt_behavior::kDismissAndNotify,
-            session.unhandled_prompt_behavior);
+            session.unhandled_prompt_behavior.CapabilityView().GetString());
 }
 
 TEST(SessionCommandsTest, ConfigureSession_legacyDefault) {
@@ -667,5 +669,43 @@ TEST(SessionCommandsTest, ConfigureSession_legacyDefault) {
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_NE(desired_caps_out, nullptr);
   // legacy values:
-  ASSERT_EQ(::prompt_behavior::kIgnore, session.unhandled_prompt_behavior);
+  ASSERT_EQ(::prompt_behavior::kIgnore,
+            session.unhandled_prompt_behavior.CapabilityView().GetString());
+}
+
+TEST(SessionCommandsTest, ConfigureSession_unhandledPromptBehaviorDict) {
+  BrowserInfo binfo;
+  MockChrome* chrome = new MockChrome(binfo);
+  Session session("id", std::unique_ptr<Chrome>(chrome));
+
+  base::Value::Dict params_in = base::test::ParseJsonDict(
+      R"({
+        "capabilities": {
+          "alwaysMatch": {
+            "unhandledPromptBehavior": {
+              "alert": "accept",
+              "confirm": "dismiss",
+              "prompt": "ignore",
+              "beforeUnload": "accept"
+            }
+          },
+        }
+      })");
+  const base::Value::Dict* desired_caps_out = nullptr;
+  base::Value::Dict merged_out;
+  Capabilities capabilities_out;
+
+  Status status = internal::ConfigureSession(
+      &session, params_in, desired_caps_out, merged_out, &capabilities_out);
+  ASSERT_EQ(kOk, status.code()) << status.message();
+  ASSERT_NE(desired_caps_out, nullptr);
+  // Testing specific values could be fragile, but want to verify they are set
+
+  std::string json;
+  base::JSONWriter::Write(session.unhandled_prompt_behavior.CapabilityView(),
+                          &json);
+  ASSERT_EQ(
+      "{\"alert\":\"accept\",\"beforeUnload\":\"accept\",\"confirm\":"
+      "\"dismiss\",\"prompt\":\"ignore\"}",
+      json);
 }

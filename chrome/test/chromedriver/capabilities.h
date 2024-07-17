@@ -23,6 +23,7 @@
 #include "chrome/test/chromedriver/chrome/log.h"
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 #include "chrome/test/chromedriver/net/net_util.h"
+#include "chrome/test/chromedriver/prompt_behavior.h"
 #include "chrome/test/chromedriver/session.h"
 
 namespace base {
@@ -126,7 +127,7 @@ struct Capabilities {
 
   bool strict_file_interactability;
 
-  std::string unhandled_prompt_behavior;
+  std::optional<PromptBehavior> unhandled_prompt_behavior;
 
   //
   // ChromeDriver specific capabilities
