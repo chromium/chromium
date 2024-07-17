@@ -18,6 +18,7 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace supervised_user {
@@ -206,6 +207,10 @@ void ListFamilyMembersService::SetFamilyMemberPrefs(
       return;
     }
   }
+
+  // If there is no associated family member, set to default.
+  user_prefs_->SetString(prefs::kFamilyLinkUserMemberRole,
+                         supervised_user::kDefaultEmptyFamilyMemberRole);
 }
 
 }  // namespace supervised_user

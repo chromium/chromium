@@ -31,6 +31,21 @@ class ListFamilyMembersServiceTest : public ::testing::Test {
   }
 
  protected:
+  void SimulateErrorResponseForPendingRequest() {
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
+        "mine/members?alt=proto",
+        /*content=*/"", net::HTTP_BAD_REQUEST);
+  }
+
+  void SimulateEmptyResponseForPendingRequest() {
+    kidsmanagement::ListMembersResponse response;
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
+        "mine/members?alt=proto",
+        response.SerializeAsString());
+  }
+
   void SimulateResponseForPendingRequest(std::string_view username) {
     kidsmanagement::ListMembersResponse response;
     supervised_user::SetFamilyMemberAttributesForTesting(
@@ -126,6 +141,43 @@ TEST_F(ListFamilyMembersServiceTest,
   SimulateResponseForPendingRequest("username_hoh");
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_EQ(hoh_username, "username_hoh");
+
+  test_list_family_members_service_->Shutdown();
+}
+
+TEST_F(ListFamilyMembersServiceTest,
+       EmptyFamilyFlowsFromFetcherToPreferencesWithFetchCapability) {
+  base::test::ScopedFeatureList feature_list(
+      supervised_user::kFetchListFamilyMembersWithCapability);
+  // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
+  // list family response from fetches.
+  auto extract_empty_response = base::BindLambdaForTesting(
+      [&](const kidsmanagement::ListMembersResponse& response) {
+        ASSERT_TRUE(response.members().empty());
+      });
+
+  // Subscribe to the mock method.
+  base::CallbackListSubscription subscription =
+      test_list_family_members_service_->SubscribeToSuccessfulFetches(
+          extract_empty_response);
+
+  // Test the `fetcher_`.
+  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
+      "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+  mutator.set_can_fetch_family_member_info(true);
+  identity_test_env_.UpdateAccountInfoForAccount(primary_account);
+  test_list_family_members_service_->Init();
+
+  // Perform the sequence of obtaining an access token, simulating response and
+  // verifying the result.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  SimulateEmptyResponseForPendingRequest();
+  ASSERT_EQ(0, test_url_loader_factory_.NumPending());
+  EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
+            supervised_user::kDefaultEmptyFamilyMemberRole);
 
   test_list_family_members_service_->Shutdown();
 }
@@ -339,6 +391,42 @@ TEST_F(ListFamilyMembersServiceTest,
   SimulateResponseForPendingRequest("username_hoh");
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_EQ(response_hoh_username, "username_hoh");
+
+  test_list_family_members_service_->Shutdown();
+}
+
+TEST_F(ListFamilyMembersServiceTest,
+       FamilyFlowsFromFetcherToPreferencesWithFetchCapabilityAndError) {
+  base::test::ScopedFeatureList feature_list(
+      supervised_user::kFetchListFamilyMembersWithCapability);
+  // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
+  // list family response from fetches.
+  auto extract_empty_response = base::BindLambdaForTesting(
+      [&](const kidsmanagement::ListMembersResponse& response) {
+        ASSERT_TRUE(response.members().empty());
+      });
+
+  // Subscribe to the mock method.
+  base::CallbackListSubscription subscription =
+      test_list_family_members_service_->SubscribeToSuccessfulFetches(
+          extract_empty_response);
+
+  // Test the `fetcher_`.
+  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
+      "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+  mutator.set_can_fetch_family_member_info(true);
+  identity_test_env_.UpdateAccountInfoForAccount(primary_account);
+  test_list_family_members_service_->Init();
+
+  // Perform the sequence of obtaining an access token, simulating response and
+  // verifying the result.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  SimulateErrorResponseForPendingRequest();
+  ASSERT_EQ(0, test_url_loader_factory_.NumPending());
+  EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole), "");
 
   test_list_family_members_service_->Shutdown();
 }

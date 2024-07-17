@@ -11,8 +11,9 @@ import "permissions_common.proto";
 // only).
 
 message ListMembersRequest {
-  // Must always be "mine" (enforced by the API config). Required.
-  optional string family_id = 1;
+  // If set to true, returns an empty response (no members field set) instead of
+  // throwing NOT_FOUND errors when the authenticated user has no family.
+  optional bool allow_empty_family = 4;
 }
 
 message ListMembersResponse {

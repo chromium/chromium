@@ -520,10 +520,13 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     ListFamilyMembersFetcher::Callback callback,
     const FetcherConfig& config) {
+  kidsmanagement::ListMembersRequest request;
+  // If there is no associated Family Group with the account return an empty
+  // response instead of NOT_FOUND.
+  request.set_allow_empty_family(true);
   std::unique_ptr<ListFamilyMembersFetcher> fetcher =
       CreateFetcher<kidsmanagement::ListMembersResponse>(
-          identity_manager, url_loader_factory,
-          kidsmanagement::ListMembersRequest(), config);
+          identity_manager, url_loader_factory, request, config);
   fetcher->Start(std::move(callback));
   return fetcher;
 }
