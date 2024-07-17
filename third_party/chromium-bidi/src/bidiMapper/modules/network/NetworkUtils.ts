@@ -115,6 +115,35 @@ export function cdpFetchHeadersFromBidiNetworkHeaders(
   }));
 }
 
+export function networkHeaderFromCookieHeaders(
+  headers?: Network.CookieHeader[]
+): Network.Header | undefined {
+  if (headers === undefined) {
+    return undefined;
+  }
+
+  const value = headers.reduce((acc, value, index) => {
+    if (index > 0) {
+      acc += ';';
+    }
+    const cookieValue =
+      value.value.type === 'base64'
+        ? btoa(value.value.value)
+        : value.value.value;
+    acc += `${value.name}=${cookieValue}`;
+
+    return acc;
+  }, '');
+
+  return {
+    name: 'Cookie',
+    value: {
+      type: 'string',
+      value,
+    },
+  };
+}
+
 /** Converts from Bidi auth action to CDP auth challenge response. */
 export function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
   action: 'default' | 'cancel' | 'provideCredentials'

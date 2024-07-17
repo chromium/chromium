@@ -42,6 +42,7 @@ import {
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
   bidiBodySizeFromCdpPostDataEntries,
+  networkHeaderFromCookieHeaders,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -82,6 +83,7 @@ export class NetworkRequest {
     url?: string;
     method?: string;
     headers?: Network.Header[];
+    cookies?: Network.CookieHeader[];
     bodySize?: number;
   };
 
@@ -171,7 +173,7 @@ export class NetworkRequest {
     return Boolean(this.#request.info);
   }
 
-  isDataUrl(): boolean {
+  #isDataUrl(): boolean {
     return this.url.startsWith('data:');
   }
 
@@ -217,7 +219,7 @@ export class NetworkRequest {
   }
 
   get #bodySize() {
-    let bodySize: number = 0;
+    let bodySize = 0;
     if (typeof this.#requestOverrides?.bodySize === 'number') {
       bodySize = this.#requestOverrides.bodySize;
     } else {
@@ -351,7 +353,7 @@ export class NetworkRequest {
       // Flush redirects
       options.wasRedirected ||
       options.hasFailed ||
-      this.isDataUrl() ||
+      this.#isDataUrl() ||
       Boolean(this.#request.extraInfo) ||
       // Requests from cache don't have extra info
       this.#servedFromCache ||
@@ -361,7 +363,7 @@ export class NetworkRequest {
 
     const noInterceptionExpected =
       // We can't intercept data urls from CDP
-      this.isDataUrl() ||
+      this.#isDataUrl() ||
       // Cached requests never hit the network
       this.#servedFromCache;
 
@@ -381,7 +383,6 @@ export class NetworkRequest {
     ) {
       this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
     }
-
     const responseExtraInfoCompleted =
       Boolean(this.#response.extraInfo) ||
       // Response from cache don't have extra info
@@ -551,9 +552,11 @@ export class NetworkRequest {
   async continueRequest(
     overrides: Omit<Network.ContinueRequestParameters, 'request'> = {}
   ) {
-    const headers: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
-
+    const overrideHeaders = this.#getOverrideHeader(
+      overrides.headers,
+      overrides.cookies
+    );
+    const headers = cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
     const postData = getCdpBodyFromBiDiBytesValue(overrides.body);
 
     await this.#continueRequest({
@@ -567,6 +570,7 @@ export class NetworkRequest {
       url: overrides.url,
       method: overrides.method,
       headers: overrides.headers,
+      cookies: overrides.cookies,
       bodySize: getSizeFromBiDiBytesValue(overrides.body),
     };
   }
@@ -611,8 +615,12 @@ export class NetworkRequest {
     }
 
     if (this.#interceptPhase === Network.InterceptPhase.ResponseStarted) {
-      const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
-        cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
+      const overrideHeaders = this.#getOverrideHeader(
+        overrides.headers,
+        overrides.cookies
+      );
+      const responseHeaders =
+        cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
 
       await this.#continueResponse({
         responseCode: overrides.statusCode,
@@ -686,10 +694,12 @@ export class NetworkRequest {
       return await this.#continueRequest();
     }
 
-    // TODO: Step 6
-    // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
-    const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
+    const overrideHeaders = this.#getOverrideHeader(
+      overrides.headers,
+      overrides.cookies
+    );
+    const responseHeaders =
+      cdpFetchHeadersFromBidiNetworkHeaders(overrideHeaders);
 
     const responseCode = overrides.statusCode ?? this.#statusCode ?? 200;
 
@@ -889,6 +899,31 @@ export class NetworkRequest {
       this.#request.info?.request.url.endsWith(faviconUrl) ??
       false
     );
+  }
+
+  #getOverrideHeader(
+    headers: Network.Header[] | undefined,
+    cookies: Network.CookieHeader[] | undefined
+  ): Network.Header[] | undefined {
+    if (!headers && !cookies) {
+      return undefined;
+    }
+    let overrideHeaders: Network.Header[] | undefined = headers;
+    const cookieHeader = networkHeaderFromCookieHeaders(cookies);
+    if (cookieHeader && !overrideHeaders) {
+      overrideHeaders = this.#requestHeaders;
+    }
+    if (cookieHeader && overrideHeaders) {
+      overrideHeaders.filter(
+        (header) =>
+          header.name.localeCompare('cookie', undefined, {
+            sensitivity: 'base',
+          }) !== 0
+      );
+      overrideHeaders.push(cookieHeader);
+    }
+
+    return overrideHeaders;
   }
 
   static #getInitiatorType(

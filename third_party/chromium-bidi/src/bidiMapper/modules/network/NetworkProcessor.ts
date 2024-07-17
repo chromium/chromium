@@ -88,8 +88,6 @@ export class NetworkProcessor {
       Network.InterceptPhase.BeforeRequestSent,
     ]);
 
-    // TODO: Set / expand.
-    // ; Step 9. cookies
     try {
       await request.continueRequest(params);
     } catch (error) {
@@ -111,8 +109,6 @@ export class NetworkProcessor {
       Network.InterceptPhase.ResponseStarted,
     ]);
 
-    // TODO: Set / expand.
-    // ; Step 10. cookies
     try {
       await request.continueResponse(params);
     } catch (error) {
@@ -162,8 +158,6 @@ export class NetworkProcessor {
       NetworkProcessor.validateHeaders(params.headers);
     }
 
-    // TODO: Set / expand.
-    // ; Step 10. cookies
     const request = this.#getBlockedRequestOrFail(params.request, [
       Network.InterceptPhase.BeforeRequestSent,
       Network.InterceptPhase.ResponseStarted,
