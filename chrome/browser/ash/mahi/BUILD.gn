@@ -108,11 +108,24 @@ static_library("test_util") {
   sources = [
     "fake_mahi_browser_delegate_ash.cc",
     "fake_mahi_browser_delegate_ash.h",
+    "mahi_test_util.cc",
+    "mahi_test_util.h",
+    "mahi_ui_browser_test_base.cc",
+    "mahi_ui_browser_test_base.h",
   ]
 
   deps = [
     ":mahi",
+    "//ash:test_support",
     "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/views/mahi",
+    "//chrome/test:test_support_ui",
     "//chromeos/crosapi/mojom",
+    "//components/manta:manta",
+    "//testing/gtest",
+    "//ui/events:test_support",
   ]
 }

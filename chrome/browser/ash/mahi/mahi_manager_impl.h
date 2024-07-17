@@ -58,6 +58,8 @@ class MahiManagerImpl : public chromeos::MahiManager,
   // Called when availability for a refresh changes based on the shown content.
   void NotifyRefreshAvailability(bool available);
 
+  MahiUiController* ui_controller_for_test() { return &ui_controller_; }
+
  private:
   friend class MahiManagerImplTest;
   friend class MahiManagerImplFeatureKeyTest;
