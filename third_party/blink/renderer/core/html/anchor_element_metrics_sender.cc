@@ -546,6 +546,9 @@ void AnchorElementMetricsSender::ComputeAnchorElementsPositionUpdates() {
 
   for (const HTMLAnchorElement* anchor : anchors_in_viewport_) {
     LocalFrame* frame = anchor->GetDocument().GetFrame();
+    if (!frame) {
+      continue;
+    }
     const LocalFrame& local_root = frame->LocalFrameRoot();
     // TODO(crbug.com/347719430): LocalFrameView::FrameToViewport called below
     // doesn't work for subframes whose local root is not the main frame.

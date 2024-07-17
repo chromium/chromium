@@ -1564,4 +1564,54 @@ TEST_F(AnchorElementMetricsSenderTest,
   EXPECT_FLOAT_EQ(3.5f * unit / kViewportHeight,
                   positions.begin()->second->vertical_position_ratio);
 }
+
+// Regression test for crbug.com/352973572.
+TEST_F(AnchorElementMetricsSenderTest, SubframeWithObservedAnchorsDetached) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kNavigationPredictorNewViewportFeatures);
+
+  // Navigate the main frame.
+  String source("https://foo.com");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  const int scroll_height_px = 100;
+  main_resource.Complete(String::Format(R"html(
+    <body>
+      <div style="height: %dpx;"></div>
+      <iframe width="400px" height="400px"></iframe>
+      <a href="https://foo.com/one">one</a>
+      <div style="height: 1000px;"></div>
+    </body>
+  )html",
+                                        scroll_height_px));
+
+  String subframe_source("https://foo.com/iframe");
+  SimRequest subframe_resource(subframe_source, "text/html");
+  frame_test_helpers::LoadFrameDontWait(
+      MainFrame().FirstChild()->ToWebLocalFrame(), KURL(subframe_source));
+  subframe_resource.Complete(R"html(
+    <body>
+      <a href="https://foo.com/two">one</a>
+    </body>
+  )html");
+
+  Compositor().BeginFrame();
+  ProcessEvents(/*expected_anchors=*/2);
+
+  EXPECT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  EXPECT_EQ(2u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(0u, mock_host->left_viewport_.size());
+
+  WebLocalFrameImpl* subframe =
+      To<WebLocalFrameImpl>(MainFrame().FirstChild()->ToWebLocalFrame());
+  Persistent<Document> subframe_doc = subframe->GetFrame()->GetDocument();
+  subframe->Detach();
+
+  VerticalScroll(-scroll_height_px);
+  ProcessPositionUpdates();
+  EXPECT_EQ(1u, mock_host->positions_.size());
+}
+
 }  // namespace blink
