@@ -297,8 +297,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the passwords view controller appears on screen.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordsViewControllerIsPresented {
+- (void)testPasswordsViewControllerIsPresented {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -310,8 +309,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the passwords view controller contains the "Manage Passwords..."
 // and "Manage Settings..." actions.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordsViewControllerContainsManageActions {
+- (void)testPasswordsViewControllerContainsManageActions {
   // TODO(crbug.com/40857537): Re-enable when flake fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
@@ -334,8 +332,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the "Manage Passwords..." action works.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testManagePasswordsActionOpensPasswordManager {
+- (void)testManagePasswordsActionOpensPasswordManager {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -357,9 +354,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password Manager is dismissed when local authentication fails
 // after tapping "Manage Passwords...".
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)
-    DISABLED_testManagePasswordsActionWithFailedAuthDismissesPasswordManager {
+- (void)testManagePasswordsActionWithFailedAuthDismissesPasswordManager {
   CheckPasswordManagerUIDismissesAfterFailedAuthentication(
       ManualFallbackManagePasswordsMatcher());
 
@@ -368,8 +363,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the "Manage Settings..." action works.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testManageSettingsActionOpensPasswordSettings {
+- (void)testManageSettingsActionOpensPasswordSettings {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -390,9 +384,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that Password Settings is dismissed when local authentication fails
 // after tapping "Manage Settings...".
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)
-    DISABLED_testManageSettingsActionWithFailedAuthDismissesPasswordSettings {
+- (void)testManageSettingsActionWithFailedAuthDismissesPasswordSettings {
   CheckPasswordManagerUIDismissesAfterFailedAuthentication(
       ManualFallbackManageSettingsMatcher());
 
@@ -401,8 +393,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the "Manage Passwords..." action works in incognito mode.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testManagePasswordsActionOpensPasswordSettingsInIncognito {
+- (void)testManagePasswordsActionOpensPasswordSettingsInIncognito {
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadLoginPage];
@@ -427,8 +418,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the "Manage Settings..." action works in incognito mode.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testManageSettingsActionOpensPasswordSettingsInIncognito {
+- (void)testManageSettingsActionOpensPasswordSettingsInIncognito {
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadLoginPage];
@@ -452,8 +442,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the "Select Password..." action works in incognito mode.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testSelectPasswordActionInIncognito {
+- (void)testSelectPasswordActionInIncognito {
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadLoginPage];
@@ -467,8 +456,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that returning from "Manage Settings..." leaves the keyboard and the
 // icons in the right state.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordsStateAfterPresentingManageSettings {
+- (void)testPasswordsStateAfterPresentingManageSettings {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -519,8 +507,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the "Select Password..." action works.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testSelectPasswordActionOpensOtherPasswordList {
+- (void)testSelectPasswordActionOpensOtherPasswordList {
   [self openOtherPasswords];
 
   [[EarlGrey
@@ -529,8 +516,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the "Select Password..." screen won't open if canceled.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testCancellingSelectPasswordAction {
+- (void)testCancellingSelectPasswordAction {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -553,8 +539,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the other password list can be dismissed with a swipe down.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testClosingOtherPasswordListViaSwipeDown {
+- (void)testClosingOtherPasswordListViaSwipeDown {
   [self openOtherPasswords];
 
   [[EarlGrey
@@ -580,8 +565,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the "Select Password..." action is only availbale when there are
 // saved passwords in the password stores.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testSelectPasswordActionAvailability {
+- (void)testSelectPasswordActionAvailability {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
                             @"Accessory Upgrade feature is disabled.")
@@ -613,8 +597,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the "Select Password..." UI is dismissed after failed local
 // authentication.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testOtherPasswordListUIDismissedAfterFailedAuth {
+- (void)testOtherPasswordListUIDismissedAfterFailedAuth {
   // Setup failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
@@ -649,8 +632,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that returning from "Select Password..." leaves the view and icons
 // in the right state.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordsStateAfterPresentingOtherPasswordList {
+- (void)testPasswordsStateAfterPresentingOtherPasswordList {
   [self openOtherPasswords];
 
   [[EarlGrey
@@ -685,8 +667,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password View Controller is still present after tapping the
 // search bar.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordControllerWhileSearching {
+- (void)testPasswordControllerWhileSearching {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -734,8 +715,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password View Controller is dismissed when tapping the
 // keyboard icon.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testKeyboardIconDismissPasswordController {
+- (void)testKeyboardIconDismissPasswordController {
   if ([ChromeEarlGrey isIPadIdiom] ||
       [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_SKIPPED(
@@ -764,8 +744,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password View Controller is dismissed when tapping the outside
 // the popover on iPad.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testIPadTappingOutsidePopOverDismissPasswordController {
+- (void)testIPadTappingOutsidePopOverDismissPasswordController {
   if (![ChromeEarlGrey isIPadIdiom]) {
     return;
   }
@@ -818,8 +797,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the Password View Controller stays on rotation.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordControllerSupportsRotation {
+- (void)testPasswordControllerSupportsRotation {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -836,8 +814,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that content is injected in iframe messaging.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordControllerSupportsIFrameMessaging {
+- (void)testPasswordControllerSupportsIFrameMessaging {
   // Disable the password bottom sheet.
   [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
 
@@ -875,8 +852,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that an alert is shown when trying to fill a password in an unsecure
 // field.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordControllerPresentsUnsecureAlert {
+- (void)testPasswordControllerPresentsUnsecureAlert {
   // Disable the password bottom sheet.
   [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
 
@@ -916,8 +892,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the password icon is not present when no passwords are available.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordIconIsNotVisibleWhenPasswordStoreEmpty {
+- (void)testPasswordIconIsNotVisibleWhenPasswordStoreEmpty {
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
                            @"Accessory Upgrade feature is enabled.");
@@ -936,8 +911,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the "no passwords found" message is visible when no password
 // suggestions are available for the current website.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testNoPasswordsFoundMessageIsVisibleWhenNoPasswordSuggestions {
+- (void)testNoPasswordsFoundMessageIsVisibleWhenNoPasswordSuggestions {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
                            @"Accessory Upgrade feature is disabled.");
@@ -960,8 +934,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests password generation on manual fallback.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testPasswordGenerationOnManualFallback {
+- (void)testPasswordGenerationOnManualFallback {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
@@ -991,9 +964,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests password generation on manual fallback for signed in not syncing users.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)
-    DISABLED_testPasswordGenerationOnManualFallbackSignedInNotSyncingAccount {
+- (void)testPasswordGenerationOnManualFallbackSignedInNotSyncingAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
@@ -1018,9 +989,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests password generation on manual fallback not showing for signed in not
 // syncing users with Passwords toggle in account settings disbaled.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)
-    DISABLED_testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled {
+- (void)testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];
@@ -1050,9 +1019,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests password generation on manual fallback not showing for signed in not
 // syncing users with encryption error.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)
-    DISABLED_testPasswordGenerationFallbackSignedInNotSyncingEncryptionError {
+- (void)testPasswordGenerationFallbackSignedInNotSyncingEncryptionError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
@@ -1088,8 +1055,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the overflow menu button is only visible when the Keyboard
 // Accessory Upgrade feature is enabled.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testOverflowMenuVisibility {
+- (void)testOverflowMenuVisibility {
   // Disable the password bottom sheet.
   [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
 
@@ -1121,8 +1087,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests the "Edit" action of the overflow menu button displays the password's
 // details in edit mode.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testEditPasswordFromOverflowMenu {
+- (void)testEditPasswordFromOverflowMenu {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
                             @"Accessory Upgrade feature is disabled.")
@@ -1168,8 +1133,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that tapping the "Autofill Form" button fills the password form with
 // the right data.
-// TODO(crbug.com/350474772): Test is failing during `setUp` on ipad-simulator.
-- (void)DISABLED_testAutofillFormButtonFillsForm {
+- (void)testAutofillFormButtonFillsForm {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
                             @"Accessory Upgrade feature is disabled.")
