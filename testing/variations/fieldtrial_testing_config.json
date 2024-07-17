@@ -14129,6 +14129,21 @@
             ]
         }
     ],
+    "NearbySharingWifiDirect": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NearbySharingWifiDirect"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetAdapterMaxBufSize": [
         {
             "platforms": [
