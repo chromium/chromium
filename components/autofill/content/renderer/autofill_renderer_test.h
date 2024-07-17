@@ -120,6 +120,8 @@ class AutofillRendererTest : public content::RenderViewTest {
       std::unique_ptr<PasswordGenerationAgent> password_generation_agent,
       blink::AssociatedInterfaceRegistry* associated_interfaces);
 
+  blink::WebDocument GetDocument() { return GetMainFrame()->GetDocument(); }
+
   // Simulates a click on the element with id `element_id` and, if, successful,
   // runs until the task environment is idle. Waits until the `TaskEnvironment`
   // is idle to ensure that the `AutofillDriver` is notified via mojo.

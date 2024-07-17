@@ -13,6 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/autofill/content/renderer/autofill_agent_test_api.h"
+#include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache_test_api.h"
@@ -27,15 +29,10 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_select_element.h"
 
-using base::ASCIIToUTF16;
 using blink::WebDocument;
 using blink::WebElement;
-using blink::WebInputElement;
-using blink::WebSelectElement;
-using blink::WebString;
 using testing::AllOf;
 using testing::ElementsAre;
 using testing::Field;
@@ -43,6 +40,8 @@ using testing::Property;
 using testing::UnorderedElementsAre;
 
 namespace autofill {
+namespace {
+
 using CheckStatus = FormFieldData::CheckStatus;
 
 auto HasId(FormRendererId expected_id) {
@@ -62,46 +61,55 @@ auto IsToken(FrameToken expected_token, int expected_predecessor) {
 const FormData* GetFormByName(const std::vector<FormData>& forms,
                               std::string_view name) {
   for (const FormData& form : forms) {
-    if (form.name() == ASCIIToUTF16(name)) {
+    if (form.name() == base::ASCIIToUTF16(name)) {
       return &form;
     }
   }
   return nullptr;
 }
 
-FormCache::UpdateFormCacheResult UpdateFormCache(FormCache& form_cache) {
-  return form_cache.UpdateFormCache(*base::MakeRefCounted<FieldDataManager>());
-}
-
-class FormCacheBrowserTest : public content::RenderViewTest {
+class FormCacheBrowserTest : public test::AutofillRendererTest {
  public:
-  FormCacheBrowserTest() {
-    focus_test_utils_ = std::make_unique<test::FocusTestUtils>(
-        base::BindRepeating(&FormCacheBrowserTest::ExecuteJavaScriptForTests,
-                            base::Unretained(this)));
-    field_data_manager_ = base::MakeRefCounted<FieldDataManager>();
-  }
   ~FormCacheBrowserTest() override = default;
-  FormCacheBrowserTest(const FormCacheBrowserTest&) = delete;
-  FormCacheBrowserTest& operator=(const FormCacheBrowserTest&) = delete;
 
-  FormCache::UpdateFormCacheResult UpdateFormCache(FormCache& form_cache) {
-    return form_cache.UpdateFormCache(GetFieldDataManager());
+  void SetUp() override {
+    test::AutofillRendererTest::SetUp();
+    form_cache_.emplace(&autofill_agent());
   }
 
- protected:
-  std::string GetFocusLog() {
-    return focus_test_utils_->GetFocusLog(GetMainFrame()->GetDocument());
+  void TearDown() override {
+    form_cache_.reset();
+    test::AutofillRendererTest::TearDown();
+  }
+
+  FormCache::UpdateFormCacheResult UpdateFormCache() {
+    return form_cache_->UpdateFormCache(GetFieldDataManager());
+  }
+
+  size_t num_extracted_forms() {
+    return test_api(*form_cache_).num_extracted_forms();
   }
 
   FieldDataManager& GetFieldDataManager() const {
     return *field_data_manager_.get();
   }
 
-  std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
+  test::FocusTestUtils& focus_test_utils() { return focus_test_utils_; }
 
  private:
-  scoped_refptr<FieldDataManager> field_data_manager_;
+  scoped_refptr<FieldDataManager> field_data_manager_ =
+      base::MakeRefCounted<FieldDataManager>();
+
+  test::FocusTestUtils focus_test_utils_{
+      base::BindRepeating(&FormCacheBrowserTest::ExecuteJavaScriptForTests,
+                          base::Unretained(this))};
+
+  // The subject of this test fixture. The fixture inherits from
+  // AutofillRendererTest because we need an AutofillAgent to initialize a
+  // FormCache. That AutofillAgent has a FormCache on its own, but we define a
+  // separate one for this test fixture because the `AutofillAgent`'s cache is
+  // used and populated by `AutofillAgent`.
+  std::optional<FormCache> form_cache_;
 };
 
 TEST_F(FormCacheBrowserTest, UpdatedForms) {
@@ -114,8 +122,7 @@ TEST_F(FormCacheBrowserTest, UpdatedForms) {
     <input type="text" name="unowned_element">
   )");
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("form1")));
@@ -147,8 +154,7 @@ TEST_F(FormCacheBrowserTest, RemovedForms) {
     <input type="text" id="unowned_element">
   )");
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("form1"),
@@ -168,7 +174,7 @@ TEST_F(FormCacheBrowserTest, RemovedForms) {
     document.getElementById("form2").innerHTML = "";
   )");
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
 
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_THAT(forms.removed_forms,
@@ -178,7 +184,7 @@ TEST_F(FormCacheBrowserTest, RemovedForms) {
     document.getElementById("unowned_element").remove();
   )");
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
 
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_THAT(forms.removed_forms, ElementsAre(FormRendererId()));
@@ -191,7 +197,7 @@ TEST_F(FormCacheBrowserTest, RemovedForms) {
     `;
   )");
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
 
   EXPECT_THAT(forms.updated_forms, ElementsAre(HasName("form2")));
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -205,7 +211,7 @@ TEST_F(FormCacheBrowserTest, RemovedForms) {
     `;
   )");
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
 
   EXPECT_THAT(forms.updated_forms, ElementsAre(HasName("form2")));
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -218,8 +224,7 @@ TEST_F(FormCacheBrowserTest, ExtractFormAfterDynamicFieldChange) {
     <form id="g"> <label id="label">Name</label><input></form>
   )");
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasName("f"), HasName("g")));
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -228,7 +233,7 @@ TEST_F(FormCacheBrowserTest, ExtractFormAfterDynamicFieldChange) {
     document.getElementById("label").innerHTML = "Last Name";
   )");
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
   EXPECT_THAT(forms.updated_forms, ElementsAre(HasName("g")));
   EXPECT_TRUE(forms.removed_forms.empty());
 }
@@ -241,13 +246,10 @@ TEST_F(FormCacheBrowserTest, ExtractFrames) {
     <iframe id="frame2"></iframe>
   )");
 
-  FrameToken frame1_token =
-      GetFrameToken(GetMainFrame()->GetDocument(), "frame1");
-  FrameToken frame2_token =
-      GetFrameToken(GetMainFrame()->GetDocument(), "frame2");
+  FrameToken frame1_token = GetFrameToken(GetDocument(), "frame1");
+  FrameToken frame2_token = GetFrameToken(GetDocument(), "frame2");
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("form1")));
@@ -275,14 +277,13 @@ TEST_F(FormCacheBrowserTest, ExtractFormsTwice) {
     <input type="text" name="unowned_element">
   )");
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("form1")));
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
   // As nothing has changed, there are no new or removed forms.
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -296,14 +297,13 @@ TEST_F(FormCacheBrowserTest, ExtractFramesTwice) {
     <iframe></iframe>
   )");
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("form1")));
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
   // As nothing has changed, there are no new or removed forms.
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -319,9 +319,9 @@ TEST_F(FormCacheBrowserTest, ExtractFramesAfterVisibilityChange) {
     <iframe id="frame3" style="display: none;"></iframe>
   )");
 
-  WebElement iframe1 = GetElementById(GetMainFrame()->GetDocument(), "frame1");
-  WebElement iframe2 = GetElementById(GetMainFrame()->GetDocument(), "frame2");
-  WebElement iframe3 = GetElementById(GetMainFrame()->GetDocument(), "frame3");
+  WebElement iframe1 = GetElementById(GetDocument(), "frame1");
+  WebElement iframe2 = GetElementById(GetDocument(), "frame2");
+  WebElement iframe3 = GetElementById(GetDocument(), "frame3");
 
   auto GetSize = [](const WebElement& element) {
     gfx::Rect bounds = element.BoundsInWidget();
@@ -332,8 +332,7 @@ TEST_F(FormCacheBrowserTest, ExtractFramesAfterVisibilityChange) {
   ASSERT_LE(GetSize(iframe2), 0);
   ASSERT_LE(GetSize(iframe3), 0);
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("form1")));
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -346,7 +345,7 @@ TEST_F(FormCacheBrowserTest, ExtractFramesAfterVisibilityChange) {
   ASSERT_GT(GetSize(iframe2), 0);
   ASSERT_GT(GetSize(iframe3), 0);
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_TRUE(forms.removed_forms.empty());
 
@@ -357,7 +356,7 @@ TEST_F(FormCacheBrowserTest, ExtractFramesAfterVisibilityChange) {
   ASSERT_LE(GetSize(iframe2), 0);
   ASSERT_LE(GetSize(iframe3), 0);
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_TRUE(forms.removed_forms.empty());
 }
@@ -372,8 +371,7 @@ TEST_F(FormCacheBrowserTest, ExtractFormsAfterModification) {
     <input type="text" name="unowned_element">
   )");
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("form1")));
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -393,7 +391,7 @@ TEST_F(FormCacheBrowserTest, ExtractFormsAfterModification) {
     document.body.appendChild(new_input_2);
   )");
 
-  forms = UpdateFormCache(form_cache);
+  forms = UpdateFormCache();
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("form1")));
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -407,80 +405,20 @@ TEST_F(FormCacheBrowserTest, ExtractFormsAfterModification) {
   EXPECT_EQ(2u, unowned_form->fields().size());
 }
 
-struct FillElementData {
-  const raw_ref<blink::WebFormControlElement> element;
-  std::u16string value;
-};
-
-FormFieldData* FindFieldByName(FormData& form_data,
-                               blink::WebString search_field_name) {
-  auto it = base::ranges::find(test_api(form_data).fields(),
-                               search_field_name.Utf16(), &FormFieldData::name);
-  return it != form_data.fields().end() ? &*it : nullptr;
-}
-
-// Fills the fields referenced in `form_fill_data`. Fills `checkbox_element`, if
-// non-null.
-void FillAndCheckState(
-    const WebDocument& document,
-    const FormData& form_data,
-    FieldDataManager& field_data_manager,
-    const std::vector<FillElementData>& form_to_fill,
-    std::optional<blink::WebInputElement> checkbox_element = std::nullopt,
-    CheckStatus fill_checkbox_check_status =
-        CheckStatus::kCheckableButUnchecked) {
-  FormData values_to_fill = form_data;
-  for (const FillElementData& field_to_fill : form_to_fill) {
-    FormFieldData* value_to_fill = FindFieldByName(
-        values_to_fill, field_to_fill.element->NameForAutofill());
-    ASSERT_TRUE(value_to_fill != nullptr);
-    value_to_fill->set_value(field_to_fill.value);
-    value_to_fill->set_is_autofilled(true);
-  }
-
-  if (checkbox_element) {
-    FormFieldData* value_to_fill =
-        FindFieldByName(values_to_fill, checkbox_element->NameForAutofill());
-    ASSERT_TRUE(value_to_fill != nullptr);
-    value_to_fill->set_check_status(fill_checkbox_check_status);
-    value_to_fill->set_is_autofilled(true);
-  }
-
-  std::vector<FormFieldData::FillData> fields_to_fill;
-  fields_to_fill.reserve(values_to_fill.fields().size());
-  for (const FormFieldData& field : values_to_fill.fields()) {
-    fields_to_fill.emplace_back(field);
-  }
-  form_util::ApplyFieldsAction(
-      document, fields_to_fill, mojom::FormActionType::kFill,
-      mojom::ActionPersistence::kFill, field_data_manager);
-
-  for (const FillElementData& field_to_fill : form_to_fill) {
-    EXPECT_EQ(field_to_fill.value, field_to_fill.element->Value().Utf16());
-  }
-
-  if (checkbox_element) {
-    bool expect_checked = (fill_checkbox_check_status == CheckStatus::kChecked);
-    EXPECT_EQ(expect_checked, checkbox_element->IsChecked());
-  }
-}
-
 // Tests that correct focus, change and blur events are emitted during the
 // autofilling and clearing of the form with an initially focused element.
+// TODO: crbug.com/40100455 - Move elsewhere; the test is not about FormCache.
 TEST_F(FormCacheBrowserTest,
        VerifyFocusAndBlurEventsAfterAutofillAndClearingWithFocusElement) {
-  // Load a form.
-  LoadHTML(
-      "<html><form id='myForm'>"
-      "<label>First Name:</label><input id='fname' name='0'><br>"
-      "<label>Last Name:</label> <input id='lname' name='1'><br>"
-      "</form></html>");
+  LoadHTML(R"(<form id='myForm'>
+              <label>First Name:</label><input id='fname' name='0'><br>
+              <label>Last Name:</label> <input id='lname' name='1'><br>
+              </form>)");
 
-  focus_test_utils_->SetUpFocusLogging();
-  focus_test_utils_->FocusElement("fname");
+  focus_test_utils().SetUpFocusLogging();
+  focus_test_utils().FocusElement("fname");
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_THAT(forms.updated_forms,
               UnorderedElementsAre(HasId(FormRendererId()), HasName("myForm")));
@@ -496,14 +434,12 @@ TEST_F(FormCacheBrowserTest,
   values_to_fill[1].value = u"Smith";
   values_to_fill[1].is_autofilled = true;
 
-  auto fname =
-      GetFormControlElementById(GetMainFrame()->GetDocument(), "fname");
+  auto fname = GetFormControlElementById(GetDocument(), "fname");
 
   // Simulate filling the form using Autofill.
-  form_util::ApplyFieldsAction(GetMainFrame()->GetDocument(), values_to_fill,
-                               mojom::FormActionType::kFill,
-                               mojom::ActionPersistence::kFill,
-                               GetFieldDataManager());
+  form_util::ApplyFieldsAction(
+      GetDocument(), values_to_fill, mojom::FormActionType::kFill,
+      mojom::ActionPersistence::kFill, GetFieldDataManager());
 
   // Expected Result in order:
   // - from filling
@@ -513,21 +449,20 @@ TEST_F(FormCacheBrowserTest,
   //  * Change lname
   //  * Blur lname
   //  * Focus fname
-  EXPECT_EQ(GetFocusLog(), "c0b0f1c1b1f0");
+  EXPECT_EQ(focus_test_utils().GetFocusLog(GetDocument()), "c0b0f1c1b1f0");
 }
 
 // Test that the FormCache does not contain empty forms.
 TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
   LoadHTML(R"(<form></form>)");
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  EXPECT_EQ(1u, GetMainFrame()->GetDocument().GetTopLevelForms().size());
-  EXPECT_EQ(0u, test_api(form_cache).extracted_forms_size());
+  EXPECT_EQ(1u, GetDocument().GetTopLevelForms().size());
+  EXPECT_EQ(0u, num_extracted_forms());
 }
 
 // Test that the FormCache never contains more than |kMaxExtractableFields|
@@ -541,15 +476,13 @@ TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
   }
   LoadHTML(html.c_str());
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_EQ(forms.updated_forms.size(), kMaxExtractableFields);
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  EXPECT_EQ(kMaxExtractableFields + 1,
-            GetMainFrame()->GetDocument().GetTopLevelForms().size());
-  EXPECT_EQ(kMaxExtractableFields, test_api(form_cache).extracted_forms_size());
+  EXPECT_EQ(kMaxExtractableFields + 1, GetDocument().GetTopLevelForms().size());
+  EXPECT_EQ(kMaxExtractableFields, num_extracted_forms());
 }
 
 // Test that FormCache::UpdateFormCache() limits the number of total fields by
@@ -561,11 +494,9 @@ TEST_F(FormCacheBrowserTest, FieldLimit) {
   }
   LoadHTML(html.c_str());
 
-  ASSERT_EQ(kMaxExtractableFields + 1,
-            GetMainFrame()->GetDocument().GetTopLevelForms().size());
+  ASSERT_EQ(kMaxExtractableFields + 1, GetDocument().GetTopLevelForms().size());
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_EQ(kMaxExtractableFields, forms.updated_forms.size());
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -581,10 +512,9 @@ TEST_F(FormCacheBrowserTest, FrameLimit) {
   LoadHTML(html.c_str());
 
   ASSERT_EQ(kMaxExtractableChildFrames + 1,
-            GetMainFrame()->GetDocument().GetTopLevelForms().size());
+            GetDocument().GetTopLevelForms().size());
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_EQ(kMaxExtractableChildFrames, forms.updated_forms.size());
   EXPECT_TRUE(forms.removed_forms.empty());
@@ -611,11 +541,9 @@ TEST_F(FormCacheBrowserTest, MAYBE_FieldAndFrameLimit) {
   }
   LoadHTML(html.c_str());
 
-  ASSERT_EQ(kMaxExtractableFields + 1,
-            GetMainFrame()->GetDocument().GetTopLevelForms().size());
+  ASSERT_EQ(kMaxExtractableFields + 1, GetDocument().GetTopLevelForms().size());
 
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
+  FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_EQ(forms.updated_forms.size(), kMaxExtractableFields);
   EXPECT_TRUE(base::ranges::none_of(forms.updated_forms,
@@ -631,4 +559,5 @@ TEST_F(FormCacheBrowserTest, MAYBE_FieldAndFrameLimit) {
   EXPECT_TRUE(forms.removed_forms.empty());
 }
 
+}  // namespace
 }  // namespace autofill

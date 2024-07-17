@@ -20,7 +20,9 @@ class FormCacheTestApi {
  public:
   explicit FormCacheTestApi(FormCache* form_cache) : form_cache_(*form_cache) {}
 
-  size_t extracted_forms_size() { return form_cache_->extracted_forms_.size(); }
+  size_t num_extracted_forms() const {
+    return form_cache_->extracted_forms_.size();
+  }
 
  private:
   const raw_ref<FormCache> form_cache_;

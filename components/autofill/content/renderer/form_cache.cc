@@ -6,51 +6,21 @@
 
 #include <algorithm>
 #include <functional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 
-#include "base/check_op.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/form_data_predictions.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/metrics/form_element_pii_type.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
-#include "third_party/blink/public/web/web_input_element.h"
-#include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_select_element.h"
-#include "ui/base/l10n/l10n_util.h"
-
-using blink::WebAutofillState;
-using blink::WebConsoleMessage;
-using blink::WebDocument;
-using blink::WebElement;
-using blink::WebFormControlElement;
-using blink::WebFormElement;
-using blink::WebInputElement;
-using blink::WebLocalFrame;
-using blink::WebNode;
-using blink::WebSelectElement;
-using blink::WebString;
-using blink::WebVector;
 
 namespace autofill {
 
@@ -83,7 +53,7 @@ FormCache::UpdateFormCacheResult& FormCache::UpdateFormCacheResult::operator=(
     UpdateFormCacheResult&&) = default;
 FormCache::UpdateFormCacheResult::~UpdateFormCacheResult() = default;
 
-FormCache::FormCache(WebLocalFrame* frame) : frame_(frame) {}
+FormCache::FormCache(AutofillAgent* owner) : agent_(CHECK_DEREF(owner)) {}
 FormCache::~FormCache() = default;
 
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
@@ -136,11 +106,11 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return true;
   };
 
-  WebDocument document = frame_->GetDocument();
+  blink::WebDocument document = agent_->GetDocument();
   if (!document) {
     return r;
   }
-  for (const WebFormElement& form_element :
+  for (const blink::WebFormElement& form_element :
        base::FeatureList::IsEnabled(
            blink::features::kAutofillIncludeFormElementsInShadowDom)
            ? document.GetTopLevelForms()
@@ -156,7 +126,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   // Look for more extractable fields outside of forms. Create a synthetic form
   // from them.
   std::optional<FormData> synthetic_form = form_util::ExtractFormData(
-      document, WebFormElement(), field_data_manager);
+      document, blink::WebFormElement(), field_data_manager);
   if (synthetic_form) {
     ProcessForm(std::move(*synthetic_form));
   }

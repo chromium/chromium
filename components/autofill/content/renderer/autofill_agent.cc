@@ -484,7 +484,7 @@ AutofillAgent::AutofillAgent(
     blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame),
       config_(config),
-      form_cache_(std::make_unique<FormCache>(render_frame->GetWebFrame())),
+      form_cache_(std::make_unique<FormCache>(this)),
       password_autofill_agent_(std::move(password_autofill_agent)),
       password_generation_agent_(std::move(password_generation_agent)) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
@@ -534,9 +534,7 @@ void AutofillAgent::Reset() {
   // Navigation to a new page or a page refresh.
   last_queried_element_ = {};
   form_cache_ =
-      unsafe_render_frame()
-          ? std::make_unique<FormCache>(unsafe_render_frame()->GetWebFrame())
-          : nullptr;
+      unsafe_render_frame() ? std::make_unique<FormCache>(this) : nullptr;
   is_dom_content_loaded_ = false;
   select_or_selectlist_option_change_batch_timer_.Stop();
   datalist_option_change_batch_timer_.Stop();

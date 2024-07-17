@@ -5,26 +5,18 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_CACHE_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_CACHE_H_
 
-#include <stddef.h>
-
 #include <map>
-#include <set>
-#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/unique_ids.h"
 
-namespace blink {
-class WebLocalFrame;
-}  // namespace blink
-
 namespace autofill {
+
+class AutofillAgent;
 
 // Manages the forms in a single RenderFrame.
 class FormCache {
@@ -43,7 +35,7 @@ class FormCache {
     base::flat_set<FormRendererId> removed_forms;
   };
 
-  explicit FormCache(blink::WebLocalFrame* frame);
+  explicit FormCache(AutofillAgent* owner);
 
   FormCache(const FormCache&) = delete;
   FormCache& operator=(const FormCache&) = delete;
@@ -86,8 +78,8 @@ class FormCache {
  private:
   friend class FormCacheTestApi;
 
-  // The frame this FormCache is associated with. Weak reference.
-  raw_ptr<blink::WebLocalFrame> frame_;
+  // The owning AutofillAgent.
+  const raw_ref<AutofillAgent> agent_;
 
   // The cached forms. Used to prevent re-extraction of forms.
   std::map<FormRendererId, FormData> extracted_forms_;

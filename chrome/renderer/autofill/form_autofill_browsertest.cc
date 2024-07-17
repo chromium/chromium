@@ -20,6 +20,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/chrome_render_view_test.h"
+#include "components/autofill/content/renderer/autofill_agent_test_api.h"
+#include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/test_utils.h"
@@ -286,10 +288,6 @@ bool ClickElement(const WebDocument& document,
   return true;
 }
 
-FormCache::UpdateFormCacheResult UpdateFormCache(FormCache& form_cache) {
-  return form_cache.UpdateFormCache(*base::MakeRefCounted<FieldDataManager>());
-}
-
 void ApplyFieldsAction(
     const blink::WebDocument& document,
     base::span<const FormFieldData> fields,
@@ -315,7 +313,7 @@ FormData FindForm(const blink::WebFormControlElement& element,
   return FormData();
 }
 
-class FormAutofillTest : public ChromeRenderViewTest {
+class FormAutofillTest : public test::AutofillRendererTest {
  public:
   FormAutofillTest() = default;
 
@@ -324,16 +322,27 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   ~FormAutofillTest() override = default;
 
-#if BUILDFLAG(IS_WIN)
   void SetUp() override {
-    ChromeRenderViewTest::SetUp();
+    test::AutofillRendererTest::SetUp();
+    form_cache_.emplace(&autofill_agent());
 
+#if BUILDFLAG(IS_WIN)
     // Autofill uses the system font to render suggestion previews. On Windows
     // an extra step is required to ensure that the system font is configured.
     blink::WebFontRendering::SetMenuFontMetrics(
         blink::WebString::FromASCII("Arial"), 12);
-  }
 #endif
+  }
+
+  void TearDown() override {
+    form_cache_.reset();
+    test::AutofillRendererTest::TearDown();
+  }
+
+  FormCache::UpdateFormCacheResult UpdateFormCache() {
+    return form_cache_->UpdateFormCache(
+        *base::MakeRefCounted<FieldDataManager>());
+  }
 
   void ExpectLabels(const char* html,
                     const std::vector<std::u16string>& id_attributes,
@@ -365,11 +374,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
                             const std::vector<FormFieldData>& fields) {
     LoadHTML(html);
 
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
-
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     const FormData& form = forms[0];
@@ -452,11 +457,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     else
       LoadHTML(html);
 
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
-
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -553,17 +554,11 @@ class FormAutofillTest : public ChromeRenderViewTest {
   }
 
   WebFormControlElement GetFormControlElementById(const WebString& id) {
-    return GetMainFrame()
-        ->GetDocument()
-        .GetElementById(id)
-        .To<WebFormControlElement>();
+    return GetDocument().GetElementById(id).DynamicTo<WebFormControlElement>();
   }
 
   WebInputElement GetInputElementById(const WebString& id) {
-    return GetMainFrame()
-        ->GetDocument()
-        .GetElementById(id)
-        .To<WebInputElement>();
+    return GetDocument().GetElementById(id).DynamicTo<WebInputElement>();
   }
 
   void TestFillForm(const char* html, bool unowned, const char* url_override) {
@@ -695,11 +690,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestFindFormForInputElement(const char* html, bool unowned) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -750,16 +742,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestFindFormForTextAreaElement(const char* html, bool unowned) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the textarea element we want to find.
-    WebElement element =
-        web_frame->GetDocument().GetElementById("street-address");
+    WebElement element = GetDocument().GetElementById("street-address");
     WebFormControlElement textarea_element =
         element.To<WebFormControlElement>();
 
@@ -814,11 +802,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestFillFormMaxLength(const char* html, bool unowned) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -906,11 +891,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestFillFormNegativeMaxLength(const char* html, bool unowned) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -982,11 +964,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestFillFormEmptyName(const char* html, bool unowned) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1061,11 +1040,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestFillFormEmptyFormNames(const char* html, bool unowned) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     const size_t expected_size = unowned ? 1 : 2;
     ASSERT_EQ(expected_size, forms.size());
 
@@ -1154,11 +1130,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
                                  const char* placeholder_lastname,
                                  const char* placeholder_email) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1321,11 +1294,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
                                    const char* placeholder_city,
                                    const char* placeholder_state) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1499,11 +1469,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
                                          const char* placeholder_lastname,
                                          const char* placeholder_email) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1610,11 +1577,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
                                             const char* placeholder_expiration,
                                             const char* placeholder_name) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1728,11 +1692,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
                                             const char* placeholder_expiration,
                                             const char* placeholder_name) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     // Get the input element we want to find.
@@ -1844,11 +1805,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestClearPreviewedElements(const char* html) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     std::vector<std::pair<WebFormControlElement, WebAutofillState>> elements;
@@ -1897,11 +1855,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestClearPreviewedFormWithNonEmptyInitiatingNode(const char* html) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     std::vector<std::pair<WebFormControlElement, WebAutofillState>> elements;
@@ -1950,11 +1905,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   void TestClearPreviewedFormWithAutofilledInitiatingNode(const char* html) {
     LoadHTML(html);
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
 
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     ASSERT_EQ(1U, forms.size());
 
     std::vector<std::pair<WebFormControlElement, WebAutofillState>> elements;
@@ -2029,6 +1981,10 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  // We use a fresh `FormCache` in this fixture because the `AutofillAgent`'s
+  // cache is used and populated by `AutofillAgent`.
+  std::optional<FormCache> form_cache_;
 };
 
 // We should be able to extract a normal text field.
@@ -2914,11 +2870,7 @@ TEST_F(FormAutofillTest, ExtractMultipleForms) {
                 <input type=submit name='reply-send' value=Send>
               </form>)");
 
-  WebLocalFrame* web_frame = GetMainFrame();
-  ASSERT_NE(nullptr, web_frame);
-
-  FormCache form_cache(web_frame);
-  std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
   ASSERT_EQ(2U, forms.size());
 
   // First form.
@@ -2987,15 +2939,11 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
            <input type=submit name='reply-send' value=Send>
          </form>)");
 
-  WebLocalFrame* web_frame = GetMainFrame();
-  ASSERT_NE(nullptr, web_frame);
-
-  FormCache form_cache(web_frame);
-  std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
   ASSERT_EQ(1U, forms.size());
 
   // Second call should give nothing as there are no new forms.
-  forms = UpdateFormCache(form_cache).updated_forms;
+  forms = UpdateFormCache().updated_forms;
   ASSERT_TRUE(forms.empty());
 
   // Append to the current form will re-extract.
@@ -3007,7 +2955,7 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
          document.getElementById('testform').appendChild(newInput);)");
   base::RunLoop().RunUntilIdle();
 
-  forms = UpdateFormCache(form_cache).updated_forms;
+  forms = UpdateFormCache().updated_forms;
   ASSERT_EQ(1U, forms.size());
 
   const std::vector<FormFieldData>& fields = forms[0].fields();
@@ -3067,8 +3015,7 @@ TEST_F(FormAutofillTest, OnlyExtractNewForms) {
         document.body.appendChild(newForm);)");
   base::RunLoop().RunUntilIdle();
 
-  web_frame = GetMainFrame();
-  forms = UpdateFormCache(form_cache).updated_forms;
+  forms = UpdateFormCache().updated_forms;
   ASSERT_EQ(1U, forms.size());
 
   const std::vector<FormFieldData>& fields2 = forms[0].fields();
@@ -3098,11 +3045,7 @@ TEST_F(FormAutofillTest, ExtractFormsNoFields) {
   LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
               </form>)");
 
-  WebLocalFrame* web_frame = GetMainFrame();
-  ASSERT_NE(nullptr, web_frame);
-
-  FormCache form_cache(web_frame);
-  std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
   ASSERT_TRUE(forms.empty());
 }
 
@@ -3117,11 +3060,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_Autocomplete) {
              <input type=submit name='reply-send' value=Send>
            </form>)");
 
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
-
-    WebVector<WebFormElement> web_forms =
-        web_frame->GetDocument().GetTopLevelForms();
+    WebVector<WebFormElement> web_forms = GetDocument().GetTopLevelForms();
     ASSERT_EQ(1U, web_forms.size());
     WebFormElement web_form = web_forms[0];
 
@@ -5091,11 +5030,7 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
     SCOPED_TRACE(test_case.description);
     LoadHTML(test_case.html);
 
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
-
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
+    std::vector<FormData> forms = UpdateFormCache().updated_forms;
     EXPECT_EQ(test_case.number_of_extracted_forms, forms.size());
     if (!forms.empty())
       EXPECT_EQ(test_case.is_form_tag, !forms.back().renderer_id().is_null());
