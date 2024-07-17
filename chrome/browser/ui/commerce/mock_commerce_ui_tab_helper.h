@@ -27,6 +27,7 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
   const gfx::Image& GetInvalidProductImage();
 
   MOCK_METHOD(const gfx::Image&, GetProductImage, ());
+  MOCK_METHOD(bool, ShouldShowDiscountsIconView, ());
   MOCK_METHOD(bool, ShouldShowPriceTrackingIconView, ());
   MOCK_METHOD(bool, ShouldShowPriceInsightsIconView, ());
   MOCK_METHOD(bool, ShouldShowProductSpecificationsIconView, ());
@@ -50,6 +51,7 @@ class MockCommerceUiTabHelper : public commerce::CommerceUiTabHelper {
   MOCK_METHOD(PriceInsightsIconView::PriceInsightsIconLabelType,
               GetPriceInsightsIconLabelTypeForPage,
               ());
+  MOCK_METHOD(const std::vector<commerce::DiscountInfo>&, GetDiscounts, ());
 
  private:
   gfx::Image valid_product_image_;

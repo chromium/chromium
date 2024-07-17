@@ -547,7 +547,7 @@ void CommerceUiTabHelper::UpdateDiscountsIconView() {
   if (!base::FeatureList::IsEnabled(commerce::kDiscountsUiRefactor)) {
     return;
   }
-  // TODO(b/351935350): Update the new discounts icon.
+  UpdatePageActionIconView(web_contents(), PageActionIconType::kDiscounts);
 }
 
 bool CommerceUiTabHelper::IsShowingDiscountsIcon() {
@@ -588,7 +588,8 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
 
   if (base::FeatureList::IsEnabled(commerce::kDiscountsUiRefactor)) {
     if (discounts_page_action_controller_->WantsExpandedUi()) {
-      // TODO(b/351935350): expand the new discounts icon.
+      page_action_to_expand_ = PageActionIconType::kDiscounts;
+      MaybeRecordShoppingInformationUKM(PageActionIconType::kDiscounts);
       return;
     }
   } else {
@@ -748,8 +749,9 @@ void CommerceUiTabHelper::MaybeRecordShoppingInformationUKM(
 
   if (page_action_type.has_value()) {
     int64_t promoted_feature = 0;
-    // TODO(b/351935350): Update this to the new discounts icon type.
-    if (page_action_type == PageActionIconType::kPaymentsOfferNotification) {
+    // TODO(b/351935350): Remove the kPaymentsOfferNotification check.
+    if (page_action_type == PageActionIconType::kPaymentsOfferNotification ||
+        page_action_type == PageActionIconType::kDiscounts) {
       promoted_feature =
           static_cast<int64_t>(ShoppingContextualFeature::kDiscounts);
     } else if (page_action_type == PageActionIconType::kPriceInsights) {

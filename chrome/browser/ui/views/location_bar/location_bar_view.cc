@@ -354,7 +354,7 @@ void LocationBarView::Init() {
       params.types_enabled.push_back(
           PageActionIconType::kProductSpecifications);
     }
-
+    params.types_enabled.push_back(PageActionIconType::kDiscounts);
     params.types_enabled.push_back(PageActionIconType::kPriceInsights);
     params.types_enabled.push_back(PageActionIconType::kPriceTracking);
 

@@ -194,6 +194,7 @@ aggregate_vector_icons("components_vector_icons") {
     "settings_outline.icon",
     "shopping_bag.icon",
     "shopping_bag_refresh.icon",
+    "shoppingmode.icon",
     "skip_next.icon",
     "skip_previous.icon",
     "sms.icon",

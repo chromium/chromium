@@ -4331,6 +4331,7 @@ if (!is_android) {
         "../browser/ui/views/bubble/bubble_frame_view_browsertest.cc",
         "../browser/ui/views/bubble/webui_bubble_manager_browsertest.cc",
         "../browser/ui/views/certificate_selector_dialog_browsertest.cc",
+        "../browser/ui/views/commerce/discounts_icon_view_browsertest.cc",
         "../browser/ui/views/commerce/ntp_discount_consent_dialog_view_browsertest.cc",
         "../browser/ui/views/commerce/price_insights_icon_view_browsertest.cc",
         "../browser/ui/views/commerce/price_tracking_icon_view_browsertest.cc",

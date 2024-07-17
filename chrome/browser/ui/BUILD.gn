@@ -5559,6 +5559,8 @@ static_library("ui") {
       "views/chrome_web_dialog_view.h",
       "views/color_provider_browser_helper.cc",
       "views/color_provider_browser_helper.h",
+      "views/commerce/discounts_icon_view.cc",
+      "views/commerce/discounts_icon_view.h",
       "views/commerce/ntp_discount_consent_dialog_view.cc",
       "views/commerce/ntp_discount_consent_dialog_view.h",
       "views/commerce/price_insights_icon_view.cc",
