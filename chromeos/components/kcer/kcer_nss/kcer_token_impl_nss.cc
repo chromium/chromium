@@ -81,9 +81,13 @@ void CleanUpAndDestroyKeys(crypto::ScopedSECKEYPublicKey public_key,
   // Clean up generated keys. PK11_DeleteTokenPrivateKey and
   // PK11_DeleteTokenPublicKey are documented to also destroy the passed
   // SECKEYPublicKey/SECKEYPrivateKey structures.
-  PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
-                             /*force=*/false);
-  PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release());
+  if (private_key) {
+    PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
+                               /*force=*/false);
+  }
+  if (public_key) {
+    PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release());
+  }
 }
 
 base::expected<crypto::ScopedSECKEYPrivateKey, Error>
