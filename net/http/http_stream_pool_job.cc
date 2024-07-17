@@ -201,18 +201,6 @@ RequestPriority HttpStreamPool::Job::GetPriority() const {
   return static_cast<RequestPriority>(requests_.FirstMax().priority());
 }
 
-bool HttpStreamPool::Job::ReachedMaxStreamLimit() const {
-  if (pool()->ReachedMaxStreamLimit()) {
-    return true;
-  }
-
-  if (group_->ReachedMaxStreamLimit()) {
-    return true;
-  }
-
-  return false;
-}
-
 void HttpStreamPool::Job::ResolveServiceEndpoint(
     RequestPriority initial_priority) {
   HostResolver::ResolveHostParameters parameters;
@@ -258,7 +246,15 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
   // There might be multiple pending requests. Make attempts as much as needed
   // and allowed.
   size_t num_attempts = 0;
-  while (PendingRequestCount() > 0 && !ReachedMaxStreamLimit()) {
+  while (PendingRequestCount() > 0 && !group_->ReachedMaxStreamLimit()) {
+    // If we can't attempt connection due to the pool's limit, try to close an
+    // idle stream in the pool.
+    if (pool()->ReachedMaxStreamLimit()) {
+      if (!pool()->CloseOneIdleStreamSocket()) {
+        break;
+      }
+    }
+
     std::unique_ptr<StreamAttempt> attempt = std::make_unique<TcpStreamAttempt>(
         &attempt_params_, *ip_endpoint, &net_log_);
     auto in_flight_attempt =

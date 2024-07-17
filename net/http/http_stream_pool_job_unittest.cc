@@ -840,4 +840,53 @@ TEST_F(HttpStreamPoolJobTest, UseIdleStreamSocketAfterRelease) {
   ASSERT_EQ(job->PendingRequestCount(), 0u);
 }
 
+TEST_F(HttpStreamPoolJobTest,
+       CloseIdleStreamAttemptConnectionReachedPoolLimit) {
+  constexpr size_t kMaxPerGroup = 2;
+  constexpr size_t kMaxPerPool = 3;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+  pool().set_max_stream_sockets_per_pool_for_testing(kMaxPerPool);
+
+  const HttpStreamKey key_a(url::SchemeHostPort("http", "a.test", 80),
+                            PRIVACY_MODE_DISABLED, SocketTag(),
+                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                            /*disable_cert_network_fetches=*/false);
+
+  const HttpStreamKey key_b(url::SchemeHostPort("http", "b.test", 80),
+                            PRIVACY_MODE_DISABLED, SocketTag(),
+                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                            /*disable_cert_network_fetches=*/false);
+
+  // Add idle streams up to the group's limit in group A.
+  Group& group_a = pool().GetOrCreateGroupForTesting(key_a);
+  for (size_t i = 0; i < kMaxPerGroup; ++i) {
+    group_a.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+  }
+  ASSERT_EQ(group_a.IdleStreamSocketCount(), 2u);
+  ASSERT_FALSE(pool().ReachedMaxStreamLimit());
+
+  // Create an HttpStream in group B. The pool should reach its limit.
+  Group& group_b = pool().GetOrCreateGroupForTesting(key_b);
+  std::unique_ptr<HttpStream> stream1 =
+      group_b.CreateTextBasedStream(std::make_unique<FakeStreamSocket>());
+  ASSERT_TRUE(pool().ReachedMaxStreamLimit());
+
+  // Request a stream in group B. The request should close an idle stream in
+  // group A.
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  StreamRequester requester;
+  HttpStreamRequest* request = requester.RequestStream(pool());
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  endpoint_request->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+
+  ASSERT_TRUE(request->completed());
+  ASSERT_EQ(group_a.IdleStreamSocketCount(), 1u);
+}
+
 }  // namespace net

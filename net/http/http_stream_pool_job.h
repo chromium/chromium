@@ -117,10 +117,6 @@ class HttpStreamPool::Job
   // Returns the current load state.
   LoadState GetLoadState() const;
 
-  // Returns true if we can't make any connection attempts due to per-pool or
-  // per-group limits.
-  bool ReachedMaxStreamLimit() const;
-
   void ResolveServiceEndpoint(RequestPriority initial_priority);
 
   void MaybeChangeServiceEndpointRequestPriority();
