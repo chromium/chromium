@@ -1259,30 +1259,27 @@ std::vector<GURL> GetTargetUrlsOfBoostRenderProcessForLoading() {
   return result;
 }
 
-bool IsBoostRenderProcessForLoadingTarget(
-    const GURL& url,
+bool IsTargetLifecycleStateOfBoostRenderProcessForLoading(
     RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) {
-  static const bool kIsEnabled = base::FeatureList::IsEnabled(
-      blink::features::kBoostRenderProcessForLoading);
-
-  if (!kIsEnabled) {
-    return false;
-  }
-
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    return false;
-  }
-
   switch (lifecycle_state) {
     case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
     case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
     case RenderFrameHostImpl::LifecycleStateImpl::kActive:
-      break;
+      return true;
     case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
     case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
     case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
     case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
       return false;
+  }
+}
+
+bool IsTargetUrlOfBoostRenderProcessForLoading(const GURL& url) {
+  static const bool kIsEnabled = base::FeatureList::IsEnabled(
+      blink::features::kBoostRenderProcessForLoading);
+
+  if (!kIsEnabled) {
+    return false;
   }
 
   static const base::NoDestructor<std::vector<GURL>> kTargetUrls(
@@ -1300,6 +1297,13 @@ bool IsBoostRenderProcessForLoadingTarget(
   }
 
   return false;
+}
+
+void RecordIsProcessBackgrounded(const char* timing_string,
+                                 bool is_process_backgrounded) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Navigation.IsProcessBackgrounded.", timing_string}),
+      is_process_backgrounded);
 }
 
 }  // namespace
@@ -5575,6 +5579,10 @@ void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
     return;
 
   delegate_->DOMContentLoaded(this);
+  if (last_committed_url_.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
+    RecordIsProcessBackgrounded("OnDOMContentLoaded",
+                                GetProcess()->IsProcessBackgrounded());
+  }
   MaybeResetBoostRenderProcessForLoading();
 }
 
@@ -7945,6 +7953,10 @@ void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
     return;
 
   delegate_->DOMContentLoaded(this);
+  if (last_committed_url_.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
+    RecordIsProcessBackgrounded("OnDOMContentLoaded",
+                                GetProcess()->IsProcessBackgrounded());
+  }
   MaybeResetBoostRenderProcessForLoading();
 }
 
@@ -11387,10 +11399,14 @@ void RenderFrameHostImpl::CommitNavigation(
           .Record(ukm::UkmRecorder::Get());
     }
 
-    if (IsBoostRenderProcessForLoadingTarget(common_params->url,
-                                             lifecycle_state_) &&
-        IsOutermostMainFrame()) {
-      BoostRenderProcessForLoading();
+    if (IsTargetLifecycleStateOfBoostRenderProcessForLoading(
+            lifecycle_state_) &&
+        common_params->url.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
+      if (IsTargetUrlOfBoostRenderProcessForLoading(common_params->url)) {
+        BoostRenderProcessForLoading();
+      }
+      RecordIsProcessBackgrounded("OnCommit",
+                                  GetProcess()->IsProcessBackgrounded());
     }
 
     SendCommitNavigation(
