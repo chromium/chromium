@@ -248,6 +248,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetIsProtected(bool is_protected);
 
+  void SetTextSelStart(int32_t text_sel_start);
+  void SetTextSelEnd(int32_t text_sel_end);
+
   // Hides this view from the accessibility APIs. Keep in mind that this is not
   // the sole determinant of whether the ignored state is set. See
   // `UpdateIgnoredState`.

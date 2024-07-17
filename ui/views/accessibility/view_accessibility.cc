@@ -1147,4 +1147,12 @@ void ViewAccessibility::RemoveExpandCollapseState() {
   SetState(ax::mojom::State::kCollapsed, false);
 }
 
+void ViewAccessibility::SetTextSelStart(int32_t text_sel_start) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart, text_sel_start);
+}
+
+void ViewAccessibility::SetTextSelEnd(int32_t text_sel_end) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, text_sel_end);
+}
+
 }  // namespace views
