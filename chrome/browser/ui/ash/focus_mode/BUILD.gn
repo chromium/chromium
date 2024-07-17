@@ -27,7 +27,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "focus_mode_browsertest.cc" ]
+  sources = [
+    "focus_mode_browsertest.cc",
+    "focus_mode_policy_browsertest.cc",
+  ]
 
   deps = [
     ":focus_mode",
@@ -35,6 +38,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base/test:test_support",
+    "//chrome/browser/policy:test_support",
     "//chrome/browser/ui/ash",
     "//chrome/test:test_support",
     "//content/test:test_support",

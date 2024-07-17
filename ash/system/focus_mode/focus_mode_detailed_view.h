@@ -37,6 +37,10 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   METADATA_HEADER(FocusModeDetailedView, TrayDetailedView)
 
  public:
+  // Ids to easily find child views in `FocusModeDetailedView`. Unique only
+  // within the `FocusModeDetailedView`.
+  enum ViewId { kTimerView = 1000, kTaskView, kSoundView };
+
   explicit FocusModeDetailedView(DetailedViewDelegate* delegate);
   FocusModeDetailedView(const FocusModeDetailedView&) = delete;
   FocusModeDetailedView& operator=(const FocusModeDetailedView&) = delete;

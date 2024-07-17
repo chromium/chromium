@@ -21,6 +21,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/media_session/public/cpp/media_session_service.h"
@@ -216,6 +217,10 @@ FocusModeSoundsController::FocusModeSoundsController()
   soundscape_playlists_.reserve(kPlaylistNum);
   youtube_music_playlists_.reserve(kPlaylistNum);
 
+  // Default sound sections to enabled.
+  enabled_sound_sections_ = {focus_mode_util::SoundType::kSoundscape,
+                             focus_mode_util::SoundType::kYouTubeMusic};
+
   // `service` can be null in tests.
   media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
@@ -254,7 +259,7 @@ void FocusModeSoundsController::DownloadTrackThumbnail(
 
 void FocusModeSoundsController::GetNextTrack(GetNextTrackCallback callback) {
   if (selected_playlist_.type == focus_mode_util::SoundType::kNone ||
-      selected_playlist_.id.empty()) {
+      selected_playlist_.id.empty() || !IsPlaylistAllowed(selected_playlist_)) {
     LOG(WARNING) << "No selected playlist";
     std::move(callback).Run(std::nullopt);
     return;
@@ -400,6 +405,20 @@ void FocusModeSoundsController::DownloadPlaylistsForType(
     return;
   }
 
+  if (is_soundscape_type) {
+    if (!base::Contains(enabled_sound_sections_,
+                        focus_mode_util::SoundType::kSoundscape)) {
+      LOG(WARNING) << "Playlist download for Focus Sounds blocked by policy";
+      return;
+    }
+  } else {
+    if (!base::Contains(enabled_sound_sections_,
+                        focus_mode_util::SoundType::kYouTubeMusic)) {
+      LOG(WARNING) << "Playlist download for YouTube Music blocked by policy";
+      return;
+    }
+  }
+
   auto sorted_playlists_callback =
       base::BindOnce(&FocusModeSoundsController::OnAllThumbnailsDownloaded,
                      weak_factory_.GetWeakPtr(), is_soundscape_type,
@@ -420,6 +439,13 @@ void FocusModeSoundsController::UpdateFromUserPrefs() {
   if (!active_user_prefs) {
     return;
   }
+  pref_registrar_.Reset();
+  pref_registrar_.Init(active_user_prefs);
+  pref_registrar_.Add(
+      prefs::kFocusModeSoundsEnabled,
+      base::BindRepeating(&FocusModeSoundsController::OnPrefChanged,
+                          weak_factory_.GetWeakPtr()));
+  OnPrefChanged();
 
   const auto& dict = active_user_prefs->GetDict(prefs::kFocusModeSoundSection);
 
@@ -431,16 +457,17 @@ void FocusModeSoundsController::UpdateFromUserPrefs() {
     sound_type_ = static_cast<focus_mode_util::SoundType>(
         dict.FindInt(focus_mode_util::kSoundTypeKey).value());
   }
-
-  base::flat_set<focus_mode_util::SoundType> enabled_sections =
-      ReadSoundSectionPolicy(active_user_prefs);
-  // TODO(b/328121041): Push section information into the views.
 }
 
 void FocusModeSoundsController::SetYouTubeMusicFailureCallback(
     base::RepeatingClosure callback) {
   CHECK(callback);
   youtube_music_delegate_->SetFailureCallback(std::move(callback));
+}
+
+bool FocusModeSoundsController::IsPlaylistAllowed(
+    const focus_mode_util::SelectedPlaylist& playlist) const {
+  return base::Contains(enabled_sound_sections_, playlist.type);
 }
 
 void FocusModeSoundsController::SaveUserPref() {
@@ -467,9 +494,15 @@ void FocusModeSoundsController::ResetSelectedPlaylist() {
 
 void FocusModeSoundsController::SelectPlaylist(
     const focus_mode_util::SelectedPlaylist& playlist_data) {
+  if (!IsPlaylistAllowed(playlist_data)) {
+    LOG(WARNING) << "Playlist cannot be selected due to policy";
+    return;
+  }
+
   if (FocusModeController::Get()->in_focus_session()) {
     SoundsStarted();
   }
+
   selected_playlist_ = playlist_data;
 
   // TODO(b/337063849): Update the sound state when the media stream
@@ -521,6 +554,12 @@ void FocusModeSoundsController::OnAllThumbnailsDownloaded(
   // downloading.
   // TODO(b/321071604): We may need to update this once caching is implemented.
   std::move(update_sounds_view_callback).Run(is_soundscape_type);
+}
+
+void FocusModeSoundsController::OnPrefChanged() {
+  PrefService* active_user_prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  enabled_sound_sections_ = ReadSoundSectionPolicy(active_user_prefs);
 }
 
 }  // namespace ash

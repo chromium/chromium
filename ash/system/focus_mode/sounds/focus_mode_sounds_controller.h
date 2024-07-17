@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
@@ -94,6 +95,10 @@ class ASH_EXPORT FocusModeSoundsController
 
   void SoundsStarted() { sounds_started_time_ = base::Time::Now(); }
 
+  const base::flat_set<focus_mode_util::SoundType>& sound_sections() const {
+    return enabled_sound_sections_;
+  }
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -138,6 +143,9 @@ class ASH_EXPORT FocusModeSoundsController
   void SetYouTubeMusicFailureCallback(base::RepeatingClosure callback);
 
  private:
+  bool IsPlaylistAllowed(
+      const focus_mode_util::SelectedPlaylist& playlist) const;
+
   void SaveUserPref();
   void ResetSelectedPlaylist();
   void SelectPlaylist(const focus_mode_util::SelectedPlaylist& playlist_data);
@@ -146,6 +154,9 @@ class ASH_EXPORT FocusModeSoundsController
       bool is_soundscape_type,
       UpdateSoundsViewCallback update_sounds_view_callback,
       std::vector<std::unique_ptr<Playlist>> sorted_playlists);
+
+  // Handler for changes in the FocusModeSoundsEnabled pref.
+  void OnPrefChanged();
 
   std::unique_ptr<FocusModeSoundsDelegate> soundscape_delegate_;
   std::unique_ptr<FocusModeYouTubeMusicDelegate> youtube_music_delegate_;
@@ -159,6 +170,9 @@ class ASH_EXPORT FocusModeSoundsController
 
   // Records the time when we requested to play a selected playlist.
   base::Time sounds_started_time_;
+
+  PrefChangeRegistrar pref_registrar_;
+  base::flat_set<focus_mode_util::SoundType> enabled_sound_sections_;
 
   // True if the request id of the focus mode media session has gained audio
   // focus. Note that focus mode will only have a maximum of one media playing

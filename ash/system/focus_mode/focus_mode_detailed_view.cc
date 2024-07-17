@@ -332,10 +332,15 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
 
   CreateTaskView(is_network_connected);
 
-  scroll_content()->AddChildView(
-      std::make_unique<FocusModeSoundsView>(is_network_connected));
-
   FocusModeController* focus_mode_controller = FocusModeController::Get();
+
+  const base::flat_set<focus_mode_util::SoundType>& sound_sections =
+      focus_mode_controller->focus_mode_sounds_controller()->sound_sections();
+  views::View* sound_view =
+      scroll_content()->AddChildView(std::make_unique<FocusModeSoundsView>(
+          sound_sections, is_network_connected));
+  sound_view->SetID(ViewId::kSoundView);
+
   const bool in_focus_session = focus_mode_controller->in_focus_session();
 
   CreateDoNotDisturbContainer();
@@ -555,6 +560,7 @@ void FocusModeDetailedView::CreateTimerView() {
   timer_view_container_ =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
           RoundedContainer::Behavior::kBottomRounded));
+  timer_view_container_->SetID(ViewId::kTimerView);
   timer_view_container_->SetProperty(views::kMarginsKey,
                                      kConnectedContainerMargins);
   timer_view_container_->SetBorderInsets(kTimerViewBorderInsets);
@@ -726,6 +732,7 @@ void FocusModeDetailedView::CreateTaskView(bool is_network_connected) {
   task_view_container_ =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
           RoundedContainer::Behavior::kAllRounded));
+  task_view_container_->SetID(ViewId::kTaskView);
   task_view_container_->SetProperty(views::kMarginsKey,
                                     kDisconnectedContainerMargins);
   task_view_container_->SetBorderInsets(kTaskViewContainerInsets);

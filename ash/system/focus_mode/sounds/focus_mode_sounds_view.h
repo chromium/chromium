@@ -7,7 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/rounded_container.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "base/containers/flat_set.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -26,7 +28,9 @@ class ASH_EXPORT FocusModeSoundsView
   METADATA_HEADER(FocusModeSoundsView, RoundedContainer)
 
  public:
-  explicit FocusModeSoundsView(bool is_network_connected);
+  explicit FocusModeSoundsView(
+      const base::flat_set<focus_mode_util::SoundType>& sound_sections,
+      bool is_network_connected);
   FocusModeSoundsView(const FocusModeSoundsView&) = delete;
   FocusModeSoundsView& operator=(const FocusModeSoundsView&) = delete;
   ~FocusModeSoundsView() override;
@@ -34,6 +38,14 @@ class ASH_EXPORT FocusModeSoundsView
   // FocusModeSoundsController::Observer:
   void OnSelectedPlaylistChanged() override;
   void OnPlaylistStateChanged() override;
+
+  std::pair<TabSliderButton*, SoundSectionView*> soundscape_views() const {
+    return {soundscape_button_, soundscape_container_};
+  }
+
+  std::pair<TabSliderButton*, SoundSectionView*> youtube_music_views() const {
+    return {youtube_music_button_, youtube_music_container_};
+  }
 
  private:
   // Updates this view based on `is_soundscape_type`.
@@ -45,10 +57,13 @@ class ASH_EXPORT FocusModeSoundsView
       const focus_mode_util::SelectedPlaylist& selected_playlist);
 
   // Creates `soundscape_button_` and `youtube_music_button_`.
-  void CreateTabSliderButtons(bool is_network_connected);
+  void CreateTabSliderButtons(
+      const base::flat_set<focus_mode_util::SoundType>& sections,
+      bool is_network_connected);
 
   // Creates `soundscape_container_` and `youtube_music_container_`.
-  void CreatesSoundSectionViews();
+  void CreatesSoundSectionViews(
+      const base::flat_set<focus_mode_util::SoundType>& sections);
 
   // Toggles YouTube Music alternate view. It's used to update the UIs for
   // non-premium account.
