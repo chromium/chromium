@@ -904,7 +904,8 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionCloseBeforeStreamRequest) {
   int packet_num = 1;
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakePingPacket(packet_num++));
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_.Packet(packet_num++).AddPingFrame().Build());
   quic_data.AddRead(
       ASYNC, server_maker_.MakeConnectionClosePacket(
                  1, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!"));
@@ -977,7 +978,8 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionCloseWithPendingStreamRequest) {
   int packet_num = 1;
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakePingPacket(packet_num++));
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_.Packet(packet_num++).AddPingFrame().Build());
   quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
                                       packet_num++, 50,
                                       /*unidirectional=*/false));
@@ -1733,7 +1735,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
                           .AddPingFrame()
                           .Build());
   quic_data2.AddRead(ASYNC, ERR_IO_PENDING);
-  quic_data2.AddRead(ASYNC, server_maker_.MakePingPacket(1));
+  quic_data2.AddRead(ASYNC, server_maker_.Packet(1).AddPingFrame().Build());
   quic_data2.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data2.AddRead(ASYNC, ERR_NETWORK_CHANGED);
   quic_data2.AddSocketDataToFactory(&socket_factory_);
@@ -1793,11 +1795,13 @@ TEST_P(QuicChromiumClientSessionTest, RetransmittableOnWireTimeout) {
   int packet_num = 1;
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakePingPacket(packet_num++));
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_.Packet(packet_num++).AddPingFrame().Build());
 
   quic_data.AddRead(ASYNC, server_maker_.MakeAckPacket(1, packet_num - 1, 1));
 
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakePingPacket(packet_num++));
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_.Packet(packet_num++).AddPingFrame().Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -2163,16 +2167,16 @@ TEST_P(QuicChromiumClientSessionTest, ReportsReceivedEcn) {
   mock_quic_data.AddRead(
       ASYNC, server_maker_.MakeInitialSettingsPacket(read_packet_num++));
   server_maker_.set_ecn_codepoint(quic::ECN_ECT0);
-  mock_quic_data.AddRead(ASYNC,
-                         server_maker_.MakePingPacket(read_packet_num++));
+  mock_quic_data.AddRead(
+      ASYNC, server_maker_.Packet(read_packet_num++).AddPingFrame().Build());
   mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeAckPacket(
                                            write_packet_num++, 0, 1, 0, ecn));
   server_maker_.set_ecn_codepoint(quic::ECN_ECT1);
-  mock_quic_data.AddRead(ASYNC,
-                         server_maker_.MakePingPacket(read_packet_num++));
+  mock_quic_data.AddRead(
+      ASYNC, server_maker_.Packet(read_packet_num++).AddPingFrame().Build());
   server_maker_.set_ecn_codepoint(quic::ECN_CE);
-  mock_quic_data.AddRead(ASYNC,
-                         server_maker_.MakePingPacket(read_packet_num++));
+  mock_quic_data.AddRead(
+      ASYNC, server_maker_.Packet(read_packet_num++).AddPingFrame().Build());
   ecn.ect1 = 1;
   ecn.ce = 1;
   mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeAckPacket(

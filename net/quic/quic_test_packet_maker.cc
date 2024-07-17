@@ -167,11 +167,6 @@ QuicTestPacketBuilder& QuicTestPacketMaker::Packet(uint64_t packet_number) {
   return *builder_.get();
 }
 
-std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakePingPacket(
-    uint64_t packet_number) {
-  return Packet(packet_number).AddPingFrame().Build();
-}
-
 std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeRetireConnectionIdPacket(uint64_t packet_number,
                                                   uint64_t sequence_number) {
