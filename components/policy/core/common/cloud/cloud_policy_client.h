@@ -186,6 +186,11 @@ class POLICY_EXPORT CloudPolicyClient {
     // kDemoRequisition ("cros-demo-mode").
     std::optional<enterprise_management::DemoModeDimensions>
         demo_mode_dimensions;
+
+    // The following field is relevant only to Browsers undergoing profile
+    // registration via the generic OIDC, and contains OIDC specific state
+    // details.
+    std::string oidc_state;
   };
 
   // If non-empty, |machine_id|, |machine_model|, |brand_code|,

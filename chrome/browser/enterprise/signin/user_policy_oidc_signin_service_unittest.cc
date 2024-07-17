@@ -56,9 +56,8 @@ using PolicyFetchCallback =
 
 namespace {
 const ProfileManagementOicdTokens kExampleOidcTokens =
-    ProfileManagementOicdTokens{.auth_token = "example_auth_token",
-                                .id_token = "example_id_token",
-                                .identity_name = u"Test User"};
+    ProfileManagementOicdTokens{"example_auth_token", "example_id_token",
+                                u"Test User"};
 
 constexpr char kExampleUserEmail[] = "user@test.com";
 constexpr char kExampleDmToken[] = "example_dm_token";

@@ -71,8 +71,9 @@ namespace {
 const char kOidcEnrollmentHistogramName[] = "Enterprise.OidcEnrollment";
 
 const ProfileManagementOicdTokens kExampleOidcTokens =
-    ProfileManagementOicdTokens{.auth_token = "example_auth_token",
-                                .id_token = "example_id_token"};
+    ProfileManagementOicdTokens("example_auth_token",
+                                "example_id_token",
+                                /*identity_name=*/u"");
 constexpr char kExampleSubjectIdentifier[] = "example_subject_id";
 constexpr char kExampleIssuerIdentifier[] = "example_issuer_id";
 constexpr char kExampleUserDisplayName[] = "Test User";
@@ -515,7 +516,12 @@ class OidcAuthenticationSigninInterceptorTest
               ->GetProfileAttributesStorage()
               .GetProfileAttributesWithPath(added_profile_->GetPath());
 
-      EXPECT_EQ(entry->GetProfileManagementOidcTokens(), oidc_tokens);
+      ProfileManagementOicdTokens tokens =
+          entry->GetProfileManagementOidcTokens();
+      EXPECT_EQ(tokens.auth_token, oidc_tokens.auth_token);
+      EXPECT_EQ(tokens.auth_token, oidc_tokens.auth_token);
+      EXPECT_EQ(tokens.identity_name, oidc_tokens.identity_name);
+      EXPECT_EQ(tokens.state, oidc_tokens.state);
       EXPECT_EQ(base::UTF16ToUTF8(entry->GetGAIAName()),
                 kExampleUserDisplayName);
       EXPECT_EQ(entry->GetProfileManagementId(),
@@ -690,8 +696,8 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, InterceptionForSameProfile) {
-  ProfileManagementOicdTokens new_example_token = ProfileManagementOicdTokens{
-      .auth_token = "new_auth_token", .id_token = "new_id_token"};
+  ProfileManagementOicdTokens new_example_token = ProfileManagementOicdTokens(
+      "new_auth_token", "new_id_token", /*identity_name=*/u"");
 
   // Fake current TestProfile as an OIDC profile with the same subject ID.
   ProfileAttributesEntry* entry =

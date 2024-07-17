@@ -6,8 +6,10 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/base64url.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -39,20 +41,26 @@ constexpr char kOidcEntraLoginPath[] = "/common/login";
 constexpr char kOidcEntraKmsiPath[] = "/kmsi";
 
 constexpr char kQuerySeparator[] = "&";
-constexpr char kAuthTokenHeader[] = "access_token=";
-constexpr char kIdTokenHeader[] = "id_token=";
+constexpr char kKeyValueSeparator[] = "=";
+constexpr char kAuthTokenHeader[] = "access_token";
+constexpr char kIdTokenHeader[] = "id_token";
+constexpr char kOidcStateHeader[] = "state";
 
-std::string ExtractFragmentValueWithKey(const std::string& fragment,
-                                        const std::string& key) {
-  size_t start = fragment.find(key);
-  if (start == std::string::npos) {
-    return std::string();
+base::flat_map<std::string, std::string> SplitUrl(const std::string& url) {
+  std::vector<std::string> fragments = base::SplitString(
+      url, kQuerySeparator, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  base::flat_map<std::string, std::string> url_map;
+  for (auto& fragment : fragments) {
+    size_t start = fragment.find(kKeyValueSeparator);
+    if (start == std::string::npos) {
+      continue;
+    }
+    std::string key = fragment.substr(0, start);
+    std::string val = fragment.substr(start + 1, fragment.size());
+    url_map.emplace(key, val);
   }
-  start += key.length();
 
-  size_t end = fragment.find(kQuerySeparator, start);
-  return (end == std::string::npos) ? fragment.substr(start)
-                                    : fragment.substr(start, end - start);
+  return url_map;
 }
 
 bool IsEnrollmentUrl(GURL& url) {
@@ -74,15 +82,20 @@ OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
   }
 
   auto url = navigation_handle->GetURL();
-  if (!(url.DomainIs(kOidcEntraLoginHost) &&
-        (url.path() == kOidcEntraReprocessPath ||
-         url.path() == kOidcEntraKmsiPath ||
-         url.path() == kOidcEntraLoginPath))) {
-    return nullptr;
+  if (!base::FeatureList::IsEnabled(
+          profile_management::features::
+              kEnableGenericOidcAuthProfileManagement)) {
+    if (!(url.DomainIs(kOidcEntraLoginHost) &&
+          (url.path() == kOidcEntraReprocessPath ||
+           url.path() == kOidcEntraKmsiPath ||
+           url.path() == kOidcEntraLoginPath))) {
+      return nullptr;
+    }
+
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Valid enrollment URL found, processing URL: " << url;
   }
 
-  VLOG_POLICY(2, OIDC_ENROLLMENT)
-      << "Valid enrollment URL found, processing URL: " << url;
   return std::make_unique<OidcAuthResponseCaptureNavigationThrottle>(
       navigation_handle);
 }
@@ -116,7 +129,7 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
   // registration attempt.
   if (!IsEnrollmentUrl(url)) {
     VLOG_POLICY(1, OIDC_ENROLLMENT)
-        << "Enrollment URL from OIDC redircetion is invalid: " << url;
+        << "Enrollment URL from OIDC redirection is invalid: " << url;
     return PROCEED;
   }
 
@@ -138,10 +151,31 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
   // security reasons. Example URL:
   // https://chromeenterprise.google/enroll/#access_token=<oauth_token>&token_type=Bearer&expires_in=4887&scope=email+openid+profile&id_token=<id_token>&session_state=<session_state>
   std::string url_ref = url.ref();
+  base::flat_map<std::string, std::string> url_map = SplitUrl(url_ref);
+  if (url_map.size() == 0) {
+    VLOG_POLICY(1, OIDC_ENROLLMENT)
+        << "Failed to extract details from the enrollment URL: " << url;
+    return PROCEED;
+  }
+
+  // In the case that we are preforming a generic OIDC profile enrollment, an
+  // additional OIDC state field is present in the URL.
+  std::string state = "";
+  if (base::FeatureList::IsEnabled(
+          profile_management::features::
+              kEnableGenericOidcAuthProfileManagement)) {
+    if (url_map.contains(kOidcStateHeader)) {
+      state = url_map[kOidcStateHeader];
+    } else {
+      LOG_POLICY(WARNING, OIDC_ENROLLMENT)
+          << "OIDC state is missing from the OIDC enrollment URL.";
+    }
+  }
 
   std::string auth_token =
-      ExtractFragmentValueWithKey(url_ref, kAuthTokenHeader);
-  std::string id_token = ExtractFragmentValueWithKey(url_ref, kIdTokenHeader);
+      url_map.contains(kAuthTokenHeader) ? url_map[kAuthTokenHeader] : "";
+  std::string id_token =
+      url_map.contains(kIdTokenHeader) ? url_map[kIdTokenHeader] : "";
 
   if (auth_token.empty() || id_token.empty()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
@@ -175,8 +209,8 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
       base::BindOnce(
           &OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens,
           weak_ptr_factory_.GetWeakPtr(),
-          ProfileManagementOicdTokens{.auth_token = std::move(auth_token),
-                                      .id_token = std::move(id_token)}));
+          ProfileManagementOicdTokens(std::move(auth_token),
+                                      std::move(id_token), std::move(state))));
   return DEFER;
 }
 

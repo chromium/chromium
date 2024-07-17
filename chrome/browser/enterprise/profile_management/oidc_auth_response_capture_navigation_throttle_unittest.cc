@@ -31,9 +31,11 @@ namespace {
 constexpr char kTokenTemplate[] = R"(%s.%s.%s)";
 constexpr char kOidcAuthTokenFieldTemplate[] = R"(access_token=%s&)";
 constexpr char kOidcIdTokenFieldTemplate[] = R"(&id_token=%s&)";
+constexpr char kOidcStateFieldTemplate[] = R"(&state=%s&)";
 constexpr char kOidcAuthResponseTemplate[] =
     "https://chromeenterprise.google/enroll/"
-    "#%stoken_type=Bearer&expires_in=5000&scope=email+openid+profile%ssession_"
+    "#%stoken_type=Bearer&expires_in=5000&scope=email+openid+profile%s%"
+    "ssession_"
     "state=abc-123";
 constexpr char kDummyHeader[] = "encoded_header";
 constexpr char kDummySignature[] = "signature";
@@ -41,8 +43,11 @@ constexpr char kDummySignature[] = "signature";
 constexpr char kOidcEntraReprocessUrl[] =
     "https://login.microsoftonline.com/common/"
     "reprocess?some_encoded_value&session_id=123";
+constexpr char kOidcNonEntraReprocessUrl[] =
+    "https://test.com/common/reprocess?some_encoded_value&session_id=123";
 
 constexpr char kOidcEntraKmsiUrl[] = "https://login.microsoftonline.com/kmsi";
+constexpr char kOidcState[] = "1234";
 
 constexpr char kUserPrincipleNameClaimName[] = "upn";
 constexpr char kSubjectClaimName[] = "sub";
@@ -63,7 +68,8 @@ std::string BuildTokenFromDict(const base::Value::Dict& dict) {
 }
 
 std::string BuildOidcResponseUrl(const std::string& oidc_auth_token,
-                                 const std::string& oidc_id_token) {
+                                 const std::string& oidc_id_token,
+                                 const std::string& oidc_state) {
   std::string auth_token_field =
       oidc_auth_token.empty() ? std::string()
                               : base::StringPrintf(kOidcAuthTokenFieldTemplate,
@@ -72,8 +78,13 @@ std::string BuildOidcResponseUrl(const std::string& oidc_auth_token,
       oidc_id_token.empty() ? std::string()
                             : base::StringPrintf(kOidcIdTokenFieldTemplate,
                                                  oidc_id_token.c_str());
+  std::string state_field =
+      oidc_state.empty()
+          ? std::string()
+          : base::StringPrintf(kOidcStateFieldTemplate, oidc_state.c_str());
+
   return base::StringPrintf(kOidcAuthResponseTemplate, auth_token_field.c_str(),
-                            id_token_field.c_str());
+                            id_token_field.c_str(), state_field.c_str());
 }
 
 }  // namespace
@@ -82,11 +93,13 @@ namespace profile_management {
 
 class OidcAuthResponseCaptureNavigationThrottleTest
     : public BrowserWithTestWindowTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   OidcAuthResponseCaptureNavigationThrottleTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kOidcAuthProfileManagement, enable_oidc_interception());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kOidcAuthProfileManagement, enable_oidc_interception()},
+         {features::kEnableGenericOidcAuthProfileManagement,
+          enable_generic_oidc()}});
   }
 
   ~OidcAuthResponseCaptureNavigationThrottleTest() override = default;
@@ -116,6 +129,14 @@ class OidcAuthResponseCaptureNavigationThrottleTest
   MockOidcAuthenticationSigninInterceptor* GetMockOidcInterceptor() {
     return static_cast<MockOidcAuthenticationSigninInterceptor*>(
         OidcAuthenticationSigninInterceptorFactory::GetForProfile(profile()));
+  }
+
+  void ValidateOidcTokens(ProfileManagementOicdTokens tokens,
+                          ProfileManagementOicdTokens expected_tokens) {
+    EXPECT_EQ(tokens.auth_token, expected_tokens.auth_token);
+    EXPECT_EQ(tokens.id_token, expected_tokens.id_token);
+    EXPECT_EQ(tokens.identity_name, expected_tokens.identity_name);
+    EXPECT_EQ(tokens.state, expected_tokens.state);
   }
 
   void ExpectNoOidcInterception(
@@ -154,6 +175,26 @@ class OidcAuthResponseCaptureNavigationThrottleTest
     }
   }
 
+  void ExpectOidcInterception(
+      MockOidcAuthenticationSigninInterceptor* oidc_interceptor,
+      ProfileManagementOicdTokens expected_oidc_tokens) {
+    if (!enable_oidc_interception()) {
+      ASSERT_EQ(nullptr, oidc_interceptor);
+    } else {
+      EXPECT_CALL(*oidc_interceptor, MaybeInterceptOidcAuthentication(
+                                         web_contents(), _, kExampleIdIssuer,
+                                         kExampleIdSubject, _))
+          .WillOnce([this, expected_oidc_tokens](
+                        content::WebContents* intercepted_contents,
+                        ProfileManagementOicdTokens oidc_tokens,
+                        std::string issuer_id, std::string subject_id,
+                        OidcInterceptionCallback oidc_callback) {
+            ValidateOidcTokens(oidc_tokens, expected_oidc_tokens);
+            std::move(oidc_callback).Run();
+          });
+    }
+  }
+
   void TestNoServiceForInvalidProfile(Profile* invalid_profile) {
     std::string auth_token = BuildTokenFromDict(
         base::Value::Dict()
@@ -183,14 +224,69 @@ class OidcAuthResponseCaptureNavigationThrottleTest
     if (!enable_oidc_interception()) {
       ASSERT_EQ(nullptr, throttle.get());
     } else {
-      navigation_handle.set_url(
-          GURL(BuildOidcResponseUrl(auth_token, id_token)));
+      navigation_handle.set_url(GURL(BuildOidcResponseUrl(
+          auth_token, id_token, /*oidc_state=*/std::string())));
       EXPECT_EQ(NavigationThrottle::PROCEED,
                 throttle->WillProcessResponse().action());
       task_environment()->RunUntilIdle();
       CheckFunnelAndResultHistogram(
           OidcInterceptionFunnelStep::kValidRedirectionCaptured,
           OidcInterceptionResult::kInvalidProfile);
+    }
+  }
+
+  void TestSuccessfulInterception(bool add_oidc_state, bool is_entra_url) {
+    std::string auth_token = BuildTokenFromDict(
+        base::Value::Dict()
+            .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
+            .Set(kSubjectClaimName, kExampleAuthSubject));
+    std::string id_token = BuildTokenFromDict(
+        base::Value::Dict()
+            .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
+            .Set(kSubjectClaimName, kExampleIdSubject)
+            .Set(kIssuerClaimName, kExampleIdIssuer));
+    std::string oidc_state =
+        (enable_generic_oidc() && add_oidc_state) ? kOidcState : std::string();
+
+    std::string redirection_url =
+        BuildOidcResponseUrl(auth_token, id_token, oidc_state);
+    std::string reprocess_url =
+        is_entra_url ? kOidcEntraReprocessUrl : kOidcNonEntraReprocessUrl;
+    content::MockNavigationHandle navigation_handle(GURL(reprocess_url),
+                                                    main_frame());
+
+    auto* oidc_interceptor = GetMockOidcInterceptor();
+    if (is_entra_url) {
+      if (enable_generic_oidc() && !enable_oidc_interception()) {
+        ASSERT_EQ(nullptr, oidc_interceptor);
+      } else {
+        ExpectOidcInterception(
+            oidc_interceptor,
+            ProfileManagementOicdTokens(auth_token, id_token, oidc_state));
+      }
+    } else {
+      if (!enable_oidc_interception()) {
+        ASSERT_EQ(nullptr, oidc_interceptor);
+      } else if (enable_generic_oidc()) {
+        ExpectOidcInterception(
+            oidc_interceptor,
+            ProfileManagementOicdTokens(auth_token, id_token, oidc_state));
+      }
+    }
+
+    auto throttle =
+        OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
+            &navigation_handle);
+    if (!enable_oidc_interception() ||
+        (!enable_generic_oidc() && !is_entra_url)) {
+      ASSERT_EQ(nullptr, throttle.get());
+    } else {
+      throttle->set_resume_callback_for_testing(
+          task_environment()->QuitClosure());
+      navigation_handle.set_url(GURL(redirection_url));
+      EXPECT_EQ(NavigationThrottle::DEFER,
+                throttle->WillProcessResponse().action());
+      task_environment()->RunUntilQuit();
     }
   }
 
@@ -218,7 +314,8 @@ class OidcAuthResponseCaptureNavigationThrottleTest
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  bool enable_oidc_interception() { return GetParam(); }
+  bool enable_oidc_interception() { return std::get<0>(GetParam()); }
+  bool enable_generic_oidc() { return std::get<1>(GetParam()); }
 
  protected:
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
@@ -229,7 +326,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
 };
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
-       DirectNavigationDoesNoTrigger) {
+       DirectNavigationOnGenericOidcOnly) {
   std::string auth_token = BuildTokenFromDict(
       base::Value::Dict()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
@@ -240,7 +337,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
           .Set(kSubjectClaimName, kExampleIdSubject)
           .Set(kIssuerClaimName, kExampleIdIssuer));
 
-  std::string direct_navigate_url = BuildOidcResponseUrl(auth_token, id_token);
+  std::string direct_navigate_url =
+      BuildOidcResponseUrl(auth_token, id_token, /*oidc_state=*/std::string());
 
   content::MockNavigationHandle navigation_handle(GURL(direct_navigate_url),
                                                   main_frame());
@@ -248,6 +346,10 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 
   if (!enable_oidc_interception()) {
     ASSERT_EQ(nullptr, oidc_interceptor);
+  } else if (enable_generic_oidc()) {
+    ExpectOidcInterception(
+        oidc_interceptor,
+        ProfileManagementOicdTokens(auth_token, id_token, /*state=*/""));
   } else {
     EXPECT_CALL(*oidc_interceptor,
                 MaybeInterceptOidcAuthentication(_, _, _, _, _))
@@ -258,59 +360,41 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
       OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
           &navigation_handle);
 
-  ASSERT_EQ(nullptr, throttle.get());
-}
-
-TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
-  std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict()
-          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleAuthSubject));
-  std::string id_token = BuildTokenFromDict(
-      base::Value::Dict()
-          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleIdSubject)
-          .Set(kIssuerClaimName, kExampleIdIssuer));
-
-  std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
-
-  content::MockNavigationHandle navigation_handle(GURL(kOidcEntraReprocessUrl),
-                                                  main_frame());
-
-  auto* oidc_interceptor = GetMockOidcInterceptor();
-  if (!enable_oidc_interception()) {
-    ASSERT_EQ(nullptr, oidc_interceptor);
-  } else {
-    EXPECT_CALL(*oidc_interceptor,
-                MaybeInterceptOidcAuthentication(
-                    web_contents(),
-                    ProfileManagementOicdTokens{.auth_token = auth_token,
-                                                .id_token = id_token},
-                    kExampleIdIssuer, kExampleIdSubject, _))
-        .WillOnce([](content::WebContents* intercepted_contents,
-                     ProfileManagementOicdTokens oidc_tokens,
-                     std::string issuer_id, std::string subject_id,
-                     OidcInterceptionCallback oidc_callback) {
-          std::move(oidc_callback).Run();
-        });
-  }
-
-  auto throttle =
-      OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
-          &navigation_handle);
-  if (!enable_oidc_interception()) {
-    ASSERT_EQ(nullptr, throttle.get());
-  } else {
+  if (enable_generic_oidc() && enable_oidc_interception()) {
     throttle->set_resume_callback_for_testing(
         task_environment()->QuitClosure());
-    navigation_handle.set_url(GURL(redirection_url));
+    navigation_handle.set_url(GURL(direct_navigate_url));
     EXPECT_EQ(NavigationThrottle::DEFER,
               throttle->WillProcessResponse().action());
     task_environment()->RunUntilQuit();
+    CheckFunnelAndResultHistogram(
+        OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+  } else {
+    ASSERT_EQ(nullptr, throttle.get());
   }
+}
 
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
+  TestSuccessfulInterception(/*add_oidc_state=*/false, /*is_entra_url=*/true);
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+}
+
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
+       SuccessfulInterceptionWithState) {
+  TestSuccessfulInterception(/*add_oidc_state=*/true, /*is_entra_url=*/true);
+  CheckFunnelAndResultHistogram(
+      OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+}
+
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
+       SuccessfulInterceptionWithState_nonEntraUrl) {
+  TestSuccessfulInterception(/*add_oidc_state=*/true, /*is_entra_url=*/false);
+
+  if (enable_generic_oidc()) {
+    CheckFunnelAndResultHistogram(
+        OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+  }
 }
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingAuthToken) {
@@ -320,7 +404,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingAuthToken) {
           .Set(kSubjectClaimName, kExampleIdSubject)
           .Set(kIssuerClaimName, kExampleIdIssuer));
 
-  std::string redirection_url = BuildOidcResponseUrl(std::string(), id_token);
+  std::string redirection_url = BuildOidcResponseUrl(
+      /*oidc_auth_token=*/std::string(), id_token, /*state=*/std::string());
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
@@ -336,7 +421,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingIdToken) {
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleAuthSubject));
 
-  std::string redirection_url = BuildOidcResponseUrl(auth_token, std::string());
+  std::string redirection_url = BuildOidcResponseUrl(
+      auth_token, /*oidc_id_token=*/std::string(), /*state=*/std::string());
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
@@ -368,7 +454,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingIdTokenSubClaim) {
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kIssuerClaimName, kExampleIdIssuer));
 
-  std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
+  std::string redirection_url =
+      BuildOidcResponseUrl(auth_token, id_token, /*oidc_state=*/std::string());
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
@@ -386,7 +473,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingIdTokenIssClaim) {
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleIdSubject));
 
-  std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
+  std::string redirection_url =
+      BuildOidcResponseUrl(auth_token, id_token, /*oidc_state=*/std::string());
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
@@ -401,7 +489,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, EmptyIdJson) {
       base::Value::Dict().Set(kSubjectClaimName, kExampleAuthSubject));
   std::string id_token = BuildTokenFromDict(base::Value::Dict());
 
-  std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
+  std::string redirection_url =
+      BuildOidcResponseUrl(auth_token, id_token, /*oidc_state=*/std::string());
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
@@ -427,8 +516,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
               .Set(kSubjectClaimName, kExampleIdSubject))
           .value());
 
-  std::string redirection_url =
-      BuildOidcResponseUrl(auth_token, malformed_id_token);
+  std::string redirection_url = BuildOidcResponseUrl(
+      auth_token, malformed_id_token, /*oidc_state=*/std::string());
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
@@ -455,8 +544,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DecodeFailure) {
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleAuthSubject));
 
-  std::string redirection_url =
-      BuildOidcResponseUrl(auth_token, malformed_id_token);
+  std::string redirection_url = BuildOidcResponseUrl(
+      auth_token, malformed_id_token, /*oidc_state=*/std::string());
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
@@ -478,7 +567,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DataDecoderFailure) {
           .Set(kSubjectClaimName, kExampleIdSubject)
           .Set(kIssuerClaimName, kExampleIdIssuer));
 
-  std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
+  std::string redirection_url =
+      BuildOidcResponseUrl(auth_token, id_token, /*oidc_state=*/std::string());
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
@@ -498,8 +588,10 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, NoServiceForIncognito) {
       /*create_if_needed=*/true));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         OidcAuthResponseCaptureNavigationThrottleTest,
-                         /*enable_oidc_interception=*/testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OidcAuthResponseCaptureNavigationThrottleTest,
+    testing::Combine(/*enable_oidc_interception=*/testing::Bool(),
+                     /*enable_generic_oidc=*/testing::Bool()));
 
 }  // namespace profile_management

@@ -1754,6 +1754,9 @@ void CloudPolicyClient::CreateDeviceRegisterRequest(
     *request->mutable_demo_mode_dimensions() =
         params.demo_mode_dimensions.value();
   }
+  if (!params.oidc_state.empty()) {
+    request->set_oidc_profile_enrollment_state(params.oidc_state);
+  }
 }
 
 void CloudPolicyClient::CreateUniqueRequestJob(

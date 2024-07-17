@@ -59,6 +59,7 @@ const char kProfileManagementOidcAuthToken[] =
     "profile_management_oidc_auth_token";
 const char kProfileManagementOidcIdToken[] = "profile_management_oidc_id_token";
 const char kProfileManagementId[] = "profile_management_id";
+const char kProfileManagementOidcState[] = "profile_management_oidc_state";
 const char kUserAcceptedAccountManagement[] =
     "user_accepted_account_management";
 const char kIsUsingNewPlaceholderAvatarIcon[] =
@@ -146,6 +147,34 @@ void ProfileAttributesEntry::RegisterLocalStatePrefs(
 }
 
 ProfileAttributesEntry::ProfileAttributesEntry() = default;
+
+ProfileManagementOicdTokens::ProfileManagementOicdTokens() {}
+
+ProfileManagementOicdTokens::ProfileManagementOicdTokens(
+    const std::string& auth_token,
+    const std::string& id_token,
+    const std::u16string& identity_name)
+    : auth_token(auth_token),
+      id_token(id_token),
+      identity_name(identity_name) {}
+
+ProfileManagementOicdTokens::ProfileManagementOicdTokens(
+    const std::string& auth_token,
+    const std::string& id_token,
+    const std::string& state)
+    : auth_token(auth_token), id_token(id_token), state(state) {}
+
+ProfileManagementOicdTokens::ProfileManagementOicdTokens(
+    ProfileManagementOicdTokens&& other) = default;
+ProfileManagementOicdTokens& ProfileManagementOicdTokens::operator=(
+    ProfileManagementOicdTokens&& other) = default;
+
+ProfileManagementOicdTokens::ProfileManagementOicdTokens(
+    const ProfileManagementOicdTokens& other) = default;
+ProfileManagementOicdTokens& ProfileManagementOicdTokens::operator=(
+    const ProfileManagementOicdTokens& other) = default;
+
+ProfileManagementOicdTokens::~ProfileManagementOicdTokens() = default;
 
 void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
                                         const base::FilePath& path,
@@ -569,9 +598,9 @@ std::string ProfileAttributesEntry::GetProfileManagementEnrollmentToken()
 
 ProfileManagementOicdTokens
 ProfileAttributesEntry::GetProfileManagementOidcTokens() const {
-  return ProfileManagementOicdTokens{
-      .auth_token = GetString(kProfileManagementOidcAuthToken),
-      .id_token = GetString(kProfileManagementOidcIdToken)};
+  return ProfileManagementOicdTokens(GetString(kProfileManagementOidcAuthToken),
+                                     GetString(kProfileManagementOidcIdToken),
+                                     GetString(kProfileManagementOidcState));
 }
 
 std::string ProfileAttributesEntry::GetProfileManagementId() const {
@@ -787,8 +816,9 @@ void ProfileAttributesEntry::SetProfileManagementEnrollmentToken(
 
 void ProfileAttributesEntry::SetProfileManagementOidcTokens(
     const ProfileManagementOicdTokens& oidc_tokens) {
-  CHECK(SetString(kProfileManagementOidcAuthToken, oidc_tokens.auth_token));
-  CHECK(SetString(kProfileManagementOidcIdToken, oidc_tokens.id_token));
+  SetString(kProfileManagementOidcAuthToken, oidc_tokens.auth_token);
+  SetString(kProfileManagementOidcIdToken, oidc_tokens.id_token);
+  SetString(kProfileManagementOidcState, oidc_tokens.state);
   if (SetString16(kOIDCIdentityNameKey, oidc_tokens.identity_name)) {
     profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
   }

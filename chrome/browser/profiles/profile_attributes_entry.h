@@ -42,14 +42,36 @@ enum class NameForm {
 };
 
 struct ProfileManagementOicdTokens {
+  // TODO(b/353757492): Fix typo and possibly change from struct to class.
+  ProfileManagementOicdTokens();
+  ProfileManagementOicdTokens(const std::string& auth_token,
+                              const std::string& id_token,
+                              const std::u16string& identity_name);
+  ProfileManagementOicdTokens(const std::string& auth_token,
+                              const std::string& id_token,
+                              const std::string& state);
+
+  ProfileManagementOicdTokens(const ProfileManagementOicdTokens& other);
+  ProfileManagementOicdTokens& operator=(
+      const ProfileManagementOicdTokens& other);
+
+  ProfileManagementOicdTokens(ProfileManagementOicdTokens&& other);
+  ProfileManagementOicdTokens& operator=(ProfileManagementOicdTokens&& other);
+  ~ProfileManagementOicdTokens();
+
+  // Authorization token from the authorization response.
   std::string auth_token;
+
+  // ID token from the authorization response.
   std::string id_token;
+
+  // Identity name of the profile. This is only relevant after the completion of
+  // profile registration.
   std::u16string identity_name;
 
-  bool operator==(const ProfileManagementOicdTokens& other) const {
-    return identity_name == other.identity_name &&
-           auth_token == other.auth_token && id_token == other.id_token;
-  }
+  // OIDC configuration state. This is only relevant during profile
+  // registration.
+  std::string state;
 };
 
 class ProfileAttributesEntry {

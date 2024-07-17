@@ -120,7 +120,7 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
   }
 
   web_contents_ = intercepted_contents->GetWeakPtr();
-  oidc_tokens_ = oidc_tokens;
+  oidc_tokens_ = std::move(oidc_tokens);
   unique_user_identifier_ = base::StringPrintf(
       kUniqueIdentifierTemplate, issuer_id.c_str(), subject_id.c_str());
 
@@ -202,7 +202,7 @@ void OidcAuthenticationSigninInterceptor::Reset() {
   }
 
   web_contents_ = nullptr;
-  oidc_tokens_ = {};
+  oidc_tokens_ = ProfileManagementOicdTokens();
   dm_token_.clear();
   client_id_.clear();
   user_display_name_.clear();
@@ -284,7 +284,7 @@ void OidcAuthenticationSigninInterceptor::StartOidcRegistration() {
 
   registration_helper_for_temporary_client_->StartRegistrationWithOidcTokens(
       oidc_tokens_.auth_token, oidc_tokens_.id_token, std::string(),
-      std::move(registration_callback));
+      oidc_tokens_.state, std::move(registration_callback));
 }
 
 void OidcAuthenticationSigninInterceptor::OnClientRegistered(
