@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 #include <ostream>
@@ -15,28 +10,29 @@ namespace blink {
 
 namespace {
 
-constexpr size_t kWritingModeSize =
-    static_cast<size_t>(WritingMode::kMaxWritingMode) + 1;
-// Following four arrays contain values for horizontal-tb, vertical-rl,
+using PhysicalDirectionMap =
+    std::array<PhysicalDirection,
+               static_cast<size_t>(WritingMode::kMaxWritingMode) + 1>;
+// Following six arrays contain values for horizontal-tb, vertical-rl,
 // vertical-lr, sideways-rl, and sideways-lr in this order.
-constexpr PhysicalDirection kInlineStartMap[kWritingModeSize] = {
+constexpr PhysicalDirectionMap kInlineStartMap = {
     PhysicalDirection::kLeft, PhysicalDirection::kUp, PhysicalDirection::kUp,
     PhysicalDirection::kUp, PhysicalDirection::kDown};
-constexpr PhysicalDirection kInlineEndMap[kWritingModeSize] = {
+constexpr PhysicalDirectionMap kInlineEndMap = {
     PhysicalDirection::kRight, PhysicalDirection::kDown,
     PhysicalDirection::kDown, PhysicalDirection::kDown, PhysicalDirection::kUp};
-constexpr PhysicalDirection kBlockStartMap[kWritingModeSize] = {
+constexpr PhysicalDirectionMap kBlockStartMap = {
     PhysicalDirection::kUp, PhysicalDirection::kRight, PhysicalDirection::kLeft,
     PhysicalDirection::kRight, PhysicalDirection::kLeft};
-constexpr PhysicalDirection kBlockEndMap[kWritingModeSize] = {
+constexpr PhysicalDirectionMap kBlockEndMap = {
     PhysicalDirection::kDown, PhysicalDirection::kLeft,
     PhysicalDirection::kRight, PhysicalDirection::kLeft,
     PhysicalDirection::kRight};
-constexpr PhysicalDirection kLineOverMap[kWritingModeSize] = {
+constexpr PhysicalDirectionMap kLineOverMap = {
     PhysicalDirection::kUp, PhysicalDirection::kRight,
     PhysicalDirection::kRight, PhysicalDirection::kRight,
     PhysicalDirection::kLeft};
-constexpr PhysicalDirection kLineUnderMap[kWritingModeSize] = {
+constexpr PhysicalDirectionMap kLineUnderMap = {
     PhysicalDirection::kDown, PhysicalDirection::kLeft,
     PhysicalDirection::kLeft, PhysicalDirection::kLeft,
     PhysicalDirection::kRight};
