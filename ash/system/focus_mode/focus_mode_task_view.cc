@@ -330,6 +330,9 @@ void FocusModeTaskView::OnSelectedTaskChanged(
     // Otherwise, it'll be updated by `OnClearTask()`.
     if (!complete_animation_running_) {
       textfield_->SetText(std::u16string());
+      if (textfield_->HasFocus()) {
+        textfield_->SetActive(true);
+      }
       UpdateStyle(/*show_selected_state=*/false, is_network_connected_);
     }
     return;
