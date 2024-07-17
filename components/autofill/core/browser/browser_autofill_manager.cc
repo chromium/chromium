@@ -3056,7 +3056,8 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
           context.ablation_group, AblationGroup::kDefault);
     }
 
-    if (!suggestions.empty() && ablation_group == AblationGroup::kAblation) {
+    if (!suggestions.empty() && ablation_group == AblationGroup::kAblation &&
+        !features::kAutofillAblationStudyIsDryRun.Get()) {
       // Logic for disabling/ablating autofill.
       context.suppress_reason = SuppressReason::kAblation;
       return {};

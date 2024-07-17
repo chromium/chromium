@@ -720,6 +720,10 @@ const base::FeatureParam<int>
 const base::FeatureParam<int>
     kAutofillAblationStudyAblationWeightPerMilleList4Param{
         &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param4", 0};
+// If true, the ablation study runs as an A/A study (no behavioral changes) but
+// clients are assigned to the respective groups.
+const base::FeatureParam<bool> kAutofillAblationStudyIsDryRun{
+    &kAutofillEnableAblationStudy, "ablation_study_is_dry_run", false};
 // Improves the selection of phone country codes by also considering address
 // country codes / names.
 // See GetStreetAddressForInput() in field_filling_address_util.cc for a details

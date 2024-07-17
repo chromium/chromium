@@ -3154,6 +3154,34 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
+// Tests that if the ablation study runs in dry-run mode, suggestions are
+// shown even though the ablation study is enabled.
+// This is basically a copy of
+// ShouldNotShowAddressSuggestionsIfAddressAutofillDisabled, except that the
+// dryrun flag ist set.
+TEST_F(BrowserAutofillManagerTest,
+       ShouldShowAddressSuggestionsIfAblationIsInDryRunMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams feature_parameters{
+      {features::kAutofillAblationStudyEnabledForAddressesParam.name, "true"},
+      {features::kAutofillAblationStudyEnabledForPaymentsParam.name, "true"},
+      {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
+       "1000"},
+      {features::kAutofillAblationStudyIsDryRun.name, "true"}};
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillEnableAblationStudy, feature_parameters);
+
+  // Set up our form data.
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  GetAutofillSuggestions(form, form.fields()[0]);
+
+  // Verify that suggestions are returned.
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_GT(external_delegate()->suggestions().size(), 0u);
+}
+
 struct LogAblationTestParams {
   const char* description;
   // Whether any autofillable data is stored.
