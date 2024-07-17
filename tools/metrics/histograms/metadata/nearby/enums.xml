@@ -156,6 +156,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Cancelled"/>
   <int value="4" label="Failed To Connect Socket"/>
   <int value="5" label="Failed To Open Firewall Hole"/>
+  <int value="6" label="Failed To Listen to Socket"/>
 </enum>
 
 <enum name="NearbyConnectionsWifiLanConnectResult">

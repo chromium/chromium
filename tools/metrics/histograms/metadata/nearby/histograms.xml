@@ -626,6 +626,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.WifiDirect.ListenForService.Error"
+    enum="NearbyConnectionsWifiDirectServiceError" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the error that occured attempting to listen for new Nearby
+    Connections via the connected WiFi Direct interface. Emitted when Nearby
+    Connections encounters an error setting up the the TCP server socket.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.WifiDirect.ListenForService.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to listen for new Nearby Connections via
+    the connected WiFi Direct interface. Emitted when Nearby Connections returns
+    the result from listen for service call.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.WifiLan.ConnectResult"
     enum="NearbyConnectionsWifiLanConnectResult" expires_after="2025-04-30">
   <owner>hansenmichael@google.com</owner>

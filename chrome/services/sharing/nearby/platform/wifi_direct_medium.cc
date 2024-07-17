@@ -198,6 +198,11 @@ std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
     int port) {
   // Ensure that there is a valid WiFi Direct connection.
   if (!connection_) {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ListenForService.Error",
+        WifiDirectServiceError::kNoConnection);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ListenForService.Result", false);
     return nullptr;
   }
 
@@ -205,6 +210,11 @@ std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
   auto fd = base::ScopedFD(
       net::CreatePlatformSocket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
   if (fd.get() < 0) {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ListenForService.Error",
+        WifiDirectServiceError::kFailedToCreatePlatformSocket);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ListenForService.Result", false);
     return nullptr;
   }
   mojo::PlatformHandle handle = mojo::PlatformHandle(std::move(fd));
@@ -222,6 +232,11 @@ std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
 
   if (!did_associate) {
     // Socket not associated at the platform layer.
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ListenForService.Error",
+        WifiDirectServiceError::kFailedToAssociateSocket);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ListenForService.Result", false);
     return nullptr;
   }
 
@@ -243,6 +258,11 @@ std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
   }
 
   if (!firewall_hole) {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ListenForService.Error",
+        WifiDirectServiceError::kFailedToOpenFirewallHole);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ListenForService.Result", false);
     return nullptr;
   }
 
@@ -260,9 +280,16 @@ std::unique_ptr<api::WifiDirectServerSocket> WifiDirectMedium::ListenForService(
     waitable_event.Wait();
   }
   if (!socket) {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ListenForService.Error",
+        WifiDirectServiceError::kFailedToListenToSocket);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ListenForService.Result", false);
     return nullptr;
   }
 
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.WifiDirect.ListenForService.Result", true);
   return std::make_unique<WifiDirectServerSocket>(
       io_thread_->task_runner(), std::move(handle), std::move(firewall_hole),
       std::move(socket));

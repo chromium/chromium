@@ -27,7 +27,8 @@ enum class WifiDirectServiceError {
   kCancelled = 3,
   kFailedToConnectSocket = 4,
   kFailedToOpenFirewallHole = 5,
-  kMaxValue = kFailedToOpenFirewallHole,
+  kFailedToListenToSocket = 6,
+  kMaxValue = kFailedToListenToSocket,
 };
 
 class WifiDirectMedium : public api::WifiDirectMedium {

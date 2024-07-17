@@ -41,6 +41,10 @@ constexpr char kConnectToServiceResultMetricName[] =
     "Nearby.Connections.WifiDirect.ConnectToService.Result";
 constexpr char kConnectToServiceErrorMetricName[] =
     "Nearby.Connections.WifiDirect.ConnectToService.Error";
+constexpr char kListenForServiceResultMetricName[] =
+    "Nearby.Connections.WifiDirect.ListenForService.Result";
+constexpr char kListenForServiceErrorMetricName[] =
+    "Nearby.Connections.WifiDirect.ListenForService.Error";
 
 // Pick a random port for each test run, otherwise the `Listen` call has a
 // chance to return ADDRESS_IN_USE(-147).
@@ -573,6 +577,8 @@ TEST_F(WifiDirectMediumTest, ListenForService_Success) {
       medium()));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -585,6 +591,10 @@ TEST_F(WifiDirectMediumTest, ListenForService_Success) {
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 1);
   histogram_tester().ExpectBucketCount(kAssociateSocketResultMetricName,
                                        /*bucket:true=*/1, 1);
+  histogram_tester().ExpectTotalCount(kListenForServiceResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kListenForServiceResultMetricName,
+                                       /*bucket:true=*/1, 1);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 0);
 }
 
 TEST_F(WifiDirectMediumTest, ListenForService_MissingConnection) {
@@ -600,6 +610,8 @@ TEST_F(WifiDirectMediumTest, ListenForService_MissingConnection) {
       medium()));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -609,6 +621,12 @@ TEST_F(WifiDirectMediumTest, ListenForService_MissingConnection) {
       medium()));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectBucketCount(kListenForServiceResultMetricName,
+                                       /*bucket:false=*/0, 1);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 1);
+  histogram_tester().ExpectBucketCount(kListenForServiceErrorMetricName,
+                                       WifiDirectServiceError::kNoConnection,
+                                       1);
 }
 
 TEST_F(WifiDirectMediumTest, ListenForService_FailToAssociateSocket) {
@@ -626,6 +644,8 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToAssociateSocket) {
       medium()));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -638,6 +658,12 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToAssociateSocket) {
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 1);
   histogram_tester().ExpectBucketCount(kAssociateSocketResultMetricName,
                                        /*bucket:false=*/0, 1);
+  histogram_tester().ExpectBucketCount(kListenForServiceResultMetricName,
+                                       /*bucket:false=*/0, 1);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 1);
+  histogram_tester().ExpectBucketCount(
+      kListenForServiceErrorMetricName,
+      WifiDirectServiceError::kFailedToAssociateSocket, 1);
 }
 
 TEST_F(WifiDirectMediumTest, ListenForService_FailToOpenFirewallHole) {
@@ -655,6 +681,8 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToOpenFirewallHole) {
       medium()));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -667,6 +695,12 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToOpenFirewallHole) {
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 1);
   histogram_tester().ExpectBucketCount(kAssociateSocketResultMetricName,
                                        /*bucket:true=*/1, 1);
+  histogram_tester().ExpectBucketCount(kListenForServiceResultMetricName,
+                                       /*bucket:false=*/0, 1);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 1);
+  histogram_tester().ExpectBucketCount(
+      kListenForServiceErrorMetricName,
+      WifiDirectServiceError::kFailedToOpenFirewallHole, 1);
 }
 
 TEST_F(WifiDirectMediumTest, ListenForService_InvalidAddress) {
@@ -685,6 +719,8 @@ TEST_F(WifiDirectMediumTest, ListenForService_InvalidAddress) {
       medium()));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -697,6 +733,12 @@ TEST_F(WifiDirectMediumTest, ListenForService_InvalidAddress) {
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 1);
   histogram_tester().ExpectBucketCount(kAssociateSocketResultMetricName,
                                        /*bucket:true=*/1, 1);
+  histogram_tester().ExpectBucketCount(kListenForServiceResultMetricName,
+                                       /*bucket:false=*/0, 1);
+  histogram_tester().ExpectTotalCount(kListenForServiceErrorMetricName, 1);
+  histogram_tester().ExpectBucketCount(
+      kListenForServiceErrorMetricName,
+      WifiDirectServiceError::kFailedToListenToSocket, 1);
 }
 
 }  // namespace nearby::chrome
