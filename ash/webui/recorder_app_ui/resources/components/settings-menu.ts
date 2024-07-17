@@ -158,6 +158,11 @@ export class SettingsMenu extends ReactiveLitElement {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
     this.platformHandler.downloadModel(ModelId.SUMMARY);
+    // TODO(pihsun): This downloads the model used by title suggestion, and
+    // both model are downloaded together with the same toggle. This currently
+    // doesn't take extra time because it's the base model for summary. Change
+    // this to title suggestion specific model when we have LoRA for that.
+    this.platformHandler.downloadModel(ModelId.GEMINI_XXS_IT_BASE);
   }
 
   private onSummaryToggle(ev: Event) {

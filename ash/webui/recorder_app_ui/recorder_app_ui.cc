@@ -169,6 +169,11 @@ void RecorderAppUI::AddModelMonitor(
     model_state = {recorder_app::mojom::ModelStateType::kUnavailable,
                    std::nullopt};
     model_states_.insert({model_id, model_state});
+    // TODO(pihsun): This currently only gets the model state once on first
+    // monitor, and updates with progress when LoadModel is called. So if the
+    // model is installed by any other mean (like downloaded as a base model or
+    // by other app), the state won't be updated. Consider if we should expose
+    // the observer API from DLC for each individual model.
     on_device_model_service_->GetPlatformModelState(
         model_id, base::BindOnce(&RecorderAppUI::GetPlatformModelStateCallback,
                                  weak_ptr_factory_.GetWeakPtr(), model_id));

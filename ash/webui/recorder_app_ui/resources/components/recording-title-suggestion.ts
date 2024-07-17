@@ -154,7 +154,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
     if (this.suggestedTitles === null ||
         this.suggestedTitles.state !== ComputedState.DONE ||
         this.suggestedTitles.value === null) {
-      // TOOD(pihsun): Handler error.
+      // TOOD(pihsun): Handle error.
       return html`<div id="loading">
         <genai-placeholder></genai-placeholder>
       </div>`;

@@ -28,9 +28,10 @@ import {
   ReactiveLitElement,
   ScopedAsyncComputed,
 } from '../core/reactive/lit.js';
-import {signal} from '../core/reactive/signal.js';
+import {computed, signal} from '../core/reactive/signal.js';
 import {RecordingMetadata} from '../core/recording_data_manager.js';
 import {concatTextTokens} from '../core/soda/soda.js';
+import {settings, SummaryEnableState} from '../core/state/settings.js';
 import {assertInstanceof} from '../core/utils/assert.js';
 
 import {RecordingTitleSuggestion} from './recording-title-suggestion.js';
@@ -90,23 +91,49 @@ export class RecordingTitle extends ReactiveLitElement {
 
   recordingMetadata: RecordingMetadata|null = null;
 
+  private readonly recordingMetadataSignal =
+    this.propSignal('recordingMetadata');
+
   private readonly editing = signal(false);
 
   private readonly suggestionShown = signal(false);
 
-  private readonly suggestedTitles = new ScopedAsyncComputed(this, async () => {
-    // TODO(pihsun): Cache title suggestion between hide/show the suggestion
-    // dialog?
-    if (!this.suggestionShown.value || this.recordingMetadata === null) {
+  private readonly recordingDataManager = useRecordingDataManager();
+
+  private readonly platformHandler = usePlatformHandler();
+
+  private readonly textTokens = new ScopedAsyncComputed(this, async () => {
+    if (this.recordingMetadataSignal.value === null) {
       return null;
     }
     const {textTokens} = await this.recordingDataManager.getTranscription(
-      this.recordingMetadata.id,
+      this.recordingMetadataSignal.value.id,
     );
-    if (textTokens === null) {
+    return textTokens;
+  });
+
+  private readonly shouldShowTitleSuggestion = computed(() => {
+    const modelState = this.platformHandler.getModelState(
+      ModelId.GEMINI_XXS_IT_BASE,
+    );
+    return (
+      modelState.value.kind === 'installed' &&
+      settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
+      this.textTokens.value !== null && this.textTokens.value.length > 0
+    );
+  });
+
+  private readonly suggestedTitles = new ScopedAsyncComputed(this, async () => {
+    // TODO(pihsun): Cache title suggestion between hide/show the suggestion
+    // dialog?
+    if (!this.suggestionShown.value || this.recordingMetadata === null ||
+        !this.shouldShowTitleSuggestion.value) {
       return null;
     }
-    const text = concatTextTokens(textTokens);
+    if (this.textTokens.value === null) {
+      return null;
+    }
+    const text = concatTextTokens(this.textTokens.value);
     const model = await this.platformHandler.loadModel(
       ModelId.GEMINI_XXS_IT_BASE,
     );
@@ -117,10 +144,6 @@ export class RecordingTitle extends ReactiveLitElement {
       model.close();
     }
   });
-
-  private readonly recordingDataManager = useRecordingDataManager();
-
-  private readonly platformHandler = usePlatformHandler();
 
   private get editTextfield(): Textfield|null {
     return this.shadowRoot?.querySelector('cros-textfield') ?? null;
@@ -211,8 +234,10 @@ export class RecordingTitle extends ReactiveLitElement {
 
   override render(): RenderResult {
     if (this.editing.value) {
-      const suggestionIconButton = this.suggestionShown.value ? nothing : html`
-            <cra-icon-button
+      const suggestionIconButton =
+        this.suggestionShown.value || !this.shouldShowTitleSuggestion.value ?
+        nothing :
+        html`<cra-icon-button
               buttonstyle="floating"
               size="small"
               slot="trailing"
@@ -220,8 +245,7 @@ export class RecordingTitle extends ReactiveLitElement {
               @click=${this.openSuggestionDialog}
             >
               <cra-icon slot="icon" name="pen_spark"></cra-icon>
-            </cra-icon-button>
-          `;
+            </cra-icon-button>`;
       // TODO(pihsun): Handle keyboard event like "enter".
       return html`<cros-textfield
           type="text"
