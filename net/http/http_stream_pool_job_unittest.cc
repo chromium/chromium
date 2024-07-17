@@ -29,7 +29,9 @@
 #include "net/socket/socket_test_util.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/spdy/spdy_test_util_common.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
+#include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -327,7 +329,10 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     resolve_error_info_ = resolve_error_info;
   }
 
-  void OnCertificateError(int status, const SSLInfo& ssl_info) override {}
+  void OnCertificateError(int status, const SSLInfo& ssl_info) override {
+    result_ = status;
+    cert_error_ssl_info_ = ssl_info;
+  }
 
   void OnNeedsProxyAuth(const HttpResponseInfo& proxy_response,
                         const ProxyInfo& used_proxy_info,
@@ -351,6 +356,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     return resolve_error_info_;
   }
 
+  const SSLInfo& cert_error_ssl_info() const { return cert_error_ssl_info_; }
+
  private:
   url::SchemeHostPort destination_;
   PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
@@ -367,6 +374,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   std::optional<int> result_;
   NetErrorDetails net_error_details_;
   ResolveErrorInfo resolve_error_info_;
+  SSLInfo cert_error_ssl_info_;
 };
 
 }  // namespace
@@ -564,6 +572,46 @@ TEST_F(HttpStreamPoolJobTest, TlsCryptoReadyDelayed) {
   endpoint_request->set_crypto_ready(true).CallOnServiceEndpointsUpdated();
   RunUntilIdle();
   EXPECT_THAT(*requester.result(), IsOk());
+}
+
+TEST_F(HttpStreamPoolJobTest, CertificateError) {
+  // Set the per-group limit to one to allow only one attempt.
+  constexpr size_t kMaxPerGroup = 1;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  const scoped_refptr<X509Certificate> kCert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+
+  auto data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(data.get());
+  SSLSocketDataProvider ssl(ASYNC, ERR_CERT_DATE_INVALID);
+  ssl.ssl_info.cert_status = ERR_CERT_DATE_INVALID;
+  ssl.ssl_info.cert = kCert;
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  constexpr std::string_view kDestination = "https://a.test";
+  StreamRequester requester1;
+  requester1.set_destination(kDestination).RequestStream(pool());
+  StreamRequester requester2;
+  requester2.set_destination(kDestination).RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  EXPECT_FALSE(requester1.result().has_value());
+  EXPECT_FALSE(requester2.result().has_value());
+
+  endpoint_request->set_crypto_ready(true).CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  EXPECT_THAT(*requester1.result(), IsError(ERR_CERT_DATE_INVALID));
+  EXPECT_THAT(*requester2.result(), IsError(ERR_CERT_DATE_INVALID));
+  ASSERT_TRUE(
+      requester1.cert_error_ssl_info().cert->EqualsIncludingChain(kCert.get()));
+  ASSERT_TRUE(
+      requester2.cert_error_ssl_info().cert->EqualsIncludingChain(kCert.get()));
 }
 
 TEST_F(HttpStreamPoolJobTest, RequestCancelledBeforeAttemptSuccess) {

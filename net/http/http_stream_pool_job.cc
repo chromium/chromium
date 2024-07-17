@@ -106,6 +106,10 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     const NetLogWithSource& net_log) {
+  // TODO(crbug.com/346835898): Handle requests that are coming while `this` is
+  // failing.
+  CHECK(!is_failing_);
+
   auto entry = std::make_unique<RequestEntry>(this);
   std::unique_ptr<HttpStreamRequest> request =
       entry->CreateRequest(delegate, net_log);
@@ -409,6 +413,8 @@ std::optional<IPEndPoint> HttpStreamPool::Job::FindUnattemptedIPEndPoint(
 }
 
 void HttpStreamPool::Job::NotifyFailure(int rv) {
+  is_failing_ = true;
+
   RequestEntry* entry = ExtractFirstRequestToNotify();
   if (!entry) {
     return;
@@ -420,6 +426,23 @@ void HttpStreamPool::Job::NotifyFailure(int rv) {
 
   entry->delegate()->OnStreamFailed(rv, net_error_details_, proxy_info_,
                                     resolve_error_info_);
+  // `this` may be deleted.
+}
+
+void HttpStreamPool::Job::NotifyCertificateError(int rv,
+                                                 const SSLInfo& ssl_info) {
+  is_failing_ = true;
+
+  RequestEntry* entry = ExtractFirstRequestToNotify();
+  if (!entry) {
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&Job::NotifyCertificateError,
+                                weak_ptr_factory_.GetWeakPtr(), rv, ssl_info));
+
+  entry->delegate()->OnCertificateError(rv, ssl_info);
   // `this` may be deleted.
 }
 
@@ -505,19 +528,36 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
       std::move(in_flight_attempts_.extract(it).value());
   pool()->DecrementTotalConnectingStreamCount();
 
+  std::unique_ptr<StreamSocket> stream_socket =
+      in_flight_attempt->attempt->ReleaseStreamSocket();
+
   if (rv != OK) {
     CHECK_NE(rv, ERR_IO_PENDING);
     failed_ip_endpoints_.emplace(in_flight_attempt->attempt->ip_endpoint());
     last_attempt_error_ = rv;
     in_flight_attempt.reset();
-    MaybeAttemptConnection();
+
+    if (IsCertificateError(rv)) {
+      // When a certificate error happened for an attempt, notifies all requests
+      // of the error.
+      CHECK(UsingTls());
+      CHECK(stream_socket);
+      SSLInfo ssl_info;
+      bool has_ssl_info = stream_socket->GetSSLInfo(&ssl_info);
+      CHECK(has_ssl_info);
+      stream_socket.reset();
+      NotifyCertificateError(rv, ssl_info);
+    } else {
+      stream_socket.reset();
+      MaybeAttemptConnection();
+    }
     return;
   }
 
+  CHECK(stream_socket);
+
   // TODO(crbug.com/346835898): Support preconnect.
 
-  std::unique_ptr<StreamSocket> stream_socket =
-      in_flight_attempt->attempt->ReleaseStreamSocket();
   // TODO(crbug.com/346835898): Support HTTP/2.
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
   CreateTextBasedStreamAndNotify(std::move(stream_socket));

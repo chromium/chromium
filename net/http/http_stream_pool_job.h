@@ -149,6 +149,9 @@ class HttpStreamPool::Job
   // Notifies a failure to all requests.
   void NotifyFailure(int rv);
 
+  // Notifies a certificate error to all requests.
+  void NotifyCertificateError(int rv, const SSLInfo& ssl_info);
+
   // Creates a text based stream and notifies the highest priority request.
   void CreateTextBasedStreamAndNotify(
       std::unique_ptr<StreamSocket> stream_socket);
@@ -185,6 +188,11 @@ class HttpStreamPool::Job
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
       service_endpoint_request_;
   bool service_endpoint_request_finished_ = false;
+
+  // Set to true when `this` cannot handle further requests. Used to ensure that
+  // `this` doesn't accept further requests while notifying the failure to the
+  // existing requests.
+  bool is_failing_ = false;
 
   NetErrorDetails net_error_details_;
   ResolveErrorInfo resolve_error_info_;
