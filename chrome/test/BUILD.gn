@@ -4683,8 +4683,6 @@ if (!is_android) {
         "../browser/ui/ash/back_gesture_browsertest.cc",
         "../browser/ui/ash/chrome_new_window_client_browsertest.cc",
         "../browser/ui/ash/clipboard_history_browsertest.cc",
-        "../browser/ui/ash/download_status/holding_space_display_client_browsertest.cc",
-        "../browser/ui/ash/download_status/notification_display_client_browsertest.cc",
         "../browser/ui/ash/event_latency_metrics_browsertest.cc",
         "../browser/ui/ash/faster_split_screen_browsertest.cc",
         "../browser/ui/ash/feature_discovery_duration_reporter_browsertest.cc",
@@ -5168,6 +5166,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/capture_mode:browser_tests",
         "//chrome/browser/ui/ash/desks:browser_tests",
         "//chrome/browser/ui/ash/device_scheduled_reboot:browser_tests",
+        "//chrome/browser/ui/ash/download_status:browser_tests",
         "//chrome/browser/ui/ash/holding_space:browser_tests",
       ]
     }

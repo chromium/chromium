@@ -2343,16 +2343,6 @@ static_library("ui") {
       "ash/auth/cryptohome_pin_engine.h",
       "ash/auth/legacy_fingerprint_engine.cc",
       "ash/auth/legacy_fingerprint_engine.h",
-      "ash/download_status/display_client.cc",
-      "ash/download_status/display_client.h",
-      "ash/download_status/display_manager.cc",
-      "ash/download_status/display_manager.h",
-      "ash/download_status/display_metadata.cc",
-      "ash/download_status/display_metadata.h",
-      "ash/download_status/holding_space_display_client.cc",
-      "ash/download_status/holding_space_display_client.h",
-      "ash/download_status/notification_display_client.cc",
-      "ash/download_status/notification_display_client.h",
       "ash/focus_mode/chrome_focus_mode_delegate.cc",
       "ash/focus_mode/chrome_focus_mode_delegate.h",
       "ash/game_dashboard/chrome_game_dashboard_delegate.cc",
@@ -3607,6 +3597,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/capture_mode",
       "//chrome/browser/ui/ash/desks",
       "//chrome/browser/ui/ash/device_scheduled_reboot",
+      "//chrome/browser/ui/ash/download_status",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -3983,6 +3974,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/capture_mode",
       "//chrome/browser/ui/ash/desks",
       "//chrome/browser/ui/ash/device_scheduled_reboot",
+      "//chrome/browser/ui/ash/download_status",
     ]
 
     if (is_chrome_branded) {
@@ -7207,8 +7199,6 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "ash/download_status/display_test_util.cc",
-      "ash/download_status/display_test_util.h",
       "ash/shelf/chrome_shelf_controller_test_util.cc",
       "ash/shelf/chrome_shelf_controller_test_util.h",
       "webui/ash/settings/test_support/fake_hierarchy.cc",
