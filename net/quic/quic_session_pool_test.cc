@@ -1745,9 +1745,12 @@ TEST_P(QuicSessionPoolTest, MaxOpenStream) {
   int packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
-  socket_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                        packet_num++, 50,
-                                        /*unidirectional=*/false));
+  socket_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num++)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
 
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     socket_data.AddWrite(SYNCHRONOUS,

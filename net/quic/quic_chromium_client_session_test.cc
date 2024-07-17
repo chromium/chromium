@@ -613,13 +613,19 @@ TEST_P(QuicChromiumClientSessionTest, AsyncStreamRequest) {
   // MockCryptoClientStream::SetConfigNegotiated() so when the 51st stream is
   // requested, a STREAMS_BLOCKED will be sent, indicating that it's blocked
   // at the limit of 50.
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      packet_num++, 50,
-                                      /*unidirectional=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num++)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
   // Similarly, requesting the 52nd stream will also send a STREAMS_BLOCKED.
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      packet_num++, 50,
-                                      /*unidirectional=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num++)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
   quic_data.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeRstPacket(packet_num++,
@@ -719,12 +725,18 @@ TEST_P(QuicChromiumClientSessionTest, ReadAfterConnectionClose) {
   // MockCryptoClientStream::SetConfigNegotiated() so when the 51st stream is
   // requested, a STREAMS_BLOCKED will be sent, indicating that it's blocked
   // at the limit of 50.
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      2, 50,
-                                      /*unidirectional=*/false));
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      3, 50,
-                                      /*unidirectional=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(3)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   // This packet will be read after connection is closed.
   quic_data.AddRead(
@@ -783,12 +795,18 @@ TEST_P(QuicChromiumClientSessionTest, ClosedWithAsyncStreamRequest) {
   // MockCryptoClientStream::SetConfigNegotiated() so when the 51st stream is
   // requested, a STREAMS_BLOCKED will be sent, indicating that it's blocked
   // at the limit of 50.
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      2, 50,
-                                      /*unidirectional=*/false));
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      3, 50,
-                                      /*unidirectional=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(3)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -843,9 +861,12 @@ TEST_P(QuicChromiumClientSessionTest, CancelPendingStreamRequest) {
   // The open stream limit is set to 50 by
   // MockCryptoClientStream::SetConfigNegotiated() so when the 51st stream is
   // requested, a STREAMS_BLOCKED will be sent.
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      2, 50,
-                                      /*unidirectional=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
   // This node receives the RST_STREAM+STOP_SENDING, it responds
   // with only a RST_STREAM.
   quic_data.AddWrite(SYNCHRONOUS,
@@ -980,9 +1001,12 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionCloseWithPendingStreamRequest) {
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      packet_num++, 50,
-                                      /*unidirectional=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num++)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(
       ASYNC, server_maker_.MakeConnectionClosePacket(
@@ -1029,18 +1053,24 @@ TEST_P(QuicChromiumClientSessionTest, MaxNumStreams) {
   // Initial configuration is 50 dynamic streams. Taking into account
   // the static stream (headers), expect to block on when hitting the limit
   // of 50 streams
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      2, 50,
-                                      /*unidirectional=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.MakeRstPacket(
                          3, GetNthClientInitiatedBidirectionalStreamId(0),
                          quic::QUIC_RST_ACKNOWLEDGEMENT));
   // For the second CreateOutgoingStream that fails because of hitting the
   // stream count limit.
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      4, 50,
-                                      /*unidirectional=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(4)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
   quic_data.AddRead(
       ASYNC, server_maker_.MakeMaxStreamsPacket(1, 50 + 2,
                                                 /*unidirectional=*/false));
@@ -1137,9 +1167,12 @@ TEST_P(QuicChromiumClientSessionTest, ClosePendingStream) {
 TEST_P(QuicChromiumClientSessionTest, MaxNumStreamsViaRequest) {
   MockQuicData quic_data(version_);
   quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
-  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                      2, 50,
-                                      /*unidirectional=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(2)
+          .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
+                                  /*unidirectional=*/false)
+          .Build());
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.MakeRstPacket(
                          3, GetNthClientInitiatedBidirectionalStreamId(0),

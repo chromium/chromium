@@ -1410,9 +1410,12 @@ TEST_P(WebSocketQuicStreamAdapterTest, AsyncAdapterCreation) {
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructSettingsPacket(packet_number++));
 
-  mock_quic_data_.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                            packet_number++, kMaxOpenStreams,
-                                            /* unidirectional = */ false));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                       .AddStreamsBlockedFrame(/*control_frame_id=*/1,
+                                               /*stream_count=*/kMaxOpenStreams,
+                                               /* unidirectional = */ false)
+                       .Build());
 
   mock_quic_data_.AddRead(
       ASYNC, server_maker_.MakeMaxStreamsPacket(1, kMaxOpenStreams + 2,

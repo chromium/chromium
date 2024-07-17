@@ -96,11 +96,6 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::QuicReceivedPacket> MakeDummyCHLOPacket(
       uint64_t packet_number);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeStreamsBlockedPacket(
-      uint64_t packet_number,
-      quic::QuicStreamCount stream_count,
-      bool unidirectional);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeMaxStreamsPacket(
       uint64_t packet_number,
       quic::QuicStreamCount stream_count,

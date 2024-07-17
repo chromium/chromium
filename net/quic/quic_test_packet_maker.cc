@@ -184,16 +184,6 @@ QuicTestPacketMaker::MakeDummyCHLOPacket(uint64_t packet_number) {
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeStreamsBlockedPacket(
-    uint64_t packet_number,
-    quic::QuicStreamCount stream_count,
-    bool unidirectional) {
-  return Packet(packet_number)
-      .AddStreamsBlockedFrame(1, stream_count, unidirectional)
-      .Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeMaxStreamsPacket(uint64_t packet_number,
                                           quic::QuicStreamCount stream_count,
                                           bool unidirectional) {
