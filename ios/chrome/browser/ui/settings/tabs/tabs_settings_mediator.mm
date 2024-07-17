@@ -10,35 +10,17 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "components/sync/service/sync_service.h"
-#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_navigation_commands.h"
 
-namespace {
-
-bool IsTabSyncEnabled(syncer::SyncService* service) {
-  return service->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kTabs);
-}
-
-}  // namespace
-
-@interface TabsSettingsMediator () <PrefObserverDelegate,
-                                    SyncObserverModelBridge>
+@interface TabsSettingsMediator () <PrefObserverDelegate>
 @end
 
 @implementation TabsSettingsMediator {
   // Preference service from the application context.
   raw_ptr<PrefService> _prefs;
-  // Sync service.
-  raw_ptr<syncer::SyncService> _syncService;
-  // Observer for changes to the sync state.
-  std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
@@ -48,21 +30,16 @@ bool IsTabSyncEnabled(syncer::SyncService* service) {
 }
 
 - (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
-                                 syncService:(syncer::SyncService*)syncService
                                     consumer:
                                         (id<TabsSettingsConsumer>)consumer {
   self = [super init];
   if (self) {
     CHECK(localPrefService);
-    CHECK(syncService);
     CHECK(consumer);
     _prefs = localPrefService;
-    _syncService = syncService;
     _consumer = consumer;
     _prefChangeRegistrar.Init(_prefs);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
-    _syncObserverBridge =
-        std::make_unique<SyncObserverBridge>(self, _syncService);
     if (IsInactiveTabsAvailable()) {
       _prefObserverBridge->ObserveChangesForPreference(
           prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
@@ -74,13 +51,6 @@ bool IsTabSyncEnabled(syncer::SyncService* service) {
                                  : InactiveTabsTimeThreshold().InDays();
       [_consumer setInactiveTabsTimeThreshold:currentThreshold];
     }
-
-    if (IsTabPickupEnabled()) {
-      _prefObserverBridge->ObserveChangesForPreference(prefs::kTabPickupEnabled,
-                                                       &_prefChangeRegistrar);
-      [_consumer setTabPickupEnabled:!IsTabPickupDisabledByUser() &&
-                                     IsTabSyncEnabled(_syncService)];
-    }
   }
   return self;
 }
@@ -88,7 +58,6 @@ bool IsTabSyncEnabled(syncer::SyncService* service) {
 - (void)disconnect {
   _prefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
-  _syncObserverBridge.reset();
   _prefs = nil;
   _consumer = nil;
 }
@@ -101,19 +70,7 @@ bool IsTabSyncEnabled(syncer::SyncService* service) {
     [_consumer
         setInactiveTabsTimeThreshold:_prefs->GetInteger(
                                          prefs::kInactiveTabsTimeThreshold)];
-  } else if (preferenceName == prefs::kTabPickupEnabled) {
-    CHECK(IsTabPickupEnabled());
-    [_consumer
-        setTabPickupEnabled:_prefs->GetBoolean(prefs::kTabPickupEnabled) &&
-                            IsTabSyncEnabled(_syncService)];
   }
-}
-
-#pragma mark - SyncObserverModelBridge
-
-- (void)onSyncStateChanged {
-  [_consumer setTabPickupEnabled:_prefs->GetBoolean(prefs::kTabPickupEnabled) &&
-                                 IsTabSyncEnabled(_syncService)];
 }
 
 #pragma mark - TabsSettingsTableViewControllerDelegate
@@ -122,12 +79,6 @@ bool IsTabSyncEnabled(syncer::SyncService* service) {
     (TabsSettingsTableViewController*)tabsSettingsTableViewController {
   base::RecordAction(base::UserMetricsAction("Settings.Tabs.InactiveTabs"));
   [self.handler showInactiveTabsSettings];
-}
-
-- (void)tabsSettingsTableViewControllerDidSelectTabPickupSettings:
-    (TabsSettingsTableViewController*)tabsSettingsTableViewController {
-  base::RecordAction(base::UserMetricsAction("Settings.Tabs.TabPickup"));
-  [self.handler showTabPickupSettings];
 }
 
 @end

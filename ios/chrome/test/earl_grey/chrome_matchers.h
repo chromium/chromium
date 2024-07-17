@@ -346,10 +346,6 @@ id<GREYMatcher> ManageSyncSettingsButton();
 // screen.
 id<GREYMatcher> InactiveTabsSettingsButton();
 
-// Returns a matcher for the Tab Pickup Settings button on the Tabs Settings
-// screen.
-id<GREYMatcher> TabPickupSettingsButton();
-
 // Returns a matcher for the Tabs Settings button on the main Settings screen.
 id<GREYMatcher> TabsSettingsButton();
 

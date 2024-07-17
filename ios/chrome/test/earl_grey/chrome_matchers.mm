@@ -427,10 +427,6 @@ id<GREYMatcher> InactiveTabsSettingsButton() {
   return [ChromeMatchersAppInterface inactiveTabsSettingsButton];
 }
 
-id<GREYMatcher> TabPickupSettingsButton() {
-  return [ChromeMatchersAppInterface tabPickupSettingsButton];
-}
-
 id<GREYMatcher> TabsSettingsButton() {
   return [ChromeMatchersAppInterface tabsSettingsButton];
 }

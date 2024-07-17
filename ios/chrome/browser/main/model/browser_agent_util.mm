@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_parenting_browser_agent.h"
-#import "ios/chrome/browser/tabs/model/tab_pickup/tab_pickup_browser_agent.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_center_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -73,10 +72,6 @@ void AttachBrowserAgents(Browser* browser) {
   }
 
   SnapshotBrowserAgent::CreateForBrowser(browser);
-
-  if (!browser_is_off_record && !browser_is_inactive) {
-    TabPickupBrowserAgent::CreateForBrowser(browser);
-  }
 
   if (IsWebChannelsEnabled() && !browser_is_off_record) {
     FollowBrowserAgent::CreateForBrowser(browser);

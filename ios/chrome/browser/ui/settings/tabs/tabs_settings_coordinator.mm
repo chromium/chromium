@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/tabs/tab_pickup/tab_pickup_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller.h"
@@ -23,8 +22,6 @@
   TabsSettingsTableViewController* _viewController;
   // Coordinator for the inactive tabs settings.
   InactiveTabsSettingsCoordinator* _inactiveTabsSettingsCoordinator;
-  // Coordinator for the tab pickup settings.
-  TabPickupSettingsCoordinator* _tabPickupSettingsCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -43,8 +40,6 @@
   _viewController = [[TabsSettingsTableViewController alloc] init];
   _mediator = [[TabsSettingsMediator alloc]
       initWithUserLocalPrefService:GetApplicationContext()->GetLocalState()
-                       syncService:SyncServiceFactory::GetForBrowserState(
-                                       self.browser->GetBrowserState())
                           consumer:_viewController];
 
   _viewController.delegate = _mediator;
@@ -73,13 +68,6 @@
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser];
   [_inactiveTabsSettingsCoordinator start];
-}
-
-- (void)showTabPickupSettings {
-  _tabPickupSettingsCoordinator = [[TabPickupSettingsCoordinator alloc]
-      initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser];
-  [_tabPickupSettingsCoordinator start];
 }
 
 @end

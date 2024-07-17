@@ -370,29 +370,6 @@ void MigrateIntegerPref(std::string_view pref_name,
   source_pref_service->ClearPref(pref_name);
 }
 
-// Migrates a time pref from source to target PrefService.
-void MigrateTimePref(std::string_view pref_name,
-                     PrefService* target_pref_service,
-                     PrefService* source_pref_service) {
-  const PrefService::Preference* target_pref =
-      target_pref_service->FindPreference(pref_name);
-  CHECK(target_pref);
-
-  const PrefService::Preference* source_pref =
-      source_pref_service->FindPreference(pref_name);
-  CHECK(source_pref);
-
-  // Only migrate the pref if 1. it is not set in target,
-  // 2. it is not the default in source.
-  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
-    target_pref_service->SetTime(pref_name,
-                                 source_pref_service->GetTime(pref_name));
-  }
-
-  // In all cases, clear the pref from source.
-  source_pref_service->ClearPref(pref_name);
-}
-
 // Migrates a string pref from source to target PrefService.
 void MigrateStringPref(std::string_view pref_name,
                        PrefService* target_pref_service,
@@ -432,15 +409,6 @@ void MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
     PrefService* profile_pref_service) {
   MigrateStringPref(pref_name, profile_pref_service,
                     GetApplicationContext()->GetLocalState());
-}
-
-// Helper function migrating the `time` preference from LocalState prefs to
-// BrowserState prefs.
-void MigrateTimePrefFromLocalStatePrefsToProfilePrefs(
-    std::string_view pref_name,
-    PrefService* profile_pref_service) {
-  MigrateTimePref(pref_name, profile_pref_service,
-                  GetApplicationContext()->GetLocalState());
 }
 
 // Helper function migrating the `int` preference from LocalState prefs to
@@ -1061,6 +1029,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 02/2024.
   prefs->ClearPref(kIosPromosManagerImpressions);
+
+  // Added 07/2024.
+  prefs->ClearPref(prefs::kTabPickupEnabled);
+  prefs->ClearPref(prefs::kTabPickupLastDisplayedTime);
+  prefs->ClearPref(prefs::kTabPickupLastDisplayedURL);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1192,14 +1165,6 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
       tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref, prefs);
 
   // Added 02/2024.
-  MigrateTimePrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kTabPickupLastDisplayedTime, prefs);
-
-  // Added 02/2024.
-  MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kTabPickupLastDisplayedURL, prefs);
-
-  // Added 02/2024.
   MigrateListPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosLatestMostVisitedSites, prefs);
 
@@ -1263,6 +1228,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // BrowserState pref needs to be updated.
   MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosSafetyCheckManagerInsecurePasswordCounts, prefs);
+
+  // Added 07/2024.
+  prefs->ClearPref(prefs::kTabPickupLastDisplayedTime);
+  prefs->ClearPref(prefs::kTabPickupLastDisplayedURL);
 }
 
 void MigrateObsoleteUserDefault() {

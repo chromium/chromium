@@ -25119,6 +25119,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabPickupSettingsBack">
+  <obsolete>Deprecated as of 07/2024</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <description>
@@ -25128,6 +25129,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabPickupSettingsClose">
+  <obsolete>Deprecated as of 07/2024</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <description>
@@ -34030,6 +34032,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.Tabs.TabPickup">
+  <obsolete>Deprecated as of 07/2024</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@chromium.org</owner>
   <description>

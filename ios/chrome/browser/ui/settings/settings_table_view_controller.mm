@@ -97,7 +97,6 @@
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -556,7 +555,7 @@ struct EnhancedSafeBrowsingActivePromoData
       PhotosServiceFactory::GetForBrowserState(_browserState);
   bool shouldShowDownloadsSettings =
       photosService && photosService->IsSupported();
-  if (IsInactiveTabsAvailable() || IsTabPickupEnabled()) {
+  if (IsInactiveTabsAvailable()) {
     [model addItem:[self tabsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 

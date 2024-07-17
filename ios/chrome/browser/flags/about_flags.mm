@@ -92,7 +92,6 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 #import "ios/chrome/browser/ui/lens/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -439,26 +438,6 @@ const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
      std::size(kTabInactivityThresholdThreeWeeks), nullptr},
     {"One minute [Demo]", kTabInactivityThresholdOneMinuteDemo,
      std::size(kTabInactivityThresholdOneMinuteDemo), nullptr},
-};
-
-const FeatureEntry::FeatureParam kTabPickupThresholdTenMinutes[] = {
-    {kTabPickupThresholdParameterName, kTabPickupThresholdTenMinutesParam}};
-const FeatureEntry::FeatureParam kTabPickupThresholdOneHour[] = {
-    {kTabPickupThresholdParameterName, kTabPickupThresholdOneHourParam}};
-const FeatureEntry::FeatureParam kTabPickupThresholdTwoHours[] = {
-    {kTabPickupThresholdParameterName, kTabPickupThresholdTwoHoursParam}};
-const FeatureEntry::FeatureParam kTabPickupNoFavicon[] = {
-    {kTabPickupThresholdParameterName, kTabPickupNoFaviconParam}};
-
-const FeatureEntry::FeatureVariation kTabPickupThresholdVariations[] = {
-    {"Ten Minutes", kTabPickupThresholdTenMinutes,
-     std::size(kTabPickupThresholdTenMinutes), nullptr},
-    {"One Hour", kTabPickupThresholdOneHour,
-     std::size(kTabPickupThresholdOneHour), nullptr},
-    {"Two Hours", kTabPickupThresholdTwoHours,
-     std::size(kTabPickupThresholdTwoHours), nullptr},
-    {"No favicon", kTabPickupNoFavicon, std::size(kTabPickupNoFavicon),
-     nullptr},
 };
 
 const FeatureEntry::FeatureParam kTabResumptionMostRecentTabOnly[] = {
@@ -1532,11 +1511,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSpotlightNeverRetainIndexName,
      flag_descriptions::kSpotlightNeverRetainIndexDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSpotlightNeverRetainIndex)},
-    {"tab-pickup-threshold", flag_descriptions::kTabPickupThresholdName,
-     flag_descriptions::kTabPickupThresholdDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabPickupThreshold,
-                                    kTabPickupThresholdVariations,
-                                    "TabPickupThreshold")},
     {"ios-iph-for-safari-switcher",
      flag_descriptions::kIPHForSafariSwitcherName,
      flag_descriptions::kIPHForSafariSwitcherDescription, flags_ui::kOsIos,
@@ -1556,9 +1530,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxDefaultSetting,
                                     kBottomOmniboxDefaultSettingVariations,
                                     "BottomOmniboxDefaultSetting")},
-    {"tab-pickup-minimum-delay", flag_descriptions::kTabPickupMinimumDelayName,
-     flag_descriptions::kTabPickupMinimumDelayDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabPickupMinimumDelay)},
     {"ios-password-auth-on-entry-v2",
      flag_descriptions::kIOSPasswordAuthOnEntryV2Name,
      flag_descriptions::kIOSPasswordAuthOnEntryV2Description, flags_ui::kOsIos,

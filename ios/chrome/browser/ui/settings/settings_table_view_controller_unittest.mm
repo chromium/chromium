@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -517,10 +516,9 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
   CheckController();
 
   // The section to check for depends on some other features.
-  SettingsSectionIdentifier section =
-      IsInactiveTabsAvailable() || IsTabPickupEnabled()
-          ? SettingsSectionIdentifierInfo
-          : SettingsSectionIdentifierAdvanced;
+  SettingsSectionIdentifier section = IsInactiveTabsAvailable()
+                                          ? SettingsSectionIdentifierInfo
+                                          : SettingsSectionIdentifierAdvanced;
 
   EXPECT_TRUE([controller().tableViewModel
       hasItemForItemType:SettingsItemTypeDownloadsSettings

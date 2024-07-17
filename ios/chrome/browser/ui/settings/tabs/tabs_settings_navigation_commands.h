@@ -11,9 +11,6 @@
 // Shows inactive tabs settings screen.
 - (void)showInactiveTabsSettings;
 
-// Shows the tab pickup settings screen.
-- (void)showTabPickupSettings;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_TABS_TABS_SETTINGS_NAVIGATION_COMMANDS_H_

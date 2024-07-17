@@ -11,9 +11,6 @@
 // Called when the value of prefs::kInactiveTabsTimeThreshold changed.
 - (void)setInactiveTabsTimeThreshold:(int)threshold;
 
-// Called when the value of prefs::kTabPickupEnabled changed.
-- (void)setTabPickupEnabled:(bool)enabled;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_TABS_TABS_SETTINGS_CONSUMER_H_

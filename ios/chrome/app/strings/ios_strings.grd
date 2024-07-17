@@ -2830,12 +2830,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OPTIONS_REPORT_AN_ISSUE" desc="Title for the option on Settings page to report an issue. [Length: 20em] [iOS only]">
         Report an Issue
       </message>
-      <message name="IDS_IOS_OPTIONS_TAB_PICKUP" desc="Title for opening the setting for displaying tab suggestions from other devices. (Title case)">
-        Show Tab Suggestions from Other Devices
-      </message>
-      <message name="IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_TITLE" desc="Title for the screen setting displaying tab suggestion settings. (Title case)">
-        Tab Suggestions
-      </message>
       <message name="IDS_IOS_OPTIONS_WEB_SERVICES_LABEL" desc="Title for group of web services items in Privacy settings table, including Show Suggestions, Preload Webpages, and Send Usage Data. [Length: 10em] [iOS only]">
         Web Services
       </message>
@@ -5253,12 +5247,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         {count, plural,
         =1 {1 Tab}
         other {{count} Tabs}}
-      </message>
-      <message name="IDS_IOS_TAB_PICKUP_BANNER_BUTTON" desc="Infobar button to open a previously opened tab from another device.">
-        Open
-      </message>
-      <message name="IDS_IOS_TAB_PICKUP_BANNER_TITLE" desc="Infobar title to open a previously opened tab from another device.">
-        Last Tab Used on <ph name="SOURCE_DEVICE">$1<ex>iPad</ex></ph>
       </message>
       <message name="IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION" desc="Description for the long-press context menu of the module that presents the last opened tab, on the new tab page.">
         Hide "Continue with This Tab"

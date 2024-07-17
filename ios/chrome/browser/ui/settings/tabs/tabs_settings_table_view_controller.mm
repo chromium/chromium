@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
@@ -25,13 +24,11 @@ namespace {
 // List of sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierInactiveTabs = kSectionIdentifierEnumZero,
-  SectionIdentifierTabPickup,
 };
 
 // List of item types.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeInactiveTabs = kItemTypeEnumZero,
-  ItemTypeTabPickup,
 };
 
 }  // namespace
@@ -39,16 +36,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @implementation TabsSettingsTableViewController {
   // Updatable inactive tabs item.
   TableViewDetailIconItem* _inactiveTabsDetailItem;
-  // Updatable tab pickup item.
-  TableViewDetailIconItem* _tabPickupDetailItem;
   // Current inactive tab days threshold.
   int _inactiveDaysThreshold;
-  // State of the tab pickup feature.
-  bool _tabPickupEnabled;
 }
 
 - (instancetype)init {
-  CHECK(IsInactiveTabsAvailable() || IsTabPickupEnabled());
+  CHECK(IsInactiveTabsAvailable());
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_TABS_MANAGEMENT_SETTINGS);
@@ -77,13 +70,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [model addItem:[self moveInactiveTabsItem]
         toSectionWithIdentifier:SectionIdentifierInactiveTabs];
     [self updateInactiveTabsItemWithDaysThreshold:_inactiveDaysThreshold];
-  }
-
-  if (IsTabPickupEnabled()) {
-    [model addSectionWithIdentifier:SectionIdentifierTabPickup];
-    [model addItem:[self tabPickupItem]
-        toSectionWithIdentifier:SectionIdentifierTabPickup];
-    [self updateTabPickupState:_tabPickupEnabled];
   }
 }
 
@@ -118,10 +104,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateInactiveTabsItemWithDaysThreshold:threshold];
 }
 
-- (void)setTabPickupEnabled:(bool)enabled {
-  [self updateTabPickupState:enabled];
-}
-
 #pragma mark - Private
 
 // Called when a row is selected at `indexPath`.
@@ -132,10 +114,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeInactiveTabs:
       [self.delegate
           tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:self];
-      break;
-    case ItemTypeTabPickup:
-      [self.delegate
-          tabsSettingsTableViewControllerDidSelectTabPickupSettings:self];
       break;
   }
 }
@@ -155,20 +133,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _inactiveTabsDetailItem;
 }
 
-// Returns a newly created TableViewDetailIconItem for the tab pickup
-// settings menu.
-- (TableViewDetailIconItem*)tabPickupItem {
-  _tabPickupDetailItem =
-      [[TableViewDetailIconItem alloc] initWithType:ItemTypeTabPickup];
-  _tabPickupDetailItem.text =
-      l10n_util::GetNSString(IDS_IOS_OPTIONS_TAB_PICKUP);
-  _tabPickupDetailItem.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  _tabPickupDetailItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  _tabPickupDetailItem.accessibilityIdentifier = kSettingsTabPickupCellId;
-  return _tabPickupDetailItem;
-}
-
 // Updates the detail text for the Inactive tabs item.
 - (void)updateInactiveTabsItemWithDaysThreshold:(int)threshold {
   _inactiveDaysThreshold = threshold;
@@ -185,18 +149,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
             _inactiveDaysThreshold));
   }
   [self reconfigureCellsForItems:@[ _inactiveTabsDetailItem ]];
-}
-
-// Updates the detail text for the tab pickup item.
-- (void)updateTabPickupState:(bool)enabled {
-  _tabPickupEnabled = enabled;
-  if (!_tabPickupDetailItem) {
-    return;
-  }
-
-  _tabPickupDetailItem.detailText = l10n_util::GetNSString(
-      _tabPickupEnabled ? IDS_IOS_SETTING_ON : IDS_IOS_SETTING_OFF);
-  [self reconfigureCellsForItems:@[ _tabPickupDetailItem ]];
 }
 
 @end

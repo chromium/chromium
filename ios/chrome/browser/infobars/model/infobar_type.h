@@ -27,8 +27,7 @@ enum class InfobarType {
   kInfobarTypeTailoredSecurityService = 8,
   // Message Infobar for Sync Error.
   kInfobarTypeSyncError = 9,
-  // Message Infobar for Tab Pickup.
-  kInfobarTypeTabPickup = 10,
+  // 10 was used for a Tab Pickup, do not use.
   // Message Infobar for Parcel Tracking.
   kInfobarTypeParcelTracking = 11,
   // Message Infobar for Enhanced Safe Browsing.
