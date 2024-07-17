@@ -15,6 +15,7 @@
 #include "ash/accessibility/accessibility_notification_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
+#include "ash/accessibility/disable_trackpad_event_rewriter.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
@@ -184,6 +185,8 @@ const FeatureData kFeatures[] = {
     {FeatureType::kFaceGaze, prefs::kAccessibilityFaceGazeEnabled, nullptr,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_FACEGAZE,
      /*toggleable_in_quicksettings=*/true},
+    {FeatureType::kDisableTrackpad, prefs::kAccessibilityDisableTrackpadEnabled,
+     nullptr, 0, /*toggleable_in_quicksettings=*/false},
 };
 
 // An array describing the confirmation dialogs for the features which have
@@ -254,6 +257,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityDictationEnabled,
     prefs::kAccessibilityDictationLocale,
     prefs::kAccessibilityDictationLocaleOfflineNudge,
+    prefs::kAccessibilityDisableTrackpadEnabled,
     prefs::kAccessibilityFocusHighlightEnabled,
     prefs::kAccessibilityHighContrastEnabled,
     prefs::kAccessibilityLargeCursorEnabled,
@@ -945,6 +949,9 @@ void AccessibilityController::Feature::LogDurationMetric() {
     case FeatureType::kDictation:
       feature_duration_metric += "CrosDictation";
       break;
+    case FeatureType::kDisableTrackpad:
+      feature_duration_metric += "CrosDisableTrackpad";
+      break;
     case FeatureType::kDockedMagnifier:
       feature_duration_metric += "CrosDockedMagnifier";
       break;
@@ -1156,6 +1163,8 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityFaceGazeEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityDisableTrackpadEnabled,
+                                false);
 
   // Not syncable because it might change depending on application locale,
   // user settings, and because different languages can cause speech recognition
@@ -1541,6 +1550,11 @@ AccessibilityController::Feature& AccessibilityController::dictation() const {
   return GetFeature(FeatureType::kDictation);
 }
 
+AccessibilityController::Feature& AccessibilityController::disable_trackpad()
+    const {
+  return GetFeature(FeatureType::kDisableTrackpad);
+}
+
 AccessibilityController::Feature& AccessibilityController::color_correction()
     const {
   return GetFeature(FeatureType::kColorCorrection);
@@ -1868,6 +1882,11 @@ bool AccessibilityController::IsEnterpriseIconVisibleForSwitchAccess() {
 void AccessibilityController::SetAccessibilityEventRewriter(
     AccessibilityEventRewriter* accessibility_event_rewriter) {
   accessibility_event_rewriter_ = accessibility_event_rewriter;
+}
+
+void AccessibilityController::SetDisableTrackpadEventRewriter(
+    DisableTrackpadEventRewriter* rewriter) {
+  disable_trackpad_event_rewriter_ = rewriter;
 }
 
 void AccessibilityController::HideSwitchAccessBackButton() {
@@ -2333,6 +2352,11 @@ void AccessibilityController::OnSessionStateChanged(
 AccessibilityEventRewriter*
 AccessibilityController::GetAccessibilityEventRewriterForTest() {
   return accessibility_event_rewriter_;
+}
+
+DisableTrackpadEventRewriter*
+AccessibilityController::GetDisableTrackpadEventRewriterForTest() {
+  return disable_trackpad_event_rewriter_;
 }
 
 void AccessibilityController::DisableAutoClickConfirmationDialogForTest() {
@@ -3258,6 +3282,14 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       } else {
         dictation_bubble_controller_.reset();
       }
+      break;
+    case FeatureType::kDisableTrackpad:
+      if (!::features::IsAccessibilityDisableTrackpadEnabled() ||
+          !disable_trackpad_event_rewriter_) {
+        return;
+      }
+
+      disable_trackpad_event_rewriter_->SetEnabled(enabled);
       break;
     case FeatureType::kFloatingMenu:
       if (enabled && always_show_floating_menu_when_enabled_) {

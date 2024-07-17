@@ -61,6 +61,7 @@ class DictationBubbleController;
 enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
 enum class DictationNotificationType;
+class DisableTrackpadEventRewriter;
 class FloatingAccessibilityController;
 class PointScanController;
 class ScopedBacklightsForcedOff;
@@ -234,15 +235,14 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   // Getters for the corresponding features.
   Feature& autoclick() const;
   Feature& caret_highlight() const;
+  Feature& color_correction() const;
+  Feature& cursor_color() const;
   Feature& cursor_highlight() const;
   Feature& dictation() const;
-  Feature& color_correction() const;
+  Feature& disable_trackpad() const;
   Feature& face_gaze() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
-  FeatureWithDialog& fullscreen_magnifier() const;
-  FeatureWithDialog& docked_magnifier() const;
-  FeatureWithDialog& high_contrast() const;
   Feature& large_cursor() const;
   Feature& live_caption() const;
   Feature& mono_audio() const;
@@ -253,7 +253,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   Feature& sticky_keys() const;
   Feature& switch_access() const;
   Feature& virtual_keyboard() const;
-  Feature& cursor_color() const;
+  FeatureWithDialog& docked_magnifier() const;
+  FeatureWithDialog& fullscreen_magnifier() const;
+  FeatureWithDialog& high_contrast() const;
 
   void SetDisplayRotationAcceleratorDialogBeenAccepted();
   bool HasDisplayRotationAcceleratorDialogBeenAccepted() const;
@@ -345,6 +347,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   bool IsEnterpriseIconVisibleForSwitchAccess();
   void SetAccessibilityEventRewriter(
       AccessibilityEventRewriter* accessibility_event_rewriter);
+  void SetDisableTrackpadEventRewriter(DisableTrackpadEventRewriter* rewriter);
   bool IsPointScanEnabled();
 
   bool IsVirtualKeyboardSettingVisibleInTray();
@@ -605,6 +608,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   // Test helpers:
   AccessibilityEventRewriter* GetAccessibilityEventRewriterForTest();
+  DisableTrackpadEventRewriter* GetDisableTrackpadEventRewriterForTest();
   SwitchAccessMenuBubbleController* GetSwitchAccessBubbleControllerForTest() {
     return switch_access_bubble_controller_.get();
   }
@@ -748,6 +752,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   std::unique_ptr<SwitchAccessMenuBubbleController>
       switch_access_bubble_controller_;
   raw_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_ = nullptr;
+  raw_ptr<DisableTrackpadEventRewriter> disable_trackpad_event_rewriter_ =
+      nullptr;
   // Used in tests to disable the dialog shown when Auto Click is turned on.
   bool no_auto_click_confirmation_dialog_for_testing_ = false;
   bool no_switch_access_disable_confirmation_dialog_for_testing_ = false;

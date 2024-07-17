@@ -10,6 +10,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_observer.h"
+#include "ash/accessibility/disable_trackpad_event_rewriter.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
@@ -19,6 +20,7 @@
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -1792,6 +1794,20 @@ TEST_F(AccessibilityControllerTest, LogsDurationAtShutdown) {
   ExpectSessionDurationMetricCount("CrosLargeCursor", 1);
 }
 
+// Verifies that the DisableTrackpadEventRewriter isn't initialized, since the
+// feature flag is off in this test suite.
+TEST_F(AccessibilityControllerTest,
+       DisableTrackpadEventRewriterNotInitialized) {
+  // Initialize the EventRewriterController manually so that all EventRewriters
+  // get initialized.
+  EventRewriterController::Get()->Initialize(nullptr, nullptr);
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  // AccessibilityController shouldn't have a reference to the
+  // DisableTrackpadEventRewriter.
+  ASSERT_EQ(nullptr, controller->GetDisableTrackpadEventRewriterForTest());
+}
+
 namespace {
 
 enum class TestUserLoginType {
@@ -2135,6 +2151,58 @@ TEST_F(AccessibilityControllerSelectToSpeakKeyboardShortcutTest,
   // No dialog should be shown if Select to speak is disabled by a policy.
   ASSERT_EQ(nullptr, controller->GetConfirmationDialogForTest());
   ASSERT_FALSE(controller->select_to_speak().enabled());
+}
+
+class AccessibilityControllerDisableTrackpadTest : public AshTestBase {
+ protected:
+  AccessibilityControllerDisableTrackpadTest() = default;
+  AccessibilityControllerDisableTrackpadTest(
+      const AccessibilityControllerDisableTrackpadTest&) = delete;
+  AccessibilityControllerDisableTrackpadTest& operator=(
+      const AccessibilityControllerDisableTrackpadTest&) = delete;
+  ~AccessibilityControllerDisableTrackpadTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityDisableTrackpad);
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AccessibilityControllerDisableTrackpadTest,
+       PrefChangesEventRewriterEnabledState) {
+  // Initialize the EventRewriterController manually so that all EventRewriters
+  // get initialized.
+  EventRewriterController::Get()->Initialize(nullptr, nullptr);
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+
+  // Verify that the disable trackpad feature is off by default.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityDisableTrackpadEnabled));
+  ASSERT_FALSE(controller->disable_trackpad().enabled());
+
+  // AccessibilityController should have a reference to the
+  // DisableTrackpadEventRewriter and it should also be off by default.
+  auto* disable_trackpad_event_rewriter =
+      controller->GetDisableTrackpadEventRewriterForTest();
+  ASSERT_NE(nullptr, disable_trackpad_event_rewriter);
+  ASSERT_FALSE(disable_trackpad_event_rewriter->IsEnabled());
+
+  // Enabling the disable trackpad feature should enable the
+  // DisableTrackpadEventRewriter.
+  prefs->SetBoolean(prefs::kAccessibilityDisableTrackpadEnabled, true);
+  ASSERT_TRUE(controller->disable_trackpad().enabled());
+  ASSERT_TRUE(disable_trackpad_event_rewriter->IsEnabled());
+
+  // Disabling the feature should disable the event rewriter.
+  prefs->SetBoolean(prefs::kAccessibilityDisableTrackpadEnabled, false);
+  ASSERT_FALSE(controller->disable_trackpad().enabled());
+  ASSERT_FALSE(disable_trackpad_event_rewriter->IsEnabled());
 }
 
 }  // namespace ash

@@ -17,6 +17,7 @@ enum class A11yFeatureType {
   kCursorColor,
   kCursorHighlight,
   kDictation,
+  kDisableTrackpad,
   kDockedMagnifier,
   kFaceGaze,
   kFloatingMenu,

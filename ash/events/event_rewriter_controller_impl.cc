@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/accessibility/disable_trackpad_event_rewriter.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/mirror_window_controller.h"
@@ -19,6 +20,7 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/command_line.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
@@ -125,6 +127,15 @@ void EventRewriterControllerImpl::Initialize(
   accessibility_event_rewriter_ = accessibility_event_rewriter.get();
 
   // EventRewriters are notified in the order they are added.
+  if (::features::IsAccessibilityDisableTrackpadEnabled()) {
+    std::unique_ptr<DisableTrackpadEventRewriter>
+        disable_trackpad_event_rewriter =
+            std::make_unique<DisableTrackpadEventRewriter>();
+    disable_trackpad_event_rewriter_ = disable_trackpad_event_rewriter.get();
+    // The DisableTrackpadEventRewriter needs to be notified first, as it
+    // should stop all trackpad events from propagating further into the system.
+    AddEventRewriter(std::move(disable_trackpad_event_rewriter));
+  }
   if (features::IsPeripheralCustomizationEnabled() ||
       ::features::IsShortcutCustomizationEnabled()) {
     AddEventRewriter(std::move(peripheral_customization_event_rewriter));

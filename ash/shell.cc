@@ -810,6 +810,7 @@ Shell::~Shell() {
   // EventRewriterController directly, so it must be reset first to avoid
   // accessing invalid memory (see b/315127220).
   AccessibilityController::Get()->SetAccessibilityEventRewriter(nullptr);
+  AccessibilityController::Get()->SetDisableTrackpadEventRewriter(nullptr);
   event_rewriter_controller_.reset();
   keyboard_modifier_metrics_recorder_.reset();
   touchscreen_metrics_recorder_.reset();
