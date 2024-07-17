@@ -31,7 +31,6 @@
 
 namespace sql {
 class Statement;
-class StatementID;
 }  // namespace sql
 
 namespace content {
@@ -310,18 +309,6 @@ class CONTENT_EXPORT AttributionStorageSql {
       StoredSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  std::optional<base::Time> GetNextReportTime(sql::StatementID id,
-                                              const char* sql,
-                                              base::Time time)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  [[nodiscard]] bool AdjustOfflineReportTimes(sql::StatementID id,
-                                              const char* sql,
-                                              base::TimeDelta min_delay,
-                                              base::TimeDelta max_delay,
-                                              base::Time now)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns whether the database execution was successful.
