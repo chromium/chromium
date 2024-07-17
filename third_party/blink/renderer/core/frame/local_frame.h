@@ -924,10 +924,6 @@ class CORE_EXPORT LocalFrame final
     return *v8_local_compile_hints_producer_;
   }
 
-  // Gets the content settings associated with the current navigation commit.
-  // Can only be called while the frame is not detached.
-  const mojom::RendererContentSettingsPtr& GetContentSettings();
-
   // Returns whether images are allowed to load for the current frame. This is a
   // convenience method that checks both renderer content settings and frame
   // settings.

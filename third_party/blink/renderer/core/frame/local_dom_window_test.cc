@@ -343,4 +343,21 @@ TEST_F(LocalDOMWindowTest, StorageAccessApiStatus) {
             net::StorageAccessApiStatus::kAccessViaAPI);
 }
 
+TEST_F(LocalDOMWindowTest, CanExecuteScriptsDuringDetach) {
+  GetFrame().Loader().DetachDocument();
+  EXPECT_NE(GetFrame().DomWindow(), nullptr);
+
+  // When detach has started and FrameLoader::document_loader_ is nullptr, but
+  // the window hasn't been detached from its frame yet, CanExecuteScripts()
+  // should return false and not crash.
+  // This case is reachable when the only thing blocking a main frame's load
+  // event from firing is an iframe's load event, and that iframe is detached,
+  // thus unblocking the load event. If the detaching window is accessed inside
+  // a load event listener in that case, we may call CanExecuteScripts() in this
+  // partially-detached state.
+  // See crbug.com/350874762, crbug.com/41482536 and crbug.com/41484859.
+  EXPECT_FALSE(
+      GetFrame().DomWindow()->CanExecuteScripts(kAboutToExecuteScript));
+}
+
 }  // namespace blink

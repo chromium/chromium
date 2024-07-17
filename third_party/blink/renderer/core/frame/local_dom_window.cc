@@ -460,8 +460,9 @@ ResourceFetcher* LocalDOMWindow::Fetcher() {
 
 bool LocalDOMWindow::CanExecuteScripts(
     ReasonForCallingCanExecuteScripts reason) {
-  if (!GetFrame())
+  if (!GetFrame()) {
     return false;
+  }
 
   // Detached frames should not be attempting to execute script.
   DCHECK(!GetFrame()->IsDetached());
@@ -484,11 +485,7 @@ bool LocalDOMWindow::CanExecuteScripts(
     }
     return false;
   }
-
-  bool allow_script_renderer = GetFrame()->GetSettings()->GetScriptEnabled();
-  bool allow_script_content_setting =
-      GetFrame()->GetContentSettings()->allow_script;
-  bool script_enabled = allow_script_renderer && allow_script_content_setting;
+  bool script_enabled = GetFrame()->ScriptEnabled();
   if (!script_enabled && reason == kAboutToExecuteScript) {
     WebContentSettingsClient* settings_client =
         GetFrame()->GetContentSettingsClient();

@@ -2178,7 +2178,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
       return true;
     }
 
-    if (GetContentSettings()->allow_popup) {
+    if (loader_.GetDocumentLoader()->GetContentSettings()->allow_popup) {
       return true;
     }
     PrintNavigationErrorMessage(
@@ -4028,24 +4028,29 @@ bool LocalFrame::IsSameOrigin() {
   return security_origin->IsSameOriginWith(top_security_origin);
 }
 
-const mojom::RendererContentSettingsPtr& LocalFrame::GetContentSettings() {
-  DCHECK(!IsDetached());
-  return loader_.GetDocumentLoader()->GetContentSettings();
-}
-
 bool LocalFrame::ImagesEnabled() {
   DCHECK(!IsDetached());
-
+  // If this is called in the middle of detach, GetDocumentLoader() might
+  // already be nullptr.
+  if (!loader_.GetDocumentLoader()) {
+    return false;
+  }
   bool allow_image_renderer = GetSettings()->GetImagesEnabled();
-  bool allow_image_content_setting = GetContentSettings()->allow_image;
+  bool allow_image_content_setting =
+      loader_.GetDocumentLoader()->GetContentSettings()->allow_image;
   return allow_image_renderer && allow_image_content_setting;
 }
 
 bool LocalFrame::ScriptEnabled() {
   DCHECK(!IsDetached());
-
+  // If this is called in the middle of detach, GetDocumentLoader() might
+  // already be nullptr.
+  if (!loader_.GetDocumentLoader()) {
+    return false;
+  }
   bool allow_script_renderer = GetSettings()->GetScriptEnabled();
-  bool allow_script_content_setting = GetContentSettings()->allow_script;
+  bool allow_script_content_setting =
+      loader_.GetDocumentLoader()->GetContentSettings()->allow_script;
   return allow_script_renderer && allow_script_content_setting;
 }
 
