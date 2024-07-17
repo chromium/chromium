@@ -162,8 +162,6 @@ class GPU_EXPORT ClientSharedImage
     destruction_sync_token_ = sync_token;
   }
 
-  void MarkForDestruction() {}
-
   // Creates a ClientSharedImage that is not associated with any
   // SharedImageInterface for testing.
   static scoped_refptr<ClientSharedImage> CreateForTesting();
