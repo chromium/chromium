@@ -4687,7 +4687,6 @@ if (!is_android) {
         "../browser/ui/ash/faster_split_screen_browsertest.cc",
         "../browser/ui/ash/feature_discovery_duration_reporter_browsertest.cc",
         "../browser/ui/ash/float_controller_browsertest.cc",
-        "../browser/ui/ash/glanceables/glanceables_browsertest.cc",
         "../browser/ui/ash/global_media_controls/global_media_controls_cast_start_browsertest.cc",
         "../browser/ui/ash/google_one_offer_iph_tab_helper_browsertest.cc",
         "../browser/ui/ash/keyboard/keyboard_controller_browsertest.cc",
@@ -5167,6 +5166,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/device_scheduled_reboot:browser_tests",
         "//chrome/browser/ui/ash/download_status:browser_tests",
         "//chrome/browser/ui/ash/focus_mode:browser_tests",
+        "//chrome/browser/ui/ash/glanceables:browser_tests",
         "//chrome/browser/ui/ash/holding_space:browser_tests",
       ]
     }
@@ -8587,9 +8587,6 @@ test("unit_tests") {
       "../browser/ui/ash/accelerator_metadata_unittest.cc",
       "../browser/ui/ash/app_access_notifier_unittest.cc",
       "../browser/ui/ash/app_icon_color_cache_unittest.cc",
-      "../browser/ui/ash/glanceables/glanceables_classroom_client_impl_unittest.cc",
-      "../browser/ui/ash/glanceables/glanceables_keyed_service_factory_unittest.cc",
-      "../browser/ui/ash/glanceables/glanceables_keyed_service_unittest.cc",
       "../browser/ui/ash/global_media_controls/media_notification_provider_impl_unittest.cc",
       "../browser/ui/ash/holding_space/holding_space_keyed_service_unittest.cc",
       "../browser/ui/ash/ime_controller_client_impl_unittest.cc",
@@ -8896,6 +8893,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/calendar:unit_tests",
       "//chrome/browser/ui/ash/desks:unit_tests",
       "//chrome/browser/ui/ash/device_scheduled_reboot:unit_tests",
+      "//chrome/browser/ui/ash/glanceables:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]

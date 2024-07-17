@@ -5525,6 +5525,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/download_status",
       "//chrome/browser/ui/ash/focus_mode",
       "//chrome/browser/ui/ash/game_dashboard",
+      "//chrome/browser/ui/ash/glanceables",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -5857,6 +5858,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/download_status",
       "//chrome/browser/ui/ash/focus_mode",
       "//chrome/browser/ui/ash/game_dashboard",
+      "//chrome/browser/ui/ash/glanceables",
     ]
 
     if (is_chrome_branded) {
