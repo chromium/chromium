@@ -16,8 +16,6 @@ namespace {
 
 constexpr int kSuggestionAccessibilitySuffixId =
     IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX;
-constexpr int kSuggestionAccessibilityHintId =
-    IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST;
 }  // namespace
 
 class OmniboxAnswerActionTest : public testing::Test {
@@ -42,8 +40,7 @@ TEST_F(OmniboxAnswerActionTest, ActionHasLabelsFromEnhancement) {
   EXPECT_EQ(base::UTF16ToUTF8(labels.suggestion_contents), display_text);
   EXPECT_EQ(labels.accessibility_suffix,
             l10n_util::GetStringUTF16(kSuggestionAccessibilitySuffixId));
-  EXPECT_EQ(labels.accessibility_hint,
-            l10n_util::GetStringUTF16(kSuggestionAccessibilityHintId));
+  EXPECT_EQ(base::UTF16ToUTF8(labels.accessibility_hint), display_text);
 }
 
 TEST_F(OmniboxAnswerActionTest, ConvertAction) {

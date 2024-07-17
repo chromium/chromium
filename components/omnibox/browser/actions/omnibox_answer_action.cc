@@ -51,14 +51,13 @@ OmniboxAnswerAction::OmniboxAnswerAction(
     omnibox::SuggestionEnhancement enhancement,
     TemplateURLRef::SearchTermsArgs search_terms_args,
     omnibox::AnswerType answer_type)
-    : OmniboxAction(
-          OmniboxAction::LabelStrings(
-              base::UTF8ToUTF16(enhancement.display_text()),
-              base::UTF8ToUTF16(enhancement.display_text()),
-              l10n_util::GetStringUTF16(
-                  IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX),
-              l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST)),
-          {}),
+    : OmniboxAction(OmniboxAction::LabelStrings(
+                        base::UTF8ToUTF16(enhancement.display_text()),
+                        base::UTF8ToUTF16(enhancement.display_text()),
+                        l10n_util::GetStringUTF16(
+                            IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX),
+                        base::UTF8ToUTF16(enhancement.display_text())),
+                    {}),
       search_terms_args(search_terms_args),
       enhancement_(std::move(enhancement)),
       answer_type_(answer_type) {}
