@@ -76,6 +76,9 @@ bool WifiDirectMedium::ConnectWifiDirect(WifiDirectCredentials* credentials) {
   waitable_event.Wait();
 
   // An active remote means the group has been connected to.
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.WifiDirect.ConnectToWifiDirectGroup.Result",
+      !!connection_);
   return !!connection_;
 }
 
@@ -342,6 +345,9 @@ void WifiDirectMedium::OnGroupConnected(
     connection_.set_disconnect_handler(
         base::BindOnce(&WifiDirectMedium::OnDisconnect, base::Unretained(this)),
         io_thread_->task_runner());
+  } else {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ConnectToWifiDirectGroup.Error", result);
   }
 
   // Trigger sync signal.
