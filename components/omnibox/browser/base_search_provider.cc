@@ -137,11 +137,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
     match.suggestion_group_id = suggestion.suggestion_group_id();
   }
   match.answer = suggestion.answer();
-  // Ensure RichAnswerTemplate has an answer.
-  if (suggestion.answer_template().has_value() &&
-      suggestion.answer_template()->answers_size() > 0) {
-    match.answer_template = suggestion.answer_template();
-  }
+  match.answer_template = suggestion.answer_template();
   match.answer_type = suggestion.answer_type();
   match.suggest_type = suggestion.suggest_type();
   for (const int subtype : suggestion.subtypes()) {

@@ -774,18 +774,21 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
       omnibox_feature_configs::SuggestionAnswerMigration>
       scoped_config;
   scoped_config.Get().enabled = true;
+
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"weather los",
                           metrics::OmniboxEventProto::NTP_REALBOX,
                           scheme_classifier);
+  // Test behavior with template present; template is set from decoding
+  // "google:templateinfo" field.
   {
     // Setup RichAnswerTemplate with answer data.
     omnibox::RichSuggestTemplate suggest_template;
     omnibox::RichAnswerTemplate* answer_template =
         suggest_template.mutable_rich_answer_template();
     omnibox::AnswerData* answer_data = answer_template->add_answers();
-    answer_data->mutable_headline()->set_text("68F Fri - Los Angeles, CA");
-    answer_data->mutable_subhead()->set_text("weather los angeles");
+    answer_data->mutable_headline()->set_text("weather los angeles");
+    answer_data->mutable_subhead()->set_text("68F Fri - Los Angeles, CA");
     answer_data->mutable_image()->set_url("//www.gstatic.com/images/image.png");
 
     std::string json_data =
@@ -801,6 +804,12 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
         },
         "google:suggestdetail": [
           {
+            "ansa": {
+              "l": [{"il": {"t": [{"t": "weather new york", "tt": 8}]}},
+                {"il": {"at": {"t": "Fri - New York, NY","tt": 19},
+                "i": {"d": "//www.gstatic.com/images/image.png", "t": 3},
+                "t": [{"t": "50F", "tt": 18}]}}]
+            },
             "ansb": "8",
             "google:templateinfo": ")" +
         SerializeAndEncodeRichSuggestTemplate(suggest_template) +
@@ -832,10 +841,14 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
 
     // Ensure the correct suggestion has RichAnswerTemplate info and is
     // correctly parsed.
+    // TODO(b/326368632):: Verify answer type.
     ASSERT_EQ(3U, results.suggest_results.size());
     ASSERT_TRUE(results.suggest_results[0].answer_template().has_value());
+    ASSERT_FALSE(results.suggest_results[1].answer_template().has_value());
+    ASSERT_FALSE(results.suggest_results[2].answer_template().has_value());
+
     // Protos should initially not be equal because there is formatting done to
-    // a templates URL after decoding.
+    // a template's URL after decoding "google:templateinfo".
     ASSERT_FALSE(
         ProtosAreEqual(results.suggest_results[0].answer_template().value(),
                        *answer_template));
@@ -846,8 +859,6 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
     ASSERT_TRUE(
         ProtosAreEqual(results.suggest_results[0].answer_template().value(),
                        *answer_template));
-    ASSERT_FALSE(results.suggest_results[1].answer_template().has_value());
-    ASSERT_FALSE(results.suggest_results[2].answer_template().has_value());
   }
   // Test behavior with no template present; template is set from parsing "ansa"
   // JSON field.
@@ -894,6 +905,10 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
         root_val->GetList(), input, scheme_classifier,
         /*default_result_relevance=*/400,
         /*is_keyword_result=*/false, &results));
+
+    // Ensure the correct suggestion has RichAnswerTemplate info and is
+    // correctly parsed.
+    // TODO(b/326368632):: Verify answer type.
     ASSERT_EQ(3U, results.suggest_results.size());
     ASSERT_TRUE(results.suggest_results[0].answer_template().has_value());
     ASSERT_FALSE(results.suggest_results[1].answer_template().has_value());
@@ -953,8 +968,11 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
         root_val->GetList(), input, scheme_classifier,
         /*default_result_relevance=*/400,
         /*is_keyword_result=*/false, &results));
+
+    // Ensure the correct suggestion has RichAnswerTemplate info and is
+    // correctly parsed.
+    // TODO(b/326368632):: Verify answer type.
     ASSERT_EQ(3U, results.suggest_results.size());
-    // RichAnswerTemplate should get set from "ansa" field.
     ASSERT_TRUE(results.suggest_results[0].answer_template().has_value());
     ASSERT_FALSE(results.suggest_results[1].answer_template().has_value());
     ASSERT_FALSE(results.suggest_results[2].answer_template().has_value());
@@ -968,17 +986,21 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
     EXPECT_EQ(answer_data.image().url(),
               "https://www.gstatic.com/images/image.png");
   }
+  // TODO(b/326368632): Add test when template is present but has no answers.
+  // TODO(b/326368632): Add test when template is present but types is invalid.
 }
 
 TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfoCounterfactual) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{omnibox::kOmniboxAnswerActions,
-        {{OmniboxFieldTrial::kAnswerActionsCounterfactual.name, "true"}}},
-       {omnibox_feature_configs::SuggestionAnswerMigration::
-            kOmniboxSuggestionAnswerMigration,
-        {}}},
+        {{OmniboxFieldTrial::kAnswerActionsCounterfactual.name, "true"}}}},
       /*disabled_features=*/{});
+
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::SuggestionAnswerMigration>
+      scoped_config;
+  scoped_config.Get().enabled = true;
 
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(u"weather los",
@@ -990,8 +1012,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfoCounterfactual) {
     omnibox::RichAnswerTemplate* answer_template =
         suggest_template.mutable_rich_answer_template();
     omnibox::AnswerData* answer_data = answer_template->add_answers();
-    answer_data->mutable_headline()->set_text("68F Fri - Los Angeles, CA");
-    answer_data->mutable_subhead()->set_text("weather los angeles");
+    answer_data->mutable_headline()->set_text("weather los angeles");
+    answer_data->mutable_subhead()->set_text("68F Fri - Los Angeles, CA");
     answer_data->mutable_image()->set_url("//www.gstatic.com/images/image.png");
     answer_template->mutable_enhancements()
         ->add_enhancements()
@@ -1010,6 +1032,12 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfoCounterfactual) {
         },
         "google:suggestdetail": [
           {
+            "ansa": {
+              "l": [{"il": {"t": [{"t": "weather new york", "tt": 8}]}},
+                {"il": {"at": {"t": "Fri - New York, NY","tt": 19},
+                "i": {"d": "//www.gstatic.com/images/image.png", "t": 3},
+                "t": [{"t": "50F", "tt": 18}]}}]
+            },
             "ansb": "8",
             "google:templateinfo": ")" +
         SerializeAndEncodeRichSuggestTemplate(suggest_template) +
@@ -1038,11 +1066,23 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfoCounterfactual) {
         root_val->GetList(), input, scheme_classifier,
         /*default_result_relevance=*/400,
         /*is_keyword_result=*/false, &results));
+
+    // Ensure the correct suggestion has RichAnswerTemplate info and is
+    // correctly parsed.
+    // TODO(b/326368632):: Verify answer type.
     ASSERT_EQ(3U, results.suggest_results.size());
     ASSERT_TRUE(results.suggest_results[0].answer_template().has_value());
-    ASSERT_FALSE(
-        ProtosAreEqual(results.suggest_results[0].answer_template().value(),
-                       *answer_template));
+    ASSERT_FALSE(results.suggest_results[1].answer_template().has_value());
+    ASSERT_FALSE(results.suggest_results[2].answer_template().has_value());
+
+    omnibox::AnswerData parsed_answer_data =
+        results.suggest_results[0].answer_template()->answers(0);
+    // The first image line in "ansa" is equivalent to AnswerData's headline and
+    // second image line is equivalent to subhead.
+    EXPECT_EQ(parsed_answer_data.headline().text(), "weather new york");
+    EXPECT_EQ(parsed_answer_data.subhead().text(), "50F Fri - New York, NY");
+    EXPECT_EQ(parsed_answer_data.image().url(),
+              "https://www.gstatic.com/images/image.png");
     ASSERT_TRUE(results.suggest_results[0]
                     .answer_template()
                     ->enhancements()

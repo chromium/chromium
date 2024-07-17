@@ -19,7 +19,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -860,12 +859,13 @@ bool SearchSuggestionParser::ParseSuggestResults(
         }
       }
 
-      std::u16string match_contents_prefix;
-      SuggestionAnswer answer;
-      bool answer_parsed_successfully = false;
-      std::optional<int> suggestion_group_id;
+      omnibox::RichSuggestTemplate suggest_template;
       omnibox::EntityInfo entity_info;
+      std::u16string match_contents_prefix;
+      std::optional<int> suggestion_group_id;
+      bool answer_parsed_successfully = false;
       omnibox::RichAnswerTemplate answer_template;
+      SuggestionAnswer answer;
       omnibox::AnswerType answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&
@@ -873,6 +873,13 @@ bool SearchSuggestionParser::ParseSuggestResults(
         const base::Value::Dict& suggestion_detail =
             (*suggestion_details)[index].GetDict();
 
+        // Rich Suggest Template.
+        const auto* rich_template_str =
+            suggestion_detail.FindString("google:templateinfo");
+        DecodeProtoFromBase64<omnibox::RichSuggestTemplate>(rich_template_str,
+                                                            suggest_template);
+
+        // Entity.
         const auto* entity_info_string =
             suggestion_detail.FindString("google:entityinfo");
         DecodeProtoFromBase64<omnibox::EntityInfo>(entity_info_string,
@@ -890,54 +897,41 @@ bool SearchSuggestionParser::ParseSuggestResults(
         // Suggestion group Id.
         suggestion_group_id = suggestion_detail.FindInt("zl");
 
-        // Extract the Answer, if provided.
-        const base::Value::Dict* answer_json =
-            suggestion_detail.FindDict("ansa");
+        // Answer.
         const std::string* answer_type_str =
             suggestion_detail.FindString("ansb");
         if (answer_type_str) {
-          // TemplateInfo should only exist if the server-side flag enabling
-          // its creation is enabled.
-          const auto* answer_template_string =
-              suggestion_detail.FindString("google:templateinfo");
-          bool template_parsed_successfully = false;
-          // Check that answer type string can be mapped to
-          // omnibox::AnswerType.
+          // Check that answer type string can be mapped to omnibox::AnswerType.
           int numeric_answer_type = 0;
           if (base::StringToInt(base::UTF8ToUTF16(*answer_type_str),
                                 &numeric_answer_type)) {
+            base::UmaHistogramSparse("Omnibox.AnswerParseType",
+                                     numeric_answer_type);
             answer_type = AnswerTypeForNumber(numeric_answer_type);
           }
-          if (answer_template_string &&
-              answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
-            omnibox::RichSuggestTemplate suggest_template;
-            template_parsed_successfully =
-                DecodeProtoFromBase64<omnibox::RichSuggestTemplate>(
-                    answer_template_string, suggest_template);
+        }
+        if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
+          // omnibox::RichAnswerTemplate is preferred to "ansa" if available.
+          if (suggest_template.has_rich_answer_template() &&
+              !OmniboxFieldTrial::kAnswerActionsCounterfactual.Get()) {
             answer_template = suggest_template.rich_answer_template();
             FormatAnswerTemplateImageURL(&answer_template);
-            // TODO(327497146): Create histogram to log whether decoding was
-            // successful.
-          }
-          // Both RichAnswerTemplate and "ansa" may be found in the response for
-          // decoding safety. In the case that decoding the template is
-          // unsuccessful, fallback to JSON parsing.
-          if (!template_parsed_successfully && answer_json) {
+            // Ensure `answer_template` has an answer.
+            answer_parsed_successfully = answer_template.answers_size() > 0;
+          } else if (const auto* answer_json =
+                         suggestion_detail.FindDict("ansa")) {
             if (omnibox_feature_configs::SuggestionAnswerMigration::Get()
-                    .enabled &&
-                answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED &&
-                omnibox::answer_data_parser::ParseJsonToAnswerData(
-                    *answer_json, &answer_template)) {
-            } else if (SuggestionAnswer::ParseAnswer(
-                           *answer_json, base::UTF8ToUTF16(*answer_type_str),
-                           &answer)) {
-              base::UmaHistogramSparse("Omnibox.AnswerParseType",
-                                       answer.type());
-              answer_parsed_successfully = true;
+                    .enabled) {
+              answer_parsed_successfully =
+                  omnibox::answer_data_parser::ParseJsonToAnswerData(
+                      *answer_json, &answer_template);
+            } else {
+              answer_parsed_successfully = SuggestionAnswer::ParseAnswer(
+                  *answer_json, base::UTF8ToUTF16(*answer_type_str), &answer);
             }
-            UMA_HISTOGRAM_BOOLEAN("Omnibox.AnswerParseSuccess",
-                                  answer_parsed_successfully);
           }
+          base::UmaHistogramBoolean("Omnibox.AnswerParseSuccess",
+                                    answer_parsed_successfully);
         }
       }
 
@@ -951,18 +945,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
                         nav_intent, relevance, relevances != nullptr,
                         should_prefetch, should_prerender, trimmed_input));
 
-      results->suggest_results.back().SetAnswerType(answer_type);
-      // TODO(b/327497146) Fix rendering of answers outside of Desktop Omnibox
-      // when kOmniboxSuggestionAnswerMigration is enabled.
-      // Ensure `answer_template` has an answer.
-      if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-          answer_template.answers_size() > 0) {
-        if (OmniboxFieldTrial::kAnswerActionsCounterfactual.Get()) {
-          answer_template.mutable_enhancements()->Clear();
+      if (answer_parsed_successfully) {
+        results->suggest_results.back().SetAnswerType(answer_type);
+        if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+          results->suggest_results.back().SetRichAnswerTemplate(
+              answer_template);
+        } else {
+          results->suggest_results.back().SetAnswer(answer);
         }
-        results->suggest_results.back().SetRichAnswerTemplate(answer_template);
-      } else if (answer_parsed_successfully) {
-        results->suggest_results.back().SetAnswer(answer);
       }
 
       if (suggestion_group_id) {

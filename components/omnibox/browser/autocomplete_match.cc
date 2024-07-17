@@ -1245,7 +1245,6 @@ TemplateURL* AutocompleteMatch::GetTemplateURL(
 GURL AutocompleteMatch::ImageUrl() const {
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
       answer_template.has_value()) {
-    CHECK_GT(answer_template->answers_size(), 0);
     return GURL(answer_template->answers(0).image().url());
   }
   return answer ? answer->image_url() : image_url;
