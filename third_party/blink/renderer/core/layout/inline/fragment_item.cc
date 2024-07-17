@@ -7,6 +7,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -1162,9 +1163,10 @@ PositionWithAffinity FragmentItem::PositionForPointInText(
 unsigned FragmentItem::TextOffsetForPoint(const PhysicalOffset& point,
                                           const FragmentItems& items) const {
   DCHECK_EQ(Type(), kText);
-  const ComputedStyle& style = Style();
-  const LayoutUnit& point_in_line_direction =
-      style.IsHorizontalWritingMode() ? point.left : point.top;
+  WritingModeConverter converter({GetWritingMode(), TextDirection::kLtr},
+                                 Size());
+  const LayoutUnit point_in_line_direction =
+      converter.ToLogical(point, PhysicalSize()).inline_offset;
   if (const ShapeResultView* shape_result = TextShapeResult()) {
     float scaled_offset = ScaleInlineOffset(point_in_line_direction);
     // TODO(layout-dev): Move caret logic out of ShapeResult into separate
@@ -1179,7 +1181,7 @@ unsigned FragmentItem::TextOffsetForPoint(const PhysicalOffset& point,
   DCHECK(IsFlowControl());
 
   // Zero-inline-size objects such as newline always return the start offset.
-  LogicalSize size = Size().ConvertToLogical(style.GetWritingMode());
+  LogicalSize size = converter.ToLogical(Size());
   if (!size.inline_size)
     return StartOffset();
 
