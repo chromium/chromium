@@ -339,6 +339,12 @@ AutofillAgent::~AutofillAgent() {
   }
 }
 
+WebDocument AutofillAgent::GetDocument() const {
+  return unsafe_render_frame()
+             ? unsafe_render_frame()->GetWebFrame()->GetDocument()
+             : WebDocument();
+}
+
 void AutofillAgent::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::AutofillAgent> pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
@@ -461,8 +467,8 @@ void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
   // Refer to http://crbug.com/1105254
   if ((config_.uses_keyboard_accessory_for_suggestions ||
        !config_.focus_requires_scroll) &&
-      element &&
-      element.GetDocument().GetFrame()->HasTransientUserActivation()) {
+      element && unsafe_render_frame() &&
+      unsafe_render_frame()->GetWebFrame()->HasTransientUserActivation()) {
     // If the focus change was caused by a user gesture,
     // DidReceiveLeftMouseDownOrGestureTapInNode() will show the autofill
     // suggestions. See crbug.com/730764 for why showing autofill suggestions as
@@ -516,10 +522,8 @@ void AutofillAgent::FocusedElementChanged(
   auto handle_focus_change = [&]() {
     if ((config_.uses_keyboard_accessory_for_suggestions ||
          !config_.focus_requires_scroll) &&
-        new_focused_element &&
-        new_focused_element.GetDocument()
-            .GetFrame()
-            ->HasTransientUserActivation()) {
+        new_focused_element && unsafe_render_frame() &&
+        unsafe_render_frame()->GetWebFrame()->HasTransientUserActivation()) {
       // If the focus change was caused by a user gesture,
       // DidReceiveLeftMouseDownOrGestureTapInNode() will show the autofill
       // suggestions. See crbug.com/730764 for why showing autofill suggestions
@@ -859,11 +863,11 @@ void AutofillAgent::ApplyFieldsAction(
           features::kAutofillDontUpdateLastQueriedElementOnFill)) {
     return;
   }
-  if (!unsafe_render_frame()) {
+  WebDocument document = GetDocument();
+  if (!document) {
     return;
   }
 
-  WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
   ClearPreviewedForm();
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     previewed_elements_ =
@@ -1294,11 +1298,11 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
 void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {
-  if (!unsafe_render_frame()) {
+  WebDocument document = GetDocument();
+  if (!document) {
     std::vector<std::string> matches;
     std::move(potential_matches).Run(matches);
   } else {
-    WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
     form_util::TraverseDomForFourDigitCombinations(
         document, std::move(potential_matches));
   }
@@ -1361,13 +1365,13 @@ void AutofillAgent::TriggerFormExtractionWithResponse(
 void AutofillAgent::ExtractForm(
     FormRendererId form_id,
     base::OnceCallback<void(const std::optional<FormData>&)> callback) {
-  if (!unsafe_render_frame()) {
+  WebDocument document = GetDocument();
+  if (!document) {
     std::move(callback).Run(std::nullopt);
     return;
   }
   DenseSet<form_util::ExtractOption> extract_options =
       MaybeExtractDatalist({form_util::ExtractOption::kBounds});
-  WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
   if (!form_id) {
     if (std::optional<FormData> form =
             form_util::ExtractFormData(document, WebFormElement(),
@@ -1493,16 +1497,11 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
 }
 
 void AutofillAgent::DidCompleteFocusChangeInFrame() {
-  if (!unsafe_render_frame()) {
+  WebDocument document = GetDocument();
+  if (!document) {
     return;
   }
-  WebDocument doc = unsafe_render_frame()->GetWebFrame()->GetDocument();
-  WebElement focused_element;
-  if (doc) {
-    focused_element = doc.FocusedElement();
-  }
-
-  if (focused_element) {
+  if (WebElement focused_element = document.FocusedElement()) {
     SendFocusedInputChangedNotificationToBrowser(focused_element);
   }
 
@@ -1566,7 +1565,7 @@ void AutofillAgent::BatchSelectOrSelectListOptionChange(
     FieldRendererId element_id) {
   WebFormControlElement element =
       form_util::GetFormControlByRendererId(element_id);
-  if (!element || !element.GetDocument()) {
+  if (!element) {
     return;
   }
 
@@ -1612,7 +1611,8 @@ bool AutofillAgent::IsPrerendering() const {
 
 void AutofillAgent::HandleFocusChangeComplete(
     bool focused_node_was_last_clicked) {
-  if (!unsafe_render_frame()) {
+  WebDocument document = GetDocument();
+  if (!document) {
     return;
   }
 
@@ -1621,8 +1621,7 @@ void AutofillAgent::HandleFocusChangeComplete(
   // are used, treat the focused node as if it was the last clicked.
   focused_node_was_last_clicked |= is_screen_reader_enabled_;
 
-  WebElement focused_element =
-      unsafe_render_frame()->GetWebFrame()->GetDocument().FocusedElement();
+  WebElement focused_element = document.FocusedElement();
   if (!focused_element) {
     return;
   }
@@ -1741,10 +1740,11 @@ void AutofillAgent::OnProvisionallySaveForm(
     SaveFormReason source) {
   DCHECK(form_util::MaybeWasOwnedByFrame(form_element, unsafe_render_frame()));
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
-  WebDocument document =
-      unsafe_render_frame()
-          ? unsafe_render_frame()->GetWebFrame()->GetDocument()
-          : WebDocument();
+
+  WebDocument document = GetDocument();
+  if (!document) {
+    return;
+  }
 
   // Updates cached data needed for submission so that we only cache the latest
   // version of the to-be-submitted form.
@@ -1934,15 +1934,15 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   bool user_edited_unowned_form = !user_autofilled_or_edited_owned_form &&
                                   !user_autofilled_unowned_form &&
                                   !formless_elements_user_edited_.empty();
+  WebDocument document = GetDocument();
   if ((!user_autofilled_or_edited_owned_form && !user_autofilled_unowned_form &&
        !user_edited_unowned_form) ||
-      !unsafe_render_frame()) {
+      !document) {
     return std::nullopt;
   }
   // Extracts the last-interacted form, with fallback to its last-saved state.
   std::optional<FormData> form = form_util::ExtractFormData(
-      unsafe_render_frame()->GetWebFrame()->GetDocument(),
-      last_interacted_form().GetForm(), field_data_manager());
+      document, last_interacted_form().GetForm(), field_data_manager());
   return !form || (user_edited_unowned_form &&
                    base::ranges::none_of(form->fields(), has_been_user_edited))
              ? provisionally_saved_form()
@@ -1971,14 +1971,14 @@ void AutofillAgent::UpdateLastInteractedElement(
     WebFormElement form_element =
         form_util::GetFormByRendererId(absl::get<FormRendererId>(element_id));
     last_interacted_form_ = FormRef(form_element);
+    WebDocument document = GetDocument();
     provisionally_saved_form() =
-        unsafe_render_frame()
-            ? form_util::ExtractFormData(
-                  unsafe_render_frame()->GetWebFrame()->GetDocument(),
-                  form_util::GetFormByRendererId(
-                      absl::get<FormRendererId>(element_id)),
-                  field_data_manager())
-            : std::nullopt;
+        document ? form_util::ExtractFormData(
+                       document,
+                       form_util::GetFormByRendererId(
+                           absl::get<FormRendererId>(element_id)),
+                       field_data_manager())
+                 : std::nullopt;
   }
 }
 
