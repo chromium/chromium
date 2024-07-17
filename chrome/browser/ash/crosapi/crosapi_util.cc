@@ -781,7 +781,7 @@ void InjectBrowserInitParams(
   // Lacros.
   // TODO(crbug.com/40948861): Remove after completing the trial.
   variations::LimitedEntropySyntheticTrial limited_entropy_synthetic_trial(
-      local_state);
+      local_state, ash::GetChannel());
   params->limited_entropy_synthetic_trial_seed =
       limited_entropy_synthetic_trial.GetRandomizationSeed(local_state);
 

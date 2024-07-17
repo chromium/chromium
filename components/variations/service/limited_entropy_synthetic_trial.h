@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/version_info/channel.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/variations/synthetic_trial_registry.h"
 
@@ -25,7 +26,8 @@ inline constexpr char kIsLimitedEntropySyntheticTrialSeedValidHistogram[] =
 
 class LimitedEntropySyntheticTrial {
  public:
-  explicit LimitedEntropySyntheticTrial(PrefService* local_state);
+  explicit LimitedEntropySyntheticTrial(PrefService* local_state,
+                                        version_info::Channel channel);
 
   LimitedEntropySyntheticTrial(const LimitedEntropySyntheticTrial&) = delete;
   LimitedEntropySyntheticTrial& operator=(const LimitedEntropySyntheticTrial&) =
