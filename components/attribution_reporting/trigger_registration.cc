@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/features.h"
@@ -137,6 +138,9 @@ TriggerRegistration::Parse(base::Value::Dict dict) {
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
 
+  ASSIGN_OR_RETURN(registration.attribution_scopes,
+                   AttributionScopesSet::FromJSON(dict));
+
   registration.debug_key = ParseDebugKey(dict);
   registration.debug_reporting = ParseDebugReporting(dict);
 
@@ -225,6 +229,8 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   aggregatable_trigger_config.Serialize(dict);
 
   aggregatable_debug_reporting_config.Serialize(dict);
+
+  attribution_scopes.Serialize(dict);
 
   return dict;
 }

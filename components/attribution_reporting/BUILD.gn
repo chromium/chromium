@@ -57,6 +57,10 @@ component("attribution_reporting") {
     "aggregatable_values.h",
     "aggregation_keys.cc",
     "aggregation_keys.h",
+    "attribution_scopes_data.cc",
+    "attribution_scopes_data.h",
+    "attribution_scopes_set.cc",
+    "attribution_scopes_set.h",
     "constants.h",
     "debug_types.cc",
     "debug_types.h",
@@ -150,6 +154,8 @@ source_set("unit_tests") {
     "aggregatable_utils_unittest.cc",
     "aggregatable_values_unittest.cc",
     "aggregation_keys_unittest.cc",
+    "attribution_scopes_data_unittest.cc",
+    "attribution_scopes_set_unittest.cc",
     "destination_set_unittest.cc",
     "eligibility_unittest.cc",
     "event_level_epsilon_unittest.cc",
@@ -405,6 +411,18 @@ mojom("registration_mojom") {
           cpp =
               "::attribution_reporting::AggregatableDebugReportingContribution"
           forward_declaration = "namespace attribution_reporting { class AggregatableDebugReportingContribution; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AttributionScopesSet"
+          cpp = "::attribution_reporting::AttributionScopesSet"
+          forward_declaration =
+              "namespace attribution_reporting { class AttributionScopesSet; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AttributionScopesData"
+          cpp = "::attribution_reporting::AttributionScopesData"
+          forward_declaration =
+              "namespace attribution_reporting { class AttributionScopesData; }"
         },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]

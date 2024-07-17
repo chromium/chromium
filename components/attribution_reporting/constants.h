@@ -43,6 +43,11 @@ inline constexpr uint8_t kMaxTriggerDataPerSource = 32;
 
 inline constexpr size_t kMaxTriggerContextIdLength = 64;
 
+inline constexpr uint32_t kDefaultMaxEventStates = 3;
+
+inline constexpr size_t kMaxScopesPerSource = 20;
+inline constexpr size_t kMaxLengthPerAttributionScope = 50;
+
 inline constexpr char kTriggerDataMatchingExact[] = "exact";
 inline constexpr char kTriggerDataMatchingModulus[] = "modulus";
 
@@ -54,6 +59,8 @@ inline constexpr char kAggregatableFilteringIdsMaxBytes[] =
 inline constexpr char kAggregatableReportWindow[] =
     "aggregatable_report_window";
 inline constexpr char kAggregationKeys[] = "aggregation_keys";
+inline constexpr char kAttributionScopeLimit[] = "attribution_scope_limit";
+inline constexpr char kAttributionScopes[] = "attribution_scopes";
 inline constexpr char kDestination[] = "destination";
 inline constexpr char kDestinationLimitPriority[] =
     "destination_limit_priority";
@@ -64,6 +71,7 @@ inline constexpr char kEventReportWindows[] = "event_report_windows";
 inline constexpr char kExpiry[] = "expiry";
 inline constexpr char kFilterData[] = "filter_data";
 inline constexpr char kMaxEventLevelReports[] = "max_event_level_reports";
+inline constexpr char kMaxEventStates[] = "max_event_states";
 inline constexpr char kPriority[] = "priority";
 inline constexpr char kSourceEventId[] = "source_event_id";
 inline constexpr char kStartTime[] = "start_time";

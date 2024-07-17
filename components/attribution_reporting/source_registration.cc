@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
@@ -142,6 +143,9 @@ SourceRegistration::Parse(base::Value::Dict registration,
       result.aggregation_keys,
       AggregationKeys::FromJSON(registration.Find(kAggregationKeys)));
 
+  ASSIGN_OR_RETURN(result.attribution_scopes_data,
+                   AttributionScopesData::FromJSON(registration));
+
   result.debug_key = ParseDebugKey(registration);
 
   result.debug_reporting = ParseDebugReporting(registration);
@@ -226,6 +230,8 @@ base::Value::Dict SourceRegistration::ToJson() const {
   event_level_epsilon.Serialize(dict);
 
   aggregatable_debug_reporting_config.Serialize(dict);
+
+  attribution_scopes_data.Serialize(dict);
 
   if (base::FeatureList::IsEnabled(attribution_reporting::features::
                                        kAttributionSourceDestinationLimit)) {

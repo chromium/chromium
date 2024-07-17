@@ -97,6 +97,9 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<uint32_t, ParseError> ParseUint32(const base::Value&);
 
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<uint32_t, ParseError> ParsePositiveUint32(const base::Value&);
+
 base::Value Uint32ToJson(uint32_t);
 
 enum class StringSetError {

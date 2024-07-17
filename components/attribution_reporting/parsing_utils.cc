@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/constants.h"
@@ -240,6 +241,15 @@ base::expected<uint32_t, ParseError> ParseUint32(const base::Value& value) {
   }
 
   return static_cast<uint32_t>(*double_value);
+}
+
+base::expected<uint32_t, ParseError> ParsePositiveUint32(
+    const base::Value& value) {
+  ASSIGN_OR_RETURN(uint32_t int_value, ParseUint32(value));
+  if (int_value == 0) {
+    return base::unexpected(ParseError());
+  }
+  return int_value;
 }
 
 base::Value Uint32ToJson(uint32_t value) {

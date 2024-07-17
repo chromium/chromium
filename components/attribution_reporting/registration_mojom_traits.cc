@@ -21,6 +21,8 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
@@ -298,6 +300,42 @@ bool StructTraits<
 }
 
 // static
+bool StructTraits<attribution_reporting::mojom::AttributionScopesSetDataView,
+                  attribution_reporting::AttributionScopesSet>::
+    Read(attribution_reporting::mojom::AttributionScopesSetDataView data,
+         attribution_reporting::AttributionScopesSet* out) {
+  std::vector<std::string> scopes;
+  if (!data.ReadScopes(&scopes)) {
+    return false;
+  }
+
+  *out = attribution_reporting::AttributionScopesSet(std::move(scopes));
+  return true;
+}
+
+// static
+bool StructTraits<attribution_reporting::mojom::AttributionScopesDataDataView,
+                  attribution_reporting::AttributionScopesData>::
+    Read(attribution_reporting::mojom::AttributionScopesDataDataView data,
+         attribution_reporting::AttributionScopesData* out) {
+  attribution_reporting::AttributionScopesSet scopes;
+  if (!data.ReadAttributionScopesSet(&scopes)) {
+    return false;
+  }
+
+  auto attribution_scopes_data =
+      attribution_reporting::AttributionScopesData::Create(
+          std::move(scopes), data.attribution_scope_limit(),
+          data.max_event_states());
+  if (!attribution_scopes_data.has_value()) {
+    return false;
+  }
+
+  *out = *std::move(attribution_scopes_data);
+  return true;
+}
+
+// static
 bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                   attribution_reporting::SourceRegistration>::
     Read(attribution_reporting::mojom::SourceRegistrationDataView data,
@@ -323,6 +361,10 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
   }
 
   if (!data.ReadAggregationKeys(&out->aggregation_keys)) {
+    return false;
+  }
+
+  if (!data.ReadAttributionScopesData(&out->attribution_scopes_data)) {
     return false;
   }
 
@@ -492,6 +534,11 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
   if (!max_bytes.has_value()) {
     return false;
   }
+
+  if (!data.ReadAttributionScopes(&out->attribution_scopes)) {
+    return false;
+  }
+
   std::optional<attribution_reporting::AggregatableTriggerConfig>
       aggregatable_trigger_config =
           attribution_reporting::AggregatableTriggerConfig::Create(

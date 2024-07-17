@@ -18,6 +18,8 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -115,6 +117,20 @@ std::ostream& operator<<(std::ostream& out,
                          const EventReportWindows& event_report_windows) {
   base::Value::Dict dict;
   event_report_windows.Serialize(dict);
+  return out << dict;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionScopesSet& attribution_scopes_set) {
+  base::Value::Dict dict;
+  attribution_scopes_set.Serialize(dict);
+  return out << dict;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionScopesData& attribution_scopes_data) {
+  base::Value::Dict dict;
+  attribution_scopes_data.Serialize(dict);
   return out << dict;
 }
 

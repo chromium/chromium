@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
@@ -67,6 +68,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   std::optional<SuitableOrigin> aggregation_coordinator_origin;
   AggregatableTriggerConfig aggregatable_trigger_config;
   AggregatableDebugReportingConfig aggregatable_debug_reporting_config;
+  AttributionScopesSet attribution_scopes;
 };
 
 }  // namespace attribution_reporting

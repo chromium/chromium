@@ -25,4 +25,8 @@ BASE_FEATURE(kAttributionReportingAggregatableFilteringIds,
              "AttributionReportingAggregatableFilteringIds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAttributionScopes,
+             "AttributionScopes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace attribution_reporting::features

@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
@@ -79,6 +80,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   EventLevelEpsilon event_level_epsilon;
   SourceAggregatableDebugReportingConfig aggregatable_debug_reporting_config;
   int64_t destination_limit_priority = 0;
+  AttributionScopesData attribution_scopes_data;
 };
 
 }  // namespace attribution_reporting

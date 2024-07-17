@@ -23,6 +23,8 @@ class AggregatableTriggerConfig;
 class AggregatableTriggerData;
 class AggregatableValues;
 class AggregationKeys;
+class AttributionScopesData;
+class AttributionScopesSet;
 class DestinationSet;
 class EventReportWindows;
 class MaxEventLevelReports;
@@ -59,6 +61,10 @@ std::ostream& operator<<(std::ostream&, const FilterPair&);
 std::ostream& operator<<(std::ostream&, const DestinationSet&);
 
 std::ostream& operator<<(std::ostream&, const EventReportWindows&);
+
+std::ostream& operator<<(std::ostream&, const AttributionScopesSet&);
+
+std::ostream& operator<<(std::ostream&, const AttributionScopesData&);
 
 std::ostream& operator<<(std::ostream&, const SourceRegistration&);
 

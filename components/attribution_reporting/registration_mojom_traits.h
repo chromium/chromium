@@ -21,6 +21,8 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
@@ -249,6 +251,45 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::AttributionScopesSetDataView,
+                 attribution_reporting::AttributionScopesSet> {
+  static const attribution_reporting::AttributionScopesSet::Scopes& scopes(
+      const attribution_reporting::AttributionScopesSet& set) {
+    return set.scopes();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::AttributionScopesSetDataView data,
+      attribution_reporting::AttributionScopesSet* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::AttributionScopesDataDataView,
+                 attribution_reporting::AttributionScopesData> {
+  static const attribution_reporting::AttributionScopesSet&
+  attribution_scopes_set(
+      const attribution_reporting::AttributionScopesData& data) {
+    return data.attribution_scopes_set();
+  }
+
+  static std::optional<uint32_t> attribution_scope_limit(
+      const attribution_reporting::AttributionScopesData& data) {
+    return data.attribution_scope_limit();
+  }
+
+  static uint32_t max_event_states(
+      const attribution_reporting::AttributionScopesData& data) {
+    return data.max_event_states();
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::AttributionScopesDataDataView data,
+      attribution_reporting::AttributionScopesData* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
   static const attribution_reporting::DestinationSet& destinations(
@@ -321,6 +362,12 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static int64_t destination_limit_priority(
       const attribution_reporting::SourceRegistration& source) {
     return source.destination_limit_priority;
+  }
+
+  static const attribution_reporting::AttributionScopesData&
+  attribution_scopes_data(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.attribution_scopes_data;
   }
 
   static bool Read(
@@ -467,6 +514,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   aggregatable_debug_reporting_config(
       const attribution_reporting::TriggerRegistration& source) {
     return source.aggregatable_debug_reporting_config;
+  }
+
+  static const attribution_reporting::AttributionScopesSet& attribution_scopes(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.attribution_scopes;
   }
 
   static bool Read(

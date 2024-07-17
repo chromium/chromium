@@ -24,6 +24,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/features.h"
@@ -547,6 +548,41 @@ TEST(TriggerRegistrationTest, ParseAggregatableDebugReportingConfig) {
 
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAttributionAggregatableDebugReporting);
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    EXPECT_THAT(TriggerRegistration::Parse(test_case.json), test_case.matches);
+  }
+}
+
+TEST(TriggerRegistrationTest, ParseAttributionScopesConfig) {
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<TriggerRegistration, TriggerRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          "attribution_scopes_set_valid",
+          R"json({
+            "attribution_scopes": ["123"]
+          })json",
+          ValueIs(Field(&TriggerRegistration::attribution_scopes,
+                        AttributionScopesSet({"123"}))),
+      },
+      {
+          "attribution_scopes_set_invalid",
+          R"json({
+            "attribution_scopes": [123]
+          })json",
+          ErrorIs(TriggerRegistrationError::kAttributionScopesValueInvalid),
+      },
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAttributionScopes);
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);

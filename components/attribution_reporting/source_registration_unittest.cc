@@ -17,6 +17,8 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
@@ -707,6 +709,51 @@ TEST(SourceRegistrationTest, ParseAggregatableDebugReportingConfig) {
 
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAttributionAggregatableDebugReporting);
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    EXPECT_THAT(
+        SourceRegistration::Parse(test_case.json, SourceType::kNavigation),
+        test_case.matches);
+  }
+}
+
+TEST(SourceRegistrationTest, ParseAttributionScopesConfig) {
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<SourceRegistration, SourceRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          "valid",
+          R"json({
+            "attribution_scope_limit": 1,
+            "max_event_states": 1,
+            "attribution_scopes": ["1"],
+            "destination": "https://d.example"
+          })json",
+          ValueIs(Field(
+              &SourceRegistration::attribution_scopes_data,
+              *AttributionScopesData::Create(AttributionScopesSet({"1"}),
+                                             /*attribution_scope_limit=*/1,
+                                             /*max_event_states=*/1))),
+      },
+      {
+          "invalid",
+          R"json({
+            "max_event_states": 1,
+            "attribution_scopes": ["1"],
+            "destination": "https://d.example"
+          })json",
+          ErrorIs(SourceRegistrationError::kAttributionScopeLimitRequired),
+      },
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAttributionScopes);
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);

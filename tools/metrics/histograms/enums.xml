@@ -3651,6 +3651,12 @@ Called by update_net_error_codes.py.-->
   <int value="40" label="summary_buckets value invalid"/>
   <int value="41" label="event_level_epsilon value is invalid"/>
   <int value="42" label="destination_limit_priority is invalid"/>
+  <int value="43" label="attribution_scope_limit value is invalid"/>
+  <int value="44"
+      label="attribution_scope_limit is required for this configuration"/>
+  <int value="45" label="max_event_states value is invalid"/>
+  <int value="46" label="attribution_scopes value not a valid list"/>
+  <int value="47" label="attribution_scopes list value is invalid"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/source_registration_error.mojom:SourceRegistrationError) -->
@@ -3798,6 +3804,8 @@ Called by update_net_error_codes.py.-->
   <int value="31"
       label="non-default aggregatable_filtering_id_max_bytes is disallowed
              for aggregatable_source_registration_time"/>
+  <int value="32" label="attribution_scopes value not a valid list"/>
+  <int value="33" label="attribution_scopes list value is invalid"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/trigger_registration_error.mojom:TriggerRegistrationError) -->
