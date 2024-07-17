@@ -49,8 +49,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.privacy_sandbox.ReminderType;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -101,7 +99,6 @@ public final class StatusMediatorUnitTest {
     private @Mock WebContents mWebContents;
     private @Mock StatusView mStatusView;
     @Mock UserPrefsJni mMockUserPrefsJni;
-    @Mock TrackingProtectionBridgeJni mMockTrackingProtectionBridgeJni;
     @Mock private PrefService mPrefs;
     @Mock private Tracker mTracker;
 
@@ -135,7 +132,6 @@ public final class StatusMediatorUnitTest {
         doReturn(logo).when(mSearchEngineUtils).getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
-        mJniMocker.mock(TrackingProtectionBridgeJni.TEST_HOOKS, mMockTrackingProtectionBridgeJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
 
         TrackerFactory.setTrackerForTests(mTracker);
@@ -663,30 +659,6 @@ public final class StatusMediatorUnitTest {
         doReturn(true).when(mTracker).wouldTriggerHelpUI(any());
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
-    }
-
-    @Test
-    @SmallTest
-    public void iphReminder3pcdDisplayed() {
-        doReturn(ReminderType.ACTIVE).when(mMockTrackingProtectionBridgeJni).getReminderType(any());
-
-        mMediator.onPageLoadStopped();
-
-        // IPH should be shown.
-        verify(mPageInfoIPHController, times(1))
-                .showTrackingProtectionReminderIPH(anyInt(), anyInt(), any());
-    }
-
-    @Test
-    @SmallTest
-    public void iphReminder3pcdNotDisplayed() {
-        doReturn(ReminderType.NONE).when(mMockTrackingProtectionBridgeJni).getReminderType(any());
-
-        mMediator.onPageLoadStopped();
-
-        // IPH should be shown.
-        verify(mPageInfoIPHController, never())
-                .showTrackingProtectionReminderIPH(anyInt(), anyInt(), any());
     }
 
     @Test

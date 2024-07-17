@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -62,7 +61,6 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
@@ -72,8 +70,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIPHController;
-import org.chromium.chrome.browser.privacy_sandbox.ReminderType;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -112,7 +108,6 @@ public class CustomTabToolbarUnitTest {
             new GURL("https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html");
 
     @Rule public MockitoRule mRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock LocationBarModel mLocationBarModel;
     @Mock ActionMode.Callback mActionModeCallback;
@@ -132,7 +127,6 @@ public class CustomTabToolbarUnitTest {
     @Mock WindowAndroid mWindowAndroid;
     private @Mock PageInfoIPHController mPageInfoIPHController;
     @Mock private CustomTabFeatureOverridesManager mFeatureOverridesManager;
-    @Mock TrackingProtectionBridgeJni mMockTrackingProtectionBridgeJni;
 
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
@@ -193,8 +187,6 @@ public class CustomTabToolbarUnitTest {
         mLocationBar.setIPHControllerForTesting(mPageInfoIPHController);
         mSecurityButton = mToolbar.findViewById(R.id.security_button);
         mSecurityIcon = mToolbar.findViewById(R.id.security_icon);
-
-        mJniMocker.mock(TrackingProtectionBridgeJni.TEST_HOOKS, mMockTrackingProtectionBridgeJni);
     }
 
     @After
@@ -512,7 +504,6 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testCookieControlsIcon_onHighlightCookieControl_animateOnPageStoppedLoading() {
-        doReturn(ReminderType.ACTIVE).when(mMockTrackingProtectionBridgeJni).getReminderType(any());
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onHighlightCookieControl(true);
@@ -531,29 +522,8 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    public void testTrackingProtectionReminderIPH() {
-        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
-        doReturn(ReminderType.ACTIVE).when(mMockTrackingProtectionBridgeJni).getReminderType(any());
-
-        mLocationBar.onHighlightCookieControl(true);
-        mLocationBar.onStatusChanged(
-                /* controls_visible= */ true,
-                /* protections_on= */ true,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-
-        // Should show only the reminder IPH.
-        mLocationBar.onPageLoadStopped();
-        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, times(1))
-                .showTrackingProtectionReminderIPH(anyInt(), anyInt(), any());
-    }
-
-    @Test
     public void
             testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingDisabled_doesNotDisplayIPH() {
-        doReturn(ReminderType.ACTIVE).when(mMockTrackingProtectionBridgeJni).getReminderType(any());
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onHighlightCookieControl(true);
@@ -572,7 +542,6 @@ public class CustomTabToolbarUnitTest {
     @Test
     public void
             testCookieControlsIcon_trackingProtectionDisabled_cookieBlockingEnabled_displaysCookieControlsIPH() {
-        doReturn(ReminderType.ACTIVE).when(mMockTrackingProtectionBridgeJni).getReminderType(any());
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
         mLocationBar.onHighlightCookieControl(true);

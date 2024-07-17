@@ -83,8 +83,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
-import org.chromium.chrome.browser.privacy_sandbox.ReminderType;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -164,7 +162,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private OnClickListener mCloseClickListener;
     private CookieControlsBridge mCookieControlsBridge;
-    private TrackingProtectionBridge mTrackingProtectionBridge;
     private boolean mShouldHighlightCookieControlsIcon;
     private boolean mCookieControlsVisible;
     private boolean mThirdPartyCookiesBlocked;
@@ -1061,7 +1058,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private static final int STATE_DOMAIN_AND_TITLE = 2;
         private static final int STATE_EMPTY = 3; // Not used as a regular state.
         private static final int COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT = 8500;
-        private static final int TRACKING_PROTECTION_IPH_TIMEOUT_MS = 5000;
         private int mState = STATE_DOMAIN_ONLY;
 
         // Used for After branding runnables
@@ -1471,12 +1467,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 animateCookieControlsIcon();
                 mShouldHighlightCookieControlsIcon = false;
             }
-
-            if (!getCurrentTab().isIncognitoBranded()) {
-                maybeShowPrivacySandboxReminder(
-                        mPageInfoIPHController,
-                        new TrackingProtectionBridge(getCurrentTab().getProfile()));
-            }
         }
 
         @Override
@@ -1485,23 +1475,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             updateSecurityIcon();
             updateProgressBarColors();
             updateUrlBar();
-        }
-
-        private void maybeShowPrivacySandboxReminder(
-                PageInfoIPHController controller,
-                TrackingProtectionBridge trackingProtectionBridge) {
-            @ReminderType int reminderType = trackingProtectionBridge.getReminderType();
-
-            if (reminderType == ReminderType.SILENT) {
-                trackingProtectionBridge.onReminderExperienced();
-            } else if (reminderType == ReminderType.ACTIVE) {
-                controller.showTrackingProtectionReminderIPH(
-                        TRACKING_PROTECTION_IPH_TIMEOUT_MS,
-                        R.string.tracking_protection_reminder_iph_message,
-                        () -> {
-                            trackingProtectionBridge.onReminderExperienced();
-                        });
-            }
         }
 
         private void updateLeftMarginOfTitleUrlContainer() {

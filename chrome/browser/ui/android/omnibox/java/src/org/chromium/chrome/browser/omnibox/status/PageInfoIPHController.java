@@ -97,27 +97,4 @@ public class PageInfoIPHController {
                         .setDismissOnTouch(true)
                         .build());
     }
-
-    /**
-     * Show the IPH reminder for the tracking protection icon in the omnibox.
-     *
-     * @param iphTimeout The timeout after which the IPH bubble should disappear if it was shown.
-     * @param stringId Resource id of the string displayed. The string will also be used for
-     *     accessibility.
-     */
-    public void showTrackingProtectionReminderIPH(
-            int iphTimeout, @StringRes int stringId, Runnable onShowCallback) {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
-                                mStatusView.getContext().getResources(),
-                                FeatureConstants.TRACKING_PROTECTION_REMINDER_FEATURE,
-                                stringId,
-                                stringId)
-                        .setAutoDismissTimeout(iphTimeout)
-                        .setInsetRect(new Rect())
-                        .setAnchorView(mStatusView)
-                        .setDismissOnTouch(true)
-                        .setOnShowCallback(onShowCallback)
-                        .build());
-    }
 }

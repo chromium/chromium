@@ -31,8 +31,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
-import org.chromium.chrome.browser.privacy_sandbox.ReminderType;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -49,6 +48,7 @@ import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -61,8 +61,6 @@ public class StatusMediator
                 MerchantTrustSignalsCoordinator.OmniboxIconController,
                 CookieControlsObserver {
     private static final int PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS = 8500;
-    private static final int TRACKING_PROTECTION_IPH_TIMEOUT_MS = 5000;
-
     public static final String PERMISSION_ICON_TIMEOUT_MS_PARAM = "PermissionIconTimeoutMs";
 
     static final String COOKIE_CONTROLS_ICON = "COOKIE_CONTROLS_ICON";
@@ -835,27 +833,22 @@ public class StatusMediator
     }
 
     public void onPageLoadStopped() {
-        if (mLocationBarDataProvider != null && mLocationBarDataProvider.isIncognitoBranded()) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) {
             return;
         }
-        Profile profile = mProfileSupplier.get();
-        maybeShowPrivacySandboxReminder(
-                mPageInfoIPHController, new TrackingProtectionBridge(profile));
-    }
+        if (mPageSecurityLevel != ConnectionSecurityLevel.SECURE) {
+            return;
+        }
+        if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
+            if (!mCookieControlsVisible || !mThirdPartyCookiesBlocked) return;
 
-    private void maybeShowPrivacySandboxReminder(
-            PageInfoIPHController controller, TrackingProtectionBridge trackingProtectionBridge) {
-        @ReminderType int reminderType = trackingProtectionBridge.getReminderType();
+            if (UserPrefs.get(profile).getInteger(Pref.TRACKING_PROTECTION_ONBOARDING_ACK_ACTION)
+                    == 0) {
+                return;
+            }
 
-        if (reminderType == ReminderType.SILENT) {
-            trackingProtectionBridge.onReminderExperienced();
-        } else if (reminderType == ReminderType.ACTIVE) {
-            controller.showTrackingProtectionReminderIPH(
-                    TRACKING_PROTECTION_IPH_TIMEOUT_MS,
-                    R.string.tracking_protection_reminder_iph_message,
-                    () -> {
-                        trackingProtectionBridge.onReminderExperienced();
-                    });
+            animateCookieControlsIcon(() -> {});
         }
     }
 

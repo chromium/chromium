@@ -218,6 +218,5 @@ java_cpp_enum("privacy_sandbox_enums") {
   sources = [
     "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h",
     "//components/privacy_sandbox/tracking_protection_onboarding.h",
-    "//components/privacy_sandbox/tracking_protection_reminder_service.h",
   ]
 }

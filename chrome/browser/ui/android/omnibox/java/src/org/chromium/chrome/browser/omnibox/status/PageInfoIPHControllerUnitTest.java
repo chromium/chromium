@@ -107,20 +107,4 @@ public class PageInfoIPHControllerUnitTest {
         assertNull(cmd.anchorRect);
         assertEquals(mView, cmd.anchorView);
     }
-
-    @Test
-    public void showTrackingProtectionReminderIPH() {
-        mController.showTrackingProtectionReminderIPH(TIMEOUT, IPH_RES_ID, () -> {});
-        verify(mHelper).requestShowIPH(mIPHCmdCaptor.capture());
-        var cmd = mIPHCmdCaptor.getValue();
-        cmd.fetchFromResources();
-
-        assertEquals(TIMEOUT, cmd.autoDismissTimeout);
-        assertEquals(IPH_RES_ID, cmd.stringId);
-        assertEquals(FeatureConstants.TRACKING_PROTECTION_REMINDER_FEATURE, cmd.featureName);
-        assertEquals(STATUS_INSETS, cmd.insetRect);
-        assertTrue(cmd.dismissOnTouch);
-        assertNull(cmd.anchorRect);
-        assertEquals(mView, cmd.anchorView);
-    }
 }
