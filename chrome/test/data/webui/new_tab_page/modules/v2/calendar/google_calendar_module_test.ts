@@ -8,7 +8,6 @@ import {googleCalendarDescriptor, GoogleCalendarProxyImpl} from 'chrome://new-ta
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -29,7 +28,6 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     module = await googleCalendarDescriptor.initialize(0) as
         GoogleCalendarModuleElement;
     document.body.append(module);
-    await waitAfterNextRender(module);
   }
 
   setup(async () => {

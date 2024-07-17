@@ -7,11 +7,10 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '../../../strings.m.js';
 import '../../module_header.js';
 
-import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {FooDataItem} from '../../../foo.mojom-webui.js';
-import {loadTimeData} from '../../../i18n_setup.js';
+import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 
 import {FooProxy} from './foo_proxy.js';

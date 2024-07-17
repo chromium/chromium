@@ -6,7 +6,6 @@ import type {OutlookCalendarModuleElement} from 'chrome://new-tab-page/lazy_load
 import {outlookCalendarDescriptor} from 'chrome://new-tab-page/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
@@ -24,7 +23,6 @@ suite('NewTabPageModulesOutlookCalendarModuleTest', () => {
         OutlookCalendarModuleElement;
     assertTrue(!!module);
     document.body.append(module);
-    await waitAfterNextRender(module);
 
     // Assert.
     assertTrue(isVisible(module.$.moduleHeaderElementV2));

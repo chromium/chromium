@@ -1,18 +1,17 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Attachment, CalendarEvent} from '../../../google_calendar.mojom-webui.js';
-import {I18nMixin} from '../../../i18n_setup.js';
+import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
+import {I18nMixinLit} from '../../../i18n_setup.js';
 
-import {getTemplate} from './calendar_event.html.js';
+import {getCss} from './calendar_event.css.js';
+import {getHtml} from './calendar_event.html.js';
 import {toJsTimestamp} from './common.js';
 
 const kMillisecondsInMinute: number = 60000;
@@ -21,44 +20,46 @@ const kMinutesInHour: number = 60;
 export interface CalendarEventElement {
   $: {
     header: HTMLAnchorElement,
-    startTime: HTMLSpanElement,
-    timeStatus: HTMLSpanElement,
-    title: HTMLSpanElement,
+    startTime: HTMLElement,
+    timeStatus: HTMLElement,
+    title: HTMLElement,
   };
 }
+
+const CalendarEventElementBase = I18nMixinLit(CrLitElement);
 
 /**
  * The calendar event element for displaying a single event.
  */
-export class CalendarEventElement extends I18nMixin
-(PolymerElement) {
+export class CalendarEventElement extends CalendarEventElementBase {
   static get is() {
     return 'ntp-calendar-event';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       doubleBooked: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
-      event: Object,
+
+      event: {type: Object},
+
       expanded: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
-      formattedStartTime_: {
-        type: String,
-        computed: 'computeFormattedStartTime_(event.startTime)',
-      },
-      timeStatus_: {
-        type: String,
-        computed: 'computeTimeStatus_(event.startTime, expanded, doubleBooked)',
-      },
+
+      formattedStartTime_: {type: String},
+      timeStatus_: {type: String},
     };
   }
 
@@ -66,8 +67,21 @@ export class CalendarEventElement extends I18nMixin
   event: CalendarEvent;
   expanded: boolean;
 
-  private formattedStartTime_: string;
-  private timeStatus_: string;
+  protected formattedStartTime_: string;
+  protected timeStatus_: string;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('event')) {
+      this.formattedStartTime_ = this.computeFormattedStartTime_();
+    }
+
+    if (changedProperties.has('event') || changedProperties.has('expanded') ||
+        changedProperties.has('doubleBooked')) {
+      this.timeStatus_ = this.computeTimeStatus_();
+    }
+  }
 
   private computeFormattedStartTime_(): string {
     const offsetDate = toJsTimestamp(this.event.startTime);
@@ -104,24 +118,32 @@ export class CalendarEventElement extends I18nMixin
         'modulesCalendarInXHr', Math.round(hoursUntilMeeting).toString());
   }
 
-  private openAttachment_(e: DomRepeatEvent<Attachment>) {
-    window.location.href = e.model.item.resourceUrl.url;
+  protected openAttachment_(e: Event) {
+    const currentTarget = e.currentTarget as HTMLElement;
+    const index = Number(currentTarget.dataset['index']);
+    window.location.href = this.event.attachments[index]!.resourceUrl.url;
   }
 
-  private openVideoConference_() {
+  protected openVideoConference_() {
     window.location.href = this.event.conferenceUrl!.url;
   }
 
-  private showConferenceButton_(): boolean {
-    return !!(this.event.conferenceUrl && this.event.conferenceUrl.url);
+  protected showConferenceButton_(): boolean {
+    return !!this.event.conferenceUrl?.url;
   }
 
-  private showAttachments_(): boolean {
+  protected showAttachments_(): boolean {
     return this.event.attachments.length > 0;
   }
 
-  private showLocation_(): boolean {
+  protected showLocation_(): boolean {
     return !!this.event.location;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-calendar-event': CalendarEventElement;
   }
 }
 

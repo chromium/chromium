@@ -4,13 +4,13 @@
 
 import '../../module_header.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
+import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
-import {getTemplate} from './outlook_calendar_module.html.js';
+import {getHtml} from './outlook_calendar_module.html.js';
 
 export interface OutlookCalendarModuleElement {
   $: {
@@ -18,25 +18,23 @@ export interface OutlookCalendarModuleElement {
   };
 }
 
+const OutlookCalendarModuleElementBase = I18nMixinLit(CrLitElement);
+
 /**
  * The Outlook Calendar module, which serves as an inside look in to upcoming
  * events on a user's Microsoft Outlook calendar.
  */
-export class OutlookCalendarModuleElement extends I18nMixin
-(PolymerElement) {
+export class OutlookCalendarModuleElement extends
+    OutlookCalendarModuleElementBase {
   static get is() {
     return 'ntp-outlook-calendar-module';
   }
 
-  static get template() {
-    return getTemplate();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  static get properties() {
-    return {};
-  }
-
-  private getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItemGroups_(): MenuItem[][] {
     return [
       [
         {
@@ -55,7 +53,7 @@ export class OutlookCalendarModuleElement extends I18nMixin
     ];
   }
 
-  private onDisableButtonClick_() {
+  protected onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
       detail: {
@@ -67,7 +65,7 @@ export class OutlookCalendarModuleElement extends I18nMixin
     this.dispatchEvent(disableEvent);
   }
 
-  private onMenuButtonClick_(e: Event) {
+  protected onMenuButtonClick_(e: Event) {
     this.$.moduleHeaderElementV2.showAt(e);
   }
 }

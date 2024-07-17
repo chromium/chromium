@@ -5,15 +5,16 @@
 import './calendar.js';
 import '../../module_header.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent, GoogleCalendarPageHandlerRemote} from '../../../google_calendar.mojom-webui.js';
-import {I18nMixin} from '../../../i18n_setup.js';
+import {I18nMixinLit} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
 import type {CalendarElement} from './calendar.js';
-import {getTemplate} from './google_calendar_module.html.js';
+import {getCss} from './google_calendar_module.css.js';
+import {getHtml} from './google_calendar_module.html.js';
 import {GoogleCalendarProxyImpl} from './google_calendar_proxy.js';
 
 export interface GoogleCalendarModuleElement {
@@ -23,31 +24,35 @@ export interface GoogleCalendarModuleElement {
   };
 }
 
+const GoogleCalendarModuleElementBase = I18nMixinLit(CrLitElement);
+
 /**
  * The Google Calendar module, which serves as an inside look in to today's
  * events on a user's Google Calendar .
  */
-export class GoogleCalendarModuleElement extends I18nMixin
-(PolymerElement) {
+export class GoogleCalendarModuleElement extends
+    GoogleCalendarModuleElementBase {
   static get is() {
     return 'ntp-google-calendar-module';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      events_: Object,
+      events_: {type: Object},
     };
   }
 
-private events_:
-  CalendarEvent[];
+  protected events_: CalendarEvent[];
 
-private handler_:
-  GoogleCalendarPageHandlerRemote;
+  private handler_: GoogleCalendarPageHandlerRemote;
 
   constructor(events: CalendarEvent[]) {
     super();
@@ -55,7 +60,7 @@ private handler_:
     this.events_ = events;
   }
 
-  private getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItemGroups_(): MenuItem[][] {
     return [
       [
         {
@@ -79,7 +84,7 @@ private handler_:
     ];
   }
 
-  private onDisableButtonClick_() {
+  protected onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
       detail: {
@@ -89,7 +94,7 @@ private handler_:
     this.dispatchEvent(disableEvent);
   }
 
-  private onDismissButtonClick_() {
+  protected onDismissButtonClick_() {
     this.handler_.dismissModule();
     this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
       bubbles: true,
@@ -101,7 +106,7 @@ private handler_:
     }));
   }
 
-  private onMenuButtonClick_(e: Event) {
+  protected onMenuButtonClick_(e: Event) {
     this.$.moduleHeaderElementV2.showAt(e);
   }
 }

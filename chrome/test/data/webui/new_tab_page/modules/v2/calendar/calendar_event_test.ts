@@ -5,8 +5,7 @@
 import {CalendarEventElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createEvent} from './test_support.js';
 
@@ -22,7 +21,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     element.event = createEvent(1);
     element.expanded = false;
     document.body.append(element);
-    await waitAfterNextRender(element);
+    await microtasksFinished();
   });
 
   test('event is visible', async () => {
@@ -34,14 +33,14 @@ suite('NewTabPageModulesCalendaEventTest', () => {
 
     element.event =
         createEvent(1, {startTime: {internalValue: convertedStartTime}});
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     assertTrue(isVisible(element));
     assertTrue(isVisible(element.$.title));
     assertTrue(isVisible(element.$.startTime));
-    assertEquals(element.$.title.innerHTML, 'Test Event 1');
-    assertEquals(element.$.startTime.innerHTML, '3:04am');
+    assertEquals(element.$.title.textContent, 'Test Event 1');
+    assertEquals(element.$.startTime.textContent, '3:04am');
     assertEquals(element.$.header.href, element.event.url.url);
   });
 
@@ -52,11 +51,11 @@ suite('NewTabPageModulesCalendaEventTest', () => {
 
     element.event =
         createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     assertFalse(isVisible(element.$.timeStatus));
-    assertEquals(element.$.timeStatus.innerText, '');
+    assertEquals('', element.$.timeStatus.textContent!.trim());
   });
 
   test('double booked status displayed', async () => {
@@ -67,7 +66,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     element.event =
         createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
     element.doubleBooked = true;
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     assertTrue(isVisible(element.$.timeStatus));
@@ -82,7 +81,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     element.event =
         createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
     element.expanded = true;
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     assertTrue(isVisible(element.$.timeStatus));
     assertEquals(element.$.timeStatus.innerText, 'In Progress');
@@ -91,7 +90,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     startTimeFromUnixEpoch += (1000000n * 60n * 5n);
     element.event =
         createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     assertEquals(element.$.timeStatus.innerText, 'In 5 min');
 
@@ -99,14 +98,14 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     startTimeFromUnixEpoch += (1000000n * 60n * 60n);
     element.event =
         createEvent(1, {startTime: {internalValue: startTimeFromUnixEpoch}});
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     assertEquals(element.$.timeStatus.innerText, 'In 1 hr');
   });
 
   test('Expanded event shows extra info', async () => {
     element.expanded = true;
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const locationElement = $$(element, '#location');
@@ -136,7 +135,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
   test('location hidden if empty', async () => {
     element.expanded = true;
     element.event = createEvent(1, {location: ''});
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const locationElement = $$(element, '#location');
@@ -147,7 +146,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
   test('attachments hidden if empty', async () => {
     element.expanded = true;
     element.event = createEvent(1, {attachments: []});
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const attachmentsElement = $$(element, '#attachments');
@@ -158,7 +157,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
   test('conference button hidden if empty', async () => {
     element.expanded = true;
     element.event = createEvent(1, {conferenceUrl: {url: ''}});
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const conferenceElement = $$(element, '#conference');

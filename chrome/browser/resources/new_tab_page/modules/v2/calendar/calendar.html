@@ -1,86 +1,13 @@
-<style>
-  :host {
-    display: block;
-    padding: 0 8px;
-  }
-
-  .row {
-    background-color: var(--color-new-tab-page-module-item-background);
-    box-sizing: border-box;
-    display: block;
-    width: 100%;
-  }
-
-  ntp-calendar-event:first-of-type,
-  .row[double-booked] + .row,
-  .row[double-booked] + dom-repeat + .row,
-  .row[expanded] + .row,
-  .row[expanded] + dom-repeat + .row {
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    margin-top: 8px;
-    padding-top: 12px;
-  }
-
-  .row:last-child,
-  .row:has(+ .row[double-booked]),
-  .row:has(+ .row[expanded]) {
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-    margin-bottom: 8px;
-    padding-bottom: 12px;
-  }
-
-  .row[double-booked],
-  .row[expanded] {
-    border-radius: 12px;
-    margin: 8px 0;
-    padding: 12px 0;
-  }
-
-  #seeMore a {
-    box-sizing: border-box;
-    color: var(--color-new-tab-page-link);
-    display: block;
-    font-size: var(--ntp-module-text-size);
-    font-weight: 500;
-    line-height: var(--ntp-module-line-height);
-    overflow: hidden;
-    padding: 4px 16px;
-    position: relative;
-    text-decoration: none;
-    width: 100%;
-  }
-
-  #seeMore #hoverContainer {
-    background: var(--color-new-tab-page-module-item-background-hovered);
-    display: none;
-    height: 100%;
-    inset: 0;
-    position: absolute;
-    width: 100%;
-  }
-
-  #seeMore:hover #hoverContainer {
-    display: block;
-  }
-
-  :host-context(.focus-outline-visible) a:focus,
-  a:focus-visible {
-    box-shadow: var(--ntp-focus-shadow);
-    outline: none;
-  }
-</style>
-<template is="dom-repeat" items="[[events]]">
+${this.events.map((item, index) => html`
   <ntp-calendar-event
       class="row"
-      double-booked="[[isDoubleBooked_(index, doubleBookedIndices_)]]"
-      expanded="[[isExpanded_(index, expandedEventIndex_)]]"
-      event="[[item]]">
+      ?double-booked="${this.isDoubleBooked_(index)}"
+      ?expanded="${this.isExpanded_(index)}"
+      .event="${item}">
   </ntp-calendar-event>
-</template>
+`)}
 <div id="seeMore" class="row">
-  <a href="[[calendarLink]]">
+  <a href="${this.calendarLink}">
     $i18n{modulesCalendarSeeMore}
     <div id="hoverContainer"></div>
   </a>

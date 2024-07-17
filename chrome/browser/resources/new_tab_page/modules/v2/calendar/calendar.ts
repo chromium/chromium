@@ -3,52 +3,61 @@
 // found in the LICENSE file.
 import './calendar_event.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
 import {WindowProxy} from '../../../window_proxy.js';
 
-import {getTemplate} from './calendar.html.js';
+import {getCss} from './calendar.css.js';
+import {getHtml} from './calendar.html.js';
 import {toJsTimestamp} from './common.js';
 
 export interface CalendarElement {
   $: {
-    seeMore: HTMLDivElement,
+    seeMore: HTMLElement,
   };
 }
 
 /**
  * The calendar element for displaying the user's list of events. .
  */
-export class CalendarElement extends PolymerElement {
+export class CalendarElement extends CrLitElement {
   static get is() {
     return 'ntp-calendar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      calendarLink: String,
-      events: Object,
-      doubleBookedIndices_: {
-        type: Object,
-        computed: 'computeDoubleBookedIndices_(events, expandedEventIndex_)',
-      },
-      expandedEventIndex_: {
-        type: Number,
-        computed: 'computeExpandedEventIndex_(events)',
-      },
+      calendarLink: {type: String},
+      events: {type: Object},
+      doubleBookedIndices_: {type: Object},
+      expandedEventIndex_: {type: Number},
     };
   }
 
   calendarLink: string;
-  events: CalendarEvent[];
+  events: CalendarEvent[] = [];
 
   private doubleBookedIndices_: number[];
   private expandedEventIndex_: number;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('events')) {
+      this.expandedEventIndex_ = this.computeExpandedEventIndex_();
+      this.doubleBookedIndices_ = this.computeDoubleBookedIndices_();
+    }
+  }
 
   private computeDoubleBookedIndices_(): number[] {
     const result: number[] = [];
@@ -129,11 +138,11 @@ export class CalendarElement extends PolymerElement {
     return expandableEventIndices[0];
   }
 
-  private isDoubleBooked_(index: number) {
+  protected isDoubleBooked_(index: number) {
     return this.doubleBookedIndices_.includes(index);
   }
 
-  private isExpanded_(index: number) {
+  protected isExpanded_(index: number) {
     return index === this.expandedEventIndex_;
   }
 }

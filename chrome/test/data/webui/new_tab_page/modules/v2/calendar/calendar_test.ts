@@ -6,9 +6,8 @@ import type {CalendarEvent} from 'chrome://new-tab-page/google_calendar.mojom-we
 import {CalendarElement} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';
 
@@ -28,7 +27,7 @@ suite('NewTabPageModulesCalendarTest', () => {
   test('events are listed', async () => {
     const numEvents = 2;
     element.events = createEvents(numEvents);
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const eventElements =
@@ -54,7 +53,7 @@ suite('NewTabPageModulesCalendarTest', () => {
       }));
     }
     element.events = events;
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const eventElements =
@@ -79,7 +78,7 @@ suite('NewTabPageModulesCalendarTest', () => {
       endTime: toTime(new Date(mockTime + (30 * 60000))),
     }));
     element.events = events;
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const eventElements =
@@ -104,7 +103,7 @@ suite('NewTabPageModulesCalendarTest', () => {
       isAccepted: true,
     }));
     element.events = events;
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const eventElements =
@@ -123,7 +122,7 @@ suite('NewTabPageModulesCalendarTest', () => {
       endTime: toTime(new Date(mockTime)),
     }));
     element.events = events;
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const eventElements =
@@ -134,13 +133,14 @@ suite('NewTabPageModulesCalendarTest', () => {
 
   test('see more link is displayed', async () => {
     element.calendarLink = 'https://foo.com/';
+    await microtasksFinished();
 
     // Assert.
     assertTrue(isVisible(element.$.seeMore));
     const anchor = element.$.seeMore.querySelector<HTMLAnchorElement>('a');
     assertTrue(!!anchor);
-    assertEquals(anchor!.href, 'https://foo.com/');
-    assertEquals(anchor!.innerText, 'See more');
+    assertEquals('https://foo.com/', anchor!.href);
+    assertEquals('See more', anchor!.innerText);
   });
 
   test('double booked events are marked', async () => {
@@ -158,12 +158,12 @@ suite('NewTabPageModulesCalendarTest', () => {
       }));
     }
     element.events = events;
-    await waitAfterNextRender(element);
+    await microtasksFinished();
 
     // Assert.
     const eventElements =
         element.shadowRoot!.querySelectorAll('ntp-calendar-event');
-    assertEquals(eventElements.length, 3);
+    assertEquals(3, eventElements.length);
     assertTrue(eventElements[1]!.hasAttribute('expanded'));
     assertTrue(eventElements[0]!.hasAttribute('double-booked'));
     assertTrue(eventElements[2]!.hasAttribute('double-booked'));

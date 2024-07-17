@@ -1,0 +1,144 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host([expanded]) #header {
+  color: var(--color-new-tab-page-primary-foreground);
+  font-weight: 500;
+}
+
+#header {
+  box-sizing: border-box;
+  column-gap: 4px;
+  color: var(--color-new-tab-page-secondary-foreground);
+  display: flex;
+  font-size: var(--ntp-module-text-size);
+  line-height: var(--ntp-module-line-height);
+  padding: 4px 16px;
+  position: relative;
+  text-decoration: none;
+  width: 100%;
+}
+
+#header #hoverContainer {
+  background: var(--color-new-tab-page-module-item-background-hovered);
+  display: none;
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+#header:hover #hoverContainer {
+  display: block;
+}
+
+:host-context(.focus-outline-visible) #header:focus,
+#header:focus-visible {
+  box-shadow: var(--ntp-focus-shadow);
+  outline: none;
+}
+
+#startTime {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 56px;
+}
+
+#title {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#timeStatus {
+  background-color: var(
+      --color-new-tab-page-module-calendar-event-time-status-background);
+  border-radius: 100px;
+  color: var(--color-new-tab-page-secondary-foreground);
+  display: inline-block;
+  flex-basis: content;
+  flex-shrink: 0;
+  font-size: var(--ntp-module-secondary-text-size);
+  font-weight: 400;
+  line-height: var(--ntp-module-secondary-line-height);
+  padding: 2px 8px;
+}
+
+.cr-icon {
+  --cr-icon-color: var(--color-new-tab-page-secondary-foreground);
+  --cr-icon-size: 18px;
+  height: 20px;
+  margin: 0;
+  width: 20px;
+}
+
+#expandedInfo {
+  padding: 0 16px;
+}
+
+#attachments, #location {
+  column-gap: 8px;
+  display: flex;
+  padding: 4px 0;
+  width: 100%;
+}
+
+#location-icon {
+  --cr-icon-image: url(modules/v2/calendar/icons/location.svg);
+}
+
+#location p {
+  color: var(--color-new-tab-page-secondary-foreground);
+  font-size: 12px;
+  line-height: var(--ntp-module-secondary-line-height);
+  margin: 0;
+  overflow: hidden;
+  padding: 2px 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#attachments {
+  overflow: hidden;
+  position: relative;
+}
+
+#attachment-icon {
+  --cr-icon-image: url(modules/v2/calendar/icons/attachment.svg);
+  padding: 2px 0;
+}
+
+#attachments cr-chip {
+  --cr-chip-color: var(--color-new-tab-page-link);
+  --cr-chip-border-radius: 100px;
+  --cr-chip-font-size: var(--ntp-module-secondary-text-size);
+  --cr-chip-height: 24px;
+}
+
+#attachments img {
+  height: 14px;
+  width: 14px;
+}
+
+#fade {
+  background: linear-gradient(to right, transparent,
+      var(--color-new-tab-page-module-item-background));
+  height: 100%;
+  position: absolute;
+  inset-inline-end: -12px;
+  width: 30px;
+}
+
+#conference {
+  margin-top: 12px;
+}

@@ -1,10 +1,10 @@
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
-    header-text="[[i18n('modulesOutlookCalendarTitle')]]"
-    menu-item-groups="[[getMenuItemGroups_()]]"
-    more-actions-text="[[i18nRecursive('',
+    header-text="$i18n{modulesOutlookCalendarTitle}"
+    .menuItemGroups="${this.getMenuItemGroups_()}"
+    more-actions-text="${this.i18nRecursive('',
                           'modulesMoreActions',
-                          'modulesOutlookCalendarTitle')]]"
-    on-disable-button-click="onDisableButtonClick_"
-    on-menu-button-click="onMenuButtonClick_">
+                          'modulesOutlookCalendarTitle')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @menu-button-click="${this.onMenuButtonClick_}">
 </ntp-module-header-v2>
