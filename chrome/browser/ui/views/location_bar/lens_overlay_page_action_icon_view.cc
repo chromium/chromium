@@ -82,7 +82,9 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
 LensOverlayPageActionIconView::~LensOverlayPageActionIconView() = default;
 
 bool LensOverlayPageActionIconView::ShouldShowLabel() const {
-  return should_show_label_;
+  // The persistent entrypoint should never show a label.
+  return should_show_label_ &&
+         !lens::features::IsOmniboxEntrypointAlwaysVisible();
 }
 
 void LensOverlayPageActionIconView::Layout(PassKey) {
