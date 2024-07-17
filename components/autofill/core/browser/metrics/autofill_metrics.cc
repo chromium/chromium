@@ -2795,6 +2795,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   }
 
   if (day_in_ablation_window >= 0) {
+    builder.SetIsAblationStudyInDryRunMode(
+        features::kAutofillAblationStudyIsDryRun.Get());
     builder.SetDayInAblationWindow(day_in_ablation_window);
     builder.SetIsInControlGroupOfAblation(control_group_of_ablation.data()[0]);
     builder.SetIsInAblationGroupOfAblation(

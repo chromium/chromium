@@ -7413,6 +7413,7 @@ struct LogFocusedComplexFormAtFormRemoveTestCase {
   std::string test_name;
   test::FormDescription form;
   bool enable_ablation_study_for_addresses = false;
+  bool ablation_study_is_dry_run = false;
   // Simulate focus by tab key, focus on page load, or focus by click/tap.
   // For click/tap, also `step_1_click` should be true. The first field
   // of the form is focused.
@@ -7807,6 +7808,67 @@ INSTANTIATE_TEST_SUITE_P(
                          kIsInControlGroupOfConditionalAblationName,
                      0},
                     {UkmFocusedComplexFormType::kDayInAblationWindowName, 10},
+                    {UkmFocusedComplexFormType::
+                         kIsAblationStudyInDryRunModeName,
+                     0},
+                }},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // The user focuses and types into an autofillable field. Because
+            // the ablation study is rolled to 100%, the respective metrics are
+            // reported.
+            .test_name = "ablation_study_in_dry_run_mode",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = ADDRESS_HOME_LINE1,
+                                .autocomplete_attribute = "address-line1"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .enable_ablation_study_for_addresses = true,
+            .ablation_study_is_dry_run = true,
+            .step_0_focus = true,
+            .step_1_click = true,
+            .step_2_typing = true,
+            .step_5_submit = true,
+            .expected_metrics =
+                {
+                    {UkmFocusedComplexFormType::kAutofilledName, 0},
+                    {UkmFocusedComplexFormType::kEditedAfterAutofillName, 0},
+                    {UkmFocusedComplexFormType::kAutofillDataQueriedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kFormTypesName,
+                     kFormTypeNameForLogging_AddressForm_or_PostalAddressForm},
+                    {UkmFocusedComplexFormType::
+                         kHadNonEmptyValueAtSubmissionName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kUserModifiedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::
+                         kMillisecondsFromFirstInteractionUntilSubmissionName,
+                     1000},
+                    // Due to the dry-run mode, suggestions are available.
+                    {UkmFocusedComplexFormType::kSuggestionsAvailableName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kWasSubmittedName, 1},
+                    // Ablation study metrics. All of these are the same as
+                    // in the non-dry-run mode.
+                    {UkmFocusedComplexFormType::
+                         kIsInAblationGroupOfAblationName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::
+                         kIsInAblationGroupOfConditionalAblationName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kIsInControlGroupOfAblationName,
+                     0},
+                    {UkmFocusedComplexFormType::
+                         kIsInControlGroupOfConditionalAblationName,
+                     0},
+                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 10},
+                    // This is true due to dry-run mode.
+                    {UkmFocusedComplexFormType::
+                         kIsAblationStudyInDryRunModeName,
+                     1},
                 }}),
     [](const testing::TestParamInfo<
         LogFocusedComplexFormAtFormRemoveTest::ParamType>& info) {
@@ -7822,7 +7884,9 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
       {features::kAutofillAblationStudyEnabledForAddressesParam.name, "true"},
       {features::kAutofillAblationStudyEnabledForPaymentsParam.name, "true"},
       {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
-       "1000"}};
+       "1000"},
+      {features::kAutofillAblationStudyIsDryRun.name,
+       GetParam().ablation_study_is_dry_run ? "true" : "false"}};
   base::test::ScopedFeatureList scoped_feature_list;
   if (GetParam().enable_ablation_study_for_addresses) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(

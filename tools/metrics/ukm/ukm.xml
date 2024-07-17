@@ -4157,6 +4157,13 @@ be describing additional metrics about the same event.
       time.
     </summary>
   </metric>
+  <metric name="IsAblationStudyInDryRunMode">
+    <summary>
+      If 1, the ablation study is in dry run mode, meaning that clients are
+      diverted into ablation and control groups, but they observe no behavioral
+      change.
+    </summary>
+  </metric>
   <metric name="IsInAblationGroupOfAblation">
     <summary>
       A bit-vector with bits set according to `FormType`. A set bit indicates
