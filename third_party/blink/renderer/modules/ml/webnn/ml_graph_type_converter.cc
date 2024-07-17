@@ -544,7 +544,6 @@ OperationPtr CreateArgMinMaxOperation(const OperandToIdMap& operand_to_id_map,
   CHECK_LE(axes.size(), input_rank);
   arg_min_max_mojo->axes = axes;
   arg_min_max_mojo->keep_dimensions = options->keepDimensions();
-  arg_min_max_mojo->select_last_index = options->selectLastIndex();
 
   return blink_mojom::Operation::NewArgMinMax(std::move(arg_min_max_mojo));
 }

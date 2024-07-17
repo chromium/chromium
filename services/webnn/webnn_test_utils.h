@@ -103,8 +103,7 @@ class GraphInfoBuilder final {
                       uint64_t input_operand_id,
                       uint64_t output_operand_id,
                       std::vector<uint32_t> axes,
-                      bool keep_dimensions,
-                      bool select_last_index);
+                      bool keep_dimensions);
 
   // A `BatchNormalizationAttributes` type should have the following members:
   // struct BatchNormalizationAttributes {

@@ -405,7 +405,6 @@ struct ArgMinMaxTester {
   OperandInfo input;
   std::vector<uint32_t> axes;
   bool keep_dimensions = false;
-  bool select_last_index = false;
   OperandInfo output;
   bool expected;
 
@@ -419,7 +418,7 @@ struct ArgMinMaxTester {
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
     builder.BuildArgMinMax(kind, input_operand_id, output_operand_id, axes,
-                           keep_dimensions, select_last_index);
+                           keep_dimensions);
 
     EXPECT_EQ(WebNNGraphImpl::IsValidForTesting(context_properties,
                                                 builder.GetGraphInfo()),
@@ -533,7 +532,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
       uint64_t input_operand_id =
           builder.BuildInput("input", {2, 3, 4, 5}, OperandDataType::kInt32);
       builder.BuildArgMinMax(kind, input_operand_id, input_operand_id, {0},
-                             true, false);
+                             true);
       EXPECT_FALSE(WebNNGraphImpl::IsValidForTesting(context_properties,
                                                      builder.GetGraphInfo()));
     }

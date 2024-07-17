@@ -481,9 +481,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForArgMinMax(
   operator_desc.AxisCount = axes.size();
   operator_desc.Axes = axes.data();
   operator_desc.AxisDirection =
-      arg_min_max->select_last_index
-          ? DML_AXIS_DIRECTION::DML_AXIS_DIRECTION_DECREASING
-          : DML_AXIS_DIRECTION::DML_AXIS_DIRECTION_INCREASING;
+      DML_AXIS_DIRECTION::DML_AXIS_DIRECTION_INCREASING;
   DML_OPERATOR_TYPE operator_type;
   switch (arg_min_max->kind) {
     case mojom::ArgMinMax_Kind::kMin: {

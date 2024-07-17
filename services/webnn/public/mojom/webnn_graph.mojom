@@ -62,8 +62,6 @@ struct ArgMinMax {
   array<uint32> axes;
   // True is to retain reduced dimensions with size 1.
   bool keep_dimensions = false;
-  // True is to select the last index rather than the first find along axis.
-  bool select_last_index = false;
 };
 
 // Represents normalizing the tensor values of input features across

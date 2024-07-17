@@ -889,10 +889,6 @@ auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
     return base::unexpected(OpKindToString(arg_min_max.kind) +
                             ": Only supports scalar axis.");
   }
-  if (arg_min_max.select_last_index) {
-    return base::unexpected(OpKindToString(arg_min_max.kind) +
-                            ": Only first index can be selected.");
-  }
   ASSIGN_OR_RETURN(std::vector<int32_t> signed_axes,
                    ToSignedDimensions(arg_min_max.axes));
   const std::array<int32_t, 1> axis_tensor_shape = {
