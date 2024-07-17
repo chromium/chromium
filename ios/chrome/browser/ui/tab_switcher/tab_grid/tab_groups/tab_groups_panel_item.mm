@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
 
-#import "base/time/time.h"
 #import "base/uuid.h"
 
 @implementation TabGroupsPanelItem

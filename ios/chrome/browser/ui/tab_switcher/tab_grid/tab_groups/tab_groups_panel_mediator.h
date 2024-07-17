@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
 
 @protocol GridToolbarsMutator;
@@ -20,8 +21,9 @@ class TabGroupSyncService;
 }  // namespace tab_groups
 
 // TabGroupsPanelMediator controls the Tab Groups panel in Tab Grid.
-@interface TabGroupsPanelMediator
-    : NSObject <TabGridPageMutator, TabGroupsPanelMutator>
+@interface TabGroupsPanelMediator : NSObject <TabGridPageMutator,
+                                              TabGroupsPanelItemDataSource,
+                                              TabGroupsPanelMutator>
 
 // - `tabGroupSyncService`: the data source for the Tab Groups panel.
 // - `regularWebStateList`: used to configure the Done button. Must not be null.

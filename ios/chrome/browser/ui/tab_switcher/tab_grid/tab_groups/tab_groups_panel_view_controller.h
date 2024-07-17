@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data_source.h"
 
 @protocol TabGroupsPanelMutator;
 @class TabGroupsPanelViewController;
@@ -28,6 +29,9 @@
 
 // Mutator is informed when the model should be updated after user interaction.
 @property(nonatomic, weak) id<TabGroupsPanelMutator> mutator;
+
+// Data source to query TabGroupsPanelItem properties, to configure cells.
+@property(nonatomic, weak) id<TabGroupsPanelItemDataSource> itemDataSource;
 
 // UI Delegate is informed of user interactions.
 @property(nonatomic, weak) id<TabGroupsPanelViewControllerUIDelegate>

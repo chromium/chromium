@@ -31,24 +31,4 @@ TEST_F(TabGroupsPanelItemTest, Equality) {
   // Setting the same saved tab group ID brings back equality.
   item_2.savedTabGroupID = first_uuid;
   EXPECT_NSEQ(item_1, item_2);
-
-  // Changing the title doesn't affect equality.
-  item_1.title = @"Title 1";
-  item_2.title = @"Title 2";
-  EXPECT_NSEQ(item_1, item_2);
-
-  // Changing the color doesn't affect equality.
-  item_1.color = UIColor.yellowColor;
-  item_2.color = UIColor.redColor;
-  EXPECT_NSEQ(item_1, item_2);
-
-  // Changing the creation date doesn't affect equality.
-  item_1.creationDate = base::Time::Now();
-  item_2.creationDate = base::Time::Now() - base::Days(1);
-  EXPECT_NSEQ(item_1, item_2);
-
-  // Changing the favicons doesn’t affect equality.
-  item_1.favicons = @[ [[UIImage alloc] init] ];
-  item_2.favicons = @[ [[UIImage alloc] init], [[UIImage alloc] init] ];
-  EXPECT_NSEQ(item_1, item_2);
 }

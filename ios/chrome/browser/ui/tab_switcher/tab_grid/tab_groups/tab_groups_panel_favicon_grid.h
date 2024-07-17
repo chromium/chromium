@@ -10,9 +10,12 @@
 // A 2×2 grid of favicons to appear in a TabGroupsPanelCell.
 @interface TabGroupsPanelFaviconGrid : UIView
 
-// The favicons to display. If there are more than 4 favicons, the first three
-// favicons are displayed, and the bottom-trailing favicon is replaced with the
-// count of overflowing favicons.
+// The total number of tabs in the represented group. If there are more than 4
+// tabs, an overflow counter is displayed in the bottom-trailing position.
+@property(nonatomic, assign) NSUInteger numberOfTabs;
+
+// The favicons to display. Up to the first 4 favicons are used, based on
+// `numberOfTabs`.
 @property(nonatomic, copy) NSArray<UIImage*>* favicons;
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;

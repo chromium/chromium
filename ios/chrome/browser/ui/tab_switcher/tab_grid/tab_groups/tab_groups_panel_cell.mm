@@ -92,6 +92,7 @@ const CGFloat kDotSize = 14;
   _subtitleLabel.text = nil;
   _dot.backgroundColor = nil;
   _faviconsGrid.favicons = nil;
+  self.item = nil;
 }
 
 @end

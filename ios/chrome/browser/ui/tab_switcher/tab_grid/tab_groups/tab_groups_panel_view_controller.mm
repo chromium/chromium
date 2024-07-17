@@ -7,9 +7,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "base/check.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/time/time.h"
-#import "components/saved_tab_groups/string_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_state_view.h"
@@ -18,6 +15,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_favicon_grid.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
 
 namespace {
@@ -42,13 +40,6 @@ NSString* const kTabGroupsSection = @"TabGroups";
 
 typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
     TabGroupsPanelSnapshot;
-
-// Returns a user-friendly localized string representing the duration since the
-// creation date.
-NSString* CreationText(base::Time creation_date) {
-  return base::SysUTF16ToNSString(tab_groups::LocalizedElapsedTimeSinceCreation(
-      base::Time::Now() - creation_date));
-}
 
 }  // namespace
 
@@ -84,16 +75,14 @@ NSString* CreationText(base::Time creation_date) {
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   [self.view addSubview:_collectionView];
 
+  __weak __typeof(self) weakSelf = self;
   UICollectionViewCellRegistration* registration =
       [UICollectionViewCellRegistration
           registrationWithCellClass:[TabGroupsPanelCell class]
                configurationHandler:^(TabGroupsPanelCell* cell,
                                       NSIndexPath* indexPath,
                                       TabGroupsPanelItem* item) {
-                 cell.titleLabel.text = item.title;
-                 cell.subtitleLabel.text = CreationText(item.creationDate);
-                 cell.dot.backgroundColor = item.color;
-                 cell.faviconsGrid.favicons = item.favicons;
+                 [weakSelf configureCell:cell withItem:item];
                }];
 
   _dataSource = [[UICollectionViewDiffableDataSource alloc]
@@ -318,6 +307,22 @@ NSString* CreationText(base::Time creation_date) {
   } else {
     removeEmptyState();
   }
+}
+
+- (void)configureCell:(TabGroupsPanelCell*)cell
+             withItem:(TabGroupsPanelItem*)item {
+  cell.item = item;
+  TabGroupsPanelItemData* itemData =
+      [_itemDataSource dataForItem:item
+          withFaviconsFetchCompletion:^(NSArray<UIImage*>* favicons) {
+            if ([cell.item isEqual:item]) {
+              cell.faviconsGrid.favicons = favicons;
+            }
+          }];
+  cell.titleLabel.text = itemData.title;
+  cell.dot.backgroundColor = itemData.color;
+  cell.subtitleLabel.text = itemData.creationText;
+  cell.faviconsGrid.numberOfTabs = itemData.numberOfTabs;
 }
 
 @end

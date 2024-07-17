@@ -81,6 +81,7 @@
   _mediator.toolbarTabGridDelegate = _toolbarTabGridDelegate;
   _mediator.consumer = _gridViewController;
   _gridViewController.mutator = _mediator;
+  _gridViewController.itemDataSource = _mediator;
 }
 
 - (void)stop {

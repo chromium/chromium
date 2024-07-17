@@ -13,6 +13,7 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/saved_tab_groups/saved_tab_group.h"
+#import "components/saved_tab_groups/string_utils.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -20,9 +21,13 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/gfx/image/image.h"
 
 namespace {
 
@@ -30,26 +35,24 @@ using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
                             tab_groups::TabGroupSyncService::Observer>;
 
+// Converts a vector of `SavedTabGroup`s into an array of `TabGroupsPanelItem`s.
 NSArray<TabGroupsPanelItem*>* CreateItems(
     std::vector<tab_groups::SavedTabGroup> groups) {
   NSMutableArray<TabGroupsPanelItem*>* items = [[NSMutableArray alloc] init];
-
   for (const auto& group : groups) {
     TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
     item.savedTabGroupID = group.saved_guid();
-    item.title = base::SysUTF16ToNSString(group.title());
-    item.creationDate = group.creation_time_windows_epoch_micros();
-    item.color = TabGroup::ColorForTabGroupColorId(group.color());
-    NSMutableArray<UIImage*>* favicons = [[NSMutableArray alloc] init];
-    for (const auto& _ : group.saved_tabs()) {
-      // TODO(crbug.com/351110394): Query up to 4 favicons only.
-      [favicons addObject:[[UIImage alloc] init]];
-    }
-    item.favicons = favicons;
     [items addObject:item];
   }
-
+  // TODO(crbug.com/353479022): Sort by creation date.
   return items;
+}
+
+// Returns a user-friendly localized string representing the duration since the
+// creation date.
+NSString* CreationText(base::Time creation_date) {
+  return base::SysUTF16ToNSString(tab_groups::LocalizedElapsedTimeSinceCreation(
+      base::Time::Now() - creation_date));
 }
 
 }  // namespace
@@ -109,7 +112,7 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
   _regularWebStateList = nullptr;
 }
 
-#pragma mark - TabGridPageMutator
+#pragma mark TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
   _selectedGrid = selected;
@@ -126,7 +129,7 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
       << "Tab Groups panel should only support Normal mode.";
 }
 
-#pragma mark - TabGridToolbarsGridDelegate
+#pragma mark TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
   NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
@@ -164,13 +167,67 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
   NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
 }
 
-#pragma mark - TabGroupsPanelMutator
+#pragma mark TabGroupsPanelItemDataSource
+
+- (TabGroupsPanelItemData*)dataForItem:(TabGroupsPanelItem*)item
+           withFaviconsFetchCompletion:
+               (void (^)(NSArray<UIImage*>*))completion {
+  const auto group = _tabGroupSyncService->GetGroup(item.savedTabGroupID);
+  if (!group) {
+    return nil;
+  }
+
+  // Gather the item data.
+  TabGroupsPanelItemData* itemData = [[TabGroupsPanelItemData alloc] init];
+  const auto title = group->title();
+  const auto numberOfTabs = group->saved_tabs().size();
+  if (title.length() > 0) {
+    itemData.title = base::SysUTF16ToNSString(title);
+  } else {
+    itemData.title = l10n_util::GetPluralNSStringF(
+        IDS_IOS_TAB_GROUP_TABS_NUMBER, numberOfTabs);
+  }
+  itemData.color = TabGroup::ColorForTabGroupColorId(group->color());
+  itemData.creationText =
+      CreationText(group->creation_time_windows_epoch_micros());
+  itemData.numberOfTabs = static_cast<NSUInteger>(numberOfTabs);
+
+  // Fetch the favicons.
+  NSMutableArray<UIImage*>* favicons = [[NSMutableArray alloc] init];
+  const auto saved_tabs = group->saved_tabs();
+  // Query up to 4 favicons…
+  NSUInteger maxFaviconsCount = MIN(numberOfTabs, 4);
+  // … but only 3 if there is an overflow. The 4th spot is replaced with the
+  // count of remaining tabs.
+  if (maxFaviconsCount > 4) {
+    maxFaviconsCount = 3;
+  }
+  for (size_t i = 0; i < saved_tabs.size() && favicons.count < maxFaviconsCount;
+       i++) {
+    // TODO(crbug.com/351110394): Fetch favicons from the URL.
+    const auto favicon = saved_tabs[i].favicon();
+    if (favicon) {
+      [favicons addObject:favicon->ToUIImage()];
+    } else {
+      [favicons addObject:[UIImage imageNamed:@"ic_close"]];
+    }
+  }
+  // TODO(crbug.com/351110394): Remove this simulated asynchronous fetch once
+  // actually fetching favicons asynchronously.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    completion(favicons);
+  });
+
+  return itemData;
+}
+
+#pragma mark TabGroupsPanelMutator
 
 - (void)selectTabGroupsPanelItem:(TabGroupsPanelItem*)item {
   // TODO(crbug.com/329626537): Handle opening the tab group locally.
 }
 
-#pragma mark - TabGroupSyncServiceObserverDelegate
+#pragma mark TabGroupSyncServiceObserverDelegate
 
 - (void)tabGroupSyncServiceInitialized {
   _serviceInitialized = true;
@@ -185,6 +242,7 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
 - (void)tabGroupSyncServiceTabGroupUpdated:
             (const tab_groups::SavedTabGroup&)group
                                 fromSource:(tab_groups::TriggerSource)source {
+  // TODO(crbug.com/353479040): Just reconfigure the group that changed.
   [self populateItemsFromService];
 }
 
@@ -201,7 +259,7 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
   [self populateItemsFromService];
 }
 
-#pragma mark - Private
+#pragma mark Private
 
 // Creates and send a tab grid toolbar configuration with button that should be
 // displayed when Tab Groups is selected.
