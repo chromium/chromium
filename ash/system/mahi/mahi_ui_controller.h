@@ -108,17 +108,17 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
   // Sends `question` to the backend. `current_panel_content` determines if the
   // `question` is regarding the current content displayed on the panel.
   // `source` indicates where `question` is posted.
+  // If `update_summary_after_answer_question` is true, a request to update the
+  // summary view will be made when the answer is loaded.
   void SendQuestion(const std::u16string& question,
                     bool current_panel_content,
-                    QuestionSource source);
+                    QuestionSource source,
+                    bool update_summary_after_answer_question = false);
 
   // Sends requests to the backend to update summary and outlines.
   // `delegates_` will be notified of the updated summary and outlines when
   // requests are fulfilled.
   void UpdateSummaryAndOutlines();
-
-  // Makes sure that we update the summary after `OnAnswerLoaded` is called.
-  void SetUpdateSummaryAfterAnswerQuestion();
 
   // Records histogram that tracks the amount of times the panel was opened
   // during an active session.

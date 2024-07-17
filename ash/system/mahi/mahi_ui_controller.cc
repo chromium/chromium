@@ -151,8 +151,11 @@ void MahiUiController::Retry(VisibilityState origin_state) {
 
 void MahiUiController::SendQuestion(const std::u16string& question,
                                     bool current_panel_content,
-                                    QuestionSource source) {
+                                    QuestionSource source,
+                                    bool update_summary_after_answer_question) {
   InvalidatePendingRequests();
+
+  update_summary_after_answer_question_ = update_summary_after_answer_question;
 
   base::UmaHistogramEnumeration(
       mahi_constants::kMahiQuestionSourceHistogramName, source);
@@ -179,10 +182,6 @@ void MahiUiController::UpdateSummaryAndOutlines() {
       &MahiUiController::OnSummaryLoaded, weak_ptr_factory_.GetWeakPtr()));
   chromeos::MahiManager::Get()->GetOutlines(base::BindOnce(
       &MahiUiController::OnOutlinesLoaded, weak_ptr_factory_.GetWeakPtr()));
-}
-
-void MahiUiController::SetUpdateSummaryAfterAnswerQuestion() {
-  update_summary_after_answer_question_ = true;
 }
 
 void MahiUiController::OnSessionStateChanged(

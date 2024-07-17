@@ -414,13 +414,13 @@ void MahiManagerImpl::OnContextMenuClicked(
       // we need to update the summary after answering the question to make sure
       // that user gets summary when navigating back to the summary UI
       // (b/345621992).
-      ui_controller_.SetUpdateSummaryAfterAnswerQuestion();
-
       // When the user sends a question from the context menu, we treat it as
       // the start of a new journey, so we set `current_panel_content` false.
-      ui_controller_.SendQuestion(context_menu_request->question.value(),
-                                  /*current_panel_content=*/false,
-                                  MahiUiController::QuestionSource::kMenuView);
+      ui_controller_.SendQuestion(
+          context_menu_request->question.value(),
+          /*current_panel_content=*/false,
+          MahiUiController::QuestionSource::kMenuView,
+          /*update_summary_after_answer_question=*/true);
 
       return;
     case MahiContextMenuActionType::kSettings:

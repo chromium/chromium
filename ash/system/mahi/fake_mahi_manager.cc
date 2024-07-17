@@ -133,12 +133,11 @@ void FakeMahiManager::OnContextMenuClicked(
       // we need to update the summary after answering the question to make sure
       // that user gets summary when navigating back to the summary UI
       // (b/345621992).
-      // TODO(b/345621992): Make this a param of `SendQuestion()` instead.
-      ui_controller_.SetUpdateSummaryAfterAnswerQuestion();
-
-      ui_controller_.SendQuestion(context_menu_request->question.value(),
-                                  /*current_panel_content=*/true,
-                                  MahiUiController::QuestionSource::kMenuView);
+      ui_controller_.SendQuestion(
+          context_menu_request->question.value(),
+          /*current_panel_content=*/true,
+          MahiUiController::QuestionSource::kMenuView,
+          /*update_summary_after_answer_question=*/true);
       return;
     case MahiContextMenuActionType::kSettings:
       NewWindowDelegate::GetInstance()->OpenUrl(

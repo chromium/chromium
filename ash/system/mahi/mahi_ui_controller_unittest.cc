@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_panel_view.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "ash/system/mahi/test/mahi_test_util.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
@@ -22,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,6 +66,15 @@ void ChangeLockState(bool locked) {
 }  // namespace
 
 class MahiUiControllerTest : public AshTestBase {
+ public:
+  MahiUiControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  MahiUiControllerTest(const MahiUiControllerTest&) = delete;
+  MahiUiControllerTest& operator=(const MahiUiControllerTest&) = delete;
+
+  ~MahiUiControllerTest() override = default;
+
  protected:
   MockMahiUiControllerDelegate& delegate() { return delegate_; }
   MockView& delegate_view() { return delegate_view_; }
@@ -73,6 +84,8 @@ class MahiUiControllerTest : public AshTestBase {
  private:
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+
     ON_CALL(delegate_, GetView).WillByDefault(Return(&delegate_view_));
     AshTestBase::SetUp();
     scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
@@ -84,6 +97,7 @@ class MahiUiControllerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<MockView> delegate_view_;
   NiceMock<MahiUiController> ui_controller_;
   NiceMock<MockMahiUiControllerDelegate> delegate_{&ui_controller_};
@@ -233,6 +247,13 @@ TEST_F(MahiUiControllerTest, SendQuestion) {
             std::move(callback).Run(answer, MahiResponseStatus::kSuccess);
           });
 
+  const std::u16string summary(u"fake summary");
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault(
+          [&summary](chromeos::MahiManager::MahiSummaryCallback callback) {
+            std::move(callback).Run(summary, MahiResponseStatus::kSuccess);
+          });
+
   InSequence s;
   const std::u16string question(u"fake question");
   EXPECT_CALL(delegate(),
@@ -244,8 +265,37 @@ TEST_F(MahiUiControllerTest, SendQuestion) {
                                        Eq(MahiUiUpdateType::kAnswerLoaded)),
                               Property(&MahiUiUpdate::GetAnswer, answer))));
 
+  // `kSummaryLoaded` update should not be called when
+  // `update_summary_after_answer_question` is false.
+  EXPECT_CALL(delegate(),
+              OnUpdated(Property(&MahiUiUpdate::type,
+                                 Eq(MahiUiUpdateType::kSummaryLoaded))))
+      .Times(0);
+
   ui_controller().SendQuestion(question, /*current_panel_content=*/true,
-                               MahiUiController::QuestionSource::kPanel);
+                               MahiUiController::QuestionSource::kPanel,
+                               /*update_summary_after_answer_question=*/false);
+  Mock::VerifyAndClearExpectations(&delegate());
+
+  EXPECT_CALL(delegate(),
+              OnUpdated(AllOf(Property(&MahiUiUpdate::type,
+                                       Eq(MahiUiUpdateType::kQuestionPosted)),
+                              Property(&MahiUiUpdate::GetQuestion, question))));
+  EXPECT_CALL(delegate(),
+              OnUpdated(AllOf(Property(&MahiUiUpdate::type,
+                                       Eq(MahiUiUpdateType::kAnswerLoaded)),
+                              Property(&MahiUiUpdate::GetAnswer, answer))));
+
+  // `kSummaryLoaded` update should be called when
+  // `update_summary_after_answer_question` is true.
+  EXPECT_CALL(delegate(),
+              OnUpdated(AllOf(Property(&MahiUiUpdate::type,
+                                       Eq(MahiUiUpdateType::kSummaryLoaded)),
+                              Property(&MahiUiUpdate::GetSummary, summary))));
+
+  ui_controller().SendQuestion(question, /*current_panel_content=*/true,
+                               MahiUiController::QuestionSource::kPanel,
+                               /*update_summary_after_answer_question=*/true);
   Mock::VerifyAndClearExpectations(&delegate());
 }
 
@@ -356,6 +406,79 @@ TEST_F(MahiUiControllerTest, RacingRequests) {
   ASSERT_TRUE(summary_waiter.Wait());
   ASSERT_TRUE(answer_waiter.Wait());
   Mock::VerifyAndClearExpectations(&delegate());
+}
+
+// Tests to make sure that when navigating back to summary view, the view is not
+// stuck at loading (b/345621992).
+TEST_F(MahiUiControllerTest, UpdateSummaryAfterAnswerQuestionAsync) {
+  auto delay_time = base::Milliseconds(10);
+  // Configs the mock mahi manager to respond async-ly.
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault(
+          [delay_time](chromeos::MahiManager::MahiSummaryCallback callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](chromeos::MahiManager::MahiSummaryCallback callback) {
+                      std::move(callback).Run(u"fake summary",
+                                              MahiResponseStatus::kSuccess);
+                    },
+                    std::move(callback)),
+                delay_time);
+          });
+
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault([delay_time](
+                         const std::u16string& question,
+                         bool current_panel_content,
+                         chromeos::MahiManager::MahiAnswerQuestionCallback
+                             callback) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+                  std::move(callback).Run(u"fake answer",
+                                          MahiResponseStatus::kSuccess);
+                },
+                std::move(callback)),
+            delay_time);
+      });
+
+  MahiPanelView panel_view(&ui_controller());
+  ui_controller().SendQuestion(u"fake question", /*current_panel_content=*/true,
+                               MahiUiController::QuestionSource::kMenuView,
+                               /*update_summary_after_answer_question=*/true);
+
+  auto* question_answer_view =
+      panel_view.GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  auto* summary_outlines_section =
+      panel_view.GetViewByID(mahi_constants::ViewId::kSummaryOutlinesSection);
+
+  EXPECT_TRUE(question_answer_view->GetVisible());
+  EXPECT_FALSE(summary_outlines_section->GetVisible());
+
+  ui_controller().NavigateToSummaryOutlinesSection();
+  EXPECT_FALSE(question_answer_view->GetVisible());
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+
+  // Summary is loading after answering a question.
+  EXPECT_TRUE(
+      panel_view
+          .GetViewByID(mahi_constants::ViewId::kSummaryLoadingAnimatedImage)
+          ->GetVisible());
+  EXPECT_FALSE(panel_view.GetViewByID(mahi_constants::ViewId::kSummaryLabel)
+                   ->GetVisible());
+
+  // Fast forward until summary is loaded.
+  task_environment()->FastForwardBy(base::Milliseconds(30));
+
+  // The loading image should not be visible now since summary is fully loaded.
+  EXPECT_FALSE(
+      panel_view
+          .GetViewByID(mahi_constants::ViewId::kSummaryLoadingAnimatedImage)
+          ->GetVisible());
+  EXPECT_TRUE(panel_view.GetViewByID(mahi_constants::ViewId::kSummaryLabel)
+                  ->GetVisible());
 }
 
 // Test suite where the UI controller and its delegate are initialized on
