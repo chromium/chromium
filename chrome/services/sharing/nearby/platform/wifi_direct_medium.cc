@@ -96,11 +96,21 @@ std::unique_ptr<api::WifiDirectSocket> WifiDirectMedium::ConnectToService(
     CancellationFlag* cancellation_flag) {
   // Ensure that there is a valid WiFi Direct connection.
   if (!connection_) {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ConnectToService.Error",
+        WifiDirectServiceError::kNoConnection);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ConnectToService.Result", false);
     return nullptr;
   }
 
   // Ensure the connection attempt hasn't been cancelled.
   if (cancellation_flag && cancellation_flag->Cancelled()) {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ConnectToService.Error",
+        WifiDirectServiceError::kCancelled);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ConnectToService.Result", false);
     return nullptr;
   }
 
@@ -108,6 +118,11 @@ std::unique_ptr<api::WifiDirectSocket> WifiDirectMedium::ConnectToService(
       net::CreatePlatformSocket(AF_INET, SOCK_STREAM, IPPROTO_TCP)));
   if (!handle.is_valid()) {
     // Failed to get a socket file descriptor.
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ConnectToService.Error",
+        WifiDirectServiceError::kFailedToCreatePlatformSocket);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ConnectToService.Result", false);
     return nullptr;
   }
 
@@ -123,12 +138,22 @@ std::unique_ptr<api::WifiDirectSocket> WifiDirectMedium::ConnectToService(
 
   if (!did_associate) {
     // Socket not associated at the platform layer.
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ConnectToService.Error",
+        WifiDirectServiceError::kFailedToAssociateSocket);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ConnectToService.Result", false);
     return nullptr;
   }
 
   // TODO(b/345572726): Unittest this specific cancellation scenario.
   if (cancellation_flag && cancellation_flag->Cancelled()) {
     // Cancelled during connection attempt.
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ConnectToService.Error",
+        WifiDirectServiceError::kCancelled);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ConnectToService.Result", false);
     return nullptr;
   }
 
@@ -144,15 +169,27 @@ std::unique_ptr<api::WifiDirectSocket> WifiDirectMedium::ConnectToService(
     waitable_event.Wait();
   }
   if (!socket) {
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ConnectToService.Error",
+        WifiDirectServiceError::kFailedToConnectSocket);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ConnectToService.Result", false);
     return nullptr;
   }
 
   // TODO(b/345572726): Unittest this specific cancellation scenario.
   if (cancellation_flag && cancellation_flag->Cancelled()) {
     // Cancelled during connection attempt.
+    base::UmaHistogramEnumeration(
+        "Nearby.Connections.WifiDirect.ConnectToService.Error",
+        WifiDirectServiceError::kCancelled);
+    base::UmaHistogramBoolean(
+        "Nearby.Connections.WifiDirect.ConnectToService.Result", false);
     return nullptr;
   }
 
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.WifiDirect.ConnectToService.Result", true);
   return std::make_unique<WifiDirectSocket>(
       std::move(handle), io_thread_->task_runner(), std::move(socket));
 }

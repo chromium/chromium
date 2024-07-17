@@ -18,6 +18,18 @@
 
 namespace nearby::chrome {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WifiDirectServiceError {
+  kNoConnection = 0,
+  kFailedToCreatePlatformSocket = 1,
+  kFailedToAssociateSocket = 2,
+  kCancelled = 3,
+  kFailedToConnectSocket = 4,
+  kFailedToOpenFirewallHole = 5,
+  kMaxValue = kFailedToOpenFirewallHole,
+};
+
 class WifiDirectMedium : public api::WifiDirectMedium {
  public:
   explicit WifiDirectMedium(

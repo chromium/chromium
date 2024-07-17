@@ -550,6 +550,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.WifiDirect.ConnectToService.Error"
+    enum="NearbyConnectionsWifiDirectServiceError" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the error that occured attempting to connect to the Nearby
+    Connections endpoint via the connected WiFi Direct interface. Emitted when
+    Nearby Connections encounters an error initiating the TCP connection.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.WifiDirect.ConnectToService.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to connect to the Nearby onnections
+    endpoint via the connected WiFi Direct interface. Emitted when Nearby
+    Connections returns the result from connect to service call.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.WifiDirect.ConnectToWifiDirectGroup.Error"
     enum="NearbyConnectionsWifiDirectResult" expires_after="2025-04-30">
   <owner>jackshira@google.com</owner>

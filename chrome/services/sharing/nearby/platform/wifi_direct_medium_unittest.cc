@@ -37,6 +37,10 @@ constexpr char kConnectGroupErrorMetricName[] =
     "Nearby.Connections.WifiDirect.ConnectToWifiDirectGroup.Error";
 constexpr char kAssociateSocketResultMetricName[] =
     "Nearby.Connections.WifiDirect.AssociateSocket.Result";
+constexpr char kConnectToServiceResultMetricName[] =
+    "Nearby.Connections.WifiDirect.ConnectToService.Result";
+constexpr char kConnectToServiceErrorMetricName[] =
+    "Nearby.Connections.WifiDirect.ConnectToService.Error";
 
 // Pick a random port for each test run, otherwise the `Listen` call has a
 // chance to return ADDRESS_IN_USE(-147).
@@ -452,6 +456,8 @@ TEST_F(WifiDirectMediumTest, ConnectToService_Success) {
       medium()));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kConnectToServiceResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kConnectToServiceErrorMetricName, 0);
 
   int port = RandomPort();
   AcceptSocket(port);
@@ -466,6 +472,10 @@ TEST_F(WifiDirectMediumTest, ConnectToService_Success) {
 
   EXPECT_TRUE(connection->did_associate);
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 1);
+  histogram_tester().ExpectTotalCount(kConnectToServiceResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kConnectToServiceResultMetricName,
+                                       /*bucket:true=*/1, 1);
+  histogram_tester().ExpectTotalCount(kConnectToServiceErrorMetricName, 0);
 }
 
 TEST_F(WifiDirectMediumTest, ConnectToService_MissingConnection) {
@@ -483,6 +493,8 @@ TEST_F(WifiDirectMediumTest, ConnectToService_MissingConnection) {
       medium()));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kConnectToServiceResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kConnectToServiceErrorMetricName, 0);
 
   int port = RandomPort();
   AcceptSocket(port);
@@ -496,6 +508,12 @@ TEST_F(WifiDirectMediumTest, ConnectToService_MissingConnection) {
       medium(), port));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectBucketCount(kConnectToServiceResultMetricName,
+                                       /*bucket:false=*/0, 1);
+  histogram_tester().ExpectTotalCount(kConnectToServiceErrorMetricName, 1);
+  histogram_tester().ExpectBucketCount(kConnectToServiceErrorMetricName,
+                                       WifiDirectServiceError::kNoConnection,
+                                       1);
 }
 
 TEST_F(WifiDirectMediumTest, ConnectToService_FailToAssociatesSocket) {
@@ -515,6 +533,8 @@ TEST_F(WifiDirectMediumTest, ConnectToService_FailToAssociatesSocket) {
       medium()));
 
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kConnectToServiceResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kConnectToServiceErrorMetricName, 0);
 
   int port = RandomPort();
   AcceptSocket(port);
@@ -530,6 +550,12 @@ TEST_F(WifiDirectMediumTest, ConnectToService_FailToAssociatesSocket) {
   histogram_tester().ExpectTotalCount(kAssociateSocketResultMetricName, 1);
   histogram_tester().ExpectBucketCount(kAssociateSocketResultMetricName,
                                        /*bucket:false=*/0, 1);
+  histogram_tester().ExpectBucketCount(kConnectToServiceResultMetricName,
+                                       /*bucket:false=*/0, 1);
+  histogram_tester().ExpectTotalCount(kConnectToServiceErrorMetricName, 1);
+  histogram_tester().ExpectBucketCount(
+      kConnectToServiceErrorMetricName,
+      WifiDirectServiceError::kFailedToAssociateSocket, 1);
 }
 
 TEST_F(WifiDirectMediumTest, ListenForService_Success) {
