@@ -243,7 +243,6 @@ class GraphImplDml final : public WebNNGraphImpl {
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
-      std::unique_ptr<CommandRecorder> inference_command_recorder,
       base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
       std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
       GraphBufferBindingInfo graph_buffer_binding_info,

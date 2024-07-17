@@ -5385,7 +5385,6 @@ void GraphImplDml::OnCompilationComplete(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     WebNNContextImpl::CreateGraphImplCallback callback,
-    std::unique_ptr<CommandRecorder> inference_command_recorder,
     base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
     std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
     GraphBufferBindingInfo graph_buffer_binding_info,
@@ -5398,18 +5397,15 @@ void GraphImplDml::OnCompilationComplete(
     return;
   }
 
-  std::unique_ptr<CommandRecorder> initialization_command_recorder;
-  if (adapter->IsNPU()) {
-    ASSIGN_OR_RETURN(
-        initialization_command_recorder,
-        CommandRecorder::Create(adapter->init_command_queue_for_npu(),
-                                adapter->dml_device()),
-        &HandleGraphCreationFailure,
-        "Failed to create command recorder for graph initialization.",
-        std::move(callback), context.get());
-  } else {
-    initialization_command_recorder = std::move(inference_command_recorder);
-  }
+  CommandQueue* command_queue = adapter->IsNPU()
+                                    ? adapter->init_command_queue_for_npu()
+                                    : adapter->command_queue();
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<CommandRecorder> initialization_command_recorder,
+      CommandRecorder::Create(command_queue, adapter->dml_device()),
+      &HandleGraphCreationFailure,
+      "Failed to create command recorder for graph initialization.",
+      std::move(callback), context.get());
 
   HRESULT hr = initialization_command_recorder->Open();
   if (FAILED(hr)) {
@@ -5679,13 +5675,6 @@ void GraphImplDml::CreateAndBuild(
     WebNNContextImpl::CreateGraphImplCallback callback,
     const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
-  // `CommandRecorder` would keep reference of command queue and DML device.
-  ASSIGN_OR_RETURN(
-      std::unique_ptr<CommandRecorder> command_recorder,
-      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device()),
-      &HandleGraphCreationFailure, "Failed to create the command recorder.",
-      std::move(callback), context.get());
-
   GraphBuilderDml graph_builder(adapter->dml_device());
   IdToNodeOutputMap id_to_node_output_map;
   const IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
@@ -6092,7 +6081,6 @@ void GraphImplDml::CreateAndBuild(
                      pass_dml_execution_disable_meta_commands),
       base::BindOnce(&GraphImplDml::OnCompilationComplete, std::move(adapter),
                      std::move(context), std::move(callback),
-                     std::move(command_recorder),
                      std::move(graph_info->constant_id_to_buffer_map),
                      std::move(constant_id_to_input_index_map),
                      std::move(graph_buffer_binding_info),
