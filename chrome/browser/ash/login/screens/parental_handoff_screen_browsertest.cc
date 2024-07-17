@@ -190,7 +190,9 @@ class ParentalHandoffScreenChildBrowserTest
       &policy_server_mixin_};
 };
 
-IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenChildBrowserTest, ChildUserLogin) {
+// TODO(crbug.com/353692644): Test is flaky
+IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenChildBrowserTest,
+                       DISABLED_ChildUserLogin) {
   LoginAsNewChildUser();
 
   WizardController* wizard = WizardController::default_controller();
