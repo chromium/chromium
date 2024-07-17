@@ -1237,7 +1237,6 @@ class CORE_EXPORT LocalFrame final
 
   WebPrintParams print_params_;
 
-  GC_PLUGIN_IGNORE("https://crbug.com/41482945")
   BrowserInterfaceBrokerProxyImpl browser_interface_broker_proxy_;
 
   // Holds WebLinkPreviewTriggerer instance if content renderer client wants to

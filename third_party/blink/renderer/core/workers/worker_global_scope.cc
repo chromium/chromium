@@ -643,6 +643,7 @@ WorkerGlobalScope::WorkerGlobalScope(
           creation_params->agent_group_scheduler_compositor_task_runner)),
       time_origin_(time_origin),
       font_selector_(MakeGarbageCollected<OffscreenFontSelector>(this)),
+      browser_interface_broker_proxy_(this),
       script_eval_state_(ScriptEvalState::kPauseAfterFetch),
       ukm_source_id_(creation_params->ukm_source_id),
       top_level_frame_security_origin_(
@@ -778,6 +779,7 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(font_selector_);
   visitor->Trace(trusted_types_);
   visitor->Trace(worker_script_);
+  visitor->Trace(browser_interface_broker_proxy_);
   WorkerOrWorkletGlobalScope::Trace(visitor);
   Supplementable<WorkerGlobalScope>::Trace(visitor);
 }

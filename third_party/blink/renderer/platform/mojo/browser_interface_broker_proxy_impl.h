@@ -9,15 +9,18 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+class ContextLifecycleNotifier;
 
 class PLATFORM_EXPORT TestableBrowserInterfaceBrokerProxy
     : public BrowserInterfaceBrokerProxy {
@@ -60,8 +63,11 @@ class PLATFORM_EXPORT TestableBrowserInterfaceBrokerProxy
 // worker-scoped InterfaceProvider (see https://crbug.com/40519010).
 class PLATFORM_EXPORT BrowserInterfaceBrokerProxyImpl
     : public TestableBrowserInterfaceBrokerProxy {
+  DISALLOW_NEW();
+
  public:
-  BrowserInterfaceBrokerProxyImpl() = default;
+  explicit BrowserInterfaceBrokerProxyImpl(ContextLifecycleNotifier* notifier);
+
   BrowserInterfaceBrokerProxyImpl(const BrowserInterfaceBrokerProxyImpl&) =
       delete;
   BrowserInterfaceBrokerProxyImpl& operator=(
@@ -81,8 +87,14 @@ class PLATFORM_EXPORT BrowserInterfaceBrokerProxyImpl
 
   bool is_bound() const;
 
+  void Trace(Visitor*) const;
+
  private:
-  mojo::Remote<mojom::blink::BrowserInterfaceBroker> broker_;
+  // TODO(https://crbug.com/352165586): Stop using
+  // `kForceWithoutContextObserver`.
+  HeapMojoRemote<mojom::blink::BrowserInterfaceBroker,
+                 HeapMojoWrapperMode::kForceWithoutContextObserver>
+      broker_;
 };
 
 }  // namespace blink

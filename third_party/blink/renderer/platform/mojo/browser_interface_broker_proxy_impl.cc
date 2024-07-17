@@ -98,6 +98,10 @@ BrowserInterfaceBrokerProxy& GetEmptyBrowserInterfaceBroker() {
 BrowserInterfaceBrokerProxy::BrowserInterfaceBrokerProxy() = default;
 BrowserInterfaceBrokerProxy::~BrowserInterfaceBrokerProxy() = default;
 
+BrowserInterfaceBrokerProxyImpl::BrowserInterfaceBrokerProxyImpl(
+    ContextLifecycleNotifier* notifier)
+    : broker_(notifier) {}
+
 void BrowserInterfaceBrokerProxyImpl::Bind(
     CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase> broker,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -127,6 +131,10 @@ void BrowserInterfaceBrokerProxyImpl::GetInterface(
 
 bool BrowserInterfaceBrokerProxyImpl::is_bound() const {
   return broker_.is_bound();
+}
+
+void BrowserInterfaceBrokerProxyImpl::Trace(Visitor* visitor) const {
+  visitor->Trace(broker_);
 }
 
 }  // namespace blink

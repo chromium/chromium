@@ -30,6 +30,8 @@ class PLATFORM_EXPORT MojoBindingContext
     : public ContextLifecycleNotifier,
       public Supplementable<MojoBindingContext> {
  public:
+  MojoBindingContext() : mojo_js_interface_broker_(this) {}
+
   virtual const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
       const = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
@@ -51,14 +53,13 @@ class PLATFORM_EXPORT MojoBindingContext
   }
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(mojo_js_interface_broker_);
     ContextLifecycleNotifier::Trace(visitor);
     Supplementable::Trace(visitor);
   }
 
  private:
   bool use_mojo_js_interface_broker_;
-
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   BrowserInterfaceBrokerProxyImpl mojo_js_interface_broker_;
 };
 
