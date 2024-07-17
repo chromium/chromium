@@ -18,6 +18,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/coordinator:public",
+    "//ios/chrome/browser/contextual_panel/utils",
     "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/price_insights/ui:price_insights_ui",
     "//ios/chrome/browser/shared/coordinator/alert",

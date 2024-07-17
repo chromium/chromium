@@ -13635,6 +13635,17 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="AccessibilityExtraExtraExtraLarge"/>
 </enum>
 
+<!-- LINT.IfChange(IOSContextualPanelDismissedReason) -->
+
+<enum name="IOSContextualPanelDismissedReason">
+  <int value="0" label="User dismissed"/>
+  <int value="1" label="Tab changed"/>
+  <int value="2" label="Navigation initiated"/>
+  <int value="3" label="Dismissed due to interaction with info block"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h:ContextualPanelDismissedReason) -->
+
 <!-- LINT.IfChange(IOSContextualPanelInfoBlockImpression) -->
 
 <enum name="IOSContextualPanelInfoBlockImpression">
@@ -13647,7 +13658,7 @@ Called by update_permissions_policy_enum.py.-->
              IPH)"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/ui/contextual_panel_metrics.h:PanelBlockImpressionType) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h:PanelBlockImpressionType) -->
 
 <!-- LINT.IfChange(IOSContextualPanelModelRelevance) -->
 
@@ -13657,7 +13668,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="High"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/ui/contextual_panel_metrics.h:ModelRelevanceType) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h:ModelRelevanceType) -->
 
 <enum name="IOSDefaultBookmarkFolderOutcome">
   <int value="0" label="kUnset"/>

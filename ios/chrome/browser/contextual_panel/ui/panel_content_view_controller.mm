@@ -10,11 +10,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/contextual_panel/ui/contextual_panel_metrics.h"
 #import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_display_controller.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_data.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_metrics_data.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_item_collection_view_cell.h"
+#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -302,6 +302,8 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
 // Target for the close button.
 - (void)closeButtonTapped {
+  base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
+                                ContextualPanelDismissedReason::UserDismissed);
   [self.contextualSheetCommandHandler closeContextualSheet];
 }
 

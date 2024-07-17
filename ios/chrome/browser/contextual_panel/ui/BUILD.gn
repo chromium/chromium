@@ -14,10 +14,10 @@ source_set("ui") {
     "panel_content_view_controller.mm",
   ]
   deps = [
-    ":metrics",
     ":public",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_branded_strings_grit",
+    "//ios/chrome/browser/contextual_panel/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
@@ -36,11 +36,6 @@ source_set("public") {
   ]
   deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("metrics") {
-  sources = [ "contextual_panel_metrics.h" ]
-  deps = [ "//base" ]
 }
 
 source_set("eg2_tests") {

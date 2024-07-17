@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
-#import "ios/chrome/browser/contextual_panel/ui/contextual_panel_metrics.h"
+#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -120,6 +120,9 @@ void ContextualPanelTabHelper::DidStartNavigation(
   }
 
   if (IsContextualPanelCurrentlyOpened()) {
+    base::UmaHistogramEnumeration(
+        "IOS.ContextualPanel.DismissedReason",
+        ContextualPanelDismissedReason::NavigationInitiated);
     [contextual_sheet_handler_ hideContextualSheet];
     CloseContextualPanel();
   }
@@ -166,6 +169,8 @@ void ContextualPanelTabHelper::WasShown(web::WebState* web_state) {
 
 void ContextualPanelTabHelper::WasHidden(web::WebState* web_state) {
   if (IsContextualPanelCurrentlyOpened()) {
+    base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
+                                  ContextualPanelDismissedReason::TabChanged);
     [contextual_sheet_handler_ hideContextualSheet];
   }
 }

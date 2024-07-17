@@ -379,6 +379,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ContextualPanel.DismissedReason"
+    enum="IOSContextualPanelDismissedReason" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The reason the Contextual Panel was dismissed. Fired every time the panel
+    closes.
+  </summary>
+</histogram>
+
 <histogram
     name="IOS.ContextualPanel.InfoBlockImpression.{ContextualPanelItemType}"
     enum="IOSContextualPanelInfoBlockImpression" expires_after="2025-06-30">

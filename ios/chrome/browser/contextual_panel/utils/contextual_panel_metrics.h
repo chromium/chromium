@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UI_CONTEXTUAL_PANEL_METRICS_H_
-#define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UI_CONTEXTUAL_PANEL_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UTILS_CONTEXTUAL_PANEL_METRICS_H_
+#define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UTILS_CONTEXTUAL_PANEL_METRICS_H_
 
 // Values of the UMA IOS.ContextualPanel.Model.Relevance histograms. Must be
 // kept up to date with IOSContextualPanelModelRelevance in enums.xml. These
@@ -33,4 +33,18 @@ enum class PanelBlockImpressionType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelInfoBlockImpression)
 
-#endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UI_CONTEXTUAL_PANEL_METRICS_H_
+// Values of the UMA IOS.ContextualPanel.DismissedReason histogram. Must be
+// kept up to date with IOSContextualPanelInfoBlockImpression in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ContextualPanelDismissedReason)
+enum class ContextualPanelDismissedReason {
+  UserDismissed = 0,
+  TabChanged = 1,
+  NavigationInitiated = 2,
+  BlockInteraction = 3,
+  kMaxValue = BlockInteraction
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelDismissedReason)
+
+#endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UTILS_CONTEXTUAL_PANEL_METRICS_H_

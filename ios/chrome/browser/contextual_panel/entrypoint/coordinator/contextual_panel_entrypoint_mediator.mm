@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
+#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
@@ -118,6 +120,9 @@
           _webStateList->GetActiveWebState());
 
   if (contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
+    base::UmaHistogramEnumeration(
+        "IOS.ContextualPanel.DismissedReason",
+        ContextualPanelDismissedReason::UserDismissed);
     [_contextualSheetHandler closeContextualSheet];
   } else {
     [_contextualSheetHandler openContextualSheet];

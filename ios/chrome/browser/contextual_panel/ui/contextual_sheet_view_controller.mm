@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_view_controller.h"
 
-#import "ios/chrome/browser/contextual_panel/ui/contextual_panel_metrics.h"
+#import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -122,7 +123,7 @@ const CGFloat kTopCornerRadius = 10;
   if (sender.state == UIGestureRecognizerStateEnded) {
     CGFloat newHeight = [self restingHeight];
     if (newHeight == 0) {
-      [self.contextualSheetHandler closeContextualSheet];
+      [self closeSheet];
     } else {
       [self animateHeightConstraintToConstant:newHeight];
     }
@@ -152,6 +153,12 @@ const CGFloat kTopCornerRadius = 10;
 - (void)blockForAnimatingHeightConstraintToConstant:(CGFloat)constant {
   _heightConstraint.constant = constant;
   [self.view.superview layoutIfNeeded];
+}
+
+- (void)closeSheet {
+  base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
+                                ContextualPanelDismissedReason::UserDismissed);
+  [self.contextualSheetHandler closeContextualSheet];
 }
 
 #pragma mark - ContextualSheetDisplayController

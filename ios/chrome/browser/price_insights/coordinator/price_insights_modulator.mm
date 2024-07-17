@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_modulator.h"
 
 #import "base/i18n/number_formatting.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,6 +15,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_cell.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -308,6 +310,9 @@ NSDate* getNSDateFromString(std::string date) {
                 messageAction:^{
                   base::RecordAction(
                       base::UserMetricsAction("MobileMenuPriceNotifications"));
+                  base::UmaHistogramEnumeration(
+                      "IOS.ContextualPanel.DismissedReason",
+                      ContextualPanelDismissedReason::BlockInteraction);
                   [weakContextualSheetHandler closeContextualSheet];
                   [weakPriceNotificationsHandler showPriceNotifications];
                 }
