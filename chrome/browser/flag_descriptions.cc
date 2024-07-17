@@ -154,12 +154,6 @@ const char kComputePressureBreakCalibrationMitigationDescription[] =
     "pressure is, but the Compute Pressure API can be susceptible to "
     "calibration attempts.";
 
-const char kContentLanguagesInLanguagePickerName[] =
-    "Content languages in language picker";
-const char kContentLanguagesInLanguagePickerDescription[] =
-    "Enables bringing user's content languages that are translatable to the "
-    "top of the list with all languages shown in the translate menu";
-
 const char kContentSettingsPartitioningName[] = "Content Settings Partitioning";
 const char kContentSettingsPartitioningDescription[] =
     "Partition content settings by StoragePartitions";

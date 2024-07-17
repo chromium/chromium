@@ -2946,19 +2946,6 @@ const FeatureEntry::FeatureVariation kSCTAuditingVariations[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-// The variations of ContentLanguagesInLanguagePicker.
-const FeatureEntry::FeatureParam
-    kContentLanguagesInLanguagePickerDisableObservers[] = {
-        {language::kContentLanguagesDisableObserversParam, "true"}};
-
-const FeatureEntry::FeatureVariation
-    kContentLanguagesInLanguaePickerVariations[] = {
-        {"Without observers", kContentLanguagesInLanguagePickerDisableObservers,
-         std::size(kContentLanguagesInLanguagePickerDisableObservers), nullptr},
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 // The variations of TranslateMessageUI
 const FeatureEntry::FeatureParam kTranslateMessageUISnackbar[] = {
     {translate::kTranslateMessageUISnackbarParam, "true"}};
@@ -9339,16 +9326,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSplitCacheByNetworkIsolationKeyDescription,
      kOsWin | kOsLinux | kOsLacros | kOsMac | kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kSplitCacheByNetworkIsolationKey)},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"content-languages-in-language-picker",
-     flag_descriptions::kContentLanguagesInLanguagePickerName,
-     flag_descriptions::kContentLanguagesInLanguagePickerDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(language::kContentLanguagesInLanguagePicker,
-                                    kContentLanguagesInLanguaePickerVariations,
-                                    "ContentLanguagesInLanguagePicker")},
-#endif
 
     {"draw-predicted-ink-point", flag_descriptions::kDrawPredictedPointsName,
      flag_descriptions::kDrawPredictedPointsDescription, kOsAll,

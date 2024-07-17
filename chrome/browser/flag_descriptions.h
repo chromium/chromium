@@ -124,9 +124,6 @@ extern const char kContainerName[];
 extern const char kContainerDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-extern const char kContentLanguagesInLanguagePickerName[];
-extern const char kContentLanguagesInLanguagePickerDescription[];
-
 extern const char kContentSettingsPartitioningName[];
 extern const char kContentSettingsPartitioningDescription[];
 
