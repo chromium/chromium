@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
@@ -329,7 +330,7 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
         if (!ov.app_id && visit.app_id) {
           auto is_matched = [ov](VisitRow v) { return ov.url_id == v.url_id; };
           auto pos = std::find_if(visits->begin(), visits->end(), is_matched);
-          DCHECK(pos != visits->end());
+          CHECK(pos != visits->end(), base::NotFatalUntil::M130);
           *pos = visit;
           found_urls[visit.url_id] = visit;
         }
