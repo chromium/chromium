@@ -250,11 +250,6 @@ void VideoToolboxFrameConverter::Convert(
 
   if (!frame) {
     MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create VideoFrame";
-
-    // |image| was dropped along with |release_cb|, but the SharedImage is still
-    // alive.
-    shared_image->MarkForDestruction();
-
     std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
   }
@@ -292,7 +287,6 @@ void VideoToolboxFrameConverter::OnVideoFrameReleased(
 
   if (client_shared_image) {
     client_shared_image->UpdateDestructionSyncToken(sync_token);
-    client_shared_image->MarkForDestruction();
   }
 
   // Release |image|.
