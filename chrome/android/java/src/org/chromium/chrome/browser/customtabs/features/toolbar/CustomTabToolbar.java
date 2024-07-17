@@ -1888,6 +1888,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mOmniboxBackground.setTint(
                     ChromeColors.getSurfaceColor(getContext(), R.dimen.toolbar_text_box_elevation));
             mLocationBarFrameLayout.setBackground(mOmniboxBackground);
+            var lp = mLocationBarFrameLayout.getLayoutParams();
+            lp.height =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.custom_tabs_location_bar_active_height);
+            mLocationBarFrameLayout.setLayoutParams(lp);
+
+            lp = mUrlBar.getLayoutParams();
+            lp.height =
+                    getResources().getDimensionPixelSize(R.dimen.custom_tabs_url_bar_active_height);
+            mUrlBar.setLayoutParams(lp);
 
             mTitleUrlContainer.setOnClickListener(
                     v -> {
