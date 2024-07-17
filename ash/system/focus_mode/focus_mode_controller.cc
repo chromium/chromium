@@ -94,12 +94,11 @@ void ShowEndingMomentNudge() {
 
   // NOTE: we anchor to `tray->image_view()` in order to center the nudge
   // properly because there is extra spacing on the actual `FocusModeTray` view.
-  AnchoredNudgeData nudge_data(
-      focus_mode_util::kFocusModeEndingMomentNudgeId,
-      NudgeCatalogName::kFocusModeEndingMomentNudge,
-      l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE),
-      tray->image_view());
+  const auto& title_and_emoji =
+      focus_mode_util::GetCongratulatoryTextAndEmoji();
+  AnchoredNudgeData nudge_data(focus_mode_util::kFocusModeEndingMomentNudgeId,
+                               NudgeCatalogName::kFocusModeEndingMomentNudge,
+                               title_and_emoji, tray->image_view());
   nudge_data.arrow = views::BubbleBorder::BOTTOM_CENTER;
   nudge_data.duration = NudgeDuration::kDefaultDuration;
   nudge_data.anchored_to_shelf = true;
@@ -113,13 +112,11 @@ void ShowEndingMomentNudge() {
   const std::u16string duration_string =
       focus_mode_util::GetDurationString(current_session->session_duration(),
                                          /*digital_format=*/false);
-  std::u16string title = l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE);
   Shell::Get()
       ->accessibility_controller()
       ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT, title,
-          duration_string));
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT,
+          title_and_emoji, duration_string));
 }
 
 void HideEndingMomentNudge() {

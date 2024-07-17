@@ -4,6 +4,8 @@
 
 #include "ash/system/focus_mode/focus_mode_ending_moment_view.h"
 
+#include <string>
+
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
@@ -24,19 +26,23 @@ namespace {
 constexpr auto kTextContainerSize = gfx::Size(225, 72);
 constexpr int kSpaceBetweenText = 4;
 constexpr int kSpaceBetweenButtons = 8;
+// The maximum width for the title is 202px, which is based on the width for the
+// party-popper is 19px and the width for the space separator between the emoji
+// and the title is 4px.
+constexpr int kTitleMaximumWidth = 202;
 
 std::unique_ptr<views::Label> CreateTextLabel(
     gfx::HorizontalAlignment alignment,
     TypographyToken token,
     ui::ColorId color_id,
     bool allow_multiline,
-    int message_id) {
+    const std::u16string& text) {
   auto label = std::make_unique<views::Label>();
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(alignment);
   TypographyProvider::Get()->StyleLabel(token, *label);
   label->SetEnabledColorId(color_id);
-  label->SetText(l10n_util::GetStringUTF16(message_id));
+  label->SetText(text);
   label->SetMultiLine(allow_multiline);
   label->SetMaxLines(allow_multiline ? 2 : 1);
   return label;
@@ -65,14 +71,32 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
                                views::MaximumFlexSizeRule::kPreferred,
                                /*adjust_height_for_width =*/false));
 
-  text_container->AddChildView(
+  // `title_and_emoji_box` contains a congratulatory text in `title_label` and
+  // an party-popper emoji.
+  auto* title_and_emoji_box =
+      text_container->AddChildView(std::make_unique<views::BoxLayoutView>());
+  title_and_emoji_box->SetOrientation(
+      views::BoxLayout::Orientation::kHorizontal);
+  title_and_emoji_box->SetMainAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  title_and_emoji_box->SetBetweenChildSpacing(kSpaceBetweenText);
+
+  auto* title_label = title_and_emoji_box->AddChildView(
       CreateTextLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosHeadline1,
                       cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/false,
-                      IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE));
+                      l10n_util::GetStringUTF16(
+                          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE)));
+  title_label->SetMaximumWidthSingleLine(kTitleMaximumWidth);
+
+  title_and_emoji_box->AddChildView(CreateTextLabel(
+      gfx::ALIGN_LEFT, TypographyToken::kCrosHeadline1,
+      cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/false, u"🎉"));
+
   text_container->AddChildView(
       CreateTextLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosAnnotation1,
                       cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/true,
-                      IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY));
+                      l10n_util::GetStringUTF16(
+                          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY)));
 
   // Add a top level spacer in first layout manager, between the text container
   // and button container.

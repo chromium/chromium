@@ -129,4 +129,12 @@ std::string GetSourceTitleForMediaControls(const SelectedPlaylist& playlist) {
       base::UTF8ToUTF16(playlist_type), base::UTF8ToUTF16(playlist.title));
 }
 
+std::u16string GetCongratulatoryTextAndEmoji() {
+  return base::JoinString(
+      {l10n_util::GetStringUTF16(
+           IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE),
+       u"🎉"},
+      u" ");
+}
+
 }  // namespace ash::focus_mode_util

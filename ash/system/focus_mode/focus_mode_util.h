@@ -106,6 +106,9 @@ ASH_EXPORT std::u16string GetFormattedEndTimeString(const base::Time end_time);
 ASH_EXPORT std::string GetSourceTitleForMediaControls(
     const SelectedPlaylist& playlist);
 
+// Returns a congratulatory text followed by an emoji during the ending moment.
+ASH_EXPORT std::u16string GetCongratulatoryTextAndEmoji();
+
 }  // namespace focus_mode_util
 
 }  // namespace ash

@@ -55,8 +55,7 @@ constexpr base::TimeDelta kTaskItemViewFadeOutDuration =
 std::u16string GetAccessibleTrayName(
     const FocusModeSession::Snapshot& session_snapshot) {
   if (session_snapshot.state == FocusModeSession::State::kEnding) {
-    return l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE);
+    return focus_mode_util::GetCongratulatoryTextAndEmoji();
   }
 
   const std::u16string duration_string =
@@ -75,8 +74,7 @@ std::u16string GetAccessibleBubbleName(
     const FocusModeSession::Snapshot& session_snapshot,
     const std::u16string& task_title) {
   if (session_snapshot.state == FocusModeSession::State::kEnding) {
-    std::u16string title = l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE);
+    std::u16string title = focus_mode_util::GetCongratulatoryTextAndEmoji();
     std::u16string body = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY);
     return l10n_util::GetStringFUTF16(
