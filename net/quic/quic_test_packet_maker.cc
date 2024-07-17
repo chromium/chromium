@@ -184,20 +184,6 @@ QuicTestPacketMaker::MakeDummyCHLOPacket(uint64_t packet_number) {
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeDataAndRstPacket(
-    uint64_t packet_number,
-    quic::QuicStreamId data_stream_id,
-    std::string_view data,
-    quic::QuicStreamId rst_stream_id,
-    quic::QuicRstStreamErrorCode rst_error_code) {
-  return Packet(packet_number)
-      .AddStreamFrame(data_stream_id, /* fin = */ false, data)
-      .AddStopSendingFrame(rst_stream_id, rst_error_code)
-      .AddRstStreamFrame(rst_stream_id, rst_error_code)
-      .Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeAckAndRstPacket(
     uint64_t packet_number,
     quic::QuicStreamId stream_id,

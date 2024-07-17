@@ -96,13 +96,6 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::QuicReceivedPacket> MakeDummyCHLOPacket(
       uint64_t packet_number);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
-      uint64_t packet_number,
-      quic::QuicStreamId data_stream_id,
-      std::string_view data,
-      quic::QuicStreamId rst_stream_id,
-      quic::QuicRstStreamErrorCode rst_error_code);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRstPacket(
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
