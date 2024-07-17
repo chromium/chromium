@@ -179,7 +179,7 @@ class RenderWidgetHostViewBrowserTest : public ContentBrowserTest {
   static void GiveItSomeTime() {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(250));
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }
 
@@ -1584,7 +1584,8 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
     const base::TimeTicks start_time = base::TimeTicks::Now();
     // The full action_timeout is excessively long when expecting nothing to be
     // logged.
-    while (base::TimeTicks::Now() - start_time < base::Seconds(1)) {
+    const base::TimeDelta kTimeout = TestTimeouts::action_timeout() / 10;
+    while (base::TimeTicks::Now() - start_time < kTimeout) {
       GiveItSomeTime();
       ASSERT_TRUE(
           histogram_tester_.GetAllSamples("Browser.Tabs.TabSwitchResult3")
