@@ -6,10 +6,9 @@ package org.chromium.chrome.browser.autofill.iban;
 
 import android.content.Context;
 
-import org.jni_zero.JniType;
-
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -28,7 +27,7 @@ public class AutofillSaveIbanBottomSheetCoordinator {
      * Creates the coordinator.
      *
      * @param bridge The bridge to signal UI flow events (OnUiCanceled, OnUiAccepted, etc.) to.
-     * @param ibanLabel String value of the IBAN being saved, e.g. CH** **** **** **** *800 9.
+     * @param uiInfo An object providing UI resources for the bottom sheet model.
      * @param context The context for this component.
      * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
      *     shown.
@@ -39,7 +38,7 @@ public class AutofillSaveIbanBottomSheetCoordinator {
      */
     public AutofillSaveIbanBottomSheetCoordinator(
             AutofillSaveIbanBottomSheetBridge bridge,
-            @JniType("std::u16string_view") String ibanLabel,
+            AutofillSaveIbanUiInfo uiInfo,
             Context context,
             BottomSheetController bottomSheetController,
             LayoutStateProvider layoutStateProvider,
@@ -48,7 +47,16 @@ public class AutofillSaveIbanBottomSheetCoordinator {
 
         mModel =
                 new PropertyModel.Builder(AutofillSaveIbanBottomSheetProperties.ALL_KEYS)
-                        .with(AutofillSaveIbanBottomSheetProperties.IBAN_LABEL, ibanLabel)
+                        .with(AutofillSaveIbanBottomSheetProperties.TITLE, uiInfo.getTitleText())
+                        .with(
+                                AutofillSaveIbanBottomSheetProperties.IBAN_LABEL,
+                                uiInfo.getIbanLabel())
+                        .with(
+                                AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL,
+                                uiInfo.getAcceptText())
+                        .with(
+                                AutofillSaveIbanBottomSheetProperties.CANCEL_BUTTON_LABEL,
+                                uiInfo.getCancelText())
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillSaveIbanBottomSheetViewBinder::bind);
@@ -71,5 +79,10 @@ public class AutofillSaveIbanBottomSheetCoordinator {
     /** Destroys this component, hiding the bottom sheet if needed. */
     public void destroy() {
         mMediator.destroy();
+    }
+
+    /** Retrieves the PropertyModel associated with the view for testing purposes. */
+    PropertyModel getPropertyModelForTesting() {
+        return mModel;
     }
 }

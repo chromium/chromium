@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 @JNINamespace("autofill")
 /**
@@ -41,7 +42,10 @@ public class AutofillSaveIbanUiInfo {
     @VisibleForTesting
     /** Construct the delegate given all the members. */
     /* package */ AutofillSaveIbanUiInfo(
-            String acceptText, String cancelText, String ibanLabel, String titleText) {
+            @JniType("std::u16string") String acceptText,
+            @JniType("std::u16string") String cancelText,
+            @JniType("std::u16string") String ibanLabel,
+            @JniType("std::u16string") String titleText) {
         mAcceptText = acceptText;
         mCancelText = cancelText;
         mIbanLabel = ibanLabel;

@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/autofill/payments/autofill_message_model.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
+#include "components/autofill/core/browser/payments/autofill_save_iban_ui_info.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #else  // !BUILDFLAG(IS_ANDROID)
@@ -437,8 +438,10 @@ void ChromePaymentsAutofillClient::ConfirmSaveIbanLocally(
     if (auto* bridge = GetOrCreateAutofillSaveIbanBottomSheetBridge()) {
       auto save_iban_delegate = std::make_unique<AutofillSaveIbanDelegate>(
           std::move(callback), web_contents());
-      bridge->RequestShowContent(iban.GetIdentifierStringForAutofillDisplay(),
-                                 std::move(save_iban_delegate));
+      AutofillSaveIbanUiInfo ui_info =
+          AutofillSaveIbanUiInfo::CreateForLocalSave(
+              iban.GetIdentifierStringForAutofillDisplay());
+      bridge->RequestShowContent(ui_info, std::move(save_iban_delegate));
     }
   }
 #else

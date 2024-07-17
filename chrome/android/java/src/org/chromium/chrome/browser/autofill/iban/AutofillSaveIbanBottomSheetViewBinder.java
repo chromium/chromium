@@ -14,8 +14,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 /*package*/ class AutofillSaveIbanBottomSheetViewBinder {
     static void bind(
             PropertyModel model, AutofillSaveIbanBottomSheetView view, PropertyKey propertyKey) {
-        if (AutofillSaveIbanBottomSheetProperties.IBAN_LABEL == propertyKey) {
+        if (AutofillSaveIbanBottomSheetProperties.TITLE == propertyKey) {
+            view.mTitle.setText(model.get(AutofillSaveIbanBottomSheetProperties.TITLE));
+        } else if (AutofillSaveIbanBottomSheetProperties.IBAN_LABEL == propertyKey) {
             view.mIbanLabel.setText(model.get(AutofillSaveIbanBottomSheetProperties.IBAN_LABEL));
+        } else if (AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL == propertyKey) {
+            view.mAcceptButton.setText(
+                    model.get(AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL));
+        } else if (AutofillSaveIbanBottomSheetProperties.CANCEL_BUTTON_LABEL == propertyKey) {
+            view.mCancelButton.setText(
+                    model.get(AutofillSaveIbanBottomSheetProperties.CANCEL_BUTTON_LABEL));
         }
     }
 }

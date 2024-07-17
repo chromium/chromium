@@ -62,7 +62,7 @@ found in the LICENSE file.
                     android:importantForAccessibility="no"
                     android:layout_gravity="center" />
 
-                <!-- IBAN label e.g., CH56 **** **** **** *800 9-->
+                <!-- IBAN label e.g., CH** **** **** **** *800 9-->
                 <TextView
                     android:id="@+id/autofill_save_iban_label"
                     android:layout_width="match_parent"
@@ -85,6 +85,7 @@ found in the LICENSE file.
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/autofill_save_iban_nickname_input"
+                    android:maxLength="25"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
@@ -105,8 +106,7 @@ found in the LICENSE file.
                 android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
                 android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
                 android:minHeight="@dimen/min_touch_target_size"
-                android:minWidth="@dimen/min_touch_target_size"
-                android:text="@string/save"/>
+                android:minWidth="@dimen/min_touch_target_size"/>
 
             <!-- "No thanks" button -->
             <org.chromium.ui.widget.ButtonCompat
@@ -118,8 +118,7 @@ found in the LICENSE file.
                 android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
                 android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
                 android:minHeight="@dimen/min_touch_target_size"
-                android:minWidth="@dimen/min_touch_target_size"
-                android:text="@string/no_thanks"/>
+                android:minWidth="@dimen/min_touch_target_size"/>
 
         </LinearLayout>
     </ScrollView>

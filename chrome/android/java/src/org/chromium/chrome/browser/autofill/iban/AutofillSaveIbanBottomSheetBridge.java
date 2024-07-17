@@ -17,6 +17,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -54,15 +55,15 @@ public class AutofillSaveIbanBottomSheetBridge {
     /**
      * Requests to show the bottom sheet. Called via JNI from C++.
      *
-     * @param ibanLabel String value of the IBAN being saved, e.g. CH** **** **** **** *800 9.
+     * @param uiInfo An object providing UI resources to the bottom sheet view.
      */
     @CalledByNative
-    public void requestShowContent(@JniType("std::u16string_view") String ibanLabel) {
+    public void requestShowContent(AutofillSaveIbanUiInfo uiInfo) {
         if (mNativeAutofillSaveIbanBottomSheetBridge == 0) return;
         mCoordinator =
                 new AutofillSaveIbanBottomSheetCoordinator(
                         this,
-                        ibanLabel,
+                        uiInfo,
                         mContext,
                         mBottomSheetController,
                         mLayoutStateProvider,

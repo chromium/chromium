@@ -52,10 +52,34 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
 
     @Test
     @SmallTest
+    public void testTitle() {
+        verifyPropertyBoundToTextView(
+                mView.mContentView.findViewById(R.id.autofill_local_save_iban_title_text),
+                AutofillSaveIbanBottomSheetProperties.TITLE);
+    }
+
+    @Test
+    @SmallTest
     public void testIbanLabel() {
         verifyPropertyBoundToTextView(
                 mView.mContentView.findViewById(R.id.autofill_save_iban_label),
                 AutofillSaveIbanBottomSheetProperties.IBAN_LABEL);
+    }
+
+    @Test
+    @SmallTest
+    public void testAcceptButton() {
+        verifyPropertyBoundToTextView(
+                mView.mContentView.findViewById(R.id.autofill_save_iban_confirm_button),
+                AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL);
+    }
+
+    @Test
+    @SmallTest
+    public void testCancelButton() {
+        verifyPropertyBoundToTextView(
+                mView.mContentView.findViewById(R.id.autofill_save_iban_cancel_button),
+                AutofillSaveIbanBottomSheetProperties.CANCEL_BUTTON_LABEL);
     }
 
     private void bind(PropertyModel.Builder modelBuilder) {

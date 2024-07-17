@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
@@ -40,8 +41,14 @@ import org.chromium.ui.base.WindowAndroid;
 @SmallTest
 public final class AutofillSaveIbanBottomSheetBridgeTest {
     private static final long MOCK_POINTER = 0xb00fb00f;
-    private static final String IBAN_LABEL = "CH56 **** **** **** *800 9";
     private static final String USER_PROVIDED_NICKNAME = "My Doctor's IBAN";
+    private static final AutofillSaveIbanUiInfo TEST_IBAN_UI_INFO =
+            new AutofillSaveIbanUiInfo.Builder()
+                    .withAcceptText("Save")
+                    .withCancelText("No thanks")
+                    .withIbanLabel("FR** **** **** **** **** ***0 189")
+                    .withTitleText("Save IBAN?")
+                    .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -77,7 +84,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
 
     @Test
     public void testRequestShowContent() {
-        mAutofillSaveIbanBottomSheetBridge.requestShowContent(IBAN_LABEL);
+        mAutofillSaveIbanBottomSheetBridge.requestShowContent(TEST_IBAN_UI_INFO);
 
         verify(mBottomSheetController)
                 .requestShowContent(
@@ -86,7 +93,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
 
     @Test
     public void testDestroy() {
-        mAutofillSaveIbanBottomSheetBridge.requestShowContent(IBAN_LABEL);
+        mAutofillSaveIbanBottomSheetBridge.requestShowContent(TEST_IBAN_UI_INFO);
         mAutofillSaveIbanBottomSheetBridge.destroy();
 
         verify(mBottomSheetController)
@@ -102,7 +109,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
 
     @Test
     public void testDestroy_whenDestroyed() {
-        mAutofillSaveIbanBottomSheetBridge.requestShowContent(IBAN_LABEL);
+        mAutofillSaveIbanBottomSheetBridge.requestShowContent(TEST_IBAN_UI_INFO);
 
         mAutofillSaveIbanBottomSheetBridge.destroy();
         clearInvocations(mBottomSheetController);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.iban;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -23,11 +24,18 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveIbanBottomSheetCoordinatorTest {
-    private static final String IBAN_LABEL = "CH** **** **** **** *800 9";
+    private static final AutofillSaveIbanUiInfo TEST_IBAN_UI_INFO =
+            new AutofillSaveIbanUiInfo.Builder()
+                    .withAcceptText("Save")
+                    .withCancelText("No thanks")
+                    .withIbanLabel("FR** **** **** **** **** ***0 189")
+                    .withTitleText("Save IBAN?")
+                    .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -47,7 +55,7 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
         mCoordinator =
                 new AutofillSaveIbanBottomSheetCoordinator(
                         mBridge,
-                        IBAN_LABEL,
+                        TEST_IBAN_UI_INFO,
                         mActivity,
                         mBottomSheetController,
                         mLayoutStateProvider,
@@ -71,5 +79,29 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
         verify(mBottomSheetController)
                 .hideContent(
                         any(AutofillSaveIbanBottomSheetContent.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    public void testInitialModelValues() {
+        assertEquals(
+                TEST_IBAN_UI_INFO.getIbanLabel(),
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillSaveIbanBottomSheetProperties.IBAN_LABEL));
+        assertEquals(
+                TEST_IBAN_UI_INFO.getTitleText(),
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillSaveIbanBottomSheetProperties.TITLE));
+        assertEquals(
+                TEST_IBAN_UI_INFO.getAcceptText(),
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL));
+        assertEquals(
+                TEST_IBAN_UI_INFO.getCancelText(),
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillSaveIbanBottomSheetProperties.CANCEL_BUTTON_LABEL));
     }
 }
