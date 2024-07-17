@@ -443,9 +443,6 @@ void FocusModeTaskView::AddOrUpdateTask(const std::optional<TaskId>& task_id,
 void FocusModeTaskView::PaintFocusRingAndUpdateStyle() {
   const bool is_active = textfield_->IsActive();
   if (is_active) {
-    // `task_id_` indicates if a task is new or existing. Use this to control
-    // the styling of the textfield.
-    UpdateStyle(task_id_.has_value(), is_network_connected_);
     // `SystemTextfield::SetActive` will show focus ring when `textfield_` is
     // active. But in our case, we don't want the textfield to show the focus
     // ring, but show its parent focus ring. Thus, we need to hide
@@ -492,19 +489,6 @@ void FocusModeTaskView::OnAddTaskButtonPressed() {
 
 void FocusModeTaskView::UpdateStyle(bool show_selected_state,
                                     bool is_network_connected) {
-  // Unfocus the textfield if a task is selected.
-  if (show_selected_state) {
-    auto* focus_manager = textfield_->GetFocusManager();
-    // If a task was selected from a chip, the textfield will still be focused.
-    // Unfocus it in this case.
-    if (focus_manager && focus_manager->GetFocusedView() == textfield_) {
-      textfield_->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
-      // If the textfield is focused, unfocusing it will end up calling this
-      // method again.
-      return;
-    }
-  }
-
   textfield_container_->SetBorder(views::CreateEmptyBorder(
       show_selected_state ? kSelectedStateBoxInsets
                           : kUnselectedStateBoxInsets));
