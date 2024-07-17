@@ -16519,11 +16519,13 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "PlusAddressAffiliations",
                         "PlusAddressRefresh",
                         "PlusAddressRefreshUiInAndroid",
                         "PlusAddressRefreshUiInDesktopModal",
                         "PlusAddressRefreshUiInIOS",
-                        "PlusAddressesEnabled"
+                        "PlusAddressesEnabled",
+                        "SyncPlusAddress"
                     ]
                 }
             ]
@@ -21773,27 +21775,6 @@
                     },
                     "enable_features": [
                         "SyncIncreaseNudgeDelayForSingleClient"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SyncPlusAddress": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncPlusAddress"
                     ]
                 }
             ]
