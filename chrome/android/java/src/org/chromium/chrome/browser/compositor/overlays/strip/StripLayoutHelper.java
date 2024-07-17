@@ -1349,6 +1349,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mActiveTabIndexOnStartup = activeTabIndexOnStartup;
         mCreatedTabOnStartup = createdTabOnStartup;
 
+        // Avoid creating the placeholder strip if we have an invalid active tab index.
+        if (mActiveTabIndexOnStartup < 0 || mActiveTabIndexOnStartup >= mTabCountOnStartup) return;
+
         // If tabs are still being restored on startup, create placeholder tabs to mitigate jank.
         if (!mTabStateInitialized) {
             prepareEmptyPlaceholderStripLayout();
