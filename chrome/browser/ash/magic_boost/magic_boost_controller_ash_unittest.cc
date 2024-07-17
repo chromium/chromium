@@ -23,8 +23,9 @@ namespace ash {
 namespace {
 
 const std::string kHistogramName = kMagicBoostDisclaimerViewHistogram;
+constexpr char kTestUrl[] = "https://www.google.com";
 
-}
+}  // namespace
 
 class MagicBoostControllerAshTest : public AshTestBase {
  public:
@@ -64,6 +65,8 @@ class MagicBoostControllerAshTest : public AshTestBase {
   void OnDisclaimerDeclineButtonPressed() {
     controller.OnDisclaimerDeclineButtonPressed();
   }
+
+  void OnLinkPressed() { controller.OnLinkPressed(kTestUrl); }
 
   MockEditorPanelManager& mock_editor_panel_manager() {
     return mock_editor_panel_manager_;
@@ -267,6 +270,19 @@ TEST_F(MagicBoostControllerAshTest,
       DisclaimerViewAction::kDeclineButtonPressed, 1);
   histogram_tester->ExpectBucketCount(
       kHistogramName + "Total", DisclaimerViewAction::kDeclineButtonPressed, 1);
+}
+
+TEST_F(MagicBoostControllerAshTest, ClickingOnLinkClosesWidget) {
+  controller.ShowDisclaimerUi(
+      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+
+  EXPECT_TRUE(controller.disclaimer_widget_for_test());
+
+  OnLinkPressed();
+
+  EXPECT_FALSE(controller.disclaimer_widget_for_test());
 }
 
 }  // namespace ash

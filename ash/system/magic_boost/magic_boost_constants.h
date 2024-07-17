@@ -11,6 +11,11 @@ namespace ash::magic_boost {
 enum ViewId {
   DisclaimerViewAcceptButton = 1,
   DisclaimerViewDeclineButton,
+  DisclaimerViewParagraphOne,
+  DisclaimerViewParagraphTwo,
+  DisclaimerViewParagraphThree,
+  DisclaimerViewParagraphFour,
+  DisclaimerViewTitle,
 };
 
 }  // namespace ash::magic_boost

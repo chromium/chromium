@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -71,20 +70,11 @@ views::StyledLabel::RangeStyleInfo GetBodyTextStyle() {
   return style;
 }
 
-// Placeholder url.
-constexpr char kTestURL[] = "https://www.google.com";
-
-// Opens the passed in `url` in a new tab.
-void OnLinkClick(const std::string& url) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
-}
-
-views::StyledLabel::RangeStyleInfo GetLinkTextStyle() {
+views::StyledLabel::RangeStyleInfo GetLinkTextStyle(
+    base::RepeatingClosure press_link_callback) {
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
-          base::BindRepeating(&OnLinkClick, kTestURL));
+          std::move(press_link_callback));
   link_style.override_color_id =
       static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant);
   return link_style;
@@ -100,11 +90,13 @@ views::Builder<views::StyledLabel> GetTextBodyBuilder(
 }
 
 views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
-  return GetTextBodyBuilder(
-      l10n_util::GetStringUTF16(IDS_ASH_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE));
+  return GetTextBodyBuilder(l10n_util::GetStringUTF16(
+                                IDS_ASH_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE))
+      .SetID(magic_boost::ViewId::DisclaimerViewParagraphOne);
 }
 
-views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
+views::Builder<views::StyledLabel> GetParagraphTwoBuilder(
+    base::RepeatingClosure press_link_callback) {
   std::vector<size_t> offsets;
   const std::u16string link_text =
       l10n_util::GetStringUTF16(IDS_ASH_MAGIC_BOOST_DISCLAIMER_TERMS_LINK_TEXT);
@@ -113,10 +105,11 @@ views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
 
   return views::Builder<views::StyledLabel>()
       .SetText(text)
+      .SetID(magic_boost::ViewId::DisclaimerViewParagraphTwo)
       .AddStyleRange(gfx::Range(0, offsets.at(0)), GetBodyTextStyle())
       .AddStyleRange(
           gfx::Range(offsets.at(0), offsets.at(0) + link_text.length()),
-          GetLinkTextStyle())
+          GetLinkTextStyle(std::move(press_link_callback)))
       .AddStyleRange(
           gfx::Range(offsets.at(0) + link_text.length(), text.length()),
           GetBodyTextStyle())
@@ -126,10 +119,12 @@ views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
 
 views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
   return GetTextBodyBuilder(l10n_util::GetStringUTF16(
-      IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE));
+                                IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE))
+      .SetID(magic_boost::ViewId::DisclaimerViewParagraphThree);
 }
 
-views::Builder<views::StyledLabel> GetParagraphFourBuilder() {
+views::Builder<views::StyledLabel> GetParagraphFourBuilder(
+    base::RepeatingClosure press_link_callback) {
   std::vector<size_t> offsets;
   const std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_ASH_MAGIC_BOOST_DISCLAIMER_LEARN_MORE_LINK_TEXT);
@@ -138,10 +133,11 @@ views::Builder<views::StyledLabel> GetParagraphFourBuilder() {
 
   return views::Builder<views::StyledLabel>()
       .SetText(text)
+      .SetID(magic_boost::ViewId::DisclaimerViewParagraphFour)
       .AddStyleRange(gfx::Range(0, offsets.at(0)), GetBodyTextStyle())
       .AddStyleRange(
           gfx::Range(offsets.at(0), offsets.at(0) + link_text.length()),
-          GetLinkTextStyle())
+          GetLinkTextStyle(std::move(press_link_callback)))
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false);
 }
@@ -150,7 +146,9 @@ views::Builder<views::StyledLabel> GetParagraphFourBuilder() {
 
 MagicBoostDisclaimerView::MagicBoostDisclaimerView(
     base::RepeatingClosure press_accept_button_callback,
-    base::RepeatingClosure press_decline_button_callback) {
+    base::RepeatingClosure press_decline_button_callback,
+    base::RepeatingClosure press_terms_of_service_callback,
+    base::RepeatingClosure press_learn_more_link_callback) {
   views::View* disclaimer_view;
   std::u16string decline_button_text =
       l10n_util::GetStringUTF16(IDS_ASH_MAGIC_BOOST_DISCLAIMER_DECLINE_BUTTON);
@@ -183,13 +181,18 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView(
                       .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
                       .SetHorizontalAlignment(
                           gfx::HorizontalAlignment::ALIGN_LEFT)
+                      .SetID(magic_boost::ViewId::DisclaimerViewTitle)
                       .CopyAddressTo(&title_)
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_ASH_MAGIC_BOOST_DISCLAIMER_TITLE)),
                   GetParagraphOneBuilder().CopyAddressTo(&paragraph_one_),
-                  GetParagraphTwoBuilder().CopyAddressTo(&paragraph_two_),
+                  GetParagraphTwoBuilder(
+                      std::move(press_terms_of_service_callback))
+                      .CopyAddressTo(&paragraph_two_),
                   GetParagraphThreeBuilder().CopyAddressTo(&paragraph_three_),
-                  GetParagraphFourBuilder().CopyAddressTo(&paragraph_four_)),
+                  GetParagraphFourBuilder(
+                      std::move(press_learn_more_link_callback))
+                      .CopyAddressTo(&paragraph_four_)),
           views::Builder<views::BoxLayoutView>()
               .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
               .SetBetweenChildSpacing(kBetweenButtonsSpacing)
@@ -225,7 +228,9 @@ MagicBoostDisclaimerView::~MagicBoostDisclaimerView() = default;
 views::UniqueWidgetPtr MagicBoostDisclaimerView::CreateWidget(
     int64_t display_id,
     base::RepeatingClosure press_accept_button_callback,
-    base::RepeatingClosure press_decline_button_callback) {
+    base::RepeatingClosure press_decline_button_callback,
+    base::RepeatingClosure press_disclaimer_link_callback,
+    base::RepeatingClosure press_learn_more_link_callback) {
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
@@ -241,7 +246,9 @@ views::UniqueWidgetPtr MagicBoostDisclaimerView::CreateWidget(
       std::make_unique<views::Widget>(std::move(params));
   auto disclaimer_view = std::make_unique<MagicBoostDisclaimerView>(
       std::move(press_accept_button_callback),
-      std::move(press_decline_button_callback));
+      std::move(press_decline_button_callback),
+      std::move(press_disclaimer_link_callback),
+      std::move(press_learn_more_link_callback));
   const int widget_height = disclaimer_view->GetPreferredSize().height();
   widget->SetContentsView(std::move(disclaimer_view));
 

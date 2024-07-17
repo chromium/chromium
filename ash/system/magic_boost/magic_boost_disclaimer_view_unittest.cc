@@ -12,6 +12,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -27,6 +28,7 @@ class MagicBoostDisclaimerViewTest : public AshTestBase {
   // Mock callbacks:
   MOCK_METHOD(void, OnAcceptButtonPressed, (), ());
   MOCK_METHOD(void, OnDeclineButtonPressed, (), ());
+  MOCK_METHOD(void, OnLinkPressed, (), ());
 
  private:
 };
@@ -35,7 +37,8 @@ TEST_F(MagicBoostDisclaimerViewTest, WidgetPosition) {
   UpdateDisplay("1000x800");
   auto* root_window = GetContext();
   auto widget = MagicBoostDisclaimerView::CreateWidget(
-      GetPrimaryDisplay().id(), base::DoNothing(), base::DoNothing());
+      GetPrimaryDisplay().id(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing());
 
   EXPECT_EQ(widget->GetWindowBoundsInScreen().CenterPoint(),
             root_window->bounds().CenterPoint());
@@ -53,7 +56,11 @@ TEST_F(MagicBoostDisclaimerViewTest, ButtonActions) {
               base::Unretained(this)),
           base::BindRepeating(
               &MagicBoostDisclaimerViewTest::OnDeclineButtonPressed,
-              base::Unretained(this))));
+              base::Unretained(this)),
+          base::BindRepeating(&MagicBoostDisclaimerViewTest::OnLinkPressed,
+                              base::Unretained(this)),
+          base::BindRepeating(&MagicBoostDisclaimerViewTest::OnLinkPressed,
+                              base::Unretained(this))));
 
   auto* accept_button = disclaimer_view->GetViewByID(
       magic_boost::ViewId::DisclaimerViewAcceptButton);
@@ -69,4 +76,40 @@ TEST_F(MagicBoostDisclaimerViewTest, ButtonActions) {
   LeftClickOn(decline_button);
   testing::Mock::VerifyAndClearExpectations(this);
 }
+
+TEST_F(MagicBoostDisclaimerViewTest, LinkActions) {
+  auto widget = CreateFramelessTestWidget();
+  widget->SetBounds(gfx::Rect(/*x=*/0, /*y=*/0,
+                              /*width=*/1000,
+                              /*height=*/800));
+  auto* disclaimer_view =
+      widget->SetContentsView(std::make_unique<MagicBoostDisclaimerView>(
+          base::BindRepeating(
+              &MagicBoostDisclaimerViewTest::OnAcceptButtonPressed,
+              base::Unretained(this)),
+          base::BindRepeating(
+              &MagicBoostDisclaimerViewTest::OnDeclineButtonPressed,
+              base::Unretained(this)),
+          base::BindRepeating(&MagicBoostDisclaimerViewTest::OnLinkPressed,
+                              base::Unretained(this)),
+          base::BindRepeating(&MagicBoostDisclaimerViewTest::OnLinkPressed,
+                              base::Unretained(this))));
+
+  auto* paragraph_two =
+      AsViewClass<views::StyledLabel>(disclaimer_view->GetViewByID(
+          magic_boost::ViewId::DisclaimerViewParagraphTwo));
+
+  EXPECT_CALL(*this, OnLinkPressed);
+  paragraph_two->ClickFirstLinkForTesting();
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  auto* paragraph_four =
+      AsViewClass<views::StyledLabel>(disclaimer_view->GetViewByID(
+          magic_boost::ViewId::DisclaimerViewParagraphFour));
+
+  EXPECT_CALL(*this, OnLinkPressed);
+  paragraph_four->ClickFirstLinkForTesting();
+  testing::Mock::VerifyAndClearExpectations(this);
+}
+
 }  // namespace ash

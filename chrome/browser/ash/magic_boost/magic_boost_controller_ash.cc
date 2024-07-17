@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
@@ -13,6 +14,11 @@
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 
 namespace ash {
+
+// Placeholder for the disclaimer terms of service url.
+constexpr char kDisclaimerTOSURL[] = "https://www.google.com";
+// Placeholder for the learn more url.
+constexpr char kLearnMoreURL[] = "https://www.google.com";
 
 using TransitionAction = crosapi::mojom::MagicBoostController::TransitionAction;
 
@@ -47,7 +53,11 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
       /*press_decline_button_callback=*/
       base::BindRepeating(
           &MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&MagicBoostControllerAsh::OnLinkPressed,
+                          weak_ptr_factory_.GetWeakPtr(), kDisclaimerTOSURL),
+      base::BindRepeating(&MagicBoostControllerAsh::OnLinkPressed,
+                          weak_ptr_factory_.GetWeakPtr(), kLearnMoreURL));
   disclaimer_widget_->Show();
 
   RecordDisclaimerViewActionMetrics(opt_in_features_,
@@ -94,6 +104,14 @@ void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
 
   RecordDisclaimerViewActionMetrics(
       opt_in_features_, DisclaimerViewAction::kDeclineButtonPressed);
+
+  CloseDisclaimerUi();
+}
+
+void MagicBoostControllerAsh::OnLinkPressed(const std::string& url) {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 
   CloseDisclaimerUi();
 }

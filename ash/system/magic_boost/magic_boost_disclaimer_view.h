@@ -30,7 +30,9 @@ class ASH_EXPORT MagicBoostDisclaimerView : public views::View {
  public:
   MagicBoostDisclaimerView(
       base::RepeatingClosure press_accept_button_callback,
-      base::RepeatingClosure press_decline_button_callback);
+      base::RepeatingClosure press_decline_button_callback,
+      base::RepeatingClosure press_terms_of_service_callback,
+      base::RepeatingClosure press_learn_more_link_callback);
   MagicBoostDisclaimerView(const MagicBoostDisclaimerView&) = delete;
   MagicBoostDisclaimerView& operator=(const MagicBoostDisclaimerView&) = delete;
   ~MagicBoostDisclaimerView() override;
@@ -45,7 +47,9 @@ class ASH_EXPORT MagicBoostDisclaimerView : public views::View {
   static views::UniqueWidgetPtr CreateWidget(
       int64_t display_id,
       base::RepeatingClosure press_accept_button_callback,
-      base::RepeatingClosure press_decline_button_callback);
+      base::RepeatingClosure press_decline_button_callback,
+      base::RepeatingClosure press_terms_of_service_callback,
+      base::RepeatingClosure press_learn_more_link_callback);
 
   // Returns the host widget's name.
   static const char* GetWidgetName();

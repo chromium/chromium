@@ -48,6 +48,7 @@ class MagicBoostControllerAsh : public crosapi::mojom::MagicBoostController {
   void OnDisclaimerAcceptButtonPressed(
       crosapi::mojom::MagicBoostController::TransitionAction action);
   void OnDisclaimerDeclineButtonPressed();
+  void OnLinkPressed(const std::string& url);
 
   mojo::ReceiverSet<crosapi::mojom::MagicBoostController> receivers_;
 
