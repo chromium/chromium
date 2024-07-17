@@ -336,6 +336,10 @@ NativeWidgetMacNSWindowHost::~NativeWidgetMacNSWindowHost() {
   DestroyCompositor();
 }
 
+Widget* NativeWidgetMacNSWindowHost::GetWidget() {
+  return native_widget_mac_ ? native_widget_mac_->GetWidget() : nullptr;
+}
+
 NativeWidgetMacNSWindow* NativeWidgetMacNSWindowHost::GetInProcessNSWindow()
     const {
   return in_process_ns_window_;
@@ -430,7 +434,7 @@ void NativeWidgetMacNSWindowHost::InitWindow(
           gfx::NativeWindow(in_process_ns_window_), application_host_,
           in_process_ns_window_bridge_.get(), GetNSWindowMojo());
 
-  Widget* widget = native_widget_mac_->GetWidget();
+  Widget* widget = GetWidget();
   widget_type_ = params.type;
   bool is_tooltip = params.type == Widget::InitParams::TYPE_TOOLTIP;
   if (!is_tooltip)
@@ -516,22 +520,23 @@ void NativeWidgetMacNSWindowHost::CloseWindowNow() {
 }
 
 void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
-  DCHECK(!bounds.IsEmpty() ||
-         !native_widget_mac_->GetWidget()->GetMinimumSize().IsEmpty())
+  Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+  DCHECK(!bounds.IsEmpty() || !widget->GetMinimumSize().IsEmpty())
       << "Zero-sized windows are not supported on Mac";
   UpdateLocalWindowFrame(bounds);
 
   // `SetBounds()` accepts an optional maximum size, while
   // `Widget::GetMaximumSize()` uses an empty size to represent "no maximum
   // size", so we convert between those here.
-  std::optional<gfx::Size> maximum_size =
-      native_widget_mac_->GetWidget()->GetMaximumSize();
+  std::optional<gfx::Size> maximum_size = widget->GetMaximumSize();
   if (maximum_size->IsEmpty()) {
     maximum_size = std::nullopt;
   }
 
-  GetNSWindowMojo()->SetBounds(
-      bounds, native_widget_mac_->GetWidget()->GetMinimumSize(), maximum_size);
+  GetNSWindowMojo()->SetBounds(bounds, widget->GetMinimumSize(), maximum_size);
 
   if (remote_ns_window_remote_) {
     gfx::Rect window_in_screen =
@@ -545,11 +550,13 @@ void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
 }
 
 void NativeWidgetMacNSWindowHost::SetSize(const gfx::Size& size) {
-  DCHECK(!size.IsEmpty() ||
-         !native_widget_mac_->GetWidget()->GetMinimumSize().IsEmpty())
+  Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+  DCHECK(!size.IsEmpty() || !widget->GetMinimumSize().IsEmpty())
       << "Zero-sized windows are not supported on Mac";
-  GetNSWindowMojo()->SetSize(size,
-                             native_widget_mac_->GetWidget()->GetMinimumSize());
+  GetNSWindowMojo()->SetSize(size, widget->GetMinimumSize());
 
   if (remote_ns_window_remote_) {
     // Reflecting the logic above in SetBoundsInScreen, update our local
@@ -690,9 +697,13 @@ bool NativeWidgetMacNSWindowHost::SetWindowTitle(const std::u16string& title) {
 }
 
 void NativeWidgetMacNSWindowHost::OnWidgetInitDone() {
-  Widget* widget = native_widget_mac_->GetWidget();
-  if (DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate())
-    dialog->AddObserver(this);
+  Widget* widget = GetWidget();
+  if (widget) {
+    if (DialogDelegate* dialog =
+            widget->widget_delegate()->AsDialogDelegate()) {
+      dialog->AddObserver(this);
+    }
+  }
 }
 
 bool NativeWidgetMacNSWindowHost::RedispatchKeyEvent(NSEvent* event) {
@@ -776,7 +787,9 @@ void NativeWidgetMacNSWindowHost::OnNativeViewHostAttach(const View* view,
                                                          NSView* native_view) {
   DCHECK_EQ(0u, attached_native_view_host_views_.count(view));
   attached_native_view_host_views_[view] = native_view;
-  native_widget_mac_->GetWidget()->ReorderNativeViews();
+  if (Widget* widget = GetWidget()) {
+    widget->ReorderNativeViews();
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnNativeViewHostDetach(const View* view) {
@@ -987,8 +1000,9 @@ void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
       compositor_->Suspend();
     }
   }
-  native_widget_mac_->GetWidget()->OnNativeWidgetVisibilityChanged(
-      window_visible);
+  if (Widget* widget = GetWidget()) {
+    widget->OnNativeWidgetVisibilityChanged(window_visible);
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowNativeThemeChanged() {
@@ -1125,8 +1139,9 @@ void NativeWidgetMacNSWindowHost::OnIsFirstResponderChanged(
 void NativeWidgetMacNSWindowHost::OnMouseCaptureActiveChanged(bool is_active) {
   DCHECK_NE(is_mouse_capture_active_, is_active);
   is_mouse_capture_active_ = is_active;
-  if (!is_mouse_capture_active_)
-    native_widget_mac_->GetWidget()->OnMouseCaptureLost();
+  if (!is_mouse_capture_active_ && GetWidget()) {
+    GetWidget()->OnMouseCaptureLost();
+  }
 }
 
 bool NativeWidgetMacNSWindowHost::GetIsDraggableBackgroundAt(
@@ -1175,7 +1190,9 @@ void NativeWidgetMacNSWindowHost::GetWordAt(
 }
 
 bool NativeWidgetMacNSWindowHost::GetWidgetIsModal(bool* widget_is_modal) {
-  *widget_is_modal = native_widget_mac_->GetWidget()->IsModal();
+  if (Widget* widget = GetWidget()) {
+    *widget_is_modal = widget->IsModal();
+  }
   return true;
 }
 
@@ -1200,16 +1217,17 @@ void NativeWidgetMacNSWindowHost::OnWindowGeometryChanged(
   window_bounds_in_screen_ = new_window_bounds_in_screen;
   content_bounds_in_screen_ = new_content_bounds_in_screen;
 
+  Widget* widget = GetWidget();
   // When a window grows vertically, the AppKit origin changes, but as far as
   // toolkit-views is concerned, the window hasn't moved. Suppress these.
-  if (window_has_moved)
-    native_widget_mac_->GetWidget()->OnNativeWidgetMove();
+  if (window_has_moved && widget) {
+    widget->OnNativeWidgetMove();
+  }
 
   // Note we can't use new_window_bounds_in_screen.size(), since it includes the
   // titlebar for the purposes of detecting a window move.
-  if (content_has_resized) {
-    native_widget_mac_->GetWidget()->OnNativeWidgetSizeChanged(
-        content_bounds_in_screen_.size());
+  if (content_has_resized && widget) {
+    widget->OnNativeWidgetSizeChanged(content_bounds_in_screen_.size());
 
     // Update the compositor surface and layer size.
     UpdateCompositorProperties();
@@ -1246,8 +1264,9 @@ void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionComplete(
 void NativeWidgetMacNSWindowHost::OnWindowMiniaturizedChanged(
     bool miniaturized) {
   is_miniaturized_ = miniaturized;
-  if (native_widget_mac_)
-    native_widget_mac_->GetWidget()->OnNativeWidgetWindowShowStateChanged();
+  if (Widget* widget = GetWidget()) {
+    widget->OnNativeWidgetWindowShowStateChanged();
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowZoomedChanged(bool zoomed) {
@@ -1271,7 +1290,7 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowWillClose() {
-  Widget* widget = native_widget_mac_->GetWidget();
+  Widget* widget = GetWidget();
   if (widget && widget->widget_delegate() &&
       widget->widget_delegate()->AsDialogDelegate()) {
     widget->widget_delegate()->AsDialogDelegate()->RemoveObserver(this);
@@ -1313,7 +1332,9 @@ void NativeWidgetMacNSWindowHost::OnWindowKeyStatusChanged(
 void NativeWidgetMacNSWindowHost::OnWindowStateRestorationDataChanged(
     const std::vector<uint8_t>& data) {
   state_restoration_data_ = data;
-  native_widget_mac_->GetWidget()->OnNativeWidgetWorkspaceChanged();
+  if (Widget* widget = GetWidget()) {
+    widget->OnNativeWidgetWorkspaceChanged();
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowParentChanged(
@@ -1336,7 +1357,7 @@ void NativeWidgetMacNSWindowHost::OnWindowParentChanged(
     parent_->children_.push_back(this);
   }
 
-  if (Widget* widget = native_widget_mac_->GetWidget()) {
+  if (Widget* widget = GetWidget()) {
     widget->OnNativeWidgetParentChanged(
         parent_ ? parent_->native_widget_mac()->GetNativeView() : nullptr);
   }
@@ -1519,7 +1540,7 @@ bool NativeWidgetMacNSWindowHost::HandleAccelerator(
     bool require_priority_handler,
     bool* was_handled) {
   *was_handled = false;
-  if (Widget* widget = native_widget_mac_->GetWidget()) {
+  if (Widget* widget = GetWidget()) {
     if (require_priority_handler &&
         !widget->GetFocusManager()->HasPriorityHandler(accelerator)) {
       return true;
@@ -1731,18 +1752,24 @@ id NativeWidgetMacNSWindowHost::GetAccessibilityFocusedUIElement() {
 
 void NativeWidgetMacNSWindowHost::OnPaintLayer(
     const ui::PaintContext& context) {
-  native_widget_mac_->GetWidget()->OnNativeWidgetPaint(context);
+  if (Widget* widget = GetWidget()) {
+    widget->OnNativeWidgetPaint(context);
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
-  native_widget_mac_->GetWidget()->DeviceScaleFactorChanged(
-      old_device_scale_factor, new_device_scale_factor);
+  if (Widget* widget = GetWidget()) {
+    widget->DeviceScaleFactorChanged(old_device_scale_factor,
+                                     new_device_scale_factor);
+  }
 }
 
 void NativeWidgetMacNSWindowHost::UpdateVisualState() {
-  native_widget_mac_->GetWidget()->LayoutRootViewIfNecessary();
+  if (Widget* widget = GetWidget()) {
+    widget->LayoutRootViewIfNecessary();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

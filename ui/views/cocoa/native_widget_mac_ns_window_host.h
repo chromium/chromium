@@ -100,6 +100,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
     return children_;
   }
 
+  // The Widget associated with the NativeWidgetMac.
+  // Returns nullptr if it doesn't exist.
+  Widget* GetWidget();
+
   // The bridge factory that was used to create the true NSWindow for this
   // widget. This is nullptr for in-process windows.
   remote_cocoa::ApplicationHost* application_host() const {
