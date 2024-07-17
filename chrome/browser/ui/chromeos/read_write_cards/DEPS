@@ -1,3 +1,9 @@
 include_rules = [
   "+chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h",
 ]
+
+specific_include_rules = {
+  "read_write_cards_manager_impl_unittest\.cc": [
+    "+ash/system/mahi",
+  ]
+}

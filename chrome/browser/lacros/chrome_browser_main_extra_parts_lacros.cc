@@ -64,7 +64,7 @@
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_manager_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"

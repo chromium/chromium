@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_manager_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"

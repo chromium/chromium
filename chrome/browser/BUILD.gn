@@ -6320,6 +6320,7 @@ static_library("browser") {
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/policy:onc",
       "//chrome/browser/ui/chromeos/read_write_cards",
+      "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/dlp_internals:mojo_bindings",
       "//chrome/browser/webshare:storage",

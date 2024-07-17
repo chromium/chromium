@@ -199,6 +199,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/game_dashboard",
     "//chrome/browser/ui/ash/global_media_controls",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
     "//chrome/browser/web_applications",
     "//chrome/browser/webshare:storage",
