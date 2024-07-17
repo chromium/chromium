@@ -6661,6 +6661,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxGroupingFrameworkDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForNonZPS)},
 
+
     {"omnibox-calc-provider", flag_descriptions::kOmniboxCalcProviderName,
      flag_descriptions::kOmniboxCalcProviderDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox_feature_configs::CalcProvider::kCalcProvider)},
@@ -11775,12 +11776,13 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillSkipAndroidBottomSheetForIban)},
 #endif
 
-    {"pwm-show-suggestions-on-autofocus",
-     flag_descriptions::kPasswordManagerShowSuggestionsOnAutofocusName,
-     flag_descriptions::kPasswordManagerShowSuggestionsOnAutofocusDescription,
+    {"pwm-show-webauthn-suggestions-on-autofocus",
+     flag_descriptions::kPasswordManagerShowWebauthnSuggestionsOnAutofocusName,
+     flag_descriptions::
+         kPasswordManagerShowWebauthnSuggestionsOnAutofocusDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(
-         password_manager::features::kShowSuggestionsOnAutofocus)},
+         password_manager::features::kShowWebauthnSuggestionsOnAutofocus)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"fetch-gaia-hash-on-sign-in",

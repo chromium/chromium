@@ -506,7 +506,6 @@ bool HasTextInputs(const FormData& form_data) {
                               &FormFieldData::IsTextInputElement);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 bool IsWebAuthnForm(const FormData* form_data) {
   auto has_webauthn_attribute = [](const FormFieldData& field) {
     return field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
@@ -515,6 +514,7 @@ bool IsWebAuthnForm(const FormData* form_data) {
          base::ranges::any_of(form_data->fields(), has_webauthn_attribute);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 // Returns a prediction whether the form that contains `username_element` and
 // `password_element` will be ready for submission after filling these two
 // elements.
@@ -2373,9 +2373,10 @@ void PasswordAutofillAgent::MaybeTriggerSuggestionsOnFocusedElement(
 
   auto form_data =
       GetFormDataFromWebForm(form_util::GetOwningForm(focused_element));
-  if ((times_received_fill_data_[form_data->renderer_id()] == 1) &&
+  if (IsWebAuthnForm(form_data.get()) &&
+      (times_received_fill_data_[form_data->renderer_id()] == 1) &&
       base::FeatureList::IsEnabled(
-          password_manager::features::kShowSuggestionsOnAutofocus)) {
+          password_manager::features::kShowWebauthnSuggestionsOnAutofocus)) {
     autofill_agent_->TriggerSuggestions(
         autofill::form_util::GetFieldRendererId(focused_element),
         AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField);
