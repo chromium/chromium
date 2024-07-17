@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/chromeos/vulkan_image_processor.h"
+#include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
 
 #include "base/bits.h"
 #include "base/logging.h"
@@ -19,7 +19,7 @@
 
 namespace media {
 
-class VulkanImageProcessor::VulkanRenderPass {
+class VulkanOverlayAdaptor::VulkanRenderPass {
  public:
   VulkanRenderPass(const VulkanRenderPass&) = delete;
   VulkanRenderPass& operator=(const VulkanRenderPass&) = delete;
@@ -39,7 +39,7 @@ class VulkanImageProcessor::VulkanRenderPass {
   const VkDevice logical_device_;
 };
 
-class VulkanImageProcessor::VulkanShader {
+class VulkanOverlayAdaptor::VulkanShader {
  public:
   VulkanShader(const VulkanShader&) = delete;
   VulkanShader& operator=(const VulkanShader&) = delete;
@@ -60,7 +60,7 @@ class VulkanImageProcessor::VulkanShader {
   const VkDevice logical_device_;
 };
 
-class VulkanImageProcessor::VulkanPipeline {
+class VulkanOverlayAdaptor::VulkanPipeline {
  public:
   VulkanPipeline(const VulkanPipeline&) = delete;
   VulkanPipeline& operator=(const VulkanPipeline&) = delete;
@@ -99,7 +99,7 @@ class VulkanImageProcessor::VulkanPipeline {
   const VkDevice logical_device_;
 };
 
-class VulkanImageProcessor::VulkanDescriptorPool {
+class VulkanOverlayAdaptor::VulkanDescriptorPool {
  public:
   VulkanDescriptorPool(const VulkanDescriptorPool&) = delete;
   VulkanDescriptorPool& operator=(const VulkanDescriptorPool&) = delete;
@@ -125,7 +125,7 @@ class VulkanImageProcessor::VulkanDescriptorPool {
   const VkDevice logical_device_;
 };
 
-class VulkanImageProcessor::VulkanDeviceQueueWrapper {
+class VulkanOverlayAdaptor::VulkanDeviceQueueWrapper {
  public:
   VulkanDeviceQueueWrapper(const VulkanDeviceQueueWrapper&) = delete;
   VulkanDeviceQueueWrapper& operator=(const VulkanDeviceQueueWrapper&) = delete;
@@ -149,7 +149,7 @@ class VulkanImageProcessor::VulkanDeviceQueueWrapper {
   const std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue_;
 };
 
-class VulkanImageProcessor::VulkanCommandPoolWrapper {
+class VulkanOverlayAdaptor::VulkanCommandPoolWrapper {
  public:
   VulkanCommandPoolWrapper(const VulkanCommandPoolWrapper&) = delete;
   VulkanCommandPoolWrapper& operator=(const VulkanCommandPoolWrapper&) = delete;
@@ -169,7 +169,7 @@ class VulkanImageProcessor::VulkanCommandPoolWrapper {
   const std::unique_ptr<gpu::VulkanCommandPool> command_pool_;
 };
 
-class VulkanImageProcessor::VulkanTextureImage {
+class VulkanOverlayAdaptor::VulkanTextureImage {
  public:
   VulkanTextureImage(const VulkanTextureImage&) = delete;
   VulkanTextureImage& operator=(const VulkanTextureImage&) = delete;
@@ -209,7 +209,7 @@ class VulkanImageProcessor::VulkanTextureImage {
   const VkDevice logical_device_;
 };
 
-class VulkanImageProcessor::VulkanSampler {
+class VulkanOverlayAdaptor::VulkanSampler {
  public:
   VulkanSampler(const VulkanSampler&) = delete;
   VulkanSampler& operator=(const VulkanSampler&) = delete;
@@ -230,21 +230,21 @@ class VulkanImageProcessor::VulkanSampler {
   const VkDevice logical_device_;
 };
 
-VulkanImageProcessor::VulkanRenderPass::VulkanRenderPass(
+VulkanOverlayAdaptor::VulkanRenderPass::VulkanRenderPass(
     VkDevice logical_device,
     VkRenderPass render_pass)
     : render_pass_(render_pass), logical_device_(logical_device) {}
 
-VulkanImageProcessor::VulkanRenderPass::~VulkanRenderPass() {
+VulkanOverlayAdaptor::VulkanRenderPass::~VulkanRenderPass() {
   vkDestroyRenderPass(logical_device_, render_pass_, nullptr);
 }
 
-VkRenderPass VulkanImageProcessor::VulkanRenderPass::Get() {
+VkRenderPass VulkanOverlayAdaptor::VulkanRenderPass::Get() {
   return render_pass_;
 }
 
-std::unique_ptr<VulkanImageProcessor::VulkanRenderPass>
-VulkanImageProcessor::VulkanRenderPass::Create(VkFormat format,
+std::unique_ptr<VulkanOverlayAdaptor::VulkanRenderPass>
+VulkanOverlayAdaptor::VulkanRenderPass::Create(VkFormat format,
                                                VkDevice logical_device) {
   VkAttachmentDescription color_attachment{};
   color_attachment.format = format;
@@ -281,20 +281,20 @@ VulkanImageProcessor::VulkanRenderPass::Create(VkFormat format,
   return base::WrapUnique(new VulkanRenderPass(logical_device, render_pass));
 }
 
-VulkanImageProcessor::VulkanShader::VulkanShader(VkDevice logical_device,
+VulkanOverlayAdaptor::VulkanShader::VulkanShader(VkDevice logical_device,
                                                  VkShaderModule shader)
     : shader_(shader), logical_device_(logical_device) {}
 
-VulkanImageProcessor::VulkanShader::~VulkanShader() {
+VulkanOverlayAdaptor::VulkanShader::~VulkanShader() {
   vkDestroyShaderModule(logical_device_, shader_, nullptr);
 }
 
-VkShaderModule VulkanImageProcessor::VulkanShader::Get() {
+VkShaderModule VulkanOverlayAdaptor::VulkanShader::Get() {
   return shader_;
 }
 
-std::unique_ptr<VulkanImageProcessor::VulkanShader>
-VulkanImageProcessor::VulkanShader::Create(const uint32_t* shader_code,
+std::unique_ptr<VulkanOverlayAdaptor::VulkanShader>
+VulkanOverlayAdaptor::VulkanShader::Create(const uint32_t* shader_code,
                                            size_t shader_code_size,
                                            VkDevice logical_device) {
   VkShaderModuleCreateInfo shader_info{};
@@ -312,12 +312,12 @@ VulkanImageProcessor::VulkanShader::Create(const uint32_t* shader_code,
   return base::WrapUnique(new VulkanShader(logical_device, shader));
 }
 
-VulkanImageProcessor::VulkanPipeline::VulkanPipeline(
+VulkanOverlayAdaptor::VulkanPipeline::VulkanPipeline(
     VkPipeline pipeline,
     VkDescriptorSetLayout descriptor_set_layout,
     VkPipelineLayout pipeline_layout,
-    std::unique_ptr<VulkanImageProcessor::VulkanShader> vert_shader,
-    std::unique_ptr<VulkanImageProcessor::VulkanShader> frag_shader,
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanShader> vert_shader,
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanShader> frag_shader,
     VkDevice logical_device)
     : pipeline_(pipeline),
       descriptor_set_layout_(descriptor_set_layout),
@@ -326,34 +326,34 @@ VulkanImageProcessor::VulkanPipeline::VulkanPipeline(
       frag_shader_(std::move(frag_shader)),
       logical_device_(logical_device) {}
 
-VulkanImageProcessor::VulkanPipeline::~VulkanPipeline() {
+VulkanOverlayAdaptor::VulkanPipeline::~VulkanPipeline() {
   vkDestroyPipeline(logical_device_, pipeline_, nullptr);
   vkDestroyPipelineLayout(logical_device_, pipeline_layout_, nullptr);
   vkDestroyDescriptorSetLayout(logical_device_, descriptor_set_layout_,
                                nullptr);
 }
 
-VkPipeline VulkanImageProcessor::VulkanPipeline::Get() {
+VkPipeline VulkanOverlayAdaptor::VulkanPipeline::Get() {
   return pipeline_;
 }
 
 VkDescriptorSetLayout
-VulkanImageProcessor::VulkanPipeline::GetDescriptorSetLayout() {
+VulkanOverlayAdaptor::VulkanPipeline::GetDescriptorSetLayout() {
   return descriptor_set_layout_;
 }
 
-VkPipelineLayout VulkanImageProcessor::VulkanPipeline::GetPipelineLayout() {
+VkPipelineLayout VulkanOverlayAdaptor::VulkanPipeline::GetPipelineLayout() {
   return pipeline_layout_;
 }
 
-std::unique_ptr<VulkanImageProcessor::VulkanPipeline>
-VulkanImageProcessor::VulkanPipeline::Create(
+std::unique_ptr<VulkanOverlayAdaptor::VulkanPipeline>
+VulkanOverlayAdaptor::VulkanPipeline::Create(
     const std::vector<VkVertexInputBindingDescription>& binding_descriptions,
     const std::vector<VkVertexInputAttributeDescription>&
         attribute_descriptions,
     const std::vector<VkDescriptorSetLayoutBinding>& ubo_bindings,
-    std::unique_ptr<VulkanImageProcessor::VulkanShader> vert_shader,
-    std::unique_ptr<VulkanImageProcessor::VulkanShader> frag_shader,
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanShader> vert_shader,
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanShader> frag_shader,
     const std::vector<size_t>& push_constants_size,
     VkRenderPass render_pass,
     VkDevice logical_device) {
@@ -517,7 +517,7 @@ VulkanImageProcessor::VulkanPipeline::Create(
       std::move(frag_shader), logical_device));
 }
 
-VulkanImageProcessor::VulkanDescriptorPool::VulkanDescriptorPool(
+VulkanOverlayAdaptor::VulkanDescriptorPool::VulkanDescriptorPool(
     std::vector<VkDescriptorSet> descriptor_sets,
     VkDescriptorPool descriptor_pool,
     VkDevice logical_device)
@@ -525,17 +525,17 @@ VulkanImageProcessor::VulkanDescriptorPool::VulkanDescriptorPool(
       descriptor_pool_(descriptor_pool),
       logical_device_(logical_device) {}
 
-VulkanImageProcessor::VulkanDescriptorPool::~VulkanDescriptorPool() {
+VulkanOverlayAdaptor::VulkanDescriptorPool::~VulkanDescriptorPool() {
   vkDestroyDescriptorPool(logical_device_, descriptor_pool_, nullptr);
 }
 
 const std::vector<VkDescriptorSet>&
-VulkanImageProcessor::VulkanDescriptorPool::Get() {
+VulkanOverlayAdaptor::VulkanDescriptorPool::Get() {
   return descriptor_sets_;
 }
 
-std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
-VulkanImageProcessor::VulkanDescriptorPool::Create(
+std::unique_ptr<VulkanOverlayAdaptor::VulkanDescriptorPool>
+VulkanOverlayAdaptor::VulkanDescriptorPool::Create(
     size_t num_descriptor_sets,
     std::vector<VkDescriptorType> descriptor_types,
     VkDescriptorSetLayout descriptor_set_layout,
@@ -580,7 +580,7 @@ VulkanImageProcessor::VulkanDescriptorPool::Create(
       descriptor_sets, descriptor_pool, logical_device));
 }
 
-VulkanImageProcessor::VulkanTextureImage::VulkanTextureImage(
+VulkanOverlayAdaptor::VulkanTextureImage::VulkanTextureImage(
     gpu::VulkanImage& image,
     const std::vector<VkImageView>& image_views,
     const std::vector<VkFramebuffer>& framebuffers,
@@ -592,7 +592,7 @@ VulkanImageProcessor::VulkanTextureImage::VulkanTextureImage(
       current_layout_(initial_layout),
       logical_device_(logical_device) {}
 
-VulkanImageProcessor::VulkanTextureImage::~VulkanTextureImage() {
+VulkanOverlayAdaptor::VulkanTextureImage::~VulkanTextureImage() {
   for (VkFramebuffer framebuffer : framebuffers_) {
     vkDestroyFramebuffer(logical_device_, framebuffer, nullptr);
   }
@@ -602,21 +602,21 @@ VulkanImageProcessor::VulkanTextureImage::~VulkanTextureImage() {
   }
 }
 
-VkImage VulkanImageProcessor::VulkanTextureImage::GetImage() {
+VkImage VulkanOverlayAdaptor::VulkanTextureImage::GetImage() {
   return image_->image();
 }
 
 const std::vector<VkImageView>&
-VulkanImageProcessor::VulkanTextureImage::GetImageViews() {
+VulkanOverlayAdaptor::VulkanTextureImage::GetImageViews() {
   return image_views_;
 }
 
 const std::vector<VkFramebuffer>&
-VulkanImageProcessor::VulkanTextureImage::GetFramebuffers() {
+VulkanOverlayAdaptor::VulkanTextureImage::GetFramebuffers() {
   return framebuffers_;
 }
 
-void VulkanImageProcessor::VulkanTextureImage::TransitionImageLayout(
+void VulkanOverlayAdaptor::VulkanTextureImage::TransitionImageLayout(
     gpu::VulkanCommandBuffer* command_buf,
     VkImageLayout new_layout,
     uint32_t src_queue_family_index,
@@ -632,8 +632,8 @@ void VulkanImageProcessor::VulkanTextureImage::TransitionImageLayout(
   current_layout_ = new_layout;
 }
 
-std::unique_ptr<VulkanImageProcessor::VulkanTextureImage>
-VulkanImageProcessor::VulkanTextureImage::Create(
+std::unique_ptr<VulkanOverlayAdaptor::VulkanTextureImage>
+VulkanOverlayAdaptor::VulkanTextureImage::Create(
     gpu::VulkanImage& image,
     const std::vector<VkFormat>& formats,
     const std::vector<gfx::Size>& sizes,
@@ -696,43 +696,43 @@ VulkanImageProcessor::VulkanTextureImage::Create(
       logical_device));
 }
 
-VulkanImageProcessor::VulkanDeviceQueueWrapper::VulkanDeviceQueueWrapper(
+VulkanOverlayAdaptor::VulkanDeviceQueueWrapper::VulkanDeviceQueueWrapper(
     std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue)
     : vulkan_device_queue_(std::move(vulkan_device_queue)) {}
 
-VulkanImageProcessor::VulkanDeviceQueueWrapper::~VulkanDeviceQueueWrapper() {
+VulkanOverlayAdaptor::VulkanDeviceQueueWrapper::~VulkanDeviceQueueWrapper() {
   vulkan_device_queue_->Destroy();
 }
 
 gpu::VulkanDeviceQueue*
-VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanDeviceQueue() {
+VulkanOverlayAdaptor::VulkanDeviceQueueWrapper::GetVulkanDeviceQueue() {
   return vulkan_device_queue_.get();
 }
 
 VkPhysicalDevice
-VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanPhysicalDevice() {
+VulkanOverlayAdaptor::VulkanDeviceQueueWrapper::GetVulkanPhysicalDevice() {
   return vulkan_device_queue_->GetVulkanPhysicalDevice();
 }
 
-VkPhysicalDeviceProperties VulkanImageProcessor::VulkanDeviceQueueWrapper::
+VkPhysicalDeviceProperties VulkanOverlayAdaptor::VulkanDeviceQueueWrapper::
     GetVulkanPhysicalDeviceProperties() {
   return vulkan_device_queue_->vk_physical_device_properties();
 }
 
-VkDevice VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanDevice() {
+VkDevice VulkanOverlayAdaptor::VulkanDeviceQueueWrapper::GetVulkanDevice() {
   return vulkan_device_queue_->GetVulkanDevice();
 }
 
-VkQueue VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanQueue() {
+VkQueue VulkanOverlayAdaptor::VulkanDeviceQueueWrapper::GetVulkanQueue() {
   return vulkan_device_queue_->GetVulkanQueue();
 }
 
-uint32_t VulkanImageProcessor::VulkanDeviceQueueWrapper::GetVulkanQueueIndex() {
+uint32_t VulkanOverlayAdaptor::VulkanDeviceQueueWrapper::GetVulkanQueueIndex() {
   return vulkan_device_queue_->GetVulkanQueueIndex();
 }
 
-std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
-VulkanImageProcessor::VulkanDeviceQueueWrapper::Create(
+std::unique_ptr<VulkanOverlayAdaptor::VulkanDeviceQueueWrapper>
+VulkanOverlayAdaptor::VulkanDeviceQueueWrapper::Create(
     gpu::VulkanImplementation* implementation) {
   auto vulkan_device_queue = CreateVulkanDeviceQueue(
       implementation,
@@ -747,21 +747,21 @@ VulkanImageProcessor::VulkanDeviceQueueWrapper::Create(
       new VulkanDeviceQueueWrapper(std::move(vulkan_device_queue)));
 }
 
-VulkanImageProcessor::VulkanCommandPoolWrapper::VulkanCommandPoolWrapper(
+VulkanOverlayAdaptor::VulkanCommandPoolWrapper::VulkanCommandPoolWrapper(
     std::unique_ptr<gpu::VulkanCommandPool> command_pool)
     : command_pool_(std::move(command_pool)) {}
 
-VulkanImageProcessor::VulkanCommandPoolWrapper::~VulkanCommandPoolWrapper() {
+VulkanOverlayAdaptor::VulkanCommandPoolWrapper::~VulkanCommandPoolWrapper() {
   command_pool_->Destroy();
 }
 
 std::unique_ptr<gpu::VulkanCommandBuffer>
-VulkanImageProcessor::VulkanCommandPoolWrapper::CreatePrimaryCommandBuffer() {
+VulkanOverlayAdaptor::VulkanCommandPoolWrapper::CreatePrimaryCommandBuffer() {
   return command_pool_->CreatePrimaryCommandBuffer();
 }
 
-std::unique_ptr<VulkanImageProcessor::VulkanCommandPoolWrapper>
-VulkanImageProcessor::VulkanCommandPoolWrapper::Create(
+std::unique_ptr<VulkanOverlayAdaptor::VulkanCommandPoolWrapper>
+VulkanOverlayAdaptor::VulkanCommandPoolWrapper::Create(
     gpu::VulkanDeviceQueue* device_queue,
     bool allow_protected_memory) {
   std::unique_ptr<gpu::VulkanCommandPool> command_pool =
@@ -772,12 +772,12 @@ VulkanImageProcessor::VulkanCommandPoolWrapper::Create(
       new VulkanCommandPoolWrapper(std::move(command_pool)));
 }
 
-VulkanImageProcessor::VulkanSampler::VulkanSampler(VkSampler sampler,
+VulkanOverlayAdaptor::VulkanSampler::VulkanSampler(VkSampler sampler,
                                                    VkDevice logical_device)
     : sampler_(sampler), logical_device_(logical_device) {}
 
-std::unique_ptr<VulkanImageProcessor::VulkanSampler>
-VulkanImageProcessor::VulkanSampler::Create(VkFilter filter_mode,
+std::unique_ptr<VulkanOverlayAdaptor::VulkanSampler>
+VulkanOverlayAdaptor::VulkanSampler::Create(VkFilter filter_mode,
                                             bool normalize_coords,
                                             VkDevice logical_device) {
   VkSamplerCreateInfo sampler_info{
@@ -808,32 +808,32 @@ VulkanImageProcessor::VulkanSampler::Create(VkFilter filter_mode,
   return base::WrapUnique(new VulkanSampler(sampler, logical_device));
 }
 
-VkSampler& VulkanImageProcessor::VulkanSampler::Get() {
+VkSampler& VulkanOverlayAdaptor::VulkanSampler::Get() {
   return sampler_;
 }
 
-VulkanImageProcessor::VulkanSampler::~VulkanSampler() {
+VulkanOverlayAdaptor::VulkanSampler::~VulkanSampler() {
   vkDestroySampler(logical_device_, sampler_, nullptr);
 }
 
-VulkanImageProcessor::VulkanImageProcessor(
+VulkanOverlayAdaptor::VulkanOverlayAdaptor(
     std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation,
-    std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanDeviceQueueWrapper>
         vulkan_device_queue,
-    std::unique_ptr<VulkanImageProcessor::VulkanCommandPoolWrapper>
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanCommandPoolWrapper>
         command_pool,
-    std::unique_ptr<VulkanImageProcessor::VulkanRenderPass> convert_render_pass,
-    std::unique_ptr<VulkanImageProcessor::VulkanRenderPass>
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanRenderPass> convert_render_pass,
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanRenderPass>
         transform_render_pass,
-    std::unique_ptr<VulkanImageProcessor::VulkanPipeline> convert_pipeline,
-    std::unique_ptr<VulkanImageProcessor::VulkanPipeline> transform_pipeline,
-    std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanPipeline> convert_pipeline,
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanPipeline> transform_pipeline,
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanDescriptorPool>
         convert_descriptor_pool,
-    std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanDescriptorPool>
         transform_descriptor_pool,
-    std::unique_ptr<VulkanImageProcessor::VulkanSampler> sampler,
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanSampler> sampler,
     std::unique_ptr<gpu::VulkanImage> pivot_image,
-    std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture,
+    std::unique_ptr<VulkanOverlayAdaptor::VulkanTextureImage> pivot_texture,
     bool is_protected,
     TiledImageFormat tile_format)
     : vulkan_implementation_(std::move(vulkan_implementation)),
@@ -851,7 +851,7 @@ VulkanImageProcessor::VulkanImageProcessor(
       is_protected_(is_protected),
       tile_format_(tile_format) {}
 
-VulkanImageProcessor::~VulkanImageProcessor() {
+VulkanOverlayAdaptor::~VulkanOverlayAdaptor() {
   // Make sure there aren't any pending cleanup jobs before we start destroying
   // stuff.
   vulkan_device_queue_->GetVulkanDeviceQueue()
@@ -861,7 +861,7 @@ VulkanImageProcessor::~VulkanImageProcessor() {
   pivot_image_->Destroy();
 }
 
-std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
+std::unique_ptr<VulkanOverlayAdaptor> VulkanOverlayAdaptor::Create(
     bool is_protected,
     TiledImageFormat format,
     const gfx::Size& max_size) {
@@ -1013,7 +1013,7 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
       /*is_framebuffer=*/true, convert_render_pass->Get(),
       vulkan_device_queue->GetVulkanDevice());
 
-  return base::WrapUnique(new VulkanImageProcessor(
+  return base::WrapUnique(new VulkanOverlayAdaptor(
       std::move(vulkan_implementation), std::move(vulkan_device_queue),
       std::move(command_pool), std::move(convert_render_pass),
       std::move(transform_render_pass), std::move(convert_pipeline),
@@ -1022,7 +1022,7 @@ std::unique_ptr<VulkanImageProcessor> VulkanImageProcessor::Create(
       std::move(pivot_image), std::move(pivot_texture), is_protected, format));
 }
 
-void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
+void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
                                    const gfx::Size& input_visible_size,
                                    gpu::VulkanImage& out_image,
                                    const gfx::RectF& display_rect,
@@ -1118,7 +1118,7 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     default:
-      LOG(ERROR) << "Unsupported rotation requested for VulkanImageProcessor.";
+      LOG(ERROR) << "Unsupported rotation requested for VulkanOverlayAdaptor.";
       return;
   }
   vertex_push_constants[12] = static_cast<float>(input_visible_size.width()) /
@@ -1312,15 +1312,15 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
   fence_helper->ProcessCleanupTasks();
 }
 
-gpu::VulkanDeviceQueue* VulkanImageProcessor::GetVulkanDeviceQueue() {
+gpu::VulkanDeviceQueue* VulkanOverlayAdaptor::GetVulkanDeviceQueue() {
   return vulkan_device_queue_->GetVulkanDeviceQueue();
 }
 
-gpu::VulkanImplementation& VulkanImageProcessor::GetVulkanImplementation() {
+gpu::VulkanImplementation& VulkanOverlayAdaptor::GetVulkanImplementation() {
   return *vulkan_implementation_;
 }
 
-TiledImageFormat VulkanImageProcessor::GetTileFormat() const {
+TiledImageFormat VulkanOverlayAdaptor::GetTileFormat() const {
   return tile_format_;
 }
 

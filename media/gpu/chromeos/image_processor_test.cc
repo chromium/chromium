@@ -42,7 +42,7 @@
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/libyuv_image_processor_backend.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#include "media/gpu/chromeos/vulkan_image_processor.h"
+#include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/image_processor/image_processor_client.h"
 #include "media/gpu/test/image_quality_metrics.h"
@@ -901,17 +901,17 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
           gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
       "TestLabel", std::move(out_gmb));
 
-  auto vulkan_image_processor =
-      VulkanImageProcessor::Create(/*is_protected=*/false, kMM21);
-  ASSERT_TRUE(vulkan_image_processor);
+  auto vulkan_overlay_adaptor =
+      VulkanOverlayAdaptor::Create(/*is_protected=*/false, kMM21);
+  ASSERT_TRUE(vulkan_overlay_adaptor);
 
   auto input_vulkan_representation = shared_image_manager.ProduceVulkan(
-      input_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
-      vulkan_image_processor->GetVulkanImplementation(),
+      input_mailbox, nullptr, vulkan_overlay_adaptor->GetVulkanDeviceQueue(),
+      vulkan_overlay_adaptor->GetVulkanImplementation(),
       /*needs_detiling=*/true);
   auto output_vulkan_representation = shared_image_manager.ProduceVulkan(
-      output_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
-      vulkan_image_processor->GetVulkanImplementation(),
+      output_mailbox, nullptr, vulkan_overlay_adaptor->GetVulkanDeviceQueue(),
+      vulkan_overlay_adaptor->GetVulkanImplementation(),
       /*needs_detiling=*/true);
   {
     std::vector<VkSemaphore> begin_semaphores;
@@ -924,7 +924,7 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
 
     // TODO(b/251458823): Add tests for more interesting crop and rotation
     // parameters.
-    vulkan_image_processor->Process(
+    vulkan_overlay_adaptor->Process(
         input_access->GetVulkanImage(), visible_rect.size(),
         output_access->GetVulkanImage(),
         gfx::RectF(static_cast<float>(output_size.width()),
@@ -934,7 +934,7 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   }
 
   // This implicitly waits for all semaphores to signal.
-  vulkan_image_processor->GetVulkanDeviceQueue()
+  vulkan_overlay_adaptor->GetVulkanDeviceQueue()
       ->GetFenceHelper()
       ->PerformImmediateCleanup();
 
@@ -1125,17 +1125,17 @@ TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
           gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
       "TestLabel", std::move(out_gmb));
 
-  auto vulkan_image_processor =
-      VulkanImageProcessor::Create(/*is_protected=*/false, kMT2T);
-  ASSERT_TRUE(vulkan_image_processor);
+  auto vulkan_overlay_adaptor =
+      VulkanOverlayAdaptor::Create(/*is_protected=*/false, kMT2T);
+  ASSERT_TRUE(vulkan_overlay_adaptor);
 
   auto input_vulkan_representation = shared_image_manager.ProduceVulkan(
-      input_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
-      vulkan_image_processor->GetVulkanImplementation(),
+      input_mailbox, nullptr, vulkan_overlay_adaptor->GetVulkanDeviceQueue(),
+      vulkan_overlay_adaptor->GetVulkanImplementation(),
       /*needs_detiling=*/true);
   auto output_vulkan_representation = shared_image_manager.ProduceVulkan(
-      output_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
-      vulkan_image_processor->GetVulkanImplementation(),
+      output_mailbox, nullptr, vulkan_overlay_adaptor->GetVulkanDeviceQueue(),
+      vulkan_overlay_adaptor->GetVulkanImplementation(),
       /*needs_detiling=*/true);
   {
     std::vector<VkSemaphore> begin_semaphores;
@@ -1148,7 +1148,7 @@ TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
 
     // TODO(b/251458823): Add tests for more interesting crop and rotation
     // parameters.
-    vulkan_image_processor->Process(
+    vulkan_overlay_adaptor->Process(
         input_access->GetVulkanImage(), visible_rect.size(),
         output_access->GetVulkanImage(),
         gfx::RectF(static_cast<float>(output_size.width()),
@@ -1158,7 +1158,7 @@ TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
   }
 
   // This implicitly waits for all semaphores to signal.
-  vulkan_image_processor->GetVulkanDeviceQueue()
+  vulkan_overlay_adaptor->GetVulkanDeviceQueue()
       ->GetFenceHelper()
       ->PerformImmediateCleanup();
 

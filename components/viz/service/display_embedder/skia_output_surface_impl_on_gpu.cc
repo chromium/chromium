@@ -2805,12 +2805,12 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
     gfx::OverlayTransform transform,
     bool is_10bit) {
   // TODO(greenjustin): Ideally we wouldn't have to recreate the entire
-  // VulkanImageProcessor when we change from MM21 to MT2T, since only the
+  // VulkanOverlayAdaptor when we change from MM21 to MT2T, since only the
   // shaders really need swapped out.
-  if (!vulkan_image_processor_ ||
-      (is_10bit && vulkan_image_processor_->GetTileFormat() == media::kMM21) ||
-      (!is_10bit && vulkan_image_processor_->GetTileFormat() == media::kMT2T)) {
-    vulkan_image_processor_ = media::VulkanImageProcessor::Create(
+  if (!vulkan_overlay_adaptor_ ||
+      (is_10bit && vulkan_overlay_adaptor_->GetTileFormat() == media::kMM21) ||
+      (!is_10bit && vulkan_overlay_adaptor_->GetTileFormat() == media::kMT2T)) {
+    vulkan_overlay_adaptor_ = media::VulkanOverlayAdaptor::Create(
         true, is_10bit ? media::kMT2T : media::kMM21);
   }
 
@@ -2819,13 +2819,13 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
   // queue.
   auto input_representation =
       shared_image_representation_factory_->ProduceVulkan(
-          input, vulkan_image_processor_->GetVulkanDeviceQueue(),
-          vulkan_image_processor_->GetVulkanImplementation(),
+          input, vulkan_overlay_adaptor_->GetVulkanDeviceQueue(),
+          vulkan_overlay_adaptor_->GetVulkanImplementation(),
           /*needs_detiling=*/true);
   auto output_representation =
       shared_image_representation_factory_->ProduceVulkan(
-          output, vulkan_image_processor_->GetVulkanDeviceQueue(),
-          vulkan_image_processor_->GetVulkanImplementation(),
+          output, vulkan_overlay_adaptor_->GetVulkanDeviceQueue(),
+          vulkan_overlay_adaptor_->GetVulkanImplementation(),
           /*needs_detiling=*/true);
 
   if (!input_representation || !output_representation) {
@@ -2842,7 +2842,7 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
         gpu::RepresentationAccessMode::kWrite, begin_semaphores,
         end_semaphores);
 
-    vulkan_image_processor_->Process(
+    vulkan_overlay_adaptor_->Process(
         input_access->GetVulkanImage(), input_visible_size,
         output_access->GetVulkanImage(), display_rect, crop_rect, transform,
         begin_semaphores, end_semaphores);
@@ -2852,7 +2852,7 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
 }
 
 void SkiaOutputSurfaceImplOnGpu::CleanupImageProcessor() {
-  vulkan_image_processor_ = nullptr;
+  vulkan_overlay_adaptor_ = nullptr;
 }
 #endif
 

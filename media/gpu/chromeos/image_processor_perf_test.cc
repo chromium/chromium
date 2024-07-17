@@ -29,7 +29,7 @@
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/perf_test_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#include "media/gpu/chromeos/vulkan_image_processor.h"
+#include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/video_frame_mapper_factory.h"
@@ -947,21 +947,21 @@ TEST_P(VulkanImageProcessorPerfTest, Detile) {
         std::move(output_gmb));
   }
 
-  auto vulkan_image_processor =
-      VulkanImageProcessor::Create(/*is_protected=*/false, GetParam());
-  ASSERT_TRUE(vulkan_image_processor);
+  auto vulkan_overlay_adaptor =
+      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam());
+  ASSERT_TRUE(vulkan_overlay_adaptor);
 
   auto start_time = base::TimeTicks::Now();
   for (int i = 0; i < kNumberOfTestCycles; i++) {
     auto input_representation = shared_image_manager.ProduceVulkan(
         input_mailboxes[i % kNumberOfTestFrames], nullptr,
-        vulkan_image_processor->GetVulkanDeviceQueue(),
-        vulkan_image_processor->GetVulkanImplementation(),
+        vulkan_overlay_adaptor->GetVulkanDeviceQueue(),
+        vulkan_overlay_adaptor->GetVulkanImplementation(),
         /*needs_detiling=*/true);
     auto output_representation = shared_image_manager.ProduceVulkan(
         output_mailboxes[i % kNumberOfTestFrames], nullptr,
-        vulkan_image_processor->GetVulkanDeviceQueue(),
-        vulkan_image_processor->GetVulkanImplementation(),
+        vulkan_overlay_adaptor->GetVulkanDeviceQueue(),
+        vulkan_overlay_adaptor->GetVulkanImplementation(),
         /*needs_detiling=*/true);
 
     {
@@ -977,7 +977,7 @@ TEST_P(VulkanImageProcessorPerfTest, Detile) {
       // TODO(b/251458823): Add tests for more interesting crop and rotation
       // parameters. Preliminary testing indicates that rotation in particular
       // might have a substantial impact on performance.
-      vulkan_image_processor->Process(
+      vulkan_overlay_adaptor->Process(
           input_access->GetVulkanImage(), test_image_size,
           output_access->GetVulkanImage(),
           gfx::RectF(static_cast<float>(test_coded_size.width()),
@@ -987,7 +987,7 @@ TEST_P(VulkanImageProcessorPerfTest, Detile) {
     }
   }
   // This implicitly waits for all semaphores to signal.
-  vulkan_image_processor->GetVulkanDeviceQueue()
+  vulkan_overlay_adaptor->GetVulkanDeviceQueue()
       ->GetFenceHelper()
       ->PerformImmediateCleanup();
   auto end_time = base::TimeTicks::Now();

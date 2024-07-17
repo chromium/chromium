@@ -46,7 +46,7 @@
 
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
-#include "media/gpu/chromeos/vulkan_image_processor.h"
+#include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
 #endif
 
 namespace gfx {
@@ -629,7 +629,7 @@ class SkiaOutputSurfaceImplOnGpu
 
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
-  std::unique_ptr<media::VulkanImageProcessor> vulkan_image_processor_ =
+  std::unique_ptr<media::VulkanOverlayAdaptor> vulkan_overlay_adaptor_ =
       nullptr;
 #endif
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
+
 #include <linux/videodev2.h>
 #include <sys/mman.h>
 #include <sys/poll.h>
@@ -35,7 +37,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/perf_test_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#include "media/gpu/chromeos/vulkan_image_processor.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/image_quality_metrics.h"
 #include "media/gpu/test/video_test_environment.h"
@@ -449,12 +450,12 @@ void InitWithRandom(const gfx::Size size,
   }
 }
 
-class VulkanImageProcessorTest
+class VulkanOverlayAdaptorTest
     : public testing::Test,
       public testing::WithParamInterface<TiledImageFormat> {
  public:
-  VulkanImageProcessorTest();
-  ~VulkanImageProcessorTest() = default;
+  VulkanOverlayAdaptorTest();
+  ~VulkanOverlayAdaptorTest() = default;
 
   struct PrintToStringParamName {
     template <class ParamType>
@@ -470,7 +471,7 @@ class VulkanImageProcessorTest
                         const gfx::RectF& display_rect,
                         const gfx::RectF& crop_rect,
                         gfx::OverlayTransform transform,
-                        VulkanImageProcessor& processor);
+                        VulkanOverlayAdaptor& processor);
 
   scoped_refptr<VideoFrame> CreateVideoFrame(
       gpu::Mailbox mailbox,
@@ -496,7 +497,7 @@ class VulkanImageProcessorTest
   std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
 };
 
-VulkanImageProcessorTest::VulkanImageProcessorTest()
+VulkanOverlayAdaptorTest::VulkanOverlayAdaptorTest()
     : share_group_(base::MakeRefCounted<gl::GLShareGroup>()),
       surface_(gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
                                                   gfx::Size())),
@@ -512,14 +513,14 @@ VulkanImageProcessorTest::VulkanImageProcessorTest()
       &shared_image_manager_, nullptr, false);
 }
 
-void VulkanImageProcessorTest::ProcessMailboxes(
+void VulkanOverlayAdaptorTest::ProcessMailboxes(
     gpu::Mailbox in_mailbox,
     const gfx::Size& size,
     gpu::Mailbox out_mailbox,
     const gfx::RectF& display_rect,
     const gfx::RectF& crop_rect,
     gfx::OverlayTransform transform,
-    VulkanImageProcessor& processor) {
+    VulkanOverlayAdaptor& processor) {
   auto in_vulkan_representation = shared_image_manager_.ProduceVulkan(
       in_mailbox, nullptr, processor.GetVulkanDeviceQueue(),
       processor.GetVulkanImplementation(), /*needs_detiling=*/true);
@@ -541,7 +542,7 @@ void VulkanImageProcessorTest::ProcessMailboxes(
   }
 }
 
-scoped_refptr<VideoFrame> VulkanImageProcessorTest::CreateVideoFrame(
+scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateVideoFrame(
     gpu::Mailbox mailbox,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -594,7 +595,7 @@ scoped_refptr<VideoFrame> VulkanImageProcessorTest::CreateVideoFrame(
   return mapped_frame;
 }
 
-scoped_refptr<VideoFrame> VulkanImageProcessorTest::CreateFramebuffer(
+scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
     gpu::Mailbox mailbox,
     const gfx::Size& coded_size,
     bool is_10bit) {
@@ -630,7 +631,7 @@ scoped_refptr<VideoFrame> VulkanImageProcessorTest::CreateFramebuffer(
   return mapped_frame;
 }
 
-TEST_P(VulkanImageProcessorTest, Correctness) {
+TEST_P(VulkanOverlayAdaptorTest, Correctness) {
   bool is_10bit = GetParam() == kMT2T;
 
   auto in_mailbox = gpu::Mailbox::Generate();
@@ -652,16 +653,16 @@ TEST_P(VulkanImageProcessorTest, Correctness) {
   gfx::Size output_size(1000, 1000);
   auto out_frame = CreateFramebuffer(out_mailbox, output_size, is_10bit);
 
-  auto vulkan_image_processor =
-      VulkanImageProcessor::Create(/*is_protected=*/false, GetParam());
+  auto vulkan_overlay_adaptor =
+      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam());
 
   ProcessMailboxes(in_mailbox, image.VisibleRect().size(), out_mailbox,
                    gfx::RectF(base::checked_cast<float>(output_size.width()),
                               base::checked_cast<float>(output_size.height())),
                    gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE,
-                   *vulkan_image_processor);
+                   *vulkan_overlay_adaptor);
   // This implicitly waits for all semaphores to signal.
-  vulkan_image_processor->GetVulkanDeviceQueue()
+  vulkan_overlay_adaptor->GetVulkanDeviceQueue()
       ->GetFenceHelper()
       ->PerformImmediateCleanup();
 
@@ -704,7 +705,7 @@ TEST_P(VulkanImageProcessorTest, Correctness) {
   ASSERT_TRUE(psnr >= psnr_threshold);
 }
 
-TEST_P(VulkanImageProcessorTest, Performance) {
+TEST_P(VulkanOverlayAdaptorTest, Performance) {
   constexpr size_t kNumberOfTestFrames = 10;
   constexpr size_t kNumberOfTestCycles = 200;
   constexpr int kTestImageWidth = 1920;
@@ -735,8 +736,8 @@ TEST_P(VulkanImageProcessorTest, Performance) {
         CreateFramebuffer(out_mailboxes[i], test_image_size, is_10bit);
   }
 
-  auto vulkan_image_processor =
-      VulkanImageProcessor::Create(/*is_protected=*/false, GetParam());
+  auto vulkan_overlay_adaptor =
+      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam());
 
   auto start_time = base::TimeTicks::Now();
   for (size_t i = 0; i < kNumberOfTestCycles; i++) {
@@ -746,7 +747,7 @@ TEST_P(VulkanImageProcessorTest, Performance) {
         gfx::RectF(base::checked_cast<float>(test_image_size.width()),
                    base::checked_cast<float>(test_image_size.height())),
         gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE,
-        *vulkan_image_processor);
+        *vulkan_overlay_adaptor);
   }
   auto end_time = base::TimeTicks::Now();
 
@@ -758,9 +759,9 @@ TEST_P(VulkanImageProcessorTest, Performance) {
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         VulkanImageProcessorTest,
+                         VulkanOverlayAdaptorTest,
                          testing::Values(kMM21, kMT2T),
-                         VulkanImageProcessorTest::PrintToStringParamName());
+                         VulkanOverlayAdaptorTest::PrintToStringParamName());
 
 }  // namespace
 }  // namespace media

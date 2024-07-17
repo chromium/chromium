@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_CHROMEOS_VULKAN_IMAGE_PROCESSOR_H_
-#define MEDIA_GPU_CHROMEOS_VULKAN_IMAGE_PROCESSOR_H_
+#ifndef MEDIA_GPU_CHROMEOS_VULKAN_OVERLAY_ADAPTOR_H_
+#define MEDIA_GPU_CHROMEOS_VULKAN_OVERLAY_ADAPTOR_H_
 
 #include <vulkan/vulkan_core.h>
 
@@ -25,15 +25,15 @@ namespace media {
 enum TiledImageFormat { kMM21, kMT2T };
 
 // An image processor using Vulkan to perform MM21 detiling.
-class MEDIA_GPU_EXPORT VulkanImageProcessor {
+class MEDIA_GPU_EXPORT VulkanOverlayAdaptor {
  public:
-  VulkanImageProcessor(const VulkanImageProcessor&) = delete;
-  VulkanImageProcessor& operator=(const VulkanImageProcessor&) = delete;
+  VulkanOverlayAdaptor(const VulkanOverlayAdaptor&) = delete;
+  VulkanOverlayAdaptor& operator=(const VulkanOverlayAdaptor&) = delete;
 
-  ~VulkanImageProcessor();
+  ~VulkanOverlayAdaptor();
 
   // TODO(greenjustin): Change the |is_protected| bool to an enum.
-  static std::unique_ptr<VulkanImageProcessor> Create(
+  static std::unique_ptr<VulkanOverlayAdaptor> Create(
       bool is_protected,
       TiledImageFormat format = kMM21,
       const gfx::Size& max_size = gfx::Size(3840, 2160));
@@ -64,45 +64,45 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
   class VulkanTextureImage;
   class VulkanSampler;
 
-  VulkanImageProcessor(
+  VulkanOverlayAdaptor(
       std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation,
-      std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanDeviceQueueWrapper>
           vulkan_device_queue,
-      std::unique_ptr<VulkanImageProcessor::VulkanCommandPoolWrapper>
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanCommandPoolWrapper>
           command_pool,
-      std::unique_ptr<VulkanImageProcessor::VulkanRenderPass>
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanRenderPass>
           convert_render_pass,
-      std::unique_ptr<VulkanImageProcessor::VulkanRenderPass>
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanRenderPass>
           transform_render_pass,
-      std::unique_ptr<VulkanImageProcessor::VulkanPipeline> convert_pipeline,
-      std::unique_ptr<VulkanImageProcessor::VulkanPipeline> transform_pipeline,
-      std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanPipeline> convert_pipeline,
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanPipeline> transform_pipeline,
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanDescriptorPool>
           convert_descriptor_pool,
-      std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanDescriptorPool>
           transform_descriptor_pool,
-      std::unique_ptr<VulkanImageProcessor::VulkanSampler> sampler,
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanSampler> sampler,
       std::unique_ptr<gpu::VulkanImage> pivot_image,
-      std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture,
+      std::unique_ptr<VulkanOverlayAdaptor::VulkanTextureImage> pivot_texture,
       bool is_protected,
       TiledImageFormat tile_format);
 
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
-  std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanDeviceQueueWrapper>
       vulkan_device_queue_;
-  std::unique_ptr<VulkanImageProcessor::VulkanCommandPoolWrapper> command_pool_;
-  std::unique_ptr<VulkanImageProcessor::VulkanRenderPass> convert_render_pass_;
-  std::unique_ptr<VulkanImageProcessor::VulkanRenderPass>
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanCommandPoolWrapper> command_pool_;
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanRenderPass> convert_render_pass_;
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanRenderPass>
       transform_render_pass_;
-  std::unique_ptr<VulkanImageProcessor::VulkanPipeline> convert_pipeline_;
-  std::unique_ptr<VulkanImageProcessor::VulkanPipeline> transform_pipeline_;
-  std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanPipeline> convert_pipeline_;
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanPipeline> transform_pipeline_;
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanDescriptorPool>
       convert_descriptor_pool_;
-  std::unique_ptr<VulkanImageProcessor::VulkanDescriptorPool>
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanDescriptorPool>
       transform_descriptor_pool_;
-  std::unique_ptr<VulkanImageProcessor::VulkanSampler> sampler_;
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanSampler> sampler_;
 
   std::unique_ptr<gpu::VulkanImage> pivot_image_;
-  std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture_;
+  std::unique_ptr<VulkanOverlayAdaptor::VulkanTextureImage> pivot_texture_;
 
   bool is_protected_;
   const TiledImageFormat tile_format_;
@@ -110,4 +110,4 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_CHROMEOS_VULKAN_IMAGE_PROCESSOR_H_
+#endif  // MEDIA_GPU_CHROMEOS_VULKAN_OVERLAY_ADAPTOR_H_
