@@ -134,28 +134,12 @@ class QuicTestPacketMaker {
       quic::QuicRstStreamErrorCode error_code,
       bool include_stop_sending_if_v99 = true);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeRstAndDataPacket(
-      uint64_t packet_number,
-      quic::QuicStreamId rst_stream_id,
-      quic::QuicRstStreamErrorCode rst_error_code,
-      quic::QuicStreamId data_stream_id,
-      std::string_view data);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
       uint64_t packet_number,
       quic::QuicStreamId data_stream_id,
       std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeDataRstAndAckPacket(
-      uint64_t packet_number,
-      quic::QuicStreamId data_stream_id,
-      std::string_view data,
-      quic::QuicStreamId rst_stream_id,
-      quic::QuicRstStreamErrorCode rst_error_code,
-      uint64_t largest_received,
-      uint64_t smallest_received);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRstPacket(
       uint64_t packet_number,
@@ -164,25 +148,6 @@ class QuicTestPacketMaker {
       uint64_t largest_received,
       uint64_t smallest_received,
       bool include_stop_sending_if_v99 = true);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeRstAckAndConnectionClosePacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      quic::QuicRstStreamErrorCode error_code,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      quic::QuicErrorCode quic_error,
-      const std::string& quic_error_details);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeRstAckAndDataPacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      quic::QuicRstStreamErrorCode error_code,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      quic::QuicStreamId data_id,
-      bool fin,
-      std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckDataAndRst(
       uint64_t packet_number,
@@ -203,22 +168,6 @@ class QuicTestPacketMaker {
       quic::QuicStreamId data_id,
       bool fin,
       std::string_view data);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeRstAndConnectionClosePacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      quic::QuicRstStreamErrorCode error_code,
-      quic::QuicErrorCode quic_error,
-      const std::string& quic_error_details);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeDataRstAndConnectionClosePacket(
-      uint64_t packet_number,
-      quic::QuicStreamId data_stream_id,
-      std::string_view data,
-      quic::QuicStreamId rst_stream_id,
-      quic::QuicRstStreamErrorCode error_code,
-      quic::QuicErrorCode quic_error,
-      const std::string& quic_error_details);
 
   std::unique_ptr<quic::QuicReceivedPacket>
   MakeDataRstAckAndConnectionClosePacket(
@@ -263,11 +212,6 @@ class QuicTestPacketMaker {
       quic::QuicErrorCode quic_error,
       const std::string& quic_error_details);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeGoAwayPacket(
-      uint64_t packet_number,
-      quic::QuicErrorCode error_code,
-      std::string reason_phrase);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckPacket(
       uint64_t packet_number,
       uint64_t largest_received,
@@ -306,15 +250,6 @@ class QuicTestPacketMaker {
       uint64_t packet_number,
       uint64_t largest_received,
       uint64_t smallest_received,
-      std::string_view data);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckRetransmissionAndDataPacket(
-      uint64_t packet_number,
-      const std::vector<uint64_t>& original_packet_numbers,
-      quic::QuicStreamId stream_id,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      bool fin,
       std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRetransmissionPacket(
@@ -383,13 +318,6 @@ class QuicTestPacketMaker {
       quic::QuicStreamId id,
       spdy::SpdyPriority spdy_priority);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndPriorityPacket(
-      uint64_t packet_number,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      quic::QuicStreamId id,
-      spdy::SpdyPriority spdy_priority);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionPacket(
       uint64_t original_packet_number,
       uint64_t new_packet_number);
@@ -397,13 +325,6 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::QuicReceivedPacket> MakeCombinedRetransmissionPacket(
       const std::vector<uint64_t>& original_packet_numbers,
       uint64_t new_packet_number);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndPriorityUpdatePacket(
-      uint64_t packet_number,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      quic::QuicStreamId id,
-      spdy::SpdyPriority spdy_priority);
 
   std::unique_ptr<quic::QuicEncryptedPacket> MakeStatelessResetPacket();
 
