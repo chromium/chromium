@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -1410,6 +1411,85 @@ TEST_F(
       .WaitForSuccess(
           auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip,
           kSomeOtherSuccessBody);
+}
+
+// Test the case where the response has no compression groups.
+TEST_F(TrustedSignalsCacheTest, BiddingSignalsNoCompressionGroup) {
+  auto bidding_params = CreateDefaultBiddingParams();
+  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+
+  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  ValidateFetchParams(fetch, bidding_params,
+                      /*expected_compression_group_id=*/0, partition_id);
+
+  // Respond with an empty map with no compression groups.
+  std::move(fetch.callback).Run({});
+
+  TestTrustedSignalsCacheClient(handle, cache_mojo_pipe_)
+      .WaitForError("Fetched signals missing compression group 0.");
+}
+
+// Test the case where only information for the wrong compression group is
+// received.
+TEST_F(TrustedSignalsCacheTest, BiddingSignalsWrongCompressionGroup) {
+  auto bidding_params = CreateDefaultBiddingParams();
+  auto [handle, partition_id] = RequestTrustedBiddingSignals(bidding_params);
+
+  auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+  ValidateFetchParams(fetch, bidding_params,
+                      /*expected_compression_group_id=*/0, partition_id);
+
+  // Modify index of the only compression group when generating a response.
+  CHECK(base::Contains(fetch.compression_groups, 0));
+  std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>
+      modified_compression_groups;
+  modified_compression_groups.emplace(1,
+                                      std::move(fetch.compression_groups[0]));
+  fetch.compression_groups = std::move(modified_compression_groups);
+  RespondToFetchWithSuccess(fetch);
+
+  // A request for `handle3`'s data should return the different data.
+  TestTrustedSignalsCacheClient(handle, cache_mojo_pipe_)
+      .WaitForError("Fetched signals missing compression group 0.");
+}
+
+// Test the case where only one of two compression groups is returned by the
+// server. Both compression groups should fail. Run two test cases, one with the
+// first compression group missing, one with the second missing.
+TEST_F(TrustedSignalsCacheTest, BiddingSignalsOneCompressionGroupMissing) {
+  for (int missing_group : {0, 1}) {
+    auto bidding_params1 = CreateDefaultBiddingParams();
+    auto bidding_params2 = CreateDefaultBiddingParams();
+    bidding_params2.joining_origin =
+        url::Origin::Create(GURL("https://other.joining.origin.test"));
+
+    auto [handle1, partition_id1] =
+        RequestTrustedBiddingSignals(bidding_params1);
+    auto [handle2, partition_id2] =
+        RequestTrustedBiddingSignals(bidding_params2);
+    EXPECT_NE(handle1->compression_group_token(),
+              handle2->compression_group_token());
+
+    auto fetch = trusted_signals_cache_->WaitForBiddingSignalsFetch();
+    EXPECT_EQ(fetch.trusted_bidding_signals_url,
+              bidding_params1.trusted_bidding_signals_url);
+    ASSERT_EQ(fetch.compression_groups.size(), 2u);
+
+    // Remove missing compression group from the request, and generate a valid
+    // response for the other group.
+    ASSERT_TRUE(fetch.compression_groups.erase(missing_group));
+    RespondToFetchWithSuccess(fetch);
+
+    std::string expected_error = base::StringPrintf(
+        "Fetched signals missing compression group %i.", missing_group);
+
+    // Even though the data for only one Handle was missing, both should have
+    // the same error.
+    TestTrustedSignalsCacheClient(handle1, cache_mojo_pipe_)
+        .WaitForError(expected_error);
+    TestTrustedSignalsCacheClient(handle2, cache_mojo_pipe_)
+        .WaitForError(expected_error);
+  }
 }
 
 // Tests the case where request is made, and then a second request with one

@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
@@ -286,6 +287,9 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
 
   // Sets the received data. May only be called once. Clears information about
   // the Fetch, since it's now completed.
+  //
+  // Also sends `data` to all pending clients waiting on it, if there are any,
+  // and clears them all.
   void SetData(CachedResult data) {
     DCHECK(!data_);
     data_ = std::make_unique<CachedResult>(std::move(data));
@@ -301,6 +305,12 @@ class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
     // sending the data to any consumers.
     fetch_ = std::nullopt;
     fetch_compression_group_ = std::nullopt;
+
+    // Send data to pending clients.
+    for (auto& pending_client : pending_clients_) {
+      SendResultToClient(std::move(pending_client), *data_);
+    }
+    pending_clients_.clear();
   }
 
   // True if SetData() has been invoked.
@@ -684,31 +694,61 @@ void TrustedSignalsCacheImpl::OnFetchComplete(
     TrustedSignalsFetcher::SignalsFetchResult signals_fetch_result) {
   Fetch* fetch = &fetch_it->second;
 
-  for (auto& compression_group_pair : fetch->compression_groups) {
-    Fetch::CompressionGroup* compression_group = &compression_group_pair.second;
-    CachedResult result;
+  // If the result is not an error, separate out the data for each compression
+  // group in the request, prior to sending the data to pending requests for it.
+  // If any result is missing, replace `signals_fetch_result` with an error and
+  // throw away all extracted data. In that case, the error will be used for all
+  // compression groups, even those that did receive data.
+  std::vector<std::pair<CompressionGroupData*, CachedResult>>
+      compression_group_results;
+  if (signals_fetch_result.has_value()) {
+    compression_group_results.reserve(fetch->compression_groups.size());
+    for (auto& compression_group_pair : fetch->compression_groups) {
+      Fetch::CompressionGroup* compression_group =
+          &compression_group_pair.second;
+      CachedResult result;
+      auto signals_fetch_result_it =
+          signals_fetch_result->find(compression_group->compression_group_id);
+      if (signals_fetch_result_it == signals_fetch_result->end()) {
+        // If this happens, all results previously moved into
+        // `compression_group_results` will be ignored. Clearing this is not
+        // strictly necessary, but is done out of caution.
+        compression_group_results.clear();
 
-    if (!signals_fetch_result.has_value()) {
-      // On error, copy the shared error value to each group's
-      // CompressionGroupData.
-      result = base::unexpected(signals_fetch_result.error());
-    } else {
-      auto signals_fetch_result_it = signals_fetch_result.value().find(
-          compression_group->compression_group_id);
-      // The fetcher should fail the entire request if any compression group is
-      // missing from the response.
-      CHECK(signals_fetch_result_it != signals_fetch_result.value().end());
-
+        signals_fetch_result = base::unexpected(
+            TrustedSignalsFetcher::ErrorInfo{base::StringPrintf(
+                "Fetched signals missing compression group %i.",
+                compression_group->compression_group_id)});
+        break;
+      }
       result = std::move(signals_fetch_result_it->second);
+      compression_group_results.emplace_back(
+          compression_group->compression_group_data, std::move(result));
     }
+  }
 
-    CompressionGroupData* compression_group_data =
-        compression_group->compression_group_data;
-    auto pending_clients = compression_group_data->TakePendingClients();
-    for (auto& pending_client : pending_clients) {
-      SendResultToClient(std::move(pending_client), result);
+  if (signals_fetch_result.has_value()) {
+    // On success, pass each CachedData gathered in the earlier loop to each
+    // CompressionGroupData.
+
+    // All compression groups should have been found and have their results
+    // added to `compression_group_results` in the previous loop.
+    CHECK_EQ(compression_group_results.size(),
+             fetch->compression_groups.size());
+
+    for (auto& compression_group_result : compression_group_results) {
+      compression_group_result.first->SetData(
+          std::move(compression_group_result.second));
     }
-    compression_group_data->SetData(std::move(result));
+  } else {
+    // On error, copy the shared error value to each group's
+    // CompressionGroupData.
+    for (auto& compression_group_pair : fetch->compression_groups) {
+      CompressionGroupData* compression_group =
+          compression_group_pair.second.compression_group_data;
+      compression_group->SetData(
+          base::unexpected(signals_fetch_result.error()));
+    }
   }
 
   // The SetData() calls above cleared the references to the fetch held by the
