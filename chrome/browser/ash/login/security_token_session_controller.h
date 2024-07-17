@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -46,6 +47,7 @@ namespace ash::login {
 class SecurityTokenSessionController
     : public KeyedService,
       public chromeos::CertificateProviderService::Observer,
+      public extensions::ForceInstalledTracker::Observer,
       public session_manager::SessionManagerObserver {
  public:
   enum class Behavior { kIgnore, kLogout, kLock };
@@ -54,7 +56,7 @@ class SecurityTokenSessionController
   static const char* const kNotificationDisplayedKnownUserKey;
 
   SecurityTokenSessionController(
-      bool is_user_profile,
+      Profile* profile,
       PrefService* local_state,
       const user_manager::User* primary_user,
       chromeos::CertificateProviderService* certificate_provider_service);
@@ -86,8 +88,18 @@ class SecurityTokenSessionController
       const std::vector<chromeos::certificate_provider::CertificateInfo>&
           certificate_infos) override;
 
+  // extensions::ForceInstalledTracker::Observer
+  void OnForceInstalledExtensionsReady() override;
+
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
+
+  // Change the timeout of session_activation_timer_ for testing purposes.
+  void SetSessionActivationTimeoutForTest(
+      base::TimeDelta session_activation_seconds);
+
+  // Bypass session activation timer for testing purposes.
+  void TriggerSessionActivationTimeoutForTest();
 
  private:
   bool ShouldApplyPolicyInCurrentSessionState() const;
@@ -98,8 +110,7 @@ class SecurityTokenSessionController
 
   void ExtensionProvidesAllRequiredCertificates(
       const extensions::ExtensionId& extension_id);
-  void ExtensionStopsProvidingCertificate(
-      const extensions::ExtensionId& extension_id);
+  void ExtensionStopsProvidingCertificate();
   void TriggerAction();
   void AddLockNotification();
   void ScheduleLogoutNotification();
@@ -108,11 +119,15 @@ class SecurityTokenSessionController
   bool GetNotificationDisplayedKnownUserFlag() const;
   void SetNotificationDisplayedKnownUserFlag();
 
+  void StartSessionActivation();
+  void CompleteSessionActivation();
+
   const bool is_user_profile_;
   const raw_ptr<PrefService> local_state_;
   const raw_ptr<const user_manager::User> primary_user_;
   raw_ptr<chromeos::CertificateProviderService> certificate_provider_service_ =
       nullptr;
+  extensions::ForceInstalledTracker extensions_tracker_;
   const raw_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
   base::ScopedObservation<session_manager::SessionManager,
@@ -121,6 +136,7 @@ class SecurityTokenSessionController
   PrefChangeRegistrar pref_change_registrar_;
   Behavior behavior_ = Behavior::kIgnore;
   base::TimeDelta notification_seconds_;
+  base::TimeDelta session_activation_seconds_;
   base::flat_set<extensions::ExtensionId> observed_extensions_;
   base::flat_map<extensions::ExtensionId, std::vector<std::string>>
       extension_to_spkis_;
@@ -128,6 +144,7 @@ class SecurityTokenSessionController
       extensions_missing_required_certificates_;
   raw_ptr<views::Widget> fullscreen_notification_ = nullptr;
   base::OneShotTimer action_timer_;
+  base::OneShotTimer session_activation_timer_;
   std::unique_ptr<chromeos::CertificateProvider> certificate_provider_;
   // Whether all of the user's certificates have been provided at least once by
   // the extensions. This field is reset every time the session state changes.
@@ -135,6 +152,11 @@ class SecurityTokenSessionController
   // Whether the session state has transitioned into the `LOCKED` session state
   // at least once.
   bool had_lock_screen_transition_ = false;
+  // Whether a pre-defined amount of time has passed since the session start and
+  // activation of extensions. After this time a connection with a smart card
+  // reader should be fully established and existing certificates should be
+  // available.
+  bool is_session_activation_complete_ = false;
 
   base::WeakPtrFactory<SecurityTokenSessionController> weak_ptr_factory_{this};
 };

@@ -55,6 +55,8 @@ TEST_F(ForceInstalledTrackerTest, EmptyForcelist) {
   EXPECT_FALSE(loaded_called_);
   EXPECT_FALSE(ready_called_);
   EXPECT_TRUE(error_reason_.empty());
+  EXPECT_TRUE(force_installed_tracker()->IsReady());
+  EXPECT_FALSE(force_installed_tracker()->IsComplete());
 }
 
 TEST_F(ForceInstalledTrackerTest, EmptyForcelistAndThenUpdated) {
@@ -103,6 +105,7 @@ TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
   EXPECT_TRUE(error_reason_.empty());
   EXPECT_TRUE(force_installed_tracker()->IsDoneLoading());
   EXPECT_FALSE(force_installed_tracker()->IsReady());
+  EXPECT_FALSE(force_installed_tracker()->IsComplete());
 
   force_installed_tracker()->OnExtensionReady(profile(), ext1.get());
   force_installed_tracker()->OnExtensionReady(profile(), ext2.get());
@@ -111,6 +114,7 @@ TEST_F(ForceInstalledTrackerTest, AllExtensionsInstalled) {
   EXPECT_TRUE(error_reason_.empty());
   EXPECT_TRUE(force_installed_tracker()->IsDoneLoading());
   EXPECT_TRUE(force_installed_tracker()->IsReady());
+  EXPECT_TRUE(force_installed_tracker()->IsComplete());
 }
 
 // This test verifies that OnForceInstalledExtensionsLoaded() is not called till

@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/browser/extension_registry_factory.h"
 
 namespace ash {
 namespace login {
@@ -31,6 +32,7 @@ SecurityTokenSessionControllerFactory::SecurityTokenSessionControllerFactory()
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
+  DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
 }
 
 SecurityTokenSessionControllerFactory::
@@ -80,8 +82,7 @@ SecurityTokenSessionControllerFactory::BuildServiceInstanceForBrowserContext(
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           context);
   return std::make_unique<SecurityTokenSessionController>(
-      is_primary_profile, local_state, primary_user,
-      certificate_provider_service);
+      profile, local_state, primary_user, certificate_provider_service);
 }
 
 bool SecurityTokenSessionControllerFactory::ServiceIsCreatedWithBrowserContext()
