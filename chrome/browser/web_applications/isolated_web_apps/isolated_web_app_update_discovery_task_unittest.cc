@@ -367,13 +367,13 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Fails) {
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app,
-              test::IwaIs(Eq("installed iwa"),
-                          test::IsolationDataIs(
-                              Eq(installed_bundle_location_),
-                              Eq(base::Version("1.0.0")),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt))))
+  EXPECT_THAT(web_app, test::IwaIs(Eq("installed iwa"),
+                                   test::IsolationDataIs(
+                                       Eq(installed_bundle_location_),
+                                       Eq(base::Version("1.0.0")),
+                                       /*controlled_frame_partitions=*/_,
+                                       /*pending_update_info=*/Eq(std::nullopt),
+                                       /*integrity_block_data=*/_)))
       << task.AsDebugValue();
 }
 
@@ -403,7 +403,8 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Succeeds) {
               test::PendingUpdateInfoIs(
                   Property("variant", &IsolatedWebAppStorageLocation::variant,
                            VariantWith<IwaStorageOwnedBundle>(_)),
-                  base::Version("3.0.0")))))
+                  base::Version("3.0.0"), /*integrity_block_data=*/_),
+              /*integrity_block_data=*/_)))
       << task.AsDebugValue();
 }
 
@@ -442,7 +443,9 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
               test::PendingUpdateInfoIs(
                   Property("variant", &IsolatedWebAppStorageLocation::variant,
                            VariantWith<IwaStorageOwnedBundle>(_)),
-                  base::Version("2.0.0")))))
+                  base::Version("2.0.0"),
+                  /*integrity_block_data=*/_),
+              /*integrity_block_data=*/_)))
       << task.AsDebugValue();
 }
 

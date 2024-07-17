@@ -105,7 +105,8 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
                             test::IsolationDataIs(
                                 result->location, Eq(installed_version_),
                                 /*controlled_frame_partitions=*/_,
-                                /*pending_update_info=*/Eq(std::nullopt))));
+                                /*pending_update_info=*/Eq(std::nullopt),
+                                /*integrity_block_data=*/_)));
   }
 
   PrepareAndStoreUpdateResult PrepareAndStoreUpdateInfo(
@@ -177,7 +178,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppApplyUpdateCommandBrowserTest, Succeeds) {
       test::IwaIs(Eq("updated app"),
                   test::IsolationDataIs(
                       prepare_update_result->location, Eq(update_version_),
-                      /*controlled_frame_partitions=*/_, Eq(std::nullopt))));
+                      /*controlled_frame_partitions=*/_, Eq(std::nullopt),
+                      /*integrity_block_data=*/_)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

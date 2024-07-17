@@ -103,7 +103,8 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
                                     Eq(url::Origin::Create(GetAppUrl()))))),
               Eq(base::Version("1.0.0")),
               /*controlled_frame_partitions=*/_,
-              /*pending_update_info=*/Eq(std::nullopt))));
+              /*pending_update_info=*/Eq(std::nullopt),
+              /*integrity_block_data=*/_)));
 }
 
 class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
@@ -174,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
                            &IwaStorageUnownedBundle::path, Eq(absolute_path)))),
               Eq(base::Version("1.0.0")),
               /*controlled_frame_partitions=*/_,
-              /*pending_update_info=*/Eq(std::nullopt))));
+              /*pending_update_info=*/Eq(std::nullopt),
+              /*integrity_block_data=*/_)));
 }
 
 }  // namespace

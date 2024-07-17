@@ -299,7 +299,8 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
                           test::IsolationDataIs(
                               location, Eq(base::Version("2.0.0")),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
 
   // TODO(crbug.com/40277668): As a temporary fix to avoid race conditions with
   // `ScopedProfileKeepAlive`s, manually shutdown `KeyedService`s holding them.
@@ -577,7 +578,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
                                         /*controlled_frame_partitions=*/_,
                                         test::PendingUpdateInfoIs(
                                             UpdateLocationMatcher(profile()),
-                                            Eq(base::Version("2.0.0"))))));
+                                            Eq(base::Version("2.0.0")),
+                                            /*integrity_block_data=*/_),
+                                        /*integrity_block_data=*/_)));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -638,7 +641,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
                                         /*controlled_frame_partitions=*/_,
                                         test::PendingUpdateInfoIs(
                                             UpdateLocationMatcher(profile()),
-                                            Eq(base::Version("2.0.0"))))));
+                                            Eq(base::Version("2.0.0")),
+                                            /*integrity_block_data=*/_),
+                                        /*integrity_block_data=*/_)));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -691,7 +696,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
                                         /*controlled_frame_partitions=*/_,
                                         test::PendingUpdateInfoIs(
                                             UpdateLocationMatcher(profile()),
-                                            Eq(base::Version("2.0.0"))))));
+                                            Eq(base::Version("2.0.0")),
+                                            /*integrity_block_data=*/_),
+                                        /*integrity_block_data=*/_)));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -730,7 +737,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                                         /*controlled_frame_partitions=*/_,
                                         test::PendingUpdateInfoIs(
                                             UpdateLocationMatcher(profile()),
-                                            Eq(iwa_info1_->update_version)))));
+                                            Eq(iwa_info1_->update_version),
+                                            /*integrity_block_data=*/_),
+                                        /*integrity_block_data=*/_)));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -751,7 +760,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                               UpdateLocationMatcher(profile()),
                               Eq(iwa_info1_->update_version),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -818,7 +828,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                               UpdateLocationMatcher(profile()),
                               Eq(iwa_info1_->update_version),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
   EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
                   iwa_info2_->url_info.app_id()),
               test::IwaIs(iwa_info2_->update_app_name,
@@ -826,7 +837,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                               UpdateLocationMatcher(profile()),
                               Eq(iwa_info2_->update_version),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -1075,7 +1087,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest,
                           test::IsolationDataIs(
                               update_location_, Eq(iwa_info1_->update_version),
                               /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt))));
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
 }
 
 class IsolatedWebAppUpdateManagerDiscoveryTimerTest
