@@ -255,7 +255,7 @@ class ReadAnythingAppModel {
   void InsertSelectionNode(const ui::AXNodeID& node);
   void UpdateSelection();
   void ComputeSelectionNodeIds();
-  bool NoCurrentSelection();
+  bool IsCurrentSelectionEmpty();
   bool SelectionInsideDisplayNodes();
   bool ContentNodesOnlyContainHeadings();
 

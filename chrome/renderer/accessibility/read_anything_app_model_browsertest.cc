@@ -1063,20 +1063,547 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelectionFromAction_DoesNotDraw) {
 }
 
 TEST_F(ReadAnythingAppModelTest,
-       PostProcessSelectionFromAction_DoesNotDrawWithNoSelection) {
-  // Initial state.
+       PostProcessSelection_OnFirstOpen_DrawsWithNonEmptySelectionInside) {
+  ProcessDisplayNodes({2, 3});
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.tree_data.sel_anchor_object_id = ui::kInvalidAXNodeID;
-  update.tree_data.sel_focus_object_id = ui::kInvalidAXNodeID;
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 2;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 5;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_OnFirstOpen_DrawsWithEmptySelectionInside) {
+  ProcessDisplayNodes({2, 3});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 2;
+  update.tree_data.sel_anchor_offset = 5;
+  update.tree_data.sel_focus_offset = 5;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_OnFirstOpen_DrawsWithNonEmptySelectionOutside) {
+  ProcessDisplayNodes({2, 3});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 4;
+  update.tree_data.sel_focus_object_id = 4;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 5;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection__OnFirstOpen_DrawsWithEmptySelectionOutside) {
+  ProcessDisplayNodes({2, 3});
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 4;
+  update.tree_data.sel_focus_object_id = 4;
   update.tree_data.sel_anchor_offset = 0;
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({update});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_EmptyInside_AfterNonEmptyInside_DoesNotDraw) {
   ProcessDisplayNodes({2, 3});
+
+  // Non-empty selection inside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 2;
+  update1.tree_data.sel_focus_object_id = 2;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 5;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Empty selection inside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 3;
+  update2.tree_data.sel_focus_object_id = 3;
+  update2.tree_data.sel_anchor_offset = 2;
+  update2.tree_data.sel_focus_offset = 2;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
   SetSelectionFromAction(false);
 
   ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_EmptyInside_AfterEmptyInside_DoesNotDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Empty selection inside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 2;
+  update1.tree_data.sel_focus_object_id = 2;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 0;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Different empty selection inside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 3;
+  update2.tree_data.sel_focus_object_id = 3;
+  update2.tree_data.sel_anchor_offset = 2;
+  update2.tree_data.sel_focus_offset = 2;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_NonEmptyInside_AfterEmptyInside_DoesNotDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Empty selection inside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 3;
+  update1.tree_data.sel_focus_object_id = 3;
+  update1.tree_data.sel_anchor_offset = 2;
+  update1.tree_data.sel_focus_offset = 2;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Non-empty selection inside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 2;
+  update2.tree_data.sel_focus_object_id = 2;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 5;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_NonEmptyInside_AfterNonEmptyInside_DoesNotDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Non-empty selection inside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 3;
+  update1.tree_data.sel_focus_object_id = 3;
+  update1.tree_data.sel_anchor_offset = 2;
+  update1.tree_data.sel_focus_offset = 6;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Different non-empty selection inside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 2;
+  update2.tree_data.sel_focus_object_id = 3;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 5;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_EmptyOutside_AfterNonEmptyOutside_DoesDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Non-empty selection outside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 4;
+  update1.tree_data.sel_focus_object_id = 4;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 5;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Empty selection outside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 4;
+  update2.tree_data.sel_focus_object_id = 4;
+  update2.tree_data.sel_anchor_offset = 2;
+  update2.tree_data.sel_focus_offset = 2;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_EmptyOutside_AfterEmptyOutside_DoesNotDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Empty selection outside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 4;
+  update1.tree_data.sel_focus_object_id = 4;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 0;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Different empty selection outside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 4;
+  update2.tree_data.sel_focus_object_id = 4;
+  update2.tree_data.sel_anchor_offset = 2;
+  update2.tree_data.sel_focus_offset = 2;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_NonEmptyOutside_AfterEmptyOutside_DoesDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Empty selection outside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 4;
+  update1.tree_data.sel_focus_object_id = 4;
+  update1.tree_data.sel_anchor_offset = 2;
+  update1.tree_data.sel_focus_offset = 2;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Non-empty selection outside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 4;
+  update2.tree_data.sel_focus_object_id = 4;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 5;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_NonEmptyOutside_AfterNonEmptyOutside_DoesDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Non-empty selection outside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 4;
+  update1.tree_data.sel_focus_object_id = 4;
+  update1.tree_data.sel_anchor_offset = 2;
+  update1.tree_data.sel_focus_offset = 6;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Different non-empty selection outside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 4;
+  update2.tree_data.sel_focus_object_id = 4;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 5;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_EmptyInside_AfterNonEmptyOutside_DoesDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Non-empty selection outside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 4;
+  update1.tree_data.sel_focus_object_id = 4;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 5;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Empty selection inside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 2;
+  update2.tree_data.sel_focus_object_id = 2;
+  update2.tree_data.sel_anchor_offset = 2;
+  update2.tree_data.sel_focus_offset = 2;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_EmptyInside_AfterEmptyOutside_DoesNotDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Empty selection outside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 4;
+  update1.tree_data.sel_focus_object_id = 4;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 0;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Empty selection inside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 2;
+  update2.tree_data.sel_focus_object_id = 2;
+  update2.tree_data.sel_anchor_offset = 2;
+  update2.tree_data.sel_focus_offset = 2;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_NonEmptyInside_AfterEmptyOutside_DoesNotDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Empty selection outside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 4;
+  update1.tree_data.sel_focus_object_id = 4;
+  update1.tree_data.sel_anchor_offset = 2;
+  update1.tree_data.sel_focus_offset = 2;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Non-empty selection inside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 2;
+  update2.tree_data.sel_focus_object_id = 3;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 5;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_NonEmptyInside_AfterNonEmptyOutside_DoesDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Non-empty selection outside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 4;
+  update1.tree_data.sel_focus_object_id = 4;
+  update1.tree_data.sel_anchor_offset = 2;
+  update1.tree_data.sel_focus_offset = 6;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Non-empty selection inside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 2;
+  update2.tree_data.sel_focus_object_id = 2;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 5;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_EmptyOutside_AfterNonEmptyInside_DoesNotDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Non-empty selection inside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 2;
+  update1.tree_data.sel_focus_object_id = 3;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 5;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Empty selection outside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 4;
+  update2.tree_data.sel_focus_object_id = 4;
+  update2.tree_data.sel_anchor_offset = 2;
+  update2.tree_data.sel_focus_offset = 2;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_EmptyOutside_AfterEmptyInside_DoesNotDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Empty selection inside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 2;
+  update1.tree_data.sel_focus_object_id = 2;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 0;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Empty selection outside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 4;
+  update2.tree_data.sel_focus_object_id = 4;
+  update2.tree_data.sel_anchor_offset = 2;
+  update2.tree_data.sel_focus_offset = 2;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_FALSE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_NonEmptyOutside_AfterEmptyInside_DoesDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Empty selection inside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 2;
+  update1.tree_data.sel_focus_object_id = 2;
+  update1.tree_data.sel_anchor_offset = 2;
+  update1.tree_data.sel_focus_offset = 2;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Non-empty selection outside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 4;
+  update2.tree_data.sel_focus_object_id = 4;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 5;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       PostProcessSelection_NonEmptyOutside_AfterNonEmptyInside_DoesDraw) {
+  ProcessDisplayNodes({2, 3});
+
+  // Non-empty selection inside display nodes.
+  ui::AXTreeUpdate update1;
+  SetUpdateTreeID(&update1);
+  update1.tree_data.sel_anchor_object_id = 2;
+  update1.tree_data.sel_focus_object_id = 2;
+  update1.tree_data.sel_anchor_offset = 2;
+  update1.tree_data.sel_focus_offset = 6;
+  update1.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update1});
+  SetSelectionFromAction(false);
+  ProcessSelection();
+
+  // Non-empty selection outside display nodes.
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.tree_data.sel_anchor_object_id = 4;
+  update2.tree_data.sel_focus_object_id = 4;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 5;
+  update2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update2});
+  SetSelectionFromAction(false);
+
+  ASSERT_TRUE(ProcessSelection());
 }
 
 TEST_F(ReadAnythingAppModelTest,

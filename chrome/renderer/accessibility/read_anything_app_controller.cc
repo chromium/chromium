@@ -443,6 +443,9 @@ void ReadAnythingAppController::OnNodeDeleted(ui::AXTree* tree,
     // these issues.
     if (displayed_nodes_pending_deletion_.empty() && !IsGoogleDocs()) {
       Draw(false);
+      if (model_.has_selection()) {
+        DrawSelection();
+      }
     }
   }
 }
@@ -637,11 +640,23 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     return;
   }
 
+  if (!model_.content_node_ids().empty()) {
+    // If there are content_node_ids, this means the AXTree was successfully
+    // distilled. We must call this before PostProcessSelection() below because
+    // that call checks if the current selection is inside the currently
+    // displayed nodes. Thus, we have to calculate the display nodes first.
+    model_.ComputeDisplayNodeIdsForDistilledTree();
+  }
+
   // Draw the selection in the side panel (if one exists in the main panel).
   if (!PostProcessSelection()) {
     // If a draw did not occur, make sure to draw. This will happen if there is
-    // no main content selection when the tree is distilled.
-    bool should_recompute_display_nodes = !model_.content_node_ids().empty();
+    // no main content selection when the tree is distilled. Sometimes in Gmail,
+    // The above call to ComputeDisplayNodeIdsForDistilledTree still produces
+    // an empty display node list. If that happens and there are content nodes,
+    // we should recompute the display nodes again.
+    bool should_recompute_display_nodes =
+        !model_.content_node_ids().empty() && model_.display_node_ids().empty();
     Draw(should_recompute_display_nodes);
   }
 

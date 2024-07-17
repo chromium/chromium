@@ -125,12 +125,11 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   // are currently displaying the distilled content in Read Anything. We may not
   // need to redraw the distilled content if the user's new selection is inside
   // the distilled content.
-  // If the previous selection was outside the distilled content, we will always
-  // redraw either a) the new selected content or b) the original distilled
-  // content if the new selection is inside that or if the selection was
-  // cleared.
-  bool need_to_draw = !selection_from_action_ && !NoCurrentSelection() &&
-                      !SelectionInsideDisplayNodes();
+  // If the previous selection was non-empty and outside the distilled content,
+  // we will always redraw either a) the new selected content or b) the original
+  // distilled content if the new selection is inside that or if the selection
+  // was cleared.
+  bool need_to_draw = !selection_from_action_ && !SelectionInsideDisplayNodes();
   // Save the current selection
   UpdateSelection();
 
@@ -159,9 +158,6 @@ void ReadAnythingAppModel::UpdateSelection() {
   has_selection_ = selection.anchor_object_id != ui::kInvalidAXNodeID &&
                    selection.focus_object_id != ui::kInvalidAXNodeID &&
                    !selection.IsCollapsed();
-  if (!has_selection_) {
-    return;
-  }
 
   // Identify the start and end node ids and offsets. The start node comes
   // earlier than end node in the tree order. We need to send the selection to
@@ -373,15 +369,16 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
   }
 }
 
-bool ReadAnythingAppModel::NoCurrentSelection() {
-  return start_node_id_ == end_node_id_ ||
-         (start_node_id_ == ui::kInvalidAXNodeID &&
-          end_node_id_ == ui::kInvalidAXNodeID);
+bool ReadAnythingAppModel::IsCurrentSelectionEmpty() {
+  return (start_node_id_ != ui::kInvalidAXNodeID) &&
+         (end_node_id_ != ui::kInvalidAXNodeID) &&
+         (start_node_id_ == end_node_id_) && (start_offset_ == end_offset_);
 }
 
 bool ReadAnythingAppModel::SelectionInsideDisplayNodes() {
-  return base::Contains(display_node_ids_, start_node_id_) &&
-         base::Contains(display_node_ids_, end_node_id_);
+  return IsCurrentSelectionEmpty() ||
+         (base::Contains(display_node_ids_, start_node_id_) &&
+          base::Contains(display_node_ids_, end_node_id_));
 }
 
 ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(

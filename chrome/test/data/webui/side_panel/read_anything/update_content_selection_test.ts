@@ -107,8 +107,8 @@ suite('UpdateContentSelection', () => {
     document.body.appendChild(app);
   });
 
-  test('forward selection', () => {
-    const expected = '<div><p>World</p><p>Friend!' +
+  test('forward selection inside distilled content', async () => {
+    const expected = '<div><p>Hello</p><p>World</p><p>Friend!' +
         '<a>You\'ve Got a Friend in Me</a></p></div>';
     setSelection(
         {
@@ -173,7 +173,9 @@ suite('UpdateContentSelection', () => {
     assertEquals(2, selection.focusOffset);
   });
 
-  test('backward selection', () => {
+  test('backward selection inside distilled content', () => {
+    const expected = '<div><p>Hello</p><p>World</p><p>Friend!' +
+        '<a>You\'ve Got a Friend in Me</a></p></div>';
     setSelection(
         {
           anchor_object_id: 7,
@@ -186,6 +188,7 @@ suite('UpdateContentSelection', () => {
 
     const selection = app.getSelection();
 
+    assertEquals(expected, app.$.container.innerHTML);
     assertEquals('Hello', selection.anchorNode.textContent);
     assertEquals('Friend', selection.focusNode.textContent);
     assertEquals(1, selection.anchorOffset);
