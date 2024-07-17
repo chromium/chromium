@@ -2182,3 +2182,54 @@ TEST_F(AutocompleteControllerTest, UpdateSearchboxStatsForAnswerAction) {
       controller_.published_result_.match_at(0)
           ->search_terms_args->searchbox_stats.SerializeAsString());
 }
+
+// Anroid and iOS have different handling for pedals.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutocompleteControllerTest, NoPedalsAttachedToLensSearchboxMatches) {
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
+  const auto add = [&](OmniboxPedal* pedal) {
+    pedals.insert(
+        std::make_pair(pedal->PedalId(), base::WrapRefCounted(pedal)));
+  };
+  add(new TestOmniboxPedalClearBrowsingData());
+  provider_client()->set_pedal_provider(std::make_unique<OmniboxPedalProvider>(
+      *provider_client(), std::move(pedals)));
+  EXPECT_NE(nullptr, provider_client()->GetPedalProvider());
+
+  // Create input with lens searchbox page classification.
+  controller_.input_ = AutocompleteInput(
+      u"Clear History", metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
+      TestSchemeClassifier());
+
+  SetAutocompleteMatches({
+      CreateSearchMatch(u"Clear History"),
+      CreateSearchMatch(u"search 1"),
+      CreateSearchMatch(u"search 2"),
+  });
+
+  controller_.AttachActions();
+
+  // For a Lens Searchbox, AttachActions should not attach a pedal to the
+  // first match, and therefore it won't get split out into a separate pedal
+  // match.
+  EXPECT_EQ(nullptr, controller_.internal_result_.match_at(1)->takeover_action);
+
+  controller_.input_ =
+      AutocompleteInput(u"Clear History", metrics::OmniboxEventProto::OTHER,
+                        TestSchemeClassifier());
+
+  SetAutocompleteMatches({
+      CreateSearchMatch(u"Clear History"),
+      CreateSearchMatch(u"search 1"),
+      CreateSearchMatch(u"search 2"),
+  });
+
+  controller_.AttachActions();
+
+  // For any other page classification, AttachActions should attach a pedal to
+  // the first match and split it out into a separate action.
+  EXPECT_EQ(
+      OmniboxActionId::PEDAL,
+      controller_.internal_result_.match_at(1)->takeover_action->ActionId());
+}
+#endif

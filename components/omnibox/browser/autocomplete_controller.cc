@@ -1399,7 +1399,10 @@ void AutocompleteController::AttachActions() {
       internal_result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
     }
 
-    internal_result_.AttachPedalsToMatches(input_, *provider_client_);
+    // Do not attach pedals to matches in the Lens Searchbox.
+    if (!omnibox::IsLensSearchbox(input_.current_page_classification())) {
+      internal_result_.AttachPedalsToMatches(input_, *provider_client_);
+    }
 
 #if !BUILDFLAG(IS_IOS)
     // HistoryClusters is not enabled on iOS.
