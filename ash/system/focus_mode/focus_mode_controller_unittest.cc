@@ -22,6 +22,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_ash_web_view_factory.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -66,6 +67,32 @@ void SimulatePlaybackState(bool is_playing) {
       std::move(session_info));
 }
 
+// If `focus_gained` is true, the media with `id_observed` will gain the audio
+// focus; otherwise, the request id for it will be released.
+void SimulateAudioFocusGainedForSelectedPlaylist(
+    bool focus_gained,
+    const base::UnguessableToken& id_observed) {
+  media_session::mojom::MediaSessionInfoPtr session_info(
+      media_session::mojom::MediaSessionInfo::New());
+  session_info->state =
+      media_session::mojom::MediaSessionInfo::SessionState::kActive;
+  session_info->playback_state =
+      media_session::mojom::MediaPlaybackState::kPlaying;
+
+  media_session::mojom::AudioFocusRequestStatePtr focus(
+      media_session::mojom::AudioFocusRequestState::New());
+  auto* controller = FocusModeController::Get();
+  focus->request_id = id_observed;
+  focus->session_info = std::move(session_info);
+
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
+  if (focus_gained) {
+    sounds_controller->OnFocusGained(std::move(focus));
+  } else {
+    sounds_controller->OnRequestIdReleased(id_observed);
+  }
+}
+
 }  // namespace
 
 class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
@@ -81,6 +108,7 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
 
   // NoSessionAshTestBase:
   void SetUp() override {
+    CHECK(test_web_view_factory_.get());
     NoSessionAshTestBase::SetUp();
 
     TestSessionControllerClient* session_controller =
@@ -144,6 +172,10 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
   base::test::ScopedFeatureList scoped_feature_;
   raw_ptr<TestingPrefServiceSimple> user_1_prefs_ = nullptr;
   raw_ptr<TestingPrefServiceSimple> user_2_prefs_ = nullptr;
+
+  // Calling the factory constructor is enough to set it up.
+  std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
+      std::make_unique<TestAshWebViewFactory>();
 };
 
 // Tests that the default Focus Mode prefs are registered, and that they are
@@ -989,6 +1021,47 @@ TEST_F(FocusModeControllerMultiUserTest, CheckMediaPlayingOnStartsHistogram) {
       /*name=*/focus_mode_histogram_names::
           kStartedWithExistingMediaPlayingHistogramName,
       /*sample=*/false, /*expected_count=*/2);
+}
+
+TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistPlayedLatencyHistograms) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
+
+  // Simulate that we have a selected playlist before starting a focus session,
+  // the histogram will record the latency.
+  focus_mode_util::SelectedPlaylist selected_playlist;
+  selected_playlist.id = "id0";
+  selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
+  selected_playlist.state = focus_mode_util::SoundState::kNone;
+  sounds_controller->TogglePlaylist(selected_playlist);
+
+  controller->ToggleFocusMode();
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
+  const auto& playlist_request_id = controller->GetMediaSessionRequestId();
+  SimulateAudioFocusGainedForSelectedPlaylist(
+      /*focus_gained=*/true, /*id_observed=*/playlist_request_id);
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::kSoundscapeLatencyInMillisecondsHistogramName,
+      1);
+
+  // Simulate that we select another playlist to play during the active session,
+  // the histogram will record the latency.
+  SimulateAudioFocusGainedForSelectedPlaylist(
+      /*focus_gained=*/false, /*id_observed=*/playlist_request_id);
+  // Update the id for testing once we close the media widget.
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/false);
+
+  selected_playlist.id = "id1";
+  sounds_controller->TogglePlaylist(selected_playlist);
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
+  SimulateAudioFocusGainedForSelectedPlaylist(
+      /*focus_gained=*/true,
+      /*id_observed=*/controller->GetMediaSessionRequestId());
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::kSoundscapeLatencyInMillisecondsHistogramName,
+      2);
 }
 
 }  // namespace ash

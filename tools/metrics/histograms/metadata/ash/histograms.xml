@@ -3845,6 +3845,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.SoundscapeLatency" units="ms"
+    expires_after="2025-07-01">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Records how many milliseconds the user waited for a soundscape playlist to
+    be played from clicking on the playlist while in a focus session or starting
+    a session to play the current selected playlist.
+  </summary>
+</histogram>
+
 <histogram name="Ash.FocusMode.StartSession.ExistingMediaPlaying"
     enum="Boolean" expires_after="2025-07-01">
   <owner>hongyulong@chromium.org</owner>

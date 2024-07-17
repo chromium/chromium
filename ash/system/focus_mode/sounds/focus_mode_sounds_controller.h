@@ -92,6 +92,8 @@ class ASH_EXPORT FocusModeSoundsController
 
   focus_mode_util::SoundType sound_type() const { return sound_type_; }
 
+  void SoundsStarted() { sounds_started_time_ = base::Time::Now(); }
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -154,6 +156,9 @@ class ASH_EXPORT FocusModeSoundsController
   focus_mode_util::SelectedPlaylist selected_playlist_;
   focus_mode_util::SoundType sound_type_ =
       focus_mode_util::SoundType::kSoundscape;
+
+  // Records the time when we requested to play a selected playlist.
+  base::Time sounds_started_time_;
 
   // True if the request id of the focus mode media session has gained audio
   // focus. Note that focus mode will only have a maximum of one media playing

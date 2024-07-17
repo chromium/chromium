@@ -501,6 +501,11 @@ void FocusModeController::TriggerEndingMomentImmediately() {
 }
 
 const base::UnguessableToken& FocusModeController::GetMediaSessionRequestId() {
+  if (!test_media_request_id_.is_empty()) {
+    CHECK_IS_TEST();
+    return test_media_request_id_;
+  }
+
   return focus_mode_media_view_
              ? focus_mode_media_view_->GetMediaSessionRequestId()
              : base::UnguessableToken::Null();
@@ -529,8 +534,13 @@ void FocusModeController::StartFocusSession(
   if (selected_task) {
     focus_mode_metrics_recorder_->IncrementTasksSelectedCount();
   }
-  focus_mode_metrics_recorder_->SetHasSelectedSoundType(
-      focus_mode_sounds_controller_->selected_playlist());
+
+  const auto& selected_playlist =
+      focus_mode_sounds_controller_->selected_playlist();
+  focus_mode_metrics_recorder_->SetHasSelectedSoundType(selected_playlist);
+  if (!selected_playlist.empty()) {
+    focus_mode_sounds_controller_->SoundsStarted();
+  }
 
   current_session_ = FocusModeSession(session_duration_,
                                       session_duration_ + base::Time::Now());

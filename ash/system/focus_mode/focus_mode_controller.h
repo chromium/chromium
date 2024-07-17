@@ -203,6 +203,15 @@ class ASH_EXPORT FocusModeController
   // Get the request id for the media session played for Focus Sounds.
   const base::UnguessableToken& GetMediaSessionRequestId();
 
+  // If `create_media_widget` is true, we will assign a valid value to
+  // `test_media_request_id_`; otherwise, we will reset it due to simulating no
+  // media widget exists.
+  void SetMediaSessionRequestIdForTesting(bool create_media_widget) {
+    test_media_request_id_ = create_media_widget
+                                 ? base::UnguessableToken::Create()
+                                 : base::UnguessableToken::Null();
+  }
+
   void RequestTasksUpdateForTesting();
 
   media_session::mojom::MediaSessionInfoPtr GetSystemMediaSessionInfo();
@@ -294,6 +303,9 @@ class ASH_EXPORT FocusModeController
   // The info about the current media session for testing. It will be null if
   // there isn't a current media session.
   media_session::mojom::MediaSessionInfoPtr test_media_session_info_;
+  // The media session request id for testing.
+  base::UnguessableToken test_media_request_id_ =
+      base::UnguessableToken::Null();
 
   std::unique_ptr<FocusModeDelegate> delegate_;
 

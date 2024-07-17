@@ -26,6 +26,8 @@ constexpr char kStartedWithExistingMediaPlayingHistogramName[] =
 // Histograms recorded during a session.
 constexpr char kToggleEndButtonDuringSessionHistogramName[] =
     "Ash.FocusMode.DuringSession.ToggleEndSessionSource";
+constexpr char kSoundscapeLatencyInMillisecondsHistogramName[] =
+    "Ash.FocusMode.SoundscapeLatency";
 
 // Histograms recorded when a session ends.
 constexpr char kTasksSelectedHistogramName[] = "Ash.FocusMode.TasksSelected";

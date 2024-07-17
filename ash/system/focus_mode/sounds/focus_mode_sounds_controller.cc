@@ -13,12 +13,14 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_metrics_recorder.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_soundscape_delegate.h"
 #include "ash/system/focus_mode/sounds/focus_mode_youtube_music_delegate.h"
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/media_session/public/cpp/media_session_service.h"
@@ -299,9 +301,22 @@ void FocusModeSoundsController::OnFocusGained(
     return;
   }
 
+  if (selected_playlist_.type == focus_mode_util::SoundType::kSoundscape) {
+    base::UmaHistogramCustomCounts(
+        /*name=*/focus_mode_histogram_names::
+            kSoundscapeLatencyInMillisecondsHistogramName,
+        /*sample=*/(base::Time::Now() - sounds_started_time_).InMilliseconds(),
+        /*min=*/0, /*exclusive_max=*/2000, /*buckets=*/50);
+  }
+
   // Otherwise, we will bind the media controller observer with the specific
   // request id to observe our media state.
   media_session_request_id_ = request_id;
+
+  // `media_controller_manager_remote_` is null in test.
+  if (!media_controller_manager_remote_) {
+    return;
+  }
 
   media_controller_remote_.reset();
   media_controller_observer_receiver_.reset();
@@ -452,6 +467,9 @@ void FocusModeSoundsController::ResetSelectedPlaylist() {
 
 void FocusModeSoundsController::SelectPlaylist(
     const focus_mode_util::SelectedPlaylist& playlist_data) {
+  if (FocusModeController::Get()->in_focus_session()) {
+    SoundsStarted();
+  }
   selected_playlist_ = playlist_data;
 
   // TODO(b/337063849): Update the sound state when the media stream
