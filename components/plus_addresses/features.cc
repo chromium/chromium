@@ -23,6 +23,13 @@ constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
 
 }  // namespace
 
+// When enabled, allows the use of affiliation data with plus addresses. This
+// includes things like prefetching affiliation data, or suggesting plus
+// addresses for affiliated domains.
+BASE_FEATURE(kPlusAddressAffiliations,
+             "PlusAddressAffiliations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the enabled/disabled state of the experimental feature.
 BASE_FEATURE(kPlusAddressesEnabled,
              "PlusAddressesEnabled",
@@ -53,16 +60,15 @@ BASE_FEATURE(kPlusAddressFallbackFromContextMenu,
              "PlusAddressFallbackFromContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the `PlusAddressSettingService` will be consulted on whether
+// to offer plus address creation.
+BASE_FEATURE(kPlusAddressGlobalToggle,
+             "PlusAddressGlobalToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, plus address refresh requests to the backend are supported.
 BASE_FEATURE(kPlusAddressRefresh,
              "PlusAddressRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, allows the use of affiliation data with plus addresses. This
-// includes things like prefetching affiliation data, or suggesting plus
-// addresses for affiliated domains.
-BASE_FEATURE(kPlusAddressAffiliations,
-             "PlusAddressAffiliations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the plus address creation dialogs or bottom sheets include

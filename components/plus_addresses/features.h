@@ -12,6 +12,9 @@
 namespace plus_addresses::features {
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+BASE_DECLARE_FEATURE(kPlusAddressAffiliations);
+
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressesEnabled);
 
 // Used to control the enterprise plus address feature's OAuth scope.
@@ -59,10 +62,10 @@ COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressFallbackFromContextMenu);
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-BASE_DECLARE_FEATURE(kPlusAddressRefresh);
+BASE_DECLARE_FEATURE(kPlusAddressGlobalToggle);
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
-BASE_DECLARE_FEATURE(kPlusAddressAffiliations);
+BASE_DECLARE_FEATURE(kPlusAddressRefresh);
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressUserOnboardingEnabled);

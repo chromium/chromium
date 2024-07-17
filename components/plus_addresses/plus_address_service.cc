@@ -144,14 +144,18 @@ bool PlusAddressService::ShouldShowManualFallback(
   if (!IsSupportedOrigin(origin)) {
     return false;
   }
-  // We've met the prerequisites. If this isn't an OTR session, plus_addresses
-  // are supported.
-  if (!is_off_the_record) {
+  // We've met the prerequisites. If this isn't an OTR session and the global
+  // settings toggle isn't off, plus_addresses are supported.
+  if (!is_off_the_record &&
+      (!base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) ||
+       setting_service_->GetIsPlusAddressesEnabled())) {
     return true;
   }
-  // Prerequisites are met, but it's an off-the-record session. If there's an
-  // existing plus_address with a facet equal to `origin` (i.e. no affiliations
-  // considered), it's supported, otherwise it is not.
+
+  // Prerequisites are met, but it's an off-the-record session or the global
+  // settings toggle is off. If there's an existing plus_address with a facet
+  // equal to `origin` (i.e. no affiliations considered), it's supported,
+  // otherwise it is not.
   return GetPlusProfile(OriginToFacet(origin)).has_value();
 }
 
@@ -264,6 +268,14 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
       std::move(callback).Run({});
       return;
     }
+
+    // Do not offer creation if the setting is off.
+    if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
+        !setting_service_->GetIsPlusAddressesEnabled()) {
+      std::move(callback).Run({});
+      return;
+    }
+
     // Do not offer creation on non-empty fields and certain form types (e.g.
     // login forms).
     if (trigger_source != kManualFallbackPlusAddresses &&

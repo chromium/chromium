@@ -183,6 +183,8 @@ class PlusAddressServiceTest : public ::testing::Test {
     return &mock_affiliation_service_;
   }
 
+  FakePlusAddressSettingService& setting_service() { return setting_service_; }
+
   // Forces (re-)initialization of the `PlusAddressService`, which can be useful
   // when classes override feature parameters.
   void InitService() {
@@ -1032,6 +1034,17 @@ TEST_F(PlusAddressServiceEnabledTest, OTRWithExistingAddress) {
                                                  /*is_off_the_record=*/true));
 }
 
+TEST_F(PlusAddressServiceEnabledTest, GlobalSettingsToggleOff) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressGlobalToggle};
+  identity_env().MakeAccountAvailable("plus@plus.plus",
+                                      {signin::ConsentLevel::kSignin});
+  InitService();
+  setting_service().set_is_plus_addresses_enabled(false);
+  EXPECT_FALSE(service().ShouldShowManualFallback(kNoSubdomainOrigin,
+                                                  /*is_off_the_record=*/false));
+}
+
 TEST_F(PlusAddressServiceEnabledTest, SignedOutGetEmail) {
   EXPECT_EQ(service().GetPrimaryEmail(), std::nullopt);
 }
@@ -1544,6 +1557,72 @@ TEST_F(PlusAddressAffiliationsTest,
   ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
       .WillByDefault(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/true, PasswordFormType::kNoPasswordForm,
+      /*focused_field_value=*/u"",
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      IsSingleFillPlusAddressSuggestion(group_profile.plus_address)));
+}
+
+// Tests that no creation suggestion is offered when the profile is off the
+// record.
+TEST_F(PlusAddressAffiliationsTest,
+       GetSuggestionsDoesNotOfferCreationWhenOffTheRecord) {
+  ON_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
+  affiliations::GroupedFacets group;
+  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillByDefault(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/true, PasswordFormType::kNoPasswordForm,
+      /*focused_field_value=*/u"",
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, IsEmpty()));
+}
+
+// Tests that no creation suggestion is offered when the global toggle is off.
+TEST_F(PlusAddressAffiliationsTest,
+       GetSuggestionsDoesNotOfferCreationWhenToggleIsOff) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressGlobalToggle};
+  ON_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
+  affiliations::GroupedFacets group;
+  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillByDefault(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+  setting_service().set_is_plus_addresses_enabled(false);
+
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormType::kNoPasswordForm,
+      /*focused_field_value=*/u"",
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, IsEmpty()));
+}
+
+// Tests that filling suggestions are returned even if they are affiliated
+// matches and the global settings toggle is off.
+TEST_F(PlusAddressAffiliationsTest,
+       FillingSuggestionsAreOfferedWhenGlobalToggleIsOff) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressGlobalToggle};
+  PlusProfile group_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
+  service().SavePlusProfile(group_profile);
+  ASSERT_THAT(service().GetPlusProfiles(), ElementsAre(group_profile));
+
+  ON_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillByDefault(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+  setting_service().set_is_plus_addresses_enabled(false);
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   EXPECT_TRUE(ExpectServiceToReturnSuggestions(
