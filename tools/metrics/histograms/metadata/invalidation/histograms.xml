@@ -23,6 +23,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram
+    name="FCMInvalidations.DirectInvalidation.RegistrationTokenRetrievalStatus"
+    enum="InstanceIDResult" expires_after="2025-02-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>rbock@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Status of an attempt to register with FM and retrieve a registration token.
+    Recorded on every registration attempt or cached token retrieval.
+  </summary>
+</histogram>
+
 <histogram name="FCMInvalidations.FailedSubscriptionsErrorCode"
     enum="NetErrorCodes" expires_after="2025-02-01">
   <owner>melandory@chromium.org</owner>

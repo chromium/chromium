@@ -6,6 +6,7 @@
 
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -20,6 +21,9 @@ namespace {
 const char kTypeKey[] = "type";
 const char kPayloadKey[] = "payload";
 const char kIssueTimestampMsKey[] = "issue_timestamp_ms";
+
+constexpr char RegistrationMetricName[] =
+    "FCMInvalidations.DirectInvalidation.RegistrationTokenRetrievalStatus";
 
 // After the first failure, retry after 1 minute, then after 2, 4 etc up to a
 // maximum of 1 day.
@@ -188,8 +192,6 @@ void InvalidationListenerImpl::OnMessage(const std::string& app_id,
 
   const DirectInvalidation invalidation = ParseIncomingMessage(message);
 
-  // TODO(b/341377399) Add UMA metrics for incoming messages.
-
   Observer* observer =
       base::FindPtrOrNull(type_to_handler_, invalidation.type());
   if (observer) {
@@ -239,7 +241,7 @@ void InvalidationListenerImpl::OnRegistrationTokenReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(registration_token_handler_);
 
-  // TODO(b/341377210) Add UMA metrics for registration results.
+  base::UmaHistogramEnumeration(RegistrationMetricName, result);
 
   const bool succeeded = result == instance_id::InstanceID::SUCCESS;
 
