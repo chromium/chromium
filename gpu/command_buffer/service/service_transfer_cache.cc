@@ -53,19 +53,18 @@ void DumpMemoryForImageTransferCacheEntry(
                   MemoryAllocatorDump::kUnitsBytes, entry->CachedSize());
 
   GrBackendTexture image_backend_texture;
-  if (!SkImages::GetBackendTextureFromImage(
+  if (SkImages::GetBackendTextureFromImage(
           entry->image(), &image_backend_texture,
           false /* flushPendingGrContextIO */)) {
-    return;
-  }
-  GrGLTextureInfo info;
-  if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
-    auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
-    pmd->CreateSharedGlobalAllocatorDump(guid);
-    // Importance of 3 gives this dump priority over the dump made by Skia
-    // (importance 2), attributing memory here.
-    const int kImportance = 3;
-    pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+    GrGLTextureInfo info;
+    if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
+      auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
+      pmd->CreateSharedGlobalAllocatorDump(guid);
+      // Importance of 3 gives this dump priority over the dump made by Skia
+      // (importance 2), attributing memory here.
+      const int kImportance = 3;
+      pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+    }
   }
 }
 
@@ -112,19 +111,18 @@ void DumpMemoryForYUVImageTransferCacheEntry(
     // getBackendTexture() would end up flattening them to RGB, which is
     // undesirable.
     GrBackendTexture image_backend_texture;
-    if (!SkImages::GetBackendTextureFromImage(
+    if (SkImages::GetBackendTextureFromImage(
             entry->GetPlaneImage(i), &image_backend_texture,
             false /* flushPendingGrContextIO */)) {
-      return;
-    }
-    GrGLTextureInfo info;
-    if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
-      auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
-      pmd->CreateSharedGlobalAllocatorDump(guid);
-      // Importance of 3 gives this dump priority over the dump made by Skia
-      // (importance 2), attributing memory here.
-      const int kImportance = 3;
-      pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+      GrGLTextureInfo info;
+      if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
+        auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
+        pmd->CreateSharedGlobalAllocatorDump(guid);
+        // Importance of 3 gives this dump priority over the dump made by Skia
+        // (importance 2), attributing memory here.
+        const int kImportance = 3;
+        pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
+      }
     }
   }
 }
