@@ -16,6 +16,7 @@
 
 namespace privacy_sandbox {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
 enum class ReminderType {
   kNone,    // Don't show a reminder.
   kSilent,  // Check if a reminder would be shown.

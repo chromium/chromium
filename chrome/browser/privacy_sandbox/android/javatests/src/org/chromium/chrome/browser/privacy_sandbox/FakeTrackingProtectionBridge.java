@@ -41,6 +41,14 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
         return true;
     }
 
+    @Override
+    public int getReminderType(@JniType("Profile*") Profile profile) {
+        return 0;
+    }
+
+    @Override
+    public void onReminderExperienced(@JniType("Profile*") Profile profile) {}
+
     public void setRequiredNotice(@NoticeType int noticeType) {
         mNoticeType = noticeType;
     }

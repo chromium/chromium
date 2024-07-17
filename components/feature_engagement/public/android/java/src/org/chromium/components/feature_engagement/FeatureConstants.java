@@ -93,6 +93,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
     FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE,
     FeatureConstants.SHARING_HUB_WEBNOTES_STYLIZE_FEATURE,
+    FeatureConstants.TRACKING_PROTECTION_REMINDER_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_CHROME_INTRO_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_DOWNLOAD_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_SEARCH_FEATURE,
@@ -334,4 +335,7 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users about the gesture navigation in RTL mode. */
     String IPH_RTL_GESTURE_NAVIGATION = "IPH_RtlGestureNavigation";
+
+    /** An IPH feature to inform users about the Tracking Protection feature being enabled. */
+    String TRACKING_PROTECTION_REMINDER_FEATURE = "IPH_TrackingProtectionReminder";
 }

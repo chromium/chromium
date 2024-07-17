@@ -506,6 +506,11 @@
           </message>
         </else>
       </if>
+
+      <!--Tracking Protection - Reminder -->
+      <message name="IDS_TRACKING_PROTECTION_REMINDER_IPH_MESSAGE" desc="In-context Product Help - Appears right under the page info icon to highlight the Cookie Controls entrypoint. This message is a reminder." translateable="false" formatter_data="android_java">
+        Site not working? Try temporarily allowing third-party cookies
+      </message>
     </messages>
   </release>
 </grit>

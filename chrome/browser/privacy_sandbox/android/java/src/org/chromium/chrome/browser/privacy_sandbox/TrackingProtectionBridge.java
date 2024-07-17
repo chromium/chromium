@@ -38,6 +38,14 @@ public class TrackingProtectionBridge {
         return TrackingProtectionBridgeJni.get().shouldRunUILogic(mProfile, surface);
     }
 
+    public @ReminderType int getReminderType() {
+        return TrackingProtectionBridgeJni.get().getReminderType(mProfile);
+    }
+
+    public void onReminderExperienced() {
+        TrackingProtectionBridgeJni.get().onReminderExperienced(mProfile);
+    }
+
     @NativeMethods
     public interface Natives {
         void noticeShown(@JniType("Profile*") Profile profile, int surface, int noticeType);
@@ -50,5 +58,9 @@ public class TrackingProtectionBridge {
         boolean isOffboarded(@JniType("Profile*") Profile profile);
 
         boolean shouldRunUILogic(@JniType("Profile*") Profile profile, int surface);
+
+        int getReminderType(@JniType("Profile*") Profile profile);
+
+        void onReminderExperienced(@JniType("Profile*") Profile profile);
     }
 }

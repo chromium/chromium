@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_reminder_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
+#include "components/privacy_sandbox/tracking_protection_reminder_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/privacy_sandbox/android/jni_headers/TrackingProtectionBridge_jni.h"
@@ -67,4 +69,18 @@ static jboolean JNI_TrackingProtectionBridge_ShouldRunUILogic(JNIEnv* env,
           static_cast<
               privacy_sandbox::TrackingProtectionOnboarding::SurfaceType>(
               surface));
+}
+
+static jint JNI_TrackingProtectionBridge_GetReminderType(JNIEnv* env,
+                                                         Profile* profile) {
+  return static_cast<int>(
+      TrackingProtectionReminderFactory::GetForProfile(profile)
+          ->GetReminderType());
+}
+
+static void JNI_TrackingProtectionBridge_OnReminderExperienced(
+    JNIEnv* env,
+    Profile* profile) {
+  TrackingProtectionReminderFactory::GetForProfile(profile)
+      ->OnReminderExperienced();
 }
