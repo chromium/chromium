@@ -196,6 +196,8 @@ crbug.com/329145623 [ linux angle-vulkan graphite-disabled nvidia-0x2184 passthr
 # Flaky failure to restore context
 crbug.com/338071088 [ amd-0x67ef angle-opengl graphite-disabled no-asan passthrough release sonoma ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
 
+# Flaky timeout on Android
+crbug.com/353650054 [ android ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
