@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
@@ -858,7 +859,7 @@ Ranges<base::TimeDelta> ChunkDemuxer::GetBufferedRanges(
 
   auto itr = source_state_map_.find(id);
 
-  DCHECK(itr != source_state_map_.end());
+  CHECK(itr != source_state_map_.end(), base::NotFatalUntil::M130);
   return itr->second->GetBufferedRanges(duration_, state_ == ENDED);
 }
 
@@ -869,7 +870,7 @@ base::TimeDelta ChunkDemuxer::GetLowestPresentationTimestamp(
 
   auto itr = source_state_map_.find(id);
 
-  DCHECK(itr != source_state_map_.end());
+  CHECK(itr != source_state_map_.end(), base::NotFatalUntil::M130);
   return itr->second->GetLowestPresentationTimestamp();
 }
 
@@ -880,7 +881,7 @@ base::TimeDelta ChunkDemuxer::GetHighestPresentationTimestamp(
 
   auto itr = source_state_map_.find(id);
 
-  DCHECK(itr != source_state_map_.end());
+  CHECK(itr != source_state_map_.end(), base::NotFatalUntil::M130);
   return itr->second->GetHighestPresentationTimestamp();
 }
 

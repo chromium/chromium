@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 
@@ -316,7 +317,7 @@ size_t SourceBufferRange::DeleteGOPFromFront(BufferQueue* deleted_buffers) {
   size_t total_bytes_deleted = 0;
 
   KeyframeMap::const_iterator front = keyframe_map_.begin();
-  DCHECK(front != keyframe_map_.end());
+  CHECK(front != keyframe_map_.end(), base::NotFatalUntil::M130);
 
   // Delete the keyframe at the start of |keyframe_map_|.
   keyframe_map_.erase(front);
@@ -574,7 +575,7 @@ base::TimeDelta SourceBufferRange::FindHighestBufferedTimestampAtOrBefore(
   }
 
   auto key_iter = GetFirstKeyframeAtOrBefore(timestamp);
-  DCHECK(key_iter != keyframe_map_.end())
+  CHECK(key_iter != keyframe_map_.end(), base::NotFatalUntil::M130)
       << "BelongsToRange() semantics failed.";
   DCHECK(key_iter->first <= timestamp);
 

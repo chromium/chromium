@@ -5,12 +5,14 @@
 #include "media/cdm/aes_decryptor.h"
 
 #include <stddef.h>
+
 #include <list>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "crypto/symmetric_key.h"
@@ -290,7 +292,7 @@ bool AesDecryptor::UpdateSessionWithJWK(const std::string& session_id,
                                         CdmPromise::Exception* exception,
                                         std::string* error_message) {
   auto open_session = open_sessions_.find(session_id);
-  DCHECK(open_session != open_sessions_.end());
+  CHECK(open_session != open_sessions_.end(), base::NotFatalUntil::M130);
   CdmSessionType session_type = open_session->second;
 
   KeyIdAndKeyPairs keys;
