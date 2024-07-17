@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -382,7 +383,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 }
 
 - (void)didReceiveUnmaskVerificationResult:
-    (autofill::AutofillClient::PaymentsRpcResult)result {
+    (autofill::payments::PaymentsAutofillClient::PaymentsRpcResult)result {
   [_verifier didReceiveUnmaskVerificationResult:result];
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
@@ -42,7 +43,8 @@ class FacilitatedPaymentsInitiatePaymentRequest
   void ParseResponse(const base::Value::Dict& response) override;
   bool IsResponseComplete() override;
   void RespondToDelegate(
-      autofill::AutofillClient::PaymentsRpcResult result) override;
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result)
+      override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,

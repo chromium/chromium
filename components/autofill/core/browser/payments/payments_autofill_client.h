@@ -53,8 +53,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
  public:
   ~PaymentsAutofillClient() override;
 
-  using PaymentsRpcResult = AutofillClient::PaymentsRpcResult;
-
   // The type of the credit card the Payments RPC fetches.
   enum class PaymentsRpcCardType {
     // Unknown type.
@@ -63,6 +61,32 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kServerCard = 1,
     // Virtual card.
     kVirtualCard = 2,
+  };
+
+  enum class PaymentsRpcResult {
+    // Empty result. Used for initializing variables and should generally
+    // not be returned nor passed as arguments unless explicitly allowed by
+    // the API.
+    kNone,
+
+    // Request succeeded.
+    kSuccess,
+
+    // Request failed; try again.
+    kTryAgainFailure,
+
+    // Request failed; don't try again.
+    kPermanentFailure,
+
+    // Unable to connect to Payments servers. Prompt user to check internet
+    // connection.
+    kNetworkError,
+
+    // Request failed in retrieving virtual card information; try again.
+    kVcnRetrievalTryAgainFailure,
+
+    // Request failed in retrieving virtual card information; don't try again.
+    kVcnRetrievalPermanentFailure,
   };
 
   enum class SaveIbanOfferUserDecision {

@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -91,9 +92,10 @@ class AutofillMetricsBaseTest {
   void SetFidoEligibility(bool is_verifiable);
 
   // Mocks a RPC response from Payments.
-  void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
-                       const std::string& real_pan,
-                       bool is_virtual_card = false);
+  void OnDidGetRealPan(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      const std::string& real_pan,
+      bool is_virtual_card = false);
 
   // Mocks a RPC response from Payments, but where a non-HTTP_OK response
   // stopped it from parsing a valid response.

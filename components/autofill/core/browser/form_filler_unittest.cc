@@ -251,9 +251,10 @@ class FormFillerTest : public testing::Test {
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
-  void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
-                       const std::string& real_pan,
-                       bool is_virtual_card = false) {
+  void OnDidGetRealPan(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      const std::string& real_pan,
+      bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
         browser_autofill_manager_->client()
             .GetPaymentsAutofillClient()
@@ -1643,7 +1644,7 @@ TEST_F(FormFillerTest, FillInUpdatedExpirationDate) {
   details.exp_month = u"02";
   details.exp_year = u"2018";
   full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
+  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                   "4012888888881881");
 }
 

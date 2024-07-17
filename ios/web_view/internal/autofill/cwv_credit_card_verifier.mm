@@ -21,25 +21,29 @@ NSErrorUserInfoKey const CWVCreditCardVerifierRetryAllowedKey =
     @"retry_allowed";
 
 namespace {
-// Converts an autofill::AutofillClient::PaymentsRpcResult to a
-// CWVCreditCardVerificationError.
+// Converts an autofill::payments::PaymentsAutofillClient::PaymentsRpcResult to
+// a CWVCreditCardVerificationError.
 CWVCreditCardVerificationError CWVConvertPaymentsRPCResult(
-    autofill::AutofillClient::PaymentsRpcResult result) {
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result) {
   switch (result) {
-    case autofill::AutofillClient::PaymentsRpcResult::kNone:
-    case autofill::AutofillClient::PaymentsRpcResult::kSuccess:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kNone:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kSuccess:
     // The following two errors are not expected on iOS.
-    case autofill::AutofillClient::PaymentsRpcResult::
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
         kVcnRetrievalTryAgainFailure:
-    case autofill::AutofillClient::PaymentsRpcResult::
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
         kVcnRetrievalPermanentFailure:
       NOTREACHED_IN_MIGRATION();
       return CWVCreditCardVerificationErrorNone;
-    case autofill::AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kTryAgainFailure:
       return CWVCreditCardVerificationErrorTryAgainFailure;
-    case autofill::AutofillClient::PaymentsRpcResult::kPermanentFailure:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kPermanentFailure:
       return CWVCreditCardVerificationErrorPermanentFailure;
-    case autofill::AutofillClient::PaymentsRpcResult::kNetworkError:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kNetworkError:
       return CWVCreditCardVerificationErrorNetworkFailure;
   }
 }
@@ -211,11 +215,13 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
                                         retryAllowed:(BOOL)retryAllowed {
   if (_completionHandler) {
     NSError* error;
-    autofill::AutofillClient::PaymentsRpcResult result =
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result =
         _unmaskingController->GetVerificationResult();
     if (errorMessage.length > 0 &&
-        result != autofill::AutofillClient::PaymentsRpcResult::kNone &&
-        result != autofill::AutofillClient::PaymentsRpcResult::kSuccess) {
+        result != autofill::payments::PaymentsAutofillClient::
+                      PaymentsRpcResult::kNone &&
+        result != autofill::payments::PaymentsAutofillClient::
+                      PaymentsRpcResult::kSuccess) {
       NSDictionary* userInfo = @{
         NSLocalizedDescriptionKey : errorMessage,
         CWVCreditCardVerifierRetryAllowedKey : @(retryAllowed),
@@ -232,7 +238,7 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
 #pragma mark - Internal Methods
 
 - (void)didReceiveUnmaskVerificationResult:
-    (autofill::AutofillClient::PaymentsRpcResult)result {
+    (autofill::payments::PaymentsAutofillClient::PaymentsRpcResult)result {
   _unmaskingController->OnVerificationResult(result);
 }
 

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -35,7 +35,7 @@ class FacilitatedPaymentsNetworkInterface
     : public autofill::payments::PaymentsNetworkInterfaceBase {
  public:
   using InitiatePaymentResponseCallback = base::OnceCallback<void(
-      autofill::AutofillClient::PaymentsRpcResult,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult,
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>)>;
 
   FacilitatedPaymentsNetworkInterface(

@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_CREDIT_CARD_VERIFIER_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_CREDIT_CARD_VERIFIER_INTERNAL_H_
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "ios/web_view/public/cwv_credit_card_verifier.h"
 
@@ -38,7 +37,7 @@ class CreditCard;
 // verification results arrive from the CWVAutofillClientBridge protocol defiend
 // in CWVAutofillController.
 - (void)didReceiveUnmaskVerificationResult:
-    (autofill::AutofillClient::PaymentsRpcResult)result;
+    (autofill::payments::PaymentsAutofillClient::PaymentsRpcResult)result;
 
 // Use to notify CWVCreditCardVerifier that it needs to obtain risk data for
 // credit card verification and to pass it back in |callback|.

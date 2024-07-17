@@ -109,34 +109,6 @@ using PlusAddressCallback = base::OnceCallback<void(const std::string&)>;
 // with" (e.g. for the tab the BrowserAutofillManager is attached to).
 class AutofillClient {
  public:
-  // TODO(crbug.com/40937065): Complete the migration of PaymentsRpcResult by
-  // moving it to `payments_autofill_client.h`.
-  enum class PaymentsRpcResult {
-    // Empty result. Used for initializing variables and should generally
-    // not be returned nor passed as arguments unless explicitly allowed by
-    // the API.
-    kNone,
-
-    // Request succeeded.
-    kSuccess,
-
-    // Request failed; try again.
-    kTryAgainFailure,
-
-    // Request failed; don't try again.
-    kPermanentFailure,
-
-    // Unable to connect to Payments servers. Prompt user to check internet
-    // connection.
-    kNetworkError,
-
-    // Request failed in retrieving virtual card information; try again.
-    kVcnRetrievalTryAgainFailure,
-
-    // Request failed in retrieving virtual card information; don't try again.
-    kVcnRetrievalPermanentFailure,
-  };
-
   enum class SaveCardOfferUserDecision {
     // The user accepted credit card save.
     kAccepted,

@@ -1053,9 +1053,10 @@ class BrowserAutofillManagerTest : public testing::Test {
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
-  void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
-                       const std::string& real_pan,
-                       bool is_virtual_card = false) {
+  void OnDidGetRealPan(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      const std::string& real_pan,
+      bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
         browser_autofill_manager_->client()
             .GetPaymentsAutofillClient()
@@ -5755,7 +5756,7 @@ TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
+  OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                   "4012888888881881");
   browser_autofill_manager_->OnFormSubmitted(form, false,
                                              SubmissionSource::FORM_SUBMISSION);

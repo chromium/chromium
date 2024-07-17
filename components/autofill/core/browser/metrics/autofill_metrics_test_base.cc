@@ -157,7 +157,7 @@ void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
 }
 
 void AutofillMetricsBaseTest::OnDidGetRealPan(
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     const std::string& real_pan,
     bool is_virtual_card) {
   payments::FullCardRequest* full_card_request =
@@ -198,7 +198,8 @@ void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {
   payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
   // Don't set |response.card_type|, so that it stays as kUnknown.
   full_card_request->OnDidGetRealPan(
-      AutofillClient::PaymentsRpcResult::kPermanentFailure, response);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      response);
 }
 
 void AutofillMetricsBaseTest::OnCreditCardFetchingSuccessful(

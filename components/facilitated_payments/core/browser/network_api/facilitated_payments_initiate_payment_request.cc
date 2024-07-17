@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace payments::facilitated {
 
@@ -132,7 +133,7 @@ bool FacilitatedPaymentsInitiatePaymentRequest::IsResponseComplete() {
 }
 
 void FacilitatedPaymentsInitiatePaymentRequest::RespondToDelegate(
-    autofill::AutofillClient::PaymentsRpcResult result) {
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(response_callback_).Run(result, std::move(response_details_));
 }
 

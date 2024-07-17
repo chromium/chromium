@@ -955,7 +955,7 @@ TEST_F(IbanSaveManagerTest,
   ASSERT_TRUE(personal_data().payments_data_manager().GetLocalIbans().empty());
   GetIbanSaveManager().OnDidUploadIbanForTesting(
       iban, /*show_save_prompt=*/true,
-      AutofillClient::PaymentsRpcResult::kPermanentFailure);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
 
   histogram_tester.ExpectUniqueSample("Autofill.IbanUpload.SaveFailed", true,
                                       1);
@@ -974,7 +974,7 @@ TEST_F(IbanSaveManagerTest,
   ASSERT_EQ(personal_data().payments_data_manager().GetLocalIbans().size(), 1U);
   GetIbanSaveManager().OnDidUploadIbanForTesting(
       iban, /*show_save_prompt=*/true,
-      AutofillClient::PaymentsRpcResult::kPermanentFailure);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
 
   histogram_tester.ExpectUniqueSample("Autofill.IbanUpload.SaveFailed", false,
                                       1);
@@ -995,7 +995,7 @@ TEST_F(
   iban.set_nickname(u"new nickname");
   GetIbanSaveManager().OnDidUploadIbanForTesting(
       iban, /*show_save_prompt=*/true,
-      AutofillClient::PaymentsRpcResult::kPermanentFailure);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
 
   histogram_tester.ExpectUniqueSample("Autofill.IbanUpload.SaveFailed", false,
                                       1);
