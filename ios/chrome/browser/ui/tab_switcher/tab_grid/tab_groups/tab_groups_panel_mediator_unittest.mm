@@ -252,9 +252,10 @@ TEST_F(TabGroupsPanelMediatorTest,
   EXPECT_FALSE(toolbars_mutator.configuration.cancelSearchButton);
 }
 
-// Tests that setting a consumer populates it with data from the service's
-// GetAllGroups API.
-TEST_F(TabGroupsPanelMediatorTest, SetConsumerPopulatesNonEmptyService) {
+// Tests that setting a consumer before the service initialization doesn't
+// populate the consumer
+TEST_F(TabGroupsPanelMediatorTest,
+       SetConsumerDoesntPopulatesFromUninitializedService) {
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
@@ -272,17 +273,54 @@ TEST_F(TabGroupsPanelMediatorTest, SetConsumerPopulatesNonEmptyService) {
 
   mediator.consumer = consumer;
 
+  EXPECT_NSEQ(consumer.items, nil);
+  EXPECT_EQ(consumer.populateItemsCallCount, 0u);
+}
+
+// Tests that setting a consumer after the service initialization populates it
+// with data from the service's GetAllGroups API.
+TEST_F(TabGroupsPanelMediatorTest,
+       SetConsumerPopulatesFromInitializedAndNonEmptyService) {
+  tab_groups::TabGroupSyncService::Observer* observer = nullptr;
+  EXPECT_CALL(tab_group_sync_service_, AddObserver(_))
+      .WillOnce(SaveArg<0>(&observer));
+  TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
+      initWithTabGroupSyncService:&tab_group_sync_service_
+              regularWebStateList:&web_state_list_
+                 disabledByPolicy:NO];
+  EXPECT_NE(observer, nullptr);
+  // Prepare a consumer.
+  FakeTabGroupsPanelConsumer* consumer =
+      [[FakeTabGroupsPanelConsumer alloc] init];
+  EXPECT_NSEQ(consumer.items, nil);
+  EXPECT_EQ(consumer.populateItemsCallCount, 0u);
+  // Set a saved tab group.
+  tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
+  std::vector<tab_groups::SavedTabGroup> groups = {group};
+  EXPECT_CALL(tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(groups));
+  // Initialize the service.
+  observer->OnInitialized();
+
+  // Set the consumer.
+  mediator.consumer = consumer;
+
   EXPECT_EQ(consumer.items.count, 1u);
   EXPECT_EQ(consumer.populateItemsCallCount, 1u);
 }
 
 // Tests that setting a consumer populates it with data from the service's
 // GetAllGroups API.
-TEST_F(TabGroupsPanelMediatorTest, SetConsumerPopulatesEmptyService) {
+TEST_F(TabGroupsPanelMediatorTest,
+       SetConsumerPopulatesFromInitializedEmptyService) {
+  tab_groups::TabGroupSyncService::Observer* observer = nullptr;
+  EXPECT_CALL(tab_group_sync_service_, AddObserver(_))
+      .WillOnce(SaveArg<0>(&observer));
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                  disabledByPolicy:NO];
+  EXPECT_NE(observer, nullptr);
   // Prepare a consumer.
   FakeTabGroupsPanelConsumer* consumer =
       [[FakeTabGroupsPanelConsumer alloc] init];
@@ -292,7 +330,10 @@ TEST_F(TabGroupsPanelMediatorTest, SetConsumerPopulatesEmptyService) {
   std::vector<tab_groups::SavedTabGroup> groups = {};
   EXPECT_CALL(tab_group_sync_service_, GetAllGroups())
       .WillRepeatedly(Return(groups));
+  // Initialize the service.
+  observer->OnInitialized();
 
+  // Set the consumer.
   mediator.consumer = consumer;
 
   EXPECT_EQ(consumer.items.count, 0u);
@@ -319,8 +360,8 @@ TEST_F(TabGroupsPanelMediatorTest,
   FakeTabGroupsPanelConsumer* consumer =
       [[FakeTabGroupsPanelConsumer alloc] init];
   mediator.consumer = consumer;
-  EXPECT_EQ(consumer.items.count, 0u);
-  EXPECT_EQ(consumer.populateItemsCallCount, 1u);
+  EXPECT_NSEQ(consumer.items, nil);
+  EXPECT_EQ(consumer.populateItemsCallCount, 0u);
   // Set a saved tab group.
   tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
   groups = {group};
@@ -330,5 +371,5 @@ TEST_F(TabGroupsPanelMediatorTest,
   observer->OnInitialized();
 
   EXPECT_EQ(consumer.items.count, 1u);
-  EXPECT_EQ(consumer.populateItemsCallCount, 2u);
+  EXPECT_EQ(consumer.populateItemsCallCount, 1u);
 }

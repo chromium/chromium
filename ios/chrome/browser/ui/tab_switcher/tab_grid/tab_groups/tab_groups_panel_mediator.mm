@@ -63,7 +63,9 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
   // The bridge between the service C++ observer and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
-  std::unique_ptr<ScopedTabGroupSyncObservation> _scopedTabGroupSyncObservation;
+  std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
+  // Whether the service was fully initialized.
+  bool _serviceInitialized;
   // The regular WebStateList, to check if there are tabs to go back to when
   // pressing the Done button.
   base::WeakPtr<WebStateList> _regularWebStateList;
@@ -82,10 +84,10 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
     _tabGroupSyncService = tabGroupSyncService;
     _syncServiceObserver =
         std::make_unique<TabGroupSyncServiceObserverBridge>(self);
-    _scopedTabGroupSyncObservation =
+    _scopedSyncServiceObservation =
         std::make_unique<ScopedTabGroupSyncObservation>(
             _syncServiceObserver.get());
-    _scopedTabGroupSyncObservation->Observe(_tabGroupSyncService);
+    _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
     _regularWebStateList = regularWebStateList->AsWeakPtr();
     _isDisabled = disabled;
   }
@@ -101,7 +103,7 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
 
 - (void)disconnect {
   _consumer = nil;
-  _scopedTabGroupSyncObservation.reset();
+  _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
   _regularWebStateList = nullptr;
@@ -171,6 +173,7 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
 #pragma mark - TabGroupSyncServiceObserverDelegate
 
 - (void)tabGroupSyncServiceInitialized {
+  _serviceInitialized = true;
   [self populateItemsFromService];
 }
 
@@ -229,7 +232,9 @@ NSArray<TabGroupsPanelItem*>* CreateItems(
 
 // Reads the TabGroupSync
 - (void)populateItemsFromService {
-  [_consumer populateItems:CreateItems(_tabGroupSyncService->GetAllGroups())];
+  if (_serviceInitialized) {
+    [_consumer populateItems:CreateItems(_tabGroupSyncService->GetAllGroups())];
+  }
 }
 
 @end
