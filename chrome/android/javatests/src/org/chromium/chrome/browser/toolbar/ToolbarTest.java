@@ -226,11 +226,14 @@ public class ToolbarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    @DisabledTest(message = "b/353348883")
     public void testMaybeShowUrlBarFocusIfHardwareKeyboardAvailable_newTabFromTabSwitcher() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         // Simulate availability of a hardware keyboard.
         activity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_QWERTY;
+
+        // If soft keyboard is requested while hardware keyboard is connected - do not prefocus the
+        // Omnibox, as it will automatically call up software keyboard.
+        boolean wantPrefocus = !KeyboardUtils.shouldShowImeWithHardwareKeyboard(activity);
 
         // Open a new tab from the tab switcher.
         onViewWaiting(allOf(withId(R.id.tab_switcher_button), isDisplayed()));
@@ -240,7 +243,7 @@ public class ToolbarTest {
 
         LayoutTestUtils.waitForLayout(activity.getLayoutManager(), LayoutType.BROWSING);
 
-        // Verify that the omnibox is focused when the NTP is loaded.
+        // Verify that the omnibox is in the correct focus state when the NTP is loaded.
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -248,7 +251,7 @@ public class ToolbarTest {
                                     .getLocationBar()
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
-                            Matchers.is(true));
+                            Matchers.is(wantPrefocus));
                 });
     }
 
