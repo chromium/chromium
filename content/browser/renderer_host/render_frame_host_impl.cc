@@ -7947,7 +7947,9 @@ void RenderFrameHostImpl::EnterFullscreen(
   // sent in that case. We always send this to the main frame's widget, and if
   // there are any OOPIF widgets, this will also trigger them to resize via
   // frameRectsChanged.
-  render_view_host_->GetWidget()->SynchronizeVisualProperties();
+  GetOutermostMainFrame()
+      ->GetLocalRenderWidgetHost()
+      ->SynchronizeVisualProperties();
 }
 
 // TODO(alexmos): When the allowFullscreen flag is known in the browser
@@ -7964,7 +7966,9 @@ void RenderFrameHostImpl::ExitFullscreen() {
   // sent in that case. We always send this to the main frame's widget, and if
   // there are any OOPIF widgets, this will also trigger them to resize via
   // frameRectsChanged.
-  render_view_host_->GetWidget()->SynchronizeVisualProperties();
+  GetOutermostMainFrame()
+      ->GetLocalRenderWidgetHost()
+      ->SynchronizeVisualProperties();
 }
 
 void RenderFrameHostImpl::SuddenTerminationDisablerChanged(
