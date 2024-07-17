@@ -52,6 +52,9 @@ bool WifiDirectMedium::StartWifiDirect(WifiDirectCredentials* credentials) {
   waitable_event.Wait();
 
   // An active remote means the group has been created.
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.WifiDirect.CreateWifiDirectGroup.Result",
+      !!connection_);
   return !!connection_;
 }
 
@@ -294,6 +297,8 @@ void WifiDirectMedium::OnGroupCreated(
     return;
   }
 
+  base::UmaHistogramEnumeration(
+      "Nearby.Connections.WifiDirect.CreateWifiDirectGroup.Error", result);
   // Trigger sync signal.
   waitable_event->Signal();
 }

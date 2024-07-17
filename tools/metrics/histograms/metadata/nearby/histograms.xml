@@ -539,6 +539,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.WifiDirect.CreateWifiDirectGroup.Error"
+    enum="NearbyConnectionsWifiDirectResult" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the error that occured when the WiFi Direct group creation was
+    attempted. Emitted when Nearby Connections returns the result from the mojo
+    call to create the GO.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.WifiDirect.CreateWifiDirectGroup.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records if the WiFi Direct group was able to be created. Emitted when Nearby
+    Connections returns the result from the mojo call to create the GO.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.WifiDirect.IsP2pSupported" enum="Boolean"
     expires_after="2025-04-30">
   <owner>jackshira@google.com</owner>

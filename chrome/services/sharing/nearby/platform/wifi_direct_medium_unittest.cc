@@ -27,6 +27,10 @@ constexpr char kTestPassword[] = "ABCD1234";
 
 constexpr char kIsP2pSupportedMetricName[] =
     "Nearby.Connections.WifiDirect.IsP2pSupported";
+constexpr char kCreateGroupResultMetricName[] =
+    "Nearby.Connections.WifiDirect.CreateWifiDirectGroup.Result";
+constexpr char kCreateGroupErrorMetricName[] =
+    "Nearby.Connections.WifiDirect.CreateWifiDirectGroup.Error";
 
 // Pick a random port for each test run, otherwise the `Listen` call has a
 // chance to return ADDRESS_IN_USE(-147).
@@ -252,6 +256,9 @@ TEST_F(WifiDirectMediumTest, IsInterfaceValid_Invalid) {
 
 TEST_F(WifiDirectMediumTest, StartWifiDirect_MissingConnection) {
   manager()->SetWifiDirectConnection(nullptr);
+  histogram_tester().ExpectTotalCount(kCreateGroupResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kCreateGroupErrorMetricName, 0);
+
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
@@ -259,11 +266,22 @@ TEST_F(WifiDirectMediumTest, StartWifiDirect_MissingConnection) {
         EXPECT_FALSE(medium->StartWifiDirect(&credentials));
       },
       medium()));
+
+  histogram_tester().ExpectTotalCount(kCreateGroupResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kCreateGroupResultMetricName,
+                                       /*bucket:false=*/0, 1);
+  histogram_tester().ExpectTotalCount(kCreateGroupErrorMetricName, 1);
+  histogram_tester().ExpectBucketCount(
+      kCreateGroupErrorMetricName,
+      ash::wifi_direct::mojom::WifiDirectOperationResult::kNotSupported, 1);
 }
 
 TEST_F(WifiDirectMediumTest, StartWifiDirect_ValidConnection) {
   manager()->SetWifiDirectConnection(
       std::make_unique<FakeWifiDirectConnection>());
+  histogram_tester().ExpectTotalCount(kCreateGroupResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kCreateGroupErrorMetricName, 0);
+
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
@@ -275,6 +293,11 @@ TEST_F(WifiDirectMediumTest, StartWifiDirect_ValidConnection) {
         EXPECT_EQ(credentials.GetPassword(), kTestPassword);
       },
       medium()));
+
+  histogram_tester().ExpectTotalCount(kCreateGroupResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kCreateGroupResultMetricName,
+                                       /*bucket:true=*/1, 1);
+  histogram_tester().ExpectTotalCount(kCreateGroupErrorMetricName, 0);
 }
 
 TEST_F(WifiDirectMediumTest, StopWifiDirect_MissingConnection) {

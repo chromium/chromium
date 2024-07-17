@@ -4,6 +4,8 @@
 
 module ash.wifi_direct.mojom;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum WifiDirectOperationResult {
   kSuccess,
   // Wifi Direct is disallowed in platform per Manager.P2PAllowed.

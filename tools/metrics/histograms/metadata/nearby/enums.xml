@@ -131,6 +131,24 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Utility process disconnected Presence mojo pipe"/>
 </enum>
 
+<enum name="NearbyConnectionsWifiDirectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not Allowed"/>
+  <int value="2" label="Not Supported"/>
+  <int value="3" label="Not Connected"/>
+  <int value="4" label="Concurrency Not Supported"/>
+  <int value="5" label="Frequency Not Supported"/>
+  <int value="6" label="Auth Failure"/>
+  <int value="7" label="Group Not Found"/>
+  <int value="8" label="Already Connected"/>
+  <int value="9" label="Operation In Progress"/>
+  <int value="10" label="Invalid Arguments"/>
+  <int value="11" label="Timeout"/>
+  <int value="12" label="Invalid Result Code"/>
+  <int value="13" label="Invalid Group Properties"/>
+  <int value="14" label="Unknown Failure"/>
+</enum>
+
 <enum name="NearbyConnectionsWifiLanConnectResult">
   <int value="0" label="Success"/>
   <int value="1" label="Canceled"/>
