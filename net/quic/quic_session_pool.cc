@@ -1274,7 +1274,7 @@ bool QuicSessionPool::HasMatchingIpSession(
 
 void QuicSessionPool::OnJobComplete(Job* job, int rv) {
   auto iter = active_jobs_.find(job->key().session_key());
-  DCHECK(iter != active_jobs_.end());
+  CHECK(iter != active_jobs_.end(), base::NotFatalUntil::M130);
   if (rv == OK) {
     if (!is_quic_known_to_work_on_current_network_) {
       set_is_quic_known_to_work_on_current_network(true);

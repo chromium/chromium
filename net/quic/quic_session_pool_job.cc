@@ -5,6 +5,7 @@
 #include "net/quic/quic_session_pool_job.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
@@ -66,7 +67,7 @@ void QuicSessionPool::Job::AddRequest(QuicSessionRequest* request) {
 
 void QuicSessionPool::Job::RemoveRequest(QuicSessionRequest* request) {
   auto request_iter = requests_.find(request);
-  DCHECK(request_iter != requests_.end());
+  CHECK(request_iter != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(request_iter);
 }
 
