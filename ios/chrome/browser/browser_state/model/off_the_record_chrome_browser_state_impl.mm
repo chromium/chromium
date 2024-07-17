@@ -34,11 +34,16 @@ OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
 
   user_prefs::UserPrefs::Set(this, GetPrefs());
   io_data_.reset(new OffTheRecordChromeBrowserStateIOData::Handle(this));
-  BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
-      this);
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kIncognito);
   base::RecordAction(base::UserMetricsAction("IncognitoMode_Started"));
+
+  // DO NOT ADD ANY INITIALISATION AFTER THIS LINE.
+
+  // The initialisation of the ChromeBrowserState is now complete and the
+  // service can be safely created.
+  BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
+      this);
 }
 
 OffTheRecordChromeBrowserStateImpl::~OffTheRecordChromeBrowserStateImpl() {

@@ -33,6 +33,14 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
 
 HostContentSettingsMapFactory::~HostContentSettingsMapFactory() {}
 
+bool HostContentSettingsMapFactory::ServiceIsRequiredForContextInitialization()
+    const {
+  // HostContentSettingsMap is required to initialize the PrefService of
+  // the ChromeBrowserState as it is part of the implementation of the
+  // SupervisedUserPrefStore.
+  return true;
+}
+
 scoped_refptr<RefcountedKeyedService>
 HostContentSettingsMapFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {

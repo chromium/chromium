@@ -35,6 +35,7 @@ class SupervisedUserSettingsServiceFactory
   ~SupervisedUserSettingsServiceFactory() override = default;
 
   // BrowserStateKeyedServiceFactory implementation.
+  bool ServiceIsRequiredForContextInitialization() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(

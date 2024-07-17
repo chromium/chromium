@@ -30,6 +30,14 @@ SupervisedUserSettingsServiceFactory::SupervisedUserSettingsServiceFactory()
           "SupervisedUserSettingsService",
           BrowserStateDependencyManager::GetInstance()) {}
 
+bool SupervisedUserSettingsServiceFactory::
+    ServiceIsRequiredForContextInitialization() const {
+  // SupervisedUserSettingsService is required to initialize the PrefService
+  // of the ChromeBrowserState as it is part of the implementation of the
+  // SupervisedUserPrefStore.
+  return true;
+}
+
 std::unique_ptr<KeyedService>
 SupervisedUserSettingsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {

@@ -33,6 +33,7 @@ class HostContentSettingsMapFactory
   ~HostContentSettingsMapFactory() override;
 
   // BrowserStateKeyedServiceFactory implementation.
+  bool ServiceIsRequiredForContextInitialization() const override;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(

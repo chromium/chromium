@@ -177,6 +177,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
       BuildBrowserStatePolicyConnector(policy_schema_registry_.get(), connector,
                                        user_cloud_policy_manager_.get());
 
+  // Register BrowserState preferences.
   RegisterBrowserStatePrefs(pref_registry_.get());
   BrowserStateDependencyManager::GetInstance()
       ->RegisterBrowserStatePrefsForServices(pref_registry_.get());
@@ -199,9 +200,6 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
 
   // Migrate obsolete prefs.
   MigrateObsoleteBrowserStatePrefs(state_path, prefs_.get());
-
-  BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
-      this);
 
   // In //chrome/browser, SupervisedUserSettingsService is a SimpleKeyedService
   // and can be created to initialize SupervisedUserPrefStore.
@@ -244,6 +242,13 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   // Make sure we initialize the io_data_ after everything else has been
   // initialized that we might be reading from the IO thread.
   io_data_->Init(cookie_path, cache_path, cache_max_size, state_path);
+
+  // DO NOT ADD ANY INITIALISATION AFTER THIS LINE.
+
+  // The initialisation of the ChromeBrowserState is now complete and the
+  // service can be safely created.
+  BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
+      this);
 
   if (delegate_) {
     // TODO(crbug.com/333865629): pass correct values for `success` and
