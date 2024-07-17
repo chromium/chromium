@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetecto
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.ui.base.ActivityIntentRequestTrackerDelegate;
@@ -221,7 +221,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                 firstDrawView,
                 () -> {
                     mFirstDrawComplete = true;
-                    StartSurfaceConfiguration.recordHistogram(
+                    BrowserUiUtils.recordHistogram(
                             FIRST_DRAW_COMPLETED_TIME_MS_UMA,
                             SystemClock.elapsedRealtime() - getOnCreateTimestampMs());
                     if (!mStartupDelayed) {

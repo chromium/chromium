@@ -149,14 +149,14 @@ public class ExploreSurfaceCoordinator {
         if (!maybeRecordContentLoadingTime() && mFeedSurfaceCoordinator.isLoadingFeed()) {
             mHasPendingUmaRecording = true;
         }
-        StartSurfaceConfiguration.recordHistogram(
+        BrowserUiUtils.recordHistogram(
                 FEED_STREAM_CREATED_TIME_MS_UMA, mStreamCreatedTimeMs - activityCreationTimeMs);
     }
 
     private boolean maybeRecordContentLoadingTime() {
         if (mActivityCreationTimeMs == 0 || mContentFirstAvailableTimeMs == 0) return false;
 
-        StartSurfaceConfiguration.recordHistogram(
+        BrowserUiUtils.recordHistogram(
                 FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
                 mContentFirstAvailableTimeMs - mActivityCreationTimeMs);
         return true;

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.util;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 
 /** Deals with multiple parts of browser UI code calls. */
@@ -60,11 +61,15 @@ public class BrowserUiUtils {
         int NUM_ENTRIES = 3;
     }
 
+    private static final String TAG = "BrowserUiUtils";
+    private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
+
     /**
      * Returns the host name for histograms.
+     *
      * @param hostSurface The corresponding item of the host name in {@link HostSurface}.
      * @return The host name used for the histograms like the "NewTabPage" in
-     * "NewTabPage.Module.Click" and "StartSurface" in "StartSurface.Module.Click".
+     *     "NewTabPage.Module.Click" and "StartSurface" in "StartSurface.Module.Click".
      */
     public static String getHostName(int hostSurface) {
         switch (hostSurface) {
@@ -124,5 +129,17 @@ public class BrowserUiUtils {
             recordModuleClickHistogram(
                     HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.PROFILE_BUTTON);
         }
+    }
+
+    /**
+     * Records histograms of showing the home surface. Nothing will be recorded if timeDurationMs
+     * isn't valid.
+     */
+    public static void recordHistogram(String name, long timeDurationMs) {
+        if (timeDurationMs < 0) return;
+
+        String histogramName = STARTUP_UMA_PREFIX + name;
+        Log.i(TAG, "Recorded %s = %d ms", histogramName, timeDurationMs);
+        RecordHistogram.recordTimesHistogram(histogramName, timeDurationMs);
     }
 }

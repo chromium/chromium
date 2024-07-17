@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.Log;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
 
@@ -17,7 +13,6 @@ import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
  * variation should be used.
  */
 public class StartSurfaceConfiguration {
-    private static final String TAG = "StartSurfaceConfig";
     private static final String LOGO_POLISH_LARGE_SIZE_PARAM = "polish_logo_size_large";
     public static final BooleanCachedFieldTrialParameter LOGO_POLISH_LARGE_SIZE =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -27,8 +22,6 @@ public class StartSurfaceConfiguration {
     public static final BooleanCachedFieldTrialParameter LOGO_POLISH_MEDIUM_SIZE =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_MEDIUM_SIZE_PARAM, false);
-
-    private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
 
     /** Returns whether logo polish flag is enabled in the given context. */
     public static boolean isLogoPolishEnabled() {
@@ -58,22 +51,5 @@ public class StartSurfaceConfiguration {
         }
 
         return LogoSizeForLogoPolish.SMALL;
-    }
-
-    /**
-     * Records histograms of showing the StartSurface. Nothing will be recorded if timeDurationMs
-     * isn't valid.
-     */
-    public static void recordHistogram(String name, long timeDurationMs) {
-        if (timeDurationMs < 0) return;
-
-        String histogramName = getHistogramName(name);
-        Log.i(TAG, "Recorded %s = %d ms", histogramName, timeDurationMs);
-        RecordHistogram.recordTimesHistogram(histogramName, timeDurationMs);
-    }
-
-    @VisibleForTesting
-    public static String getHistogramName(String name) {
-        return STARTUP_UMA_PREFIX + name;
     }
 }
