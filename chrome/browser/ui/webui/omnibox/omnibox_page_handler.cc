@@ -383,37 +383,37 @@ void OmniboxPageHandler::OnResultChanged(AutocompleteController* controller,
     response->combined_results =
         mojo::ConvertTo<std::vector<mojom::AutocompleteMatchPtr>>(matches);
   }
+  std::vector<scoped_refptr<AutocompleteProvider>> providers = {};
+  for (const auto& provider : controller->providers())
+    if (controller->ShouldRunProvider(provider.get()))
+      providers.push_back(provider);
   response->results_by_provider =
       mojo::ConvertTo<std::vector<mojom::AutocompleteResultsForProviderPtr>>(
-          controller->providers());
+          providers);
 
   // Fill AutocompleteMatch::starred.
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
   if (bookmark_model) {
-    for (size_t i = 0; i < response->combined_results.size(); ++i) {
-      response->combined_results[i]->starred = bookmark_model->IsBookmarked(
-          GURL(response->combined_results[i]->destination_url));
+    for (const auto& match : response->combined_results) {
+      match->starred =
+          bookmark_model->IsBookmarked(GURL(match->destination_url));
     }
-    for (size_t i = 0; i < response->results_by_provider.size(); ++i) {
-      const mojom::AutocompleteResultsForProvider& result_by_provider =
-          *response->results_by_provider[i];
-      for (size_t j = 0; j < result_by_provider.results.size(); ++j) {
-        result_by_provider.results[j]->starred = bookmark_model->IsBookmarked(
-            GURL(result_by_provider.results[j]->destination_url));
+    for (const auto& results_by_provider : response->results_by_provider) {
+      for (const auto& match : results_by_provider->results) {
+        match->starred =
+            bookmark_model->IsBookmarked(GURL(match->destination_url));
       }
     }
   }
 
   // Obtain a vector of all image urls required.
   std::vector<std::string> image_urls;
-  for (size_t i = 0; i < response->combined_results.size(); ++i)
-    image_urls.push_back(response->combined_results[i]->image);
-  for (size_t i = 0; i < response->results_by_provider.size(); ++i) {
-    const mojom::AutocompleteResultsForProvider& result_by_provider =
-        *response->results_by_provider[i];
-    for (size_t j = 0; j < result_by_provider.results.size(); ++j)
-      image_urls.push_back(result_by_provider.results[j]->image);
+  for (const auto& match : response->combined_results)
+    image_urls.push_back(match->image);
+  for (const auto& results_by_provider : response->results_by_provider) {
+    for (const auto& match : results_by_provider->results)
+      image_urls.push_back(match->image);
   }
 
   auto type = GetAutocompleteControllerType(controller);

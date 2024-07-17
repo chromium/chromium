@@ -273,6 +273,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   UpdateType last_update_type() const { return last_update_type_; }
   const Providers& providers() const { return providers_; }
 
+  // Returns whether the given provider should be ran based on whether we're in
+  // keyword mode and which keyword we're searching. Currently runs all enabled
+  // providers unless in a Starter Pack scope, except for OpenTabProvider which
+  // only runs on Lacros and the @tabs scope.
+  bool ShouldRunProvider(AutocompleteProvider* provider) const;
+
   const base::TimeTicks& last_time_default_match_changed() const {
     return last_time_default_match_changed_;
   }
@@ -433,12 +439,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   bool OnMemoryDump(
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* process_memory_dump) override;
-
-  // Returns whether the given provider should be ran based on whether we're in
-  // keyword mode and which keyword we're searching. Currently runs all enabled
-  // providers unless in a Starter Pack scope, except for OpenTabProvider which
-  // only runs on Lacros and the @tabs scope.
-  bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Runs the batch scoring for all the eligible matches in `results_.matches_`.

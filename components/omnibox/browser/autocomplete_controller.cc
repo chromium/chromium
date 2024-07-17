@@ -985,25 +985,6 @@ void AutocompleteController::SetMatchDestinationURL(
 #endif
 }
 
-GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
-    const TemplateURL* template_url,
-    const TemplateURLRef::SearchTermsArgs& search_terms_args) const {
-  if (!template_url) {
-    return GURL();
-  }
-
-  // Skip search term replacement when in the @gemini scope.
-  // TODO(crbug.com/41494524): Replace this logic with a proper fix to support
-  // keywords that do not do search term replacement in omnibox.
-  if (template_url->starter_pack_id() ==
-      TemplateURLStarterPackData::kAskGoogle) {
-    return GURL(OmniboxFieldTrial::kGeminiUrlOverride.Get());
-  }
-
-  return GURL(template_url->url_ref().ReplaceSearchTerms(
-      search_terms_args, template_url_service_->search_terms_data()));
-}
-
 void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
                                                            size_t end) {
   if (begin == end)
@@ -1021,6 +1002,128 @@ void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
 
   AutocompleteResult::GroupSuggestionsBySearchVsURL(
       std::next(result.begin(), begin), std::next(result.begin(), end));
+}
+
+bool AutocompleteController::ShouldRunProvider(
+    AutocompleteProvider* provider) const {
+  if (!provider) {
+    return false;
+  }
+
+  // Only a subset of providers are run for the Lens searchboxes.
+  if (omnibox::IsLensSearchbox(input_.current_page_classification())) {
+    return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
+           provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST;
+  }
+
+  if (input_.InKeywordMode()) {
+    // Only a subset of providers are run when we're in a starter pack keyword
+    // mode. Try to grab the TemplateURL to determine if we're in starter pack
+    // mode and whether this provider should be run.
+    AutocompleteInput keyword_input = input_;
+    const TemplateURL* keyword_turl =
+        KeywordProvider::GetSubstitutingTemplateURLForInput(
+            template_url_service_, &keyword_input);
+
+    if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
+      switch (provider->type()) {
+        // Search provider and keyword provider are still run because we would
+        // lose the suggestion the keyword chip is attached to otherwise. Search
+        // provider suggestions are curbed for starter pack scopes in
+        // `SearchProvider::ShouldCurbDefaultSuggestions()`.
+        case AutocompleteProvider::TYPE_SEARCH:
+          return true;
+        case AutocompleteProvider::TYPE_KEYWORD:
+          return true;
+
+        // @Bookmarks starter pack scope - run only the bookmarks provider.
+        case AutocompleteProvider::TYPE_BOOKMARK:
+          return (keyword_turl->starter_pack_id() ==
+                  TemplateURLStarterPackData::kBookmarks);
+
+        // @History starter pack scope - run history quick and history url
+        // providers.
+        case AutocompleteProvider::TYPE_HISTORY_QUICK:
+        case AutocompleteProvider::TYPE_HISTORY_URL:
+        case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
+          return (keyword_turl->starter_pack_id() ==
+                  TemplateURLStarterPackData::kHistory);
+
+        // @Tabs starter pack scope - run the open tab provider.
+        case AutocompleteProvider::TYPE_OPEN_TAB:
+          return (keyword_turl->starter_pack_id() ==
+                  TemplateURLStarterPackData::kTabs);
+
+        // No other providers should run when in a starter pack scope.
+        default:
+          return false;
+      }
+    }
+
+    // Outside of the starter pack scopes, keyword mode should still restrict
+    // certain providers (when LimitKeywordModeSuggestions is enabled).
+    if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get().enabled) {
+      switch (provider->type()) {
+        // Don't run history cluster provider.
+        case AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER:
+          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                       .limit_history_cluster_suggestions);
+
+        // Don't run document provider, except for Google Drive.
+        case AutocompleteProvider::TYPE_DOCUMENT:
+          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                       .limit_document_suggestions) ||
+                 (keyword_turl &&
+                  base::StartsWith(keyword_turl->url(),
+                                   "https://drive.google.com",
+                                   base::CompareCase::INSENSITIVE_ASCII));
+
+        // Don't run on device head provider.
+        case AutocompleteProvider::TYPE_ON_DEVICE_HEAD:
+          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                       .limit_on_device_head_suggestions);
+
+        // Treat all other providers as usual.
+        default:
+          break;
+      }
+    }
+  }
+
+  // Some providers should only run in starter pack mode or in the CrOS
+  // launcher. If we reach here, we're not in starter pack mode.
+  switch (provider->type()) {
+    case AutocompleteProvider::TYPE_OPEN_TAB:
+      return is_cros_launcher_;
+#if !BUILDFLAG(IS_IOS)
+    case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
+      return history_embeddings::kOmniboxUnscoped.Get();
+#endif
+    default:
+      break;
+  }
+
+  // Otherwise, run all providers.
+  return true;
+}
+
+GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
+    const TemplateURL* template_url,
+    const TemplateURLRef::SearchTermsArgs& search_terms_args) const {
+  if (!template_url) {
+    return GURL();
+  }
+
+  // Skip search term replacement when in the @gemini scope.
+  // TODO(crbug.com/41494524): Replace this logic with a proper fix to support
+  // keywords that do not do search term replacement in omnibox.
+  if (template_url->starter_pack_id() ==
+      TemplateURLStarterPackData::kAskGoogle) {
+    return GURL(OmniboxFieldTrial::kGeminiUrlOverride.Get());
+  }
+
+  return GURL(template_url->url_ref().ReplaceSearchTerms(
+      search_terms_args, template_url_service_->search_terms_data()));
 }
 
 void AutocompleteController::InitializeAsyncProviders(int provider_types) {
@@ -1873,108 +1976,6 @@ AutocompleteController::GetOmniboxPositionExperimentStatsV2() const {
       break;
   }
   return experiment_stats_v2;
-}
-
-bool AutocompleteController::ShouldRunProvider(
-    AutocompleteProvider* provider) const {
-  if (!provider) {
-    return false;
-  }
-
-  // Only a subset of providers are run for the Lens searchboxes.
-  if (omnibox::IsLensSearchbox(input_.current_page_classification())) {
-    return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
-           provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST;
-  }
-
-  if (input_.InKeywordMode()) {
-    // Only a subset of providers are run when we're in a starter pack keyword
-    // mode. Try to grab the TemplateURL to determine if we're in starter pack
-    // mode and whether this provider should be run.
-    AutocompleteInput keyword_input = input_;
-    const TemplateURL* keyword_turl =
-        KeywordProvider::GetSubstitutingTemplateURLForInput(
-            template_url_service_, &keyword_input);
-
-    if (keyword_turl && keyword_turl->starter_pack_id() > 0) {
-      switch (provider->type()) {
-        // Search provider and keyword provider are still run because we would
-        // lose the suggestion the keyword chip is attached to otherwise. Search
-        // provider suggestions are curbed for starter pack scopes in
-        // `SearchProvider::ShouldCurbDefaultSuggestions()`.
-        case AutocompleteProvider::TYPE_SEARCH:
-        case AutocompleteProvider::TYPE_KEYWORD:
-          return true;
-
-        // @Bookmarks starter pack scope - run only the bookmarks provider.
-        case AutocompleteProvider::TYPE_BOOKMARK:
-          return (keyword_turl->starter_pack_id() ==
-                  TemplateURLStarterPackData::kBookmarks);
-
-        // @History starter pack scope - run history quick and history url
-        // providers.
-        case AutocompleteProvider::TYPE_HISTORY_QUICK:
-        case AutocompleteProvider::TYPE_HISTORY_URL:
-        case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
-          return (keyword_turl->starter_pack_id() ==
-                  TemplateURLStarterPackData::kHistory);
-
-        // @Tabs starter pack scope - run the open tab provider.
-        case AutocompleteProvider::TYPE_OPEN_TAB:
-          return (keyword_turl->starter_pack_id() ==
-                  TemplateURLStarterPackData::kTabs);
-
-        // No other providers should run when in a starter pack scope.
-        default:
-          return false;
-      }
-    }
-
-    // Outside of the starter pack scopes, keyword mode should still restrict
-    // certain providers (when LimitKeywordModeSuggestions is enabled).
-    if (omnibox_feature_configs::LimitKeywordModeSuggestions::Get().enabled) {
-      switch (provider->type()) {
-        // Don't run history cluster provider.
-        case AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER:
-          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
-                       .limit_history_cluster_suggestions);
-
-        // Don't run document provider, except for Google Drive.
-        case AutocompleteProvider::TYPE_DOCUMENT:
-          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
-                       .limit_document_suggestions) ||
-                 (keyword_turl &&
-                  base::StartsWith(keyword_turl->url(),
-                                   "https://drive.google.com",
-                                   base::CompareCase::INSENSITIVE_ASCII));
-
-        // Don't run on device head provider.
-        case AutocompleteProvider::TYPE_ON_DEVICE_HEAD:
-          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
-                       .limit_on_device_head_suggestions);
-
-        // Treat all other providers as usual.
-        default:
-          break;
-      }
-    }
-  }
-
-  // Some providers should only run in starter pack mode or in the CrOS
-  // launcher. If we reach here, we're not in starter pack mode.
-  switch (provider->type()) {
-    case AutocompleteProvider::TYPE_OPEN_TAB:
-      return is_cros_launcher_;
-#if !BUILDFLAG(IS_IOS)
-    case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
-      return history_embeddings::kOmniboxUnscoped.Get();
-#endif
-    default:
-      break;
-  }
-
-  // Otherwise, run all providers.
-  return true;
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
