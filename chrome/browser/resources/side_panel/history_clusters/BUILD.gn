@@ -32,4 +32,14 @@ build_webui("build") {
             target_gen_dir) ]
 
   webui_context_type = "trusted"
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "history-clusters-side-panel.top-chrome"
+    optimize_webui_in_files = [ "app.js" ]
+    optimize_webui_external_paths =
+        [ "chrome://history-clusters-side-panel.top-chrome/shared|" +
+          rebase_path(
+              "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc",
+              root_build_dir) ]
+  }
 }
