@@ -588,4 +588,7 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_LEARN_MORE_A11Y_LABEL" translateable="false" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about product specifications.">
     Learn more about product specifications.
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_FEEDBACK_PLACEHOLDER" translateable="false" desc="Placeholder text for the product specifications feedback form.">
+    Send feedback for Product Specifications.
+  </message>
 </grit-part>
