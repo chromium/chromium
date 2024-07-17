@@ -665,6 +665,8 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
       ],
     },
     graphicsTabletButtonConfig: GraphicsTabletButtonConfig.kNoConfig,
+    batteryInfo: null,
+    customizationRestriction: CustomizationRestriction.kAllowCustomizations,
   },
   {
     id: 16,
@@ -726,6 +728,8 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
     },
     graphicsTabletButtonConfig:
         GraphicsTabletButtonConfig.kWacomStandardFourButtons,
+    batteryInfo: null,
+    customizationRestriction: CustomizationRestriction.kAllowCustomizations,
   },
 ];
 
@@ -771,6 +775,8 @@ export const fakeGraphicsTablets2: GraphicsTablet[] = [
     },
     graphicsTabletButtonConfig:
         GraphicsTabletButtonConfig.kWacomStandardFourButtons,
+    batteryInfo: null,
+    customizationRestriction: CustomizationRestriction.kAllowCustomizations,
   },
 ];
 
