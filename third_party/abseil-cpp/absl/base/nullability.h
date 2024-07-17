@@ -167,7 +167,7 @@ ABSL_NAMESPACE_BEGIN
 // absl::Nonnull
 //
 // The indicated pointer is never null. It is the responsibility of the provider
-// of this pointer across an API boundary to ensure that the pointer is never be
+// of this pointer across an API boundary to ensure that the pointer is never
 // set to null. Consumers of this pointer across an API boundary may safely
 // dereference the pointer.
 //

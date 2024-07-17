@@ -42,7 +42,7 @@
       ABSL_LOGGING_INTERNAL_DLOG##severity.InternalStream()
 #endif
 
-// The `switch` ensures that this expansion is the begnning of a statement (as
+// The `switch` ensures that this expansion is the beginning of a statement (as
 // opposed to an expression). The use of both `case 0` and `default` is to
 // suppress a compiler warning.
 #define ABSL_LOG_INTERNAL_VLOG_IMPL(verbose_level)                         \

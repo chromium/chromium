@@ -314,6 +314,24 @@ absl_test("prefetch_test") {
   deps = [ ":prefetch" ]
 }
 
+absl_source_set("poison") {
+  public = [ "internal/poison.h" ]
+  sources = [ "internal/poison.cc" ]
+  deps = [
+    ":config",
+    ":core_headers",
+    ":malloc_internal",
+  ]
+}
+
+absl_test("poison_test") {
+  sources = [ "internal/poison_test.cc" ]
+  deps = [
+    ":config",
+    ":poison",
+  ]
+}
+
 absl_test("config_test") {
   sources = [ "config_test.cc" ]
   deps = [
