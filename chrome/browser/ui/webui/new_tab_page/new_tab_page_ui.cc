@@ -420,13 +420,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       "modulesOverflowScrollbarEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesOverflowScrollbar));
 
-  source->AddString("photosModuleCustomArtWork",
-                    base::GetFieldTrialParamValueByFeature(
-                        ntp_features::kNtpPhotosModuleCustomizedOptInArtWork,
-                        ntp_features::kNtpPhotosModuleOptInArtWorkParam));
-  source->AddBoolean("photosModuleSplitSvgCustomArtWork",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kNtpPhotosModuleSplitSvgOptInArtWork));
   source->AddBoolean("modulesRedesignedEnabled", redesigned_modules_enabled);
 
   SearchboxHandler::SetupWebUIDataSource(
