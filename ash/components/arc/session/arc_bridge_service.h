@@ -54,6 +54,8 @@ class DiskSpaceHost;
 class DiskSpaceInstance;
 class EnterpriseReportingHost;
 class EnterpriseReportingInstance;
+class ErrorNotificationHost;
+class ErrorNotificationInstance;
 class FileSystemHost;
 class FileSystemInstance;
 class IioSensorHost;
@@ -227,6 +229,11 @@ class ArcBridgeService {
   enterprise_reporting() {
     return &enterprise_reporting_;
   }
+  ConnectionHolder<mojom::ErrorNotificationInstance,
+                   mojom::ErrorNotificationHost>*
+  error_notification() {
+    return &error_notification_;
+  }
   ConnectionHolder<mojom::FileSystemInstance, mojom::FileSystemHost>*
   file_system() {
     return &file_system_;
@@ -374,6 +381,9 @@ class ArcBridgeService {
   ConnectionHolder<mojom::EnterpriseReportingInstance,
                    mojom::EnterpriseReportingHost>
       enterprise_reporting_;
+  ConnectionHolder<mojom::ErrorNotificationInstance,
+                   mojom::ErrorNotificationHost>
+      error_notification_;
   ConnectionHolder<mojom::FileSystemInstance, mojom::FileSystemHost>
       file_system_;
   ConnectionHolder<mojom::IioSensorInstance, mojom::IioSensorHost> iio_sensor_;

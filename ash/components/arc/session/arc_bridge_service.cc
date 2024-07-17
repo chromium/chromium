@@ -22,6 +22,7 @@
 #include "ash/components/arc/mojom/digital_goods.mojom.h"
 #include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
+#include "ash/components/arc/mojom/error_notification.mojom.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "ash/components/arc/mojom/iio_sensor.mojom.h"
 #include "ash/components/arc/mojom/ime.mojom.h"

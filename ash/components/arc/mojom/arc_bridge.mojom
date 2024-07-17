@@ -23,6 +23,7 @@ import "ash/components/arc/mojom/crash_collector.mojom";
 import "ash/components/arc/mojom/digital_goods.mojom";
 import "ash/components/arc/mojom/disk_space.mojom";
 import "ash/components/arc/mojom/enterprise_reporting.mojom";
+import "ash/components/arc/mojom/error_notification.mojom";
 import "ash/components/arc/mojom/file_system.mojom";
 import "ash/components/arc/mojom/iio_sensor.mojom";
 import "ash/components/arc/mojom/ime.mojom";
@@ -63,9 +64,9 @@ import "ash/components/arc/mojom/wallpaper.mojom";
 import "ash/components/arc/mojom/webapk.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 
-// Next MinVersion: 67
+// Next MinVersion: 68
 // Deprecated method IDs: 101, 105, 121, 126, 132, 134, 136, 137, 153, 154, 160
-// Next method ID: 172
+// Next method ID: 173
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -146,6 +147,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the EnterpriseReportingInstance interface is ready.
   [MinVersion=15] OnEnterpriseReportingInstanceReady@122(
       pending_remote<EnterpriseReportingInstance> instance_remote);
+
+  // Notifies Chrome that the ErrorNotificationInstance interface is ready.
+  [MinVersion=67] OnErrorNotificationInstanceReady@172(
+    pending_remote<ErrorNotificationInstance> instance_remote);
 
   // Notifies Chrome that the FileSystemInstance interface is ready.
   [MinVersion=13] OnFileSystemInstanceReady@119(

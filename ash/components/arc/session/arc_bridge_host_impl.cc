@@ -24,6 +24,7 @@
 #include "ash/components/arc/mojom/digital_goods.mojom.h"
 #include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
+#include "ash/components/arc/mojom/error_notification.mojom.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "ash/components/arc/mojom/iio_sensor.mojom.h"
 #include "ash/components/arc/mojom/ime.mojom.h"
@@ -212,6 +213,13 @@ void ArcBridgeHostImpl::OnEnterpriseReportingInstanceReady(
         enterprise_reporting_remote) {
   OnInstanceReady(arc_bridge_service_->enterprise_reporting(),
                   std::move(enterprise_reporting_remote));
+}
+
+void ArcBridgeHostImpl::OnErrorNotificationInstanceReady(
+    mojo::PendingRemote<mojom::ErrorNotificationInstance>
+        error_notification_remote) {
+  OnInstanceReady(arc_bridge_service_->error_notification(),
+                  std::move(error_notification_remote));
 }
 
 void ArcBridgeHostImpl::OnFileSystemInstanceReady(

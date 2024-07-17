@@ -98,6 +98,9 @@ class ArcBridgeHostImpl
   void OnEnterpriseReportingInstanceReady(
       mojo::PendingRemote<mojom::EnterpriseReportingInstance>
           enterprise_reporting_remote) override;
+  void OnErrorNotificationInstanceReady(
+      mojo::PendingRemote<mojom::ErrorNotificationInstance> error_dialog_remote)
+      override;
   void OnFileSystemInstanceReady(mojo::PendingRemote<mojom::FileSystemInstance>
                                      file_system_remote) override;
   void OnIioSensorInstanceReady(

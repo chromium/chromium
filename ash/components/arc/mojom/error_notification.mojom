@@ -1,0 +1,58 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+module arc.mojom;
+
+[Extensible]
+enum ErrorType {
+  [Default] CRASH = 0,
+  ANR = 1,
+};
+
+// Contains details of the error needed for general Chrome notifications.
+struct ErrorDetails {
+  string name; // app name or process name
+  string title; // title of the Chrome notification
+  ErrorType type;
+  array<string>? buttonLabels;
+};
+
+// Next Method ID: 1
+// Mojo interface exposed by the Chrome browser process for error notification,
+// ARC is the client.
+interface ErrorNotificationHost {
+  // Sends the details of the error.
+  SendErrorDetails@0(
+      ErrorDetails details,
+      pending_remote<ErrorNotificationActionHandler> action_handler)
+      => (pending_remote<ErrorNotificationItem>? item);
+};
+
+// Next Method ID: 1
+// Mojo interface exposed by ARC for Error Notifications, the Chrome browser
+// process is the client.
+interface ErrorNotificationInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<ErrorNotificationHost> host_remote) => ();
+};
+
+// Next Method ID: 1
+// Mojo interface providing ARC the ability to request Chrome to manage
+// displayed error notifications.
+interface ErrorNotificationItem {
+  // Instructs Chrome to dismiss a specific error notification.
+  CloseErrorNotification@0();
+};
+
+// Next Method ID: 2
+// Mojo interface through which Chrome communicates user interactions (clicks,
+// closes) on error notifications back to ARC.
+interface ErrorNotificationActionHandler {
+  // Informs ARC that a button within the notification was clicked.
+  OnNotificationButtonClicked@0(uint32 buttonIndex);
+
+  // Informs ARC that the notification was dismissed by the user.
+  OnNotificationClosed@1();
+};

@@ -20,6 +20,7 @@
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
 #include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
+#include "ash/components/arc/mojom/error_notification.mojom.h"
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "ash/components/arc/mojom/ime.mojom.h"
 #include "ash/components/arc/mojom/input_method_manager.mojom.h"
@@ -128,6 +129,10 @@ void FakeArcBridgeHost::OnDiskSpaceInstanceReady(
 void FakeArcBridgeHost::OnEnterpriseReportingInstanceReady(
     mojo::PendingRemote<mojom::EnterpriseReportingInstance>
         enterprise_reporting_remote) {}
+
+void FakeArcBridgeHost::OnErrorNotificationInstanceReady(
+    mojo::PendingRemote<mojom::ErrorNotificationInstance>
+        error_notification_remote) {}
 
 void FakeArcBridgeHost::OnFileSystemInstanceReady(
     mojo::PendingRemote<mojom::FileSystemInstance> file_system_remote) {}

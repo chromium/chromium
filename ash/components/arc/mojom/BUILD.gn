@@ -29,6 +29,7 @@ mojom("mojom") {
     "digital_goods.mojom",
     "disk_space.mojom",
     "enterprise_reporting.mojom",
+    "error_notification.mojom",
     "file_system.mojom",
     "iio_sensor.mojom",
     "ime.mojom",
