@@ -205,9 +205,9 @@ class AttributionInteropParser {
              config.destination_rate_limit.max_per_reporting_site_per_day,
              required);
 
-    ParseDouble(dict, "max_navigation_info_gain",
+    ParseDouble(dict, "max_event_level_channel_capacity_navigation",
                 config.event_level_limit.max_navigation_info_gain, required);
-    ParseDouble(dict, "max_event_info_gain",
+    ParseDouble(dict, "max_event_level_channel_capacity_event",
                 config.event_level_limit.max_event_info_gain, required);
 
     ParseUInt32(dict, "max_trigger_state_cardinality",

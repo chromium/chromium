@@ -532,11 +532,12 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.event_level_limit.max_reports_per_destination = 10;
        }},
-      {R"json({"max_navigation_info_gain":"0.2"})json", false,
+      {R"json({"max_event_level_channel_capacity_navigation":"0.2"})json",
+       false,
        [](AttributionConfig& c) {
          c.event_level_limit.max_navigation_info_gain = 0.2;
        }},
-      {R"json({"max_event_info_gain":"0.2"})json", false,
+      {R"json({"max_event_level_channel_capacity_event":"0.2"})json", false,
        [](AttributionConfig& c) {
          c.event_level_limit.max_event_info_gain = 0.2;
        }},
@@ -580,8 +581,8 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "rate_limit_origins_per_site_window_in_days":"5",
         "max_settable_event_level_epsilon":"0.2",
         "max_event_level_reports_per_destination":"10",
-        "max_navigation_info_gain":"5.5",
-        "max_event_info_gain":"0.5",
+        "max_event_level_channel_capacity_navigation":"5.5",
+        "max_event_level_channel_capacity_event":"0.5",
         "max_trigger_state_cardinality":"10",
         "max_aggregatable_reports_per_destination":"10",
         "aggregatable_report_min_delay":"10",
@@ -761,19 +762,21 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxInfoGain) {
   {
     AttributionInteropConfig config;
     base::Value::Dict dict;
-    dict.Set("max_navigation_info_gain", "-1.5");
-    EXPECT_THAT(MergeAttributionInteropConfig(std::move(dict), config),
-                ErrorIs(HasSubstr(
-                    "[\"max_navigation_info_gain\"]: must be \"inf\" or a "
-                    "non-negative double formated as a base-10 string")));
+    dict.Set("max_event_level_channel_capacity_navigation", "-1.5");
+    EXPECT_THAT(
+        MergeAttributionInteropConfig(std::move(dict), config),
+        ErrorIs(HasSubstr("[\"max_event_level_channel_capacity_navigation\"]: "
+                          "must be \"inf\" or a "
+                          "non-negative double formated as a base-10 string")));
   }
   {
     AttributionInteropConfig config;
     base::Value::Dict dict;
-    dict.Set("max_event_info_gain", "-1.5");
+    dict.Set("max_event_level_channel_capacity_event", "-1.5");
     EXPECT_THAT(
         MergeAttributionInteropConfig(std::move(dict), config),
-        ErrorIs(HasSubstr("[\"max_event_info_gain\"]: must be \"inf\" or a "
+        ErrorIs(HasSubstr("[\"max_event_level_channel_capacity_event\"]: must "
+                          "be \"inf\" or a "
                           "non-negative double formated as a base-10 string")));
   }
 }

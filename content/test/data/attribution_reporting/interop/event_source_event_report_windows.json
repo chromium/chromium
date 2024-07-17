@@ -1,7 +1,7 @@
 {
   "description": "Set report windows for event type event-level reporting",
   "api_config": {
-    "max_event_info_gain": "6"
+    "max_event_level_channel_capacity_event": "6"
   },
   "input": {
     "registrations": [

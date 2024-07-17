@@ -70,11 +70,11 @@
 
   // Positive double that controls the max channel capacity in bits for
   // navigation sources.
-  "max_navigation_info_gain": "11.46173",
+  "max_event_level_channel_capacity_navigation": "11.46173",
 
   // Positive double that controls the max channel capacity in bits for event
   // sources.
-  "max_event_info_gain": "6.5",
+  "max_event_level_channel_capacity_event": "6.5",
 
   // Positive integer that controls the max trigger state cardinality per
   // source. Defaulted to `UINT32_MAX`.
