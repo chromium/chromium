@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_launch_state.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
@@ -67,7 +66,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -332,10 +330,9 @@ KioskLaunchController::KioskLaunchController(
 
 KioskLaunchController::~KioskLaunchController() = default;
 
-void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
-                                  bool auto_launch) {
-  SYSLOG(INFO) << "Starting kiosk mode for app " << kiosk_app_id;
-  kiosk_app_id_ = kiosk_app_id;
+void KioskLaunchController::Start(KioskApp kiosk_app, bool auto_launch) {
+  SYSLOG(INFO) << "Starting kiosk mode for app " << kiosk_app.id();
+  kiosk_app_ = std::move(kiosk_app);
   auto_launch_ = auto_launch;
   launcher_start_time_ = base::Time::Now();
 
@@ -350,10 +347,10 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     CHECK_IS_TEST();
   }
 
-  if (auto_launch && kiosk_app_id.type == KioskAppType::kChromeApp) {
+  if (auto_launch && kiosk_app_id().type == KioskAppType::kChromeApp) {
     CHECK(KioskChromeAppManager::IsInitialized());
     KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-        *kiosk_app_id.app_id);
+        *kiosk_app_id().app_id);
   }
 
   network_ui_controller_->Start();
@@ -364,11 +361,11 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
                            base::BindOnce(&KioskLaunchController::OnTimerFire,
                                           weak_ptr_factory_.GetWeakPtr()));
 
-  CHECK(kiosk_app_id.account_id.is_valid());
+  CHECK(kiosk_app_id().account_id.is_valid());
 
   profile_loader_handle_ =
       std::move(profile_loader_)
-          .Run(kiosk_app_id.account_id, kiosk_app_id.type,
+          .Run(kiosk_app_id().account_id, kiosk_app_id().type,
                /*on_done=*/
                base::BindOnce(
                    [](KioskLaunchController* self,
@@ -457,7 +454,7 @@ void KioskLaunchController::StartAppLaunch(Profile& profile) {
 void KioskLaunchController::InitializeKeyboard() {
   // Reset virtual keyboard to use IME engines in app profile early.
   ChromeKeyboardControllerClient::Get()->RebuildKeyboardIfEnabled();
-  if (kiosk_app_id_.type == KioskAppType::kWebApp) {
+  if (kiosk_app_id().type == KioskAppType::kWebApp) {
     // Make keyboard config sync with the `VirtualKeyboardFeatures`
     // policy.
     ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
@@ -484,7 +481,7 @@ void KioskLaunchController::InitializeLauncher() {
   DCHECK(!app_launcher_);
 
   app_state_ = kInitLauncher;
-  app_launcher_ = app_launcher_factory_.Run(profile_, kiosk_app_id_,
+  app_launcher_ = app_launcher_factory_.Run(profile_, kiosk_app_id(),
                                             network_ui_controller_.get());
   app_launcher_observation_.Observe(app_launcher_.get());
   app_launcher_->Initialize();
@@ -508,17 +505,9 @@ void KioskLaunchController::OnCancelAppLaunch() {
 
 AppLaunchSplashScreenView::Data
 KioskLaunchController::GetSplashScreenAppData() {
-  std::optional<KioskApp> app =
-      KioskController::Get().GetAppById(kiosk_app_id_);
-  // TODO(b/306117645) upgrade to CHECK.
-  DUMP_WILL_BE_CHECK(app.has_value());
-
-  if (!app.has_value()) {
-    return AppLaunchSplashScreenView::Data(
-        /*name=*/std::string(), /*icon=*/gfx::ImageSkia(), /*url=*/GURL());
-  }
-  return AppLaunchSplashScreenView::Data(app->name(), app->icon(),
-                                         /*url=*/app->url().value_or(GURL()));
+  return AppLaunchSplashScreenView::Data(
+      kiosk_app().name(), kiosk_app().icon(),
+      /*url=*/kiosk_app().url().value_or(GURL()));
 }
 
 void KioskLaunchController::CleanUp() {
@@ -541,7 +530,7 @@ void KioskLaunchController::CleanUp() {
   } else {
     CHECK_IS_TEST();
   }
-  RecordKioskLaunchDuration(kiosk_app_id_.type,
+  RecordKioskLaunchDuration(kiosk_app_id().type,
                             base::Time::Now() - launcher_start_time_);
 }
 
@@ -694,12 +683,14 @@ void KioskLaunchController::OnAppWindowCreated(
     const std::optional<std::string>& app_name) {
   SYSLOG(INFO) << "App window created, closing splash screen.";
 
+  app_window_name_ = app_name;
+
   // Not receiving the `OnAppLaunched` event before we come here leads to bugs
   // like b/335158496.
   DUMP_WILL_BE_CHECK_EQ(app_state_, AppState::kLaunched);
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
-  std::move(app_launched_callback_).Run(kiosk_app_id_, profile_, app_name);
+  std::move(app_launched_callback_).Run(kiosk_app_id(), profile_, app_name);
 
   // If timer is running, do not remove splash screen for a few
   // more seconds to give the user ability to exit kiosk session.
@@ -788,6 +779,15 @@ void KioskLaunchController::FinishLaunchWithError(
     KioskAppLaunchError::Error error) {
   CloseSplashScreen();
   std::move(done_callback_).Run(error);
+}
+
+const KioskApp& KioskLaunchController::kiosk_app() const {
+  CHECK(kiosk_app_.has_value());
+  return kiosk_app_.value();
+}
+
+const KioskAppId& KioskLaunchController::kiosk_app_id() const {
+  return kiosk_app().id();
 }
 
 NetworkUiController* KioskLaunchController::GetNetworkUiControllerForTesting() {

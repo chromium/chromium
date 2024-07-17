@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -20,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -70,6 +72,22 @@ std::optional<KioskApp> ChromeAppById(const KioskChromeAppManager& manager,
   return KioskApp(
       KioskAppId::ForChromeApp(chrome_app_id, manager_app.account_id),
       manager_app.name, manager_app.icon);
+}
+
+KioskApp EmptyKioskApp(const KioskAppId& app_id) {
+  switch (app_id.type) {
+    case KioskAppType::kChromeApp:
+      return KioskApp{app_id,
+                      /*name=*/"",
+                      /*icon=*/gfx::ImageSkia(),
+                      /*url=*/std::nullopt};
+    case KioskAppType::kWebApp:
+      return KioskApp{app_id,
+                      /*name=*/"",
+                      /*icon=*/gfx::ImageSkia(),
+                      /*url=*/GURL()};
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -145,13 +163,19 @@ void KioskControllerImpl::InitializeKioskSystemSession(
   }
 }
 
-void KioskControllerImpl::StartSession(const KioskAppId& app,
+void KioskControllerImpl::StartSession(const KioskAppId& app_id,
                                        bool is_auto_launch,
                                        LoginDisplayHost* host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK_EQ(launch_controller_, nullptr);
   CHECK(!system_session_.has_value());
+
+  std::optional<KioskApp> app_maybe = GetAppById(app_id);
+  // TODO(b/306117645) change to CHECK and drop `value_or`.
+  DUMP_WILL_BE_CHECK(app_maybe.has_value());
+  KioskApp app = std::move(app_maybe).value_or(EmptyKioskApp(app_id));
+
   launch_controller_ = std::make_unique<KioskLaunchController>(
       host, host->GetOobeUI(),
       /*app_launched_callback=*/
@@ -160,7 +184,7 @@ void KioskControllerImpl::StartSession(const KioskAppId& app,
       /*done_callback=*/
       base::BindOnce(&KioskControllerImpl::OnLaunchComplete,
                      base::Unretained(this)));
-  launch_controller_->Start(app, is_auto_launch);
+  launch_controller_->Start(std::move(app), is_auto_launch);
 }
 
 void KioskControllerImpl::StartSessionAfterCrash(const KioskAppId& app,
