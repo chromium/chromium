@@ -17375,6 +17375,33 @@
             ]
         }
     ],
+    "PrivacySandboxActivityTypeStorage": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSkipPreFirstTab",
+                    "params": {
+                        "skip-pre-first-tab": "true"
+                    },
+                    "enable_features": [
+                        "PrivacySandboxActivityTypeStorage"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutSkipPreFirstTab",
+                    "params": {
+                        "skip-pre-first-tab": "false"
+                    },
+                    "enable_features": [
+                        "PrivacySandboxActivityTypeStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxAdsAPIs": [
         {
             "platforms": [
