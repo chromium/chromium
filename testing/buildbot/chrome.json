@@ -2369,6 +2369,9 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.reven.chromeos_integration_tests.filter"
+        ],
         "autotest_name": "chromium",
         "cros_board": "reven-vmtest",
         "dut_pool": "vmlab",

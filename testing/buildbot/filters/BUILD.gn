@@ -122,6 +122,7 @@ source_set("chromeos_filters") {
     "//testing/buildbot/filters/chromeos.media_unittests.filter",
     "//testing/buildbot/filters/chromeos.betty.media_unittests.filter",
     "//testing/buildbot/filters/chromeos.betty.net_unittests.filter",
+    "//testing/buildbot/filters/chromeos.reven.chromeos_integration_tests.filter",
     "//testing/buildbot/filters/chromeos.services_unittests.filter",
     "//testing/buildbot/filters/chromeos.unit_tests.filter",
     "//testing/buildbot/filters/chromeos.volteer.gl_tests_passthrough.filter",

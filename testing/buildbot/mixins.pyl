@@ -382,6 +382,11 @@
   'ci_only': {
     'ci_only': True,
   },
+  'crosier-no-arc': {
+    'args': [
+      '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.reven.chromeos_integration_tests.filter',
+    ],
+  },
   'dawn_end2end_gpu_test': {
     'args': [
       '--use-gpu-in-tests',

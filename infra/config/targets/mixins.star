@@ -319,6 +319,16 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "crosier-no-arc",
+    args = [
+        # All is_chrome_branded Chrome has components/arc, but reven board
+        # don't have ChromeOS daemons and resources necessary for ARC.
+        # Disable ARC crosier tests on reven.
+        "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.reven.chromeos_integration_tests.filter",
+    ],
+)
+
+targets.mixin(
     name = "shards-10",
     shards = 10,
 )

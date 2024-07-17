@@ -7038,6 +7038,32 @@
       },
     },
 
+    'chromeos_vmlab_tests_no_gtests_no_arc': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_chrome_criticalstaging_tast_tests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_chrome_disabled_tast_tests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_integration_tests_suite': {
+        'mixins': [
+          'crosier-no-arc',
+        ],
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+    },
+
     'chromeos_volteer_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [

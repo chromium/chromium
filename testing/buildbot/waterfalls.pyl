@@ -124,7 +124,7 @@
           'chromiumos_preflight',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_vmlab_tests_no_gtests',
+          'skylab_tests': 'chromeos_vmlab_tests_no_gtests_no_arc',
         },
         'os_type': 'chromeos',
         'cros_board': 'reven-vmtest',

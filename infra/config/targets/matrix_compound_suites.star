@@ -286,6 +286,36 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "chromeos_vmlab_tests_no_gtests_no_arc",
+    basic_suites = {
+        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_RELEASE_LKGM",
+            ],
+        ),
+        "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_RELEASE_LKGM",
+            ],
+        ),
+        "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_RELEASE_LKGM",
+            ],
+        ),
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
+            # TODO(b/353643755): Remove once ARC tests not compiled in.
+            mixins = [
+                "crosier-no-arc",
+            ],
+            variants = [
+                "CROS_RELEASE_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "chromeos_brya_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
