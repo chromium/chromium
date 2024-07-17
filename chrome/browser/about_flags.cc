@@ -587,7 +587,7 @@ const FeatureEntry::FeatureVariation kCCTPageInsightsHubPeekVariations[] = {
      std::size(kCCTPageInsightsHubBothParams), nullptr}};
 
 const FeatureEntry::FeatureParam kCCTBottomBarButtonBalancedWithHomeParam[] = {
-    {"google_bottom_bar_button_list", "0,3,10,2"}};
+    {"google_bottom_bar_button_list", "0,10,3,2"}};
 const FeatureEntry::FeatureParam kCCTBottomBarButtonsBalancedWithCustomParam[] =
     {{"google_bottom_bar_button_list", "0,3,8,2"}};
 const FeatureEntry::FeatureParam kCCTBottomBarButtonsBalancedWithSearchParam[] =
