@@ -32,6 +32,7 @@ source_set("app_shim") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/common",
     "//chrome/common:app_mode_app_support",

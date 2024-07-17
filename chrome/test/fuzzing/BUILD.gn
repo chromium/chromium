@@ -83,6 +83,7 @@ if (!is_android) {
       "//chrome:packed_resources",
       "//chrome/app:command_ids",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:ui_features",
     ]
 
     # Used for UI controls

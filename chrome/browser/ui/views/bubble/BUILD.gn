@@ -16,6 +16,7 @@ source_set("bubble") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/ui:ui_features",
     "//content/public/browser",
     "//skia",
     "//ui/base",

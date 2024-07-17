@@ -691,6 +691,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sharing/proto",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

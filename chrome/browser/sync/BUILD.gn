@@ -78,6 +78,7 @@ source_set("sync") {
     "//chrome/browser/favicon",
     "//chrome/browser/promos:utils",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ui:ui_features",
     "//chrome/common",
     "//chrome/common:buildflags",
     "//chrome/common:channel_info",

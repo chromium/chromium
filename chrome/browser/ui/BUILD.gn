@@ -257,8 +257,6 @@ static_library("ui") {
     "translate/translate_bubble_model_impl.cc",
     "translate/translate_bubble_model_impl.h",
     "translate/translate_language_list_model.h",
-    "ui_features.cc",
-    "ui_features.h",
     "uninstall_browser_prompt.h",
     "url_identity.cc",
     "url_identity.h",
@@ -448,6 +446,7 @@ static_library("ui") {
 
   deps = [
     ":browser_element_identifiers",
+    ":ui_features",
     "//base",
     "//base:i18n",
     "//base/allocator:buildflags",
@@ -7390,6 +7389,24 @@ static_library("ui") {
       "//components/compose/core/browser:mojo_bindings",
     ]
   }
+}
+
+source_set("ui_features") {
+  sources = [
+    "ui_features.cc",
+    "ui_features.h",
+  ]
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/common:buildflags",
+    "//extensions/buildflags",
+  ]
+  deps = [
+    "//components/flags_ui",
+    "//ui/base:features",
+  ]
 }
 
 # In GYP this is part of test_support_common.

@@ -2146,6 +2146,7 @@ static_library("browser") {
     "//chrome/browser/touch_to_fill/password_manager",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
