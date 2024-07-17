@@ -366,6 +366,7 @@ public class AnswerSuggestionProcessorUnitTest {
                                         .omnibox_simple_card_leadin));
         Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
+        Assert.assertNull(suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 
         suggHelper = createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, false);
         Assert.assertFalse(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
@@ -378,6 +379,8 @@ public class AnswerSuggestionProcessorUnitTest {
         Assert.assertFalse(
                 suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
+        Assert.assertEquals(
+                1, suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).size());
     }
 
     @Test

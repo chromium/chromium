@@ -118,7 +118,11 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_MAX_LINES, details[0].getMaxLines());
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_MAX_LINES, details[1].getMaxLines());
 
-        setTabSwitchOrRefineAction(model, suggestion, position);
+        if (shouldShowCardUi) {
+            setActionButtons(model, null);
+        } else {
+            setTabSwitchOrRefineAction(model, suggestion, position);
+        }
         if (suggestion.hasAnswer() && suggestion.getAnswer().getSecondLine().hasImage()) {
             fetchImage(model, new GURL(suggestion.getAnswer().getSecondLine().getImage()));
         } else if (suggestion.getAnswerTemplate() != null) {
