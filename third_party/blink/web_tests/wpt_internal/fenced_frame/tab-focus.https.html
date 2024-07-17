@@ -50,17 +50,8 @@
     // TODO(crbug.com/1289792) This is needed due to a bug in the experimental
     // flag BlockingFocusWithoutUserActivation for cross-origin iframes,
     // or any other frame where user activations are isolated.
-    var actions = new test_driver.Actions();
     var fencedframe = document.body.getElementsByTagName('fencedframe')[0]
-    await actions.pointerMove(0, 0, {origin: fencedframe})
-                 .pointerDown()
-                 .pointerUp()
-                 .send();
-
-    await actions.pointerMove(0, 0, {origin: document.body})
-                 .pointerDown()
-                 .pointerUp()
-                 .send();
+    await multiClick(10, 10, fencedframe);
 
     document.getElementById('input').focus();
     testRunner.setBrowserHandlesFocus(true);
