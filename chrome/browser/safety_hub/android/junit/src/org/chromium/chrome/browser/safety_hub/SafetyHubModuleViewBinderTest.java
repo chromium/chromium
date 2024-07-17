@@ -133,10 +133,12 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_passwords_safe);
+        String expectedSummary = mActivity.getString(R.string.safety_hub_checked_recently);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPasswordCheckPreference.getSummary().toString());
         assertEquals(SAFE_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mPasswordCheckPreference.getPrimaryButtonText());
         assertEquals(
@@ -172,10 +174,13 @@ public class SafetyHubModuleViewBinderTest {
                                 R.plurals.safety_check_passwords_compromised_exist,
                                 compromisedPasswordsCount,
                                 compromisedPasswordsCount);
+        String expectedSummary =
+                mActivity.getString(R.string.safety_hub_compromised_passwords_summary);
         String expectedPrimaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPasswordCheckPreference.getSummary().toString());
         assertEquals(
                 WARNING_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPasswordCheckPreference.getPrimaryButtonText());
@@ -201,6 +206,42 @@ public class SafetyHubModuleViewBinderTest {
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_no_passwords_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_no_passwords_summary);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+        assertFalse(mPasswordCheckPreference.isExpanded());
+
+        // Verify the managed state.
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertNull(mPasswordCheckPreference.getSecondaryButtonText());
+        assertFalse(mPasswordCheckPreference.isExpanded());
+    }
+
+    @Test
+    public void testPasswordCheckModule_CompromisedCountUnavailable() {
+        int totalPasswordsCount = 10;
+        int compromisedPasswordsCount = -1;
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+
+        String expectedTitle =
+                mActivity.getString(R.string.safety_hub_password_check_unavailable_title);
+        String expectedSummary = mActivity.getString(R.string.safety_hub_unavailable_summary);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 
@@ -290,11 +331,12 @@ public class SafetyHubModuleViewBinderTest {
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, null);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_update_unavailable_title);
+        String expectedSummary = mActivity.getString(R.string.safety_hub_unavailable_summary);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_go_to_google_play_button);
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
-        assertNull(mUpdateCheckPreference.getSummary());
+        assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
         assertEquals(INFO_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mUpdateCheckPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mUpdateCheckPreference.getSecondaryButtonText());

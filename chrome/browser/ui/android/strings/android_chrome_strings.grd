@@ -1864,6 +1864,15 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PERMISSIONS_WARNING_SUMMARY" translateable="false">
         To protect your data, permissions were removed from abusive and unused sites
       </message>
+      <message name="IDS_SAFETY_HUB_COMPROMISED_PASSWORDS_SUMMARY" translateable="false">
+        You should change these now
+      </message>
+      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_UNAVAILABLE_TITLE" translateable="false">
+        Can't check passwords
+      </message>
+      <message name="IDS_SAFETY_HUB_UNAVAILABLE_SUMMARY" translateable="false">
+        Try again later
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

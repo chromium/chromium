@@ -186,7 +186,7 @@ public class SafetyHubFetchService implements SyncService.SyncStateChangedListen
         } else {
             // Clean up account specific prefs.
             PrefService prefService = UserPrefs.get(mProfile);
-            prefService.setInteger(Pref.BREACHED_CREDENTIALS_COUNT, 0);
+            prefService.clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
 
             cancelFetchJob();
         }

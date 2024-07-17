@@ -157,7 +157,7 @@ public class SafetyHubFetchServiceTest {
         new SafetyHubFetchService(mProfile).onForegroundSessionStart();
 
         // Verify prefs are cleaned up when task is cancelled.
-        verify(mPrefService, times(1)).setInteger(Pref.BREACHED_CREDENTIALS_COUNT, 0);
+        verify(mPrefService, times(1)).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
         verify(mTaskScheduler, times(1)).cancel(any(), eq(TaskIds.SAFETY_HUB_JOB_ID));
         verify(mTaskScheduler, never()).schedule(any(), mTaskInfoCaptor.capture());
     }
@@ -170,7 +170,7 @@ public class SafetyHubFetchServiceTest {
         new SafetyHubFetchService(mProfile).syncStateChanged();
 
         // Verify prefs are cleaned up when task is cancelled.
-        verify(mPrefService, times(1)).setInteger(Pref.BREACHED_CREDENTIALS_COUNT, 0);
+        verify(mPrefService, times(1)).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
         verify(mTaskScheduler, times(1)).cancel(any(), eq(TaskIds.SAFETY_HUB_JOB_ID));
         verify(mTaskScheduler, never()).schedule(any(), any());
     }
@@ -196,7 +196,7 @@ public class SafetyHubFetchServiceTest {
         new SafetyHubFetchService(mProfile).onForegroundSessionStart();
 
         // Verify prefs are cleaned up when task is cancelled.
-        verify(mPrefService, times(1)).setInteger(Pref.BREACHED_CREDENTIALS_COUNT, 0);
+        verify(mPrefService, times(1)).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
         verify(mTaskScheduler, times(1)).cancel(any(), eq(TaskIds.SAFETY_HUB_JOB_ID));
         verify(mTaskScheduler, never()).schedule(any(), mTaskInfoCaptor.capture());
     }

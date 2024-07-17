@@ -10,7 +10,7 @@
 namespace safety_hub_prefs {
 
 void RegisterSafetyHubAndroidProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kBreachedCredentialsCount, 0);
+  registry->RegisterIntegerPref(prefs::kBreachedCredentialsCount, -1);
 }
 
 }  // namespace safety_hub_prefs

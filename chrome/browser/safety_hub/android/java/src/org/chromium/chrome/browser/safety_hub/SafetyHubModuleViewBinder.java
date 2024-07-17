@@ -18,6 +18,12 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 public class SafetyHubModuleViewBinder {
+    /**
+     * This should match the default value for {@link
+     * org.chromium.chrome.browser.preferences.Pref.BREACHED_CREDENTIALS_COUNT}.
+     */
+    private static final int INVALID_BREACHED_CREDENTIALS_COUNT = -1;
+
     public static void bindCommonProperties(
             PropertyModel model,
             SafetyHubExpandablePreference preference,
@@ -209,13 +215,25 @@ public class SafetyHubModuleViewBinder {
         boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
         @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
-        String summary = null;
+        String summary;
         String primaryButtonText = null;
         String secondaryButtonText = null;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
 
-        if (totalPasswordsCount == 0) {
+        if (compromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
+            title =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_password_check_unavailable_title);
+            summary = preference.getContext().getString(R.string.safety_hub_unavailable_summary);
+            secondaryButtonText =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_passwords_navigation_button);
+            secondaryButtonListener =
+                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+        } else if (totalPasswordsCount == 0) {
             title = preference.getContext().getString(R.string.safety_hub_no_passwords_title);
             summary = preference.getContext().getString(R.string.safety_hub_no_passwords_summary);
             secondaryButtonText =
@@ -233,6 +251,10 @@ public class SafetyHubModuleViewBinder {
                                     R.plurals.safety_check_passwords_compromised_exist,
                                     compromisedPasswordsCount,
                                     compromisedPasswordsCount);
+            summary =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_compromised_passwords_summary);
 
             primaryButtonText =
                     preference
@@ -241,6 +263,7 @@ public class SafetyHubModuleViewBinder {
             primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
         } else {
             title = preference.getContext().getString(R.string.safety_check_passwords_safe);
+            summary = preference.getContext().getString(R.string.safety_hub_checked_recently);
             secondaryButtonText =
                     preference
                             .getContext()
@@ -288,6 +311,7 @@ public class SafetyHubModuleViewBinder {
 
         if (updateStatus == null) {
             title = preference.getContext().getString(R.string.safety_hub_update_unavailable_title);
+            summary = preference.getContext().getString(R.string.safety_hub_unavailable_summary);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_go_to_google_play_button);
             secondaryButtonListener =
@@ -558,6 +582,9 @@ public class SafetyHubModuleViewBinder {
                         model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
                 if (totalPasswordsCount == 0) {
                     return SafetyHubModuleProperties.ModuleState.INFO;
+                }
+                if (compromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
+                    return SafetyHubModuleProperties.ModuleState.UNAVAILABLE;
                 }
                 return compromisedPasswordsCount > 0
                         ? SafetyHubModuleProperties.ModuleState.WARNING
