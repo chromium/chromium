@@ -6,12 +6,33 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+static_library("reorder") {
+  sources = [
+    "app_list_reorder_core.cc",
+    "app_list_reorder_core.h",
+    "app_list_reorder_delegate.h",
+    "app_list_reorder_util.cc",
+    "app_list_reorder_util.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//base",
+    "//base:i18n",
+    "//components/sync/model",
+    "//third_party/icu",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [ "app_list_reorder_core_unittest.cc" ]
 
   deps = [
+    ":reorder",
     "//ash/public/cpp",
     "//chrome/browser/ui",
     "//components/crx_file",
