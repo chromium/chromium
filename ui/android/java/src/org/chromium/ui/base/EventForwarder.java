@@ -6,6 +6,7 @@ package org.chromium.ui.base;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.net.Uri;
 import android.os.Build;
 import android.view.DragEvent;
 import android.view.InputDevice;
@@ -28,6 +29,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.MotionEventUtils;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Class used to forward view, input events down to native. */
 @JNINamespace("ui")
@@ -35,6 +38,9 @@ public class EventForwarder {
     private static final String TAG = "EventForwarder";
     private final boolean mIsDragDropEnabled;
     private final boolean mConvertTrackpadEventsToMouse;
+
+    // The mime type for a URL.
+    private static final String URL_MIME_TYPE = "text/x-moz-url";
 
     private long mNativeEventForwarder;
 
@@ -541,14 +547,26 @@ public class EventForwarder {
         if (mNativeEventForwarder == 0) {
             return false;
         }
-
-        // text/* will match text/uri-list, text/html, text/plain.
-        String[] mimeTypes =
-                clipDescription == null ? new String[0] : clipDescription.filterMimeTypes("text/*");
-        // mimeTypes is null iff there is no matching text MIME type.
-        // Try if there is any matching image MIME type.
-        if (mimeTypes == null) {
-            mimeTypes = clipDescription.filterMimeTypes("image/*");
+        boolean dragDropFilesEnabled =
+                UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_FILES);
+        String[] mimeTypes = null;
+        if (dragDropFilesEnabled) {
+            mimeTypes =
+                    new String[clipDescription != null ? clipDescription.getMimeTypeCount() : 0];
+            for (int i = 0; i < mimeTypes.length; i++) {
+                mimeTypes[i] = clipDescription.getMimeType(i);
+            }
+        } else {
+            // text/* will match text/uri-list, text/html, text/plain.
+            mimeTypes =
+                    clipDescription == null
+                            ? new String[0]
+                            : clipDescription.filterMimeTypes("text/*");
+            // mimeTypes is null iff there is no matching text MIME type.
+            // Try if there is any matching image MIME type.
+            if (mimeTypes == null) {
+                mimeTypes = clipDescription.filterMimeTypes("image/*");
+            }
         }
 
         if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
@@ -556,14 +574,43 @@ public class EventForwarder {
         }
 
         String content = "";
+        List<String> filenames = new ArrayList<String>();
+        String text = null;
+        String html = null;
+        String url = null;
         if (event.getAction() == DragEvent.ACTION_DROP) {
             try {
                 StringBuilder contentBuilder = new StringBuilder("");
                 ClipData clipData = event.getClipData();
                 final int itemCount = clipData.getItemCount();
                 for (int i = 0; i < itemCount; i++) {
-                    ClipData.Item item = clipData.getItemAt(i);
-                    contentBuilder.append(item.coerceToStyledText(containerView.getContext()));
+                    if (!dragDropFilesEnabled) {
+                        ClipData.Item item = clipData.getItemAt(i);
+                        contentBuilder.append(item.coerceToStyledText(containerView.getContext()));
+                        continue;
+                    }
+
+                    // If there are any Uris, set them as files.
+                    Uri uri = clipData.getItemAt(i).getUri();
+                    if (uri != null) {
+                        filenames.add(uri.toString());
+                    }
+                }
+
+                // Only read text, html, url if there are no Uris (files).
+                if (dragDropFilesEnabled && filenames.isEmpty() && itemCount > 0) {
+                    ClipData.Item item = clipData.getItemAt(0);
+                    CharSequence temp = item.getText();
+                    if (temp != null) {
+                        text = temp.toString();
+                        if (clipDescription.hasMimeType(URL_MIME_TYPE)) {
+                            url = text;
+                        }
+                    }
+                    temp = item.getHtmlText();
+                    if (temp != null) {
+                        html = temp.toString();
+                    }
                 }
                 content = contentBuilder.toString();
             } catch (UndeclaredThrowableException e) {
@@ -571,7 +618,7 @@ public class EventForwarder {
                 // While ClipData.Item does capture most common failures, there could be exceptions
                 // that's wrapped by Chrome classes (e.g. ServiceTracingProxyProvider) which changed
                 // the exception signiture. See crbug.com/1406777.
-                Log.e(TAG, "Parsing clip data content failed.", e.getMessage());
+                Log.e(TAG, "Parsing clip data content failed.", e);
                 content = "";
             }
         }
@@ -595,7 +642,11 @@ public class EventForwarder {
                         screenX,
                         screenY,
                         mimeTypes,
-                        content);
+                        content,
+                        filenames.toArray(new String[0]),
+                        text,
+                        html,
+                        url);
         return true;
     }
 
@@ -787,7 +838,11 @@ public class EventForwarder {
                 float screenX,
                 float screenY,
                 String[] mimeTypes,
-                String content);
+                String content,
+                String[] filenames,
+                String text,
+                String html,
+                String url);
 
         boolean onGestureEvent(
                 long nativeEventForwarder,

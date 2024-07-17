@@ -9,13 +9,20 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.net.Uri;
+import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.MotionEvent.PointerCoords;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.MotionEventUtils;
 
@@ -224,6 +232,49 @@ public class EventForwarderTest {
                         anyInt());
     }
 
+    @EnableFeatures({UiAndroidFeatureList.DRAG_DROP_FILES})
+    @Test
+    public void testDragDropEvent() {
+        // Text.
+        validateDragDropEvent(
+                new String[] {"text/plain"},
+                new ClipData.Item[] {new ClipData.Item("text content")},
+                new String[0], // expectedFilenames
+                "text content", // expectedText
+                null, // expectedHtml
+                null); // expectedUrl
+
+        // Html.
+        validateDragDropEvent(
+                new String[] {"text/html"},
+                new ClipData.Item[] {new ClipData.Item("text content", "html content")},
+                new String[0], // expectedFilenames
+                "text content", // expectedText
+                "html content", // expectedHtml
+                null); // expectedUrl
+
+        // Url.
+        validateDragDropEvent(
+                new String[] {"text/x-moz-url"},
+                new ClipData.Item[] {new ClipData.Item("url content")},
+                new String[0], // expectedFilenames
+                "url content", // expectedText
+                null, // expectedHtml
+                "url content"); // expectedUrl
+
+        // Files.
+        validateDragDropEvent(
+                new String[] {"image/jpeg", "text/plain"},
+                new ClipData.Item[] {
+                    new ClipData.Item(Uri.parse("image.jpg")),
+                    new ClipData.Item(Uri.parse("hello.txt"))
+                },
+                new String[] {"image.jpg", "hello.txt"}, // expectedFilenames
+                null, // expectedText
+                null, // expectedHtml
+                null); // expectedUrl
+    }
+
     private void verifyNativeMouseEventSent(
             long nativeEventForwarder,
             MotionEvent event,
@@ -298,5 +349,42 @@ public class EventForwarderTest {
 
     private static int getTrackpadSource() {
         return InputDevice.SOURCE_MOUSE;
+    }
+
+    private void validateDragDropEvent(
+            String[] mimeTypes,
+            ClipData.Item[] items,
+            String[] expectedFilenames,
+            String expectedText,
+            String expectedHtml,
+            String expectedUrl) {
+        ClipData clipData = new ClipData("label", mimeTypes, items[0]);
+        for (int i = 1; i < items.length; i++) {
+            clipData.addItem(items[i]);
+        }
+        ClipDescription clipDescription = new ClipDescription("label", mimeTypes);
+        EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false);
+        DragEvent event = mock(DragEvent.class);
+        doReturn(DragEvent.ACTION_DROP).when(event).getAction();
+        doReturn(14f).when(event).getX();
+        doReturn(21f).when(event).getY();
+        doReturn(clipData).when(event).getClipData();
+        doReturn(clipDescription).when(event).getClipDescription();
+        eventForwarder.onDragEvent(event, mock(View.class));
+        verify(mNativeMock, times(1))
+                .onDragEvent(
+                        EventForwarderTest.NATIVE_EVENT_FORWARDER_ID,
+                        eventForwarder,
+                        DragEvent.ACTION_DROP,
+                        14, // x
+                        21, // y
+                        14, // screenX
+                        21, // screenY
+                        mimeTypes,
+                        "", // content
+                        expectedFilenames,
+                        expectedText,
+                        expectedHtml,
+                        expectedUrl);
     }
 }

@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "cc/layers/layer.h"
 #include "cc/slim/layer.h"
@@ -33,10 +34,13 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/drop_data.h"
+#include "net/base/mime_util.h"
 #include "ui/android/overscroll_refresh_handler.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/android/drag_event_android.h"
@@ -50,6 +54,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/jar_jni/DragEvent_jni.h"
 
+using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ScopedJavaLocalRef;
@@ -437,9 +442,31 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
   switch (event.action()) {
     case JNI_DragEvent::ACTION_DRAG_ENTERED: {
       std::vector<DropData::Metadata> metadata;
+      if (!base::FeatureList::IsEnabled(features::kDragDropFiles)) {
+        for (const std::u16string& mime_type : event.mime_types()) {
+          metadata.push_back(DropData::Metadata::CreateForMimeType(
+              DropData::Kind::STRING, mime_type));
+        }
+        OnDragEntered(metadata, event.location(), event.screen_location());
+        break;
+      }
+
       for (const std::u16string& mime_type : event.mime_types()) {
-        metadata.push_back(DropData::Metadata::CreateForMimeType(
-            DropData::Kind::STRING, mime_type));
+        if (mime_type == base::ASCIIToUTF16(ui::kMimeTypeText) ||
+            mime_type == base::ASCIIToUTF16(ui::kMimeTypeHTML) ||
+            mime_type == base::ASCIIToUTF16(ui::kMimeTypeMozillaURL)) {
+          metadata.push_back(DropData::Metadata::CreateForMimeType(
+              DropData::Kind::STRING, mime_type));
+        } else {
+          // Create a file extension from the mime type.
+          std::string ext = base::UTF16ToUTF8(mime_type);
+          if (!net::GetPreferredExtensionForMimeType(ext, &ext)) {
+            // Use mime subtype as a fallback.
+            net::ParseMimeTypeWithoutParameter(ext, nullptr, &ext);
+          }
+          metadata.push_back(DropData::Metadata::CreateForFilePath(
+              base::FilePath("file." + ext)));
+        }
       }
       OnDragEntered(metadata, event.location(), event.screen_location());
       break;
@@ -452,16 +479,38 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
       drop_data.did_originate_from_renderer = false;
       drop_data.document_is_handling_drag = document_is_handling_drag_;
       JNIEnv* env = AttachCurrentThread();
-      std::u16string drop_content =
-          ConvertJavaStringToUTF16(env, event.GetJavaContent());
-      for (const std::u16string& mime_type : event.mime_types()) {
-        if (base::EqualsASCII(mime_type, ui::kMimeTypeURIList)) {
-          drop_data.url = GURL(drop_content);
-        } else if (base::EqualsASCII(mime_type, ui::kMimeTypeText)) {
-          drop_data.text = drop_content;
-        } else {
-          drop_data.html = drop_content;
+      if (!base::FeatureList::IsEnabled(features::kDragDropFiles)) {
+        std::u16string drop_content =
+            ConvertJavaStringToUTF16(env, event.GetJavaContent());
+        for (const std::u16string& mime_type : event.mime_types()) {
+          if (base::EqualsASCII(mime_type, ui::kMimeTypeURIList)) {
+            drop_data.url = GURL(drop_content);
+          } else if (base::EqualsASCII(mime_type, ui::kMimeTypeText)) {
+            drop_data.text = drop_content;
+          } else {
+            drop_data.html = drop_content;
+          }
         }
+
+        OnPerformDrop(&drop_data, event.location(), event.screen_location());
+        break;
+      }
+
+      std::vector<std::string> filenames;
+      AppendJavaStringArrayToStringVector(env, event.GetJavaFilenames(),
+                                          &filenames);
+      for (const auto& filename : filenames) {
+        drop_data.filenames.push_back(
+            ui::FileInfo(base::FilePath(filename), base::FilePath()));
+      }
+      if (!event.GetJavaText().is_null()) {
+        drop_data.text = ConvertJavaStringToUTF16(env, event.GetJavaText());
+      }
+      if (!event.GetJavaHtml().is_null()) {
+        drop_data.html = ConvertJavaStringToUTF16(env, event.GetJavaHtml());
+      }
+      if (!event.GetJavaUrl().is_null()) {
+        drop_data.url = GURL(ConvertJavaStringToUTF16(env, event.GetJavaUrl()));
       }
 
       OnPerformDrop(&drop_data, event.location(), event.screen_location());

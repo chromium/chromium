@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
@@ -85,12 +86,15 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
+import org.chromium.ui.base.UiAndroidFeatureList;
+import org.chromium.ui.base.UiAndroidFeatureMap;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -226,6 +230,10 @@ public class CompositorViewHolder extends FrameLayout
 
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
+    // Permissions are requested on a drop event, and are released when another drag starts
+    // (drag-started event) or when the current page navigates to a new URL or the tab changes.
+    private DragAndDropPermissions mDragAndDropPermissions;
+
     private final EventOffsetHandler mEventOffsetHandler =
             new EventOffsetHandler(
                     new EventOffsetHandler.EventOffsetHandlerDelegate() {
@@ -265,6 +273,11 @@ public class CompositorViewHolder extends FrameLayout
                 @Override
                 public void onContentChanged(Tab tab) {
                     CompositorViewHolder.this.onContentChanged();
+                }
+
+                @Override
+                public void onPageLoadStarted(Tab tab, GURL url) {
+                    CompositorViewHolder.this.releaseDragAndDropPermissions();
                 }
 
                 @Override
@@ -740,6 +753,13 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public boolean dispatchDragEvent(DragEvent e) {
         mEventOffsetHandler.onPreDispatchDragEvent(e.getAction(), 0.f, 0.f);
+        if (UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_FILES)) {
+            if (e.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+                releaseDragAndDropPermissions();
+            } else if (e.getAction() == DragEvent.ACTION_DROP) {
+                mDragAndDropPermissions = mActivity.requestDragAndDropPermissions(e);
+            }
+        }
         boolean ret = super.dispatchDragEvent(e);
         mEventOffsetHandler.onPostDispatchDragEvent(e.getAction());
         return ret;
@@ -1544,6 +1564,8 @@ public class CompositorViewHolder extends FrameLayout
         } else {
             mOnscreenContentProvider.onWebContentsChanged(getWebContents());
         }
+
+        releaseDragAndDropPermissions();
     }
 
     private void updateViewStateListener(ContentView newContentView) {
@@ -1800,5 +1822,13 @@ public class CompositorViewHolder extends FrameLayout
     @VirtualKeyboardMode.EnumType
     public int getVirtualKeyboardModeForTesting() {
         return mVirtualKeyboardMode;
+    }
+
+    /** Release any DragAndDropPermissions currently held. */
+    private void releaseDragAndDropPermissions() {
+        if (mDragAndDropPermissions != null) {
+            mDragAndDropPermissions.release();
+            mDragAndDropPermissions = null;
+        }
     }
 }

@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "ui/android/ui_android_features.h"
+#include "ui/base/ui_base_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/UiAndroidFeatureMap_jni.h"
@@ -16,6 +17,7 @@ namespace {
 
 // Array of features exposed through the Java UiAndroidFeatureMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &features::kDragDropFiles,
     &ui::kConvertTrackpadEventsToMouse,
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kMirrorBackForwardGesturesInRTL,

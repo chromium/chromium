@@ -17,4 +17,6 @@ public class UiAndroidFeatureList {
     public static final MutableFlagWithSafeDefault sRequireLeadingInTextViewWithLeading =
             newMutableFlagWithSafeDefault(
                     UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING, false);
+
+    public static final String DRAG_DROP_FILES = "DragDropFiles";
 }

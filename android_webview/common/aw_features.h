@@ -21,6 +21,7 @@ BASE_DECLARE_FEATURE(kWebViewBrotliSupport);
 BASE_DECLARE_FEATURE(kWebViewCheckPakFileDescriptors);
 BASE_DECLARE_FEATURE(kWebViewClearFunctorInBackground);
 BASE_DECLARE_FEATURE(kWebViewDisplayCutout);
+BASE_DECLARE_FEATURE(kWebViewDragDropFiles);
 BASE_DECLARE_FEATURE(kWebViewEnumerateDevicesCache);
 BASE_DECLARE_FEATURE(kWebViewExitReasonMetric);
 BASE_DECLARE_FEATURE(kWebViewExtraHeadersSameOriginOnly);

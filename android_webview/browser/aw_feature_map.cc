@@ -25,6 +25,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewBackForwardCache,
     &features::kWebViewDisplayCutout,
+    &features::kWebViewDragDropFiles,
     &features::kWebViewExitReasonMetric,
     &features::kWebViewInvokeZoomPickerOnGSU,
     &features::kWebViewMixedContentAutoupgrades,

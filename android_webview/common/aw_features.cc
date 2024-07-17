@@ -38,6 +38,11 @@ BASE_FEATURE(kWebViewCheckPakFileDescriptors,
              "WebViewCheckPakFileDescriptors",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allows JS DataTransfer Files from content URIs in drag-drop.
+BASE_FEATURE(kWebViewDragDropFiles,
+             "WebViewDragDropFiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Cache origins which have camera/mic permissions approved to allow subsequent
 // calls to enumerate devices to return device labels.
 BASE_FEATURE(kWebViewEnumerateDevicesCache,
