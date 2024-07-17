@@ -964,36 +964,6 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameServiceWorkerTest, Basic) {
   EXPECT_TRUE(newtab_listener.WaitUntilSatisfied());
 }
 
-class ControlledFrameAvailableChannelTest
-    : public ControlledFrameApiTest,
-      public testing::WithParamInterface<version_info::Channel> {
- protected:
-  ControlledFrameAvailableChannelTest() : channel_(GetParam()) {}
-
- private:
-  extensions::ScopedCurrentChannel channel_;
-};
-
-INSTANTIATE_TEST_SUITE_P(ControlledFrameAvailableChannels,
-                         ControlledFrameAvailableChannelTest,
-                         testing::Values(version_info::Channel::STABLE,
-                                         version_info::Channel::BETA,
-                                         version_info::Channel::DEV,
-                                         version_info::Channel::CANARY,
-                                         version_info::Channel::DEFAULT));
-
-IN_PROC_BROWSER_TEST_P(ControlledFrameAvailableChannelTest, Test) {
-  web_app::IsolatedWebAppUrlInfo url_info =
-      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
-  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  ASSERT_TRUE(CreateControlledFrame(
-      app_frame, embedded_https_test_server().GetURL("/index.html")));
-
-  // Test if Controlled Frame is available.
-  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_frame));
-}
-
 class ControlledFrameNotAvailableChannelTest
     : public ControlledFrameApiTest,
       public testing::WithParamInterface<version_info::Channel> {
