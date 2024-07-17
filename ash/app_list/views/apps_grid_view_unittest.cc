@@ -6197,6 +6197,32 @@ TEST_F(AppsGridViewTest, PulsingBlocksShowDuringAppListSync) {
   EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
 }
 
+// Verify that pulsing blocks animation does not hang if animations are
+// disabled.
+TEST_P(AppsGridViewClamshellAndTabletTest,
+       PulsingBlocksAnimationDoesNotHangWithDisabledAnimation) {
+  GetTestModel()->PopulateApps(3);
+  UpdateLayout();
+  EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Set the model status as syncing. The Pulsing blocks model should not be
+  // empty.
+  GetTestModel()->SetStatus(AppListModelStatus::kStatusSyncing);
+  UpdateLayout();
+  EXPECT_NE(0u, GetPulsingBlocksModel().view_size());
+
+  PulsingBlockView* pulsing_block_view = GetPulsingBlocksModel().view_at(0);
+
+  EXPECT_FALSE(pulsing_block_view->IsAnimating());
+  EXPECT_TRUE(pulsing_block_view->FireAnimationTimerForTest());
+  EXPECT_FALSE(pulsing_block_view->IsAnimating());
+
+  // Test should not hang.
+}
+
 // Tests that the pulsing blocks animation runs.
 TEST_P(AppsGridViewClamshellAndTabletTest,
        PulsingBlocksAnimationOnFiringAnimationTimer) {
