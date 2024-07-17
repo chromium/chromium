@@ -56,6 +56,10 @@ FormCache::UpdateFormCacheResult::~UpdateFormCacheResult() = default;
 FormCache::FormCache(AutofillAgent* owner) : agent_(CHECK_DEREF(owner)) {}
 FormCache::~FormCache() = default;
 
+void FormCache::Reset() {
+  extracted_forms_.clear();
+}
+
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     const FieldDataManager& field_data_manager) {
   // |extracted_forms_| is re-populated below in ProcessForm().

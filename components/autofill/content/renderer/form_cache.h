@@ -42,6 +42,8 @@ class FormCache {
 
   ~FormCache();
 
+  void Reset();
+
   // Returns the diff of forms since the last call to UpdateFormCache(): the new
   // forms, the still present but changed forms, and the removed forms.
   //

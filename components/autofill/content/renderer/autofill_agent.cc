@@ -484,7 +484,6 @@ AutofillAgent::AutofillAgent(
     blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame),
       config_(config),
-      form_cache_(std::make_unique<FormCache>(this)),
       password_autofill_agent_(std::move(password_autofill_agent)),
       password_generation_agent_(std::move(password_generation_agent)) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
@@ -533,8 +532,7 @@ void AutofillAgent::DidCreateDocumentElement() {
 void AutofillAgent::Reset() {
   // Navigation to a new page or a page refresh.
   last_queried_element_ = {};
-  form_cache_ =
-      unsafe_render_frame() ? std::make_unique<FormCache>(this) : nullptr;
+  form_cache_.Reset();
   is_dom_content_loaded_ = false;
   select_or_selectlist_option_change_batch_timer_.Stop();
   datalist_option_change_batch_timer_.Stop();
@@ -812,7 +810,6 @@ void AutofillAgent::HandleCaretMovedInFormField(WebElement element,
 // triggered by JavaScript, which in turn may be triggered by AutofillAgent.
 void AutofillAgent::OnDestruct() {
   receiver_.reset();
-  form_cache_ = nullptr;
   weak_ptr_factory_.InvalidateWeakPtrs();
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                 this);
@@ -1603,15 +1600,17 @@ void AutofillAgent::ExtractFormsAndNotifyPasswordAutofillAgent(
 
 void AutofillAgent::ExtractFormsUnthrottled(
     base::OnceCallback<void(bool)> callback) {
-  if (!form_cache_) {
+  content::RenderFrame* render_frame = unsafe_render_frame();
+  if (!render_frame) {
+    if (!callback.is_null()) {
+      std::move(callback).Run(/*success=*/false);
+    }
     return;
   }
   FormCache::UpdateFormCacheResult cache =
-      form_cache_->UpdateFormCache(field_data_manager());
-  if (content::RenderFrame* render_frame = unsafe_render_frame()) {
-    form_issues::MaybeEmitFormIssuesToDevtools(*render_frame->GetWebFrame(),
-                                               cache.updated_forms);
-  }
+      form_cache_.UpdateFormCache(field_data_manager());
+  form_issues::MaybeEmitFormIssuesToDevtools(*render_frame->GetWebFrame(),
+                                             cache.updated_forms);
   if (!cache.updated_forms.empty() || !cache.removed_forms.empty()) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->FormsSeen(cache.updated_forms,

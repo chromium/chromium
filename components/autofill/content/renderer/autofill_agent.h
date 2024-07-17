@@ -22,6 +22,7 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
@@ -48,7 +49,6 @@ class WebFormElement;
 
 namespace autofill {
 
-class FormCache;
 class PasswordAutofillAgent;
 class PasswordGenerationAgent;
 
@@ -65,7 +65,6 @@ class PasswordGenerationAgent;
 // To handle this state, care must be taken to check for nullptrs:
 // - `unsafe_autofill_driver()`
 // - `unsafe_render_frame()`
-// - `form_cache_`
 //
 // This RenderFrame owns all forms and fields in the renderer-browser
 // communication:
@@ -470,9 +469,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // the direction to traverse in.
   blink::WebNode NextWebNode(const blink::WebNode& current_node, bool next);
 
-  // Contains the form of the document. Does not survive navigation and is
-  // reset when the AutofillAgent is pending deletion.
-  std::unique_ptr<FormCache> form_cache_;
+  // Contains the forms of the document.
+  FormCache form_cache_{this};
 
   std::unique_ptr<PasswordAutofillAgent> password_autofill_agent_;
   std::unique_ptr<PasswordGenerationAgent> password_generation_agent_;
