@@ -15,17 +15,20 @@ found in the LICENSE file.
     android:gravity="fill"
     android:orientation="horizontal">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:gravity="center_vertical"
         android:importantForAccessibility="no">
         <ImageView
             android:id="@+id/history_sync_illustration"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:scaleType="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/history_sync_illustration"
             android:importantForAccessibility="no" />
         <ImageView
@@ -33,8 +36,12 @@ found in the LICENSE file.
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerInParent="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:importantForAccessibility="no" />
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
