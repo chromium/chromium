@@ -147,6 +147,10 @@ class TrackingProtectionOnboarding : public KeyedService {
     // Whether the current profile is a new profile or not. Affects
     // which onboarding notices are shown.
     virtual bool IsNewProfile() const = 0;
+
+    // Whether the current profile has 3PC blocked via the 3PC settings page.
+    // Affects which onboarding notices are shown.
+    virtual bool AreThirdPartyCookiesBlocked() const = 0;
   };
 
   TrackingProtectionOnboarding(std::unique_ptr<Delegate> delegate,
@@ -220,6 +224,8 @@ class TrackingProtectionOnboarding : public KeyedService {
               IsNewProfileReturnsValueProvidedByDelegate);
   FRIEND_TEST(TrackingProtectionOnboardingTest,
               IsEnterpriseManagedReturnsValueProvidedByDelegate);
+  FRIEND_TEST(TrackingProtectionOnboardingTest,
+              AreThirdPartyCookiesBlockedReturnsValueProvidedByDelegate);
   FRIEND_TEST(TrackingProtectionOnboardingNoticeBrowserTest,
               TreatsAsShownIfPreviouslyDismissed);
 
@@ -234,6 +240,8 @@ class TrackingProtectionOnboarding : public KeyedService {
   virtual bool IsEnterpriseManaged() const;
   // Whether the current profile is a new profile or not.
   virtual bool IsNewProfile() const;
+  // Whether the current profile has 3PC blocked via the 3PC settings page.
+  virtual bool AreThirdPartyCookiesBlocked() const;
 
   base::ObserverList<Observer>::Unchecked observers_;
   std::unique_ptr<Delegate> delegate_;

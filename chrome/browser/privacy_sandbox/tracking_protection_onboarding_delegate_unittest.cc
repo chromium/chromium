@@ -10,6 +10,8 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,6 +84,20 @@ TEST_F(TrackingProtectionOnboardingDelegateTest, NewProfileDetection) {
 
   profile_and_delegate()->profile()->SetIsNewProfile(false);
   EXPECT_FALSE(profile_and_delegate()->delegate()->IsNewProfile());
+}
+
+TEST_F(TrackingProtectionOnboardingDelegateTest, AreThirdPartyCookiesBlocked) {
+  profile_and_delegate()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kOff));
+  EXPECT_FALSE(
+      profile_and_delegate()->delegate()->AreThirdPartyCookiesBlocked());
+
+  profile_and_delegate()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  EXPECT_TRUE(
+      profile_and_delegate()->delegate()->AreThirdPartyCookiesBlocked());
 }
 }  // namespace
 }  // namespace privacy_sandbox

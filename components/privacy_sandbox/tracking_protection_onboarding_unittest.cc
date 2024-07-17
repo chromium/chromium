@@ -109,6 +109,15 @@ TEST_F(TrackingProtectionOnboardingTest,
 }
 
 TEST_F(TrackingProtectionOnboardingTest,
+       AreThirdPartyCookiesBlockedReturnsValueProvidedByDelegate) {
+  GetMockDelegate()->SetUpAreThirdPartyCookiesBlocked(/*blocked=*/false);
+  EXPECT_FALSE(tracking_protection_onboarding()->AreThirdPartyCookiesBlocked());
+
+  GetMockDelegate()->SetUpAreThirdPartyCookiesBlocked(/*blocked=*/true);
+  EXPECT_TRUE(tracking_protection_onboarding()->AreThirdPartyCookiesBlocked());
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
        OnboardingProfileTriggersOnboardingObservers) {
   MockTrackingProtectionObserver observer;
   tracking_protection_onboarding()->AddObserver(&observer);

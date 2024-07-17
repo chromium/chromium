@@ -6,6 +6,8 @@
 
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 
 namespace privacy_sandbox {
@@ -22,6 +24,12 @@ bool TrackingProtectionOnboardingDelegate::IsEnterpriseManaged() const {
 
 bool TrackingProtectionOnboardingDelegate::IsNewProfile() const {
   return profile_->IsNewProfile();
+}
+
+bool TrackingProtectionOnboardingDelegate::AreThirdPartyCookiesBlocked() const {
+  return profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode) ==
+         static_cast<int>(
+             content_settings::CookieControlsMode::kBlockThirdParty);
 }
 
 }  // namespace privacy_sandbox

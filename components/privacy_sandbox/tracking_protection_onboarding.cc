@@ -489,6 +489,10 @@ bool TrackingProtectionOnboarding::IsNewProfile() const {
   return delegate_->IsNewProfile();
 }
 
+bool TrackingProtectionOnboarding::AreThirdPartyCookiesBlocked() const {
+  return delegate_->AreThirdPartyCookiesBlocked();
+}
+
 void TrackingProtectionOnboarding::MaybeMarkModeBEligible() {
   auto status = GetInternalModeBOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kIneligible) {

@@ -19,6 +19,9 @@ class MockTrackingProtectionOnboardingDelegate
 
   void SetUpIsNewProfile(bool new_profile);
   MOCK_METHOD(bool, IsNewProfile, (), (const, override));
+
+  void SetUpAreThirdPartyCookiesBlocked(bool blocked);
+  MOCK_METHOD(bool, AreThirdPartyCookiesBlocked, (), (const, override));
 };
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_MOCK_TRACKING_PROTECTION_ONBOARDING_DELEGATE_H_

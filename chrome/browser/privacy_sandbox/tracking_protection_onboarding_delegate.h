@@ -19,6 +19,7 @@ class TrackingProtectionOnboardingDelegate
 
   bool IsEnterpriseManaged() const override;
   bool IsNewProfile() const override;
+  bool AreThirdPartyCookiesBlocked() const override;
 
  private:
   raw_ptr<Profile> profile_;
