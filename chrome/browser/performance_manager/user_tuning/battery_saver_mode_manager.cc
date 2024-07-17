@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -385,12 +386,16 @@ class ChromeOSBatterySaverProvider
     CHECK(manager_);
 
     chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
-    CHECK(client);
-
-    power_manager_client_observer_.Observe(client);
-    client->GetBatterySaverModeState(base::BindOnce(
-        &ChromeOSBatterySaverProvider::OnInitialBatterySaverModeObtained,
-        weak_ptr_factory_.GetWeakPtr()));
+    if (client) {
+      power_manager_client_observer_.Observe(client);
+      client->GetBatterySaverModeState(base::BindOnce(
+          &ChromeOSBatterySaverProvider::OnInitialBatterySaverModeObtained,
+          weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      // We must be in a test that didn't set up PowerManagerClient, so we don't
+      // need to listen for updates from it.
+      CHECK_IS_TEST();
+    }
 
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(
