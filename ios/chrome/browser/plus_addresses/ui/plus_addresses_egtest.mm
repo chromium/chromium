@@ -83,7 +83,7 @@ void ExpectModalTimeSample(
           &plus_addresses::test::HandleRequestToPlusAddressWithSuccess)));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  if ([self isRunningTest:@selector(testReservePlusAddressBottomSheet)]) {
+  if ([self isRunningTest:@selector(testConfirmPlusAddressUsingBottomSheet)]) {
     [self relaunchAppAndSetConfiguration];
   }
 
@@ -181,11 +181,19 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
       grey_accessibilityTrait(UIAccessibilityTraitStaticText), nil);
 }
 
+// Verifies that field with the html `id` has been filled with `value`.
+- (void)verifyFieldWithIdHasBeenFilled:(std::string)id value:(NSString*)value {
+  NSString* condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       id.c_str(), value];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
 #pragma mark - Tests
 
-// A basic test that simply opens, shows the reserved plus address and dismisses
-// the bottom sheet.
-- (void)testReservePlusAddressBottomSheet {
+// Tests showing up a bottom sheet to confirm a plus address. Once, the plus
+// address is confirmed checks if it is filled in the file.d
+- (void)testConfirmPlusAddressUsingBottomSheet {
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -202,22 +210,26 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
       base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
 
-  // Ensure the cancel button is shown.
-  id<GREYMatcher> cancelButton =
+  id<GREYMatcher> confirmButton =
       chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS);
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
 
-  // Click the cancel button, dismissing the bottom sheet.
-  [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
+  // Click the okay button, confirming the plus address.
+  [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
+
+  [self verifyFieldWithIdHasBeenFilled:kEmailFieldId
+                                 value:base::SysUTF8ToNSString(
+                                           plus_addresses::test::
+                                               kFakePlusAddress)];
 
   ExpectModalHistogram(
       plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1);
   ExpectModalHistogram(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled, 1);
+      plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed, 1);
 
-  ExpectModalTimeSample(
-      plus_addresses::metrics::PlusAddressModalCompletionStatus::kModalCanceled,
-      1);
+  ExpectModalTimeSample(plus_addresses::metrics::
+                            PlusAddressModalCompletionStatus::kModalConfirmed,
+                        1);
 }
 
 // A basic test that simply opens the bottom sheet with an error and then
