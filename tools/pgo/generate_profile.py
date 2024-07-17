@@ -27,6 +27,8 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import tempfile
+from typing import Optional
 
 _SRC_DIR = pathlib.Path(__file__).parents[2]
 _TELEMETRY_DIR = _SRC_DIR / 'third_party/catapult/telemetry'
@@ -45,6 +47,11 @@ LLVM_DIR = f'{ROOT_DIR}/third_party/llvm-build/Release+Asserts'
 PROFDATA = f'{LLVM_DIR}/bin/llvm-profdata' + exe_ext
 
 
+# This error is raised when LLVM failed to merge successfully.
+class MergeError(RuntimeError):
+    pass
+
+
 # Use this custom Namespace to provide type checking and type hinting.
 class OptionsNamespace(argparse.Namespace):
     builddir: str
@@ -57,6 +64,7 @@ class OptionsNamespace(argparse.Namespace):
     temporal_trace_length: int
     repeats: int
     verbose: int
+    quiet: int
 
 
 def parse_args():
@@ -109,6 +117,12 @@ def parse_args():
                         action='count',
                         default=0,
                         help='Increase verbosity level (repeat as needed)')
+    parser.add_argument('-q',
+                        '--quiet',
+                        action='count',
+                        default=0,
+                        help='Decrease verbosity level (passed through to '
+                        'run_benchmark.)')
     # ▲▲▲▲▲ Please update OptionsNamespace when adding or modifying args. ▲▲▲▲▲
 
     args = parser.parse_args(namespace=OptionsNamespace())
@@ -136,9 +150,32 @@ def parse_args():
     return args
 
 
+def run_profdata_merge(output_path, input_files, args: OptionsNamespace):
+    if args.temporal_trace_length:
+        extra_args = [
+            '--temporal-profile-max-trace-length',
+            str(args.temporal_trace_length)
+        ]
+    else:
+        extra_args = []
+    proc = subprocess.run([PROFDATA, 'merge', '-o', output_path] + extra_args +
+                          input_files,
+                          check=True,
+                          capture_output=True,
+                          text=True)
+    output = str(proc.stdout) + str(proc.stderr)
+    print(output)
+    if 'invalid profile created' in output:
+        # This is necessary because for some reason this invalid data is kept
+        # and only a warning is issued by llvm.
+        raise MergeError('Failed to generate valid profile data.')
+
+
 def run_benchmark(benchmark_args: list[str], args: OptionsNamespace):
     '''Puts profdata in {profiledir}/{args[0]}.profdata'''
-    name = benchmark_args[0]
+
+    # Include the first 2 args since per-story benchmarks use [name, --story=s].
+    name = '_'.join(benchmark_args[:2])
 
     # Clean up intermediate files from previous runs.
     profraw_path = f'{args.profiledir}/{name}/raw'
@@ -161,7 +198,7 @@ def run_benchmark(benchmark_args: list[str], args: OptionsNamespace):
         # to produce valid profdata. Fail fast and rely on repeats to get a
         # valid profdata.
         '--max-failures=0',
-    ] + ['-v'] * args.verbose
+    ] + ['-v'] * args.verbose + ['-q'] * args.quiet
 
     if args.android_browser:
         cmd += [
@@ -187,56 +224,85 @@ def run_benchmark(benchmark_args: list[str], args: OptionsNamespace):
                    env=env,
                    cwd=ROOT_DIR)
 
-    if not args.skip_profdata:
-        # Android's `adb pull` does not allow * globbing (i.e. pulling
-        # pgo_profiles/*). Since the naming of profraw files can vary, pull
-        # the directory and check subdirectories recursively for .profraw
-        # files.
-        profraw_files = glob.glob(f'{profraw_path}/**/*.profraw',
-                                  recursive=True)
-        if not profraw_files:
-            raise RuntimeError(f'No profraw files found in {profraw_path}')
-        subprocess.run([PROFDATA, 'merge', '-o', profdata_path] +
-                       profraw_files,
-                       check=True)
+    if args.skip_profdata:
+        return
+
+    # Android's `adb pull` does not allow * globbing (i.e. pulling
+    # pgo_profiles/*). Since the naming of profraw files can vary, pull the
+    # directory and check subdirectories recursively for .profraw files.
+    profraw_files = glob.glob(f'{profraw_path}/**/*.profraw', recursive=True)
+    if not profraw_files:
+        raise RuntimeError(f'No profraw files found in {profraw_path}')
+
+    run_profdata_merge(profdata_path, profraw_files, args)
+
+    # Test merge to prevent issues like: https://crbug.com/353702041
+    with tempfile.NamedTemporaryFile() as f:
+        run_profdata_merge(f.name, [profdata_path], args)
 
 
 def run_benchmark_with_repeats(benchmark_args: list[str],
                                args: OptionsNamespace):
+    '''Runs the benchmark with provided args, return # of times it failed.'''
     assert args.repeats > 0, 'repeats must be at least 1'
     for idx in range(args.repeats):
         try:
-            logging.info(f'Running attempt {idx + 1} for {benchmark_args}')
             run_benchmark(benchmark_args, args)
-            # Succeeded!
-            return
-        except subprocess.CalledProcessError as e:
+            return idx
+        except (subprocess.CalledProcessError, MergeError) as e:
+            if isinstance(e, subprocess.CalledProcessError):
+                if e.stdout:
+                    print(e.stdout)
+                if e.stderr:
+                    print(e.stderr)
             if idx < args.repeats - 1:
                 logging.warning('%s', e)
-                logging.warning(f'Retrying... ')
+                logging.warning(
+                    f'Retry attempt {idx + 1} for {benchmark_args}')
             else:
                 logging.error(f'Failed {args.repeats} times')
                 raise e
+    # This statement can never be reached due to the above `raise e` but is here
+    # to appease the typechecker.
+    return args.repeats
+
+
+def get_stories(benchmark_args: list[str], args: OptionsNamespace):
+    print_stories_cmd = [
+        'vpython3',
+        'tools/perf/run_benchmark',
+    ] + benchmark_args + [
+        '--print-only=stories',
+        '--print-only-runnable',  # This is essential to skip filtered stories.
+        f'--browser={args.android_browser}',
+    ]
+    proc = subprocess.run(print_stories_cmd, text=True, capture_output=True)
+    stories = []
+    for line in proc.stdout.splitlines():
+        if line and not line.startswith(('[', 'View results at')):
+            stories.append(line)
+    return stories
 
 
 def run_benchmarks(benchmarks: list[list[str]], args: OptionsNamespace):
+    fail_count = 0
     for benchmark_args in benchmarks:
-        run_benchmark_with_repeats(benchmark_args, args)
+        if not args.android_browser:
+            fail_count += run_benchmark_with_repeats(benchmark_args, args)
+        else:
+            for story in get_stories(benchmark_args, args):
+                per_story_args = [benchmark_args[0], f'--story={story}']
+                fail_count += run_benchmark_with_repeats(per_story_args, args)
+    return fail_count
 
 
 def merge_profdata(args: OptionsNamespace):
-    merge_cmd = [PROFDATA, 'merge']
-    if args.temporal_trace_length:
-        merge_cmd += [
-            '--temporal-profile-max-trace-length',
-            str(args.temporal_trace_length)
-        ]
     profile_output_path = f'{args.builddir}/profile.profdata'
-    merge_cmd += ['-o', profile_output_path]
     profdata_files = glob.glob(f'{args.profiledir}/*.profdata')
     if not profdata_files:
         raise RuntimeError(f'No profdata files found in {args.profiledir}')
-    subprocess.run(merge_cmd + profdata_files, check=True)
+
+    run_profdata_merge(profile_output_path, profdata_files, args)
 
     if args.temporal_trace_length:
         orderfile_cmd = [
@@ -296,7 +362,11 @@ def main():
                 '--extra-browser-args=--enable-features=SkiaGraphite',
             ])
 
-    run_benchmarks(benchmarks, args)
+    fail_count = run_benchmarks(benchmarks, args)
+    if fail_count:
+        logging.warning(f'Of the {len(benchmarks)} benchmarks, there were '
+                        f'{fail_count} failures that were resolved by repeat '
+                        'runs.')
 
     if not args.skip_profdata:
         merge_profdata(args)
