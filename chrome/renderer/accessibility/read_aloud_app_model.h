@@ -210,6 +210,24 @@ class ReadAloudAppModel {
       const std::u16string& combined_text,
       a11y::ReadAloudCurrentGranularity current_granularity);
 
+  // Helper for GetNextNodes.
+  // Moves the current AXPosition to the next valid position.
+  void MoveToNextAXPosition(
+      a11y::ReadAloudCurrentGranularity& current_granularity,
+      bool is_pdf,
+      bool is_docs,
+      const std::set<ui::AXNodeID>* current_nodes);
+
+  // Helper for GetNextNodes.
+  // Returns true if the node at the current AXPosition has no more text
+  // remaining.
+  // e.g. If the current node's text is "You need to not care. You need to not
+  //      stare." and Read Aloud has read out loud both sentences, this will
+  //      return true. However, if Read Aloud has only read out the first
+  //      sentence, this will return false because "You need to not stare."
+  //      still needs to be read.
+  bool NoValidTextRemainingInCurrentNode(bool is_pdf) const;
+
   // Whether Read Aloud speech is currently playing or not.
   bool speech_playing_ = false;
 

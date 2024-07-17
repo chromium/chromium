@@ -86,7 +86,7 @@ std::vector<ui::AXNodeID> ReadAloudAppModel::GetCurrentText(
   return processed_granularities_on_current_page_[processed_granularity_index_]
       .node_ids;
 }
-// TODO(b/40927698): Investigate splitting this method into helpers.
+
 // TODO(crbug.com/40927698): Update to use AXRange to better handle multiple
 // nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
 // AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
@@ -118,25 +118,9 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
   // AXPosition to simplify Read Aloud-specific code and allow improvements
   // to be used by other places where AXPosition is used.
   while (!ax_position_->IsNullPosition() && !ax_position_->AtEndOfAXTree()) {
-    ui::AXNode* anchor_node = GetNextNodeFromPosition(ax_position_);
-    std::u16string text = anchor_node->GetTextContentUTF16();
-    std::u16string text_substr = text.substr(current_text_index_);
-    int prev_index = current_text_index_;
-    // Gets the starting index for the next sentence in the current node.
-    int next_sentence_index = GetNextSentence(text_substr, is_pdf) + prev_index;
-    // If our current index within the current node is greater than that node's
-    // text, look at the next node. If the starting index of the next sentence
-    // in the node is the same the current index within the node, this means
-    // that we've reached the end of all possible sentences within the current
-    // node, and should move to the next node.
-    if ((size_t)current_text_index_ >= text.size() ||
-        (current_text_index_ == next_sentence_index)) {
-      // Move the AXPosition to the next node.
-      ax_position_ = GetNextValidPositionFromCurrentPosition(
-          current_granularity, is_pdf, is_docs, current_nodes);
-      // Reset the current text index within the current node since we just
-      // moved to a new node.
-      current_text_index_ = 0;
+    if (NoValidTextRemainingInCurrentNode(is_pdf)) {
+      MoveToNextAXPosition(current_granularity, is_pdf, is_docs, current_nodes);
+
       // Return the current granularity if the position is invalid.
       if (ShouldEndTextTraversal(current_granularity)) {
         return current_granularity;
@@ -163,6 +147,34 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
     }
   }
   return current_granularity;
+}
+
+bool ReadAloudAppModel::NoValidTextRemainingInCurrentNode(bool is_pdf) const {
+  ui::AXNode* anchor_node = GetNextNodeFromPosition(ax_position_);
+  std::u16string text = anchor_node->GetTextContentUTF16();
+  std::u16string text_substr = text.substr(current_text_index_);
+  int prev_index = current_text_index_;
+  // Gets the starting index for the next sentence in the current node.
+  int next_sentence_index = GetNextSentence(text_substr, is_pdf) + prev_index;
+  // If our current index within the current node is greater than that node's
+  // text, look at the next node. If the starting index of the next sentence
+  // in the node is the same the current index within the node, this means
+  // that we've reached the end of all possible sentences within the current
+  // node, and should move to the next node.
+  return ((size_t)current_text_index_ >= text.size() ||
+          (current_text_index_ == next_sentence_index));
+}
+
+void ReadAloudAppModel::MoveToNextAXPosition(
+    a11y::ReadAloudCurrentGranularity& current_granularity,
+    bool is_pdf,
+    bool is_docs,
+    const std::set<ui::AXNodeID>* current_nodes) {
+  ax_position_ = GetNextValidPositionFromCurrentPosition(
+      current_granularity, is_pdf, is_docs, current_nodes);
+  // Reset the current text index within the current node since we just
+  // moved to a new node.
+  current_text_index_ = 0;
 }
 
 bool ReadAloudAppModel::PositionEndsWithOpeningPunctuation(
