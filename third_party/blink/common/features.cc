@@ -2323,6 +2323,18 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", true};
 
+// If enabled, force renderer process foregrounded from CommitNavigation to
+// DOMContentLoad (crbug/351953350).
+BASE_FEATURE(kBoostRenderProcessForLoading,
+             "BoostRenderProcessForLoading",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// An empty json array means that this feature is applied unconditionally. If
+// specified, it means that the specified URLs will be the target of the new
+// behavior.
+const base::FeatureParam<std::string> kBoostRenderProcessForLoadingTargetUrls{
+    &kBoostRenderProcessForLoading, "target_urls", "[]"};
+
 // Freeze scheduler task queues in background after allowed grace time.
 // "stop" is a legacy name.
 BASE_FEATURE(kStopInBackground,

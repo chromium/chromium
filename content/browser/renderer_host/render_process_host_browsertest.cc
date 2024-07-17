@@ -75,6 +75,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/features.h"
@@ -217,6 +218,7 @@ class RenderProcessHostTestBase : public ContentBrowserTest,
   void SetVisibleClients(RenderProcessHost* process, int32_t visible_clients) {
     RenderProcessHostImpl* impl = static_cast<RenderProcessHostImpl*>(process);
     impl->visible_clients_ = visible_clients;
+    impl->UpdateProcessPriority();
   }
 
  protected:
@@ -1075,6 +1077,99 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, PriorityOverride) {
 
   // Clear the pending view so the test doesn't explode.
   process->RemovePendingView();
+}
+
+struct BoostRenderProcessForLoadingBrowserTestParam {
+  bool enable_boost_render_process_for_loading;
+  std::string target_urls;
+  int expect_render_process_backgrounded_;
+};
+
+// This test verifies `kBoostRenderProcessForLoading` feature can keep the
+// RenderProcessHost foregrounded until `DOMContentLoaded` comes.
+class BoostRenderProcessForLoadingBrowserTest
+    : public RenderProcessHostTestBase,
+      public content::WebContentsObserver,
+      public ::testing::WithParamInterface<
+          BoostRenderProcessForLoadingBrowserTestParam> {
+ public:
+  BoostRenderProcessForLoadingBrowserTest() {
+    if (GetParam().enable_boost_render_process_for_loading) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{blink::features::kBoostRenderProcessForLoading,
+            {{blink::features::kBoostRenderProcessForLoadingTargetUrls.name,
+              GetParam().target_urls}}}},
+          {});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kBoostRenderProcessForLoading);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    content::WebContentsObserver::Observe(&web_contents());
+    RenderProcessHostTestBase::SetUpOnMainThread();
+  }
+
+  content::WebContents& web_contents() { return *shell()->web_contents(); }
+
+ private:
+  // content::WebContentsObserver:
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
+    RenderProcessHost* render_process_host = render_frame_host->GetProcess();
+    // Emulate render_process_host is not visible to users.
+    SetVisibleClients(render_process_host, 0);
+    EXPECT_EQ(render_process_host->IsProcessBackgrounded(),
+              GetParam().expect_render_process_backgrounded_);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+const BoostRenderProcessForLoadingBrowserTestParam
+    kBoostRenderProcessForLoadingBrowserTestParams[] = {
+        {
+            .enable_boost_render_process_for_loading = false,
+            .target_urls = "[]",
+            .expect_render_process_backgrounded_ = true,
+        },
+        {
+            .enable_boost_render_process_for_loading = true,
+            .target_urls = "[]",
+            .expect_render_process_backgrounded_ = false,
+        },
+        {
+            .enable_boost_render_process_for_loading = true,
+            .target_urls = "[\"http://a.com\", \"http://b.com\"]",
+            .expect_render_process_backgrounded_ = false,
+        },
+        {
+            .enable_boost_render_process_for_loading = true,
+            .target_urls = "[\"http://b.com\", \"http://c.com\"]",
+            .expect_render_process_backgrounded_ = true,
+        },
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BoostRenderProcessForLoadingBrowserTest,
+    testing::ValuesIn(kBoostRenderProcessForLoadingBrowserTestParams));
+
+IN_PROC_BROWSER_TEST_P(BoostRenderProcessForLoadingBrowserTest,
+                       VerifyRenderProcessBackgrounded) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("a.com", "/simple_page.html");
+  RenderProcessHost* render_process_host =
+      web_contents().GetPrimaryMainFrame()->GetProcess();
+
+  // `BoostRenderProcessForLoadingBrowserTest::DOMContentLoaded()` is called
+  // during `NavigateToURL()`.
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  // Emulate render_process_host is not visible to users.
+  SetVisibleClients(render_process_host, 0);
+  EXPECT_TRUE(render_process_host->IsProcessBackgrounded());
 }
 
 // This test verifies properties of RenderProcessHostImpl *before* Init method

@@ -215,6 +215,10 @@ void MockRenderProcessHost::OnForegroundServiceWorkerRemoved() {
   foreground_service_worker_count_ -= 1;
 }
 
+void MockRenderProcessHost::OnBoostForLoadingAdded() {}
+
+void MockRenderProcessHost::OnBoostForLoadingRemoved() {}
+
 StoragePartition* MockRenderProcessHost::GetStoragePartition() {
   return browser_context_->GetStoragePartition(storage_partition_config_);
 }

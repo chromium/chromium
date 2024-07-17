@@ -273,7 +273,7 @@ ChildProcessLauncher::Client* ChildProcessLauncher::ReplaceClientForTest(
 
 bool RenderProcessPriority::is_background() const {
   return !visible && !has_media_stream && !boost_for_pending_views &&
-         !has_foreground_service_worker;
+         !has_foreground_service_worker && !boost_for_loading;
 }
 
 base::Process::Priority RenderProcessPriority::GetProcessPriority() const {
@@ -288,7 +288,8 @@ bool RenderProcessPriority::operator==(
          has_foreground_service_worker == other.has_foreground_service_worker &&
          frame_depth == other.frame_depth &&
          intersects_viewport == other.intersects_viewport &&
-         boost_for_pending_views == other.boost_for_pending_views
+         boost_for_pending_views == other.boost_for_pending_views &&
+         boost_for_loading == other.boost_for_loading
 #if BUILDFLAG(IS_ANDROID)
          && importance == other.importance
 #endif

@@ -3219,6 +3219,30 @@
             ]
         }
     ],
+    "BoostRenderProcessForLoading": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "target_url": "[]"
+                    },
+                    "enable_features": [
+                        "BoostRenderProcessForLoading"
+                    ]
+                }
+            ]
+        }
+    ],
     "BorealisProvision": [
         {
             "platforms": [

@@ -614,6 +614,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void OnForegroundServiceWorkerAdded() override;
   void OnForegroundServiceWorkerRemoved() override;
 
+  void OnBoostForLoadingAdded() override;
+  void OnBoostForLoadingRemoved() override;
+
   // Sets the global factory used to create new RenderProcessHosts in unit
   // tests.  It may be nullptr, in which case the default RenderProcessHost will
   // be created (this is the behavior if you don't call this function).  The
@@ -1466,6 +1469,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // processes in a timely manner.  Used to determine if a process should
   // not be backgrounded.
   int foreground_service_worker_count_ = 0;
+
+  // Tracks the count of render frame host that requested prioritize the
+  // processing commit navigation and initial loading (crbug/351953350).
+  int boost_for_loading_count_ = 0;
 
   std::unique_ptr<mojo::Receiver<viz::mojom::CompositingModeReporter>>
       compositing_mode_reporter_;

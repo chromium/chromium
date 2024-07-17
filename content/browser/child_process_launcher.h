@@ -86,7 +86,8 @@ struct RenderProcessPriority {
                         bool has_foreground_service_worker,
                         unsigned int frame_depth,
                         bool intersects_viewport,
-                        bool boost_for_pending_views
+                        bool boost_for_pending_views,
+                        bool boost_for_loading
 #if BUILDFLAG(IS_ANDROID)
                         ,
                         ChildProcessImportance importance
@@ -97,7 +98,8 @@ struct RenderProcessPriority {
         has_foreground_service_worker(has_foreground_service_worker),
         frame_depth(frame_depth),
         intersects_viewport(intersects_viewport),
-        boost_for_pending_views(boost_for_pending_views)
+        boost_for_pending_views(boost_for_pending_views),
+        boost_for_loading(boost_for_loading)
 #if BUILDFLAG(IS_ANDROID)
         ,
         importance(importance)
@@ -155,6 +157,10 @@ struct RenderProcessPriority {
   // foreground content which hasn't yet been added as a visible widget -- i.e.
   // during navigation).
   bool boost_for_pending_views;
+
+  // |boost_for_loading| is true if this process is responsible for committing
+  // navigation and initial loading.
+  bool boost_for_loading;
 
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance importance;

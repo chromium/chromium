@@ -23,6 +23,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
@@ -38,6 +39,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/state_transitions.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1228,6 +1230,78 @@ bool IsDocumentLoadedWithoutUrlLoaderClient(
          url.SchemeIs(url::kDataScheme) || !IsURLHandledByNetworkStack(url);
 }
 
+std::vector<GURL> GetTargetUrlsOfBoostRenderProcessForLoading() {
+  std::optional<base::Value> json_value =
+      base::JSONReader::Read(base::UnescapeURLComponent(
+          blink::features::kBoostRenderProcessForLoadingTargetUrls.Get(),
+          base::UnescapeRule::SPACES));
+
+  if (!json_value) {
+    return {};
+  }
+
+  base::Value::List* entries = json_value->GetIfList();
+  if (!entries) {
+    return {};
+  }
+
+  std::vector<GURL> result;
+  result.reserve(entries->size());
+  for (const base::Value& entry : *entries) {
+    const std::string* target_url = entry.GetIfString();
+    if (target_url) {
+      GURL url(*target_url);
+      if (url.is_valid()) {
+        result.emplace_back(std::move(url));
+      }
+    }
+  }
+  return result;
+}
+
+bool IsBoostRenderProcessForLoadingTarget(
+    const GURL& url,
+    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) {
+  static const bool kIsEnabled = base::FeatureList::IsEnabled(
+      blink::features::kBoostRenderProcessForLoading);
+
+  if (!kIsEnabled) {
+    return false;
+  }
+
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  switch (lifecycle_state) {
+    case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
+    case RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit:
+    case RenderFrameHostImpl::LifecycleStateImpl::kActive:
+      break;
+    case RenderFrameHostImpl::LifecycleStateImpl::kPrerendering:
+    case RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache:
+    case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
+    case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
+      return false;
+  }
+
+  static const base::NoDestructor<std::vector<GURL>> kTargetUrls(
+      GetTargetUrlsOfBoostRenderProcessForLoading());
+
+  if (kTargetUrls->empty()) {
+    return true;
+  }
+
+  for (GURL target_url : *kTargetUrls) {
+    if (url.host() == target_url.host() &&
+        url.path().starts_with(target_url.path())) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -1848,6 +1922,9 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
                              LifecycleStateImplToString(lifecycle_state()));
   TRACE_EVENT("navigation", "~RenderFrameHostImpl()",
               ChromeTrackEvent::kRenderFrameHost, this);
+
+  MaybeResetBoostRenderProcessForLoading();
+
   // See https://crbug.com/1276535
   if (check_deletion_for_bug_1276535_) {
     base::debug::DumpWithoutCrashing();
@@ -5498,6 +5575,7 @@ void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
     return;
 
   delegate_->DOMContentLoaded(this);
+  MaybeResetBoostRenderProcessForLoading();
 }
 
 void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
@@ -7867,6 +7945,7 @@ void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
     return;
 
   delegate_->DOMContentLoaded(this);
+  MaybeResetBoostRenderProcessForLoading();
 }
 
 void RenderFrameHostImpl::FocusedElementChanged(
@@ -11306,6 +11385,12 @@ void RenderFrameHostImpl::CommitNavigation(
           navigation_request->commit_params().document_ukm_source_id)
           .SetNewProcessUsedForNavigationWhenSameSiteProcessExists(value)
           .Record(ukm::UkmRecorder::Get());
+    }
+
+    if (IsBoostRenderProcessForLoadingTarget(common_params->url,
+                                             lifecycle_state_) &&
+        IsOutermostMainFrame()) {
+      BoostRenderProcessForLoading();
     }
 
     SendCommitNavigation(
@@ -16161,6 +16246,19 @@ void RenderFrameHostImpl::CleanUpMediaStreams() {
   }
 }
 
+void RenderFrameHostImpl::BoostRenderProcessForLoading() {
+  MaybeResetBoostRenderProcessForLoading();
+  boost_render_process_for_loading_ = true;
+  GetProcess()->OnBoostForLoadingAdded();
+}
+
+void RenderFrameHostImpl::MaybeResetBoostRenderProcessForLoading() {
+  if (boost_render_process_for_loading_) {
+    boost_render_process_for_loading_ = false;
+    GetProcess()->OnBoostForLoadingRemoved();
+  }
+}
+
 const blink::DocumentToken& RenderFrameHostImpl::GetDocumentToken() const {
   DCHECK_NE(LifecycleStateImpl::kPendingCommit, lifecycle_state());
   DCHECK_NE(LifecycleStateImpl::kSpeculative, lifecycle_state());
@@ -16413,6 +16511,10 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
             PermissionServiceContext::GetForCurrentDocument(this)) {
       permission_service_context->NotifyPermissionStatusChangedIfNeeded();
     }
+  }
+
+  if (new_state != LifecycleStateImpl::kActive) {
+    MaybeResetBoostRenderProcessForLoading();
   }
 }
 

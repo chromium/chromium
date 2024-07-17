@@ -1306,7 +1306,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 false /* has_foreground_service_worker */,
                 frame_depth_,
                 false /* intersects_viewport */,
-                true /* boost_for_pending_views */
+                true /* boost_for_pending_views */,
+                false /*boost_for_loading*/
 #if BUILDFLAG(IS_ANDROID)
                 ,
                 ChildProcessImportance::NORMAL
@@ -2784,6 +2785,22 @@ void RenderProcessHostImpl::OnForegroundServiceWorkerRemoved() {
   foreground_service_worker_count_ -= 1;
 
   if (foreground_service_worker_count_ == 0) {
+    UpdateProcessPriority();
+  }
+}
+
+void RenderProcessHostImpl::OnBoostForLoadingAdded() {
+  CHECK_NE(boost_for_loading_count_, std::numeric_limits<int>::max());
+  ++boost_for_loading_count_;
+  if (boost_for_loading_count_ == 1) {
+    UpdateProcessPriority();
+  }
+}
+
+void RenderProcessHostImpl::OnBoostForLoadingRemoved() {
+  CHECK_GT(boost_for_loading_count_, 0);
+  --boost_for_loading_count_;
+  if (boost_for_loading_count_ == 0) {
     UpdateProcessPriority();
   }
 }
@@ -4932,7 +4949,8 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
                                   switches::kDisableRendererBackgrounding),
       media_stream_count_ > 0, foreground_service_worker_count_ > 0,
       frame_depth_, intersects_viewport_,
-      !!pending_views_ /* boost_for_pending_views */
+      !!pending_views_, /* boost_for_pending_views */
+      boost_for_loading_count_ > 0
 #if BUILDFLAG(IS_ANDROID)
       ,
       GetEffectiveImportance()
@@ -4950,7 +4968,8 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
         foregrounded, /* has_foreground_service_worker */
         0,            /* frame_depth */
         foregrounded, /* intersects_viewport */
-        false         /* boost_for_pending_views */
+        false,        /* boost_for_pending_views */
+        foregrounded  /* boost_for_loading */
 #if BUILDFLAG(IS_ANDROID)
         ,
         foregrounded ? ChildProcessImportance::NORMAL

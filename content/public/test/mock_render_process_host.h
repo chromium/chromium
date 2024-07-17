@@ -104,6 +104,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   void OnMediaStreamRemoved() override;
   void OnForegroundServiceWorkerAdded() override;
   void OnForegroundServiceWorkerRemoved() override;
+  void OnBoostForLoadingAdded() override;
+  void OnBoostForLoadingRemoved() override;
   StoragePartition* GetStoragePartition() override;
   virtual void AddWord(const std::u16string& word);
   bool Shutdown(int exit_code) override;

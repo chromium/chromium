@@ -4171,6 +4171,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
       base::UnguessableToken nonce,
       DisableUntrustedNetworkInFencedFrameCallback callback);
 
+  // Notifies the RenderProcessHost instance that this frame started to commit
+  // navigation. This signal is used to increase the priority of the renderer
+  // process (see: crbug/351953350).
+  void BoostRenderProcessForLoading();
+  // Notifies the RenderProcessHost instance that this frame does not require
+  // increasing the priority of the renderer process anymore.
+  void MaybeResetBoostRenderProcessForLoading();
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -4902,6 +4910,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Tracking active features in this frame, for use in figuring out whether
   // or not it can be frozen.
   std::unique_ptr<FeatureObserver> feature_observer_;
+
+  // Force renderer process foregrounded during initial loading phase
+  // (crbug/351953350).
+  bool boost_render_process_for_loading_ = false;
 
   scoped_refptr<WebAuthRequestSecurityChecker>
       webauth_request_security_checker_;
