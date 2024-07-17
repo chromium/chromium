@@ -21,6 +21,7 @@
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/features.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -340,8 +341,10 @@ class WebApp {
   // IWA-specific information like from where the contents should be served.
   struct IsolationData {
     struct PendingUpdateInfo {
-      PendingUpdateInfo(IsolatedWebAppStorageLocation location,
-                        base::Version version);
+      PendingUpdateInfo(
+          IsolatedWebAppStorageLocation location,
+          base::Version version,
+          std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data);
       ~PendingUpdateInfo();
       PendingUpdateInfo(const PendingUpdateInfo&);
       PendingUpdateInfo& operator=(const PendingUpdateInfo&);
@@ -358,6 +361,8 @@ class WebApp {
       IsolatedWebAppStorageLocation location;
       base::Version version;
 
+      std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data;
+
       // TODO(cmfcmf): Add further information about the update here, such as
       // whether it should be applied immediately, or only once the IWA is
       // closed.
@@ -365,10 +370,12 @@ class WebApp {
 
     IsolationData(IsolatedWebAppStorageLocation location,
                   base::Version version);
-    IsolationData(IsolatedWebAppStorageLocation location,
-                  base::Version version,
-                  const std::set<std::string>& controlled_frame_partitions,
-                  const std::optional<PendingUpdateInfo>& pending_update_info);
+    IsolationData(
+        IsolatedWebAppStorageLocation location,
+        base::Version version,
+        const std::set<std::string>& controlled_frame_partitions,
+        const std::optional<PendingUpdateInfo>& pending_update_info,
+        std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data);
     ~IsolationData();
     IsolationData(const IsolationData&);
     IsolationData& operator=(const IsolationData&);
@@ -398,6 +405,13 @@ class WebApp {
     IsolatedWebAppStorageLocation location;
     base::Version version;
     std::set<std::string> controlled_frame_partitions;
+
+    // Might be nullopt if this IWA is not backed by a signed web bundle (for
+    // instance, in case of a proxy mode installation).
+    // This field is used to prevent redundant update attempts in case of key
+    // rotation by comparing the stored public keys against the rotated key.
+    // key. Please don't rely on it for anything security-critical!
+    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data;
 
    private:
     // If present, signals that an update for this app is available locally and

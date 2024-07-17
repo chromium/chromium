@@ -49,6 +49,38 @@ message IsolationData {
   // The version of the IWA - required.
   optional string version = 5;
 
+  // Provides information about the integrity block of this IWA's signed web
+  // bundle.
+  message IntegrityBlockData {
+    message SignatureInfoEd25519 {
+      // base64-encoded key bytes.
+      optional string public_key = 1;
+
+      // Hex-encoded signature bytes.
+      optional string signature = 2;
+    }
+    message SignatureInfoEcdsaP256SHA256 {
+      // base64-encoded key bytes.
+      optional string public_key = 1;
+
+      // Hex-encoded signature bytes.
+      optional string signature = 2;
+    }
+    message SignatureInfoUnknown {}
+
+    message SignatureInfo {
+      oneof signature_info {
+        // Add all new types to `web_app::test::CreateSignatures()` for test
+        // coverage.
+        SignatureInfoEd25519 ed25519 = 1;
+        SignatureInfoEcdsaP256SHA256 ecdsa_p256_sha256 = 2;
+        SignatureInfoUnknown unknown = 3;
+      }
+    }
+
+    repeated SignatureInfo signatures = 1;
+  }
+
   message PendingUpdateInfo {
     // The location of the pending update - required.
     oneof location {
@@ -58,7 +90,11 @@ message IsolationData {
     }
     // The version of the pending update - required.
     optional string version = 4;
+
+    optional IntegrityBlockData integrity_block_data = 5;
   }
 
   optional PendingUpdateInfo pending_update_info = 6;
+
+  optional IntegrityBlockData integrity_block_data = 7;
 }

@@ -220,7 +220,8 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
           /*controlled_frame_partitions=*/{},
           WebApp::IsolationData::PendingUpdateInfo(
               IwaStorageOwnedBundle{"another_folder", /*dev_mode=*/false},
-              base::Version("2.0.0"))));
+              base::Version("2.0.0"), /*integrity_block_data=*/std::nullopt),
+          /*integrity_block_data=*/std::nullopt));
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
     {
@@ -287,7 +288,8 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
         profile(), url_info_.origin().GetURL(), "installed iwa",
         WebApp::IsolationData(installed_bundle_location_, installed_version,
                               /*controlled_frame_partitions=*/{},
-                              pending_update_info));
+                              pending_update_info,
+                              /*integrity_block_data=*/std::nullopt));
   }
 
   FakeWebContentsManager::FakePageState& CreateUpdateManifesteAndBundle(
@@ -411,10 +413,11 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
   // App database as a pending update, but the update manifest only contains
   // version 2 (i.e., version 3 was removed from the update manifest at some
   // point before that update had a chance to be applied).
-  InstallIwa(base::Version("1.0.0"),
-             WebApp::IsolationData::PendingUpdateInfo(
-                 IwaStorageOwnedBundle{"some_path", /*dev_mode=*/false},
-                 base::Version("3.0.0")));
+  InstallIwa(
+      base::Version("1.0.0"),
+      WebApp::IsolationData::PendingUpdateInfo(
+          IwaStorageOwnedBundle{"some_path", /*dev_mode=*/false},
+          base::Version("3.0.0"), /*integrity_block_data=*/std::nullopt));
   CreateUpdateManifesteAndBundle(base::Version("2.0.0"));
 
   Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),

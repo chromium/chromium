@@ -163,10 +163,10 @@
    } ],
    "first_install_time": "1970-01-14 01:52:12.032000 UTC",
    "generated_icon_fix": {
-      "attempt_count": 44,
-      "last_attempt_time": "1970-02-10 06:29:26.196000 UTC",
+      "attempt_count": 16,
+      "last_attempt_time": "1970-01-26 13:12:59.808000 UTC",
       "source": "Retroactive",
-      "window_start_time": "1970-01-15 14:47:42.595000 UTC"
+      "window_start_time": "1970-01-22 22:45:27.144000 UTC"
    },
    "install_state": "1",
    "is_diy_app": true,
@@ -175,25 +175,47 @@
    "is_uninstalling": false,
    "isolation_data": {
       "controlled_frame_partitions (on-disk)": [ "partition_name" ],
+      "integrity_block_data": {
+         "signatures": [ {
+            "ecdsa_p256_sha256": {
+               "public_key": "AxyCBzvQfu1yaF01392k1gu2qCtT1uA2+WfIEhlyJB5S",
+               "signature": "3044022007381524F538B04F99CCC62703F06C87F66EF41BDA18A22D8E57952AA23E53A6022063C7F81D3A44798CB95823FA38FC23B15E0483744657FF49E1E83AB8C06B63C2"
+            }
+         }, {
+            "unknown": {
+            }
+         } ]
+      },
       "isolated_web_app_location": {
          "unowned_bundle": {
             "path": "1234"
          }
       },
       "pending_update_info": {
+         "integrity_block_data": {
+            "signatures": [ {
+               "ecdsa_p256_sha256": {
+                  "public_key": "AxyCBzvQfu1yaF01392k1gu2qCtT1uA2+WfIEhlyJB5S",
+                  "signature": "3044022007381524F538B04F99CCC62703F06C87F66EF41BDA18A22D8E57952AA23E53A6022063C7F81D3A44798CB95823FA38FC23B15E0483744657FF49E1E83AB8C06B63C2"
+               }
+            }, {
+               "unknown": {
+               }
+            } ]
+         },
          "isolated_web_app_location": {
             "unowned_bundle": {
                "path": "1234"
             }
          },
-         "version": "1288537934.3113960593.3937585727"
+         "version": "3937585727.2427438178.28552270"
       },
       "version": "1083487731.1419818898.544974083"
    },
    "last_badging_time": "1970-01-27 09:52:51.713000 UTC",
    "last_launch_time": "1970-01-02 14:58:07.045000 UTC",
    "latest_install_source": "menu custom tab",
-   "latest_install_time": "1970-02-01 22:09:48.330000 UTC",
+   "latest_install_time": "1970-01-15 14:47:42.595000 UTC",
    "launch_handler": {
       "client_mode": "kNavigateNew"
    },
@@ -364,8 +386,8 @@
    } ],
    "sources": [ "System", "IwaShimlessRma", "Kiosk", "Policy", "IwaPolicy", "OEM", "SubApp", "WebAppStore", "OneDriveIntegration", "Sync", "IwaUserInstalled", "ApsDefault", "Default" ],
    "start_url": "https://example.com/scope1234/start1234",
-   "supported_links_offer_dismiss_count": -1325343980,
-   "supported_links_offer_ignore_count": -2087387488,
+   "supported_links_offer_dismiss_count": -612267880,
+   "supported_links_offer_ignore_count": 1430602893,
    "sync_proto": {
       "icon_infos": [ {
          "purpose": "MONOCHROME",

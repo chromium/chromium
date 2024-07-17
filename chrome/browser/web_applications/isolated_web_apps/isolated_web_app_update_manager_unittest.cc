@@ -1018,10 +1018,12 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
 
     std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
         iwa_info1_->url_info.origin().GetURL(),
-        WebApp::IsolationData(
-            iwa_info1_->installed_location, iwa_info1_->installed_version, {},
-            WebApp::IsolationData::PendingUpdateInfo(
-                update_location_, iwa_info1_->update_version)));
+        WebApp::IsolationData(iwa_info1_->installed_location,
+                              iwa_info1_->installed_version, {},
+                              WebApp::IsolationData::PendingUpdateInfo(
+                                  update_location_, iwa_info1_->update_version,
+                                  /*integrity_block_data=*/std::nullopt),
+                              /*integrity_block_data=*/std::nullopt));
     CreateStoragePartition(iwa_info1_->url_info);
 
     Registry registry;

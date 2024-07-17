@@ -502,7 +502,8 @@ void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
       location, version, controlled_frame_partitions,
       // Always reset `pending_update_info`, because reaching this point means
       // that an install or update just succeeded.
-      /*pending_update_info=*/std::nullopt));
+      /*pending_update_info=*/std::nullopt,
+      /*integrity_block_data=*/std::nullopt));
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(

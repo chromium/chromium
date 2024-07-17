@@ -329,8 +329,9 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
   WebApp::IsolationData updated_isolation_data =
       *app_to_update->isolation_data();
   updated_isolation_data.SetPendingUpdateInfo(
-      WebApp::IsolationData::PendingUpdateInfo(*destination_storage_location_,
-                                               info.isolated_web_app_version));
+      WebApp::IsolationData::PendingUpdateInfo(
+          *destination_storage_location_, info.isolated_web_app_version,
+          /*integrity_block_data=*/std::nullopt));
   app_to_update->SetIsolationData(std::move(updated_isolation_data));
 }
 

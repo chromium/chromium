@@ -15,6 +15,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/flat_tree.h"
+#include "base/containers/to_value_list.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
@@ -873,10 +874,12 @@ WebApp::IsolationData::IsolationData(
     IsolatedWebAppStorageLocation location,
     base::Version version,
     const std::set<std::string>& controlled_frame_partitions,
-    const std::optional<PendingUpdateInfo>& pending_update_info)
+    const std::optional<PendingUpdateInfo>& pending_update_info,
+    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data)
     : location(std::move(location)),
       version(std::move(version)),
-      controlled_frame_partitions(controlled_frame_partitions) {
+      controlled_frame_partitions(controlled_frame_partitions),
+      integrity_block_data(std::move(integrity_block_data)) {
   SetPendingUpdateInfo(pending_update_info);
 }
 WebApp::IsolationData::~IsolationData() = default;
@@ -888,35 +891,31 @@ WebApp::IsolationData& WebApp::IsolationData::operator=(
     WebApp::IsolationData&&) = default;
 
 bool WebApp::IsolationData::operator==(
-    const WebApp::IsolationData& other) const {
-  return location == other.location && version == other.version &&
-         controlled_frame_partitions == other.controlled_frame_partitions &&
-         pending_update_info_ == other.pending_update_info_;
-}
+    const WebApp::IsolationData& other) const = default;
 bool WebApp::IsolationData::operator!=(
-    const WebApp::IsolationData& other) const {
-  return !(*this == other);
-}
+    const WebApp::IsolationData& other) const = default;
 
 base::Value WebApp::IsolationData::AsDebugValue() const {
-  auto value = base::Value::Dict()
-                   .Set("isolated_web_app_location", location.ToDebugValue())
-                   .Set("version", version.GetString());
-  base::Value::List* partitions =
-      value.EnsureList("controlled_frame_partitions (on-disk)");
-  for (const std::string& partition : controlled_frame_partitions) {
-    partitions->Append(partition);
-  }
-
-  value.Set("pending_update_info", OptionalAsDebugValue(pending_update_info_));
-
-  return base::Value(std::move(value));
+  return base::Value(
+      base::Value::Dict()
+          .Set("isolated_web_app_location", location.ToDebugValue())
+          .Set("version", version.GetString())
+          .Set("controlled_frame_partitions (on-disk)",
+               base::ToValueList(controlled_frame_partitions))
+          .Set("pending_update_info",
+               OptionalAsDebugValue(pending_update_info_))
+          .Set("integrity_block_data",
+               OptionalAsDebugValue(integrity_block_data)));
 }
 
 WebApp::IsolationData::PendingUpdateInfo::PendingUpdateInfo(
     IsolatedWebAppStorageLocation location,
-    base::Version version)
-    : location(std::move(location)), version(std::move(version)) {}
+    base::Version version,
+    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data)
+    : location(std::move(location)),
+      version(std::move(version)),
+      integrity_block_data(std::move(integrity_block_data)) {}
+
 WebApp::IsolationData::PendingUpdateInfo::~PendingUpdateInfo() = default;
 
 WebApp::IsolationData::PendingUpdateInfo::PendingUpdateInfo(
@@ -926,10 +925,12 @@ WebApp::IsolationData::PendingUpdateInfo::operator=(const PendingUpdateInfo&) =
     default;
 
 base::Value WebApp::IsolationData::PendingUpdateInfo::AsDebugValue() const {
-  auto value = base::Value::Dict()
-                   .Set("isolated_web_app_location", location.ToDebugValue())
-                   .Set("version", version.GetString());
-  return base::Value(std::move(value));
+  return base::Value(
+      base::Value::Dict()
+          .Set("isolated_web_app_location", location.ToDebugValue())
+          .Set("version", version.GetString())
+          .Set("integrity_block_data",
+               OptionalAsDebugValue(integrity_block_data)));
 }
 
 void WebApp::IsolationData::SetPendingUpdateInfo(

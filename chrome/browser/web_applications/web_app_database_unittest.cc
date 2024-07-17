@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -19,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -48,6 +50,9 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/ed25519_signature.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -63,6 +68,7 @@ using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsNull;
 using ::testing::NotNull;
+using ::testing::Optional;
 using ::testing::Property;
 using ::testing::VariantWith;
 
@@ -935,7 +941,8 @@ TEST_F(WebAppDatabaseProtoDataTest,
       base::Version("1.2.3"), {},
       WebApp::IsolationData::PendingUpdateInfo(
           IwaStorageOwnedBundle{"folder_name", /*dev_mode=*/false},
-          base::Version("1.2.3"))));
+          base::Version("1.2.3"), /*integrity_block_data=*/std::nullopt),
+      /*integrity_block_data=*/std::nullopt));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -957,7 +964,8 @@ TEST_F(WebAppDatabaseProtoDataTest,
       base::Version("1.0.0"), {},
       WebApp::IsolationData::PendingUpdateInfo(
           IwaStorageProxy{url::Origin::Create(GURL("https://example.com"))},
-          base::Version("2.0.0"))));
+          base::Version("2.0.0"), /*integrity_block_data=*/std::nullopt),
+      /*integrity_block_data=*/std::nullopt));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -973,7 +981,8 @@ TEST_F(WebAppDatabaseProtoDataTest,
       base::Version("1.0.0"), {},
       WebApp::IsolationData::PendingUpdateInfo(
           IwaStorageOwnedBundle{"folder_name", /*dev_mode*/ false},
-          base::Version("2.0.0"))));
+          base::Version("2.0.0"), /*integrity_block_data=*/std::nullopt),
+      /*integrity_block_data=*/std::nullopt));
 
   // Test what happens if both are owned bundles, but one is dev mode and
   // the other one is not.
@@ -1017,10 +1026,15 @@ TEST_F(WebAppDatabaseProtoDataTest,
 TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
   base::FilePath update_path(FILE_PATH_LITERAL("update_path"));
+
+  auto integrity_block_data =
+      IsolatedWebAppIntegrityBlockData(test::CreateSignatures());
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
       IwaStorageUnownedBundle{path}, base::Version("1.0.0"), {},
       WebApp::IsolationData::PendingUpdateInfo(
-          IwaStorageUnownedBundle{update_path}, base::Version("2.0.0"))));
+          IwaStorageUnownedBundle{update_path}, base::Version("2.0.0"),
+          integrity_block_data),
+      integrity_block_data));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
@@ -1031,6 +1045,11 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
               IwaStorageUnownedBundle{update_path});
   EXPECT_THAT(web_app->isolation_data()->pending_update_info()->version,
               Eq(base::Version("2.0.0")));
+  EXPECT_THAT(
+      web_app->isolation_data()->pending_update_info()->integrity_block_data,
+      Optional(Eq(integrity_block_data)));
+  EXPECT_THAT(web_app->isolation_data()->integrity_block_data,
+              Optional(Eq(integrity_block_data)));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {

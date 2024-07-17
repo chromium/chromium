@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
@@ -87,6 +88,9 @@ void SynchronizeOsIntegration(
     Profile* profile,
     const webapps::AppId& app_id,
     std::optional<SynchronizeOsOptions> options = std::nullopt);
+
+// Creates a few well-formed integrity block signatures.
+std::vector<web_package::SignedWebBundleSignatureInfo> CreateSignatures();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class ScopedSkipMainProfileCheck {
