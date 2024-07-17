@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/content/renderer/page_form_analyser_logger.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -59,22 +58,6 @@ using form_util::ExtractOption;
 
 namespace {
 
-blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
-    std::string_view type) {
-  if (type == "NO_SERVER_DATA" || type == "UNKNOWN_TYPE" ||
-      type == "EMPTY_TYPE" || type == "") {
-    return blink::FormElementPiiType::kUnknown;
-  }
-
-  if (type.starts_with("EMAIL_")) {
-    return blink::FormElementPiiType::kEmail;
-  }
-  if (type.starts_with("PHONE_")) {
-    return blink::FormElementPiiType::kPhone;
-  }
-  return blink::FormElementPiiType::kOthers;
-}
-
 // Determines whether the form is interesting enough to be sent to the browser
 // for further operations. This is the case if any of the below holds:
 // (1) At least one form field is not-checkable. (See crbug.com/1489075.)
@@ -91,15 +74,6 @@ bool IsFormInteresting(const FormData& form) {
                               &FormFieldData::autocomplete_attribute);
 }
 
-std::string GetButtonTitlesString(const ButtonTitleList& titles_list) {
-  std::vector<std::string> titles;
-  titles.reserve(titles_list.size());
-  std::transform(
-      titles_list.cbegin(), titles_list.cend(), std::back_inserter(titles),
-      [](const auto& list_item) { return base::UTF16ToUTF8(list_item.first); });
-  return base::JoinString(titles, ",");
-}
-
 }  // namespace
 
 FormCache::UpdateFormCacheResult::UpdateFormCacheResult() = default;
@@ -114,8 +88,6 @@ FormCache::~FormCache() = default;
 
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     const FieldDataManager& field_data_manager) {
-  std::set<FieldRendererId> observed_renderer_ids;
-
   // |extracted_forms_| is re-populated below in ProcessForm().
   std::map<FormRendererId, FormData> old_extracted_forms =
       std::move(extracted_forms_);
@@ -134,10 +106,6 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   // Clears |form|'s FormData::child_frames if the total number of frames
   // exceeds |kMaxExtractableChildFrames|.
   auto ProcessForm = [&](FormData form) {
-    for (const auto& field : form.fields()) {
-      observed_renderer_ids.insert(field.renderer_id());
-    }
-
     num_fields_seen += form.fields().size();
     num_frames_seen += form.child_frames().size();
 
@@ -195,134 +163,5 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   return r;
 }
 
-bool FormCache::ShowPredictions(const FormDataPredictions& form,
-                                bool attach_predictions_to_dom) {
-  DCHECK_EQ(form.data.fields().size(), form.fields.size());
-
-  WebDocument document = frame_->GetDocument();
-  WebFormElement form_element =
-      form_util::GetFormByRendererId(form.data.renderer_id());
-  std::vector<WebFormControlElement> control_elements =
-      form_util::GetOwnedAutofillableFormControls(document, form_element);
-  if (control_elements.size() != form.fields.size()) {
-    // Keep things simple.  Don't show predictions for forms that were modified
-    // between page load and the server's response to our query.
-    return false;
-  }
-
-  PageFormAnalyserLogger logger(frame_);
-  for (size_t i = 0; i < control_elements.size(); ++i) {
-    WebFormControlElement& element = control_elements[i];
-
-    const FormFieldData& field_data = form.data.fields()[i];
-    if (form_util::GetFieldRendererId(element) != field_data.renderer_id()) {
-      continue;
-    }
-    const FormFieldDataPredictions& field = form.fields[i];
-
-    element.SetFormElementPiiType(
-        MapTypePredictionToFormElementPiiType(field.overall_type));
-
-    // If the flag is enabled, attach the prediction to the field.
-    if (attach_predictions_to_dom) {
-      constexpr size_t kMaxLabelSize = 100;
-      // TODO(crbug.com/40741721): Use `parseable_label()` once the feature is
-      // launched.
-      std::u16string truncated_label =
-          field_data.label().substr(0, kMaxLabelSize);
-      // The label may be derived from the placeholder attribute and may contain
-      // line wraps which are normalized here.
-      base::ReplaceChars(truncated_label, u"\n", u"|", &truncated_label);
-
-      std::string form_id =
-          base::NumberToString(form.data.renderer_id().value());
-      std::string field_id_str =
-          base::NumberToString(field_data.renderer_id().value());
-
-      blink::LocalFrameToken frame_token;
-      if (auto* frame = element.GetDocument().GetFrame())
-        frame_token = frame->GetLocalFrameToken();
-
-      std::string title = base::StrCat({
-          "overall type: ",
-          field.overall_type,
-          "\nhtml type: ",
-          field.html_type,
-          "\nserver type: ",
-          field.server_type.has_value() ? field.server_type.value()
-                                        : "SERVER_RESPONSE_PENDING",
-          "\nheuristic type: ",
-          field.heuristic_type,
-          "\nlabel: ",
-          base::UTF16ToUTF8(truncated_label),
-          "\nparseable name: ",
-          field.parseable_name,
-          "\nsection: ",
-          field.section,
-          "\nfield signature: ",
-          field.signature,
-          "\nform signature: ",
-          form.signature,
-          "\nform signature in host form: ",
-          field.host_form_signature,
-          "\nalternative form signature: ",
-          form.alternative_signature,
-          "\nform name: ",
-          base::UTF16ToUTF8(form.data.name_attribute()),
-          "\nform id: ",
-          base::UTF16ToUTF8(form.data.id_attribute()),
-          "\nform button titles: ",
-          GetButtonTitlesString(form_util::GetButtonTitles(
-              form_element, /*button_titles_cache=*/nullptr)),
-          "\nfield frame token: ",
-          frame_token.ToString(),
-          "\nform renderer id: ",
-          form_id,
-          "\nfield renderer id: ",
-          field_id_str,
-          "\nvisible: ",
-          field_data.is_visible() ? "true" : "false",
-          "\nfocusable: ",
-          field_data.IsFocusable() ? "true" : "false",
-          "\nfield rank: ",
-          base::NumberToString(field.rank),
-          "\nfield rank in signature group: ",
-          base::NumberToString(field.rank_in_signature_group),
-          "\nfield rank in host form: ",
-          base::NumberToString(field.rank_in_host_form),
-          "\nfield rank in host form signature group: ",
-          base::NumberToString(field.rank_in_host_form_signature_group),
-      });
-
-      WebString kAutocomplete = WebString::FromASCII("autocomplete");
-      if (element.HasAttribute(kAutocomplete)) {
-        title += "\nautocomplete: " +
-                 element.GetAttribute(kAutocomplete).Utf8().substr(0, 100);
-      }
-
-      // Set the same debug string to an attribute that does not get mangled if
-      // Google Translate is triggered for the site. This is useful for
-      // automated processing of the data.
-      element.SetAttribute("autofill-information", WebString::FromUTF8(title));
-
-      //  If the field has password manager's annotation, add it as well.
-      if (element.HasAttribute("pm_parser_annotation")) {
-        title =
-            base::StrCat({title, "\npm_parser_annotation: ",
-                          element.GetAttribute("pm_parser_annotation").Utf8()});
-      }
-
-      // Set this debug string to the title so that a developer can easily debug
-      // by hovering the mouse over the input field.
-      element.SetAttribute("title", WebString::FromUTF8(title));
-
-      element.SetAttribute("autofill-prediction",
-                           WebString::FromUTF8(field.overall_type));
-    }
-  }
-  logger.Flush();
-
-  return true;
-}
 
 }  // namespace autofill

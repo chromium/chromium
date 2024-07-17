@@ -26,9 +26,6 @@ class WebLocalFrame;
 
 namespace autofill {
 
-class FormData;
-struct FormDataPredictions;
-
 // Manages the forms in a single RenderFrame.
 class FormCache {
  public:
@@ -86,14 +83,6 @@ class FormCache {
   UpdateFormCacheResult UpdateFormCache(
       const FieldDataManager& field_data_manager);
 
-  // For each field in the |form|, if |attach_predictions_to_dom| is true, sets
-  // the title to include the field's heuristic type, server type, and
-  // signature; as well as the form's signature and the experiment id for the
-  // server predictions. In all cases, may emit console warnings regarding the
-  // use of autocomplete attributes.
-  bool ShowPredictions(const FormDataPredictions& form,
-                       bool attach_predictions_to_dom);
-
  private:
   friend class FormCacheTestApi;
 
@@ -102,10 +91,6 @@ class FormCache {
 
   // The cached forms. Used to prevent re-extraction of forms.
   std::map<FormRendererId, FormData> extracted_forms_;
-
-  // The synthetic FormData is for all the fieldsets in the document without a
-  // form owner.
-  FormData synthetic_form_;
 };
 
 }  // namespace autofill
