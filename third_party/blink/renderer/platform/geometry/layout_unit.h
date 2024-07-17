@@ -173,11 +173,7 @@ class PLATFORM_EXPORT LayoutUnit {
     value_ = static_cast<int>(value);
   }
 
-  LayoutUnit Abs() const {
-    LayoutUnit return_value;
-    return_value.SetRawValue(::abs(value_));
-    return return_value;
-  }
+  LayoutUnit Abs() const { return FromRawValue(::abs(value_)); }
   int Ceil() const {
     if (UNLIKELY(value_ >= INT_MAX - kFixedPointDenominator + 1))
       return kIntMax;
@@ -222,9 +218,7 @@ class PLATFORM_EXPORT LayoutUnit {
   LayoutUnit Fraction() const {
     // Compute fraction using the mod operator to preserve the sign of the value
     // as it may affect rounding.
-    LayoutUnit fraction;
-    fraction.SetRawValue(RawValue() % kFixedPointDenominator);
-    return fraction;
+    return FromRawValue(RawValue() % kFixedPointDenominator);
   }
 
   bool MightBeSaturated() const {
@@ -235,10 +229,8 @@ class PLATFORM_EXPORT LayoutUnit {
   static constexpr float Epsilon() { return 1.0f / kFixedPointDenominator; }
 
   LayoutUnit AddEpsilon() const {
-    LayoutUnit return_value;
-    return_value.SetRawValue(
-        value_ < std::numeric_limits<int>::max() ? value_ + 1 : value_);
-    return return_value;
+    return FromRawValue(value_ < std::numeric_limits<int>::max() ? value_ + 1
+                                                                 : value_);
   }
 
   static constexpr LayoutUnit Max() {
@@ -539,9 +531,7 @@ inline LayoutUnit BoundedMultiply(const LayoutUnit& a, const LayoutUnit& b) {
   if (high != low >> 31)
     result = saturated;
 
-  LayoutUnit return_val;
-  return_val.SetRawValue(static_cast<int>(result));
-  return return_val;
+  return LayoutUnit::FromRawValue(static_cast<int>(result));
 }
 
 inline LayoutUnit operator*(const LayoutUnit& a, const LayoutUnit& b) {
@@ -573,11 +563,9 @@ constexpr double operator*(const double a, const LayoutUnit& b) {
 }
 
 inline LayoutUnit operator/(const LayoutUnit& a, const LayoutUnit& b) {
-  LayoutUnit return_val;
   int64_t raw_val = static_cast<int64_t>(LayoutUnit::kFixedPointDenominator) *
                     a.RawValue() / b.RawValue();
-  return_val.SetRawValue(base::saturated_cast<int>(raw_val));
-  return return_val;
+  return LayoutUnit::FromRawValue(base::saturated_cast<int>(raw_val));
 }
 
 inline LayoutUnit LayoutUnit::MulDiv(LayoutUnit m, LayoutUnit d) const {
@@ -611,9 +599,8 @@ inline LayoutUnit operator/(std::integral auto a, const LayoutUnit& b) {
 }
 
 ALWAYS_INLINE LayoutUnit operator+(const LayoutUnit& a, const LayoutUnit& b) {
-  LayoutUnit return_val;
-  return_val.SetRawValue(base::ClampAdd(a.RawValue(), b.RawValue()).RawValue());
-  return return_val;
+  return LayoutUnit::FromRawValue(
+      base::ClampAdd(a.RawValue(), b.RawValue()).RawValue());
 }
 
 inline LayoutUnit operator+(const LayoutUnit& a, std::integral auto b) {
@@ -641,9 +628,8 @@ constexpr double operator+(const double a, const LayoutUnit& b) {
 }
 
 ALWAYS_INLINE LayoutUnit operator-(const LayoutUnit& a, const LayoutUnit& b) {
-  LayoutUnit return_val;
-  return_val.SetRawValue(base::ClampSub(a.RawValue(), b.RawValue()).RawValue());
-  return return_val;
+  return LayoutUnit::FromRawValue(
+      base::ClampSub(a.RawValue(), b.RawValue()).RawValue());
 }
 
 inline LayoutUnit operator-(const LayoutUnit& a, std::integral auto b) {
@@ -667,18 +653,15 @@ constexpr float operator-(const float a, const LayoutUnit& b) {
 }
 
 inline LayoutUnit operator-(const LayoutUnit& a) {
-  LayoutUnit return_val;
-  return_val.SetRawValue((-base::MakeClampedNum(a.RawValue())).RawValue());
-  return return_val;
+  return LayoutUnit::FromRawValue(
+      (-base::MakeClampedNum(a.RawValue())).RawValue());
 }
 
 // Returns the remainder after a division with integer results.
 // This calculates the modulo so that:
 //   a = static_cast<int>(a / b) * b + IntMod(a, b).
 inline LayoutUnit IntMod(const LayoutUnit& a, const LayoutUnit& b) {
-  LayoutUnit return_val;
-  return_val.SetRawValue(a.RawValue() % b.RawValue());
-  return return_val;
+  return LayoutUnit::FromRawValue(a.RawValue() % b.RawValue());
 }
 
 inline LayoutUnit& operator+=(LayoutUnit& a, const LayoutUnit& b) {
