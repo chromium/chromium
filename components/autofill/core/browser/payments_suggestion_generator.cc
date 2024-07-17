@@ -114,14 +114,9 @@ std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
 }
 
 int GetObfuscationLength() {
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, the obfuscation length is 2.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On Android and iOS, the obfuscation length is 2.
   return 2;
-#elif BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(
-             features::kAutofillUseTwoDotsForLastFourDigits)
-             ? 2
-             : 4;
 #else
   return 4;
 #endif
@@ -533,8 +528,7 @@ void SetSuggestionLabelsForCard(
           {Suggestion::Text(credit_card.CardNameAndLastFourDigits(
               nickname, GetObfuscationLength()))}};
     } else {
-      // On Mobile, the label is formatted as either "••••1234" or "••1234",
-      // depending on the obfuscation length.
+      // On Mobile, the label is formatted as "••1234".
       suggestion.labels = {{Suggestion::Text(
           credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
               GetObfuscationLength()))}};

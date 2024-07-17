@@ -1486,12 +1486,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableStartupImprovementsName,
      flag_descriptions::kEnableStartupImprovementsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableStartupImprovements)},
-    {"autofill-use-two-dots-for-last-four-digits",
-     flag_descriptions::kAutofillUseTwoDotsForLastFourDigitsName,
-     flag_descriptions::kAutofillUseTwoDotsForLastFourDigitsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUseTwoDotsForLastFourDigits)},
     {"autofill-disable-profile-updates",
      flag_descriptions::kAutofillDisableProfileUpdatesName,
      flag_descriptions::kAutofillDisableProfileUpdatesDescription,

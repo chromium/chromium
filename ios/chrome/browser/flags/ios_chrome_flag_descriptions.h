@@ -155,12 +155,6 @@ extern const char kAutofillUploadCardRequestTimeoutDescription[];
 extern const char kAutofillUseRendererIDsName[];
 extern const char kAutofillUseRendererIDsDescription[];
 
-// Title and description for the flag that controls whether Autofill uses
-// two or four '•' characters when displaying the last four digits of a credit
-// card.
-extern const char kAutofillUseTwoDotsForLastFourDigitsName[];
-extern const char kAutofillUseTwoDotsForLastFourDigitsDescription[];
-
 // Title and description for the flag that changes the default setting for the
 // omnibox position.
 extern const char kBottomOmniboxDefaultSettingName[];

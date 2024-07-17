@@ -893,14 +893,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-use-two-dots-for-last-four-digits",
-    "owners": [
-      "smcgruer@chromium.org",
-      "chrome-payments-team@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "automatic-fullscreen-content-setting",
     "owners": [ "msw@chromium.org", "web-windowing-team@google.com" ],
     "expiry_milestone": 140

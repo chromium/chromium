@@ -245,12 +245,6 @@ const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment{
     &kAutofillUpstreamUpdatedUi, "autofill_upstream_updated_ui_treatment", 0};
 
 #if BUILDFLAG(IS_IOS)
-// When enabled, use two '•' when displaying the last four digits of a credit
-// card number. (E.g., '•• 8888' rather than '•••• 8888').
-BASE_FEATURE(kAutofillUseTwoDotsForLastFourDigits,
-             "AutofillUseTwoDotsForLastFourDigits",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When this is enabled, virtual card enrollment and retrieval will be enabled
 // on Bling.
 BASE_FEATURE(kAutofillEnableVirtualCards,

@@ -105,8 +105,6 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment;
 
 #if BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillUseTwoDotsForLastFourDigits);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillEnableVirtualCards);
 #endif
 

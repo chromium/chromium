@@ -195,13 +195,8 @@ bool ShouldSplitCardNameAndLastFourDigitsForMetadata() {
 // The number of obfuscation dots we use as a prefix when showing a credit
 // card's last four.
 int ObfuscationLengthForCreditCardLastFourDigits() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return 2;
-#elif BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(
-             features::kAutofillUseTwoDotsForLastFourDigits)
-             ? 2
-             : 4;
 #else
   return 4;
 #endif
