@@ -389,9 +389,10 @@ void QuicSessionPoolTest::VerifyServerMigration(const quic::QuicConfig& config,
                         ConstructInitialSettingsPacket(packet_num++));
   socket_data2.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++,
-                                         /*sequence_number=*/0u));
+  socket_data2.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
 
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     socket_data2.AddWrite(SYNCHRONOUS,
@@ -2963,8 +2964,9 @@ void QuicSessionPoolTest::TestOnNetworkMadeDefaultNonMigratableStream(
     // Ping packet to send after migration is completed.
     quic_data1.AddWrite(
         SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-    quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++, 0u));
+    quic_data1.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                         .AddRetireConnectionIdFrame(0u)
+                                         .Build());
   } else {
     client_maker_.set_connection_id(cid_on_old_path);
     socket_data.AddWrite(
@@ -3174,9 +3176,9 @@ void QuicSessionPoolTest::TestOnNetworkDisconnectedNonMigratableStream(
     // Ping packet to send after migration.
     socket_data.AddWrite(
         SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-    socket_data.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeRetireConnectionIdPacket(packet_num++, 0u));
+    socket_data.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                          .AddRetireConnectionIdFrame(0u)
+                                          .Build());
     socket_data.AddSocketDataToFactory(socket_factory_.get());
   } else {
     socket_data.AddReadPauseForever();
@@ -3353,8 +3355,9 @@ void QuicSessionPoolTest::TestOnNetworkMadeDefaultNoOpenStreams(
     // already sent on the new address, ping will no longer be sent.
     quic_data1.AddWrite(ASYNC, client_maker_.MakeRetransmissionPacket(
                                    /*original_packet_number=*/1, packet_num++));
-    quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++, 0u));
+    quic_data1.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                         .AddRetireConnectionIdFrame(0u)
+                                         .Build());
     quic_data1.AddSocketDataToFactory(socket_factory_.get());
   }
 
@@ -3426,9 +3429,10 @@ void QuicSessionPoolTest::TestOnNetworkDisconnectedNoOpenStreams(
     // Ping packet to send after migration.
     alternate_socket_data.AddWrite(
         SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-    alternate_socket_data.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeRetireConnectionIdPacket(packet_num++, 0u));
+    alternate_socket_data.AddWrite(SYNCHRONOUS,
+                                   client_maker_.Packet(packet_num++)
+                                       .AddRetireConnectionIdFrame(0u)
+                                       .Build());
     alternate_socket_data.AddSocketDataToFactory(socket_factory_.get());
   }
 
@@ -3544,8 +3548,9 @@ void QuicSessionPoolTest::TestMigrationOnNetworkDisconnected(
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.Packet(packet_number++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_number++, 0u));
+  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                         .AddRetireConnectionIdFrame(0u)
+                                         .Build());
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -3754,8 +3759,9 @@ TEST_P(QuicSessionPoolTest,
           client_maker_.Packet(to_proxy_packet_num++).AddPingFrame().Build())
       .Sync();
   socket_data1
-      .AddWrite("retire-cid", client_maker_.MakeRetireConnectionIdPacket(
-                                  to_proxy_packet_num++, 0u))
+      .AddWrite("retire-cid", client_maker_.Packet(to_proxy_packet_num++)
+                                  .AddRetireConnectionIdFrame(0u)
+                                  .Build())
       .Sync();
   spdy::Http2HeaderBlock response_headers =
       from_endpoint_maker.GetResponseHeaders("200");
@@ -4136,8 +4142,9 @@ TEST_P(QuicSessionPoolTest, NewNetworkConnectedAfterNoNetwork) {
       client_maker_.MakeCombinedRetransmissionPacket({1, 2}, packet_num++));
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++, 0u));
+  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                         .AddRetireConnectionIdFrame(0u)
+                                         .Build());
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -4263,8 +4270,9 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
       server_maker_.Packet(4).AddPathResponseFrame().AddPaddingFrame().Build());
   quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
                                  packet_number++, 1, 4, 1, {1, 2}));
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                       packet_number++, 0u));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddRetireConnectionIdFrame(0u)
+                                       .Build());
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  5, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -4434,8 +4442,9 @@ void QuicSessionPoolTest::TestMigrationOnPathDegrading(
   quic_data2.AddWrite(ASYNC,
                       client_maker_.MakeCombinedRetransmissionPacket(
                           /*original_packet_numbers=*/{1, 2}, packet_number++));
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                       packet_number++, 0u));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddRetireConnectionIdFrame(0u)
+                                       .Build());
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -4590,9 +4599,10 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyProbingWriterError) {
 
   // Connection ID is retired on the old path.
   client_maker_.set_connection_id(cid_on_old_path);
-  quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                       packet_number++,
-                                       /*sequence_number=*/1u));
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      client_maker_.Packet(packet_number++)
+                          .AddRetireConnectionIdFrame(/*sequence_number=*/1u)
+                          .Build());
 
   quic_data1.AddSocketDataToFactory(socket_factory_.get());
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -4715,9 +4725,10 @@ TEST_P(QuicSessionPoolTest,
 
   // Connection ID is retired on the old path.
   client_maker_.set_connection_id(cid_on_path1);
-  quic_data1.AddWrite(ASYNC, client_maker_.MakeRetireConnectionIdPacket(
-                                 packet_number++,
-                                 /*sequence_number=*/1u));
+  quic_data1.AddWrite(ASYNC,
+                      client_maker_.Packet(packet_number++)
+                          .AddRetireConnectionIdFrame(/*sequence_number=*/1u)
+                          .Build());
 
   // A socket will be created for a new path, but there would be no write
   // due to lack of new connection ID.
@@ -4857,8 +4868,10 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
                                               /*smallest_received=*/1)
                                  .AddPingFrame()
                                  .Build());
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                       5, /*sequence_number=*/0u));
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.Packet(5)
+                          .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                          .Build());
   quic_data2.AddRead(ASYNC, server_maker_.MakeAckPacket(3, 5, 1));
   quic_data2.AddReadPauseForever();
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
@@ -5987,8 +6000,10 @@ void QuicSessionPoolTest::
   client_maker_.set_connection_id(cid_on_new_path);
   quic_data2.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                       packet_num++, /*sequence_number=*/0u));
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.Packet(packet_num++)
+                          .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                          .Build());
 
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -6362,9 +6377,9 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
       // Retire old connection id and send ping packet after migration is
       // completed.
       quic_data2.AddWrite(
-          SYNCHRONOUS,
-          client_maker_.MakeRetireConnectionIdPacket(packet_number++,
-                                                     /*sequence_number=*/0u));
+          SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                           .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                           .Build());
       quic_data2.AddWrite(
           SYNCHRONOUS,
           client_maker_.Packet(packet_number++).AddPingFrame().Build());
@@ -6534,8 +6549,9 @@ TEST_P(QuicSessionPoolTest,
                                  .Build());
 
   quic_data2.AddWrite(SYNCHRONOUS,
-                      client_maker_.MakeRetireConnectionIdPacket(
-                          packet_number++, /*sequence_number=*/0u));
+                      client_maker_.Packet(packet_number++)
+                          .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                          .Build());
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
@@ -6826,8 +6842,9 @@ void QuicSessionPoolTest::TestMigrateSessionWithDrainingStream(
     quic_data2.AddWrite(
         ASYNC, client_maker_.Packet(packet_number++).AddPingFrame().Build());
   }
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                       packet_number++, 0u));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddRetireConnectionIdFrame(0u)
+                                       .Build());
   server_maker_.Reset();
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -6962,8 +6979,9 @@ TEST_P(QuicSessionPoolTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   quic_data2.AddWrite(ASYNC,
                       client_maker_.MakeCombinedRetransmissionPacket(
                           /*original_packet_numbers=*/{1, 2}, packet_num++));
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                       packet_num++, 0u));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                       .AddRetireConnectionIdFrame(0u)
+                                       .Build());
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -7359,8 +7377,9 @@ void QuicSessionPoolTest::TestMigrateSessionEarlyNonMigratableStream(
     // Ping packet to send after migration is completed.
     quic_data1.AddWrite(
         SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-    quic_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++, 0u));
+    quic_data1.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                         .AddRetireConnectionIdFrame(0u)
+                                         .Build());
   } else {
     client_maker_.set_connection_id(cid_on_old_path);
     socket_data.AddWrite(
@@ -7546,9 +7565,10 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnAsyncWriteError) {
           true, priority, std::move(headers), &spdy_headers_frame_len));
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++,
-                                         /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -7729,9 +7749,10 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
                           /*original_packet_numbers=*/{1, 2}, packet_num++));
   quic_data2.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                       packet_num++,
-                                       /*sequence_number=*/0u));
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.Packet(packet_num++)
+                          .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                          .Build());
   quic_data2.AddRead(ASYNC,
                      server_maker_.Packet(peer_packet_num++)
                          .AddAckFrame(1, packet_num - 1, 1u)
@@ -8070,9 +8091,10 @@ void QuicSessionPoolTest::TestNewConnectionOnAlternateNetworkBeforeHandshake(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
   socket_data2.AddReadPauseForever();
   int probing_packet_num = packet_num++;
-  socket_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++,
-                                         /*sequence_number=*/1u));
+  socket_data2.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/1u)
+                            .Build());
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     socket_data2.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeDataAndRstPacket(
@@ -8417,8 +8439,10 @@ void QuicSessionPoolTest::TestMigrationOnWriteError(IoMode write_error_mode) {
                             /*original_packet_numbers=*/{1, 2}, packet_num++));
   socket_data1.AddWrite(
       ASYNC, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++, /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -8623,9 +8647,10 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorWithMultipleRequests(
                             /*original_packet_numbers=*/{1, 2}, packet_num++));
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++,
-                                         /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -8797,9 +8822,10 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorMixedStreams(
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.Packet(packet_number++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_number++,
-                                         /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_number++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -8960,9 +8986,10 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorMixedStreams2(
   socket_data1.AddWrite(
       SYNCHRONOUS,
       client_maker_.Packet(packet_number++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_number++,
-                                         /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_number++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddWrite(
       SYNCHRONOUS, ConstructGetRequestPacket(
                        packet_number++,
@@ -9120,10 +9147,10 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorNonMigratableStream(
             .Build());
     socket_data.AddWrite(
         SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-    socket_data.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeRetireConnectionIdPacket(packet_num++,
-                                                   /*sequence_number=*/0u));
+    socket_data.AddWrite(SYNCHRONOUS,
+                         client_maker_.Packet(packet_num++)
+                             .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                             .Build());
     socket_data.AddSocketDataToFactory(socket_factory_.get());
   } else {
     socket_data.AddReadPauseForever();
@@ -9483,8 +9510,10 @@ void QuicSessionPoolTest::
                             /*original_packet_numbers=*/{1, 2}, packet_num++));
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++, /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
 
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -9643,9 +9672,10 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorWithNotificationQueuedLater(
                             /*original_packet_numbers=*/{1, 2}, packet_num++));
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++,
-                                         /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -10086,9 +10116,10 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorFromOldReaderAfterMigration) {
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++,
-                                         /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -10220,9 +10251,10 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorOnOldReaderDuringMigration) {
       SYNCHRONOUS,
       ConstructGetRequestPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++,
-                                         /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -10339,8 +10371,10 @@ TEST_P(QuicSessionPoolTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   // The PING packet sent post migration.
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++, /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddWrite(
       SYNCHRONOUS,
       ConstructGetRequestPacket(
@@ -10506,9 +10540,10 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeoutForMigration) {
   // The PING packet sent post migration.
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++,
-                                         /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data1.AddWrite(
       SYNCHRONOUS,
       ConstructGetRequestPacket(
@@ -11377,8 +11412,10 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorWithMultipleNotifications(
   socket_data1.AddWrite(ASYNC,
                         client_maker_.MakeCombinedRetransmissionPacket(
                             /*original_packet_numbers=*/{1, 2}, packet_num++));
-  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++, /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     socket_data1.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeDataAndRstPacket(
@@ -11502,9 +11539,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                                      /*original_packet_numbers=*/{1}));
   alternate_socket_data.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  alternate_socket_data.AddWrite(ASYNC,
-                                 client_maker_.MakeRetireConnectionIdPacket(
-                                     packet_num++, /*sequence_number=*/0u));
+  alternate_socket_data.AddWrite(
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                 .Build());
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid2,
                                                      /*sequence_number=*/2u,
@@ -11715,9 +11753,10 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                                      /*original_packet_numbers=*/{1}));
   alternate_socket_data.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  alternate_socket_data.AddWrite(ASYNC,
-                                 client_maker_.MakeRetireConnectionIdPacket(
-                                     packet_num++, /*sequence_number=*/0u));
+  alternate_socket_data.AddWrite(
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                 .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid2,
@@ -11923,9 +11962,10 @@ TEST_P(QuicSessionPoolTest, ServerMigration) {
       client_maker_.MakeCombinedRetransmissionPacket({1, 2}, packet_num++));
   socket_data2.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
-  socket_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
-                                         packet_num++,
-                                         /*sequence_number=*/0u));
+  socket_data2.AddWrite(SYNCHRONOUS,
+                        client_maker_.Packet(packet_num++)
+                            .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                            .Build());
   socket_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));

@@ -93,10 +93,6 @@ class QuicTestPacketMaker {
   // Clone all frames from |packet_number|.
   quic::QuicFrames CloneSavedFrames(uint64_t packet_number);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeRetireConnectionIdPacket(
-      uint64_t packet_number,
-      uint64_t sequence_number);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeNewConnectionIdPacket(
       uint64_t packet_number,
       const quic::QuicConnectionId& cid,

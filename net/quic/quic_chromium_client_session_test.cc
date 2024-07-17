@@ -1616,10 +1616,11 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
                          .AddPingFrame()
                          .Build());
     quic_data2.AddRead(ASYNC, ERR_IO_PENDING);
-    quic_data2.AddWrite(ASYNC,
-                        client_maker_.MakeRetireConnectionIdPacket(
-                            packet_num++,
-                            /*sequence_number=*/next_cid_sequence_number - 1));
+    quic_data2.AddWrite(
+        ASYNC, client_maker_.Packet(packet_num++)
+                   .AddRetireConnectionIdFrame(
+                       /*sequence_number=*/next_cid_sequence_number - 1)
+                   .Build());
     next_cid = quic::QuicUtils::CreateRandomConnectionId(
         quiche::QuicheRandom::GetInstance());
     ++next_cid_sequence_number;

@@ -168,14 +168,6 @@ QuicTestPacketBuilder& QuicTestPacketMaker::Packet(uint64_t packet_number) {
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeRetireConnectionIdPacket(uint64_t packet_number,
-                                                  uint64_t sequence_number) {
-  return Packet(packet_number)
-      .AddRetireConnectionIdFrame(sequence_number)
-      .Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeNewConnectionIdPacket(
     uint64_t packet_number,
     const quic::QuicConnectionId& cid,
