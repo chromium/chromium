@@ -4702,11 +4702,6 @@ Se questo criterio non viene configurato, tutte le origini richiederanno un gest
 <translation id="4615892138881859957">Controlla la scorciatoia usata per attivare il tasto Inserisci del "pacchetto da sei"</translation>
 <translation id="4617338332148204752">Salta il controllo dei metatag in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Funzionalità NewBaseUrlInheritanceBehavior disponibile</translation>
-<translation id="4624006912948309924">La configurazione del criterio consente di correggere quali identificatori di applicazioni vengono mostrati da <ph name="PRODUCT_OS_NAME" /> come app bloccate nella barra Avvio app e gli utenti non possono modificarli.
-
-Specifica le app di Chrome tramite il relativo ID, come pjkljhegncpnkpknbcohdijeoejaedia; le app Android tramite il relativo nome del pacchetto, ad esempio com.google.android.gm; le app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, ad esempio https://google.com/maps e le app web di sistema tramite il nome in snake case, ad esempio <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
-
-Se il criterio non è configurato, gli utenti possono modificare l'elenco di app bloccate in Avvio app.</translation>
 <translation id="4624417808625504735">Impedisci a JavaScript di utilizzare JIT su questi siti</translation>
 <translation id="46321462262887935">Imposta i tasti della fila superiore come tasti funzione, ma consenti la modifica da parte degli utenti</translation>
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
@@ -8768,15 +8763,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="7669630878711068277">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono stampare in <ph name="PRODUCT_NAME" /> e non possono modificare questa impostazione.
 
       Se il criterio viene impostato su Disattivato, gli utenti non possono stampare da <ph name="PRODUCT_NAME" />. L'opzione di stampa è disattivata nel menu con tre puntini, nelle estensioni e nelle applicazioni JavaScript.</translation>
-<translation id="7671234734316758429">Questo criterio consente agli amministratori di specificare le app che fungono da gestori predefiniti per le rispettive estensioni dei file su <ph name="PRODUCT_OS_NAME" /> che gli utenti non possono modificare.
-
-Per tutte le estensioni dei file non specificate nel criterio, gli utenti sono liberi di impostare le loro impostazioni predefinite riguardo al normale flusso di lavoro.
-
-Specifica app di Chrome tramite il relativo ID, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />; app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />; app per Android tramite il relativo nome di pacchetto, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />; app web di sistema tramite il nome del relativo snake case, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />; attività virtuali tramite il relativo nome designato preceduto da <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />.
-
-Tieni presente che le app DEVONO dichiararsi come gestori di file per le estensioni specificate nel file manifest affinché la voce del criterio abbia effetto (ossia il criterio NON estende le funzionalità di app esistenti).
-
-Se il criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> può selezionare gestori predefiniti in base alla logica interna.</translation>
 <translation id="7673194325208122247">Periodo di tempo (millisecondi)</translation>
 <translation id="7677220829878081413">
       Se è impostato su ArcSession, questo criterio forza il riavvio del dispositivo all'uscita dell'utente se Android è stato avviato.
@@ -9169,11 +9155,6 @@ Se il criterio <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> viene impostato su 
           Questo criterio è stato rimosso in Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nome della destinazione di <ph name="PRODUCT_NAME" /></translation>
-<translation id="797820628785995988">Se questo criterio viene impostato, tutti i tipi di dati specificati verranno esclusi dalla sincronizzazione sia per <ph name="CHROME_SYNC_NAME" /> sia per la sincronizzazione del profilo di roaming. Questa operazione può essere utile per ridurre le dimensioni del profilo di roaming o per limitare il tipo di dati caricati sui server di <ph name="CHROME_SYNC_NAME" />.
-
-      Attualmente i tipi di dati per questo criterio sono: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "readingList", "savedTabGroups", "tabs", "themes", "typedUrls", "wifiConfigurations". Questi nomi sono sensibili alle maiuscole.
-
-      Note: l'aggiornamento dinamico dei criteri è supportato solo in <ph name="PRODUCT_NAME" /> 123 e versioni successive. La disattivazione di "autofill" disattiva anche "payments". "typedUrls" si riferisce all'intera cronologia di navigazione.</translation>
 <translation id="7982057585796399404">Questo criterio consente di specificare un elenco di app ed estensioni installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti. Le autorizzazioni vengono concesse implicitamente, anche quelle relative alle API delle estensioni enterprise.deviceAttributes ed enterprise.platformKeys. Queste due API non sono disponibili per le app e le estensioni senza installazione forzata.
 
 Se il criterio non viene configurato, nessuna app o estensione viene installata automaticamente e gli utenti possono disinstallare qualsiasi app o estensione in <ph name="PRODUCT_NAME" />.

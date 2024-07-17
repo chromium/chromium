@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Imagen de fondo</translation>
 <translation id="3027578600144895987">Cerrar la cámara</translation>
 <translation id="3031560714565892478">El dispositivo es una videocámara.</translation>
-<translation id="3051968340259309715">Esto permite que los servicios del sistema usen la Precisión de la ubicación para determinar dónde te encuentras. La Precisión de la ubicación usa la información sobre señales inalámbricas, como los puntos de acceso de Wi-Fi, las torres de redes móviles y el GPS, junto con los datos de sensores del dispositivo, como el acelerómetro y el giroscopio, para calcular la ubicación del dispositivo. Puedes desactivar la ubicación en Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Extremo</translation>
 <translation id="3060579846059757016">Puntos destacados</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">Dispositivos de red</translation>
 <translation id="7344788170842919262">terroso</translation>
 <translation id="7346768383111016081">Ubica el control en una acción del juego para jugar con el teclado</translation>
+<translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7353413232959255829">Resultado de la búsqueda <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Presiona Intro para navegar al acceso directo.</translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
 <translation id="73631062356239394">Compartir datos de diagnóstico</translation>

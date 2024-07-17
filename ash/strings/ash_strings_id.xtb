@@ -521,6 +521,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2970920913501714344">Instal aplikasi, ekstensi, dan tema</translation>
 <translation id="2977598380246111477">Nomor berikutnya</translation>
 <translation id="2985148236010982088">Lihat semua aplikasi</translation>
+<translation id="2992272421330787632">Sembunyikan semua saran media</translation>
 <translation id="2992327365391326550">Tombol mikrofon perangkat dinonaktifkan.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Edit ukuran layar</translation>
@@ -591,6 +592,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3255483164551725916">Apa yang bisa kamu lakukan?</translation>
 <translation id="3256109297135787951">Menghapus tanda dari item di rak</translation>
 <translation id="3260969790895726815">Ucapan diproses secara lokal dan dikte berfungsi secara offline, tetapi beberapa perintah suara tidak akan berfungsi.</translation>
+<translation id="3264031581203585083">Sembunyikan semua saran Google Drive</translation>
 <translation id="3265032511221679826">Aktifkan akses lokasi presisi?</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
 <translation id="3274634049061007184">Lihat aplikasi ponsel Anda</translation>
@@ -742,6 +744,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3738664582935948253">Anda kini dapat menampilkan klik dan pintasan keyboard di rekaman layar</translation>
 <translation id="3742055079367172538">Screenshot telah diambil</translation>
 <translation id="3743775386021959186">Fokus aktif, <ph name="REMAINING_TIME" /> lagi</translation>
+<translation id="3750403286520637847">Sembunyikan saran cuaca</translation>
 <translation id="3756485814916578707">Mentransmisikan layar</translation>
 <translation id="3765841382945324995">Pintasan <ph name="SIX_PACK_KEY_NAME" /> diperbarui dari <ph name="OLD_SHORTCUT" /> menjadi <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Diedit hari ini</translation>
@@ -781,6 +784,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Tidak ada jaringan seluler yang disiapkan</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Memuat acara.</translation>
+<translation id="3927049937406914450">Cuaca tidak tersedia karena akses lokasi dinonaktifkan. Anda dapat mengubahnya di setelan.</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
 <translation id="3934456833412894880">Pengisian daya adaptif aktif. Daya baterai Anda hanya akan diisi sampai 80% untuk memperpanjang masa pakai baterai, dan diisi penuh jika Anda memerlukannya.</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
@@ -897,6 +901,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4312840429157639164">Kamera dipaskan ke pojok kanan atas. Bertentangan dengan platform sistem.</translation>
 <translation id="4316910396681052118">SEMUA APLIKASI</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Sembunyikan semua saran browser Chrome</translation>
 <translation id="4322742403972824594">Pintasan keyboard Ctrl + Alt + Panah Atas telah diubah. Untuk menggunakan tombol Home, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Kiri.</translation>
 <translation id="4324840740119394760">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin kamera</translation>
 <translation id="4327147325944669226">Rekam game</translation>
@@ -930,6 +935,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4450893287417543264">Jangan tampilkan lagi</translation>
 <translation id="4451374464530248585">Pintasan keyboard Alt + Panah Bawah telah diubah. Untuk menggunakan tombol Page Down, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Bawah.</translation>
 <translation id="4453876312474547652">Anda akan melihat papan klip saat menekan dan menahan Ctrl + V. Anda dapat menonaktifkan pintasan ini dengan menonaktifkan tanda #clipboard-history-longpress di chrome://flags (os://flags jika menggunakan Lacros).</translation>
+<translation id="445765352722456792">Sesuaikan saran</translation>
 <translation id="445864333228800152">Selamat sore,</translation>
 <translation id="4458688154122353284">Hentikan perekaman layar</translation>
 <translation id="445923051607553918">Bergabung dengan jaringan Wi-Fi</translation>
@@ -1332,6 +1338,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5802516411616338943">Buka Setelan Cepat</translation>
 <translation id="5804651031882187592">Nonaktifkan setelan "Kunci SIM"</translation>
 <translation id="5805809050170488595">Klik untuk mengaktifkan <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Chromebook dimulai ulang secara tiba-tiba. Buka jendela dan aplikasi sebelumnya.</translation>
 <translation id="5823239091726045201">Google Tasks di web</translation>
 <translation id="5825969630400862129">Setelan perangkat yang terhubung</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> di <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6469104339369989396">Aktifkan/nonaktifkan hotspot</translation>
 <translation id="6477681113376365978">Tidak dapat mendownload file</translation>
 <translation id="6482559668224714696">Kaca pembesar layar penuh</translation>
+<translation id="6485086611007560630">Cuaca (tidak tersedia)</translation>
 <translation id="6490471652906364588">Perangkat USB-C (port sebelah kanan)</translation>
 <translation id="649452524636452238">PIN kartu smart</translation>
 <translation id="6495322433318104734">Menampilkan screensaver, tekan sembarang tombol untuk keluar</translation>
@@ -1781,6 +1789,7 @@ Baru diinstal</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Beralih satuan suhu (F vs. C)</translation>
 <translation id="7519206258459640379">Framing kamera aktif.</translation>
 <translation id="7519649142417630956">Setelah dimatikan, administrator akan logout dan tidak dapat mengontrol perangkat Anda.
 
@@ -1921,6 +1930,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7951630946012935453">Redupkan keyboard</translation>
 <translation id="7953994493035617347">Konfirmasi resolusi baru?</translation>
 <translation id="795958884516058160">Pembesar Layar Penuh diaktifkan. Tekan <ph name="ACCELERATOR" /> lagi untuk menonaktifkannya.</translation>
+<translation id="7962583092928373823">Sembunyikan semua saran Google Kalender</translation>
 <translation id="7963689218131240420">Mode Jangan Ganggu nonaktif.</translation>
 <translation id="7963992254934562106">Dari <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder ...</translation>
@@ -1993,6 +2003,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8214996719228530800">Saluran Canary</translation>
 <translation id="8219451629189078428">Chromebook harus tetap aktif dan terhubung ke daya selama jangka waktu ini. Pastikan kabel pengisi daya atau adaptor dicolokkan dengan benar ke Chromebook dan stopkontak. Jangan nonaktifkan Chromebook Anda.</translation>
 <translation id="8220076512072059941">Tambahkan <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Sembunyikan saran ini</translation>
 <translation id="8230305195727960608">Mode Inversi Warna</translation>
 <translation id="8236042855478648955">Waktunya beristirahat</translation>
 <translation id="8237964652943995219">Desktop virtual berikutnya: <ph name="DESK_NAME" />. Desktop virtual <ph name="DESK_INDEX" /> dari <ph name="DESK_COUNT" />.</translation>
@@ -2179,6 +2190,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Kotak centang tidak dicentang.</translation>
 <translation id="8949925099261528566">Terhubung, tidak ada internet</translation>
 <translation id="8951539504029375108">Hanya perangkat Thunderbolt yang disetujui yang kompatibel dengan Chromebook</translation>
+<translation id="8956420987536947088">Buka jendela dan aplikasi sebelumnya</translation>
 <translation id="8959380109429710384">Anda menekan pintasan keyboard untuk pembesar layar penuh. Gunakan ctrl + alt + tanda panah untuk berpindah-pindah di tampilan yang diperbesar.</translation>
 <translation id="8964525410783593407">1 jam</translation>
 <translation id="8973885907461690937">Tempatkan fokus pada ikon menu</translation>

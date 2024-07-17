@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Latar belakang</translation>
 <translation id="3027578600144895987">Tutup kamera</translation>
 <translation id="3031560714565892478">Peranti ialah kamera video.</translation>
-<translation id="3051968340259309715">Tindakan ini membolehkan perkhidmatan sistem menggunakan Ketepatan Lokasi untuk menentukan lokasi anda. Ketepatan Lokasi menggunakan maklumat tentang isyarat wayarles, seperti titik akses Wi-Fi, menara rangkaian selular dan GPS, bersama dengan data penderia peranti, seperti akselerometer dan giroskop untuk menganggarkan lokasi peranti. Anda boleh mematikan lokasi dalam Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Titik akhir</translation>
 <translation id="3060579846059757016">Rangka</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">Peranti Rangkaian</translation>
 <translation id="7344788170842919262">berwarna tanah</translation>
 <translation id="7346768383111016081">Letakkan kawalan pada tindakan permainan untuk bermain dengan papan kekunci anda</translation>
+<translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7353413232959255829">Hasil carian <ph name="LIST_POSITION" /> daripada <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tekan Enter untuk menavigasi kepada pintasan.</translation>
 <translation id="7359657277149375382">Jenis fail</translation>
 <translation id="73631062356239394">Kongsi data diagnostik</translation>

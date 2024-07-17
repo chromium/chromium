@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Tausta</translation>
 <translation id="3027578600144895987">Sulje kamera</translation>
 <translation id="3031560714565892478">Laite on videokamera.</translation>
-<translation id="3051968340259309715">Näin järjestelmäpalvelut voivat määrittää sijaintisi sijaintitietojen tarkkuuden avulla. Sijaintitietojen tarkkuus käyttää sijainnin arvioimiseen langattomista signaaleista peräisin olevia tietoja (esim. Wi-Fi-tukiasemista ja mobiiliverkkotorneista), sekä laitteen anturien (esim. akselerometri ja gyroskooppi) keräämää dataa. Voit laittaa sijainnin pois päältä valitsemalla Asetukset &gt; Tietosuoja ja turvallisuus &gt; Yksityisyysasetukset &gt; Sijainnin käyttöoikeus. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Päätepiste</translation>
 <translation id="3060579846059757016">Osioiden yhteenvedot</translation>
@@ -1037,6 +1036,7 @@
 <translation id="6595046262780525922">Laitetaanko transkriptio päälle ja ladataanko transkriptiomalli?</translation>
 <translation id="6596816719288285829">IP-osoite</translation>
 <translation id="6599673642868607614">Kiitos palautteestasi. Tiimimme tarkastaa palautteesi, ja se auttaa meitä parantamaan Chromebook-kokemusta. Ilmoitusten suuren määrän vuoksi emme voi lähettää vastausta.</translation>
+<translation id="660846213831377756">Hiiren painikkeet</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
 <translation id="6620487321149975369">Tulostustyöt näkyvät historiassa, ellei niitä poisteta manuaalisesti</translation>
 <translation id="6624819909909965616">Ladattavan tiedoston koko voi olla enintään 10 Mt.</translation>
@@ -1190,6 +1190,7 @@
 <translation id="7343649194310845056">Verkkolaitteet</translation>
 <translation id="7344788170842919262">maanläheinen</translation>
 <translation id="7346768383111016081">Aseta ohjain pelitoiminnolle, jotta voit pelata näppäimistöllä</translation>
+<translation id="7352651011704765696">Tapahtui jokin virhe</translation>
 <translation id="7353413232959255829">Hakutulos <ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Siirry pikakomentoon painamalla Enter.</translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>
 <translation id="73631062356239394">Diagnostiikkadatan jakaminen</translation>

@@ -8,7 +8,6 @@
 <translation id="102916930470544692">ಪಾಸ್‌ಕೀ</translation>
 <translation id="1035980983510608210">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚುವುದರಿಂದ ಪಿನ್ ಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸಹ ಮುಚ್ಚಲಾಗುತ್ತದೆ.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1044891598689252897">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತವೆ</translation>
 <translation id="1049743911850919806">ಅದೃಶ್ಯ</translation>
 <translation id="1053651653201045802">ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನೋಡಲು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ಆಗಿ ಮುಂದುವರಿಸಿ</translation>
+<translation id="1388866984373351434">ಬ್ರೌಸ್ ಮಾಡುವ ಡೇಟಾ </translation>
 <translation id="1400642268715879018">ಕಳೆದ 4 ವಾರಗಳು</translation>
 <translation id="1404330357948037222">ನೀವು ಸೈನ್ ಔಟ್ ಆಗಿದ್ದೀರಿ</translation>
-<translation id="14066361343057390">ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="1407135791313364759">ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="1408847409015257906">“ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆಯನ್ನು” ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">ಫೈಲ್‌ ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="2718352093833049315">ಕೇವಲ ವೈ-ಫೈ ಮಾತ್ರ</translation>
 <translation id="2738375676495545665">ಹೊಸತೇನಿದೆ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
-<translation id="2740910715135851329">ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ, ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="2747003861858887689">ಹಿಂದಿನ ಕ್ಷೇತ್ರ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ಅನ್ನು ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2754492786623500387">ಈ ಸಾಧನದಲ್ಲಿನ ಖಾತೆಗಳು</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">Lens ಕ್ಯಾಮರಾ ಹುಡುಕಾಟ</translation>
 <translation id="2958718410589002129">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="2964349545761222050">ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="2965328226365382335">ಕೊನೆಯ 15 ನಿಮಿಷಗಳು</translation>
 <translation id="2969979262385602596">ಸೈನ್ ಇನ್ ವಿಫಲವಾಗಿದೆ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2975121486251958312">ಅಜ್ಞಾತ ಮೋಡ್ ಮಾತ್ರ ಲಭ್ಯವಿದೆ</translation>
 <translation id="2982481275546140226">ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523"><ph name="DATE" /> ರಂದು ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="374357899112510277">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3745190878148784130">ಪಠ್ಯವನ್ನು ಝೂಮ್ ಮಾಡಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
-<translation id="3747231889390582072">ನಿಮ್ಮ ಸಂಸ್ಥೆಯನ್ನು ರಕ್ಷಿಸಲು, ಈ ಸಾಧನದಿಂದ ಸೇವ್ ಮಾಡದಿರುವ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಇದು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕೀಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಒಳಗೊಂಡಿರಬಹುದು.</translation>
 <translation id="3762232513783804601">ನಿಮ್ಮ iPad ಗಾಗಿ ನಿರ್ಮಿಸಲಾಗಿದೆ</translation>
 <translation id="3768725474733206671">ಕೊನೆಯದಾಗಿ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್ ಮರುತೆರೆಯಿರಿ</translation>
 <translation id="3771033907050503522">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳು</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿನ {count} ಪುಟ}one{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿನ {count} ಪುಟಗಳು}other{ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿನ {count} ಪುಟಗಳು}}</translation>
 <translation id="4659667755519643272">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್ ನಮೂದಿಸಿ</translation>
 <translation id="46614316059270592">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಿ</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">ಫೋನ್ ಕರೆಯನ್ನು ಪ್ರಾರಂಭಿಸುವ ಮೂಲಕ ವ್ಯಾಪಾರದ ಜೊತೆಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ</translation>
 <translation id="4682686630151240767">1. iPhone ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4689564913179979534">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
@@ -1519,7 +1518,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count} ಪಾಸ್‌ವರ್ಡ್ ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ {email} ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ.}one{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ {email} ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ.}other{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಐಟಂಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ. ಅವುಗಳನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಬಳಸಲು, ಅವುಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ {email} ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ.}}</translation>
 <translation id="8522813812888400223">ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> ರಲ್ಲಿ <ph name="LAST_VISIBLE_TAB" /> ಮೂಲಕ <ph name="INCOGNITO" /> ಟ್ಯಾಬ್‌ಗಳು <ph name="FIRST_VISIBLE_TAB" /></translation>
-<translation id="852576975834694248">ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ</translation>
 <translation id="8528009254289981965">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇತರ ಆ್ಯಪ್‌ಗಳಿಂದ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8529767659511976195">ಹೊಸತು</translation>
 <translation id="8532105204136943229">ಮುಕ್ತಾಯದ ವರ್ಷ</translation>

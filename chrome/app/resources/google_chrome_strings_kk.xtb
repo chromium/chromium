@@ -22,6 +22,7 @@
 <translation id="1229096353876452996">Google қызметі Chrome-ды әдепкі браузер ретінде орнатуға кеңес береді</translation>
 <translation id="1265739287306757398">Әдісін білу</translation>
 <translation id="1278833599417554002">&amp;Chrome-ды жаңарту үшін қайта іске қосу</translation>
+<translation id="1290883685122687410">Реттеу қатесі: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome ең соңғы жүйе жаңартуларын орнатуда, күте тұрыңыз.</translation>
 <translation id="1335640173511558774">Бұл құрылғыны пайдаланбас бұрын, <ph name="MANAGER" /> келесі Қызмет көрсету шарттарын оқып, қабылдауыңызды талап етеді. Бұл шарттар Google ChromeOS Flex Шарттарын толықтырмайды, өзгертпейді және шектемейді.</translation>
 <translation id="1341711321000856656">Басқа Chrome профиліндегі құпия сөздерді көру үшін ауысуға болады</translation>
@@ -194,6 +195,7 @@
 <translation id="3583751698304738917">Басқа Chrome профилінде әлдеқашан <ph name="USER_EMAIL_ADDRESS" /> ретінде кіргенсіз.</translation>
 <translation id="3595784445906693824">Chrome-ға жаңа профильмен кіру қажет пе?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Жаңартылған нұсқаны қолдану үшін әкімшіңіз Chrome браузерін қайта іске қосуыңызды талап етеді.}=1{Жаңартылған нұсқаны қолдану үшін әкімшіңіз Chrome браузерін қайта іске қосуыңызды талап етеді. Инкогнито терезесі қайта ашылмайды.}other{Жаңартылған нұсқаны қолдану үшін әкімшіңіз Chrome браузерін қайта іске қосуыңызды талап етеді. # инкогнито терезесі қайта ашылмайды.}}</translation>
+<translation id="3597003331831379823">Реттеуді кеңейтілген құқықтармен бастау мүмкін болмады. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Жақында кірмедіңіз. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> рұқсаттарын өшірді.</translation>
 <translation id="3622797965165704966">Енді Chrome қолданбасын Google аккаунтымен және ортақ компьютерлерде пайдалану жеңілірек.</translation>
 <translation id="3635073343384702370">Құпия сөздер сақталған кезде, Chrome оларды тексере алады.</translation>

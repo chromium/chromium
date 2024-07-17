@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">କମଳା</translation>
 <translation id="125153950246128346">ଅନ୍ୟଏକ ଟାବ୍ ଦେଖିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ ବିକଳ୍ପ</translation>
-<translation id="1322824555808364080">ଲୋକମାନଙ୍କୁ ନିମନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
 <translation id="1419023007528516122">ଏହା ଆପଣଙ୍କ ଡିଭାଇସରୁ ଗୋଷ୍ଠୀକୁ ସ୍ଥାୟୀ ଭାବରେ ଡିଲିଟ କରିଦେବ</translation>
 <translation id="1486715732399361704">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ସମସ୍ତ ଟାବ ଗ୍ରୁପ ଖୋଜିପାରିବେ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> ମିନିଟ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_MINS_MANY" /> ମିନିଟ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">ଆପଣ ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପକୁ ଏଠାରେ ପାଇବେ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ}}</translation>
+<translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 ଦିନ ପରେ}other{<ph name="DAY_COUNT_MANY" /> ଦିନ ପରେ}}</translation>
 <translation id="6549021453810473782">ଷ୍ଟୋର୍ ସୂଚନା ଦେଖନ୍ତୁ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

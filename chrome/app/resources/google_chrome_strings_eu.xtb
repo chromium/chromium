@@ -22,6 +22,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1229096353876452996">Google-k Chrome lehenetsi gisa ezartzea gomendatzen du</translation>
 <translation id="1265739287306757398">Lortu argibideak</translation>
 <translation id="1278833599417554002">Exekuta ezazu berriro &amp;Chrome eguneratzeko</translation>
+<translation id="1290883685122687410">Konfigurazio-errorea: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Itxaron Chrome-k sistemaren azken eguneratzeak instalatu arte.</translation>
 <translation id="1335640173511558774">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Google Chrome OS Flex-en Baldintzak.</translation>
 <translation id="1341711321000856656">Chrome-ko beste profil bateko pasahitzak ikustera joan zaitezke</translation>
@@ -194,6 +195,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3583751698304738917">Jadanik hasita daukazu saioa <ph name="USER_EMAIL_ADDRESS" /> gisa Chrome-ko beste profil batean</translation>
 <translation id="3595784445906693824">Chrome-n beste profil batekin hasi nahi duzu saioa?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Chrome berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko}=1{Chrome berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
+<translation id="3597003331831379823">Ezin izan da exekutatu konfigurazioa gehiegizko baimenekin. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta <ph name="PERMISSION_3" /> erabiltzeko baimenak kendu dizkio.</translation>
 <translation id="3622797965165704966">Errazagoa da Chrome erabiltzea Google-ko kontuarekin eta partekatutako ordenagailuetan.</translation>
 <translation id="3635073343384702370">Gordetzen dituzun pasahitzak egiaztatzeko gai da Chrome</translation>

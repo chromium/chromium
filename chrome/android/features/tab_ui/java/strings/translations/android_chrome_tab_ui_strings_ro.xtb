@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Portocaliu</translation>
 <translation id="125153950246128346">Atinge pentru a vedea altă filă</translation>
 <translation id="1273910660700874265">Opțiuni pentru grupul de file <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Invită persoane</translation>
 <translation id="1419023007528516122">Astfel, grupul va fi șters definitiv de pe dispozitiv</translation>
 <translation id="1486715732399361704">Aici poți găsi toate grupurile de file</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Creat acum <ph name="NUM_MINS_ONE" /> minut}few{Creat acum <ph name="NUM_MINS_MANY" /> minute}other{Creat acum <ph name="NUM_MINS_MANY" /> de minute}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Aici vei vedea grupurile de file</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Anulează <ph name="TABS_COUNT_MANY" /> file selectate}other{Anulează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
+<translation id="6527303717912515753">Trimite</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{După o zi}few{După <ph name="DAY_COUNT_MANY" /> zile}other{După <ph name="DAY_COUNT_MANY" /> de zile}}</translation>
 <translation id="6549021453810473782">Vezi informații despre magazin</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

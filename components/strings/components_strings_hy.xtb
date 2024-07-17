@@ -1170,7 +1170,6 @@
 <translation id="3209034400446768650">Այս էջը կարող է գումար գանձել ձեզնից</translation>
 <translation id="3212581601480735796">Ձեր գործողությունները <ph name="HOSTNAME" /> կայքում հետագծվում են</translation>
 <translation id="3215092763954878852">Չհաջողվեց օգտագործել WebAuthn-ը</translation>
-<translation id="3215311088819828484">Արդյունքը թարմացվել է</translation>
 <translation id="3216313131063488104">Բլյուզ</translation>
 <translation id="3218181027817787318">Հարաբերական</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Պահանջվում է թարմացում հենց հիմա}=2{Պահանջվում է թարմացում մինչև վաղը}one{Պահանջվում է թարմացում # օրվա ընթացքում}other{Պահանջվում է թարմացում # օրվա ընթացքում}}</translation>
@@ -2699,7 +2698,6 @@
 <translation id="6116338172782435947">Տեսնել սեղմատախտակին պատճենված տեքստը և պատկերները</translation>
 <translation id="6117833587752089929">Ֆոտոթուղթ (ատլաս)</translation>
 <translation id="6118782133429281336">Աղբյուրների ցանկը դատարկ է։</translation>
-<translation id="6120950591512958208">Կոդն օգտագործեք վճարման ժամանակ։</translation>
 <translation id="612178891608320683">Վեգանական խոհանոց</translation>
 <translation id="6122181661879998141">քարտի դիմացի կողմում</translation>
 <translation id="6124058285696691147">Ներբեռնել առդիրը</translation>

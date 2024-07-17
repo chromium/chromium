@@ -1163,7 +1163,6 @@
 <translation id="3209034400446768650">ገፅ ገንዘብ ሊያስከፍል ይችል ይሆናል</translation>
 <translation id="3212581601480735796">በ<ph name="HOSTNAME" /> ላይ የእርስዎ እንቅስቃሴ ቁጥጥር እየተደረገበት ነው</translation>
 <translation id="3215092763954878852">WebAuthn ን መጠቀም አልተቻለም</translation>
-<translation id="3215311088819828484">ውጤት ተዘምኗል</translation>
 <translation id="3216313131063488104">ብሉዝ</translation>
 <translation id="3218181027817787318">አንጻራዊ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ዝማኔው አሁን ያስፈልጋል}=2{ዝማኔው እስከ ነገ ድረስ ያስፈልጋል}one{ዝማኔው በ# ቀን ውስጥ ያስፈልጋል}other{ዝማኔው በ# ቀናት ውስጥ ያስፈልጋል}}</translation>
@@ -2687,7 +2686,6 @@
 <translation id="6116338172782435947">ወደ ቅንጥብ ሰሌዳው የተቀዱ ጽሁፍ እና ምስሎችን ይመልከቱ</translation>
 <translation id="6117833587752089929">ፎቶ (ሳትን)</translation>
 <translation id="6118782133429281336">መነሻ ዝርዝር ባዶ ነው።</translation>
-<translation id="6120950591512958208">ክፍይ ማጠናቀቅ ላይ ይህን ኮድ ይጠቀሙ።</translation>
 <translation id="612178891608320683">የእንስሳት ተዋጽዖዎች የማይበላ ተመጋቢ ምግብ</translation>
 <translation id="6122181661879998141">የካርድዎ ፊት ለፊት</translation>
 <translation id="6124058285696691147">አባሪውን አውርድ</translation>

@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Oranžna</translation>
 <translation id="125153950246128346">Dotaknite se, če želite prikazati drug zavihek</translation>
 <translation id="1273910660700874265">Možnosti skupine zavihkov <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Pošiljanje povabil osebam</translation>
 <translation id="1419023007528516122">S tem boste skupino trajno izbrisali iz naprave</translation>
 <translation id="1486715732399361704">Vse skupine zavihkov so prikazane tukaj</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Ustvarjeno pred <ph name="NUM_MINS_ONE" /> minuto}one{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minuto}two{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutama}few{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}other{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Skupine zavihkov bodo prikazane tukaj</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Razdruži <ph name="TABS_COUNT_ONE" /> izbrani zavihek}one{Razdruži <ph name="TABS_COUNT_MANY" /> izbrani zavihek}two{Razdruži <ph name="TABS_COUNT_MANY" /> izbrana zavihka}few{Razdruži <ph name="TABS_COUNT_MANY" /> izbrane zavihke}other{Razdruži <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
+<translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Po 1 dnevu}one{Po <ph name="DAY_COUNT_MANY" /> dnevu}two{Po <ph name="DAY_COUNT_MANY" /> dneh}few{Po <ph name="DAY_COUNT_MANY" /> dneh}other{Po <ph name="DAY_COUNT_MANY" /> dneh}}</translation>
 <translation id="6549021453810473782">Ogled podatkov o trgovini</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

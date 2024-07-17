@@ -679,6 +679,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2219658597883514593">Genstart vejledningen</translation>
 <translation id="2219735899272417925">Enheden skal nulstilles</translation>
 <translation id="2221227930294879156">Festival for mad og drikke</translation>
+<translation id="2222604080869344662">Log ind på OneDrive for at fortsætte med at downloade</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2225927550500503913">Virtuelt kort er aktiveret</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Login<ph name="END_LINK" /> på Wi-Fi-netværket</translation>
@@ -778,6 +779,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2399868464369312507">Google Chrome forsøger at redigere betalingsmetoder.</translation>
 <translation id="2400600116338235695">Websitet kan anmode om tilladelse til at oprette forbindelse til serieporte</translation>
 <translation id="2404884497378469141">Prøv at kopiere dine filer igen</translation>
+<translation id="2412310121876768057">Vil du automatisk udfylde kortet næste gang?</translation>
 <translation id="2413155254802890957">Gammel</translation>
 <translation id="2413528052993050574">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet muligvis er blevet tilbagekaldt. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="2414886740292270097">Mørk</translation>
@@ -1162,7 +1164,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3209034400446768650">Siden kan opkræve betaling</translation>
 <translation id="3212581601480735796">Din aktivitet på <ph name="HOSTNAME" /> overvåges</translation>
 <translation id="3215092763954878852">WebAuthn kunne ikke anvendes</translation>
-<translation id="3215311088819828484">Resultatet er opdateret</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Du skal opdatere nu}=2{Du skal opdatere senest i morgen}one{Du skal opdatere inden for # dag}other{Du skal opdatere inden for # dage}}</translation>
@@ -1241,6 +1242,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3352881017886802007">Sportsspil</translation>
 <translation id="3355823806454867987">Skift indstillinger for proxy...</translation>
 <translation id="335809815767823">Eksporteret</translation>
+<translation id="3359387651158939842">Udfyld dit kort automatisk ved fremtidige køb, når du gemmer det til brug med Google Pay</translation>
 <translation id="3359565626472459400">Ægteskab</translation>
 <translation id="3360103848165129075">Regneark for betalingshandler</translation>
 <translation id="3362968246557010467">Denne politik blev automatisk kopieret fra den udfasede politik <ph name="OLD_POLICY" />. Du bør bruge denne politik i stedet.</translation>
@@ -2055,6 +2057,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">OL</translation>
 <translation id="4898742041545089450">Blokeringen af dette emne er fjernet, og det kan blive aktivt baseret på din browserhistorik</translation>
+<translation id="4899379435492347481">Gem dette kort, så du kan bruge det online ved køb med Google Pay på alle dine enheder</translation>
 <translation id="4900217275619098670">Niende papirrulle</translation>
 <translation id="4901052769830245369">Etiketter (halvblanke)</translation>
 <translation id="4901162432287938633">Hygiejne og toiletartikler</translation>
@@ -2684,7 +2687,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6116338172782435947">Se tekst og billeder, der er kopieret til udklipsholderen</translation>
 <translation id="6117833587752089929">Foto (satin)</translation>
 <translation id="6118782133429281336">Oprindelseslisten er tom.</translation>
-<translation id="6120950591512958208">Brug denne kode ved betaling.</translation>
 <translation id="612178891608320683">Vegansk mad</translation>
 <translation id="6122181661879998141">forsiden af dit kort</translation>
 <translation id="6124058285696691147">Download den vedhæftede fil</translation>
@@ -2718,6 +2720,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6180316780098470077">Interval for gentagelse af forsøg</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome begrænser automatisk tredjepartscookies</translation>
+<translation id="6194139058731919563">Dine kortoplysninger krypteres, når de gemmes på din Google-konto og bruges til at betale online</translation>
 <translation id="6194209731893739467">Se alle de produkter, du holder øje med, her</translation>
 <translation id="6195163219142236913">Tredjepartscookies er begrænset</translation>
 <translation id="6195371403461054755">Geologi</translation>
@@ -3619,6 +3622,7 @@ Yderligere oplysninger:
 <translation id="7831993212387676366">Hvad er indkøbslisten?</translation>
 <translation id="7832078172950550575">Du kan bruge dagligsprog til at søge i din browserhistorik ved hjælp af udtryk såsom "pizzeriaer i nærheden" eller "familievenlige parker i midtbyen". Dine søgninger, bedste matches og deres sideindhold sendes til Google og kan blive set af menneskelige kontrollanter for at forbedre denne funktion. <ph name="BEGIN_LINK" />Administrer din indstilling for søgning i historikken<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Screenshot er startet</translation>
+<translation id="7840504603489703295">Grænser fra dit pengeinstitut anvendes.</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="784404208867107517">Grupperet historik</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -3817,6 +3821,7 @@ Yderligere oplysninger:
 <translation id="8241712895048303527">Bloker på dette website</translation>
 <translation id="8242426110754782860">Fortsæt</translation>
 <translation id="8246482227229072868">Ringe</translation>
+<translation id="8248406213705193919">Vil du gemme kortet på en sikker måde?</translation>
 <translation id="8249296373107784235">Annuller</translation>
 <translation id="824968735947741546">Oversætter <ph name="SOURCE" /> (automatisk registreret) til <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Adressen gemmes i øjeblikket på denne enhed. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="ACCOUNT" />.</translation>
@@ -4302,6 +4307,7 @@ Yderligere oplysninger:
 <translation id="9169664750068251925">Bloker altid på dette website</translation>
 <translation id="9169931577761441333">Føj <ph name="APP_NAME" /> til startskærmen</translation>
 <translation id="9170848237812810038">&amp;Fortryd</translation>
+<translation id="9170906125144697215">Betal med Pix uden at skifte app</translation>
 <translation id="9171296965991013597">Vil du lukke appen?</translation>
 <translation id="9173282814238175921">Enkelt dokument/nyt ark</translation>
 <translation id="9173995187295789444">Søger efter Bluetooth-enheder...</translation>
@@ -4323,6 +4329,7 @@ Yderligere oplysninger:
 <translation id="9205078245616868884">Dine data er krypteret med din adgangssætning til synkronisering. Angiv den for at starte synkroniseringen.</translation>
 <translation id="920643408853370361">Rejseforsikring</translation>
 <translation id="9207861905230894330">Artiklen kunne ikke tilføjes.</translation>
+<translation id="9209339767782560829">Der opstod et problem under brugen af dit logincertifikat.</translation>
 <translation id="9210825002219699214">Flyrejser</translation>
 <translation id="9211461151375991073">Indtast @ for at søge efter <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Tilpas udseende</translation>

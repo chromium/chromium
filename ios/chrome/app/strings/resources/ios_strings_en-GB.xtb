@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1035980983510608210">Closing all tabs will close pinned tabs as well.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">You will be signed out and browsing data will be deleted</translation>
 <translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Signed out. Sign back in to use the bookmarks, passwords and more in your account.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Passwords</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776">Continue as <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Browsing Data</translation>
 <translation id="1400642268715879018">Last 4 Weeks</translation>
 <translation id="1404330357948037222">You're signed out</translation>
-<translation id="14066361343057390">You will be signed out</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1408847409015257906">Tap Privacy and Security</translation>
 <translation id="1430915738399379752">Print</translation>
@@ -341,7 +340,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2712127207578915686">Unable to Open File</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
 <translation id="2738375676495545665">Hide What's New</translation>
-<translation id="2740910715135851329">You will be signed out, tabs will be closed, browsing data will be deleted</translation>
 <translation id="2747003861858887689">Previous field</translation>
 <translation id="2749231692441336879">Following <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Accounts on this device</translation>
@@ -392,6 +390,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2952278131021475699">Lens Camera Search</translation>
 <translation id="2958718410589002129">Passwords</translation>
 <translation id="2964349545761222050">Block third-party cookies</translation>
+<translation id="2965328226365382335">Last 15 Minutes</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
 <translation id="2975121486251958312">Only Incognito mode is available</translation>
 <translation id="2982481275546140226">Clear Data</translation>
@@ -539,7 +538,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3738428049780661523">Created <ph name="DATE" /></translation>
 <translation id="374357899112510277">Hide Downloads</translation>
 <translation id="3745190878148784130">Hide Zoom text</translation>
-<translation id="3747231889390582072">To protect your organisation's security, unsaved data will be deleted from this device. This could include passwords, browsing history, cookies and more.</translation>
 <translation id="3762232513783804601">Built for your iPad</translation>
 <translation id="3768725474733206671">Reopen last closed tab</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
@@ -718,6 +716,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4659194143325814340">{count,plural, =1{{count} page on your Reading List}other{{count} pages on your Reading List}}</translation>
 <translation id="4659667755519643272">Enter Tab Switcher</translation>
 <translation id="46614316059270592">Save password</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Connect with a business by initiating a phone call</translation>
 <translation id="4682686630151240767">1. Open iPhone settings</translation>
 <translation id="4689564913179979534">Manage Payment Methods...</translation>
@@ -1519,7 +1518,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8522147671363140027">{count,plural, =1{{count} password and other items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}other{{count} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}</translation>
 <translation id="8522813812888400223">Cancel download</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Tabs <ph name="FIRST_VISIBLE_TAB" /> through <ph name="LAST_VISIBLE_TAB" /> of <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">You will be signed out and tabs will be closed</translation>
 <translation id="8528009254289981965">Open links from other apps in Incognito</translation>
 <translation id="8529767659511976195">New</translation>
 <translation id="8532105204136943229">Year of expiry</translation>
@@ -1600,6 +1598,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8876882697946675716">Keep your devices in sync</translation>
 <translation id="8879604564928138696">Double tap to try</translation>
 <translation id="8881801611828450202">Search <ph name="SEARCH_ENGINE" /> for This Image</translation>
+<translation id="8887595428614802520">Close all tabs and groups</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="890565330728586731">Back</translation>
 <translation id="8909135823018751308">Share…</translation>

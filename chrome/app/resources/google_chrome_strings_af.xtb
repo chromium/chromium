@@ -22,6 +22,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1229096353876452996">Google beveel aan dat jy Chrome as verstek instel</translation>
 <translation id="1265739287306757398">Vind uit hoe</translation>
 <translation id="1278833599417554002">Begin weer om &amp;Chrome op te dateer</translation>
+<translation id="1290883685122687410">Opstellingfout: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Wag asseblief terwyl Chrome die jongste stelselopdaterings installeer.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> vereis dat jy die volgende diensbepalings lees en aanvaar voordat jy hierdie toestel gebruik. Hierdie bepalings wysig, beperk of brei nie die Google Chrome OS Flex-bepalings uit nie.</translation>
 <translation id="1341711321000856656">Jy kan oorskakel om wagwoorde van ’n ander Chrome-profiel af te sien</translation>
@@ -195,6 +196,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3583751698304738917">Jy het reeds in ’n ander Chrome-profiel as <ph name="USER_EMAIL_ADDRESS" /> aangemeld</translation>
 <translation id="3595784445906693824">Meld in ’n nuwe profiel by Chrome aan?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Jou administrateur vereis dat jy Chrome herbegin om 'n opdatering toe te pas}=1{Jou administrateur vereis dat jy Chrome herbegin om 'n opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vereis dat jy Chrome herbegin om 'n opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
+<translation id="3597003331831379823">Kon nie opstelling met verhoogde voorregte laat loop nie. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Jy het nie onlangs die webwerf besoek nie. Chrome het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> verwyder</translation>
 <translation id="3622797965165704966">Nou is dit makliker om Chrome met jou Google-rekening en op gedeelde rekenaars te gebruik.</translation>
 <translation id="3635073343384702370">Chrome kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>

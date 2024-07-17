@@ -853,7 +853,6 @@
 <translation id="2545721997179863249">تم تحديد خيار ملء كل الحقول.</translation>
 <translation id="2546283357679194313">ملفات تعريف الارتباط وبيانات المواقع الإلكترونية
 </translation>
-<translation id="2546678870939430879">إعادة تحميل النتيجة</translation>
 <translation id="254947805923345898">قيمة السياسة غير صحيحة.</translation>
 <translation id="2549836668759467704">الاستشارات والتعاقدات المعمارية</translation>
 <translation id="255002559098805027">أرسل <ph name="HOST_NAME" /> استجابة غير صالحة.</translation>
@@ -1036,7 +1035,6 @@
 <translation id="2954624054936281172">جدول طُرق الدفع المحفوظة</translation>
 <translation id="295526156371527179">تحذير: لم يتم دمج هذه السياسة كمعجم كما هو موضح بموجب السياسة؛ لأنها ليست معجمًا.</translation>
 <translation id="2955913368246107853">إغلاق شريط البحث</translation>
-<translation id="2958345633099973853">التراجع عن تحميل النتيجة</translation>
 <translation id="2958544468932521864">كريكيت</translation>
 <translation id="2959274854674276289">أطعمة نباتية</translation>
 <translation id="2961809451460302960">تأمين على الحياة</translation>
@@ -1167,7 +1165,6 @@
 <translation id="3209034400446768650">إمكانية تحصيل الصفحة للرسوم</translation>
 <translation id="3212581601480735796">تتم مراقبة نشاطك على <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">‏تعذّر استخدام WebAuthn</translation>
-<translation id="3215311088819828484">تم تعديل النتيجة</translation>
 <translation id="3216313131063488104">موسيقى "بلوز"</translation>
 <translation id="3218181027817787318">نسبي</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{يجب إجراء التحديث الآن.}=2{يجب إجراء التحديث بحلول الغد.}zero{يجب إجراء التحديث في غضون # يوم.}few{يجب إجراء التحديث في غضون # أيام.}many{يجب إجراء التحديث في غضون # يومًا.}other{يجب إجراء التحديث في غضون # يوم.}}</translation>
@@ -2519,7 +2516,6 @@
 <translation id="5772086939108830423">استخدام مفتاح مرور على جهاز آخر</translation>
 <translation id="5776313857861697733">الأولوية</translation>
 <translation id="5776574724412881956">ألم يتم إدخال بيانات البطاقة الافتراضية؟ انقر على تفاصيل البطاقة الافتراضية لنسخها إلى الحافظة. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">جارٍ تحميل النتيجة</translation>
 <translation id="5781136890105823427">تم تفعيل التجربة.</translation>
 <translation id="578305955206182703">كهرمان</translation>
 <translation id="5783700460098783980">أمتعة ولوازم سفر</translation>
@@ -2694,7 +2690,6 @@
 <translation id="6116338172782435947">الاطلاع على النصوص والصور التي تم نسخها إلى الحافظة</translation>
 <translation id="6117833587752089929">تصوير (برّاق)</translation>
 <translation id="6118782133429281336">قائمة المصادر فارغة.</translation>
-<translation id="6120950591512958208">يمكنك استخدام هذا الرمز عند الدفع.</translation>
 <translation id="612178891608320683">الأطعمة الخالية من المنتجات الحيوانية</translation>
 <translation id="6122181661879998141">الجهة الأمامية للبطاقة</translation>
 <translation id="6124058285696691147">تنزيل المرفق</translation>

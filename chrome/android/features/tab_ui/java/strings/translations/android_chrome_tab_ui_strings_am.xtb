@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">ብርቱካናማ</translation>
 <translation id="125153950246128346">ሌላ ትር ለመመልከት መታ ያድርጉ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> የትር ቡድን አማራጮች</translation>
-<translation id="1322824555808364080">ሰዎችን ይጋብዙ</translation>
 <translation id="1419023007528516122">ይህ ቡድኑን ከመሣሪያዎ እስከመጨረሻው ይሰርዘዋል</translation>
 <translation id="1486715732399361704">ሁሉንም የትር ቡድኖችዎን እዚህ ማግኘት ይችላሉ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ከ<ph name="NUM_MINS_ONE" /> ደቂቃ በፊት የተፈጠረ}one{ከ<ph name="NUM_MINS_MANY" /> ደቂቃ በፊት የተፈጠረ}other{ከ<ph name="NUM_MINS_MANY" /> ደቂቃዎች በፊት የተፈጠረ}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">የትር ቡድኖችዎን እዚህ ያገኟቸዋል</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን ነጥል}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ትርን ነጥል}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ነጥል}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር}one{<ph name="TABS_COUNT_MANY" /> ትር}other{<ph name="TABS_COUNT_MANY" /> ትሮች}}</translation>
+<translation id="6527303717912515753">አጋራ</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{ከ1 ቀን በኋላ}one{ከ<ph name="DAY_COUNT_MANY" /> ቀን በኋላ}other{ከ<ph name="DAY_COUNT_MANY" /> ቀናት በኋላ}}</translation>
 <translation id="6549021453810473782">የመደብር መረጃን ይመልከቱ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

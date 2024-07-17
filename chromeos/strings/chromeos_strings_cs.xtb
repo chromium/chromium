@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Pozadí</translation>
 <translation id="3027578600144895987">Zavřete fotoaparát</translation>
 <translation id="3031560714565892478">Zařízení je videokamera.</translation>
-<translation id="3051968340259309715">Systémové služby budou moct k určení vaší polohy používat funkci Přesnost určování polohy. Funkce Přesnost určování polohy využívá k odhadu polohy informace o bezdrátových signálech, jako jsou přístupové body Wi-Fi, vysílače mobilní sítě a GPS, spolu s údaji ze senzorů zařízení, jako je akcelerometr a gyroskop. Přístup k poloze můžete vypnout v Nastavení &gt; Ochrana soukromí a zabezpečení &gt; Nastavení ochrany soukromí &gt; Přístup k poloze. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Koncový bod</translation>
 <translation id="3060579846059757016">Osnova</translation>
@@ -1037,6 +1036,7 @@
 <translation id="6595046262780525922">Zapnout přepis a stáhnout model přepisu?</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6599673642868607614">Děkujeme vám za zpětnou vazbu. Vaše zpětná vazba nám pomáhá vylepšovat Chromebooky a náš tým se jí bude věnovat. Vzhledem k velkému počtu hlášení vám nebudeme moci odpovědět.</translation>
+<translation id="660846213831377756">Klávesy myši</translation>
 <translation id="6618744767048954150">Probíhá</translation>
 <translation id="6620487321149975369">Tiskové úlohy se budou zobrazovat v historii, pokud je ručně neodstraníte</translation>
 <translation id="6624819909909965616">Nelze nahrát soubor větší než 10 MB</translation>
@@ -1190,6 +1190,7 @@
 <translation id="7343649194310845056">Síťová zařízení</translation>
 <translation id="7344788170842919262">zemité</translation>
 <translation id="7346768383111016081">Přiřaďte k herní akci způsob ovládání, abyste mohli hrát pomocí klávesnice</translation>
+<translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7353413232959255829">Výsledek vyhledávání <ph name="LIST_POSITION" /> z <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Stisknutím klávesy Enter přejdete na zkratku.</translation>
 <translation id="7359657277149375382">Typ souboru</translation>
 <translation id="73631062356239394">Sdílení diagnostických dat</translation>

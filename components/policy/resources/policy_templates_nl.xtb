@@ -692,6 +692,7 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="1539343118617844331">School</translation>
 <translation id="1542491165152947087">Sta gebruikers toe de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen op hun apparaat aan of uit te zetten.</translation>
 <translation id="1542958897137600427">Registratie van clientcertificaten aanzetten</translation>
+<translation id="1548431234399786388">Beheert de instellingen voor Rapportage over browsergebeurtenissen.</translation>
 <translation id="1550295162561011575">Als je dit beleid instelt, kunnen beheerders automatisering instellen om apps te starten op <ph name="PRODUCT_NAME" />-apparaten. Deze apps kunnen worden gestart nadat de gebruiker is ingelogd of kunnen gelijktijdig door de gebruiker worden gestart vanuit de launcher.</translation>
 <translation id="1551782388466447648">Het virtuele aanraaktoetsenbord aanzetten op het inlogscherm</translation>
 <translation id="1552418937045050762">Als deze instelling aanstaat, kunnen gebruikers zich aanmelden voor Dichtbij delen. Daarmee kunnen ze bestanden sturen naar en ontvangen van mensen in de buurt.
@@ -3818,6 +3819,9 @@ Opmerking: Als de instelling resulteert in geen verificatiemethoden die wederzij
 <translation id="3979738908158213640">URL's die toegang krijgen om apparaatattesten uit te voeren tijdens SAML-verificatie</translation>
 <translation id="3982322576186033243">Onveilige hashes niet toestaan in TLS-handshakes</translation>
 <translation id="3982465141749620677">Vragen om opnieuw te verifiëren in een tabblad</translation>
+<translation id="3982849521386211220">Hiermee kun je de lijst met Reporting API-eindpunten[1] instellen waarnaar bedrijfsrapporten kunnen worden gestuurd.
+
+[1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
 <translation id="398294729592983401">Toestaan dat gebruikers de instelling voor fingerprinting-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan- of uitzetten op hun apparaat.</translation>
 <translation id="3983162212222338509">De DNS-omzetting van het systeem kan binnen of buiten het netwerkproces worden uitgevoerd, of gedeeltelijk binnen en gedeeltelijk buiten het netwerkproces, afhankelijk van de systeemconfiguratie en functievlaggen.</translation>
 <translation id="3986700049001404598">Gebruikers toestaan processen te beëindigen met taakbeheer van Chrome</translation>
@@ -4313,6 +4317,7 @@ Opmerking: Met dit beleid wordt het beleid <ph name="ARC_GLS_POLICY_NAME" /> be�
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Vanaf M85 worden patronen met de jokertekens '*' en '[*.]' in de host niet meer ondersteund voor dit beleid.</translation>
 <translation id="4369307906396795087">Scripts voor workers (web workers, service workers, enzovoort) maken gebruik van minder strenge MIME-typecontrole. Workerscripts met verouderde MIME-typen, zoals <ph name="MIMETYPE_TEXT_ASCII" />, werken ook.</translation>
+<translation id="4370908590951861085">Rapportage-eindpunten</translation>
 <translation id="4370937370030117032">Gebruikersnaam en bestandsnaam naar systeemeigen printers sturen uitzetten</translation>
 <translation id="4372704773119750918">Zakelijke gebruikers niet toestaan deel uit te maken van multiprofielen (primair of secundair)</translation>
 <translation id="4373332965635821723">Snelkoppelingen voor toegankelijkheid aanzetten</translation>
@@ -4621,11 +4626,6 @@ Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersge
 <translation id="4615892138881859957">De sneltoets beheren die wordt gebruikt om de 'six pack'-toets voor Invoegen te activeren</translation>
 <translation id="4617338332148204752">De metatagcontrole in <ph name="PRODUCT_FRAME_NAME" /> overslaan</translation>
 <translation id="461901491675418689">De functie NewBaseUrlInheritanceBehavior is beschikbaar</translation>
-<translation id="4624006912948309924">Als je het beleid instelt, wordt bepaald welke app-ID's <ph name="PRODUCT_OS_NAME" /> toont als vastgezette apps in de Launcher-balk en kunnen deze niet worden gewijzigd door gebruikers.
-
-Geef Chrome-apps op basis van ID op, zoals pjkljhegncpnkpknbcohdijeoejaedia; Android-apps op basis van pakketnaam, zoals com.google.android.gm; web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals https://google.com/maps; en systeemweb-apps op basis van hun naam in snake case, zoals <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
-
-Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps in de Launcher wijzigen.</translation>
 <translation id="4624417808625504735">Voorkomen dat JavaScript op deze sites JIT kan gebruiken</translation>
 <translation id="46321462262887935">Toetsen op de bovenste rij gebruiken als functietoetsen, maar de gebruiker toestaan dit te wijzigen</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
@@ -6944,13 +6944,6 @@ Als je dit beleid niet instelt, wordt het virtuele toetsenbord getoond op basis 
       Het virtuele toetsenbord kan worden gewijzigd in een compacte indeling, afhankelijk van de invoermethode.</translation>
 <translation id="6404064917675764807">CRD-sessiegebeurtenissen niet rapporteren</translation>
 <translation id="6404360891305375004">Bestanden delen via netwerk toestaan</translation>
-<translation id="640519320513485101">Met dit beleid bepaal je of de ingebouwde wachtwoordmanager niet-ontsleutelbare wachtwoorden mag verwijderen uit de bijbehorende database. Dit is vereist om de volledige functionaliteit van de ingebouwde wachtwoordmanager te herstellen, maar er kan permanent gegevensverlies optreden. Niet-ontsleutelbare wachtwoordwaarden worden niet automatisch ontsleutelbaar. Als ze kunnen worden gecorrigeerd, zijn er meestal complexe gebruikersacties nodig.
-
-Als je het beleid toepast, raken gebruikers met niet-ontsleutelbare wachtwoorden die in de ingebouwde wachtwoordmanager zijn opgeslagen, deze wachtwoorden kwijt. Er gebeurt niets met wachtwoorden die nog steeds werken.
-
-Als je het beleid niet toepast, behouden gebruikers de wachtwoordmanagergegevens, maar werkt de wachtwoordmanager niet.
-
-Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6407093060083181305">Blokkeringslijst voor installatie van extensies configureren</translation>
 <translation id="640827304541402854">Firewallpassage vanaf host voor externe toegang uitzetten</translation>
 <translation id="6410847321564585975">Toelatingslijst voor rapportage van website-activiteit</translation>
@@ -7579,6 +7572,7 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6847379587945465889">Overdracht van SAML SSO-cookies naar gebruikerssessie tijdens inloggen aanzetten</translation>
 <translation id="684856667300805181">Dit beleid is in <ph name="PRODUCT_NAME" /> 68 verwijderd en vervangen door <ph name="ARC_GLS_POLICY_NAME" />.</translation>
+<translation id="684882090733715433">Rapportage over browsergebeurtenissen</translation>
 <translation id="6850300477973481112">Instellingen voor bureauconnector</translation>
 <translation id="6851199885688265233">Toegankelijkheidsfunctie voor cursormarkering aanzetten</translation>
 <translation id="6851315055469993882">HTTP auth-cache met wereldwijd bereik aanzetten</translation>
@@ -8619,17 +8613,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="7669630878711068277">Als je dit beleid toepast of niet instelt, kunnen gebruikers afdrukken in <ph name="PRODUCT_NAME" /> en kunnen ze deze instelling niet wijzigen.
 
       Als je het beleid niet hebt toegepast, kunnen gebruikers ook niet afdrukken vanaf <ph name="PRODUCT_NAME" />. Afdrukken is niet mogelijk vanuit het menu met 3 stippen, extensies en JavaScript-apps.</translation>
-<translation id="7671234734316758429">Met dit beleid kunnen beheerders apps aangeven die fungeren als standaardhandlers voor de betreffende bestandsextensies op <ph name="PRODUCT_OS_NAME" /> die gebruikers niet kunnen wijzigen.
-
-Voor alle bestandsextensies die niet in het beleid zijn aangegeven, kunnen gebruikers hun eigen standaardwaarden instellen met betrekking tot de gebruikelijke workflow.
-
-Geef Chrome-apps aan op basis van hun ID, zoals <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />; web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />; Android-apps op basis van de pakketnaam, zoals <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />;
-systeemweb-apps op basis van hun naam in snake_case, zoals <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />;
-virtuele taken op basis van de aangewezen naam voorafgegaan door <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />, zoals <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />.
-
-Apps MOETEN zichzelf definiëren als bestandshandlers voor de gespecificeerde bestandsextensies in het manifest. Zo niet, dan kan dat beleidsitem niet worden toegepast (dat wil zeggen dat het beleid de bestaande app-mogelijkheden NIET uitbreidt).
-
-Als je het beleid niet instelt, kan <ph name="PRODUCT_OS_NAME" /> standaardhandlers selecteren op basis van de interne logica.</translation>
 <translation id="7673194325208122247">Periode (milliseconden)</translation>
 <translation id="7677220829878081413">
       Als dit beleid is ingesteld op ArcSession, wordt het apparaat gedwongen opnieuw opgestart na het uitloggen van een gebruiker als Android is gestart.
@@ -9028,11 +9011,6 @@ Als je het beleid <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> niet toepast, he
           Dit beleid is verwijderd in Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Naam van de bestemming van <ph name="PRODUCT_NAME" /></translation>
-<translation id="797820628785995988">Als je het beleid instelt, worden alle aangegeven gegevenstypen uitgesloten van synchronisatie voor zowel <ph name="CHROME_SYNC_NAME" /> als synchronisatie van roamingprofielen. Dit kan handig zijn om het roamingprofiel te verkleinen of het type gegevens te beperken dat wordt geüpload naar de <ph name="CHROME_SYNC_NAME" />-servers.
-
-      De huidige gegevenstypen voor dit beleid zijn: 'apps', 'autofill', 'bookmarks', 'extensions', 'preferences', 'passwords', 'payments', 'readingList', 'savedTabGroups', 'tabs', 'themes', 'typedUrls', 'wifiConfigurations'. Die namen zijn hoofdlettergevoelig.
-
-      Opmerkingen: Beleid dynamisch vernieuwen wordt alleen ondersteund in <ph name="PRODUCT_NAME" /> versie 123 en hoger. Als je 'autofill' uitzet, wordt 'payments' ook uitgezet. 'typedUrls' verwijst naar de hele browsegeschiedenis.</translation>
 <translation id="7982057585796399404">Als je het beleid instelt, wordt een lijst met apps en extensies gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers. Rechten worden impliciet verleend, waaronder voor de extensie-API's enterprise.deviceAttributes en enterprise.platformKeys. (Deze 2 API's zijn niet beschikbaar voor apps en extensies die niet afgedwongen geïnstalleerd zijn.)
 
 Als je dit beleid niet instelt, worden apps of extensies niet automatisch geïnstalleerd en kunnen gebruikers elke app of extensie in <ph name="PRODUCT_NAME" /> verwijderen.

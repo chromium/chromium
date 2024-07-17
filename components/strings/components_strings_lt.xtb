@@ -1165,7 +1165,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3209034400446768650">Puslapyje galite būti apmokestinti</translation>
 <translation id="3212581601480735796">Jūsų veikla <ph name="HOSTNAME" /> stebima</translation>
 <translation id="3215092763954878852">Nepavyko naudoti „WebAuthn“</translation>
-<translation id="3215311088819828484">Rezultatas atnaujintas</translation>
 <translation id="3216313131063488104">Bliuzas</translation>
 <translation id="3218181027817787318">Santykinis</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Atnaujinti reikia dabar}=2{Atnaujinti reikia iki rytojaus}one{Atnaujinti reikia per # dieną}few{Atnaujinti reikia per # dienas}many{Atnaujinti reikia per # dienos}other{Atnaujinti reikia per # dienų}}</translation>
@@ -2689,7 +2688,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6116338172782435947">Peržiūrėti tekstą ir vaizdus, nukopijuotus į iškarpinę</translation>
 <translation id="6117833587752089929">Fotopopierius (atlasinis)</translation>
 <translation id="6118782133429281336">Kilmės sąrašas tuščias.</translation>
-<translation id="6120950591512958208">Naudokite šį kodą atsiskaitydami.</translation>
 <translation id="612178891608320683">Veganiška virtuvė</translation>
 <translation id="6122181661879998141">priekinėje kortelės dalyje</translation>
 <translation id="6124058285696691147">Atsisiųsti priedą</translation>

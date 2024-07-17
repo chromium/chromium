@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Нэвтрэх түлхүүр</translation>
 <translation id="1035980983510608210">Бүх табыг хааснаар бэхэлсэн табуудыг мөн хаана.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Таныг гаргах бөгөөд интернэтээр үзсэн өгөгдлийг устгана</translation>
 <translation id="1044891598689252897">Сайтууд хэвийн ажиллана</translation>
 <translation id="1049743911850919806">Нууцлал</translation>
 <translation id="1053651653201045802">Гарсан. Бүртгэлийнхээ хавчуурга, нууц үг болон бусад зүйлийг ашиглахын тулд буцаж нэвтэрнэ үү.</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776"><ph name="USER_NAME" />-р үргэлжлүүлэх</translation>
 <translation id="1400642268715879018">Сүүлийн 4 долоо хоног</translation>
 <translation id="1404330357948037222">Та гарлаа</translation>
-<translation id="14066361343057390">Таныг гаргана</translation>
 <translation id="1407135791313364759">Бүгдийг нээ</translation>
 <translation id="1408847409015257906">Нууцлал болон аюулгүй байдлыг товшино уу.</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
@@ -341,7 +339,6 @@
 <translation id="2712127207578915686">Файлыг нээх боломжгүй байна</translation>
 <translation id="2718352093833049315">Зөвхөн Wi-Fi-аар</translation>
 <translation id="2738375676495545665">Шинэ юм юу байна табыг нуух</translation>
-<translation id="2740910715135851329">Таны гаргаж, табуудыг хааж, интернэтээр үзсэн өгөгдлийг устгана</translation>
 <translation id="2747003861858887689">Өмнөх талбар</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" />-г дагаж байна</translation>
 <translation id="2754492786623500387">Энэ төхөөрөмж дээрх бүртгэлүүд</translation>
@@ -392,6 +389,7 @@
 <translation id="2952278131021475699">Lens-н Камерын хайлт</translation>
 <translation id="2958718410589002129">Нууц үг</translation>
 <translation id="2964349545761222050">Гуравдагч талын күүкиг блоклох</translation>
+<translation id="2965328226365382335">Сүүлийн 15 минут</translation>
 <translation id="2969979262385602596">Нэвтэрч чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2975121486251958312">Зөвхөн Нууцлалын горим боломжтой байна</translation>
 <translation id="2982481275546140226">Өгөгдлийг устгах</translation>
@@ -539,7 +537,6 @@
 <translation id="3738428049780661523"><ph name="DATE" />-д үүсгэсэн</translation>
 <translation id="374357899112510277">Татаж авсан файлыг нуух</translation>
 <translation id="3745190878148784130">Текстийг томруулахыг нуух</translation>
-<translation id="3747231889390582072">Танай байгууллагын аюулгүй байдлыг хамгаалахын тулд хадгалаагүй өгөгдлийг энэ төхөөрөмжөөс устгана. Үүнд нууц үг, хөтчийн түүх, күүки, бусад зүйл багтаж болно.</translation>
 <translation id="3762232513783804601">Таны iPad-д зориулан бүтээсэн</translation>
 <translation id="3768725474733206671">Хамгийн сүүлд хаасан табыг дахин нээх</translation>
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
@@ -718,6 +715,7 @@
 <translation id="4659194143325814340">{count,plural, =1{Таны Унших жагсаалтын {count}-р хуудас}other{Таны Унших жагсаалтын {count}-р хуудас}}</translation>
 <translation id="4659667755519643272">Цонх хооронд шилжигчийг оруулна уу</translation>
 <translation id="46614316059270592">Нууц үг хадгалах</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Утасны дуудлага эхлүүлснээр бизнестэй холбогдоорой</translation>
 <translation id="4682686630151240767">1. iPhone-н тохиргоог нээнэ үү</translation>
 <translation id="4689564913179979534">Төлбөрийн хэрэгслийг удирдах...</translation>
@@ -1326,6 +1324,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7609559547731036746">Хавчуурга</translation>
 <translation id="7638584964844754484">Нэвтрэх хэллэг буруу байна</translation>
 <translation id="7640669552036055091">Android-н табууд</translation>
+<translation id="7643790043444820023">Нүүр хуудсыг өөрчлөх</translation>
 <translation id="7646263789464975852">Цэс → Тохиргоо → Аюулгүй байдлын шалгалт</translation>
 <translation id="7646772052135772216">Нууц үгийг синк хийх ажиллахгүй байна</translation>
 <translation id="764827086632467055">Өгөгдмөл хөтчийн аппыг товшино уу</translation>
@@ -1518,7 +1517,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8522147671363140027">{count,plural, =1{{count} нууц үг болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}other{{count} нууц үг болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="8522813812888400223">Таталтыг цуцлах</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Цонхнууд<ph name="FIRST_VISIBLE_TAB" /> -аар <ph name="LAST_VISIBLE_TAB" /> -аас <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Таныг гаргах бөгөөд табуудыг хаана</translation>
 <translation id="8528009254289981965">Нууцлалтай горимд бусад аппаас холбоос нээх</translation>
 <translation id="8529767659511976195">Шинэ</translation>
 <translation id="8532105204136943229">Дуусах он</translation>
@@ -1599,6 +1597,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8876882697946675716">Төхөөрөмжүүдээ синк хийсэн хэвээр байгаарай</translation>
 <translation id="8879604564928138696">Туршиж үзэхийн тулд хоёр товшино уу</translation>
 <translation id="8881801611828450202">Энэ зургийг <ph name="SEARCH_ENGINE" />-с хайх</translation>
+<translation id="8887595428614802520">Бүх таб болон бүлгийг хаах</translation>
 <translation id="8898822736010347272">Шинэ аюул заналыг олж илрүүлэх болон веб дээрх бүх хүнийг хамгаалахад туслахын тулд таны зочилдог зарим хуудасны URL, системийн хязгаарлагдмал мэдээлэл болон хуудасны зарим контентыг Google рүү илгээдэг.</translation>
 <translation id="890565330728586731">Буцах</translation>
 <translation id="8909135823018751308">Мэдээллийг хуваалцах ...</translation>

@@ -1164,7 +1164,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3209034400446768650">Page may charge money</translation>
 <translation id="3212581601480735796">Your activity on <ph name="HOSTNAME" /> is being monitored</translation>
 <translation id="3215092763954878852">Couldn't use WebAuthn</translation>
-<translation id="3215311088819828484">Result updated</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relative</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Update required now}=2{Update required by tomorrow}other{Update required within # days}}</translation>
@@ -2688,7 +2687,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6116338172782435947">See text and images copied to the clipboard</translation>
 <translation id="6117833587752089929">Photo (satin)</translation>
 <translation id="6118782133429281336">Origin list is empty.</translation>
-<translation id="6120950591512958208">Use this code at checkout.</translation>
 <translation id="612178891608320683">Vegan cuisine</translation>
 <translation id="6122181661879998141">front of your card</translation>
 <translation id="6124058285696691147">Download the attachment</translation>

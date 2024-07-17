@@ -1164,7 +1164,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3209034400446768650">Sidan kan vara avgiftsbelagd</translation>
 <translation id="3212581601480735796">Din aktivitet på <ph name="HOSTNAME" /> övervakas</translation>
 <translation id="3215092763954878852">Det gick inte att använda WebAuthn</translation>
-<translation id="3215311088819828484">Resultatet har uppdaterats</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Uppdatering krävs nu}=2{Uppdatering krävs i morgon}other{Uppdatering krävs inom # dagar}}</translation>
@@ -2688,7 +2687,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6116338172782435947">Tillgång till text och bilder som kopierats till Urklipp</translation>
 <translation id="6117833587752089929">Foto (satäng)</translation>
 <translation id="6118782133429281336">Ursprungslistan är tom.</translation>
-<translation id="6120950591512958208">Använd följande kod i kassan.</translation>
 <translation id="612178891608320683">Vegansk matlagning</translation>
 <translation id="6122181661879998141">framsidan av kortet</translation>
 <translation id="6124058285696691147">Ladda ned bilagan</translation>

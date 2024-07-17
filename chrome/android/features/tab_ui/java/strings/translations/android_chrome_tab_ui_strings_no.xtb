@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Oransje</translation>
 <translation id="125153950246128346">Trykk for å se en annen fane</translation>
 <translation id="1273910660700874265">Alternativer for fanegruppen <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Inviter folk</translation>
 <translation id="1419023007528516122">Dette fører til at gruppen slettes fra enheten permanent</translation>
 <translation id="1486715732399361704">Du finner alle fanegruppene dine her</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Opprettet for <ph name="NUM_MINS_ONE" /> minutt siden}other{Opprettet for <ph name="NUM_MINS_MANY" /> minutter siden}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Her finner du fanegruppene dine</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Opphev grupperingen av <ph name="TABS_COUNT_ONE" /> valgt fane}other{Opphev grupperingen av <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
+<translation id="6527303717912515753">Del</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Etter 1 dag}other{Etter <ph name="DAY_COUNT_MANY" /> dager}}</translation>
 <translation id="6549021453810473782">Se butikkinformasjon</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

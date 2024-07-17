@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Nyckel</translation>
 <translation id="1035980983510608210">Om du stänger alla flikar stängs även fästa flikar.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Du loggas ut och webbinformationen rensas</translation>
 <translation id="1044891598689252897">Webbplatser fungerar som de ska</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Utloggad. Logga in igen om du vill använda bokmärken, lösenord med mera i kontot.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Lösenord</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="138618066238211776">Fortsätt som <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Webbinformation</translation>
 <translation id="1400642268715879018">Senaste fyra veckorna</translation>
 <translation id="1404330357948037222">Du är utloggad</translation>
-<translation id="14066361343057390">Du loggas ut</translation>
 <translation id="1407135791313364759">Öppna alla</translation>
 <translation id="1408847409015257906">Tryck på Integritet och säkerhet.</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
@@ -341,7 +340,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2712127207578915686">Det gick inte att öppna filen</translation>
 <translation id="2718352093833049315">Endast på wifi</translation>
 <translation id="2738375676495545665">Dölj Nyheter</translation>
-<translation id="2740910715135851329">Du loggas ut, flikar stängs och webbinformationen rensas</translation>
 <translation id="2747003861858887689">Föregående fält</translation>
 <translation id="2749231692441336879">Följer <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konton på den här enheten</translation>
@@ -392,6 +390,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2952278131021475699">Kamerasökning med Lens</translation>
 <translation id="2958718410589002129">Lösenord</translation>
 <translation id="2964349545761222050">Blockera tredjepartscookies</translation>
+<translation id="2965328226365382335">Senaste 15 minuterna</translation>
 <translation id="2969979262385602596">Det gick inte att logga in. Försök igen senare.</translation>
 <translation id="2975121486251958312">Endast inkognitoläge tillgängligt</translation>
 <translation id="2982481275546140226">Rensa data</translation>
@@ -539,7 +538,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3738428049780661523">Skapades <ph name="DATE" /></translation>
 <translation id="374357899112510277">Dölj nedladdningar</translation>
 <translation id="3745190878148784130">Dölj Zooma text</translation>
-<translation id="3747231889390582072">Data som inte har sparats raderas från den här enheten för att skydda organisationen. Det kan handla om lösenord, webbhistorik, cookies med mera.</translation>
 <translation id="3762232513783804601">Byggd för iPad</translation>
 <translation id="3768725474733206671">Öppna senast stängda flik igen</translation>
 <translation id="3771033907050503522">Inkognitoflikar</translation>
@@ -718,6 +716,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4659194143325814340">{count,plural, =1{{count} sida i läslistan}other{{count} sidor i läslistan}}</translation>
 <translation id="4659667755519643272">Öppna funktionen för flikbyte</translation>
 <translation id="46614316059270592">Spara lösenord</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Kontakta ett företag genom att ringa dem</translation>
 <translation id="4682686630151240767">1. Öppna iPhone-inställningarna</translation>
 <translation id="4689564913179979534">Hantera betalningsmetoder …</translation>
@@ -1519,7 +1518,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8522147671363140027">{count,plural, =1{{count} lösenord och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot {email}.}other{{count} lösenord och andra objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot {email}.}}</translation>
 <translation id="8522813812888400223">Avbryt nedladdning</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-flikarna <ph name="FIRST_VISIBLE_TAB" /> till <ph name="LAST_VISIBLE_TAB" /> av <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Du loggas ut och flikar stängs</translation>
 <translation id="8528009254289981965">Öppna länkar från andra appar i inkognitoläget</translation>
 <translation id="8529767659511976195">Nytt</translation>
 <translation id="8532105204136943229">Sista giltighetsår</translation>

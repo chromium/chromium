@@ -852,7 +852,6 @@
 <translation id="254524874071906077">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
 <translation id="2545721997179863249">আটাইবোৰ পূৰ কৰাৰ বিকল্প বাছনি কৰা হৈছে</translation>
 <translation id="2546283357679194313">কুকি আৰু ছাইট ডেটা</translation>
-<translation id="2546678870939430879">ফলাফল ৰিডু কৰক</translation>
 <translation id="254947805923345898">নীতিৰ মান মান্য নহয়।</translation>
 <translation id="2549836668759467704">নিৰ্মাণকাৰ্য সম্পর্কীয় পৰামৰ্শ আৰু চুক্তি</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" />এ এটা অমান্য সঁহাৰি পঠিয়াইছে।</translation>
@@ -1035,7 +1034,6 @@
 <translation id="2954624054936281172">ছেভ কৰি থোৱা পৰিশোধ পদ্ধতিৰ তালিকা</translation>
 <translation id="295526156371527179">সাৱধানবাণী: নীতিটোৱে নিৰ্দিষ্ট কৰা ধৰণে এই নীতিটো অভিধান হিচাপে একত্ৰিত কৰা হোৱা নাই কাৰণ এয়া অভিধান নহয়।</translation>
 <translation id="2955913368246107853">সন্ধান কৰা বাৰ বন্ধ কৰক</translation>
-<translation id="2958345633099973853">ফলাফল আনডু কৰক</translation>
 <translation id="2958544468932521864">ক্ৰিকেট</translation>
 <translation id="2959274854674276289">নিৰামিষ ৰন্ধনবিধি</translation>
 <translation id="2961809451460302960">জীৱন বীমা</translation>
@@ -1164,7 +1162,6 @@
 <translation id="3209034400446768650">পৃষ্ঠাখনে মাচুল হিচাপে টকা ল’ব পাৰে</translation>
 <translation id="3212581601480735796">আপুনি <ph name="HOSTNAME" />ত কৰা কার্যকলাপ নিৰীক্ষণ কৰি থকা হৈছে</translation>
 <translation id="3215092763954878852">WebAuthn ব্যৱহাৰ কৰিব পৰা নগ’ল</translation>
-<translation id="3215311088819828484">ফলাফল আপডে’ট কৰা হৈছে</translation>
 <translation id="3216313131063488104">ব্লুজ</translation>
 <translation id="3218181027817787318">আপেক্ষিক</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{এতিয়াই আপডে’ট কৰাৰ প্ৰয়োজন}=2{কাইলৈৰ ভিতৰত আপডে’ট কৰাৰ প্ৰয়োজন}one{# দিনৰ ভিতৰত আপডে’ট কৰাৰ প্ৰয়োজন}other{# দিনৰ ভিতৰত আপডে’ট কৰাৰ প্ৰয়োজন}}</translation>
@@ -2512,7 +2509,6 @@
 <translation id="5772086939108830423">অন্য এটা ডিভাইচত এটা পাছকী ব্যৱহাৰ কৰক</translation>
 <translation id="5776313857861697733">অগ্ৰাধিকাৰ</translation>
 <translation id="5776574724412881956">ভাৰ্চুৱেল কাৰ্ড পূৰ কৰা হোৱা নাই নেকি? প্ৰতিলিপি কৰি ক্লিপব’ৰ্ডত ৰাখিবলৈ ভাৰ্চুৱেল কাৰ্ডৰ সবিশেষত ক্লিক কৰক। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">ফলাফল ল’ড হৈ আছে</translation>
 <translation id="5781136890105823427">পৰীক্ষণ সক্ষম কৰা হৈছে</translation>
 <translation id="578305955206182703">এম্বাৰ</translation>
 <translation id="5783700460098783980">ভ্ৰমণকাৰীৰ মাল-বস্তু আৰু ভ্ৰমণৰ আনুষংগিক সামগ্ৰী</translation>
@@ -2687,7 +2683,6 @@
 <translation id="6116338172782435947">ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি কৰা পাঠ আৰু প্ৰতিচ্ছবি চাওক</translation>
 <translation id="6117833587752089929">ফট’ (ৰেচমী)</translation>
 <translation id="6118782133429281336">উৎসৰ সূচীখন খালী।</translation>
-<translation id="6120950591512958208">চেকআউট কৰাৰ সময়ত এই ক’ডটো ব্যৱহাৰ কৰক।</translation>
 <translation id="612178891608320683">সম্পূৰ্ণ শাকাহাৰী ৰন্ধনবিধি</translation>
 <translation id="6122181661879998141">আপোনাৰ কাৰ্ডৰ সন্মুখফাল</translation>
 <translation id="6124058285696691147">সংলগ্নকটো ডাউনল’ড কৰক</translation>

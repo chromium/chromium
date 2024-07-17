@@ -521,6 +521,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2970920913501714344">Instalar aplicacións, extensións e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
 <translation id="2985148236010982088">Ver todas as aplicacións</translation>
+<translation id="2992272421330787632">Ocultar todas as suxestións de contido multimedia</translation>
 <translation id="2992327365391326550">O botón do micrófono do dispositivo está desactivado.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Cambiar o tamaño de pantalla</translation>
@@ -591,6 +592,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
 <translation id="3256109297135787951">Deixa de destacar un elemento do estante</translation>
 <translation id="3260969790895726815">A voz procésase localmente e o ditado funciona sen conexión, pero algúns comandos de voz non funcionarán.</translation>
+<translation id="3264031581203585083">Ocultar todas as suxestións de Google Drive</translation>
 <translation id="3265032511221679826">Queres activar o acceso á localización precisa?</translation>
 <translation id="3269597722229482060">Facer clic co botón dereito</translation>
 <translation id="3274634049061007184">Consulta as aplicacións do teu teléfono</translation>
@@ -742,6 +744,7 @@ Conecta o dispositivo á corrente.</translation>
 <translation id="3738664582935948253">Agora podes mostrar os clics e os atallos de teclado nas gravacións da pantalla</translation>
 <translation id="3742055079367172538">Captura de pantalla feita</translation>
 <translation id="3743775386021959186">Modo Sen distraccións activado. Tempo restante: <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Ocultar suxestión do tempo</translation>
 <translation id="3756485814916578707">Emitindo pantalla</translation>
 <translation id="3765841382945324995">O atallo para <ph name="SIX_PACK_KEY_NAME" /> actualizouse de <ph name="OLD_SHORTCUT" /> a <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Editouse hoxe</translation>
@@ -782,6 +785,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3906954721959377182">Tableta</translation>
 <translation id="3923494859158167397">Non se configurou ningunha rede móbil</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, cargando eventos.</translation>
+<translation id="3927049937406914450">O tempo non está dispoñible porque o acceso á localización está desactivado. Podes cambiar esta opción na configuración.</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3934456833412894880">A función Carga intelixente está activada A batería completará o 80 % da carga para aumentar a súa duración e cargarase por completo cando o necesites.</translation>
 <translation id="3943857333388298514">Pegar</translation>
@@ -898,6 +902,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4312840429157639164">Cámara axustada á esquina superior dereita. Conflito coa plataforma do sistema.</translation>
 <translation id="4316910396681052118">TODAS AS APLICACIÓNS</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Ocultar todas as suxestións do navegador Chrome</translation>
 <translation id="4322742403972824594">O atallo Control + Alt + Frecha arriba cambiou. Para usar a tecla Inicio, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha esquerda.</translation>
 <translation id="4324840740119394760">Desta forma, poderán acceder á cámara <ph name="APP_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="4327147325944669226">Gravar xogo</translation>
@@ -931,6 +936,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
 <translation id="4451374464530248585">O atallo Alt + Frecha abaixo cambiou. Para usar a tecla Avanzar páxina, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha abaixo.</translation>
 <translation id="4453876312474547652">Podes ver o portapapeis se mantés premidas as teclas Control + V. Para desactivar este atallo, inhabilita a función experimental #clipboard-history-longpress en chrome://flags (os://flags se usas Lacros).</translation>
+<translation id="445765352722456792">Personalizar suxestións</translation>
 <translation id="445864333228800152">Bo serán!</translation>
 <translation id="4458688154122353284">Deter gravación da pantalla</translation>
 <translation id="445923051607553918">Unirse á rede wifi</translation>
@@ -1333,6 +1339,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5802516411616338943">Abrir Configuración rápida</translation>
 <translation id="5804651031882187592">Desactivar a opción Bloquear SIM</translation>
 <translation id="5805809050170488595">Facer clic para activar <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">O teu Chromebook reiniciouse inesperadamente. Abre as ventás e aplicacións anteriores.</translation>
 <translation id="5823239091726045201">Tarefas de Google na Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
@@ -1513,6 +1520,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6469104339369989396">Activar ou desactivar a zona wifi</translation>
 <translation id="6477681113376365978">Non se puido descargar o ficheiro</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
+<translation id="6485086611007560630">O tempo (non dispoñible)</translation>
 <translation id="6490471652906364588">Dispositivo USB‑C (porto dereito)</translation>
 <translation id="649452524636452238">PIN da tarxeta intelixente</translation>
 <translation id="6495322433318104734">Mostrando protector de pantalla. Para saír preme calquera tecla</translation>
@@ -1782,6 +1790,7 @@ Nova instalación</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">avanzar páxina</translation>
+<translation id="7518182783647693467">Cambiar unidades de temperatura (°F ou °C)</translation>
 <translation id="7519206258459640379">O zoom automático está activado.</translation>
 <translation id="7519649142417630956">En canto se apague o dispositivo, pecharase a sesión da persoa administradora, polo que xa non o poderá controlar.
 
@@ -1922,6 +1931,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7951630946012935453">Atenuar a luz do teclado</translation>
 <translation id="7953994493035617347">Queres confirmar a nova resolución?</translation>
 <translation id="795958884516058160">Activouse a lupa de pantalla completa. Preme <ph name="ACCELERATOR" /> de novo para desactivala.</translation>
+<translation id="7962583092928373823">Ocultar todas as suxestións de Google Calendar</translation>
 <translation id="7963689218131240420">O modo Non molestar está desactivado.</translation>
 <translation id="7963992254934562106">Do <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleccionar cartafol…</translation>
@@ -1994,6 +2004,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8214996719228530800">Canle Canary</translation>
 <translation id="8219451629189078428">Durante este tempo, o Chromebook ten que permanecer acendido e enchufado. Asegúrate de que os cables do adaptador ou do cargador estean ben inseridos tanto no Chromebook como no enchufe. Non apagues o Chromebook.</translation>
 <translation id="8220076512072059941">Engadir <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Ocultar esta suxestión</translation>
 <translation id="8230305195727960608">Modo de inversión da cor</translation>
 <translation id="8236042855478648955">É hora de que fagas unha pausa</translation>
 <translation id="8237964652943995219">Escritorio seguinte: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
@@ -2180,6 +2191,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" />, caixa de verificación non marcada.</translation>
 <translation id="8949925099261528566">Con conexión, sen Internet</translation>
 <translation id="8951539504029375108">Só son compatibles co teu Chromebook os dispositivos Thunderbolt homologados</translation>
+<translation id="8956420987536947088">Abre as ventás e aplicacións anteriores</translation>
 <translation id="8959380109429710384">Premiches o atallo de teclado da lupa de pantalla completa. Preme Control + Alt + teclas de frecha para desprazarte pola vista achegada.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Enfocar icona do menú</translation>

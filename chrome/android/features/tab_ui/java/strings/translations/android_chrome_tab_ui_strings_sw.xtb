@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Rangi ya machungwa</translation>
 <translation id="125153950246128346">Gusa ili uone kichupo kingine</translation>
 <translation id="1273910660700874265">Chaguo za kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Alika watu</translation>
 <translation id="1419023007528516122">Hatua hii itafuta kabisa kikundi kwenye kifaa chako</translation>
 <translation id="1486715732399361704">Unaweza kupata vikundi vyako vyote vya vichupo hapa</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Kiliundwa dakika <ph name="NUM_MINS_ONE" /> iliyopita}other{Kiliundwa dakika <ph name="NUM_MINS_MANY" /> zilizopita}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Utapata vikundi vya vichupo vyako hapa</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ondoa kwenye kikundi kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa}other{Ondoa kwenye kikundi vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" />}other{Vichupo <ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="6527303717912515753">Shiriki</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Baada ya siku 1}other{Baada ya siku <ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="6549021453810473782">Angalia maelezo ya duka</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">Колдонмолорду, кеңейтүүлөрдү жана темаларды жүктөп алат</translation>
 <translation id="2977598380246111477">Кийинки номер</translation>
 <translation id="2985148236010982088">Бардык колдонмолорду көрүү</translation>
+<translation id="2992272421330787632">Бардык медиа сунуштарын жашыруу</translation>
 <translation id="2992327365391326550">Түзмөктүн микрофон баскычы өчүк.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Экран өлчөмүн түзөтүү</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">Эмне кыла аласыз?</translation>
 <translation id="3256109297135787951">Текчедеги нерсени бөлүп көрсөтүүнү алып салуу</translation>
 <translation id="3260969790895726815">Кеп түзмөктө иштетилип, текстти айтып терүү офлайнда иштейт, бирок айрым үн буйруктары иштебейт.</translation>
+<translation id="3264031581203585083">Бардык Google Drive сунуштарын жашыруу</translation>
 <translation id="3265032511221679826">Так даректи аныктоону күйгүзөсүзбү?</translation>
 <translation id="3269597722229482060">Оң баскычын чыкылдатуу</translation>
 <translation id="3274634049061007184">Телефонуңуздагы колдонмолорду көрүү</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">Эми экрандан видео жаздырып алууда чыкылдатууларды жана ыкчам баскычтарды көрсөтүүгө болот</translation>
 <translation id="3742055079367172538">Скриншот тартылды</translation>
 <translation id="3743775386021959186">Ынтаа коюу режими күйүк, <ph name="REMAINING_TIME" /> калды</translation>
+<translation id="3750403286520637847">Аба ырайы сунушун жашыруу</translation>
 <translation id="3756485814916578707">Тышкы экранга чыгарылууда</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> ыкчам баскычы <ph name="OLD_SHORTCUT" /> ордуна <ph name="NEW_SHORTCUT" /> болуп өзгөрдү</translation>
 <translation id="3765841986579723851">Бүгүн түзөтүлдү</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3923494859158167397">Мобилдик тармактак жөндөлгөн жок</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, иш-чаралар жүктөлүүдө.</translation>
+<translation id="3927049937406914450">Жүргөн жерди көрсөтүү өчүрүлгөндүктөн, аба ырайы жеткиликсиз. Муну параметрлерден өзгөртө аласыз.</translation>
 <translation id="3932043219784172185">Бир да түзмөк туташкан жок</translation>
 <translation id="3934456833412894880">Этият кубаттоо күйүк. Батареяны көпкө жеткирүү үчүн батареянын деңгээли 80% сакталып, түзмөктү колдонгонуңузда ал толук кубатталат.</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">Камера жогорку оң бурчка кадалды. Системанын платформасына туура келген жок.</translation>
 <translation id="4316910396681052118">БАРДЫК КОЛДОНМОЛОР</translation>
 <translation id="4321179778687042513">Ctrl</translation>
+<translation id="4322385711258710213">Бардык Chrome серепчисинин сунуштарын жашыруу</translation>
 <translation id="4322742403972824594">Ctrl + Alt + өйдө жебе ыкчам баскычы өзгөртүлдү. Башкы бет баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + солго жебени басыңыз.</translation>
 <translation id="4324840740119394760">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына жана <ph name="APP_NAME" /> колдонмосуна камераны пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="4327147325944669226">Оюнду жаздыруу</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">Экинчи көрүнбөсүн</translation>
 <translation id="4451374464530248585">Alt + ылдый жебе ыкчам баскычы өзгөртүлдү. Барактын төмөн жагына жылдыруу баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + ылдый жебени басыңыз.</translation>
 <translation id="4453876312474547652">Ctrl + V баскычтарын кое бербей басып турганыңызда алмашуу буферин көрөсүз. chrome://flags (эгерде Lacros колдонулса, os://flags) дарегиндеги #clipboard-history-longpress желекчесин өчүрүп, бул ыкчам баскычты өчүрө аласыз.</translation>
+<translation id="445765352722456792">Сунуштарды ыңгайлаштыруу</translation>
 <translation id="445864333228800152">Кутмандуу кечиңиз менен,</translation>
 <translation id="4458688154122353284">Экрандан видео жаздырууну токтотуу</translation>
 <translation id="445923051607553918">Wi-Fi тармагына кошулуу</translation>
@@ -1332,6 +1338,7 @@
 <translation id="5802516411616338943">Ыкчам параметрлерди ачуу</translation>
 <translation id="5804651031882187592">"SIM картаны кулпулоо" параметрин өчүрүү</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> тармагын жандыруу үчүн басыңыз</translation>
+<translation id="5819918159912280082">Chromebook түзмөгүңүзү күтүлбөгөн жерден өчүрүлүп күйгүзүлдү. Мурунку терезелериңизди жана колдонмолоруңузду ачыңыз.</translation>
 <translation id="5823239091726045201">Интернетте Google Tasks</translation>
 <translation id="5825969630400862129">Туташтырылган түзмөктөрдүн параметрлери</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> бөлмөсүндөгү <ph name="ROUTE_TITLE" /> токтотулсун</translation>
@@ -1512,6 +1519,7 @@
 <translation id="6469104339369989396">Байланыш түйүнүн өчүрүү/күйгүзүү</translation>
 <translation id="6477681113376365978">Файлды жүктөп алууга болбойт</translation>
 <translation id="6482559668224714696">Толук экран режиминдеги лупа</translation>
+<translation id="6485086611007560630">Аба ырайы (жеткиликсиз)</translation>
 <translation id="6490471652906364588">USB-C түзмөгү (оң жактагы оюкча)</translation>
 <translation id="649452524636452238">Акылдуу картанын PIN коду</translation>
 <translation id="6495322433318104734">Көшөгө көрсөтүлүп жатат. Чыгуу үчүн каалаган баскычты басыңыз</translation>
@@ -1781,6 +1789,7 @@
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Температура бирдигин өчүрүү/күйгүзүү (F - C)</translation>
 <translation id="7519206258459640379">Камеранын алкагы күйүк.</translation>
 <translation id="7519649142417630956">Өчүрүлгөндөн кийин администратор чыгарылып, түзмөгүңүздү көзөмөлдөй албай калат.
 
@@ -1921,6 +1930,7 @@
 <translation id="7951630946012935453">Баскычтопту караңгылатуу</translation>
 <translation id="7953994493035617347">Жаңы дааналыкты ырастайсызбы?</translation>
 <translation id="795958884516058160">Толук экран лупасы иштетилди. Аны өчүрүү үчүн <ph name="ACCELERATOR" /> басыңыз.</translation>
+<translation id="7962583092928373823">Бардык Google Жылнаама сунуштарын жашыруу</translation>
 <translation id="7963689218131240420">"Тынчымды алба" режими өчүк.</translation>
 <translation id="7963992254934562106">Кайдан: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Папка тандоо…</translation>
@@ -1993,6 +2003,7 @@
 <translation id="8214996719228530800">Canary каналы</translation>
 <translation id="8219451629189078428">Бул убакта Chromebook күйүп, электр кубатына туташып турушу керек. Кубаттагычтын же адаптердин кабелдери Chromebook'ка жана розеткага жакшы сайылып турганын текшериңиз. Chromebook'ту өчүрбөңүз.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> кошуу</translation>
+<translation id="8228175756124063692">Бул сунушту жашыруу</translation>
 <translation id="8230305195727960608">Түстөрдү инверсиялоо режими</translation>
 <translation id="8236042855478648955">Тыныгууга убакыт келди</translation>
 <translation id="8237964652943995219">Кийинки иш такта: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> иш тактанын ичинен <ph name="DESK_INDEX" />-иш такта.</translation>
@@ -2179,6 +2190,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, белгилөө кутучасы белгиленген жок.</translation>
 <translation id="8949925099261528566">Туташып турат, Интернет жок</translation>
 <translation id="8951539504029375108">Ырасталган Thunderbolt түзмөктөрү гана Chromebook түзмөгүңүзгө шайкеш келет</translation>
+<translation id="8956420987536947088">Мурунку терезелериңизди жана колдонмолоруңузду ачыңыз</translation>
 <translation id="8959380109429710384">Толук экран лупасы үчүн ыкчам баскычты бастыңыз. Жакындатылган көрүнүштө ары-бери жылуу үчүн ctrl + alt + жебелерин колдонуңуз.</translation>
 <translation id="8964525410783593407">1 с.</translation>
 <translation id="8973885907461690937">Меню сүрөтчөсүнө өтүү</translation>

@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Ключ за достъп</translation>
 <translation id="1035980983510608210">Ако затворите всички раздели, ще бъдат затворени и фиксираните.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Ще излезете от профила си и данните за сърфирането ще бъдат изтрити</translation>
 <translation id="1044891598689252897">Сайтовете ще работят нормално</translation>
 <translation id="1049743911850919806">„Инкогнито“</translation>
 <translation id="1053651653201045802">Не сте в профила си. Влезте отново в него, за да използвате съответните отметки, пароли и др.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="138618066238211776">Продължаване като <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Данни за сърфирането</translation>
 <translation id="1400642268715879018">Последните 4 седмици</translation>
 <translation id="1404330357948037222">Не сте в профила си</translation>
-<translation id="14066361343057390">Ще излезете от профила си</translation>
 <translation id="1407135791313364759">Отваряне на всички</translation>
 <translation id="1408847409015257906">Докоснете „Поверителност и сигурност“.</translation>
 <translation id="1430915738399379752">Печат</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">Файлът не може да се отвори</translation>
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
 <translation id="2738375676495545665">Скриване на „Новите неща“</translation>
-<translation id="2740910715135851329">Ще излезете от профила си, разделите ще бъдат затворени, а данните за сърфирането – изтрити</translation>
 <translation id="2747003861858887689">Предишното поле</translation>
 <translation id="2749231692441336879">Следите <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Профили на това устройство</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">Търсене чрез камерата с Обектив</translation>
 <translation id="2958718410589002129">Пароли</translation>
 <translation id="2964349545761222050">Блокиране на „бисквитките“ на трети страни</translation>
+<translation id="2965328226365382335">Последните 15 минути</translation>
 <translation id="2969979262385602596">Влизането не бе успешно. Моля, опитайте пак по-късно.</translation>
 <translation id="2975121486251958312">Налице е само режим „инкогнито“</translation>
 <translation id="2982481275546140226">Изчистване на данните</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523">Създадено: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Скриване на „Изтегляния“</translation>
 <translation id="3745190878148784130">Скриване на „Промяна на мащаба на текста“</translation>
-<translation id="3747231889390582072">За да защитим сигурността на организацията ви, незапазените данни ще бъдат изтрити от това устройство. Те може да включват пароли, история на сърфиране, „бисквитки“ и др.</translation>
 <translation id="3762232513783804601">Създаден за вашия iPad</translation>
 <translation id="3768725474733206671">Повторно отваряне на последно затворения раздел</translation>
 <translation id="3771033907050503522">Раздели „инкогнито“</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{В списъка ви за четене има {count} страница}other{В списъка ви за четене има {count} страници}}</translation>
 <translation id="4659667755519643272">Влизане в превключвателя на раздели</translation>
 <translation id="46614316059270592">Запазване на паролата</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Свържете се с даден бизнес, като започнете телефонно обаждане</translation>
 <translation id="4682686630151240767">1. Отворете настройките на iPhone.</translation>
 <translation id="4689564913179979534">Управление на начините на плащане...</translation>
@@ -1326,6 +1325,7 @@
 <translation id="7609559547731036746">Отметки</translation>
 <translation id="7638584964844754484">Неправилен пропуск</translation>
 <translation id="7640669552036055091">Раздели от Android</translation>
+<translation id="7643790043444820023">Персонализиране на началната страница</translation>
 <translation id="7646263789464975852">„Меню → Настройки → Проверка на безопасността“</translation>
 <translation id="7646772052135772216">Синхронизирането на паролите не работи.</translation>
 <translation id="764827086632467055">Докоснете „Стандартно прилож. за браузър“.</translation>
@@ -1518,7 +1518,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count} парола и други елементи ще се запазят само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google ({email}).}other{{count} пароли и други елементи ще се запазят само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google ({email}).}}</translation>
 <translation id="8522813812888400223">Анулиране на изтеглянето</translation>
 <translation id="8524799873541103884">Раздели в режим „<ph name="INCOGNITO" />“: <ph name="FIRST_VISIBLE_TAB" /> до <ph name="LAST_VISIBLE_TAB" /> от общо <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Ще излезете от профила си и разделите ще бъдат затворени</translation>
 <translation id="8528009254289981965">Отваряне на връзки от други приложения в режим „инкогнито“</translation>
 <translation id="8529767659511976195">Ново</translation>
 <translation id="8532105204136943229">Година на валидност</translation>
@@ -1599,6 +1598,7 @@
 <translation id="8876882697946675716">Синхронизирайте устройствата си</translation>
 <translation id="8879604564928138696">Докоснете два пъти за изпробване</translation>
 <translation id="8881801611828450202">Търсене на изобр. със: <ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">Затваряне на всички раздели и групи</translation>
 <translation id="8898822736010347272">Изпраща до Google URL адресите на някои от посетените от вас страници, ограничена системна информация и част от съдържанието на страниците, за да помага за откриването на нови заплахи и да защитава всички потребители на мрежата.</translation>
 <translation id="890565330728586731">Назад</translation>
 <translation id="8909135823018751308">Споделяне…</translation>

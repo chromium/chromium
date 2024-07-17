@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">כתום</translation>
 <translation id="125153950246128346">יש להקיש כדי לראות כרטיסייה אחרת</translation>
 <translation id="1273910660700874265">‫<ph name="TITLE_OF_GROUP" /> אפשרויות לקבוצת כרטיסיות</translation>
-<translation id="1322824555808364080">הזמנת אנשים</translation>
 <translation id="1419023007528516122">הקבוצה תימחק לתמיד מהמכשיר שלך</translation>
 <translation id="1486715732399361704">כל קבוצות הכרטיסיות שלך מופיעות כאן</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{נוצרה לפני דקה (<ph name="NUM_MINS_ONE" />)}one{נוצרה לפני <ph name="NUM_MINS_MANY" /> דקות}two{נוצרה לפני <ph name="NUM_MINS_MANY" /> דקות}other{נוצרה לפני <ph name="NUM_MINS_MANY" /> דקות}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">קבוצות הכרטיסיות יופיעו כאן</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ביטול הקיבוץ של הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}two{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}other{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}one{<ph name="TABS_COUNT_MANY" /> כרטיסיות}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
+<translation id="6527303717912515753">שיתוף</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{אחרי יום אחד}one{אחרי <ph name="DAY_COUNT_MANY" /> ימים}two{אחרי <ph name="DAY_COUNT_MANY" /> ימים}other{אחרי <ph name="DAY_COUNT_MANY" /> ימים}}</translation>
 <translation id="6549021453810473782">הצגת פרטי החנות</translation>
 <translation id="6557858706263317126">‫+<ph name="HIDDEN_TABS_COUNT" /></translation>

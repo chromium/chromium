@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">پس‌زمینه</translation>
 <translation id="3027578600144895987">بستن دوربین</translation>
 <translation id="3031560714565892478">دستگاه دوربین ویدیویی است.</translation>
-<translation id="3051968340259309715">‏با این کار، خدمات سیستم می‌تواند برای تعیین مکان شما از «دقت مکان» استفاده کند. «دقت مکان» از اطلاعات مربوط به سیگنال‌های بی‌سیم، مثل نقاط دسترسی Wi-Fi، دکل‌های شبکه تلفن همراه، و GPS، همراه با داده‌های حسگر دستگاه، مثل شتاب‌سنج و ژیروسکوپ، برای تخمین زدن مکان دستگاه استفاده می‌کند. می‌توانید مکان را در «تنظیمات &gt; حریم خصوصی و امنیت &gt; تنظیمات حریم خصوصی &gt; دسترسی به مکان» خاموش کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> میلی‌آمپر</translation>
 <translation id="3056720590588772262">نقطه پایان</translation>
 <translation id="3060579846059757016">رئوس مطالب</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">دستگاه‌های شبکه</translation>
 <translation id="7344788170842919262">ساده</translation>
 <translation id="7346768383111016081">برای بازی با صفحه‌کلید، کنترل را روی کنش بازی قرار دهید</translation>
+<translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7353413232959255829">‏نتیجه جستجوی <ph name="LIST_POSITION" /> از <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" /> برای پیمایش به میان‌بر، کلید Enter را فشار دهید.</translation>
 <translation id="7359657277149375382">نوع فایل</translation>
 <translation id="73631062356239394">هم‌رسانی داده‌های عیب‌یابی</translation>

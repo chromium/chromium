@@ -12,12 +12,14 @@
 <translation id="113122355610423240">Chromium 是您的默认浏览器</translation>
 <translation id="1131805035311359397">若要检查您的密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1153368717515616349">点击 Chromium 菜单</translation>
+<translation id="1184145431117212167">安装失败，因为您的 Windows 版本不受支持。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1188705220418984327">若要共享窗口，请在“系统偏好设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1262876892872089030">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chromium 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="1265577313130862557">Chromium 阻止了此项下载操作，因为该文件具有危险性</translation>
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chromium</translation>
+<translation id="1290883685122687410">设置错误：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">设置您的新 Chromium 个人资料</translation>
 <translation id="1342274909142618978">同时删除 Chromium 中的数据 (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">您已登录 Chromium！</translation>
@@ -159,6 +161,7 @@
 <translation id="3530103706039034513"><ph name="EXISTING_USER" />已登录。若要单独存储您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chromium。</translation>
 <translation id="3533435340678213462">为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。您也可以移除不希望纳入 Chromium 考虑范围的兴趣。</translation>
 <translation id="3567254597502212821">您的浏览记录，即您在此设备上使用 Chromium 访问过的网站的记录。</translation>
+<translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3639635944603682591">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chromium。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3651803019964686660">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chromium。</translation>
@@ -200,6 +203,7 @@
 <translation id="421369550622382712">在这里，您可以找到适用于 Chromium 的精彩应用、游戏、扩展程序和主题背景。</translation>
 <translation id="4216212958613226427">使用此语言显示 Chromium 界面</translation>
 <translation id="4222932583846282852">正在取消…</translation>
+<translation id="4224210481850767180">已取消安装。</translation>
 <translation id="4230135487732243613">是否将您的 Chromium 数据与此账号相关联？</translation>
 <translation id="4251772536351901305">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chromium 警告。</translation>
 <translation id="4269093074552541569">退出 Chromium</translation>

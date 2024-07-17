@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Fondo</translation>
 <translation id="3027578600144895987">Cerrar la cámara</translation>
 <translation id="3031560714565892478">El dispositivo es una cámara de vídeo.</translation>
-<translation id="3051968340259309715">Esto permite que los servicios del sistema usen la precisión de la ubicación para determinar tu ubicación. La precisión de la ubicación usa información sobre las señales inalámbricas, como los puntos de acceso Wi-Fi, las torres de redes móviles y el GPS, junto con los datos de los sensores del dispositivo, como el acelerómetro y el giroscopio, para estimar la ubicación del dispositivo. Puedes desactivar la ubicación en Configuración &gt; Privacidad y seguridad &gt; Controles de privacidad &gt; Acceso a la ubicación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punto final</translation>
 <translation id="3060579846059757016">Esquemas</translation>
@@ -1037,6 +1036,7 @@
 <translation id="6595046262780525922">¿Activar la transcripción y descargar el modelo de transcripción?</translation>
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6599673642868607614">Gracias por darnos tu opinión. Tus comentarios nos ayudan a mejorar la experiencia en Chromebook y nuestro equipo los revisará. Recibimos muchos informes, por lo que no podremos enviarte una respuesta.</translation>
+<translation id="660846213831377756">Teclas del ratón</translation>
 <translation id="6618744767048954150">En curso</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial a menos que se quiten de forma manual</translation>
 <translation id="6624819909909965616">No se pueden subir archivos de más de 10 MB</translation>
@@ -1190,6 +1190,7 @@
 <translation id="7343649194310845056">Dispositivos de red</translation>
 <translation id="7344788170842919262">terrosos</translation>
 <translation id="7346768383111016081">Asigna los controles a acciones del juego para jugar con tu teclado</translation>
+<translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7353413232959255829">Resultado de búsqueda <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pulsa Intro para ir al acceso directo.</translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
 <translation id="73631062356239394">Compartir datos de diagnóstico</translation>

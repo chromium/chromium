@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">Chrome मा साइन इन गर्नुहोस्। तपाईं कुनै खातामा एक पटक मात्र साइन इन गर्न चाहनुहुन्छ भने तपाईं <ph name="GUEST_LINK_BEGIN" />अतिथिका रूपमा यो डिभाइस प्रयोग गर्न<ph name="GUEST_LINK_END" /> सक्नुहुन्छ।</translation>
 <translation id="1152920704813762236">ChromeOS का बारेमा</translation>
 <translation id="1154147086299354128">Chrome मा खोल्नुहोस्</translation>
+<translation id="1184145431117212167">तपाईंको डिभाइसमा भएको Windows को संस्करणमा नचल्ने भएकाले इन्स्टल गर्न सकिएन।</translation>
 <translation id="1194807384646768652">यस प्रकारको फाइल सामान्यतया डाउनलोड नगरिने र खतरनाक हुन सक्ने भएकाले Chrome ले उक्त प्रकारको फाइल डाउनलोड गर्ने कार्य ब्लक गरेको छ</translation>
 <translation id="1203500561924088507">इन्स्टल गर्नुभएकोमा धन्यवाद। <ph name="BUNDLE_NAME" /> प्रयोग गर्नुअघि तपाईंले अनिवार्य रूपमा आफ्नो ब्राउजर रिस्टार्ट गर्नु पर्छ।</translation>
 <translation id="1229096353876452996">Google ले Chrome लाई डिफल्ट ब्राउजरका रूपमा सेट गर्न सिफारिस गर्छ</translation>
@@ -237,6 +238,7 @@
 <translation id="4191857738314598978">{0,plural, =1{एक दिनभित्र Chrome पुनः सुरु गर्नुहोस्}other{# दिनभित्र Chrome पुनः सुरु गर्नुहोस्}}</translation>
 <translation id="4205939740494406371">Chrome तपाईंका पासवर्डहरू जाँच्न सक्दैन। २४ घन्टापछि फेरि प्रयास गर्नुहोस् वा <ph name="BEGIN_LINK" />आफ्नो Google खातामा गई आफ्ना पासवर्डहरू जाँच्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="4222932583846282852">रद्द गरिँदै...</translation>
+<translation id="4224210481850767180">इन्स्टल गर्ने प्रक्रिया रद्द गरिएको छ।</translation>
 <translation id="4242034826641750751">यो साइट चलाउन Chrome लाई क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="424864128008805179">Chrome बाट साइन आउट गर्ने हो?</translation>
 <translation id="4251615635259297716">तपाइँको Chrome लगतलाई यस खातामा लिङ्क गर्ने?</translation>

@@ -14,6 +14,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="113122355610423240">Chromium is your default browser</translation>
 <translation id="1131805035311359397">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Click the Chromium menu</translation>
+<translation id="1184145431117212167">Installation failed because your version of Windows is not supported.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1188705220418984327">To share your window, allow screen recording for Chromium in System Preferences.</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
@@ -204,6 +205,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="421369550622382712">Discover great apps, games, extensions and themes for Chromium.</translation>
 <translation id="4216212958613226427">This language is used to display the Chromium UI</translation>
 <translation id="4222932583846282852">Cancelling...</translation>
+<translation id="4224210481850767180">The installation has been cancelled.</translation>
 <translation id="4230135487732243613">Link my Chromium data to this account</translation>
 <translation id="4251772536351901305">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chromium warnings.</translation>
 <translation id="4269093074552541569">Sign out of Chromium</translation>

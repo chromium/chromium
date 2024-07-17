@@ -8,7 +8,6 @@
 <translation id="102916930470544692">מפתח גישה</translation>
 <translation id="1035980983510608210">אם סוגרים את כל הכרטיסיות, גם הכרטיסיות המוצמדות נסגרות.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">המערכת תוציא אותך מהחשבון ונתוני הגלישה יימחקו</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="1053651653201045802">החשבון לא מחובר. כדי להשתמש בסימניות, בסיסמאות ובפרטים נוספים בחשבון שלך, עליך להיכנס שוב לחשבון.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">סיסמאות</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="138618066238211776">המשך בתור <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">נתוני גלישה</translation>
 <translation id="1400642268715879018">מארבעת השבועות האחרונים</translation>
 <translation id="1404330357948037222">לא נכנסת לחשבון</translation>
-<translation id="14066361343057390">המערכת תוציא אותך מהחשבון</translation>
 <translation id="1407135791313364759">פתיחת כל הכרטיסיות</translation>
 <translation id="1408847409015257906">מקישים על 'פרטיות ואבטחה'.</translation>
 <translation id="1430915738399379752">הדפסה</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">לא ניתן לפתוח את הקובץ</translation>
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
 <translation id="2738375676495545665">הסתרת האפשרות 'מה חדש'</translation>
-<translation id="2740910715135851329">המערכת תוציא אותך מהחשבון, הכרטיסיות ייסגרו ונתוני הגלישה יימחקו</translation>
 <translation id="2747003861858887689">השדה הקודם</translation>
 <translation id="2749231692441336879">האתר <ph name="CHANNEL_NAME" /> נמצא במעקב</translation>
 <translation id="2754492786623500387">החשבונות במכשיר הזה</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">‏חיפוש באמצעות המצלמה ב-Lens</translation>
 <translation id="2958718410589002129">סיסמאות</translation>
 <translation id="2964349545761222050">‏חסימה של קובצי cookie מצדדים שלישיים</translation>
+<translation id="2965328226365382335">ב-15 הדקות האחרונות</translation>
 <translation id="2969979262385602596">לא ניתן היה להיכנס לחשבון. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="2975121486251958312">רק מצב אנונימי זמין</translation>
 <translation id="2982481275546140226">ניקוי נתונים</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523">תאריך היצירה: <ph name="DATE" /></translation>
 <translation id="374357899112510277">הסתרת ההורדות</translation>
 <translation id="3745190878148784130">הסתרה של 'הגדלת הטקסט'</translation>
-<translation id="3747231889390582072">‏כדי להגן על אבטחת הארגון, נתונים שלא נשמרו יימחקו מהמכשיר. הנתונים האלה יכולים לכלול סיסמאות, היסטוריית גלישה, קובצי cookie ועוד.</translation>
 <translation id="3762232513783804601">‏מותאם ל-iPad שלך</translation>
 <translation id="3768725474733206671">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
 <translation id="3771033907050503522">כרטיסיות אנונימיות</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{דף אחד ({count}) ברשימת הקריאה}one{{count} דפים ברשימת הקריאה}two{{count} דפים ברשימת הקריאה}other{{count} דפים ברשימת הקריאה}}</translation>
 <translation id="4659667755519643272">‏כניסה אל Tab Switcher</translation>
 <translation id="46614316059270592">שמירת הסיסמה</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">יצירת קשר עם עסק בשיחת טלפון</translation>
 <translation id="4682686630151240767">‏1. פותחים את הגדרות ה-iPhone</translation>
 <translation id="4689564913179979534">ניהול אמצעי תשלום...</translation>
@@ -1326,6 +1325,7 @@
 <translation id="7609559547731036746">סימניות</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
 <translation id="7640669552036055091">‏כרטיסיות מ-Android</translation>
+<translation id="7643790043444820023">התאמה אישית של דף הבית</translation>
 <translation id="7646263789464975852">תפריט ← הגדרות ← בדיקת אבטחה</translation>
 <translation id="7646772052135772216">סנכרון הסיסמאות לא פועל</translation>
 <translation id="764827086632467055">מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל</translation>
@@ -1518,7 +1518,6 @@
 <translation id="8522147671363140027">{count,plural, =1{‏סיסמה אחת ({count}) ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}one{‏{count} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}two{‏{count} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}other{‏{count} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="8522813812888400223">ביטול ההורדה</translation>
 <translation id="8524799873541103884">כרטיסיות <ph name="INCOGNITO" /> ‏<ph name="FIRST_VISIBLE_TAB" /> עד <ph name="LAST_VISIBLE_TAB" /> מתוך <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">המערכת תוציא אותך מהחשבון והכרטיסיות ייסגרו</translation>
 <translation id="8528009254289981965">פתיחת קישורים מאפליקציות אחרות במצב פרטי</translation>
 <translation id="8529767659511976195">חדש</translation>
 <translation id="8532105204136943229">שנת פקיעת התוקף</translation>
@@ -1599,6 +1598,7 @@
 <translation id="8876882697946675716">אפשר לסנכרן בין המכשירים</translation>
 <translation id="8879604564928138696">אפשר להקיש הקשה כפולה כדי לנסות</translation>
 <translation id="8881801611828450202">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">סגירה של כל הכרטיסיות והקבוצות</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="890565330728586731">אחורה</translation>
 <translation id="8909135823018751308">שיתוף…</translation>

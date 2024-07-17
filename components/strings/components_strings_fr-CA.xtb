@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">Redémarrer le tutoriel</translation>
 <translation id="2219735899272417925">Réinitialisation de l'appareil requise</translation>
 <translation id="2221227930294879156">Événements liés à l'alimentation et aux boissons</translation>
+<translation id="2222604080869344662">Connectez-vous à OneDrive pour continuer le téléchargement</translation>
 <translation id="2224337661447660594">Aucune connexion Internet</translation>
 <translation id="2225927550500503913">Carte virtuelle activée</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Se connecter<ph name="END_LINK" /> au réseau Wi-Fi</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">Google Chrome essaie de modifier les modes de paiement.</translation>
 <translation id="2400600116338235695">Les sites peuvent demander à se connecter à des ports série</translation>
 <translation id="2404884497378469141">Réessayez de copier vos fichiers</translation>
+<translation id="2412310121876768057">Remplissage automatique de la carte la prochaine fois?</translation>
 <translation id="2413155254802890957">Anciennes</translation>
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2414886740292270097">Foncé</translation>
@@ -1162,7 +1164,6 @@
 <translation id="3209034400446768650">Cette page peut exiger des frais</translation>
 <translation id="3212581601480735796">Votre activité sur <ph name="HOSTNAME" /> est surveillée</translation>
 <translation id="3215092763954878852">Impossible d'utiliser WebAuthn</translation>
-<translation id="3215311088819828484">Résultat mis à jour</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatif</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Mise à jour requise maintenant}=2{Mise à jour requise d'ici demain}one{Mise à jour requise dans # jour}other{Mise à jour requise dans # jours}}</translation>
@@ -1241,6 +1242,7 @@
 <translation id="3352881017886802007">Jeux de sports</translation>
 <translation id="3355823806454867987">Modifier les paramètres du mandataire...</translation>
 <translation id="335809815767823">Exportées</translation>
+<translation id="3359387651158939842">Remplissez automatiquement les renseignements de votre carte pour vos futurs achats lorsque vous l'enregistrez pour l'utiliser avec Google Pay</translation>
 <translation id="3359565626472459400">Mariage</translation>
 <translation id="3360103848165129075">Feuille du module de traitement du paiement</translation>
 <translation id="3362968246557010467">Cette politique a été automatiquement copiée à partir de la politique obsolète <ph name="OLD_POLICY" />. Vous devriez utiliser cette politique à la place.</translation>
@@ -2055,6 +2057,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jeux olympiques</translation>
 <translation id="4898742041545089450">Ce sujet est débloqué et peut devenir actif en fonction de votre historique de navigation</translation>
+<translation id="4899379435492347481">Enregistrez cette carte pour l'utiliser en ligne avec Google Pay pour des achats sur vos appareils</translation>
 <translation id="4900217275619098670">Neuvième rouleau</translation>
 <translation id="4901052769830245369">Étiquettes (semi-brillantes)</translation>
 <translation id="4901162432287938633">Hygiène et articles de toilette</translation>
@@ -2684,7 +2687,6 @@
 <translation id="6116338172782435947">Voir le texte et les images copiés dans le presse-papiers</translation>
 <translation id="6117833587752089929">Photo (satiné)</translation>
 <translation id="6118782133429281336">La liste d'origine est vide.</translation>
-<translation id="6120950591512958208">Utilisez ce code lors du paiement.</translation>
 <translation id="612178891608320683">Cuisine végétalienne</translation>
 <translation id="6122181661879998141">devant de votre carte</translation>
 <translation id="6124058285696691147">Télécharger la pièce jointe</translation>
@@ -2718,6 +2720,7 @@
 <translation id="6180316780098470077">Intervalle entre les nouveaux essais</translation>
 <translation id="6182972682129119950">A4 x 5</translation>
 <translation id="6184868291074982484">Chrome limite automatiquement les témoins tiers</translation>
+<translation id="6194139058731919563">Les détails de votre carte sont chiffrés lorsqu'ils sont enregistrés dans votre compte Google et utilisés pour payer en ligne</translation>
 <translation id="6194209731893739467">Vous pouvez voir tous vos produits suivis en cliquant ici</translation>
 <translation id="6195163219142236913">Témoins tiers limités</translation>
 <translation id="6195371403461054755">Géologie</translation>
@@ -3619,6 +3622,7 @@ Détails supplémentaires :
 <translation id="7831993212387676366">Qu'est-ce que la liste d'achats?</translation>
 <translation id="7832078172950550575">En utilisant un langage courant, vous pouvez effectuer des recherches dans votre historique de navigation à l'aide d'expressions telles que « pizzerias à proximité » ou « parcs appropriés pour les familles au centre-ville ». Vos recherches, les meilleurs résultats et le contenu de leurs pages sont envoyés à Google et peuvent être vus par des réviseurs humains afin d'améliorer cette fonctionnalité. <ph name="BEGIN_LINK" />Gérer vos paramètres de recherche dans l'historique<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">La capture d'écran a commencé</translation>
+<translation id="7840504603489703295">Les limites relatives à votre institution financière sont appliquées.</translation>
 <translation id="784137052867620416">Perspectives d'achat</translation>
 <translation id="784404208867107517">Historique regroupé</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application : <ph name="EXAMPLE_APP_1" />}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3817,6 +3821,7 @@ Détails supplémentaires :
 <translation id="8241712895048303527">Bloquer sur ce site</translation>
 <translation id="8242426110754782860">Continuer</translation>
 <translation id="8246482227229072868">Anneaux</translation>
+<translation id="8248406213705193919">Enregistrer la carte en toute sécurité?</translation>
 <translation id="8249296373107784235">Interrompre</translation>
 <translation id="824968735947741546">Traduction : <ph name="SOURCE" /> (détecté automatiquement) en <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Cette adresse est actuellement enregistrée sur cet appareil. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="ACCOUNT" />.</translation>
@@ -4300,6 +4305,7 @@ Détails supplémentaires :
 <translation id="9169664750068251925">Toujours bloquer pour ce site</translation>
 <translation id="9169931577761441333">Ajoutez <ph name="APP_NAME" /> à l'écran d'accueil</translation>
 <translation id="9170848237812810038">Ann&amp;uler</translation>
+<translation id="9170906125144697215">Payer avec Pix sans changer d'appli</translation>
 <translation id="9171296965991013597">Quitter l'application?</translation>
 <translation id="9173282814238175921">Document unique/Nouvelle feuille</translation>
 <translation id="9173995187295789444">Recherche d'appareils Bluetooth en cours…</translation>
@@ -4321,6 +4327,7 @@ Détails supplémentaires :
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase de passe de synchronisation. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="920643408853370361">Assurance voyage</translation>
 <translation id="9207861905230894330">Échec de l'ajout d'un article.</translation>
+<translation id="9209339767782560829">Un problème est survenu lors de l'utilisation de votre certificat de connexion.</translation>
 <translation id="9210825002219699214">Voyages aériens</translation>
 <translation id="9211461151375991073">Tapez @ pour rechercher <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Personnaliser l'apparence</translation>

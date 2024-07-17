@@ -8,7 +8,6 @@
 <translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1035980983510608210">如果關閉所有分頁，系統也會一併關閉固定分頁。</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">系統會將你登出並刪除瀏覽資料</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1053651653201045802">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資訊。</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">密碼</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="138618066238211776">以<ph name="USER_NAME" />的身分繼續</translation>
+<translation id="1388866984373351434">瀏覽資料</translation>
 <translation id="1400642268715879018">過去 4 週</translation>
 <translation id="1404330357948037222">你已登出帳戶</translation>
-<translation id="14066361343057390">系統會將你登出</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1408847409015257906">輕觸「隱私權和安全性」。</translation>
 <translation id="1430915738399379752">列印</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">無法開啟檔案</translation>
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
 <translation id="2738375676495545665">隱藏「新功能」</translation>
-<translation id="2740910715135851329">系統會將你登出、關閉分頁，並刪除瀏覽資料</translation>
 <translation id="2747003861858887689">上一個欄位</translation>
 <translation id="2749231692441336879">正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
 <translation id="2754492786623500387">這部裝置上的帳戶</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">智慧鏡頭相機搜尋功能</translation>
 <translation id="2958718410589002129">密碼</translation>
 <translation id="2964349545761222050">封鎖第三方 Cookie</translation>
+<translation id="2965328226365382335">前 15 分鐘</translation>
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
 <translation id="2975121486251958312">只能使用無痕模式</translation>
 <translation id="2982481275546140226">清除資料</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523">建立日期：<ph name="DATE" /></translation>
 <translation id="374357899112510277">隱藏「下載內容」</translation>
 <translation id="3745190878148784130">隱藏「縮放文字」</translation>
-<translation id="3747231889390582072">為確保貴機構的安全，系統將從這部裝置中刪除未儲存的資料，可能包括密碼、瀏覽記錄和 Cookie 等等。</translation>
 <translation id="3762232513783804601">專為 iPad 量身打造</translation>
 <translation id="3768725474733206671">重新開啟最近關閉的分頁</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{閱讀清單上的 {count} 個頁面}other{閱讀清單上的 {count} 個頁面}}</translation>
 <translation id="4659667755519643272">進入分頁切換選項</translation>
 <translation id="46614316059270592">儲存密碼</translation>
+<translation id="4668929960204016307">、</translation>
 <translation id="467189612236587057">打電話給商家</translation>
 <translation id="4682686630151240767">1. 開啟 iPhone 的 [設定]</translation>
 <translation id="4689564913179979534">管理付款方式...</translation>
@@ -1326,6 +1325,7 @@
 <translation id="7609559547731036746">書籤</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
 <translation id="7640669552036055091">Android 裝置上的分頁</translation>
+<translation id="7643790043444820023">自訂首頁</translation>
 <translation id="7646263789464975852">「選單」→「設定」→「安全檢查」</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="764827086632467055">輕觸「預設瀏覽器 App」</translation>
@@ -1518,7 +1518,6 @@
 <translation id="8522147671363140027">{count,plural, =1{這 {count} 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}other{這 {count} 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}}</translation>
 <translation id="8522813812888400223">取消下載</translation>
 <translation id="8524799873541103884">第 <ph name="FIRST_VISIBLE_TAB" /> 至 <ph name="LAST_VISIBLE_TAB" /> 個<ph name="INCOGNITO" />分頁，共 <ph name="NUMBER_OF_OPEN_TABS" /> 個</translation>
-<translation id="852576975834694248">你將登出並關閉分頁</translation>
 <translation id="8528009254289981965">在無痕模式中開啟其他應用程式的連結</translation>
 <translation id="8529767659511976195">新功能</translation>
 <translation id="8532105204136943229">到期年份</translation>
@@ -1599,6 +1598,7 @@
 <translation id="8876882697946675716">讓你的裝置保持同步</translation>
 <translation id="8879604564928138696">輕觸兩下即可試用</translation>
 <translation id="8881801611828450202">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
+<translation id="8887595428614802520">關閉所有分頁和群組</translation>
 <translation id="8898822736010347272">將部分已造訪網頁的網址、特定的系統資訊和部分網頁內容傳送至 Google，以協助發現新威脅並保障所有網路使用者的安全。</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8909135823018751308">分享…</translation>

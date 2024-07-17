@@ -852,7 +852,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="254524874071906077">Postavi Chrome kao podrazumevani pregledač</translation>
 <translation id="2545721997179863249">Izabrana je opcija za popunjavanje svih polja</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
-<translation id="2546678870939430879">Ponovo generišite rezultat</translation>
 <translation id="254947805923345898">Vrednost smernica nije važeća.</translation>
 <translation id="2549836668759467704">Savetodavne usluge i izvođenje radova u građevinarstvu</translation>
 <translation id="255002559098805027">Host <ph name="HOST_NAME" /> je poslao nevažeći odgovor.</translation>
@@ -1035,7 +1034,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2954624054936281172">Tabela sa sačuvanim načinima plaćanja</translation>
 <translation id="295526156371527179">Upozorenje: Ove smernice nisu objedinjene kao rečnik kako je navedeno u smernicama jer nisu rečnik.</translation>
 <translation id="2955913368246107853">Zatvorite traku za pronalaženje</translation>
-<translation id="2958345633099973853">Opozovite rezultat</translation>
 <translation id="2958544468932521864">Kriket</translation>
 <translation id="2959274854674276289">Vegetarijanska kuhinja</translation>
 <translation id="2961809451460302960">Životno osiguranje</translation>
@@ -1166,7 +1164,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3209034400446768650">Stranica može da naplaćuje</translation>
 <translation id="3212581601480735796">Vaše aktivnosti na <ph name="HOSTNAME" /> se prate</translation>
 <translation id="3215092763954878852">Korišćenje veb-standarda WebAuthn nije uspelo</translation>
-<translation id="3215311088819828484">Rezultat je ažuriran</translation>
 <translation id="3216313131063488104">Bluz</translation>
 <translation id="3218181027817787318">Relativno</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Ažuriranje mora da se obavi odmah}=2{Ažuriranje mora da se obavi do sutra}one{Ažuriranje mora da se obavi u roku od # dana}few{Ažuriranje mora da se obavi u roku od # dana}other{Ažuriranje mora da se obavi u roku od # dana}}</translation>
@@ -2516,7 +2513,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5772086939108830423">Koristite pristupni kôd na drugom uređaju</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5776574724412881956">Nema virtuelne kartice? Kliknite na podatke o virtuelnoj kartici da biste ih kopirali u privremenu memoriju. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">Rezultat se učitava</translation>
 <translation id="5781136890105823427">Eksperiment je omogućen</translation>
 <translation id="578305955206182703">Oker</translation>
 <translation id="5783700460098783980">Prtljag i pribor za putovanja</translation>
@@ -2691,7 +2687,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6116338172782435947">da vidi tekst i slike koji su kopirani u privremenu memoriju</translation>
 <translation id="6117833587752089929">Slika (saten)</translation>
 <translation id="6118782133429281336">Lista porekla je prazna.</translation>
-<translation id="6120950591512958208">Koristite ovaj kôd pri plaćanju.</translation>
 <translation id="612178891608320683">Veganska kuhinja</translation>
 <translation id="6122181661879998141">prednjoj strani kartice</translation>
 <translation id="6124058285696691147">Preuzmi prilog</translation>

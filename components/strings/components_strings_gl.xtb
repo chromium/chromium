@@ -1164,7 +1164,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3209034400446768650">Nesta páxina pódense aplicar cargos</translation>
 <translation id="3212581601480735796">Estase supervisando a túa actividade en <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">Non se puido utilizar WebAuthn</translation>
-<translation id="3215311088819828484">Resultado actualizado</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Cómpre facer unha actualización agora}=2{Cómpre facer unha actualización mañá}other{Cómpre facer unha actualización dentro de # días}}</translation>
@@ -2688,7 +2687,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6116338172782435947">Ver o texto e as imaxes que se copian no portapapeis</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
 <translation id="6118782133429281336">A lista de orixe está baleira.</translation>
-<translation id="6120950591512958208">Usa este código cando tramites a compra.</translation>
 <translation id="612178891608320683">Cociña vegana</translation>
 <translation id="6122181661879998141">anverso da tarxeta</translation>
 <translation id="6124058285696691147">Descargar o anexo</translation>

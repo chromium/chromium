@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Pozadina</translation>
 <translation id="3027578600144895987">Zatvorite kameru</translation>
 <translation id="3031560714565892478">Uređaj je video kamera.</translation>
-<translation id="3051968340259309715">Ovo omogućava sistemskim uslugama da koriste preciznost lokacije za utvrđivanje lokacije. Preciznost lokacije koristi informacije o bežičnim signalima kao što su pristupne tačke za WiFi, repetitori mobilnih mreža i GPS, zajedno sa podacima senzora uređaja, kao što su akcelerometar i žiroskop, za procenu lokacije uređaja. Možete da isključite lokaciju u odeljku Podešavanja &gt; Privatnost i bezbednost &gt; Kontrole privatnosti &gt; Pristup lokaciji. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Krajnja tačka</translation>
 <translation id="3060579846059757016">Okviri</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7344788170842919262">zemljani</translation>
 <translation id="7346768383111016081">Postavite kontrolu za radnju u igri da biste igrali pomoću tastature</translation>
+<translation id="7352651011704765696">Došlo je do greške</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />. rezultat pretrage od <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pritisnite Enter da biste otišli na prečicu.</translation>
 <translation id="7359657277149375382">Tip datoteke</translation>
 <translation id="73631062356239394">Deli dijagnostičke podatke</translation>

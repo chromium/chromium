@@ -826,6 +826,7 @@ Une "entrée utilisateur" est définie par les API du système d'exploitation et
 <translation id="1634989431648355062">Autoriser le plug-in "<ph name="FLASH_PLUGIN_NAME" />" sur ces sites</translation>
 <translation id="1635450837608153975">Désactiver les optimisations JavaScript avancées sur tous les sites</translation>
 <translation id="1635748761015837179">Autoriser l'écriture sur des périphériques de stockage externes</translation>
+<translation id="163653062822010558">Activé : le zoom CSS suit la spécification standard.</translation>
 <translation id="1639468541408865385">Activer le cache d'authentification HTTP à portée globale</translation>
 <translation id="1639673466479276550">Activez l'économiseur d'écran pour l'écran de connexion.</translation>
 <translation id="1640824698339859203">Activer le SSO flottant et déplacer les authentifications des services Web de l'utilisateur vers un nouvel appareil</translation>
@@ -1230,6 +1231,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 <translation id="1930127294345368978">Nombre maximal de feuilles pouvant être imprimées par tâche d'impression</translation>
 <translation id="1933378685401357864">Image de fond d'écran</translation>
 <translation id="1935409768874953955">La collecte de données anonymisées avec clé d'URL est toujours active</translation>
+<translation id="1942015922182679826">Activer la suppression des mots de passe indéchiffrables</translation>
 <translation id="1942626390957213764">Désactiver le hub de partage du bureau</translation>
 <translation id="194407941132272412">Désactiver l'isolation pour tous les sites Web, mais autoriser l'utilisateur à l'activer</translation>
 <translation id="1945994447126139909">Cette règle permet d'assurer la transition à court terme vers <ph name="PRODUCT_NAME" /> 88, après quoi elle sera supprimée.
@@ -1633,6 +1635,13 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 
       Si vous définissez <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> sur "2", aucune variante ne peut être appliquée au navigateur sur l'écran de connexion. Veuillez noter que ce mode n'est pas recommandé, car il est susceptible d'empêcher les développeurs <ph name="PRODUCT_OS_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu.</translation>
 <translation id="2215746393279570703">Paramètres du SSO flottant</translation>
+<translation id="2218830243081931587">Cette règle contrôle le comportement des raccourcis sur <ph name="PRODUCT_OS_NAME" />.
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="NORMAL_SYSTEM_PRIORITY" />, les raccourcis système sur <ph name="PRODUCT_OS_NAME" /> s'activeront toujours comme prévu.
+
+Si cette règle est définie sur <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'activera jamais de raccourci.
+
+Si cette règle est définie sur <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'activera jamais de raccourci lorsqu'une appli est en plein écran.</translation>
 <translation id="2221779615493499989">Signale l'état du réseau des utilisateurs sur les appareils enregistrés.
 
       Si la règle est définie sur "False", ces infos ne seront pas transmises.
@@ -2403,6 +2412,7 @@ Cette règle ne peut être configurée que comme règle relative aux utilisateur
 <translation id="2847788524147474533">Prioriser les règles de plate-forme relatives à la machine avant celles de cloud</translation>
 <translation id="2849275596224278787">Masquer les options d'accessibilité dans le menu de la barre d'état système de l'écran de connexion</translation>
 <translation id="2853649500575897584">Ne pas bloquer les anciens points d'extension du processus du navigateur</translation>
+<translation id="2853757230661166968">Permet aux applis de prendre des captures et de remplacer les raccourcis système par défaut.</translation>
 <translation id="285480231336205327">Activer le mode Contraste élevé</translation>
 <translation id="285627849510728211">Définir le jour de recharge de la batterie en mode avancé</translation>
 <translation id="2856932965866813330">Activer le partage des identifiants de l'utilisateur avec d'autres utilisateurs</translation>
@@ -3750,6 +3760,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Remarque : Cette règle doit être utilisée avec la règle "<ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />".</translation>
 <translation id="3918339829588313389">Autoriser les utilisateurs à définir un code peu sécurisé</translation>
+<translation id="392227823425989489">Tous les raccourcis système s'activeront toujours comme prévu.</translation>
 <translation id="3924506460382372403">Désactiver les rapports sur l'état de la carte graphique de l'appareil</translation>
 <translation id="3925377537407648234">Régler la résolution d'affichage et le facteur d'adaptation</translation>
 <translation id="3926681471685211524">Vérifier l'utilisation de clés RSA pour les certificats de serveur émis par les ancres de confiance locales</translation>
@@ -4161,6 +4172,13 @@ Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut ent
       Si elle est définie sur "False", la résolution DNS du système (getaddrinfo()) s'exécute dans le processus réseau plutôt que dans le processus du navigateur. Cela peut forcer la désactivation du bac à sable du service réseau, ce qui nuit à la sécurité de <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas définie, la résolution DNS du système peut s'exécuter dans le service réseau, en dehors du service réseau, ou partiellement à l'intérieur et à l'extérieur du service réseau, en fonction de la configuration du système et des flags de fonctionnalité.</translation>
+<translation id="4234788818648224034">Liste des domaines pour lesquels ne pas utiliser DNS-over-HTTPS. Cette règle est ignorée lorsque le mode DNS sécurisé est désactivé (utilisez toujours le DNS en texte brut).
+
+Si <ph name="DOH_TEMPLATES_POLICY_NAME" /> est également configurée, un domaine plus spécifique est privilégié. La spécificité correspond au nombre de points (.) dans le domaine. Lorsqu'un domaine est concerné par les deux règles, il utilise DNS-over-HTTPS par défaut.
+
+Les domaines doivent être aux formats suivants : nom de domaine complet (FQDN) ou suffixes de domaine indiqués par un préfixe générique spécial : *.
+
+Les domaines dont le format est incorrect seront ignorés.</translation>
 <translation id="4239720644496144453">Le cache n'est pas utilisé pour les applications Android. Si plusieurs utilisateurs installent la même application Android, celle-ci sera à nouveau téléchargée pour chacun d'eux.</translation>
 <translation id="4242583077375244471">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
 
@@ -4170,6 +4188,7 @@ Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats 
 
 Cette règle a été supprimée de la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, de la version 120 de <ph name="PRODUCT_OS_NAME" /> et de la version 120 de <ph name="PRODUCT_NAME" /> pour <ph name="LINUX_OS_NAME" />, et de la version 121 de <ph name="PRODUCT_NAME" /> pour <ph name="ANDROID_NAME" /> lorsque la prise en charge de l'outil de vérification des certificats racines fournis par la plate-forme a été supprimée.</translation>
 <translation id="424318624725112807">Activer la mise en surbrillance du curseur de saisie sur l'écran de connexion</translation>
+<translation id="4243419387411966417">Désactiver la suppression des mots de passe indéchiffrables</translation>
 <translation id="4245159233848584683">Si cette règle est activée ou n'est pas configurée lorsqu'un appareil est hors connexion, et que la connexion automatique sans délai à un compte local de l'appareil est autorisée, <ph name="PRODUCT_OS_NAME" /> affiche une invite de configuration du réseau.
 
 Si cette règle est désactivée, un message d'erreur s'affiche à la place.</translation>
@@ -4622,11 +4641,6 @@ Si cette règle n'est pas configurée, toutes les origines nécessitent un geste
 <translation id="4615892138881859957">Contrôle le raccourci utilisé pour déclencher la touche Insérer du groupe de six touches</translation>
 <translation id="4617338332148204752">Ignorer la vérification des balises Meta dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fonctionnalité NewBaseUrlInheritanceBehavior disponible</translation>
-<translation id="4624006912948309924">Permet de définir quels identifiants d'appli <ph name="PRODUCT_OS_NAME" /> affiche en tant qu'applis épinglées dans la barre du Lanceur d'applis. Notez que les utilisateurs ne peuvent pas les modifier.
-
-Spécifiez les applis Chrome par leur ID (par exemple, pjkljhegncpnkpknbcohdijeoejaedia), les applis Android par leur nom de package (par exemple, com.google.android.gm), les applis Web par l'URL utilisée dans <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (par exemple, https://google.com/maps) et les applis Web système par leur nom snake case (par exemple, <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />).
-
-Si cette règle n'est pas configurée, les utilisateurs peuvent modifier la liste des applis épinglées dans le Lanceur d'applications.</translation>
 <translation id="4624417808625504735">Empêcher JavaScript d'utiliser le JIT sur ces sites</translation>
 <translation id="46321462262887935">Considérer les touches supérieures comme des touches de fonction, mais autoriser l'utilisateur à modifier ce paramètre</translation>
 <translation id="4632343302005518762">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu répertoriés</translation>
@@ -5158,6 +5172,15 @@ Si cette règle n'est pas configurée, "M'aider à écrire" sera activé sur les
 <translation id="5085647276663819155">Désactiver l'aperçu avant impression</translation>
 <translation id="5087932158260897375">Si cette règle est définie sur "False", les rapports sur les données de diagnostic de fiabilité du domaine sont désactivés et aucune donnée n'est envoyée à Google.
 Si cette règle est définie sur "True" ou si elle n'est pas définie, les rapports sur les données de diagnostic de fiabilité du domaine suivront le comportement de MetricsReportingEnabled pour <ph name="PRODUCT_NAME" /> ou de DeviceMetricsReportingEnabled pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="5088284418186527880">Cette règle permet de suivre la spécification nouvellement adoptée concernant le zoom CSS.
+
+Lorsque cette règle est activée ou n'est pas configurée, la propriété "zoom" CSS suit la spécification ci-après :
+
+  https://drafts.csswg.org/css-viewport/#zoom-property
+
+Lorsque cette règle est désactivée, la propriété "zoom" CSS fonctionne de la même manière qu'avant la spécification standard.
+
+Cette règle est proposée pour une durée limitée afin de laisser le temps de migrer le contenu Web en fonction de la nouvelle spécification. Il existe aussi un essai Original Trial (DisableStandardizedBrowserZoom) qui correspond au comportement quand cette règle est désactivée. Dans la version 134, cette règle sera supprimée et le zoom CSS suivra la spécification standard de façon permanente.</translation>
 <translation id="5090791951240382356">Autoriser la fusion de règles de dictionnaire qui proviennent de sources différentes</translation>
 <translation id="5091315650312105069">Autoriser l'authentification <ph name="BASIC_AUTH" /> pour HTTP</translation>
 <translation id="5093603777978346818">Ne pas activer l'économiseur d'écran pour l'écran de verrouillage.</translation>
@@ -5222,6 +5245,15 @@ Si cette règle n'est pas configurée ou qu'elle est désactivée, les cookies e
 <translation id="5152787786897382519">Chromium et Google Chrome possèdent tous deux des groupes de règles interdépendantes pour contrôler une fonctionnalité. Ces ensembles sont représentés par les groupes de règles suivants. Les règles pouvant avoir plusieurs sources, seules les valeurs issues de la source ayant la priorité la plus haute sont appliquées. Les valeurs provenant d'une source ayant une priorité inférieure dans le même groupe sont ignorées. L'ordre de priorité est défini à la page <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icône des fonctionnalités expérimentales du navigateur dans la barre d'outils</translation>
 <translation id="5159674159887919923">Ne pas envoyer de données matérielles supplémentaires sur ChromeOS Flex</translation>
+<translation id="5162982931329320509">Liste des domaines pour lesquels utiliser DNS-over-HTTPS. DNS-over-HTTPS ne sera pas utilisé pour les domaines qui ne figurent pas sur la liste. Cette règle est ignorée lorsque le mode DNS sécurisé est désactivé (utilisez toujours le DNS en texte brut).
+
+Si la liste est vide ou si la règle n'est pas configurée, tous les domaines utiliseront DNS-over-HTTPS lorsque c'est possible. Ce comportement est identique pour une liste de domaines inclus dont la valeur est de [*].
+
+Si <ph name="DOH_TEMPLATES_POLICY_NAME" /> est également configurée, un domaine plus spécifique est privilégié. La spécificité correspond au nombre de points (.) dans le domaine. Lorsqu'un domaine est concerné par les deux règles, il utilise DNS-over-HTTPS par défaut.
+
+Les domaines doivent être aux formats suivants : nom de domaine complet (FQDN) ou suffixes de domaine indiqués par un préfixe générique spécial : *.
+
+Les domaines dont le format est incorrect seront ignorés.</translation>
 <translation id="5163002264923337812">Activer l'ancienne procédure de connexion basée sur le Web</translation>
 <translation id="5163889437570441600">Permet de caster du contenu sur l'appareil avec <ph name="PRODUCT_NAME" />.
 
@@ -5764,6 +5796,7 @@ Cette API a été supprimée dans M112.</translation>
 <translation id="5534079385061985566">Activer la fonctionnalité de restauration complète.</translation>
 <translation id="5534235660122271432">Interdire l'écriture sur des périphériques de stockage externes</translation>
 <translation id="5535256585099022933">Définir l'intervalle du redémarrage</translation>
+<translation id="5537400155400537818">Désactivé : le zoom CSS fonctionne de la même manière qu'avant la spécification standard.</translation>
 <translation id="553806128266843748">Flag booléen spécifiant si la limitation est activée.</translation>
 <translation id="5540885720415375851">Autoriser la détection des appareils en local</translation>
 <translation id="5542235730745104308">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> utilise les variantes de pages d'erreur intégrées (telles que "Page introuvable"). Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise jamais les variantes de pages d'erreur.
@@ -7999,6 +8032,7 @@ Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés e
 <translation id="7146198347561863646">Si cette règle est activée ou qu'elle n'est pas configurée, les wakelocks sont autorisés pour la gestion de l'alimentation. Des extensions peuvent demander des wakelocks par le biais de l'API d'extension de gestion de l'alimentation et par les applications ARC.
 
       Si cette règle est désactivée, les demandes de wakelocks sont ignorées.</translation>
+<translation id="7148958378210448356">Une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'effectuera jamais d'action.</translation>
 <translation id="7149042336307555519"> Types de connexion autorisés pour les mises à jour du système d'exploitation. En raison de leur taille, les mises à jour du système d'exploitation peuvent considérablement ralentir la connexion et entraînent parfois des frais supplémentaires. Elles ne sont donc pas activées par défaut pour les types de connexion jugés coûteux (actuellement, seules les connexions mobiles sont concernées).
 
       Les identifiants des types de connexion reconnus sont <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> et <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -8608,15 +8642,6 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="7669630878711068277">Si vous activez cette règle ou que vous ne la configurez pas, les utilisateurs peuvent imprimer dans <ph name="PRODUCT_NAME" />. En revanche, ils ne peuvent pas modifier ce paramètre.
 
       Si vous la désactivez, les utilisateurs ne peuvent pas imprimer à partir de <ph name="PRODUCT_NAME" />. La fonctionnalité d'impression est désactivée dans le menu à trois points, les extensions et les applications JavaScript.</translation>
-<translation id="7671234734316758429">Cette règle permet aux administrateurs de spécifier des applis qui agissent en tant que gestionnaires par défaut pour les extensions de fichier correspondantes dans <ph name="PRODUCT_OS_NAME" /> que les utilisateurs ne peuvent pas modifier.
-
-Pour toutes les extensions de fichier non spécifiées dans la règle, les utilisateurs sont libres de définir leurs propres valeurs par défaut par rapport au workflow habituel.
-
-Spécifiez les applis Chrome par leur ID (ex. : <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />), les applis Web par l'URL utilisée dans<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (ex. : <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />), les applis Android par leur nom de package (ex. : <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />), les applis Web système par leur nom snake case (ex. : <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />), les Virtual Tasks (tâches virtuelles) par leur nom désigné précédé de <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" /> (ex. : <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />).
-
-Notez que les applis DOIVENT se déclarer comme gestionnaires de fichiers pour les extensions de fichier spécifiées dans le fichier manifeste afin que cet élément de règle prenne effet (autrement dit, la règle n'étend PAS les fonctionnalités existantes des applis).
-
-Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> peut sélectionner des gestionnaires par défaut en fonction de la logique interne.</translation>
 <translation id="7673194325208122247">Période (millisecondes)</translation>
 <translation id="7677220829878081413">
       Si la règle est définie sur "ArcSession", elle contraint l'appareil à redémarrer lorsqu'un utilisateur se déconnecte si Android est en cours d'exécution.
@@ -8907,6 +8932,7 @@ Si cette règle est désactivée ou n'est pas configurée, le SPN Kerberos gén�
       Si cette règle est définie sur zéro, <ph name="PRODUCT_OS_NAME" /> ne verrouille pas l'écran en cas d'inactivité de l'utilisateur. Si cette règle n'est pas configurée, un délai par défaut est utilisé.
 
       Recommandation : Pour verrouiller l'écran en cas d'inactivité, activez le verrouillage de l'écran lors de l'arrêt temporaire, et configurez l'arrêt temporaire de <ph name="PRODUCT_OS_NAME" /> au terme du délai d'inactivité. N'utilisez cette règle que lorsque le verrouillage de l'écran doit intervenir bien avant l'arrêt temporaire de l'appareil ou lorsque vous ne voulez pas que l'appareil soit arrêté temporairement en cas d'inactivité.</translation>
+<translation id="7894964526545174973">Activer le comportement standardisé du zoom dans le navigateur</translation>
 <translation id="7895553628261067384">Accès à distance</translation>
 <translation id="7898807590879163195">Désactiver la pulsation d'activité de l'appareil</translation>
 <translation id="789975630884141379">Activer les contenus suggérés</translation>
@@ -9016,11 +9042,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
           Cette règle a été supprimée dans Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nom de la destination <ph name="PRODUCT_NAME" /></translation>
-<translation id="797820628785995988">Si cette règle est configurée, tous les types de données spécifiés ne seront pas synchronisés avec <ph name="CHROME_SYNC_NAME" /> ni avec le profil itinérant. Cela peut permettre de réduire la taille du profil itinérant ou de limiter les types de données importés sur les serveurs <ph name="CHROME_SYNC_NAME" />.
-
-      Les types de données actuels pour cette règle sont : "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "readingList", "savedTabGroups", "tabs", "themes", "typedUrls" et "wifiConfigurations". Ces noms sont sensibles à la casse.
-
-      Remarques : L'actualisation dynamique des stratégies n'est disponible qu'à partir de la version 123 de <ph name="PRODUCT_NAME" />. La désactivation du type de données "autofill" désactive également le type "payments". "typedUrls" fait référence à tout l'historique de navigation.</translation>
 <translation id="7982057585796399404">Cette règle permet de lister les applis et extensions qui s'installent de manière autonome, sans intervention de l'utilisateur, et que celui-ci ne peut pas désinstaller ni désactiver. Les autorisations sont accordées implicitement, y compris pour les API d'extension enterprise.deviceAttributes et enterprise.platformKeys (ces deux API ne sont pas disponibles pour les applis et extensions non installées d'office).
 
 Si cette règle n'est pas configurée, aucune appli ni extension n'est installée automatiquement, et l'utilisateur peut désinstaller n'importe quelle appli ou extension dans <ph name="PRODUCT_NAME" />.
@@ -9162,6 +9183,7 @@ Avertissement : Il est recommandé de ne pas désactiver les mises à jour auto
 <translation id="8089200718228084417">Activer l'impression Privet (obsolète)</translation>
 <translation id="8091982561085048989">Flag booléen spécifiant si IPP Everywhere doit être utilisé ou non pour configurer l'imprimante. Ce flag est compatible avec <ph name="PRODUCT_OS_NAME" /> version 76 (ou plus).</translation>
 <translation id="8094095107731619070">Activer la correction automatique lors de la saisie au clavier physique</translation>
+<translation id="8099833343914898016">Une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'effectuera jamais d'action en plein écran uniquement.</translation>
 <translation id="8099880303030573137">Délai d'inactivité (batterie)</translation>
 <translation id="8101381354936029836">Groupe atomique de la règle :</translation>
 <translation id="8102854005031553638">La visionneuse PDF utilise le moteur de rendu AGG.</translation>
@@ -10331,6 +10353,19 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
       Cette règle n'affecte que les utilisateurs qui se sont authentifiés via SAML.
 
       La valeur doit être indiquée en secondes.</translation>
+<translation id="9015526159640436408">URL d'une image qui servira de badge Enterprise pour le profil. L'URL doit renvoyer vers une image.
+
+Ce badge s'affichera dans la barre d'outils.
+
+Si cette règle est définie au niveau du navigateur, tous les profils afficheront ce logo dans la barre d'outils.
+
+Si cette règle est définie au niveau du profil, seul ce profil aura ce logo.
+
+Si cette règle n'est pas configurée, une icône par défaut représentant un bâtiment s'affichera.
+
+Si une erreur se produit lors de la tentative d'obtention et d'affichage de l'image, une icône par défaut représentant un bâtiment s'affichera.
+
+Contrairement aux autres règles, si celle-ci est définie au niveau du profil, elle est prioritaire sur une règle définie au niveau du navigateur.</translation>
 <translation id="9015578113567730893">Fréquence de collecte par télémétrie audio en millisecondes.</translation>
 <translation id="9015759770696099204">Les paramètres F11/F12 sont désactivés</translation>
 <translation id="9015952763003753868">Rendre la mise en correspondance <ph name="ACAM_HEADER_NAME" /> conforme dans les spécifications de la requête préliminaire <ph name="CORS" /></translation>

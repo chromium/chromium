@@ -8,7 +8,6 @@
 <translation id="102916930470544692">የይለፍ ቁልፍ</translation>
 <translation id="1035980983510608210">ሁሉንም ትሮች መዝጋት እንዲሁም የተሰኩ ትሮችን ይዘጋል።</translation>
 <translation id="1036017604683756002">ዩፒኤስ</translation>
-<translation id="1043592663436934089">ዘግተው እንዲወጡ ይደረጉና የአሰሳ ውሂብ ይሰረዛል</translation>
 <translation id="1044891598689252897">ጣቢያዎች እንደተለመደው ሆነው ይሠራሉ</translation>
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
 <translation id="1053651653201045802">ዘግተው ወጥተዋል። በመለያዎ ውስጥ ዕልባቶችን፣ የይለፍ ቃላትን እና ሌሎችንም ለመጠቀም በመለያ መልሰው ይግቡ።</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">የይለፍ ቃሎች</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="138618066238211776">እንደ <ph name="USER_NAME" /> ቀጥል</translation>
+<translation id="1388866984373351434">ውሂብ አሰሳ</translation>
 <translation id="1400642268715879018">ባለፉት 4 ሳምንቶች</translation>
 <translation id="1404330357948037222">ወጥተዋል</translation>
-<translation id="14066361343057390">ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="1407135791313364759">ሁሉንም ክፈት</translation>
 <translation id="1408847409015257906">«ግላዊነት እና ደህንነት» ላይ መታ ያድርጉ።</translation>
 <translation id="1430915738399379752">አትም</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">ፋይሉን መክፈት አልተቻለም</translation>
 <translation id="2718352093833049315">በWi-Fi ላይ ብቻ</translation>
 <translation id="2738375676495545665">ምን አዲስ ነገር አለን ደብቅ</translation>
-<translation id="2740910715135851329">እርስዎ ዘግተው እንዲወጡ ይደረጋሉ፣ ትሮች ይዘጋሉ፣ የአሰሳ ውሂብ ይሰረዛሉ</translation>
 <translation id="2747003861858887689">ቀዳሚ መስክ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" />ን በመከተል ላይ</translation>
 <translation id="2754492786623500387">በዚህ መሣሪያ ላይ ያሉ መለያዎች</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">የሌንስ ካሜራ ፍለጋ</translation>
 <translation id="2958718410589002129">የይለፍ ቃላት</translation>
 <translation id="2964349545761222050">የሶስተኛ ወገን ኩኪዎችን ያግዱ</translation>
+<translation id="2965328226365382335">የመጨረሻዎቹ 15 ደቂቃዎች</translation>
 <translation id="2969979262385602596">በመለያ መግባት አልተሳካም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="2975121486251958312">ማንነት የማያሳውቅ ሁነታ ብቻ ይገኛል</translation>
 <translation id="2982481275546140226">ውሂብን አጽዳ</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523">የተፈጠረው በ<ph name="DATE" /></translation>
 <translation id="374357899112510277">ውርዶችን ደብቅ</translation>
 <translation id="3745190878148784130">ጽሑፍ ኣጕላን ደብቅ</translation>
-<translation id="3747231889390582072">የድርጅትዎን ደህንነት ለመጠበቅ ያልተቀመጠ ውሂብ ከዚህ መሣሪያ ይሰረዛል። ይህ የይለፍ ቃላትን፣ የአሳሽ ታሪክን፣ ኩኪዎችን እና ሌሎችንም ሊያካትት ይችላል።</translation>
 <translation id="3762232513783804601">ለእርስዎ iPad የተገነባ</translation>
 <translation id="3768725474733206671">መጨረሻ ላይ የተዘጋውን ትር ዳግም ክፈት</translation>
 <translation id="3771033907050503522">ማንነት የማያሳውቁ ትሮች</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{በንባብ ዝርዝርዎ ላይ {count} ገፅ}one{በንባብ ዝርዝርዎ ላይ {count} ገፅ}other{በንባብ ዝርዝርዎ ላይ {count} ገፆች}}</translation>
 <translation id="4659667755519643272">የትር መቀያየሪያን ያስገቡ</translation>
 <translation id="46614316059270592">የይለፍ ቃል አስቀምጥ</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">የስልክ ጥሪ በማስጀመር ከንግድ ሥራ ጋር ይገናኙ</translation>
 <translation id="4682686630151240767">1. የiPhone ቅንብሮችን ይክፈቱ</translation>
 <translation id="4689564913179979534">የክፍያ ዘዴዎችን ያስተዳድሩ...</translation>
@@ -1519,7 +1518,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8522147671363140027">{count,plural, =1{{count} የይለፍ ቃል እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}one{{count} የይለፍ ቃል እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}other{{count} የይለፍ ቃላት እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="8522813812888400223">ማውረድን ሰርዝ</translation>
 <translation id="8524799873541103884">ከ<ph name="NUMBER_OF_OPEN_TABS" /> <ph name="INCOGNITO" /> ትሮች ውስጥ ከ<ph name="FIRST_VISIBLE_TAB" /> እስከ <ph name="LAST_VISIBLE_TAB" /> ያሉት</translation>
-<translation id="852576975834694248">ዘግተው እንዲወጡ ይደረጉና ትሮች ይዘጋሉ</translation>
 <translation id="8528009254289981965">ከሌሎች መተግበሪያዎች የሚመጡ አገናኞችን ማንነት የማያሳውቅ ውስጥ ይክፈቱ</translation>
 <translation id="8529767659511976195">አዲስ</translation>
 <translation id="8532105204136943229">ጊዜው የሚያልፍበት ዓመት</translation>

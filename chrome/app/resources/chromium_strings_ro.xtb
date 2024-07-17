@@ -12,6 +12,7 @@
 <translation id="113122355610423240">Chromium este browserul prestabilit</translation>
 <translation id="1131805035311359397">Ca să verifici dacă parolele sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Dă clic pe meniul Chromium</translation>
+<translation id="1184145431117212167">Instalarea nu a reușit, deoarece versiunea ta de Windows nu este acceptată.</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1188705220418984327">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chromium din Preferințe de sistem.</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
@@ -202,6 +203,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="421369550622382712">Descoperă aplicații, jocuri, extensii și teme extraordinare pentru Chromium.</translation>
 <translation id="4216212958613226427">Această limbă este folosită pentru a afișa IU Chromium</translation>
 <translation id="4222932583846282852">Se anulează…</translation>
+<translation id="4224210481850767180">Instalarea a fost anulată.</translation>
 <translation id="4230135487732243613">Vă conectați datele Chromium cu acest cont?</translation>
 <translation id="4251772536351901305">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți alege să omiți avertismentele din Chromium.</translation>
 <translation id="4269093074552541569">Deconectează-te de la Chromium</translation>

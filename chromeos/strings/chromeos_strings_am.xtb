@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">ጀርባ</translation>
 <translation id="3027578600144895987">ካሜራን ዝጋ</translation>
 <translation id="3031560714565892478">መሣሪያ የቪዲዮ ካሜራ ነው።</translation>
-<translation id="3051968340259309715">ይህ የሥርዓት አገልግሎቶች አካባቢዎን ለመወሰን የአካባቢ ትክክለኛነትን እንዲጠቀሙ ያስችላቸዋል። የአካባቢ ትክክለኛነት የመሣሪያውን አካባቢ ለመገመት እንደ የWi-Fi መዳረሻ ነጥቦች፣ የተንቀሳቃሽ ስልክ አውታረ መረብ ማማዎች እና ጂፒኤስ ያሉ የገመድ-አልባ ምልክቶች መረጃን እንደ የፍጥነት መለኪያ መሣሪያ እና ጃይሮስኮፕ ካለ የመሣሪያ ዳሳሽ ውሂብ ጋር አብሮ ይጠቀማል። አካባቢን በቅንብሮች &gt; ግላዊነት እና ደህንነት &gt; የግላዊነት መቆጣጠሪያዎች &gt; የአካባቢ መዳረሻ ላይ ማጥፋት ይችላሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ሚአ</translation>
 <translation id="3056720590588772262">የማለቂያ ነጥብ</translation>
 <translation id="3060579846059757016">መግለጫዎች</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
 <translation id="7344788170842919262">ምድራዊ</translation>
 <translation id="7346768383111016081">በቁልፍ ሰሌዳዎ ለመጫወት በጨዋታ እርምጃ ላይ መቆጣጠሪያ ያስቀምጡ</translation>
+<translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="7353413232959255829">የፍለጋ ውጤት <ph name="LIST_POSITION" /> ከ<ph name="LIST_SIZE" />፦ <ph name="SEARCH_RESULT_TEXT" />። ወደ አቋራጭ ለማሰስ አስገባን ይጫኑ።</translation>
 <translation id="7359657277149375382">የፋይል ዓይነት</translation>
 <translation id="73631062356239394">የምርመራ ውሂብን ያጋሩ</translation>

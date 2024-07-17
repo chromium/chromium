@@ -852,7 +852,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="254524874071906077">Definir o Chrome como navegador padrão</translation>
 <translation id="2545721997179863249">A opção de preencher tudo foi selecionada</translation>
 <translation id="2546283357679194313">Cookies e dados do site</translation>
-<translation id="2546678870939430879">Resultado da ação "Refazer"</translation>
 <translation id="254947805923345898">O valor da política não é válido.</translation>
 <translation id="2549836668759467704">Consultoria e contratação de construção</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> enviou uma resposta inválida.</translation>
@@ -1035,7 +1034,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2954624054936281172">Tabela de formas de pagamento salvas</translation>
 <translation id="295526156371527179">Aviso: esta política não foi mesclada como um dicionário conforme especificado porque ela não é um dicionário.</translation>
 <translation id="2955913368246107853">Fechar barra de localização</translation>
-<translation id="2958345633099973853">Desfazer resultado</translation>
 <translation id="2958544468932521864">Críquete</translation>
 <translation id="2959274854674276289">Culinária vegetariana</translation>
 <translation id="2961809451460302960">Seguro de vida</translation>
@@ -1166,7 +1164,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3209034400446768650">Esta página pode emitir cobranças em dinheiro</translation>
 <translation id="3212581601480735796">Sua atividade em <ph name="HOSTNAME" /> está sendo monitorada</translation>
 <translation id="3215092763954878852">Não foi possível usar WebAuthn</translation>
-<translation id="3215311088819828484">Resultado atualizado</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{A atualização precisa ser feita agora}=2{A atualização precisa ser feita até amanhã}one{A atualização precisa ser feita em # dia}other{A atualização precisa ser feita em # dias}}</translation>
@@ -2516,7 +2513,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5772086939108830423">Usar uma chave de acesso em outro dispositivo</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="5776574724412881956">Cartão virtual não preenchido? Copie os detalhes do cartão virtual para a área de transferência clicando neles. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">Carregando resultado</translation>
 <translation id="5781136890105823427">Experimento ativado</translation>
 <translation id="578305955206182703">Âmbar</translation>
 <translation id="5783700460098783980">Bagagens e acessórios de viagem</translation>
@@ -2691,7 +2687,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6116338172782435947">Ver os textos e imagens copiados para a área de transferência</translation>
 <translation id="6117833587752089929">Foto (acetinada)</translation>
 <translation id="6118782133429281336">A lista de origem está vazia.</translation>
-<translation id="6120950591512958208">Use este código ao finalizar a compra.</translation>
 <translation id="612178891608320683">Culinária vegana</translation>
 <translation id="6122181661879998141">parte da frente do cartão</translation>
 <translation id="6124058285696691147">Baixar o anexo</translation>

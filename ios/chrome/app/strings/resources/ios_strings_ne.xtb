@@ -8,7 +8,6 @@
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1035980983510608210">तपाईंले सबै ट्याबहरू बन्द गर्नुभयो भने पिन गरिएका ट्याबहरू पनि बन्द हुने छन्।</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">तपाईंलाई साइन आउट गरिने छ र ब्राउजिङ डेटा मेटाइने छ</translation>
 <translation id="1044891598689252897">साइटहरू सामान्य रूपमा चल्ने छन्</translation>
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="1053651653201045802">साइन आउट गरिएको छ। आफ्नो खातामा बुकमार्क र पासवर्डलगायतका कुराहरू प्रयोग गर्न फेरि साइन इन गर्नुहोस्।</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776"><ph name="USER_NAME" /> का नामबाट जारी राख्नुहोस्</translation>
 <translation id="1400642268715879018">पछिल्लो ४ हप्ता</translation>
 <translation id="1404330357948037222">तपाईं साइन आउट हुनुभएको छ</translation>
-<translation id="14066361343057390">तपाईंलाई साइन आउट गरिने छ</translation>
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="1408847409015257906">"गोपनियता र सुरक्षा" मा ट्याप गर्नुहोस्।</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
@@ -341,7 +339,6 @@
 <translation id="2712127207578915686">फाइल खोल्न असमर्थ</translation>
 <translation id="2718352093833049315">Wi-Fi मा मात्र</translation>
 <translation id="2738375676495545665">"नयाँ के छ" लुकाउनुहोस्</translation>
-<translation id="2740910715135851329">तपाईंलाई साइन आउट गरिने छ, ट्याबहरू बन्द गरिने छन्, ब्राउजिङ डेटा मेटाइने छ</translation>
 <translation id="2747003861858887689">अघिल्लो क्षेत्र</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> फलो गरिँदै छ</translation>
 <translation id="2754492786623500387">यो डिभाइसमा लिंक गरिएका खाताहरू</translation>
@@ -392,6 +389,7 @@
 <translation id="2952278131021475699">लेन्स क्यामेरा प्रयोग गरी खोज्ने सुविधा</translation>
 <translation id="2958718410589002129">पासवर्डहरू</translation>
 <translation id="2964349545761222050">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
+<translation id="2965328226365382335">अन्तिम 15 मिनेट</translation>
 <translation id="2969979262385602596">भित्र जान असफल भयो। कृपया पछि पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="2975121486251958312">इन्कोग्निटो मोड मात्र उपलब्ध छ</translation>
 <translation id="2982481275546140226">डेटा मेटाउनुहोस्</translation>
@@ -539,7 +537,6 @@
 <translation id="3738428049780661523">बनाइएको मिति: <ph name="DATE" /></translation>
 <translation id="374357899112510277">"डाउनलोडहरू" लुकाउनुहोस्</translation>
 <translation id="3745190878148784130">"टेक्स्ट जुम गर्नुहोस्" लुकाउनुहोस्</translation>
-<translation id="3747231889390582072">तपाईंको सङ्गठनको सुरक्षार्थ यो डिभाइसबाट सेभ नगरिएको डेटा मेटाइने छ। यो डेटामा पासवर्ड, ब्राउजिङ हिस्ट्री र कुकीलगायतका कुरा समावेश हुन्छन्।</translation>
 <translation id="3762232513783804601">तपाईंको iPad का लागि बनाइएको</translation>
 <translation id="3768725474733206671">अन्तिममा बन्द गरिएको ट्याब फेरि खोल्नुहोस्</translation>
 <translation id="3771033907050503522">इन्कग्निटो ट्याबहरू</translation>
@@ -718,6 +715,7 @@
 <translation id="4659194143325814340">{count,plural, =1{तपाईंले पछि पढ्न सेभ गरेका वेबपेजको सूचीमा {count} पेज छ}other{तपाईंले पछि पढ्न सेभ गरेका वेबपेजको सूचीमा {count} वटा पेज छन्}}</translation>
 <translation id="4659667755519643272">ट्याब स्विचर प्रविष्टि गर्नुहोस्</translation>
 <translation id="46614316059270592">पासवर्ड सेभ गर्नुहोस्</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">फोन कल गरेर व्यवसायसँग जोडिनुहोस्</translation>
 <translation id="4682686630151240767">१. iPhone का सेटिङ खोल्नुहोस्</translation>
 <translation id="4689564913179979534">भुक्तानी विधिहरूको व्यवस्थापन गर्नुहोस्...</translation>
@@ -1519,7 +1517,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count} पासवर्ड र अन्य वस्तुहरू यो डिभाइसमा मात्र सेभ गरिएका छन्। यी पासवर्ड र वस्तुहरू आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न तिनलाई आफ्नो Google खाता ({email}) मा सेभ गर्नुहोस्।}other{{count} वटा पासवर्ड र अन्य वस्तुहरू यो डिभाइसमा मात्र सेभ गरिएका छन्। यी पासवर्ड र वस्तुहरू आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न तिनलाई आफ्नो Google खाता ({email}) मा सेभ गर्नुहोस्।}}</translation>
 <translation id="8522813812888400223">डाउनलोड गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ट्याबहरू <ph name="FIRST_VISIBLE_TAB" /> मार्फत <ph name="LAST_VISIBLE_TAB" /> को <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">तपाईंलाई साइन आउट गरिने छ र ट्याबहरू बन्द गरिने छन्</translation>
 <translation id="8528009254289981965">अन्य एपका लिंकहरू इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
 <translation id="8529767659511976195">नयाँ</translation>
 <translation id="8532105204136943229">म्याद समाप्ति वर्ष</translation>
@@ -1600,6 +1597,7 @@
 <translation id="8876882697946675716">आफ्ना डिभाइसहरू सिंक गरिराख्नुहोस्</translation>
 <translation id="8879604564928138696">यसलाई प्रयोग गरी हेर्न डबल ट्याप गर्नुहोस्</translation>
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> मा यो छवि खोज्नुहोस्</translation>
+<translation id="8887595428614802520">सबै ट्याब र समूहहरू बन्द गर्नुहोस्</translation>
 <translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>
 <translation id="890565330728586731">पछाडि</translation>
 <translation id="8909135823018751308">साझा गर्नुहोस्...</translation>

@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Orange</translation>
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
 <translation id="1273910660700874265">Optionen für Tapgruppe „<ph name="TITLE_OF_GROUP" />“</translation>
-<translation id="1322824555808364080">Andere einladen</translation>
 <translation id="1419023007528516122">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht</translation>
 <translation id="1486715732399361704">Hier findest du alle deine Tabgruppen</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vor <ph name="NUM_MINS_ONE" /> Minute erstellt}other{Vor <ph name="NUM_MINS_MANY" /> Minuten erstellt}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Hier werden deine Tabgruppen angezeigt</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Gruppierung des <ph name="TABS_COUNT_ONE" /> ausgewählten Tabs aufheben}other{Gruppierung der <ph name="TABS_COUNT_MANY" /> ausgewählten Tabs aufheben}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
+<translation id="6527303717912515753">Teilen</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Nach 1 Tag}other{Nach <ph name="DAY_COUNT_MANY" /> Tagen}}</translation>
 <translation id="6549021453810473782">Händlerinfo anzeigen</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>

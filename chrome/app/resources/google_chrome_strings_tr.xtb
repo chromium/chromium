@@ -20,6 +20,7 @@
 <translation id="1229096353876452996">Google, Chrome'u varsayılan olarak ayarlamanızı öneriyor</translation>
 <translation id="1265739287306757398">Nasıl Yapılacağını Göster</translation>
 <translation id="1278833599417554002">&amp;Chrome'u güncellemek için yeniden başlat</translation>
+<translation id="1290883685122687410">Kurulum hatası: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome en son sistem güncellemelerini yüklerken lütfen bekleyin.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" />, bu cihazı kullanmadan önce aşağıdaki Hizmet Şartları'nı okuyup kabul etmenizi zorunlu tutmaktadır. Bu şartlar, Google ChromeOS Flex Şartları'nın kapsamını genişletmez, değiştirmez veya sınırlamaz.</translation>
 <translation id="1341711321000856656">Başka bir Chrome profilindeki şifreleri görmek için profil değiştirebilirsiniz</translation>
@@ -190,6 +191,7 @@
 <translation id="3583751698304738917">Başka bir Chrome profilinde <ph name="USER_EMAIL_ADDRESS" /> olarak zaten oturum açmış durumdasınız.</translation>
 <translation id="3595784445906693824">Chrome'da yeni bir profilde oturum açılsın mı?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor}=1{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
+<translation id="3597003331831379823">Kurulum, üst düzey ayrıcalıklarla çalıştırılamadı. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
 <translation id="3622797965165704966">Chrome'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
 <translation id="3635073343384702370">Kaydetmeniz halinde Chrome, şifrelerinizi kontrol edebilir.</translation>

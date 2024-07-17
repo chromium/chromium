@@ -853,7 +853,6 @@
 <translation id="254524874071906077">Chrome ကို ပုံသေ ဘရောင်ဇာ အဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="2545721997179863249">‘အားလုံးဖြည့်ရန်’ ရွေးစရာကို ရွေးထားသည်</translation>
 <translation id="2546283357679194313">ကူကီးများ နှင့် ဆိုက် ဒေတာ</translation>
-<translation id="2546678870939430879">ရလဒ် ပြန်လုပ်ရန်</translation>
 <translation id="254947805923345898">မူဝါဒတန်ဖိုး မမှန်ကန်ပါ။</translation>
 <translation id="2549836668759467704">ဆောက်လုပ်ရေးအကြံပေးနှင့် ကန်ထရိုက်လုပ်ခြင်း</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> သည်မမှန်ကန်သည့် တုံ့ပြန်မှုကို ပို့ခဲ့ပါသည်။</translation>
@@ -1040,7 +1039,6 @@
 <translation id="2954624054936281172">သိမ်းထားသော ငွေပေးချေနည်းလမ်းဇယား</translation>
 <translation id="295526156371527179">သတိပေးချက်- ဤမူဝါဒသည် အဘိဓာန်တစ်ခုမဟုတ်သဖြင့် မူဝါဒက သတ်မှတ်ထားသည့်အတိုင်း အဘိဓာန်အဖြစ် ၎င်းကို ပေါင်းစည်းမထားပါ။</translation>
 <translation id="2955913368246107853">နောက်ဆုံး ဘားကို ပိတ်ရန်</translation>
-<translation id="2958345633099973853">ရလဒ် နောက်ပြန်ရန်</translation>
 <translation id="2958544468932521864">ခရစ်ကက်</translation>
 <translation id="2959274854674276289">သက်သတ်လွတ်ဟင်းလျာ</translation>
 <translation id="2961809451460302960">အသက်အာမခံ</translation>
@@ -1168,7 +1166,6 @@
 <translation id="3209034400446768650">စာမျက်နှာသည် ငွေကုန်ကျမှုများ ဖြစ်စေနိုင်သည်</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> ရှိ သင့်လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နေသည်</translation>
 <translation id="3215092763954878852">WebAuthn ကို အသုံးပြု၍ မရပါ</translation>
-<translation id="3215311088819828484">ရလဒ်ကို အပ်ဒိတ်လုပ်လိုက်ပြီ</translation>
 <translation id="3216313131063488104">ဘလူးတေးဂီတ</translation>
 <translation id="3218181027817787318">အလိုက်သင့်</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ယခု အပ်ဒိတ်လိုအပ်သည်}=2{မနက်ဖြန် အပ်ဒိတ်လိုအပ်သည်}other{# ရက်အတွင်း အပ်ဒိတ်လိုအပ်သည်}}</translation>
@@ -2517,7 +2514,6 @@
 <translation id="5772086939108830423">အခြားစက်တစ်ခုတွင် လျှို့ဝှက်ကီးသုံးရန်</translation>
 <translation id="5776313857861697733">ဦးစားပေး</translation>
 <translation id="5776574724412881956">ပကတိအသွင်ကတ် ဖြည့်မထားဘူးလား။ ကလစ်ဘုတ်သို့ မိတ္တူကူးရန် ပကတိအသွင်ကတ် အသေးစိတ်ကို နှိပ်ပါ။ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">ရလဒ် ဖွင့်နေသည်</translation>
 <translation id="5781136890105823427">စမ်းသပ်မှု ဖွင့်ထားသည်</translation>
 <translation id="578305955206182703">ပယင်း</translation>
 <translation id="5783700460098783980">ခရီးဆောင်အိတ်၊ ခရီးသွားပစ္စည်း</translation>
@@ -2692,7 +2688,6 @@
 <translation id="6116338172782435947">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများအား ကြည့်ရန်</translation>
 <translation id="6117833587752089929">ဓာတ်ပုံ (ဖဲ)</translation>
 <translation id="6118782133429281336">မူရင်းစာရင်း အလွတ်ဖြစ်နေသည်။</translation>
-<translation id="6120950591512958208">ငွေရှင်းသည့်အခါ ဤကုဒ်ကို သုံးပါ။</translation>
 <translation id="612178891608320683">တိရစ္ဆာန်ထုတ်ကုန်လွတ်ဟင်းလျာ</translation>
 <translation id="6122181661879998141">သင့်ကတ်၏ ရှေ့ဘက်ခြမ်း</translation>
 <translation id="6124058285696691147">ပူးတွဲပါဖိုင်ကို ဒေါင်းလုဒ်လုပ်ရန်</translation>

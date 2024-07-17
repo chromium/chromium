@@ -679,6 +679,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2219658597883514593">Anleitung neu starten</translation>
 <translation id="2219735899272417925">Gerät muss zurückgesetzt werden</translation>
 <translation id="2221227930294879156">Veranstaltungen zum Thema Essen und Getränke</translation>
+<translation id="2222604080869344662">In OneDrive anmelden, um das Herunterladen fortzusetzen</translation>
 <translation id="2224337661447660594">Kein Internet</translation>
 <translation id="2225927550500503913">Virtuelle Karte aktiviert</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Im WLAN anmelden<ph name="END_LINK" /></translation>
@@ -778,6 +779,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2399868464369312507">Google Chrome versucht, Zahlungsmethoden zu bearbeiten.</translation>
 <translation id="2400600116338235695">Darf nachfragen, wenn sie eine Verbindung mit seriellen Ports herstellen möchte</translation>
 <translation id="2404884497378469141">Versuche noch einmal, deine Dateien zu kopieren</translation>
+<translation id="2412310121876768057">Karte beim nächsten Mal automatisch ausfüllen lassen?</translation>
 <translation id="2413155254802890957">Alt</translation>
 <translation id="2413528052993050574">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wurde möglicherweise widerrufen. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="2414886740292270097">Dunkel</translation>
@@ -1162,7 +1164,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3209034400446768650">Auf der Seite wird möglicherweise Geld verlangt</translation>
 <translation id="3212581601480735796">Deine Aktivität auf <ph name="HOSTNAME" /> wird überwacht</translation>
 <translation id="3215092763954878852">WebAuthn konnte nicht verwendet werden</translation>
-<translation id="3215311088819828484">Ergebnis aktualisiert</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Update jetzt erforderlich}=2{Update bis morgen erforderlich}other{Update innerhalb von # Tagen erforderlich}}</translation>
@@ -1241,6 +1242,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3352881017886802007">Sportspiele</translation>
 <translation id="3355823806454867987">Proxy-Einstellungen ändern...</translation>
 <translation id="335809815767823">Exportiert</translation>
+<translation id="3359387651158939842">Wenn du deine Karte für die Verwendung mit Google Pay speicherst, wird sie bei zukünftigen Käufen automatisch ausgefüllt</translation>
 <translation id="3359565626472459400">Ehe</translation>
 <translation id="3360103848165129075">Dokument zur Zahlungsabwicklung</translation>
 <translation id="3362968246557010467">Diese Richtlinie wurde automatisch aus der verworfenen Richtlinie "<ph name="OLD_POLICY" />" kopiert. Verwende stattdessen diese Richtlinie.</translation>
@@ -2053,6 +2055,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympische Spiele</translation>
 <translation id="4898742041545089450">Die Blockierung dieses Themas ist aufgehoben und wird basierend auf deinem Browserverlauf möglicherweise aktiv</translation>
+<translation id="4899379435492347481">Wenn du diese Karte speicherst, kannst du sie über Google Pay für Online-Käufe auf deinen Geräten verwenden</translation>
 <translation id="4900217275619098670">Neunte Rolle</translation>
 <translation id="4901052769830245369">Etiketten (halbglanz)</translation>
 <translation id="4901162432287938633">Hygiene- und Toilettenartikel</translation>
@@ -2682,7 +2685,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6116338172782435947">Texte und Bilder aus der Zwischenablage abrufen</translation>
 <translation id="6117833587752089929">Foto (Satin)</translation>
 <translation id="6118782133429281336">Die Quellenliste ist leer.</translation>
-<translation id="6120950591512958208">Gib diesen Code beim Bezahlen an.</translation>
 <translation id="612178891608320683">Vegane Küche</translation>
 <translation id="6122181661879998141">Vorderseite deiner Karte</translation>
 <translation id="6124058285696691147">Anhang herunterladen</translation>
@@ -2716,6 +2718,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6180316780098470077">Wiederholungsintervall</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome schränkt Drittanbieter-Cookies automatisch ein</translation>
+<translation id="6194139058731919563">Deine Kartendetails werden verschlüsselt, wenn sie in deinem Google-Konto gespeichert und zum Online-Bezahlen verwendet werden</translation>
 <translation id="6194209731893739467">Alle beobachteten Produkte hier ansehen</translation>
 <translation id="6195163219142236913">Drittanbieter-Cookies eingeschränkt</translation>
 <translation id="6195371403461054755">Geologie</translation>
@@ -3617,6 +3620,7 @@ Weitere Details:
 <translation id="7831993212387676366">Was ist die Einkaufsliste?</translation>
 <translation id="7832078172950550575">Du kannst in deinem Browserverlauf mit Ausdrücken wie „Pizzeria in meiner Nähe“ oder „kinderfreundliche Parks in der Innenstadt“ suchen. Deine Suchanfragen, die besten Ergebnisse und die zugehörigen Seiteninhalte werden an Google gesendet und möglicherweise von Prüfern gelesen, um diese Funktion zu verbessern. <ph name="BEGIN_LINK" />Einstellung für die Verlaufssuche verwalten<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Bildschirmaufnahme wurde gestartet</translation>
+<translation id="7840504603489703295">Limits von deinem Finanzinstitut werden angewendet.</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="784404208867107517">Gruppierter Verlauf</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3816,6 +3820,7 @@ Weitere Details:
 <translation id="8241712895048303527">Auf dieser Website blockieren</translation>
 <translation id="8242426110754782860">Fortfahren</translation>
 <translation id="8246482227229072868">Ringe</translation>
+<translation id="8248406213705193919">Karte sicher speichern?</translation>
 <translation id="8249296373107784235">Abbrechen</translation>
 <translation id="824968735947741546">„<ph name="SOURCE" />“ (automatisch erkannt) wird in die Sprache „<ph name="TARGET" />“ übersetzt</translation>
 <translation id="8250094606476360498">Diese Adresse ist momentan auf diesem Gerät gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="ACCOUNT" />).</translation>
@@ -4301,6 +4306,7 @@ Weitere Details:
 <translation id="9169664750068251925">Auf dieser Website immer blockieren</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> zum Startbildschirm hinzufügen</translation>
 <translation id="9170848237812810038">&amp;Rückgängig</translation>
+<translation id="9170906125144697215">Mit Pix bezahlen, ohne zwischen Apps zu wechseln</translation>
 <translation id="9171296965991013597">App verlassen?</translation>
 <translation id="9173282814238175921">Einzeldokument/neues Blatt</translation>
 <translation id="9173995187295789444">Nach Bluetooth-Geräten wird gesucht…</translation>
@@ -4322,6 +4328,7 @@ Weitere Details:
 <translation id="9205078245616868884">Deine Daten sind mit deiner Synchronisierungspassphrase verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="920643408853370361">Reiseversicherung</translation>
 <translation id="9207861905230894330">Der Artikel konnte nicht hinzugefügt werden.</translation>
+<translation id="9209339767782560829">Beim Verwenden deines Anmeldezertifikats ist ein Problem aufgetreten.</translation>
 <translation id="9210825002219699214">Flugreisen</translation>
 <translation id="9211461151375991073">@ eingeben, um auf <ph name="FEATURED_SEARCH_LIST" /> zu suchen</translation>
 <translation id="9213433120051936369">Layout anpassen</translation>

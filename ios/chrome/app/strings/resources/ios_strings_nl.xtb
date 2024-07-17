@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1035980983510608210">Als je alle tabbladen sluit, worden ook vastgezette tabbladen gesloten.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Je wordt uitgelogd en browsegegevens worden verwijderd</translation>
 <translation id="1044891598689252897">Sites werken naar behoren</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Uitgelogd. Log weer in om onder meer de bookmarks en wachtwoorden in je account te gebruiken.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Wachtwoorden</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="138618066238211776">Doorgaan als <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Browsegegevens</translation>
 <translation id="1400642268715879018">Afgelopen 4 weken</translation>
 <translation id="1404330357948037222">Je bent uitgelogd</translation>
-<translation id="14066361343057390">Je wordt uitgelogd</translation>
 <translation id="1407135791313364759">Alles openen</translation>
 <translation id="1408847409015257906">Tik op Privacy en beveiliging.</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
@@ -341,7 +340,6 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2712127207578915686">Kan bestand niet openen</translation>
 <translation id="2718352093833049315">Alleen via wifi</translation>
 <translation id="2738375676495545665">Wat is er nieuw verbergen</translation>
-<translation id="2740910715135851329">Je wordt uitgelogd, tabbladen worden gesloten, browsegegevens worden verwijderd</translation>
 <translation id="2747003861858887689">Vorig veld</translation>
 <translation id="2749231692441336879">Je volgt <ph name="CHANNEL_NAME" /> nu</translation>
 <translation id="2754492786623500387">Accounts op dit apparaat</translation>
@@ -392,6 +390,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2952278131021475699">Zoeken met Lens-camera</translation>
 <translation id="2958718410589002129">Wachtwoorden</translation>
 <translation id="2964349545761222050">Cookies van derden blokkeren</translation>
+<translation id="2965328226365382335">Afgelopen 15 minuten</translation>
 <translation id="2969979262385602596">Kan niet inloggen. Probeer het later opnieuw.</translation>
 <translation id="2975121486251958312">Alleen de incognitomodus is beschikbaar</translation>
 <translation id="2982481275546140226">Gegevens wissen</translation>
@@ -539,7 +538,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3738428049780661523">Gemaakt: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Downloads verbergen</translation>
 <translation id="3745190878148784130">Tekst zoomen verbergen</translation>
-<translation id="3747231889390582072">Niet-opgeslagen gegevens worden verwijderd van dit apparaat om je organisatie te beschermen. Dit kunnen onder andere wachtwoorden, browsegeschiedenis en cookies zijn.</translation>
 <translation id="3762232513783804601">Ontworpen voor je iPad</translation>
 <translation id="3768725474733206671">Laatst gesloten tabblad opnieuw openen</translation>
 <translation id="3771033907050503522">Incognitotabbladen</translation>
@@ -718,6 +716,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4659194143325814340">{count,plural, =1{{count} pagina op je leeslijst}other{{count} pagina's op je leeslijst}}</translation>
 <translation id="4659667755519643272">Tabbladschakelaar openen</translation>
 <translation id="46614316059270592">Wachtwoord opslaan</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Neem contact op met een bedrijf door een telefoongesprek te starten</translation>
 <translation id="4682686630151240767">1. Open de iPhone-instellingen</translation>
 <translation id="4689564913179979534">Betaalmethoden beheren...</translation>
@@ -1519,7 +1518,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8522147671363140027">{count,plural, =1{{count} wachtwoord en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, {email}.}other{{count} wachtwoorden en andere items worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, {email}.}}</translation>
 <translation id="8522813812888400223">Download annuleren</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-tabbladen <ph name="FIRST_VISIBLE_TAB" /> tot <ph name="LAST_VISIBLE_TAB" /> van <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Je wordt uitgelogd en tabbladen worden gesloten</translation>
 <translation id="8528009254289981965">Links vanuit andere apps openen in de incognitomodus</translation>
 <translation id="8529767659511976195">Nieuw</translation>
 <translation id="8532105204136943229">Vervaljaar</translation>
@@ -1600,6 +1598,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8876882697946675716">Je apparaten synchroniseren</translation>
 <translation id="8879604564928138696">Dubbeltik om te proberen</translation>
 <translation id="8881801611828450202">Zoeken op <ph name="SEARCH_ENGINE" /> naar deze afbeelding</translation>
+<translation id="8887595428614802520">Alle tabbladen en groepen sluiten</translation>
 <translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>
 <translation id="890565330728586731">Terug</translation>
 <translation id="8909135823018751308">Delen</translation>

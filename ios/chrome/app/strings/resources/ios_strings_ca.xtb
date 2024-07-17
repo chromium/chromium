@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1035980983510608210">Si tanques totes les pestanyes, també es tancaran les pestanyes fixades.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">La teva sessió es tancarà i se suprimiran les dades de navegació</translation>
 <translation id="1044891598689252897">Els llocs web funcionaran amb normalitat</translation>
 <translation id="1049743911850919806">Incògnit</translation>
 <translation id="1053651653201045802">Has tancat la sessió. Torna-la a iniciar per utilitzar les adreces d'interès, les contrasenyes i més al teu compte.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Contrasenyes</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="138618066238211776">Continua com a <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Dades de navegació</translation>
 <translation id="1400642268715879018">Quatre darreres setmanes</translation>
 <translation id="1404330357948037222">No has iniciat la sessió</translation>
-<translation id="14066361343057390">La teva sessió es tancarà</translation>
 <translation id="1407135791313364759">Obre-les totes</translation>
 <translation id="1408847409015257906">Toca Privadesa i seguretat.</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
@@ -341,7 +340,6 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2712127207578915686">No es pot obrir el fitxer</translation>
 <translation id="2718352093833049315">Només amb Wi-Fi</translation>
 <translation id="2738375676495545665">Amaga l'opció Novetats</translation>
-<translation id="2740910715135851329">Es tancarà la teva sessió, les pestanyes també es tancaran i les dades de navegació se suprimiran</translation>
 <translation id="2747003861858887689">Camp anterior</translation>
 <translation id="2749231692441336879">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Comptes d'aquest dispositiu</translation>
@@ -392,6 +390,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2952278131021475699">Cerca amb la càmera de Lens</translation>
 <translation id="2958718410589002129">Contrasenyes</translation>
 <translation id="2964349545761222050">Bloqueja les galetes de tercers</translation>
+<translation id="2965328226365382335">Els darrers 15 minuts</translation>
 <translation id="2969979262385602596">No s'ha pogut iniciar la sessió. Torneu-ho a provar més tard.</translation>
 <translation id="2975121486251958312">Només està disponible el mode d'incògnit</translation>
 <translation id="2982481275546140226">Esborra les dades</translation>
@@ -539,7 +538,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3738428049780661523">Data de creació: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Amaga l'opció Baixades</translation>
 <translation id="3745190878148784130">Amaga Amplia el text</translation>
-<translation id="3747231889390582072">Per protegir la seguretat de la teva organització, les dades no desades se suprimiran d'aquest dispositiu. Això pot incloure contrasenyes, l'historial de navegació, galetes i més.</translation>
 <translation id="3762232513783804601">Creat per a l'iPad</translation>
 <translation id="3768725474733206671">Torna a obrir l'última pestanya que es va tancar</translation>
 <translation id="3771033907050503522">Pestanyes d'incògnit</translation>
@@ -718,6 +716,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4659194143325814340">{count,plural, =1{{count} pàgina a la teva llista de lectura}other{{count} pàgines a la teva llista de lectura}}</translation>
 <translation id="4659667755519643272">Entra al selector de pestanyes</translation>
 <translation id="46614316059270592">Desa la contrasenya</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Connecta amb una empresa iniciant una trucada telefònica</translation>
 <translation id="4682686630151240767">1. Obre la configuració de l'iPhone.</translation>
 <translation id="4689564913179979534">Gestiona les formes de pagament...</translation>
@@ -1519,7 +1518,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8522147671363140027">{count,plural, =1{{count} contrasenya i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los en altres dispositius, desa'ls al teu Compte de Google {email}.}other{{count} contrasenyes i altres elements s'han desat només en aquest dispositiu. Per utilitzar-los en altres dispositius, desa'ls al teu Compte de Google {email}.}}</translation>
 <translation id="8522813812888400223">Cancel·la la baixada</translation>
 <translation id="8524799873541103884">Pestanyes <ph name="INCOGNITO" />: de <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> d'un total de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">La teva sessió es tancarà i les pestanyes també</translation>
 <translation id="8528009254289981965">Obre els enllaços d'altres aplicacions en mode d'incògnit</translation>
 <translation id="8529767659511976195">Novetat</translation>
 <translation id="8532105204136943229">Any de caducitat</translation>
@@ -1600,6 +1598,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8876882697946675716">Mantén els dispositius sincronitzats</translation>
 <translation id="8879604564928138696">Fes doble toc per provar-ho</translation>
 <translation id="8881801611828450202">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">Tanca totes les pestanyes i tots els grups</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
 <translation id="890565330728586731">Enrere</translation>
 <translation id="8909135823018751308">Comparteix...</translation>

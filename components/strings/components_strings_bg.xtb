@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">Рестартиране на урока</translation>
 <translation id="2219735899272417925">Изисква се нулиране на устройството</translation>
 <translation id="2221227930294879156">Събития, посветени на храни и напитки</translation>
+<translation id="2222604080869344662">Влезте в OneDrive, за да продължите изтеглянето</translation>
 <translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="2225927550500503913">Виртуалната карта е включена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Влизане в профила<ph name="END_LINK" /> в Wi-Fi мрежата</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">Google Chrome се опитва да редактира начините на плащане.</translation>
 <translation id="2400600116338235695">Може да поиска разрешение да се свързва със серийни портове</translation>
 <translation id="2404884497378469141">Опитайте отново да копирате файловете си</translation>
+<translation id="2412310121876768057">Да се попълни ли автоматично картата следващия път?</translation>
 <translation id="2413155254802890957">Стар</translation>
 <translation id="2413528052993050574">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; възможно е сертификатът му за сигурност да е оттеглен. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="2414886740292270097">Тъмно</translation>
@@ -1162,7 +1164,6 @@
 <translation id="3209034400446768650">Страницата може да ви таксува</translation>
 <translation id="3212581601480735796">Активността ви в <ph name="HOSTNAME" /> се следи</translation>
 <translation id="3215092763954878852">WebAuthn не можа да се използва</translation>
-<translation id="3215311088819828484">Резултатът бе актуализиран</translation>
 <translation id="3216313131063488104">Блус</translation>
 <translation id="3218181027817787318">Относително</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Изисква се актуализация сега}=2{Изисква се актуализация до утре}other{Изисква се актуализация в рамките на # дни}}</translation>
@@ -1241,6 +1242,7 @@
 <translation id="3352881017886802007">Спортни игри</translation>
 <translation id="3355823806454867987">Промяна на настройките на прокси сървъра...</translation>
 <translation id="335809815767823">Експортирани</translation>
+<translation id="3359387651158939842">Данните за картата ви ще се попълват автоматично за бъдещи покупки, когато ги запазите, за да ги използвате с Google Pay</translation>
 <translation id="3359565626472459400">Брак</translation>
 <translation id="3360103848165129075">Лист на инструмента за обработване на плащания</translation>
 <translation id="3362968246557010467">Това правило е копирано автоматично от оттегленото <ph name="OLD_POLICY" />. Препоръчваме ви да използвате него.</translation>
@@ -2055,6 +2057,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпийски игри</translation>
 <translation id="4898742041545089450">Тази тема е отблокирана и може да стане активна въз основа на историята ви на сърфиране</translation>
+<translation id="4899379435492347481">Запазете данните за тази карта, за да я използвате онлайн с Google Pay за покупки на всичките си устройства</translation>
 <translation id="4900217275619098670">Девета ролка</translation>
 <translation id="4901052769830245369">Етикети (полугланцирани)</translation>
 <translation id="4901162432287938633">Хигиена и тоалетни принадлежности</translation>
@@ -2684,7 +2687,6 @@
 <translation id="6116338172782435947">Да преглежда текста и изображенията, копирани в буферната памет</translation>
 <translation id="6117833587752089929">Снимка (сатен)</translation>
 <translation id="6118782133429281336">Списъкът с източници е празен.</translation>
-<translation id="6120950591512958208">Използвайте този код при плащане.</translation>
 <translation id="612178891608320683">Веганска кухня</translation>
 <translation id="6122181661879998141">предната страна на картата ви</translation>
 <translation id="6124058285696691147">Изтегляне на прикачения файл</translation>
@@ -2718,6 +2720,7 @@
 <translation id="6180316780098470077">Интервал за повторен опит</translation>
 <translation id="6182972682129119950">A4 x 5</translation>
 <translation id="6184868291074982484">Chrome автоматично ограничава „бисквитките“ на трети страни</translation>
+<translation id="6194139058731919563">Данните за картата ви се шифроват, когато се запазват в профила ви в Google и се използват за плащане онлайн</translation>
 <translation id="6194209731893739467">Тук ще се показват всички проследявани от вас продукти</translation>
 <translation id="6195163219142236913">„Бисквитките“ на трети страни са ограничени</translation>
 <translation id="6195371403461054755">Геология</translation>
@@ -3619,6 +3622,7 @@
 <translation id="7831993212387676366">Какво представлява списъкът за пазаруване?</translation>
 <translation id="7832078172950550575">Използвайте общ език, за да търсите в историята си на сърфиране, например фрази като „пицарии в района“ или „подходящи за цялото семейство паркове в центъра“. Търсенията ви, най-добрите съответствия и съдържанието на страниците се изпращат до Google и може да бъдат видени от проверяващи лица с цел подобряване на тази функция. <ph name="BEGIN_LINK" />Управление на настройката за търсене в историята<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Функцията за заснемане на екрана стартира</translation>
+<translation id="7840504603489703295">Прилагат се лимити от финансовата ви институция.</translation>
 <translation id="784137052867620416">Статистика за Пазаруване</translation>
 <translation id="784404208867107517">Групирана история</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -3817,6 +3821,7 @@
 <translation id="8241712895048303527">Блокиране за този сайт</translation>
 <translation id="8242426110754782860">Продължаване</translation>
 <translation id="8246482227229072868">Пръстени</translation>
+<translation id="8248406213705193919">Да се запази ли картата по сигурен начин?</translation>
 <translation id="8249296373107784235">Прекратяване</translation>
 <translation id="824968735947741546">Превежда се от <ph name="SOURCE" /> (автоматично установено) на <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Понастоящем адресът е запазен на това устройство. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="ACCOUNT" />).</translation>
@@ -4301,6 +4306,7 @@
 <translation id="9169664750068251925">Блокиране винаги на този сайт</translation>
 <translation id="9169931577761441333">Добавяне на <ph name="APP_NAME" /> към началния екран</translation>
 <translation id="9170848237812810038">&amp;Отмяна</translation>
+<translation id="9170906125144697215">Плащане посредством Pix без превключване между приложенията</translation>
 <translation id="9171296965991013597">Искате ли да затворите приложението?</translation>
 <translation id="9173282814238175921">Един документ/нов лист</translation>
 <translation id="9173995187295789444">Сканира се за устройства с Bluetooth...</translation>
@@ -4322,6 +4328,7 @@
 <translation id="9205078245616868884">Данните ви са шифровани с пропуска ви за синхронизиране. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="920643408853370361">Застраховка при пътуване</translation>
 <translation id="9207861905230894330">Добавянето на статията не бе успешно.</translation>
+<translation id="9209339767782560829">Възникна проблем при използването на сертификата ви за вход.</translation>
 <translation id="9210825002219699214">Въздушен транспорт</translation>
 <translation id="9211461151375991073">Въведете @ за търсене във: <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Персонализиране на облика</translation>

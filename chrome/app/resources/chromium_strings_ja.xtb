@@ -12,6 +12,7 @@
 <translation id="113122355610423240">既定のブラウザは Chromium です</translation>
 <translation id="1131805035311359397">パスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chromium にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="1153368717515616349">Chromium メニューをクリックする</translation>
+<translation id="1184145431117212167">Windows のバージョンがサポートされていないためインストールできませんでした。</translation>
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1188705220418984327">ウィンドウを共有するには、[システム環境設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
@@ -202,6 +203,7 @@
 <translation id="421369550622382712">Chromium の優れたアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>
 <translation id="4216212958613226427">この言語が Chromium UI の表示に使用されます</translation>
 <translation id="4222932583846282852">キャンセルしています...</translation>
+<translation id="4224210481850767180">インストールをキャンセルしました。</translation>
 <translation id="4230135487732243613">Chromium データをこのアカウントにリンクしますか？</translation>
 <translation id="4251772536351901305">標準保護機能より多くのサイトデータを分析して、危険なサイト（Google が認識していなかったサイトも含む）について警告します。Chromium の警告をスキップすることもできます。</translation>
 <translation id="4269093074552541569">Chromium からログアウト</translation>

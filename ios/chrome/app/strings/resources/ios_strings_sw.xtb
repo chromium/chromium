@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Ufunguo wa siri</translation>
 <translation id="1035980983510608210">Kufunga vichupo vyote kutafunga vichupo vilivyobandikwa pia.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Utaondolewa kwenye akaunti na data yako ya kuvinjari itafutwa</translation>
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
 <translation id="1049743911850919806">Kichupo fiche</translation>
 <translation id="1053651653201045802">Umeondoka kwenye akaunti. Ingia tena katika akaunti ili utumie alamisho, manenosiri na zaidi kwenye akaunti yako.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Manenosiri</translation>
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="138618066238211776">Endelea ukitumia <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Data ya Kuvinjari</translation>
 <translation id="1400642268715879018">Wiki 4 zilizopita</translation>
 <translation id="1404330357948037222">Umeondoka Katika Akaunti</translation>
-<translation id="14066361343057390">Utaondolewa kwenye akaunti</translation>
 <translation id="1407135791313364759">Fungua zote</translation>
 <translation id="1408847409015257906">Gusa "Faragha na Usalama.”</translation>
 <translation id="1430915738399379752">Chapisha</translation>
@@ -341,7 +340,6 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2712127207578915686">Imeshindwa kufungua faili</translation>
 <translation id="2718352093833049315">Kwenye Wi-Fi pekee</translation>
 <translation id="2738375676495545665">Kuficha Sehemu ya Yapi Mapya</translation>
-<translation id="2740910715135851329">Utaondolewa kwenye akaunti, vuchupo vitafungwa na data ya kuvinjari itafutwa</translation>
 <translation id="2747003861858887689">Sehemu iliyotangulia</translation>
 <translation id="2749231692441336879">Unafuatilia <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akaunti zilizo katika Kifaa hiki</translation>
@@ -392,6 +390,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2952278131021475699">Kutafuta kwa Kamera ya Lenzi</translation>
 <translation id="2958718410589002129">Manenosiri</translation>
 <translation id="2964349545761222050">Zuia Vidakuzi vya Tovuti Nyingine</translation>
+<translation id="2965328226365382335">Dakika 15 za Mwisho</translation>
 <translation id="2969979262385602596">Haikufaulu kuingia katika akaunti. Tafadhali jaribu tena baadaye.</translation>
 <translation id="2975121486251958312">Ni Hali Fiche tu Inayopatikana</translation>
 <translation id="2982481275546140226">Futa Data</translation>
@@ -539,7 +538,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3738428049780661523">Kiliundwa tarehe <ph name="DATE" /></translation>
 <translation id="374357899112510277">Kuficha Vipakuliwa</translation>
 <translation id="3745190878148784130">Ficha Chaguo la Kukuza Maandishi</translation>
-<translation id="3747231889390582072">Ili kulinda usalama wa shirika lako, data ambayo haijahifadhiwa itafutwa kwenye kifaa hiki. Data hii inaweza kujumuisha manenosiri, historia ya kuvinjari, vidakuzi na zaidi.</translation>
 <translation id="3762232513783804601">Imeundwa kwa ajili ya iPad Yako</translation>
 <translation id="3768725474733206671">Fungua tena Kichupo Ulichofunga mara ya Mwisho</translation>
 <translation id="3771033907050503522">Vichupo Fiche</translation>
@@ -718,6 +716,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4659194143325814340">{count,plural, =1{Ukurasa {count} kwenye Orodha yako ya Kusoma}other{Kurasa {count} kwenye Orodha yako ya Kusoma}}</translation>
 <translation id="4659667755519643272">Weka Kibadilishaji cha Kichupo</translation>
 <translation id="46614316059270592">Hifadhi Nenosiri</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Wasiliana na biashara kwa kuanza kupiga simu</translation>
 <translation id="4682686630151240767">1. Fungua Mipangilio ya iPhone</translation>
 <translation id="4689564913179979534">Dhibiti Njia za Kulipa...</translation>
@@ -1519,7 +1518,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8522147671363140027">{count,plural, =1{Nenosiri {count} na vipengee vingine vimehifadhiwa kwenye kifaa hiki pekee. Ili uvitumie kwenye vifaa vyako vingine, vihifadhi kwenye Akaunti yako ya Google, {email}.}other{Manenosiri {count} na vipengee vingine vimehifadhiwa kwenye kifaa hiki pekee. Ili uvitumie kwenye vifaa vyako vingine, vihifadhi kwenye Akaunti yako ya Google, {email}.}}</translation>
 <translation id="8522813812888400223">Katisha Upakuaji</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Vichupo <ph name="FIRST_VISIBLE_TAB" /> kupitia <ph name="LAST_VISIBLE_TAB" /> kati ya <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Utaondolewa kwenye akaunti na vichupo vitafungwa</translation>
 <translation id="8528009254289981965">Fungua viungo kutoka kwenye programu zingine katika Hali Fiche</translation>
 <translation id="8529767659511976195">Mpya</translation>
 <translation id="8532105204136943229">Mwaka wa Muda wa Matumizi Kuisha</translation>

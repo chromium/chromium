@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Pääsuvõti</translation>
 <translation id="1035980983510608210">Kui sulete kõik vahelehed, suletakse ja kinnitatud vahelehed.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Teid logitakse välja ja sirvimisandmed kustutatakse</translation>
 <translation id="1044891598689252897">Saidid töötavad tavapärasel moel</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Välja logitud. Oma konto järjehoidjate, paroolide ja muu sisu kasutamiseks logige uuesti sisse.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Paroolid</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="138618066238211776">Jätkake kasutajana <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Sirvimisandmed</translation>
 <translation id="1400642268715879018">Viimased neli nädalat</translation>
 <translation id="1404330357948037222">Olete välja logitud</translation>
-<translation id="14066361343057390">Teid logitakse välja</translation>
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="1408847409015257906">Puudutage valikut „Privaatsus ja turvalisus“.</translation>
 <translation id="1430915738399379752">Printimine</translation>
@@ -341,7 +340,6 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2712127207578915686">Faili ei õnnestu avada</translation>
 <translation id="2718352093833049315">Ainult WiFi-ga</translation>
 <translation id="2738375676495545665">Peida valik „Mis on uut?“</translation>
-<translation id="2740910715135851329">Teid logitakse välja, vahelehed suletakse ja sirvimisandmed kustutatakse</translation>
 <translation id="2747003861858887689">Eelmine väli</translation>
 <translation id="2749231692441336879">Jälgitakse kanalit <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Selles seadmes olevad kontod</translation>
@@ -392,6 +390,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2952278131021475699">Lensi kaameraotsing</translation>
 <translation id="2958718410589002129">Paroolid</translation>
 <translation id="2964349545761222050">Kolmanda osapoole küpsisefailide blokeerimine</translation>
+<translation id="2965328226365382335">Viimased 15 minutit</translation>
 <translation id="2969979262385602596">Sisselogimine ebaõnnestus. Proovige hiljem uuesti.</translation>
 <translation id="2975121486251958312">Ainult inkognito režiim on saadaval</translation>
 <translation id="2982481275546140226">Kustuta andmed</translation>
@@ -539,7 +538,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3738428049780661523">Loodi <ph name="DATE" /></translation>
 <translation id="374357899112510277">Peida valik „Allalaadimised“</translation>
 <translation id="3745190878148784130">Peida valik Suumi tekst</translation>
-<translation id="3747231889390582072">Teie organisatsiooni turvalisuse kaitsmiseks kustutatakse sellest seadmest salvestamata andmed. See võib hõlmata paroole, sirvimisajalugu, küpsiseid ja palju muud.</translation>
 <translation id="3762232513783804601">Loodud teie iPadile</translation>
 <translation id="3768725474733206671">Viimati suletud vahelehe uuesti avamine</translation>
 <translation id="3771033907050503522">Inkogn. vahelehed</translation>
@@ -718,6 +716,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4659194143325814340">{count,plural, =1{{count} leht teie lugemisloendis}other{{count} lehte teie lugemisloendis}}</translation>
 <translation id="4659667755519643272">Ava vahelehtede vaheti</translation>
 <translation id="46614316059270592">Salvesta parool</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Võtke ühendust ettevõttega, alustades telefonikõnet</translation>
 <translation id="4682686630151240767">1. Avage iPhone'i rakendus Settings</translation>
 <translation id="4689564913179979534">Makseviiside haldamine …</translation>
@@ -1326,6 +1325,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7609559547731036746">Järjehoidjad</translation>
 <translation id="7638584964844754484">Vale parool</translation>
 <translation id="7640669552036055091">Androidi vahelehed</translation>
+<translation id="7643790043444820023">Avalehe kohandamine</translation>
 <translation id="7646263789464975852">Menüü → Seaded → Ohutuskontroll</translation>
 <translation id="7646772052135772216">Paroolide sünkroonimine ei tööta</translation>
 <translation id="764827086632467055">Puudutage valikut Vaikebrauserirakendus.</translation>
@@ -1518,7 +1518,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8522147671363140027">{count,plural, =1{{count} parool ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole {email}.}other{{count} parooli ja muud üksused on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole {email}.}}</translation>
 <translation id="8522813812888400223">Tühista allalaadimine</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> vahelehed <ph name="FIRST_VISIBLE_TAB" />–<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Teid logitakse välja ja vahelehed suletakse</translation>
 <translation id="8528009254289981965">Muude rakenduste linkide avamine inkognito režiimis</translation>
 <translation id="8529767659511976195">Uus</translation>
 <translation id="8532105204136943229">Aegumisaasta</translation>

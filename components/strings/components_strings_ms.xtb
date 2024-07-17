@@ -852,7 +852,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="254524874071906077">Tetapkan Chrome sebagai Penyemak Imbas Lalai</translation>
 <translation id="2545721997179863249">Pilihan pengisian semua maklumat telah dipilih</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
-<translation id="2546678870939430879">Buat semula hasil carian</translation>
 <translation id="254947805923345898">Nilai dasar tidak sah.</translation>
 <translation id="2549836668759467704">Perundingan &amp; Kontrak Pembinaan</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> menghantar balasan yang tidak sah.</translation>
@@ -1035,7 +1034,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2954624054936281172">Jadual kaedah pembayaran yang disimpan</translation>
 <translation id="295526156371527179">Amaran: Dasar ini tidak digabungkan sebagai kamus seperti yang dinyatakan oleh dasar kerana dasar ini bukan kamus.</translation>
 <translation id="2955913368246107853">Tutup bar cari</translation>
-<translation id="2958345633099973853">Buat asal hasil carian</translation>
 <translation id="2958544468932521864">Kriket</translation>
 <translation id="2959274854674276289">Hidangan Vegetarian</translation>
 <translation id="2961809451460302960">Insurans Nyawa</translation>
@@ -1166,7 +1164,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3209034400446768650">Halaman mungkin mengenakan bayaran berbentuk wang</translation>
 <translation id="3212581601480735796">Aktiviti anda pada <ph name="HOSTNAME" /> sedang dipantau</translation>
 <translation id="3215092763954878852">Tidak dapat menggunakan WebAuthn</translation>
-<translation id="3215311088819828484">Hasil dikemaskinikan</translation>
 <translation id="3216313131063488104">Biru</translation>
 <translation id="3218181027817787318">Relatif</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Kemaskinian diperlukan sekarang}=2{Kemaskinian diperlukan menjelang esok}other{Kemaskinian diperlukan dalam masa # hari}}</translation>
@@ -2517,7 +2514,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5772086939108830423">Gunakan Kunci Laluan pada Peranti Lain</translation>
 <translation id="5776313857861697733">Keutamaan</translation>
 <translation id="5776574724412881956">Kad maya tidak diisi? Klik butiran kad maya untuk disalin ke papan keratan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">Hasil carian sedang dimuatkan</translation>
 <translation id="5781136890105823427">Percubaan didayakan</translation>
 <translation id="578305955206182703">Kuning jingga</translation>
 <translation id="5783700460098783980">Bagasi &amp; Aksesori Perjalanan</translation>
@@ -2692,7 +2688,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6116338172782435947">Lihat teks dan imej yang disalin ke papan keratan</translation>
 <translation id="6117833587752089929">Foto (Satin)</translation>
 <translation id="6118782133429281336">Senarai asalan kosong.</translation>
-<translation id="6120950591512958208">Gunakan kod ini semasa semak keluar.</translation>
 <translation id="612178891608320683">Hidangan Vegan</translation>
 <translation id="6122181661879998141">bahagian hadapan kad anda</translation>
 <translation id="6124058285696691147">Muat turun lampiran</translation>

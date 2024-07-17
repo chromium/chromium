@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">ติดตั้งแอป ส่วนขยาย และธีม</translation>
 <translation id="2977598380246111477">ตัวเลขถัดไป</translation>
 <translation id="2985148236010982088">ดูแอปทั้งหมด</translation>
+<translation id="2992272421330787632">ซ่อนคำแนะนำทั้งหมดของสื่อ</translation>
 <translation id="2992327365391326550">ปุ่มไมโครโฟนของอุปกรณ์ปิดอยู่</translation>
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
 <translation id="3001391739687111021">แก้ไขขนาดหน้าจอ</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">เธอทำอะไรได้บ้าง</translation>
 <translation id="3256109297135787951">นำไฮไลต์ออกจากรายการบนชั้นวาง</translation>
 <translation id="3260969790895726815">คําพูดจะได้รับการประมวลผลในเครื่องและการพิมพ์ตามคําบอกจะทํางานแบบออฟไลน์ แต่คําสั่งเสียงบางอย่างจะไม่ทํางาน</translation>
+<translation id="3264031581203585083">ซ่อนคำแนะนำทั้งหมดของ Google ไดรฟ์</translation>
 <translation id="3265032511221679826">เปิดการเข้าถึงตำแหน่งที่แน่นอนไหม</translation>
 <translation id="3269597722229482060">คลิกขวา</translation>
 <translation id="3274634049061007184">ดูแอปของโทรศัพท์</translation>
@@ -738,6 +740,7 @@
 <translation id="3738664582935948253">ตอนนี้คุณแสดงการคลิกและแป้นพิมพ์ลัดในการบันทึกหน้าจอได้แล้ว</translation>
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
 <translation id="3743775386021959186">โหมดโฟกัสเปิดอยู่ เหลืออีก <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">ซ่อนคำแนะนำสภาพอากาศ</translation>
 <translation id="3756485814916578707">กำลังแคสต์หน้าจอ</translation>
 <translation id="3765841382945324995">อัปเดตแป้นพิมพ์ลัดสำหรับการ<ph name="SIX_PACK_KEY_NAME" />จาก <ph name="OLD_SHORTCUT" /> เป็น <ph name="NEW_SHORTCUT" /> แล้ว</translation>
 <translation id="3765841986579723851">แก้ไขวันนี้</translation>
@@ -777,6 +780,7 @@
 <translation id="3906954721959377182">แท็บเล็ต</translation>
 <translation id="3923494859158167397">ไม่ได้ตั้งค่าเครือข่ายมือถือ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, กำลังโหลดกิจกรรม</translation>
+<translation id="3927049937406914450">คำแนะนำสภาพอากาศไม่พร้อมใช้งานเนื่องจากการเข้าถึงตำแหน่งปิดอยู่ คุณสามารถเปลี่ยนค่านี้ได้ในการตั้งค่า</translation>
 <translation id="3932043219784172185">ไม่มีอุปกรณ์ที่เชื่อมต่ออยู่</translation>
 <translation id="3934456833412894880">การชาร์จแบบปรับอัตโนมัติเปิดอยู่ แบตเตอรี่จะหยุดชาร์จที่ 80% เพื่อยืดอายุการใช้งาน และจะชาร์จจนเต็มเมื่อคุณต้องการ</translation>
 <translation id="3943857333388298514">วาง</translation>
@@ -892,6 +896,7 @@
 <translation id="4312840429157639164">จัดกล้องพอดีกับมุมขวาบนแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="4316910396681052118">แอปทั้งหมด</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">ซ่อนคำแนะนำทั้งหมดของเบราว์เซอร์ Chrome</translation>
 <translation id="4322742403972824594">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Ctrl + Alt + ลูกศรขึ้น หากต้องการใช้แป้น Home ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรซ้าย</translation>
 <translation id="4324840740119394760">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
 <translation id="4327147325944669226">บันทึกเกม</translation>
@@ -925,6 +930,7 @@
 <translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
 <translation id="4451374464530248585">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรลง หากต้องการใช้แป้น Page Down ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรลง</translation>
 <translation id="4453876312474547652">คุณจะเห็นคลิปบอร์ดเมื่อกด Ctrl + V ค้างไว้ ทั้งนี้คุณปิดแป้นพิมพ์ลัดนี้ได้ด้วยการปิดใช้ Flag #clipboard-history-longpress ใน chrome://flags (os://flags หากใช้ Lacros)</translation>
+<translation id="445765352722456792">ปรับแต่งคำแนะนำ</translation>
 <translation id="445864333228800152">สวัสดียามเย็น</translation>
 <translation id="4458688154122353284">หยุดการอัดหน้าจอ</translation>
 <translation id="445923051607553918">เข้าร่วมเครือข่าย Wi-Fi</translation>
@@ -1327,6 +1333,7 @@
 <translation id="5802516411616338943">เปิดการตั้งค่าด่วน</translation>
 <translation id="5804651031882187592">ปิดการตั้งค่า "ล็อกซิม"</translation>
 <translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Chromebook รีสตาร์ทโดยไม่คาดคิด เปิดหน้าต่างและแอปก่อนหน้า</translation>
 <translation id="5823239091726045201">Google Tasks บนเว็บ</translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
@@ -1507,6 +1514,7 @@
 <translation id="6469104339369989396">เปิด/ปิดฮอตสปอต</translation>
 <translation id="6477681113376365978">ดาวน์โหลดไฟล์ไม่ได้</translation>
 <translation id="6482559668224714696">แว่นขยายทั้งหน้าจอ</translation>
+<translation id="6485086611007560630">สภาพอากาศ (ไม่พร้อมใช้งาน)</translation>
 <translation id="6490471652906364588">อุปกรณ์ USB-C (พอร์ตด้านขวา)</translation>
 <translation id="649452524636452238">PIN สมาร์ทการ์ด</translation>
 <translation id="6495322433318104734">กำลังแสดงโปรแกรมรักษาหน้าจอ กดแป้นใดก็ได้เพื่อออก</translation>
@@ -1776,6 +1784,7 @@
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page Down</translation>
+<translation id="7518182783647693467">สลับหน่วยอุณหภูมิ (ฟาเรนไฮต์เทียบกับเซลเซียส)</translation>
 <translation id="7519206258459640379">การจัดเฟรมกล้องเปิดอยู่</translation>
 <translation id="7519649142417630956">เมื่อปิดแล้ว ผู้ดูแลระบบจะออกจากระบบและควบคุมอุปกรณ์ไม่ได้
 
@@ -1916,6 +1925,7 @@
 <translation id="7951630946012935453">หรี่แสงแป้นพิมพ์</translation>
 <translation id="7953994493035617347">ยืนยันความละเอียดใหม่ไหม</translation>
 <translation id="795958884516058160">เปิดใช้แว่นขยายทั้งหน้าจอแล้ว กด <ph name="ACCELERATOR" /> อีกครั้งเพื่อสลับเป็นปิด</translation>
+<translation id="7962583092928373823">ซ่อนคำแนะนำทั้งหมดของ Google ปฏิทิน</translation>
 <translation id="7963689218131240420">โหมดห้ามรบกวนปิดอยู่</translation>
 <translation id="7963992254934562106">จาก <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">เลือกโฟลเดอร์...</translation>
@@ -1988,6 +1998,7 @@
 <translation id="8214996719228530800">เวอร์ชัน Canary</translation>
 <translation id="8219451629189078428">คุณต้องเปิด Chromebook และเสียบปลั๊กไว้ตลอดในระหว่างนี้ ตรวจดูว่าได้เสียบสายที่ชาร์จและอะแดปเตอร์ไว้แน่นดีแล้ว ทั้งกับ Chromebook และเต้ารับ และอย่าปิด Chromebook</translation>
 <translation id="8220076512072059941">เพิ่ม <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">ซ่อนคำแนะนำนี้</translation>
 <translation id="8230305195727960608">โหมดการกลับสี</translation>
 <translation id="8236042855478648955">ได้เวลาพักแล้ว</translation>
 <translation id="8237964652943995219">เดสก์ถัดไป: <ph name="DESK_NAME" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>
@@ -2174,6 +2185,7 @@
 <translation id="894774083269346314">ไม่ได้เลือกช่องทำเครื่องหมาย <ph name="PROFILE_NAME" /> <ph name="EMAIL" /></translation>
 <translation id="8949925099261528566">เชื่อมต่อแล้ว ไม่พบอินเทอร์เน็ต</translation>
 <translation id="8951539504029375108">เฉพาะอุปกรณ์ Thunderbolt ที่ได้รับอนุมัติเท่านั้นที่เข้ากันได้กับ Chromebook ของคุณ</translation>
+<translation id="8956420987536947088">เปิดหน้าต่างและแอปก่อนหน้า</translation>
 <translation id="8959380109429710384">คุณกดแป้นพิมพ์ลัดสำหรับแว่นขยายทั้งหน้าจอ ใช้แป้น Ctrl + Alt + ลูกศร เพื่อย้ายไปรอบๆ มุมมองซูมเข้า</translation>
 <translation id="8964525410783593407">1 ชม.</translation>
 <translation id="8973885907461690937">วางโฟกัสบนไอคอนเมนู</translation>

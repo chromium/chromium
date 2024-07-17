@@ -852,7 +852,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="254524874071906077">Chrome instellen als standaardbrowser</translation>
 <translation id="2545721997179863249">De optie Alles invullen is geselecteerd</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
-<translation id="2546678870939430879">Resultaat opnieuw uitvoeren</translation>
 <translation id="254947805923345898">Beleidswaarde is ongeldig.</translation>
 <translation id="2549836668759467704">Bouwadvies en aanbesteding</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> heeft een ongeldige reactie verzonden.</translation>
@@ -1035,7 +1034,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2954624054936281172">Tabel met opgeslagen betaalmethoden</translation>
 <translation id="295526156371527179">Waarschuwing: Dit beleid is niet samengevoegd als woordenboek zoals gespecificeerd door het beleid, omdat het geen woordenboek is.</translation>
 <translation id="2955913368246107853">Zoekbalk sluiten</translation>
-<translation id="2958345633099973853">Resultaat ongedaan maken</translation>
 <translation id="2958544468932521864">Cricket</translation>
 <translation id="2959274854674276289">Vegetarische keuken</translation>
 <translation id="2961809451460302960">Levensverzekering</translation>
@@ -1163,7 +1161,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3209034400446768650">Pagina kan geld in rekening brengen</translation>
 <translation id="3212581601480735796">Je activiteit op <ph name="HOSTNAME" /> wordt gecontroleerd</translation>
 <translation id="3215092763954878852">Kan WebAuthn niet gebruiken</translation>
-<translation id="3215311088819828484">Resultaat geüpdatet</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatief</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Update nu vereist}=2{Update uiterlijk morgen vereist}other{Update binnen # dagen vereist}}</translation>
@@ -2511,7 +2508,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5772086939108830423">Een toegangscode gebruiken op een ander apparaat</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="5776574724412881956">Virtuele kaart niet ingevuld? Klik op Gegevens van virtuele kaart om deze naar het klembord te kopiëren. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">Resultaat laden</translation>
 <translation id="5781136890105823427">Experiment staat aan</translation>
 <translation id="578305955206182703">Geelbruin</translation>
 <translation id="5783700460098783980">Bagage en reisaccessoires</translation>
@@ -2686,7 +2682,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6116338172782435947">Tekst en afbeeldingen bekijken die naar het klembord zijn gekopieerd</translation>
 <translation id="6117833587752089929">Foto (satijn)</translation>
 <translation id="6118782133429281336">Oorspronglijst is leeg.</translation>
-<translation id="6120950591512958208">Gebruik deze code bij het betalen.</translation>
 <translation id="612178891608320683">Veganistische keuken</translation>
 <translation id="6122181661879998141">voorkant van je kaart</translation>
 <translation id="6124058285696691147">De bijlage downloaden</translation>

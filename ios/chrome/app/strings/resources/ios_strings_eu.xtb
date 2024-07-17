@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Sarbide-gakoa</translation>
 <translation id="1035980983510608210">Fitxa guztiak ixten badituzu, fitxa ainguratuak ere itxiko dira.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Zure saioa amaituko da, eta arakatze-datuak ezabatuko dira</translation>
 <translation id="1044891598689252897">Webguneek ohiko moduan funtzionatuko dute</translation>
 <translation id="1049743911850919806">Ezkutuko modua</translation>
 <translation id="1053651653201045802">Amaitu da saioa. Hasi saioa berriro kontuko laster-markak, pasahitzak eta bestelakoak erabiltzeko.</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776">Egin aurrera <ph name="USER_NAME" /> gisa</translation>
 <translation id="1400642268715879018">Azken lau asteetakoak</translation>
 <translation id="1404330357948037222">Amaitu egin da saioa</translation>
-<translation id="14066361343057390">Zure saioa amaituko da</translation>
 <translation id="1407135791313364759">Ireki guztiak</translation>
 <translation id="1408847409015257906">Sakatu "Pribatutasuna eta segurtasuna".</translation>
 <translation id="1430915738399379752">Inprimatu</translation>
@@ -341,7 +339,6 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2712127207578915686">Ezin da ireki fitxategia</translation>
 <translation id="2718352093833049315">Wifi bidez soilik</translation>
 <translation id="2738375676495545665">Ezkutatu "Berritasunak"</translation>
-<translation id="2740910715135851329">Zure saioa amaituko da, fitxak itxiko dira, eta arakatze-datuak ezabatuko dira</translation>
 <translation id="2747003861858887689">Aurreko eremua</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> kanalari jarraitzen</translation>
 <translation id="2754492786623500387">Gailu honetako kontuak</translation>
@@ -392,6 +389,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2952278131021475699">Lens-eko kamera bidezko bilaketa</translation>
 <translation id="2958718410589002129">Pasahitzak</translation>
 <translation id="2964349545761222050">Blokeatu hirugarrenen cookieak</translation>
+<translation id="2965328226365382335">Azken 15 minutuak</translation>
 <translation id="2969979262385602596">Ezin izan da hasi saioa. Saiatu berriro geroago.</translation>
 <translation id="2975121486251958312">Ezkutuko modua baino ez dago erabilgarri</translation>
 <translation id="2982481275546140226">Garbitu datuak</translation>
@@ -539,7 +537,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3738428049780661523">Sortze-data: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ezkutatu "Deskargak"</translation>
 <translation id="3745190878148784130">Ezkutatu "Aplikatu zooma testuari"</translation>
-<translation id="3747231889390582072">Erakundearen segurtasuna babesteko, gorde gabeko datuak ezabatu egingo dira gailutik. Baliteke pasahitzak, arakatze-historia eta cookieak ezabatzea, besteak beste.</translation>
 <translation id="3762232513783804601">Zure iPad-erako garatua</translation>
 <translation id="3768725474733206671">Ireki itxitako azken fitxa</translation>
 <translation id="3771033907050503522">Ezkutuko moduko fitxak</translation>
@@ -718,6 +715,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4659194143325814340">{count,plural, =1{{count} orri dago irakurketa-zerrendan}other{{count} orri daude irakurketa-zerrendan}}</translation>
 <translation id="4659667755519643272">Sartu fitxa-aldatzailean</translation>
 <translation id="46614316059270592">Gorde pasahitza</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Jarri enpresa batekin harremanetan telefonoz deituta</translation>
 <translation id="4682686630151240767">1. Ireki iPhone-aren Settings (ezarpenak) atala.</translation>
 <translation id="4689564913179979534">Kudeatu ordainketa-metodoak…</translation>
@@ -1326,6 +1324,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7609559547731036746">Laster-markak</translation>
 <translation id="7638584964844754484">Pasaesaldi okerra</translation>
 <translation id="7640669552036055091">Android-eko fitxak</translation>
+<translation id="7643790043444820023">Pertsonalizatu orri nagusia</translation>
 <translation id="7646263789464975852">Menua → Ezarpenak → Segurtasun-egiaztapena</translation>
 <translation id="7646772052135772216">Pasahitzen sinkronizazioa ez dabil</translation>
 <translation id="764827086632467055">Sakatu Arakatzaile lehenetsia</translation>
@@ -1518,7 +1517,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8522147671363140027">{count,plural, =1{{count} pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan ({email}).}other{{count} pasahitz eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan ({email}).}}</translation>
 <translation id="8522813812888400223">Utzi deskargatzeari</translation>
 <translation id="8524799873541103884"><ph name="FIRST_VISIBLE_TAB" />-<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /> <ph name="INCOGNITO" /> fitxak</translation>
-<translation id="852576975834694248">Zure saioa amaituko da, eta fitxak itxiko dira</translation>
 <translation id="8528009254289981965">Ireki beste aplikazioetako estekak ezkutuko moduan</translation>
 <translation id="8529767659511976195">Berria</translation>
 <translation id="8532105204136943229">Iraungitze-urtea</translation>

@@ -8,7 +8,6 @@
 <translation id="102916930470544692">ກະແຈຜ່ານ</translation>
 <translation id="1035980983510608210">ການປິດແຖບທັງໝົດຈະເປັນການປິດແຖບທີ່ປັກໝຸດແລ້ວນຳເຊັ່ນກັນ.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">ທ່ານຈະຖືກອອກຈາກລະບົບ ແລະ ຂໍ້ມູນການທ່ອງເວັບຈະຖືກລຶບ</translation>
 <translation id="1044891598689252897">ເວັບໄຊຈະເຮັດວຽກໄດ້ປົກກະຕິ</translation>
 <translation id="1049743911850919806">ບໍ່​ເຜີຍ​ຕົວຕົນ</translation>
 <translation id="1053651653201045802">ອອກຈາກລະບົບແລ້ວ. ເຂົ້າສູ່ລະບົບຄືນໃໝ່ເພື່ອໃຊ້ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນບັນຊີຂອງທ່ານ.</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776">ສືບຕໍ່ເປັນ <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 ອາທິດຜ່ານມາ</translation>
 <translation id="1404330357948037222">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
-<translation id="14066361343057390">ທ່ານຈະຖືກອອກຈາກລະບົບ</translation>
 <translation id="1407135791313364759">ເປີດ​ທັງ​ຫມົດ</translation>
 <translation id="1408847409015257906">ແຕະໃສ່ “ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພ.”</translation>
 <translation id="1430915738399379752">ພິມ</translation>
@@ -341,7 +339,6 @@
 <translation id="2712127207578915686">ບໍ່​ສາ​ມາດ​ເປີດ​ໄຟ​ລ໌​ໄດ້</translation>
 <translation id="2718352093833049315">​ສະເພາະ Wi​-Fi ເທົ່ານັ້ນ</translation>
 <translation id="2738375676495545665">ເຊື່ອງມີຫຍັງໃໝ່</translation>
-<translation id="2740910715135851329">ທ່ານຈະຖືກອອກຈາກລະບົບ, ແຖບຈະຖືກປິດໄວ້, ຂໍ້ມູນການທ່ອງເວັບຈະຖືກລຶບ</translation>
 <translation id="2747003861858887689">ຫ້ອງ​ໃສ່​ຂໍ້​ມູນ​ຜ່ານ​ມາ</translation>
 <translation id="2749231692441336879">ກຳລັງຕິດຕາມ <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">ບັນຊີຢູ່ອຸປະກອນນີ້</translation>
@@ -392,6 +389,7 @@
 <translation id="2952278131021475699">ຊອກຫາດ້ວຍກ້ອງໂດຍໃຊ້ Lens</translation>
 <translation id="2958718410589002129">ລະຫັດຜ່ານ</translation>
 <translation id="2964349545761222050">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
+<translation id="2965328226365382335">15 ນາ​ທີສຸດ​ທ້າຍ</translation>
 <translation id="2969979262385602596">ເຂົ້າ​ສູ່​ລະ​ບົບບໍ່ໄດ້, ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.</translation>
 <translation id="2975121486251958312">ມີແຕ່ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="2982481275546140226">ລຶບລ້າງຂໍ້ມູນ</translation>
@@ -539,7 +537,6 @@
 <translation id="3738428049780661523">ສ້າງຂຶ້ນເມື່ອ <ph name="DATE" /></translation>
 <translation id="374357899112510277">ເຊື່ອງການດາວໂຫຼດ</translation>
 <translation id="3745190878148784130">ເຊື່ອງ ຊູມຂໍ້ຄວາມ</translation>
-<translation id="3747231889390582072">ເພື່ອປົກປ້ອງຄວາມປອດໄພຂອງອົງກອນຂອງທ່ານ, ຂໍ້ມູນທີ່ບໍ່ໄດ້ບັນທຶກໄວ້ຈະຖືກລຶບຈາກອຸປະກອນນີ້. ສິ່ງນີ້ອາດຮວມມີລະຫັດຜ່ານ, ປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້ ແລະ ອື່ນໆ.</translation>
 <translation id="3762232513783804601">ສ້າງມາສຳລັບ iPad ຂອງທ່ານ</translation>
 <translation id="3768725474733206671">ເປີດແຖບທີ່ປິດແລ້ວຫຼ້າສຸດຄືນໃໝ່</translation>
 <translation id="3771033907050503522">ແຖບບໍ່ເຜີຍຕົນຕົວ</translation>
@@ -718,6 +715,7 @@
 <translation id="4659194143325814340">{count,plural, =1{{count} ໜ້າໃນລາຍຊື່ການອ່ານຂອງທ່ານ}other{{count} ໜ້າໃນລາຍຊື່ການອ່ານຂອງທ່ານ}}</translation>
 <translation id="4659667755519643272">ປ້ອນ​ຕົວ​ສະ​ຫຼັບ​ແຖບ​ເຂົ້າ​ໄປ</translation>
 <translation id="46614316059270592">ບັນທຶກລະຫັດຜ່ານ</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">ຕິດຕໍ່ກັບທຸລະກິດໂດຍການເລີ່ມຕົ້ນການໂທທາງໂທລະສັບ</translation>
 <translation id="4682686630151240767">1. ເປີດການຕັ້ງຄ່າ iPhone</translation>
 <translation id="4689564913179979534">ຈັດການວິທີການຈ່າຍເງິນ...</translation>
@@ -1519,7 +1517,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8522147671363140027">{count,plural, =1{ລະຫັດຜ່ານ {count} ລາຍການ ແລະ ລາຍການອື່ນໆຈະຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອໃຊ້ພວກມັນຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກພວກມັນໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email}.}other{ລະຫັດຜ່ານ {count} ລາຍການ ແລະ ລາຍການອື່ນໆຈະຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອໃຊ້ພວກມັນຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກພວກມັນໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email}.}}</translation>
 <translation id="8522813812888400223">ຍົກເລີກການດາວໂຫຼດ</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ແຖບ <ph name="FIRST_VISIBLE_TAB" /> ຜ່ານ <ph name="LAST_VISIBLE_TAB" /> ໃນ <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">ທ່ານຈະຖືກອອກຈາກລະບົບ ແລະ ແຖບຈະຖືກປິດໄວ້</translation>
 <translation id="8528009254289981965">ເປີດລິ້ງຈາກແອັບອື່ນໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="8529767659511976195">ໃໝ່</translation>
 <translation id="8532105204136943229">ປີ​ຫມົດ​ອາ​ຍຸ​</translation>
@@ -1600,6 +1597,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8876882697946675716">ຊິ້ງຂໍ້ມູນອຸປະກອນຂອງທ່ານສະເໝີ</translation>
 <translation id="8879604564928138696">ແຕະສອງເທື່ອເພື່ອລອງໃຊ້</translation>
 <translation id="8881801611828450202">ຊອກຫາຮູບນີ້ໃນ <ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">ປິດແຖບ ແລະ ກຸ່ມທັງໝົດ</translation>
 <translation id="8898822736010347272">ສົ່ງ URL ຂອງບາງໜ້າທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບທີ່ຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າໃຫ້ Google ເພື່ອຊ່ວຍຄົ້ນພົບອັນຕະລາຍໃໝ່ ແລະ ປົກປ້ອງທຸກຄົນໃນເວັບ.</translation>
 <translation id="890565330728586731">ກັບຄືນ</translation>
 <translation id="8909135823018751308">ແຊຣ໌...</translation>

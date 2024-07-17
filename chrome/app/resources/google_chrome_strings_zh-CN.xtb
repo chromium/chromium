@@ -15,11 +15,13 @@
 <translation id="1149651794389918149">登录 Chrome。如果您只想登录账号一次，可考虑<ph name="GUEST_LINK_BEGIN" />以访客身份使用设备<ph name="GUEST_LINK_END" />。</translation>
 <translation id="1152920704813762236">关于 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中打开(&amp;O)</translation>
+<translation id="1184145431117212167">安装失败，因为您的 Windows 版本不受支持。</translation>
 <translation id="1194807384646768652">Chrome 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1229096353876452996">Google 建议将 Chrome 设为默认浏览器</translation>
 <translation id="1265739287306757398">了解如何操作</translation>
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
+<translation id="1290883685122687410">设置错误：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome正在安装最新的系统更新，请稍候。</translation>
 <translation id="1335640173511558774">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Google ChromeOS Flex 条款。</translation>
 <translation id="1341711321000856656">您可切换到另一份 Chrome 个人资料以查看其中的密码</translation>
@@ -190,6 +192,7 @@
 <translation id="3583751698304738917">您已使用另一份 Chrome 个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录</translation>
 <translation id="3595784445906693824">要使用新的个人资料登录 Chrome 吗？</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{您的管理员要求您重新启动 Chrome 以应用一项更新}=1{您的管理员要求您重新启动 Chrome 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chrome 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
+<translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">您近期未访问过该网站。Chrome 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />权限</translation>
 <translation id="3622797965165704966">现在，无论是通过Google账号还是在共用的计算机上，您都可以更轻松地使用Chrome。</translation>
 <translation id="3635073343384702370">您需要先保存密码，然后才能使用 Chrome 的密码检查功能</translation>
@@ -232,6 +235,7 @@
 <translation id="4191857738314598978">{0,plural, =1{请于 1 天内重新启动 Chrome}other{请于 # 天内重新启动 Chrome}}</translation>
 <translation id="4205939740494406371">Chrome 无法检查您的密码。请过 24 小时再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="4222932583846282852">正在取消…</translation>
+<translation id="4224210481850767180">已取消安装。</translation>
 <translation id="4242034826641750751">Chrome 需要为此网站授予摄像头权限和麦克风权限</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
 <translation id="4251615635259297716">是否将您的 Chrome 数据与此账号相关联？</translation>

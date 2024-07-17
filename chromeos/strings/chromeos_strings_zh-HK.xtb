@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">背景</translation>
 <translation id="3027578600144895987">閂相機</translation>
 <translation id="3031560714565892478">裝置類型係攝影機。</translation>
-<translation id="3051968340259309715">此操作會允許系統服務使用「定位精確度」以判斷你的位置。「定位精確度」會使用 Wi-Fi 存取點、流動網絡發射塔和 GPS 等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料。如要關閉位置，請前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權]。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">端點</translation>
 <translation id="3060579846059757016">概要</translation>
@@ -1037,6 +1036,7 @@
 <translation id="6595046262780525922">要開啟轉錄功能並下載轉錄模型嗎？</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6599673642868607614">多謝您的意見。您的意見有助於我們改善 Chromebook 體驗，並將經由我們的團隊審核。由於報告數量眾多，我們將不會逐一回覆。</translation>
+<translation id="660846213831377756">滑鼠按鍵</translation>
 <translation id="6618744767048954150">正在執行</translation>
 <translation id="6620487321149975369">除非您手動移除列印工作，否則列印工作會顯示在記錄中</translation>
 <translation id="6624819909909965616">無法上載大小超過 10 MB 的檔案</translation>
@@ -1190,6 +1190,7 @@
 <translation id="7343649194310845056">網絡裝置</translation>
 <translation id="7344788170842919262">大地色</translation>
 <translation id="7346768383111016081">針對遊戲操作設定控制項，即可使用鍵盤玩遊戲</translation>
+<translation id="7352651011704765696">發生問題</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> 項搜尋結果的第 <ph name="LIST_POSITION" /> 項：<ph name="SEARCH_RESULT_TEXT" />。按下 Enter 鍵即可前往捷徑。</translation>
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="73631062356239394">分享診斷資料</translation>

@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">ਸੰਤਰੀ</translation>
 <translation id="125153950246128346">ਕਿਸੇ ਹੋਰ ਟੈਬ ਨੂੰ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਦੇ ਵਿਕਲਪ</translation>
-<translation id="1322824555808364080">ਲੋਕਾਂ ਨੂੰ ਸੱਦਾ ਦਿਓ</translation>
 <translation id="1419023007528516122">ਇਸ ਨਾਲ ਗਰੁੱਪ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟ ਜਾਵੇਗਾ</translation>
 <translation id="1486715732399361704">ਤੁਸੀਂ ਇੱਥੇ ਆਪਣੇ ਸਾਰੇ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> ਮਿੰਟ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}one{<ph name="NUM_MINS_MANY" /> ਮਿੰਟ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}other{<ph name="NUM_MINS_MANY" /> ਮਿੰਟ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">ਤੁਹਾਡੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਨੂੰ ਅਣ-ਗਰੁੱਪਬੱਧ ਕਰੋ}one{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਨੂੰ ਅਣ-ਗਰੁੱਪਬੱਧ ਕਰੋ}other{ਚੁਣੀਆਂ ਗਈਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਨੂੰ ਅਣ-ਗਰੁੱਪਬੱਧ ਕਰੋ}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
+<translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 ਦਿਨ ਬਾਅਦ}one{<ph name="DAY_COUNT_MANY" /> ਦਿਨ ਬਾਅਦ}other{<ph name="DAY_COUNT_MANY" /> ਦਿਨਾਂ ਬਾਅਦ}}</translation>
 <translation id="6549021453810473782">ਸਟੋਰ ਜਾਣਕਾਰੀ ਦੇਖੋ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

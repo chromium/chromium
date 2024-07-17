@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">ॲप्स, एक्स्टेंशन आणि थीम इंस्टॉल करा</translation>
 <translation id="2977598380246111477">पुढील नंबर</translation>
 <translation id="2985148236010982088">सर्व अ‍ॅप्स पहा</translation>
+<translation id="2992272421330787632">सर्व मीडिया सूचना लपवा</translation>
 <translation id="2992327365391326550">डिव्हाइसच्या मायक्रोफोनचे बटण बंद केले आहे.</translation>
 <translation id="3000461861112256445">मोनो ऑडिओ</translation>
 <translation id="3001391739687111021">स्क्रीनचा आकार संपादित करा</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">तुला काय करता येते?</translation>
 <translation id="3256109297135787951">तुमच्या शेल्फवरील आयटमवरील हायलाइट काढून टाका</translation>
 <translation id="3260969790895726815">स्पीचवर स्थानिकरीत्या प्रक्रिया केली जाते आणि डिक्टेशन ऑफलाइन काम करते, पण काही व्हॉइस कमांड काम करणार नाहीत.</translation>
+<translation id="3264031581203585083">सर्व Google Drive सूचना लपवा</translation>
 <translation id="3265032511221679826">अचूक स्थान अ‍ॅक्सेस सुरू करायचा आहे करा?</translation>
 <translation id="3269597722229482060">राइट क्लिक</translation>
 <translation id="3274634049061007184">तुमच्या फोनमधील ॲप्स पहा</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">तुम्ही आता स्क्रीन रेकॉर्डिंगमध्ये क्लिक आणि कीबोर्ड शॉर्टकट दाखवू शकता</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट घेतला</translation>
 <translation id="3743775386021959186">फोकस सुरू आहे, <ph name="REMAINING_TIME" /> शिल्लक आहेत</translation>
+<translation id="3750403286520637847">हवामानाशी संबंधित सूचना लपवा</translation>
 <translation id="3756485814916578707">स्‍क्रीन कास्‍ट करत आहे</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> शॉर्टकट <ph name="OLD_SHORTCUT" /> वरून <ph name="NEW_SHORTCUT" /> वर अपडेट केला आहे</translation>
 <translation id="3765841986579723851">आज संपादित केलेली</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">टॅबलेट</translation>
 <translation id="3923494859158167397">कोणतीही मोबाइल नेटवर्क सेट केलेली नाहीत</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, इव्हेंट लोड करत आहे.</translation>
+<translation id="3927049937406914450">स्थान अ‍ॅक्सेस बंद केल्यामुळे हवामान उपलब्ध नाही. तुम्ही ही सेटिंग्ज बदलू शकता.</translation>
 <translation id="3932043219784172185">कोणतेही डिव्हाइस कनेक्ट केले नाही</translation>
 <translation id="3934456833412894880">अडॅप्टिव्ह चार्जिंग सुरू आहे. बॅटरी लाइफ वाढवण्यासाठी तुमची बॅटरी ८०% वर राहील आणि तुम्हाला आवश्यक असेल, तेव्हा पूर्ण चार्ज होईल.</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">कॅमेरा सर्वात वरच्या उजव्या कोपर्‍यात स्नॅप केला आहे. सिस्टीम सर्फेसवरील इतर ॲपवर ओव्‍हरलॅप होत आहे.</translation>
 <translation id="4316910396681052118">सर्व अ‍ॅप्स</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">सर्व Chrome ब्राउझर सूचना लपवा</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Up Arrow कीबोर्ड शॉर्टकट बदलला आहे. होम की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + लेफ्ट अ‍ॅरो प्रेस करा.</translation>
 <translation id="4324840740119394760">हे कॅमेरा परवानगी असलेल्या <ph name="APP_NAME" /> आणि सर्व अ‍ॅप्स व वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="4327147325944669226">गेम रेकॉर्ड करा</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">पुन्हा दाखवू नका</translation>
 <translation id="4451374464530248585">Alt + Down Arrow कीबोर्ड शॉर्टकट बदलला आहे. पेज डाउन की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + डाउन अ‍ॅरो वापरा.</translation>
 <translation id="4453876312474547652">तुम्ही Ctrl + V प्रेस करून धरून ठेवल्यावर तुम्हाला क्लिपबोर्ड दिसेल. तुम्ही chrome://flags (Lacros वापरत असल्यास, os://flags) मधील #clipboard-history-longpress फ्लॅग बंद करून हा शॉर्टकट बंद करू शकता.</translation>
+<translation id="445765352722456792">सूचना कस्टमाइझ करा</translation>
 <translation id="445864333228800152">शुभ संध्याकाळ,</translation>
 <translation id="4458688154122353284">स्क्रीन रेकॉर्डिंग थांबवा</translation>
 <translation id="445923051607553918">वाय-फाय  नेटवर्कमध्ये सामील व्हा</translation>
@@ -1332,6 +1338,7 @@
 <translation id="5802516411616338943">क्विक सेटिंग्ज उघडा</translation>
 <translation id="5804651031882187592">"सिम लॉक करा" सेटिंग बंद करा</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
+<translation id="5819918159912280082">तुमचे Chromebook अनपेक्षितपणे रीस्टार्ट झाले आहे. तुमच्या मागील विंडो आणि अ‍ॅप्स उघडा.</translation>
 <translation id="5823239091726045201">वेबवर Google कार्ये</translation>
 <translation id="5825969630400862129">कनेक्‍ट केलेली डिव्हाइस सेटिंग्ज</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
@@ -1512,6 +1519,7 @@
 <translation id="6469104339369989396">हॉटस्पॉट टॉगल करा</translation>
 <translation id="6477681113376365978">फाइल डाउनलोड करू शकत नाही</translation>
 <translation id="6482559668224714696">फुल-स्क्रीन मॅग्निफायर</translation>
+<translation id="6485086611007560630">हवामान (उपलब्ध नाही)</translation>
 <translation id="6490471652906364588">USB-C डिव्‍हाइस (उजवे पोर्ट)</translation>
 <translation id="649452524636452238">स्मार्ट कार्डाचा पिन</translation>
 <translation id="6495322433318104734">स्क्रीन सेव्हर डिस्प्ले करत आहे, बाहेर पडण्यासाठी कोणतीही की प्रेस करा</translation>
@@ -1781,6 +1789,7 @@
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">पेज डाउन</translation>
+<translation id="7518182783647693467">तापमानाचे एकके टॉगल करा (F वि. C)</translation>
 <translation id="7519206258459640379">कॅमेरा फ्रेमिंग सुरू आहे</translation>
 <translation id="7519649142417630956">बंद केल्यानंतर, अ‍ॅडमिनिस्ट्रेटरला लॉग आउट केले जाईल आणि त्याला तुमचे डिव्हाइस नियंत्रित करता येणार नाही.
 
@@ -1921,6 +1930,7 @@
 <translation id="7951630946012935453">कीबोर्ड डिम करा</translation>
 <translation id="7953994493035617347">नवीन रेझोल्यूशन कन्फर्म करायचे आहे का?</translation>
 <translation id="795958884516058160">फुल-स्क्रीन मॅग्निफायर सुरू केले आहे. ते बंद वर टॉगल करण्यासाठी पुन्हा <ph name="ACCELERATOR" /> प्रेस करा.</translation>
+<translation id="7962583092928373823">सर्व Google Calendar सूचना लपवा</translation>
 <translation id="7963689218131240420">व्यत्यय आणू नका बंद आहे.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> कडून</translation>
 <translation id="7968693143708939792">फोल्डर निवडा…</translation>
@@ -1993,6 +2003,7 @@
 <translation id="8214996719228530800">कॅनरी चॅनल</translation>
 <translation id="8219451629189078428">या कालावधी दरम्यान Chromebook सुरू असणे आणि पॉवरशी कनेक्ट केलेले असणे आवश्यक आहे. चार्जर किंवा अडॅप्टर केबल तुमचे Chromebook आणि पॉवर आउटलेट या दोन्ही गोष्टींशी पूर्णपणे प्लग इन केल्या असल्याची खात्री करा. तुमचे Chromebook बंद करू नका.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> जोडा</translation>
+<translation id="8228175756124063692">ही सूचना लपवा</translation>
 <translation id="8230305195727960608">कलर इन्व्हर्जन मोड</translation>
 <translation id="8236042855478648955">विश्रांतीची वेळ</translation>
 <translation id="8237964652943995219">पुढील डेस्‍क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
@@ -2179,6 +2190,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> चेक बॉक्स निवडलेला नाही.</translation>
 <translation id="8949925099261528566">कनेक्‍ट केले, इंटरनेट नाही</translation>
 <translation id="8951539504029375108">तुमच्या Chromebook सह फक्त मंजुरी दिलेली थंडरबोल्ट डिव्हाइस कंपॅटिबल आहेत</translation>
+<translation id="8956420987536947088">तुमच्या मागील विंडो आणि अ‍ॅप्स उघडा</translation>
 <translation id="8959380109429710384">तुम्ही फुल-स्क्रीन मॅग्निफायरसाठी कीबोर्ड शॉर्टकट प्रेस केला आहे. झूम इन केलेल्या दृश्यामध्ये आजूबाजूला फिरण्यासाठी ctrl + alt + arrows वापरा.</translation>
 <translation id="8964525410783593407">१ तास</translation>
 <translation id="8973885907461690937">मेनू आयकनवर फोकस करा</translation>

@@ -22,6 +22,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1229096353876452996">Google recomienda configurar Chrome como navegador predeterminado</translation>
 <translation id="1265739287306757398">Más información</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
+<translation id="1290883685122687410">Error de configuración: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Espera mientras Chrome instala las últimas actualizaciones del sistema.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requiere que leas y aceptes los siguientes Términos del Servicio antes de utilizar este dispositivo. Estos términos no amplían, modifican ni limitan los Términos de Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Puedes cambiar de perfil para ver las contraseñas de otro perfil de Chrome</translation>
@@ -195,6 +196,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3583751698304738917">Ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /> en otro perfil de Chrome</translation>
 <translation id="3595784445906693824">¿Iniciar sesión en Chrome con un perfil nuevo?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Tu administrador pide que reinicies Chrome para aplicar una actualización}=1{Tu administrador pide que reinicies Chrome para aplicar una actualización. La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chrome para aplicar una actualización. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
+<translation id="3597003331831379823">No se ha podido ejecutar la configuración con privilegios avanzados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="3622797965165704966">Ahora es más fácil utilizar Chrome con tu cuenta de Google y en ordenadores compartidos.</translation>
 <translation id="3635073343384702370">Chrome puede comprobar tus contraseñas cuando las guardas</translation>

@@ -521,6 +521,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2970920913501714344">nameščanje aplikacij, razširitev in tem;</translation>
 <translation id="2977598380246111477">Naslednja številka</translation>
 <translation id="2985148236010982088">Prikaz vseh aplikacij</translation>
+<translation id="2992272421330787632">Skrij vse predloge za predstavnost</translation>
 <translation id="2992327365391326550">Gumb naprave za mikrofon je izklopljen.</translation>
 <translation id="3000461861112256445">Mono zvok</translation>
 <translation id="3001391739687111021">Urejanje velikosti zaslona</translation>
@@ -591,6 +592,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3255483164551725916">Kakšne možnosti so na voljo?</translation>
 <translation id="3256109297135787951">Opustitev označevanja elementa na polici</translation>
 <translation id="3260969790895726815">Govor se obdeluje lokalno in narek deluje brez povezave, vendar nekateri glasovni ukazi ne bodo delovali.</translation>
+<translation id="3264031581203585083">Skrij vse predloge za Google Drive</translation>
 <translation id="3265032511221679826">Želite vklopiti dostop do natančne lokacije?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3274634049061007184">Ogled aplikacij telefona</translation>
@@ -742,6 +744,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3738664582935948253">V videoposnetkih zaslona lahko zdaj prikažete klike in bližnjične tipke.</translation>
 <translation id="3742055079367172538">Posnetek zaslona je narejen</translation>
 <translation id="3743775386021959186">Osredotočenost je vklopljena, še <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Skrij predlog za vreme</translation>
 <translation id="3756485814916578707">Predvajanje vsebine zaslona</translation>
 <translation id="3765841382945324995">Bližnjica <ph name="SIX_PACK_KEY_NAME" /> je posodobljena z bližnjice <ph name="OLD_SHORTCUT" /> na bližnjico <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Urejeno danes</translation>
@@ -781,6 +784,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3906954721959377182">Tablični računalnik</translation>
 <translation id="3923494859158167397">Ni nastavljenih mobilnih omrežij.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, dogodki se nalagajo.</translation>
+<translation id="3927049937406914450">Vreme ni na voljo, ker je dostop do lokacije onemogočen. To lahko spremenite v nastavitvah.</translation>
 <translation id="3932043219784172185">Nobena naprava ni povezana</translation>
 <translation id="3934456833412894880">Prilagodljivo polnjenje je vklopljeno. Polnjenje baterije se bo zaradi podaljšanja časa delovanja baterije ustavilo pri 80 %, v celoti pa se bo napolnila, ko jo boste potrebovali.</translation>
 <translation id="3943857333388298514">Prilepi</translation>
@@ -897,6 +901,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4312840429157639164">Fotoaparat je pripet v zgornji desni kot. To je v navzkrižju s sistemskim okoljem.</translation>
 <translation id="4316910396681052118">VSE APLIKACIJE</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Skrivanje vseh predlogov za brskalnik Chrome</translation>
 <translation id="4322742403972824594">Bližnjica na tipkovnici ctrl + alt + puščica gor je spremenjena. Če želite uporabiti tipko Home, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico levo.</translation>
 <translation id="4324840740119394760">To omogoča dostop do kamere za aplikacijo <ph name="APP_NAME" /> in vse aplikacije ter spletna mesta z dovoljenjem za kamero.</translation>
 <translation id="4327147325944669226">Snemanje igre</translation>
@@ -930,6 +935,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4450893287417543264">Tega ne prikaži več</translation>
 <translation id="4451374464530248585">Bližnjica na tipkovnici alt + puščica dol je spremenjena. Če želite uporabiti tipko za stran navzdol, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico dol.</translation>
 <translation id="4453876312474547652">Ko pridržite tipki Ctrl + V, se prikaže odložišče. To bližnjico lahko izklopite tako, da onemogočite zastavico #clipboard-history-longpress v chrome://flags (os://flags, če uporabljate Lacros).</translation>
+<translation id="445765352722456792">Prilagodi predloge</translation>
 <translation id="445864333228800152">Dober večer,</translation>
 <translation id="4458688154122353284">Ustavitev snemanja zaslona</translation>
 <translation id="445923051607553918">Pridružite se omrežju Wi-Fi</translation>
@@ -1332,6 +1338,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5802516411616338943">Odpiranje hitrih nastavitev</translation>
 <translation id="5804651031882187592">Izklop nastavitve zaklepanja kartice SIM</translation>
 <translation id="5805809050170488595">Kliknite, če želite aktivirati omrežje <ph name="NETWORK_NAME" />.</translation>
+<translation id="5819918159912280082">Chromebook se je nepričakovano znova zagnal. Odprite prejšnja okna in aplikacije.</translation>
 <translation id="5823239091726045201">Google Opravila v spletu</translation>
 <translation id="5825969630400862129">Nastavitve povezanih naprav</translation>
 <translation id="5837036133683224804">Ustavi zavihek <ph name="ROUTE_TITLE" /> v sprejemniku <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6469104339369989396">Preklop dostopne točke</translation>
 <translation id="6477681113376365978">Datoteke ni mogoče prenesti</translation>
 <translation id="6482559668224714696">Celozaslonska lupa</translation>
+<translation id="6485086611007560630">Vreme (ni na voljo)</translation>
 <translation id="6490471652906364588">Naprava USB-C (desna vrata)</translation>
 <translation id="649452524636452238">PIN za pametno kartico</translation>
 <translation id="6495322433318104734">Prikaz ohranjevalnika zaslona. Pritisnite poljubno tipko, če želite zapreti.</translation>
@@ -1781,6 +1789,7 @@ Nova namestitev</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">stran dol</translation>
+<translation id="7518182783647693467">Preklop enot za temperaturo (F in C)</translation>
 <translation id="7519206258459640379">Kadriranje fotoaparata je vklopljeno.</translation>
 <translation id="7519649142417630956">Po izklopu bo skrbnik odjavljen in ne bo mogel več nadzirati naprave.
 
@@ -1921,6 +1930,7 @@ Nova namestitev</translation>
 <translation id="7951630946012935453">Zatemnitev tipkovnice</translation>
 <translation id="7953994493035617347">Želite potrditi novo ločljivost?</translation>
 <translation id="795958884516058160">Celozaslonska lupa je omogočena. Če jo želite izklopiti, znova pritisnite kombinacijo tipk <ph name="ACCELERATOR" />.</translation>
+<translation id="7962583092928373823">Skrij vse predloge za Google Koledar</translation>
 <translation id="7963689218131240420">Način »Ne moti« je izklopljen.</translation>
 <translation id="7963992254934562106">Iz: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Izberite mapo …</translation>
@@ -1993,6 +2003,7 @@ Nova namestitev</translation>
 <translation id="8214996719228530800">Kanal Canary</translation>
 <translation id="8219451629189078428">Chromebook mora medtem ostati vklopljen in priklopljen na vir napajanja. Poskrbite, da so kabli polnilnika ali napajalnika do konca priklopljeni v Chromebook in električno vtičnico. Chromebooka ne izklopite.</translation>
 <translation id="8220076512072059941">Dodajanje: <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Skrij ta predlog</translation>
 <translation id="8230305195727960608">Način inverzije barv</translation>
 <translation id="8236042855478648955">Čas je za premor</translation>
 <translation id="8237964652943995219">Naslednje namizje: <ph name="DESK_NAME" />. Namizje <ph name="DESK_INDEX" /> od <ph name="DESK_COUNT" />.</translation>
@@ -2179,6 +2190,7 @@ Nova namestitev</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Potrditveno polje ni označeno.</translation>
 <translation id="8949925099261528566">Vzpostavljena povezava, brez interneta</translation>
 <translation id="8951539504029375108">Z vašim Chromebookom so združljive samo odobrene naprave Thunderbolt.</translation>
+<translation id="8956420987536947088">Odpiranje prejšnjih oken in aplikacij</translation>
 <translation id="8959380109429710384">Pritisnili ste bližnjično tipko za celozaslonsko lupo. Za pomikanje po povečanem pogledu uporabite kombinacijo tipk ctrl + alt + puščica.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Preklop izbire na ikono menija</translation>

@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Naranja</translation>
 <translation id="125153950246128346">Presiona para ver otra pestaña</translation>
 <translation id="1273910660700874265">Opciones de los grupos de pestañas de <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Invitar personas</translation>
 <translation id="1419023007528516122">Esta acción borrará el grupo de tu dispositivo de forma permanente</translation>
 <translation id="1486715732399361704">Aquí puedes encontrar todos tus grupos de pestañas</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Se creó hace <ph name="NUM_MINS_ONE" /> minuto}other{Se creó hace <ph name="NUM_MINS_MANY" /> minutos}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Encontrarás tus grupos de pestañas aquí</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña}other{<ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
+<translation id="6527303717912515753">Compartir</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Después de 1 día}other{Después de <ph name="DAY_COUNT_MANY" /> días}}</translation>
 <translation id="6549021453810473782">Consulta la información sobre la tienda.</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>

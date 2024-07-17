@@ -8,7 +8,6 @@
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1035980983510608210">सर्व टॅब बंद केल्यामुळे पिन केलेले टॅबदेखील बंद केले जातील.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">तुम्हाला साइन आउट केले जाईल आणि ब्राउझिंग डेटा हटवला जाईल</translation>
 <translation id="1044891598689252897">साइट सामान्यपणे काम करतील</translation>
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="1053651653201045802">साइन आउट केले आहे. तुमच्या खात्यामधील बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी वापरण्यासाठी पुन्हा साइन इन करा.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">पासवर्ड</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> म्हणून पुढे सुरू ठेवा</translation>
+<translation id="1388866984373351434">ब्राउझिंग डेटा</translation>
 <translation id="1400642268715879018">मागील 4 आठवडे</translation>
 <translation id="1404330357948037222">तुम्ही साइन आउट केले आहे</translation>
-<translation id="14066361343057390">तुम्हाला साइन आउट केले जाईल</translation>
 <translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="1408847409015257906">"गोपनीयता आणि सुरक्षा" वर टॅप करा.</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">फाईल उघडण्यात अक्षम</translation>
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
 <translation id="2738375676495545665">नवीन काय आहे ते लपवा</translation>
-<translation id="2740910715135851329">तुम्हाला साइन आउट केले जाईल, टॅब बंद केले जातील, ब्राउझिंग डेटा हटवला जाईल</translation>
 <translation id="2747003861858887689">मागील फील्ड</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ला फॉलो करत आहे</translation>
 <translation id="2754492786623500387">या डिव्हाइस वरील खाती</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">Lens कॅमेरा वापरून शोध</translation>
 <translation id="2958718410589002129">पासवर्ड</translation>
 <translation id="2964349545761222050">तृतीय पक्ष कुकी ब्लॉक करा</translation>
+<translation id="2965328226365382335">अंतिम 15 मिनिटे</translation>
 <translation id="2969979262385602596">साइन इन करण्यात अयशस्वी. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2975121486251958312">फक्त गुप्त मोड उपलब्ध आहे</translation>
 <translation id="2982481275546140226">डेटा साफ करा</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523"><ph name="DATE" /> रोजी तयार केला आहे</translation>
 <translation id="374357899112510277">डाउनलोड लपवा</translation>
 <translation id="3745190878148784130">मजकुरावर झूम करा हे लपवा</translation>
-<translation id="3747231889390582072">तुमच्या संस्थेच्या सुरक्षेचे संरक्षण करण्यासाठी, सेव्ह न केलेला डेटा या डिव्हाइसवरून हटवला जाईल. यामध्ये पासवर्ड, ब्राउझिंग इतिहास, कुकी आणखी बऱ्याच गोष्टींचा समावेश असू शकतो.</translation>
 <translation id="3762232513783804601">तुमच्या iPad साठी तयार केलेले</translation>
 <translation id="3768725474733206671">शेवटी बंद केलेला टॅब पुन्हा उघडा</translation>
 <translation id="3771033907050503522">गुप्त टॅब</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{तुमच्या वाचन सूची वरील {count} पेज}other{तुमच्या वाचन सूची वरील {count} पेज}}</translation>
 <translation id="4659667755519643272">टॅब स्विचर प्रविष्‍ट करा</translation>
 <translation id="46614316059270592">पासवर्ड सेव्ह करा</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">फोन कॉल सुरू करून व्यवसायाशी कनेक्ट करा</translation>
 <translation id="4682686630151240767">१. iPhone सेटिंग्ज उघडा</translation>
 <translation id="4689564913179979534">पेमेंट पद्धती व्यवस्थापित करा...</translation>
@@ -1520,7 +1519,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count} पासवर्ड आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या {email} या Google खाते मध्ये सेव्ह करा.}other{{count} पासवर्ड आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या {email} या Google खाते मध्ये सेव्ह करा.}}</translation>
 <translation id="8522813812888400223">डाउनलोड रद्द करा</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> पैकी <ph name="LAST_VISIBLE_TAB" /> ते <ph name="FIRST_VISIBLE_TAB" /> <ph name="INCOGNITO" /> टॅब</translation>
-<translation id="852576975834694248">तुम्हाला साइन आउट केले जाईल आणि टॅब बंद केले जातील</translation>
 <translation id="8528009254289981965">गुप्त मोड मध्ये इतर ॲप्समधील लिंक उघडा</translation>
 <translation id="8529767659511976195">नवीन</translation>
 <translation id="8532105204136943229">कालबाह्य होण्याचे वर्ष</translation>
@@ -1601,6 +1599,7 @@
 <translation id="8876882697946675716">तुमची डिव्हाइस सिंकमध्ये ठेवा</translation>
 <translation id="8879604564928138696">वापरून पाहण्यासाठी दोनदा टॅप करा</translation>
 <translation id="8881801611828450202">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
+<translation id="8887595428614802520">सर्व टॅब आणि गट बंद करा</translation>
 <translation id="8898822736010347272">नवीन धोके शोधण्यात आणि वेबवरील प्रत्येकाचे संरक्षण करण्यात मदत करण्यासाठी, तुम्ही भेट देत असलेल्या काही पेजच्या URL, मर्यादित सिस्टम माहिती आणि काही पेज आशय Google ला पाठवते.</translation>
 <translation id="890565330728586731">मागे जा</translation>
 <translation id="8909135823018751308">शेअर करा...</translation>

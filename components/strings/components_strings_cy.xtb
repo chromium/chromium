@@ -1164,7 +1164,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3209034400446768650">Mae'n bosib y bydd y dudalen godi arian</translation>
 <translation id="3212581601480735796">Mae eich gweithgarwch ar <ph name="HOSTNAME" /> yn cael ei fonitro</translation>
 <translation id="3215092763954878852">Methu â defnyddio WebAuthn</translation>
-<translation id="3215311088819828484">Canlyniad wedi'i ddiweddaru</translation>
 <translation id="3216313131063488104">Bliws</translation>
 <translation id="3218181027817787318">Perthynas</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Mae angen diweddaru nawr}=2{Mae angen diweddaru erbyn yfory}zero{Mae angen diweddaru o fewn # diwrnod}few{Mae angen diweddaru o fewn # diwrnod}many{Mae angen diweddaru o fewn # diwrnod}other{Mae angen diweddaru o fewn # diwrnod}}</translation>
@@ -2688,7 +2687,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6116338172782435947">Gweld testun a lluniau a gopïwyd i'r clipfwrdd</translation>
 <translation id="6117833587752089929">Llun (Satin)</translation>
 <translation id="6118782133429281336">Mae'r rhestr darddiad yn wag.</translation>
-<translation id="6120950591512958208">Defnyddiwch y cod hwn wrth dalu.</translation>
 <translation id="612178891608320683">Bwyd Fegan</translation>
 <translation id="6122181661879998141">blaen eich cerdyn</translation>
 <translation id="6124058285696691147">Lawrlwytho'r atodiad</translation>

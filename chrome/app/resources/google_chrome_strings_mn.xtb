@@ -17,11 +17,13 @@
 <translation id="1149651794389918149">Chrome-д нэвтэрнэ үү. Хэрэв та бүртгэлд зөвхөн нэг удаа нэвтрэхийг хүсвэл <ph name="GUEST_LINK_BEGIN" />төхөөрөмжийг зочноор ашиглах<ph name="GUEST_LINK_END" /> боломжтой.</translation>
 <translation id="1152920704813762236">ChromeOS-н тухай</translation>
 <translation id="1154147086299354128">&amp;Chrome-д нээх</translation>
+<translation id="1184145431117212167">Таны Windows-н хувилбарыг дэмждэггүй тул суулгаж чадсангүй.</translation>
 <translation id="1194807384646768652">Файлын төрлийг ихэвчлэн татдаггүй бөгөөд энэ нь аюултай байж магадгүй тул Chrome энэ таталтыг блоклосон</translation>
 <translation id="1203500561924088507">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө хөтчөө дахин эхлүүлэх ёстой.</translation>
 <translation id="1229096353876452996">Chrome-г өгөгдмөлөөр тохируулахыг Google зөвлөж байна</translation>
 <translation id="1265739287306757398">Заавар харах</translation>
 <translation id="1278833599417554002">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
+<translation id="1290883685122687410">Тохируулгын алдаа: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome-оос хамгийн сүүлийн үеийн системийн шинэчлэлтүүдийг суулгаж байгаа тул түр хүлээнэ үү.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь Google ChromeOS Flex-н нөхцөлийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>
 <translation id="1341711321000856656">Та өөр Chrome профайлаас нууц үгнүүдийг харахын тулд сэлгэх боломжтой</translation>
@@ -195,6 +197,7 @@
 <translation id="3583751698304738917">Та <ph name="USER_EMAIL_ADDRESS" /> хаягаараа Chrome-н өөр профайлд аль хэдийн нэвтэрсэн байна</translation>
 <translation id="3595784445906693824">Шинэ профайлаар Chrome-д нэвтрэх үү?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас шаардаж байна}=1{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас шаардаж байна. Таны нууцлалтай цонхыг дахин нээхгүй.}other{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас шаардаж байна. Таны # нууцлалтай цонхыг дахин нээхгүй.}}</translation>
+<translation id="3597003331831379823">Нэмэлт эрхтэйгээр тохируулгыг ажиллуулж чадсангүй. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан</translation>
 <translation id="3622797965165704966">Одоо та Google хаягаа ашиглан мөн өөр бусад компьютер дээр Chrome-г ашиглахад хялбар боллоо.</translation>
 <translation id="3635073343384702370">Таныг нууц үгнүүдээ хадгалах үед Chrome тэдгээрийг шалгах боломжтой</translation>
@@ -237,6 +240,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Chrome-г 1 хоногийн дотор дахин ажиллуулна уу}other{Chrome-г # хоногийн дотор дахин ажиллуулна уу}}</translation>
 <translation id="4205939740494406371">Chrome таны нууц үгсийг шалгах боломжгүй байна. 24 цагийн дараа дахин оролдоно уу эсвэл <ph name="BEGIN_LINK" />өөрийн Google Бүртгэл дэх нууц үгсийг шалгана уу<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Цуцалж байна...</translation>
+<translation id="4224210481850767180">Суулгах үйлдлийг цуцалсан.</translation>
 <translation id="4242034826641750751">Chrome-д энэ сайтад зориулж камер болон микрофоны зөвшөөрөл шаардлагатай</translation>
 <translation id="424864128008805179">Chrome-с гарах уу?</translation>
 <translation id="4251615635259297716">Chrome өгөгдлөө энэ бүртгэл рүү холбох уу?</translation>

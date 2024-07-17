@@ -1703,6 +1703,13 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 
       Si estableces <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no podrá aplicarse ninguna variación en el navegador en la pantalla de acceso. Ten en cuenta que no se recomienda este modo porque podría impedir que los desarrolladores de <ph name="PRODUCT_OS_NAME" /> proporcionen correcciones críticas de seguridad de manera oportuna.</translation>
 <translation id="2215746393279570703">Configuración de SSO flotante</translation>
+<translation id="2218830243081931587">Esta política controla el comportamiento de las combinaciones de teclas en <ph name="PRODUCT_OS_NAME" />.
+
+Si no estableces esta política o la estableces como <ph name="NORMAL_SYSTEM_PRIORITY" />, todas las combinaciones de teclas del sistema <ph name="PRODUCT_OS_NAME" /> siempre se activarán según lo esperado.
+
+Si la estableces como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, una lista predeterminada de combinaciones de teclas del Selector nunca activará una combinación de teclas.
+
+Si estableces esta política como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, una lista predeterminada de combinaciones de teclas del Selector nunca activará una combinación de teclas mientras una app esté en pantalla completa.</translation>
 <translation id="2221779615493499989">Informa a los usuarios sobre el estado de red en dispositivos inscritos.
 
       Si estableces la política como falsa, no se informarán los eventos.
@@ -2508,6 +2515,7 @@ Esta política solo se puede establecer como política del usuario basada en la 
 <translation id="2847788524147474533">Priorizar las políticas de máquina de la plataforma sobre las políticas de máquina en la nube</translation>
 <translation id="2849275596224278787">Ocultar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de acceso</translation>
 <translation id="2853649500575897584">No bloquear los puntos de extensiones heredados del proceso del navegador</translation>
+<translation id="2853757230661166968">Permite que las apps capturen y anulen las combinaciones de teclas predeterminadas del sistema.</translation>
 <translation id="285480231336205327">Habilitar el modo de contraste alto</translation>
 <translation id="285627849510728211">Establecer la configuración para el modo avanzado de carga de la batería durante el día</translation>
 <translation id="2856932965866813330">Habilitar el uso compartido de credenciales de usuario con otros usuarios</translation>
@@ -3887,6 +3895,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Nota: Esta política debe utilizarse con <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Permitir que los usuarios establezcan un PIN poco seguro</translation>
+<translation id="392227823425989489">Todas las combinaciones de teclas del sistema siempre se activarán según lo esperado.</translation>
 <translation id="3924506460382372403">Inhabilitar los informes del estado de los gráficos del dispositivo</translation>
 <translation id="3925377537407648234">Establecer la resolución de pantalla y el factor de escalas</translation>
 <translation id="3926681471685211524">Revisar el uso de la clave RSA para los certificados del servidor que emiten las anclas de confianza locales</translation>
@@ -4337,6 +4346,13 @@ Nota: Si bloqueas las URLs internas chrome://* y chrome-untrusted://*, es posibl
       Si la estableces como falsa, se ejecutará la resolución de DNS del sistema (getaddrinfo()) en el proceso de red, en lugar de ejecutarse en el proceso del navegador. Esto puede forzar la inhabilitación de la zona de pruebas del servicio de red, lo que degrada la seguridad de <ph name="PRODUCT_NAME" />.
 
       Si no la estableces, es posible que la resolución de DNS del sistema se ejecute en el servicio de red, fuera del servicio de red, o bien parcialmente dentro y parcialmente fuera, según la configuración del sistema y las marcas de función.</translation>
+<translation id="4234788818648224034">Lista de dominios que se excluirán de la resolución con DNS-over-HTTPS. Esta política se ignora cuando el modo de DNS seguro está desactivado (siempre usa DNS en texto sin formato).
+
+Si también se establece <ph name="DOH_TEMPLATES_POLICY_NAME" />, se prefiere un dominio más específico. La especificidad se refiere a la cantidad de puntos (".") en el dominio. Cuando un dominio coincide con ambas políticas, se usa el protocolo DNS-over-HTTPS de forma predeterminada para el dominio.
+
+Se espera que los dominios tengan el formato de un nombre de dominio completamente calificado (FQDN) o como sufijos de dominio indicados con un prefijo de comodín especial "*".
+
+Se ignorarán los dominios que tengan un formato incorrecto.</translation>
 <translation id="4239720644496144453">Las apps de Android no usan caché. Si varios usuarios instalan la misma app de Android, se descargará una para cada usuario.</translation>
 <translation id="4242583077375244471">Si habilitas esta política, <ph name="PRODUCT_NAME" />
 verificará los certificados del servidor mediante el verificador de certificados integrado
@@ -4818,14 +4834,6 @@ a estas APIs.</translation>
 <translation id="4615892138881859957">Controlar la combinación de teclas utilizada para activar la tecla Insertar del "paquete de seis"</translation>
 <translation id="4617338332148204752">Omitir la comprobación de metaetiquetas en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Hacer que la función NewBaseUrlInheritanceBehavior esté disponible</translation>
-<translation id="4624006912948309924">Si estableces la política, se determinarán los identificadores de aplicación que <ph name="PRODUCT_OS_NAME" /> mostrará como apps fijas en la barra del selector; los usuarios no podrán cambiarlos.
-
-Especifica las apps de Chrome por ID, como pjkljhegncpnkpknbcohdijeoejaedia;
-las apps para Android por nombre de paquete, como com.google.android.gm;
-las apps web por la URL que se usa en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como https://google.com/maps;
-y las apps web del sistema por nombre en snake case, como <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
-
-Si no estableces la política, los usuarios podrán cambiar la lista de apps fijas en el selector.</translation>
 <translation id="4624417808625504735">Impedir que JavaScript utilice JIT en estos sitios</translation>
 <translation id="46321462262887935">Tratar las teclas de la fila superior como teclas de función, pero permitir que el usuario las modifique</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
@@ -5441,6 +5449,15 @@ Si no la estableces o la inhabilitas, las cookies y los datos se pueden usar par
 <translation id="5152787786897382519">Chromium y Google Chrome tienen algunos grupos de políticas que dependen unos de otros para controlar una función. Los siguientes grupos de políticas representan estos conjuntos. Como las políticas pueden tener diferentes fuentes, solo se aplicarán los valores que provengan de la fuente de mayor prioridad. Se ignorarán los valores que provengan de una fuente de menor prioridad perteneciente al mismo grupo. El orden de prioridad se define en <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícono de experimentos del navegador de la barra de herramientas</translation>
 <translation id="5159674159887919923">No enviar datos de hardware adicionales en ChromeOS Flex</translation>
+<translation id="5162982931329320509">Lista de dominios que se resolverán con DNS-over-HTTPS. Los otros dominios que no se incluyen en la lista no se resolverán con DNS-over-HTTPS. Esta política se ignora cuando el modo de DNS seguro está desactivado (siempre usa DNS en texto sin formato).
+
+Si la lista está vacía o no se establece, todos los dominios se resolverán con DNS-over-HTTPS siempre que sea posible. Este es el mismo comportamiento que se produce con una lista de dominios incluidos con el valor ["*"].
+
+Si también se establece <ph name="DOH_TEMPLATES_POLICY_NAME" />, se prefiere un dominio más específico. La especificidad se refiere a la cantidad de puntos (".") en el dominio. Cuando un dominio coincide con ambas políticas, se usa el protocolo DNS-over-HTTPS de forma predeterminada para el dominio.
+
+Se espera que los dominios tengan el formato de un nombre de dominio completamente calificado (FQDN) o como sufijos de dominio indicados con un prefijo de comodín especial "*".
+
+Se ignorarán los dominios que tengan un formato incorrecto.</translation>
 <translation id="5163002264923337812">Habilitar la forma de acceso antigua basada en la Web</translation>
 <translation id="5163889437570441600">Permite que se transmita contenido al dispositivo que esté usando <ph name="PRODUCT_NAME" />.
 
@@ -8353,6 +8370,7 @@ Si se inhabilita esta política, las contraseñas no se recordarán nunca y se q
 <translation id="7146198347561863646">Si habilitas la política o no la estableces, se permitirán los bloqueos de activación para la administración de energía. Las extensiones pueden solicitar estos bloqueos mediante la API de extensión de administración de energía. Las apps de ARC también pueden solicitarlos.
 
       Si inhabilitas la política, se ignorarán las solicitudes de bloqueos de activación.</translation>
+<translation id="7148958378210448356">Una lista predeterminada de combinaciones de teclas con la tecla del Selector nunca realizará una acción solo en pantalla completa.</translation>
 <translation id="7149042336307555519"> Esta política controla los tipos de conexiones permitidos en las actualizaciones del SO. Es posible que el tamaño de las actualizaciones del SO sobrecargue la conexión, lo que podría generar costos adicionales para el usuario. Por lo tanto, no están habilitadas de forma predeterminada en conexiones que se consideren costosas (actualmente, solo "celular").
 
       Los identificadores de tipos de conexión son <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> y <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -8971,20 +8989,6 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 <translation id="7669630878711068277">Si habilitas la política o no la estableces, los usuarios podrán realizar impresiones en <ph name="PRODUCT_NAME" />. Los usuarios no podrán cambiar esta configuración.
 
       Si inhabilitas la política, los usuarios no podrán realizar impresiones desde <ph name="PRODUCT_NAME" />. Se desactivará la opción de impresión en el menú de tres puntos, las extensiones y las aplicaciones de JavaScript.</translation>
-<translation id="7671234734316758429">Esta política permite que los administradores especifiquen apps que funcionan como controladores predeterminados para las respectivas extensiones de archivo
-en <ph name="PRODUCT_OS_NAME" /> que los usuarios no pueden cambiar.
-
-Para todas las extensiones de archivo que no se especifiquen en la política, los usuarios pueden establecer sus propios controladores predeterminados con respecto al
-flujo de trabajo habitual.
-
-Especifica las apps de Chrome por ID, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />;
-apps web por la URL que se usa en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />;
-apps para Android por nombre de paquete, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />; apps web del sistema por nombre en minúsculas con guiones bajos, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />; tareas virtuales por su nombre designado precedido por <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />
-
-Ten en cuenta que las apps DEBEN declararse como controladores de archivos para las extensiones de archivo especificadas en el manifiesto para
-que se aplique ese elemento de la política (es decir, la política NO extiende las capacidades existentes de la app).
-
-Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar controladores predeterminados según la lógica interna.</translation>
 <translation id="7673194325208122247">Período (milisegundos)</translation>
 <translation id="7677220829878081413">
       Si se establece en ArcSession, esta política forzará el reinicio del dispositivo después de que el usuario salga de su cuenta en el caso de que se inicie Android.
@@ -9381,11 +9385,6 @@ Si inhabilitas la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el va
           Se quitó esta política en Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nombre del destino de <ph name="PRODUCT_NAME" /></translation>
-<translation id="797820628785995988">Si estableces esta política, todos los tipos de datos especificados se excluirán de la sincronización para <ph name="CHROME_SYNC_NAME" /> y de la sincronización de perfiles en roaming. Esta política puede ayudar a reducir el tamaño del perfil móvil o limitar los tipos de datos que se suben a los servidores de <ph name="CHROME_SYNC_NAME" />.
-
-      Los tipos de datos actuales para esta política son los siguientes: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "readingList", "savedTabGroups", "tabs" themes", "typedUrls", "wifiConfigurations". Estos nombres distinguen mayúsculas de minúsculas.
-
-      Nota: La actualización de políticas dinámicas solo es compatible con la versión 123 de <ph name="PRODUCT_NAME" /> y con versiones posteriores. Si inhabilitas "autofill" también se inhabilitará la opción "payments". "typedUrls" se refiere a todo el historial de navegación.</translation>
 <translation id="7982057585796399404">Si estableces la política, se especificará una lista de apps y extensiones que se instalan en segundo plano, sin la interacción del usuario, y que este no puede desinstalar ni desactivar. Se otorgan los permisos de manera implícita, incluidos los de las APIs de extensión enterprise.deviceAttributes y enterprise.platformKeys. (Estas 2 APIs no están disponibles para las apps y extensiones que no se instalan de manera automática).
 
 Si no estableces la política, no se instalará ninguna app ni extensión de manera automática y los usuarios podrán desinstalar cualquier app o extensión en <ph name="PRODUCT_NAME" />.
@@ -9548,6 +9547,7 @@ Advertencia: Se recomienda mantener habilitadas las actualizaciones automáticas
 <translation id="8089200718228084417">Habilita la impresión Privet obsoleta</translation>
 <translation id="8091982561085048989">Función experimental booleana que indica si se debe usar IPP Everywhere para configurar la impresora. Esta función experimental es compatible con <ph name="PRODUCT_OS_NAME" /> 76 y versiones posteriores.</translation>
 <translation id="8094095107731619070">Habilitar la autocorrección en el teclado físico cuando los usuarios escriben</translation>
+<translation id="8099833343914898016">Una lista predeterminada de combinaciones de teclas con la tecla del Selector nunca realizará una acción solo en pantalla completa.</translation>
 <translation id="8099880303030573137">Demora de inactividad con batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
 <translation id="8102854005031553638">El lector de PDF usa un renderizador AGG</translation>
@@ -10781,6 +10781,19 @@ Nota: Por el momento, solo se tendrá en cuenta la primera entrada. Las extensio
       Esta política solo afecta a los usuarios autenticados mediante SAML.
 
       El valor de la política debe especificarse en segundos.</translation>
+<translation id="9015526159640436408">Una URL a una imagen que se usará como insignia de la empresa para el perfil. La URL debe dirigir a una imagen.
+
+Esta insignia se mostrará en la barra de herramientas.
+
+Si estableces esta política a nivel del navegador, todos los perfiles tendrán este logotipo en la barra de herramientas.
+
+Si estableces esta política a nivel del perfil, solo ese perfil tendrá este logotipo.
+
+Si no estableces esta política, se mostrará un ícono de edificio predeterminado.
+
+Si se produce un error mientras intentas obtener y mostrar la imagen, aparecerá un ícono de edificio predeterminado.
+
+A diferencia de otras políticas, si estableces esta política a nivel del perfil tendrá prioridad sobre una política establecida a nivel del navegador.</translation>
 <translation id="9015578113567730893">Tasa de recopilación de telemetría del audio en milisegundos.</translation>
 <translation id="9015759770696099204">La configuración de F11/F12 está inhabilitada</translation>
 <translation id="9015952763003753868">Hacer que las coincidencias de <ph name="ACAM_HEADER_NAME" /> en la especificación de solicitud preliminar <ph name="CORS" /> sean compatibles</translation>

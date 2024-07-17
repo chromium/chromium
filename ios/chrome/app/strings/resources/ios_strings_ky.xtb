@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Киргизүүчү ачкыч</translation>
 <translation id="1035980983510608210">Бардык өтмөктөр жабылса, кадалган өтмөктөр да жабылат.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Аккаунттан чыгарыласыз жана серептөө дайындары өчүрүлөт</translation>
 <translation id="1044891598689252897">Сайттар кадимкидей иштейт</translation>
 <translation id="1049743911850919806">Жашыруун</translation>
 <translation id="1053651653201045802">Аккаунтуңуздан чыктыңыз. Аккаунтуңуздагы кыстармаларды, сырсөздөрдү жана башка нерселерди колдонуу үчүн кайра кириңиз.</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776"><ph name="USER_NAME" /> катары улантуу</translation>
 <translation id="1400642268715879018">Акыркы 4 аптада</translation>
 <translation id="1404330357948037222">Аккаунттан чыгып кеттиңиз</translation>
-<translation id="14066361343057390">Аккаунттан чыгарыласыз</translation>
 <translation id="1407135791313364759">Баарын ачуу</translation>
 <translation id="1408847409015257906">"Купуялык жана коопсуздукту" таптап коюңуз.</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
@@ -341,7 +339,6 @@
 <translation id="2712127207578915686">Файлды ачуу мүмкүн эмес</translation>
 <translation id="2718352093833049315">Wi-Fi'да гана</translation>
 <translation id="2738375676495545665">"Эмне жаңылык" параметрин жашыруу</translation>
-<translation id="2740910715135851329">Аккаунттан чыгарыласыз, өтмөктөр жабылып, серептөө дайындары өчүрүлөт</translation>
 <translation id="2747003861858887689">Мурунку талаа</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> каналына жазылдыңыз</translation>
 <translation id="2754492786623500387">Ушул түзмөктөгү аккаунттар</translation>
@@ -392,6 +389,7 @@
 <translation id="2952278131021475699">Lens аркылуу издөө</translation>
 <translation id="2958718410589002129">Сырсөздөр</translation>
 <translation id="2964349545761222050">Үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
+<translation id="2965328226365382335">Акыркы 15 мүнөт</translation>
 <translation id="2969979262385602596">Кире албай калдңз. Бир аздн кийн аракт кылп көрңз.</translation>
 <translation id="2975121486251958312">Жашыруун режим гана жеткиликтүү</translation>
 <translation id="2982481275546140226">Маалыматты өчүрүү</translation>
@@ -539,7 +537,6 @@
 <translation id="3738428049780661523"><ph name="DATE" /> түзүлгөн</translation>
 <translation id="374357899112510277">Жүктөлүп алынгандарды жашыруу</translation>
 <translation id="3745190878148784130">"Текстти чоңойтуп/кичирейтүү" дегенди жашыруу</translation>
-<translation id="3747231889390582072">Уюмуңуздун коопсуздугун коргоо үчүн сакталбаган маалымат бул түзмөктөн өчүрүлөт. Ал сырсөздөрдү, көрүлгөн вебсайттарды, cookie файлдарын жана башкаларды камтышы мүмкүн.</translation>
 <translation id="3762232513783804601">iPad үчүн түзүлгөн</translation>
 <translation id="3768725474733206671">Акыркы жабылган өтмөктү кайра ачуу</translation>
 <translation id="3771033907050503522">Жашыруун өтмөктөр</translation>
@@ -718,6 +715,7 @@
 <translation id="4659194143325814340">{count,plural, =1{Окуу тизмеңизде {count} бет бар}other{Окуу тизмеңизде {count} бет бар}}</translation>
 <translation id="4659667755519643272">Өтмөк которуштургучка кирүү</translation>
 <translation id="46614316059270592">Сырсөздү сактоо</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Компанияга чалыңыз</translation>
 <translation id="4682686630151240767">1. iPhone параметрлерин ачыңыз</translation>
 <translation id="4689564913179979534">Төлөм ыкмаларын башкаруу…</translation>
@@ -1519,7 +1517,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8522147671363140027">{count,plural, =1{{count} сырсөз жана башка нерселер ушул түзмөктө гана сакталат. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда ({email}) сактаңыз.}other{{count} сырсөз жана башка нерселер ушул түзмөктө гана сакталат. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда ({email}) сактаңыз.}}</translation>
 <translation id="8522813812888400223">Жүктөп алууну токтотуу</translation>
 <translation id="8524799873541103884"><ph name="FIRST_VISIBLE_TAB" /> аркылуу <ph name="NUMBER_OF_OPEN_TABS" /> ичинен <ph name="LAST_VISIBLE_TAB" /> <ph name="INCOGNITO" /> өтмөк</translation>
-<translation id="852576975834694248">Аккаунттан чыгарыласыз жана өтмөктөр жабылат</translation>
 <translation id="8528009254289981965">Башка колдонмолордун шилтемелерин Жашыруун режимде ачуу</translation>
 <translation id="8529767659511976195">Жаңы</translation>
 <translation id="8532105204136943229">Мөөнт аяктг жыл</translation>

@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">重启教程</translation>
 <translation id="2219735899272417925">需要重置设备</translation>
 <translation id="2221227930294879156">餐饮活动</translation>
+<translation id="2222604080869344662">登录 OneDrive 即可继续下载</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2225927550500503913">虚拟卡已开启</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />登录<ph name="END_LINK" /> Wi-Fi 网络</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">Google Chrome 正在尝试修改付款方式。</translation>
 <translation id="2400600116338235695">可以询问能否连接到串行端口</translation>
 <translation id="2404884497378469141">尝试重新复制文件</translation>
+<translation id="2412310121876768057">下次自动填充此信用卡信息吗？</translation>
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2414886740292270097">深色调</translation>
@@ -1160,7 +1162,6 @@
 <translation id="3209034400446768650">此网页可能会收取费用</translation>
 <translation id="3212581601480735796">您在 <ph name="HOSTNAME" /> 上的活动正被监控</translation>
 <translation id="3215092763954878852">无法使用 WebAuthn</translation>
-<translation id="3215311088819828484">结果已更新</translation>
 <translation id="3216313131063488104">蓝调</translation>
 <translation id="3218181027817787318">相对</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{必须立即更新}=2{必须在明天更新}other{必须在 # 天内更新}}</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3352881017886802007">体育游戏</translation>
 <translation id="3355823806454867987">更改代理服务器设置...</translation>
 <translation id="335809815767823">已导出</translation>
+<translation id="3359387651158939842">如果您保存信用卡信息以供 Google Pay 使用，那么在您日后购物时，系统会自动填充此信息</translation>
 <translation id="3359565626472459400">婚姻</translation>
 <translation id="3360103848165129075">付款处理程序工作表</translation>
 <translation id="3362968246557010467">此政策的值是系统从已弃用的 <ph name="OLD_POLICY" /> 政策中自动复制而来的。您应改用此政策。</translation>
@@ -2051,6 +2053,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奥运会</translation>
 <translation id="4898742041545089450">已取消屏蔽此主题，但根据您的浏览记录，此主题可能会变为活跃主题</translation>
+<translation id="4899379435492347481">保存此信用卡信息，以便在各种设备上使用 Google Pay 进行网上购物</translation>
 <translation id="4900217275619098670">第 9 卷</translation>
 <translation id="4901052769830245369">标签（半光）</translation>
 <translation id="4901162432287938633">卫生和洗漱用具</translation>
@@ -2680,7 +2683,6 @@
 <translation id="6116338172782435947">查看复制到剪贴板的文字和图片</translation>
 <translation id="6117833587752089929">相纸（磨光）</translation>
 <translation id="6118782133429281336">源列表为空。</translation>
-<translation id="6120950591512958208">结账时使用此折扣代码。</translation>
 <translation id="612178891608320683">纯素食</translation>
 <translation id="6122181661879998141">卡正面</translation>
 <translation id="6124058285696691147">下载该附件</translation>
@@ -2713,6 +2715,7 @@
 <translation id="6180316780098470077">重试间隔</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome 会自动限制第三方 Cookie</translation>
+<translation id="6194139058731919563">在将信用卡详细信息保存到 Google 账号并用于在线付款时，系统会加密处理这些信息</translation>
 <translation id="6194209731893739467">您跟踪的所有商品都会显示在此处</translation>
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195371403461054755">地质学</translation>
@@ -3614,6 +3617,7 @@
 <translation id="7831993212387676366">什么是购物清单？</translation>
 <translation id="7832078172950550575">您可以使用日常用语搜索浏览记录，例如使用“我附近的披萨店”或“市中心适合全家游玩的公园”等短语。您的搜索内容、最佳匹配结果和相应网页内容将发送给 Google，并且可能会由人工审核员查看，以改进此功能。<ph name="BEGIN_LINK" />管理历史记录搜索设置<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">已开始截屏/录屏</translation>
+<translation id="7840504603489703295">系统会应用金融机构设置的限额。</translation>
 <translation id="784137052867620416">购物数据洞见</translation>
 <translation id="784404208867107517">已分组的历史记录</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{无}=1{1 个应用（<ph name="EXAMPLE_APP_1" />）}=2{2 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
@@ -3812,6 +3816,7 @@
 <translation id="8241712895048303527">在此网站上拦截</translation>
 <translation id="8242426110754782860">继续</translation>
 <translation id="8246482227229072868">戒指</translation>
+<translation id="8248406213705193919">安全保存信用卡信息吗？</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="824968735947741546">正在将（自动检测到的）<ph name="SOURCE" />翻译成<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">此地址目前已保存到该设备上。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
@@ -4296,6 +4301,7 @@
 <translation id="9169664750068251925">在此网站上始终阻止</translation>
 <translation id="9169931577761441333">将“<ph name="APP_NAME" />”添加到主屏幕</translation>
 <translation id="9170848237812810038">撤消(&amp;U)</translation>
+<translation id="9170906125144697215">使用 Pix 付款，无需切换应用</translation>
 <translation id="9171296965991013597">要退出应用吗？</translation>
 <translation id="9173282814238175921">单一文档/新工作表</translation>
 <translation id="9173995187295789444">正在扫描蓝牙设备…</translation>
@@ -4317,6 +4323,7 @@
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="920643408853370361">旅行保险</translation>
 <translation id="9207861905230894330">无法添加文章。</translation>
+<translation id="9209339767782560829">使用您的登录证书时出现问题。</translation>
 <translation id="9210825002219699214">航空旅行</translation>
 <translation id="9211461151375991073">输入 @ 搜索 <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">自定义外观</translation>

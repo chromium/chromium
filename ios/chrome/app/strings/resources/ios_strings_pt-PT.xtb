@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1035980983510608210">Se fechar todos os separadores, os separadores fixos também são fechados.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">A sua sessão vai ser terminada e os dados de navegação vão ser eliminados</translation>
 <translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
 <translation id="1049743911850919806">Navegação anónima</translation>
 <translation id="1053651653201045802">Sessão terminada. Volte a iniciar sessão para usar os marcadores, as palavras-passe e muito mais na sua conta.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Palavras-passe</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Dados de navegação</translation>
 <translation id="1400642268715879018">Últimas 4 semanas</translation>
 <translation id="1404330357948037222">Não tem sessão iniciada</translation>
-<translation id="14066361343057390">A sessão vai ser terminada</translation>
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1408847409015257906">Toque em "Privacidade e segurança".</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -341,7 +340,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2712127207578915686">Não é pos. abrir o fich.</translation>
 <translation id="2718352093833049315">Apenas em Wi-Fi</translation>
 <translation id="2738375676495545665">Ocultar Novidades</translation>
-<translation id="2740910715135851329">A sua sessão vai ser terminada, os separadores vão ser fechados e os dados de navegação vão ser eliminados</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">A seguir o canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
@@ -392,6 +390,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2952278131021475699">Pesquisa com a câmara do Lens</translation>
 <translation id="2958718410589002129">Palavras-passe</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
+<translation id="2965328226365382335">Últimos 15 Minutos</translation>
 <translation id="2969979262385602596">Falha ao iniciar sessão. Tente nov. mais tarde.</translation>
 <translation id="2975121486251958312">Só está disponível o Modo de navegação anónima</translation>
 <translation id="2982481275546140226">Limpar dados</translation>
@@ -539,7 +538,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3738428049780661523">Data de criação: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Transferências</translation>
 <translation id="3745190878148784130">Ocultar Aplicar zoom no texto</translation>
-<translation id="3747231889390582072">Para proteger a segurança da sua organização, os dados não guardados vão ser eliminados deste dispositivo. Estes dados podem incluir palavras-passe, o histórico de navegação, cookies e muito mais.</translation>
 <translation id="3762232513783804601">Concebido para o iPad</translation>
 <translation id="3768725474733206671">Voltar a abrir o último separador fechado</translation>
 <translation id="3771033907050503522">Sep. nav. anónima</translation>
@@ -718,6 +716,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4659194143325814340">{count,plural, =1{{count} página na sua Lista de leitura}other{{count} páginas na sua Lista de leitura}}</translation>
 <translation id="4659667755519643272">Aceder ao Comutador de separadores</translation>
 <translation id="46614316059270592">Guardar palavra-passe</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Iniciar uma chamada telefónica para contactar uma empresa</translation>
 <translation id="4682686630151240767">1. Abra as Definições do iPhone</translation>
 <translation id="4689564913179979534">Gerir métodos de pagamento</translation>
@@ -1519,7 +1518,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8522147671363140027">{count,plural, =1{{count} palavra-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google, {email}.}other{{count} palavras-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google, {email}.}}</translation>
 <translation id="8522813812888400223">Cancelar transferência</translation>
 <translation id="8524799873541103884">Separadores <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">A sua sessão vai ser terminada e os separadores vão ser fechados</translation>
 <translation id="8528009254289981965">Abra links de outras apps na Navegação anónima</translation>
 <translation id="8529767659511976195">Novo</translation>
 <translation id="8532105204136943229">Ano de validade</translation>
@@ -1600,6 +1598,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8876882697946675716">Mantenha os seus dispositivos sincronizados</translation>
 <translation id="8879604564928138696">Toque duas vezes para experimentar</translation>
 <translation id="8881801611828450202">Pesquisar esta imagem no <ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">Fechar todos os separadores e grupos</translation>
 <translation id="8898822736010347272">Envia URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas para a Google para ajudar a detetar novas ameaças e a proteger todos os utilizadores na Web.</translation>
 <translation id="890565330728586731">Anterior</translation>
 <translation id="8909135823018751308">Partilhar…</translation>

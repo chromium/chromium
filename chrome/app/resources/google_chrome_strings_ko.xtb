@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">Chrome에 로그인합니다. 계정에 한 번만 로그인하려면 <ph name="GUEST_LINK_BEGIN" />기기를 게스트로 사용<ph name="GUEST_LINK_END" />하면 됩니다.</translation>
 <translation id="1152920704813762236">ChromeOS 정보</translation>
 <translation id="1154147086299354128">Chrome에서 열기(&amp;O)</translation>
+<translation id="1184145431117212167">지원되지 않는 Windows 버전으로 인해 설치할 수 없습니다.</translation>
 <translation id="1194807384646768652">일반적으로 다운로드하지 않는 파일 형식이며 위험할 가능성이 있기 때문에 Chrome에서 이 다운로드를 차단했습니다.</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
 <translation id="1229096353876452996">Chrome을 기본 브라우저로 설정하는 것이 좋습니다.</translation>
@@ -239,6 +240,7 @@
 <translation id="4191857738314598978">{0,plural, =1{1일 이내로 Chrome을 다시 시작해 주세요}other{#일 이내로 Chrome을 다시 시작해 주세요}}</translation>
 <translation id="4205939740494406371">Chrome에서 비밀번호를 확인할 수 없습니다. 24시간 후에 다시 시도해 보거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="4222932583846282852">취소 중...</translation>
+<translation id="4224210481850767180">설치가 취소되었습니다.</translation>
 <translation id="4242034826641750751">Chrome에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4251615635259297716">Chrome 데이터를 이 계정에 연결하시겠습니까?</translation>

@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Fons</translation>
 <translation id="3027578600144895987">Tanca la càmera</translation>
 <translation id="3031560714565892478">El dispositiu és una càmera de vídeo.</translation>
-<translation id="3051968340259309715">Això permet que els serveis del sistema utilitzin la precisió de la ubicació per determinar la teva ubicació. Per estimar la ubicació del dispositiu, la precisió de la ubicació utilitza informació de senyals sense fil, com ara punts d'accés Wi‐Fi, torres de xarxes mòbils i GPS, així com dades dels sensors del dispositiu, com ara l'acceleròmetre i el giroscopi. Pots desactivar la ubicació a Configuració &gt; Privadesa i seguretat &gt; Controls de privadesa &gt; Accés a la ubicació. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punt final</translation>
 <translation id="3060579846059757016">Esquemes</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
 <translation id="7344788170842919262">terrossos</translation>
 <translation id="7346768383111016081">Col·loca el control sobre l'acció del joc per jugar amb el teclat</translation>
+<translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7353413232959255829">Resultat de cerca <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Prem Retorn per navegar fins a la drecera.</translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
 <translation id="73631062356239394">Comparteix les dades de diagnòstic</translation>

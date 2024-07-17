@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">ਬੈਕਗ੍ਰਾਊਂਡ</translation>
 <translation id="3027578600144895987">ਕੈਮਰਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="3031560714565892478">ਡੀਵਾਈਸ ਇੱਕ ਵੀਡੀਓ ਕੈਮਰਾ ਹੈ।</translation>
-<translation id="3051968340259309715">ਇਸ ਨਾਲ ਸਿਸਟਮ ਸੇਵਾਵਾਂ ਨੂੰ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਨਿਰਧਾਰਿਤ ਕਰਨ ਲਈ ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਮਿਲਦੀ ਹੈ। ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਸੈਟਿੰਗ ਵਾਇਰਲੈੱਸ ਸਿਗਨਲਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵਰਤਦੀ ਹੈ, ਜਿਵੇਂ ਕਿ ਵਾਈ-ਫਾਈ ਪਹੁੰਚ ਬਿੰਦੂ, ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਟਾਵਰ, GPS ਦੇ ਨਾਲ-ਨਾਲ ਡੀਵਾਈਸ ਸੈਂਸਰ ਡਾਟਾ, ਜਿਵੇਂ ਕਿ ਐਕਸੈੱਲਰੋਮੀਟਰ ਅਤੇ ਜਾਇਰੋਸਕੋਪ, ਤਾਂ ਜੋ ਡੀਵਾਈਸ ਟਿਕਾਣੇ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਇਆ ਜਾ ਸਕੇ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ &gt; ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ &gt; ਟਿਕਾਣਾ ਪਹੁੰਚ ਵਿੱਚ ਜਾ ਕੇ ਟਿਕਾਣੇ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ਅਖੀਰਲਾ ਬਿੰਦੂ</translation>
 <translation id="3060579846059757016">ਖਾਕੇ</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">ਨੈੱਟਵਰਕ ਡੀਵਾਈਸ</translation>
 <translation id="7344788170842919262">ਅਰਦੀ</translation>
 <translation id="7346768383111016081">ਆਪਣੇ ਕੀ-ਬੋਰਡ ਨਾਲ ਗੇਮ ਖੇਡਣ ਲਈ ਗੇਮ ਕਾਰਵਾਈ 'ਤੇ ਕੰਟਰੋਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="7352651011704765696">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> ਵਿੱਚੋਂ <ph name="LIST_POSITION" /> ਖੋਜ ਨਤੀਜਾ: <ph name="SEARCH_RESULT_TEXT" />। ਸ਼ਾਰਟਕੱਟ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="7359657277149375382">ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ</translation>
 <translation id="73631062356239394">ਤਸ਼ਖੀਸੀ ਡਾਟਾ ਸਾਂਝਾ ਕਰੋ</translation>

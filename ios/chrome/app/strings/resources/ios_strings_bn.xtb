@@ -8,7 +8,6 @@
 <translation id="102916930470544692">পাসকী</translation>
 <translation id="1035980983510608210">সমস্ত ট্যাব বন্ধ করে দিলে পিন করা ট্যাবও বন্ধ হয়ে যাবে।</translation>
 <translation id="1036017604683756002">ইউপিএস</translation>
-<translation id="1043592663436934089">আপনি সাইন-আউট হয়ে যাবেন এবং ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
 <translation id="1044891598689252897">সাইট স্বাভাবিকভাবেই কাজ করবে</translation>
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="1053651653201045802">সাইন-আউট হয়ে গেছেন। আপনার অ্যাকাউন্টে বুকমার্ক, পাসওয়ার্ড এবং আরও অনেক কিছু ব্যবহার করতে আবার সাইন-ইন করুন।</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">পাসওয়ার্ড</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> হিসেবে চালিয়ে যান</translation>
+<translation id="1388866984373351434">ব্রাউজিং ডেটা</translation>
 <translation id="1400642268715879018">গত ৪ সপ্তাহ</translation>
 <translation id="1404330357948037222">আপনি সাইন-আউট করেছেন</translation>
-<translation id="14066361343057390">আপনি সাইন-আউট হয়ে যাবেন</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1408847409015257906">"গোপনীয়তা ও সুরক্ষা" বিকল্পে ট্যাপ করুন।</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">ফাইল খুলতে অক্ষম</translation>
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
 <translation id="2738375676495545665">'নতুন কী আছে' লুকান</translation>
-<translation id="2740910715135851329">আপনি সাইন-আউট হয়ে যাবেন, ট্যাব বন্ধ হয়ে যাবে, ব্রাউজ করা ডেটা মুছে দেওয়া হয়েছে</translation>
 <translation id="2747003861858887689">পূর্ববর্তী ফিল্ড</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ফলো করা হচ্ছে</translation>
 <translation id="2754492786623500387">এই ডিভাইসে থাকা অ্যাকাউন্ট</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">Lens-এর ক্যামেরার মাধ্যমে সার্চ করার সুবিধা</translation>
 <translation id="2958718410589002129">পাসওয়ার্ড</translation>
 <translation id="2964349545761222050">থার্ড-পার্টি কুকি ব্লক করুন</translation>
+<translation id="2965328226365382335">শেষ ১৫ মিনিট ধরে</translation>
 <translation id="2969979262385602596">সাইন-ইন করা যায়নি৷ অনুগ্রহ করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="2975121486251958312">শুধুমাত্র 'ছদ্মবেশী মোড' উপলভ্য রয়েছে</translation>
 <translation id="2982481275546140226">ডেটা মুছুন</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523"><ph name="DATE" />-এ তৈরি করা হয়েছে</translation>
 <translation id="374357899112510277">ডাউনলোড লুকান</translation>
 <translation id="3745190878148784130">'টেক্সট বড় করুন' বিকল্পটি লুকান</translation>
-<translation id="3747231889390582072">আপনার সংস্থার নিরাপত্তা সুরক্ষিত রাখতে, এই ডিভাইস থেকে সেভ করা হয়নি এমন ডেটা মুছে দেওয়া হবে। এটির মধ্যে পাসওয়ার্ড, ব্রাউজিং ইতিহাস, কুকি ও আরও অনেক কিছু অন্তর্ভুক্ত।</translation>
 <translation id="3762232513783804601">আপনার iPad-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="3768725474733206671">শেষে বন্ধ হওয়া ট্যাবটি আবার খুলুন</translation>
 <translation id="3771033907050503522">ছদ্মবেশী ট্যাবগুলি</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{আপনার পড়ার তালিকায় {count}টি পেজ}one{আপনার পড়ার তালিকায় {count}টি পেজ}other{আপনার পড়ার তালিকায় {count}টি পেজ}}</translation>
 <translation id="4659667755519643272">ট্যাব পরিবর্তনকারী আনুন</translation>
 <translation id="46614316059270592">পাসওয়ার্ড সেভ করুন</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">ফোন কল শুরু করে ব্যবসার সাথে কানেক্ট করুন</translation>
 <translation id="4682686630151240767">১. iPhone সেটিংস খুলুন</translation>
 <translation id="4689564913179979534">পেমেন্ট পদ্ধতিগুলি ম্যানেজ করুন...</translation>
@@ -1520,7 +1519,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count}টি পাসওয়ার্ড ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসেও সেগুলি ব্যবহার করতে হলে, Google অ্যাকাউন্ট {email}-এ সেভ করুন।}one{{count}টি পাসওয়ার্ড ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসেও সেগুলি ব্যবহার করতে হলে, Google অ্যাকাউন্ট {email}-এ সেভ করুন।}other{{count}টি পাসওয়ার্ড ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। আপনার অন্যান্য ডিভাইসেও সেগুলি ব্যবহার করতে হলে, Google অ্যাকাউন্ট {email}-এ সেভ করুন।}}</translation>
 <translation id="8522813812888400223">ডাউনলোড বাতিল করুন</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" />টির মধ্যে <ph name="FIRST_VISIBLE_TAB" /> থেকে <ph name="LAST_VISIBLE_TAB" /> পর্যন্ত <ph name="INCOGNITO" /> ট্যাব</translation>
-<translation id="852576975834694248">আপনি সাইন-আউট হয়ে যাবেন এবং ট্যাব বন্ধ হয়ে যাবে</translation>
 <translation id="8528009254289981965">'ছদ্মবেশী' ট্যাবে অন্যান্য অ্যাপ থেকে লিঙ্ক খুলুন</translation>
 <translation id="8529767659511976195">নতুন</translation>
 <translation id="8532105204136943229">মেয়াদপূর্তির বছর</translation>

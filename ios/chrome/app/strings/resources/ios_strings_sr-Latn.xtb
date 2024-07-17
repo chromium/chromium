@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Pristupni ključ</translation>
 <translation id="1035980983510608210">Zatvaranjem svih kartica zatvarate i zakačene kartice.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Odjavićete se i podaci pregledanja će biti izbrisani</translation>
 <translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
 <translation id="1049743911850919806">Bez arhiviranja</translation>
 <translation id="1053651653201045802">Odjavljeni ste. Ponovo se prijavite da biste koristili obeleživače, lozinke i drugi sadržaj na nalogu.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Lozinke</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="138618066238211776">Nastavi kao <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Podaci pregledanja</translation>
 <translation id="1400642268715879018">Poslednje 4 nedelje</translation>
 <translation id="1404330357948037222">Odjavljeni ste</translation>
-<translation id="14066361343057390">Bićete odjavljeni</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="1408847409015257906">Dodirnite Privatnost i bezbednost.</translation>
 <translation id="1430915738399379752">Štampaj</translation>
@@ -341,7 +340,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2712127207578915686">Nije moguće otvoriti datoteku</translation>
 <translation id="2718352093833049315">Samo na WiFi-ju</translation>
 <translation id="2738375676495545665">Sakrij opciju Šta je novo</translation>
-<translation id="2740910715135851329">Bićete odjavljeni, kartice će biti zatvorene, a podaci pregledanja će biti izbrisani</translation>
 <translation id="2747003861858887689">Prethodno polje</translation>
 <translation id="2749231692441336879">Pratite kanal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Nalozi na ovom uređaju</translation>
@@ -392,6 +390,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2952278131021475699">Pretraga pomoću kamere Objektiva</translation>
 <translation id="2958718410589002129">Lozinke</translation>
 <translation id="2964349545761222050">Blokiraj kolačiće treće strane</translation>
+<translation id="2965328226365382335">Prethodnih 15 minuta</translation>
 <translation id="2969979262385602596">Prijavljivanje nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="2975121486251958312">Dostupan je samo režim bez arhiviranja</translation>
 <translation id="2982481275546140226">Obriši podatke</translation>
@@ -539,7 +538,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3738428049780661523">Napravljeno <ph name="DATE" /></translation>
 <translation id="374357899112510277">Sakrij preuzimanja</translation>
 <translation id="3745190878148784130">Sakrij opciju Zumiraj tekst</translation>
-<translation id="3747231889390582072">Da bi se zaštitila bezbednost organizacije, nesačuvani podaci će biti izbrisani sa ovog uređaja. To može da obuhvata lozinke, istoriju pregledanja, kolačiće i drugo.</translation>
 <translation id="3762232513783804601">Napravljeno za iPad</translation>
 <translation id="3768725474733206671">Ponovo otvori poslednju zatvorenu karticu</translation>
 <translation id="3771033907050503522">Kartice Bez arhiviranja</translation>
@@ -718,6 +716,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4659194143325814340">{count,plural, =1{{count} stranica na Listi za čitanje}one{{count} stranica na listi za čitanje}few{{count} stranice na listi za čitanje}other{{count} stranica na listi za čitanje}}</translation>
 <translation id="4659667755519643272">Uđi u prebacivač kartica</translation>
 <translation id="46614316059270592">Sačuvaj lozinku</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Povežite se sa preduzećem pokretanjem telefonskog poziva</translation>
 <translation id="4682686630151240767">1. Otvorite podešavanja iPhone-a</translation>
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
@@ -1519,7 +1518,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8522147671363140027">{count,plural, =1{{count} lozinka i druge stavke se čuvaju samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}one{{count} lozinka i druge stavke se čuvaju samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}few{{count} lozinke i druge stavke se čuvaju samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}other{{count} lozinki i druge stavke se čuvaju samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu, {email}.}}</translation>
 <translation id="8522813812888400223">Otkažite preuzimanje</translation>
 <translation id="8524799873541103884">Kartice <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> do <ph name="LAST_VISIBLE_TAB" /> od <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Odjavićete se i kartice će biti zatvorene</translation>
 <translation id="8528009254289981965">Otvarajte linkove iz drugih aplikacija u režimu bez arhiviranja</translation>
 <translation id="8529767659511976195">Novo</translation>
 <translation id="8532105204136943229">Godina isteka</translation>

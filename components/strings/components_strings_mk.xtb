@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">Рестартирај го упатството</translation>
 <translation id="2219735899272417925">Треба да се ресетира уредот</translation>
 <translation id="2221227930294879156">Настани за храна и пијалаци</translation>
+<translation id="2222604080869344662">Најавете се на OneDrive за да продолжите со преземање</translation>
 <translation id="2224337661447660594">Нема интернет</translation>
 <translation id="2225927550500503913">Вклучена е виртуелна картичка</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Најавување<ph name="END_LINK" /> на Wi-Fi мрежата.</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">Google Chrome се обидува да ги измени начините на плаќање.</translation>
 <translation id="2400600116338235695">Може да прашува за да се поврзе со сериски порти</translation>
 <translation id="2404884497378469141">Обидете се да ги копирате датотеките повторно</translation>
+<translation id="2412310121876768057">Да се пополни картичката автоматски следниот пат?</translation>
 <translation id="2413155254802890957">Старата</translation>
 <translation id="2413528052993050574">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е повлечен. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="2414886740292270097">Темна</translation>
@@ -1162,7 +1164,6 @@
 <translation id="3209034400446768650">Страницата може да наплаќа</translation>
 <translation id="3212581601480735796">Вашата активност на <ph name="HOSTNAME" /> се набљудува</translation>
 <translation id="3215092763954878852">Не може да се користи WebAuthn</translation>
-<translation id="3215311088819828484">Резултатот е ажуриран</translation>
 <translation id="3216313131063488104">Сино</translation>
 <translation id="3218181027817787318">Релативна</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Треба да се ажурира сега}=2{Треба да се ажурира до утре}one{Треба да се ажурира во рок од # ден}other{Треба да се ажурира во рок од # дена}}</translation>
@@ -1241,6 +1242,7 @@
 <translation id="3352881017886802007">Спортски игри</translation>
 <translation id="3355823806454867987">Промени прокси-поставки...</translation>
 <translation id="335809815767823">Извезено</translation>
+<translation id="3359387651158939842">Автоматско пополнување на вашата картичка за идни купувања кога ќе ја зачувате за користење со Google Pay</translation>
 <translation id="3359565626472459400">Брак</translation>
 <translation id="3360103848165129075">Лист на ракувачот со плаќања</translation>
 <translation id="3362968246557010467">Правилово беше автоматски копирано од неподдржаното правило <ph name="OLD_POLICY" />. Наместо него, треба да го користите ова правило.</translation>
@@ -2055,6 +2057,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпијада</translation>
 <translation id="4898742041545089450">Темава е одблокирана и може да стане активна зависно од вашата историја на прелистувањето</translation>
+<translation id="4899379435492347481">Зачувајте ја картичкава за да ја користите онлајн со Google Pay за купувања на вашите уреди</translation>
 <translation id="4900217275619098670">Деветта ролна</translation>
 <translation id="4901052769830245369">Етикети (полусјајни)</translation>
 <translation id="4901162432287938633">Хигиена и прибор за лична хигиена</translation>
@@ -2684,7 +2687,6 @@
 <translation id="6116338172782435947">гледа текст и слики копирани на привремената меморија</translation>
 <translation id="6117833587752089929">Фотографија (сатен)</translation>
 <translation id="6118782133429281336">Списокот со потекло е празен.</translation>
-<translation id="6120950591512958208">Користете го кодов при плаќање.</translation>
 <translation id="612178891608320683">Веганска кујна</translation>
 <translation id="6122181661879998141">предната страна од картичката</translation>
 <translation id="6124058285696691147">Преземете го прилогот</translation>
@@ -2718,6 +2720,7 @@
 <translation id="6180316780098470077">Обиди се повторно со интервалот</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome автоматски ги ограничува колачињата од трети страни</translation>
+<translation id="6194139058731919563">Деталите за вашата картичка се шифрираат при зачувувањето во сметката на Google и се користат за плаќање онлајн</translation>
 <translation id="6194209731893739467">Видете ги сите ваши следени производи тука</translation>
 <translation id="6195163219142236913">Колачињата од трети страни се ограничени</translation>
 <translation id="6195371403461054755">Геологија</translation>
@@ -3619,6 +3622,7 @@
 <translation id="7831993212387676366">Што е тоа „Список за купување“?</translation>
 <translation id="7832078172950550575">Користејќи секојдневен јазик, може да ја пребарувате вашата историја на прелистувањето со фрази како „места за пица во моја близина“ или „паркови во центарот на градот соодветни за семејства“. За да се подобри функцијава, вашите пребарувања, најдобрите совпаѓања и содржините на нивните страници се испраќаат до Google, а може да ги гледаат и прегледувачи. <ph name="BEGIN_LINK" />Управувајте со поставката за пребарување на историјата<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Започна снимање на екранот</translation>
+<translation id="7840504603489703295">Важат ограничувањата од вашата финансиска институција.</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="784404208867107517">Групирана историја</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3817,6 +3821,7 @@
 <translation id="8241712895048303527">Блокирај ги на сајтов</translation>
 <translation id="8242426110754782860">Продолжи</translation>
 <translation id="8246482227229072868">Прстени</translation>
+<translation id="8248406213705193919">Да се зачува картичката безбедно?</translation>
 <translation id="8249296373107784235">Прекини</translation>
 <translation id="824968735947741546">Се преведува од <ph name="SOURCE" /> (автоматски откриен) на <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Во моментов, адресава е зачувана на овој уред. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
@@ -4301,6 +4306,7 @@
 <translation id="9169664750068251925">Секогаш блокирај на оваа локација</translation>
 <translation id="9169931577761441333">Додајте ја <ph name="APP_NAME" /> на почетниот екран</translation>
 <translation id="9170848237812810038">&amp;Врати</translation>
+<translation id="9170906125144697215">Плаќајте со Pix без да менувате апликации</translation>
 <translation id="9171296965991013597">Дали да се излезе од апликацијата?</translation>
 <translation id="9173282814238175921">Еден документ/нов лист</translation>
 <translation id="9173995187295789444">Скенира за уреди со Bluetooth…</translation>
@@ -4322,6 +4328,7 @@
 <translation id="9205078245616868884">Вашите податоци се шифрирани со лозинката за синхронизирање. Внесете ја за да го започнете синхронизирањето.</translation>
 <translation id="920643408853370361">Патничко осигурување</translation>
 <translation id="9207861905230894330">Не успеа да се додаде напис.</translation>
+<translation id="9209339767782560829">Се јави проблем при користењето на сертификатот за најавување.</translation>
 <translation id="9210825002219699214">Патување со авион</translation>
 <translation id="9211461151375991073">Напишете @ за да пребарувате на <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Приспособете го изгледот</translation>

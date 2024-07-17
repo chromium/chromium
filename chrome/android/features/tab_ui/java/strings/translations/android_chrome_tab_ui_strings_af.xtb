@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Oranje</translation>
 <translation id="125153950246128346">Tik om nog 'n oortjie te sien</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" />-oortjiegroepopsies</translation>
-<translation id="1322824555808364080">Nooi mense</translation>
 <translation id="1419023007528516122">Dit sal die groep permanent van jou toestel af uitvee</translation>
 <translation id="1486715732399361704">Jy kan al jou oortjiegroepe hier kry</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> minuut gelede geskep}other{<ph name="NUM_MINS_MANY" /> minute gelede geskep}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Jy sal jou oortjiegroepe hier kry</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ongroepeer <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Ongroepeer <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
+<translation id="6527303717912515753">Deel</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Ná 1 dag}other{Ná <ph name="DAY_COUNT_MANY" /> dae}}</translation>
 <translation id="6549021453810473782">Bekyk winkelinligting</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

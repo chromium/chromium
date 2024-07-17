@@ -1162,7 +1162,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3209034400446768650">Az oldal díjat számíthat fel</translation>
 <translation id="3212581601480735796">Figyelik a(z) <ph name="HOSTNAME" /> webhelyen végzett tevékenységeit</translation>
 <translation id="3215092763954878852">Hiba történt a WebAuthn használata során</translation>
-<translation id="3215311088819828484">Eredmény frissítve</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatív</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Frissítés szükséges most}=2{Holnapig frissítés szükséges}other{# napon belül frissítés szükséges}}</translation>
@@ -2686,7 +2685,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6116338172782435947">Megtekinteni a vágólapra másolt szövegeket és képeket</translation>
 <translation id="6117833587752089929">Fotó (szatén)</translation>
 <translation id="6118782133429281336">Az eredetlista üres.</translation>
-<translation id="6120950591512958208">Használja ezt a kódot a fizetésnél.</translation>
 <translation id="612178891608320683">Vegán konyha</translation>
 <translation id="6122181661879998141">a kártya elején</translation>
 <translation id="6124058285696691147">A melléklet letöltése</translation>

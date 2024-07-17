@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1035980983510608210">La fermeture de tous les onglets fermera également les onglets épinglés.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Vous serez déconnecté, et les données de navigation seront supprimées</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1053651653201045802">Déconnecté. Reconnectez-vous pour utiliser les favoris, les mots de passe et plus dans votre compte.</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776">Continuer en tant que <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 dernières semaines</translation>
 <translation id="1404330357948037222">Vous êtes déconnecté</translation>
-<translation id="14066361343057390">Vous serez déconnecté</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408847409015257906">Touchez « Confidentialité et sécurité ».</translation>
 <translation id="1430915738399379752">Imprimer</translation>
@@ -341,7 +339,6 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2712127207578915686">Imposs. d'ouvrir fichier</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2738375676495545665">Masquer les nouveautés</translation>
-<translation id="2740910715135851329">Vous serez déconnecté, les onglets seront fermés et les données de navigation seront supprimées</translation>
 <translation id="2747003861858887689">Champ précédent</translation>
 <translation id="2749231692441336879">Vous suivez <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Comptes sur cet appareil</translation>
@@ -392,6 +389,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2952278131021475699">Recherche avec Lentille Google au moyen de l'appareil photo</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
 <translation id="2964349545761222050">Bloquer les témoins tiers</translation>
+<translation id="2965328226365382335">15 dernières minutes</translation>
 <translation id="2969979262385602596">Échec de connexion. Veuillez réessayer plus tard.</translation>
 <translation id="2975121486251958312">Seul le mode de navigation privée est proposé</translation>
 <translation id="2982481275546140226">Effacer les données</translation>
@@ -539,7 +537,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3738428049780661523">Date de création : <ph name="DATE" /></translation>
 <translation id="374357899112510277">Masquer les téléchargements</translation>
 <translation id="3745190878148784130">Masquer Zoomer sur le texte</translation>
-<translation id="3747231889390582072">Pour protéger la sécurité de votre organisation, les données non enregistrées seront supprimées de cet appareil. Cela peut inclure les mots de passe, l'historique de navigation, les témoins et plus encore.</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
 <translation id="3768725474733206671">Rouvrir le dernier onglet fermé</translation>
 <translation id="3771033907050503522">Onglets nav. priv.</translation>
@@ -718,6 +715,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4659194143325814340">{count,plural, =1{{count} page de votre liste de lecture}one{{count} page de votre liste de lecture}other{{count} pages de votre liste de lecture}}</translation>
 <translation id="4659667755519643272">Accéder au gestionnaire d’onglets</translation>
 <translation id="46614316059270592">Enregistrer le mot de passe</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Communiquez avec une entreprise en passant un appel téléphonique</translation>
 <translation id="4682686630151240767">1. Ouvrez Réglages de l'iPhone</translation>
 <translation id="4689564913179979534">Gérer vos modes de paiement…</translation>
@@ -1326,6 +1324,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7609559547731036746">Favoris</translation>
 <translation id="7638584964844754484">Mot de passe multiterme incorrect</translation>
 <translation id="7640669552036055091">Onglets d'Android</translation>
+<translation id="7643790043444820023">Personnaliser la page d'accueil</translation>
 <translation id="7646263789464975852">Menu → Paramètres → Vérification de sécurité</translation>
 <translation id="7646772052135772216">La synchronisation des mots de passe ne fonctionne pas</translation>
 <translation id="764827086632467055">Toucher Navigateur par défaut</translation>
@@ -1518,7 +1517,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8522147671363140027">{count,plural, =1{{count} mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}}one{{count} mot de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}other{{count} mots de passe et d'autres éléments sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}}</translation>
 <translation id="8522813812888400223">Annuler le téléchargement</translation>
 <translation id="8524799873541103884">Onglets <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> à <ph name="LAST_VISIBLE_TAB" /> sur <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Vous serez déconnecté, et les onglets seront fermés</translation>
 <translation id="8528009254289981965">Ouvrir des liens d'autres applications en navigation privée</translation>
 <translation id="8529767659511976195">Nouveau</translation>
 <translation id="8532105204136943229">Année d'expir.</translation>

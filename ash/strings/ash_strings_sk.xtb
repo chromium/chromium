@@ -521,6 +521,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2970920913501714344">Inštalácia aplikácií, rozšírení a motívov</translation>
 <translation id="2977598380246111477">Ďalšie číslo</translation>
 <translation id="2985148236010982088">Zobraziť všetky aplikácie</translation>
+<translation id="2992272421330787632">Skryť všetky návrhy médií</translation>
 <translation id="2992327365391326550">Tlačidlo mikrofónu zariadenia je vypnuté.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3001391739687111021">Upraviť veľkosť obrazovky</translation>
@@ -591,6 +592,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="3255483164551725916">Čo dokážeš?</translation>
 <translation id="3256109297135787951">Odstránenie zvýraznenia položky na poličke</translation>
 <translation id="3260969790895726815">Reč sa spracúva miestne a diktovanie funguje offline. Niektoré hlasové príkazy však nefungujú.</translation>
+<translation id="3264031581203585083">Skryť všetky návrhy Disku Google</translation>
 <translation id="3265032511221679826">Chcete zapnúť prístup k presnej polohe?</translation>
 <translation id="3269597722229482060">Kliknúť pravým tlačidlom</translation>
 <translation id="3274634049061007184">Zobrazujte si aplikácie z telefónu</translation>
@@ -742,6 +744,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3738664582935948253">V nahrávkach obrazovky teraz môžete zobrazovať kliknutia a klávesové skratky</translation>
 <translation id="3742055079367172538">Vytvorila sa snímka obrazovky</translation>
 <translation id="3743775386021959186">Zameranie je zapnuté, zostávajúci čas je <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Skryť návrh týkajúci sa počasia</translation>
 <translation id="3756485814916578707">Prenáša sa obrazovka</translation>
 <translation id="3765841382945324995">Skratka <ph name="SIX_PACK_KEY_NAME" /> bola aktualizovaná z kombinácie <ph name="OLD_SHORTCUT" /> na kombináciu <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Upravené dnes</translation>
@@ -781,6 +784,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Žiadne nastavené mobilné siete</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, načítavajú sa udalosti.</translation>
+<translation id="3927049937406914450">Počasie nie je k dispozícii, pretože prístup k polohe je vypnutý. Môžete to zmeniť v nastaveniach.</translation>
 <translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
 <translation id="3934456833412894880">Je zapnuté adaptívne nabíjanie. Batéria zostane nabitá na 80 %, čím sa predĺži jej výdrž, a úplne sa nabije, keď to budete potrebovať.</translation>
 <translation id="3943857333388298514">Prilepiť</translation>
@@ -897,6 +901,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4312840429157639164">Kamera bola prichytená do pravého horného rohu. Konflikt s platformou systému.</translation>
 <translation id="4316910396681052118">VŠETKY APLIKÁCIE</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Skryť všetky návrhy prehliadača Chrome</translation>
 <translation id="4322742403972824594">Klávesová skratka Ctrl + Alt + šípka nahor bola zmenená. Ak chcete použiť kláves Domov, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka doľava.</translation>
 <translation id="4324840740119394760">Týmto povolíte prístup ku kamere aplikácii <ph name="APP_NAME" /> a všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="4327147325944669226">Nahrať hru</translation>
@@ -930,6 +935,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4450893287417543264">Nabudúce nezobrazovať</translation>
 <translation id="4451374464530248585">Klávesová skratka Alt + šípka nadol bola zmenená. Ak chcete použiť kláves Page Down, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka nadol.</translation>
 <translation id="4453876312474547652">Schránka sa zobrazí, keď pridržíte klávesy Ctrl + V. Túto skratku môžete vypnúť tak, že na chrome://flags (os://flags, ak používate Lacros) deaktivujete experimentálnu funkciu #clipboard-history-longpress.</translation>
+<translation id="445765352722456792">Prispôsobiť návrhy</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
 <translation id="4458688154122353284">Zastaviť nahrávanie obrazovky</translation>
 <translation id="445923051607553918">Pripojiť sa k sieti Wi‑Fi</translation>
@@ -1332,6 +1338,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5802516411616338943">Otvoriť rýchle nastavenia</translation>
 <translation id="5804651031882187592">Vypnutie nastavenia Uzamknúť SIM</translation>
 <translation id="5805809050170488595">Kliknutím aktivujte <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Váš Chromebook sa neočakávane reštartoval. Otvorte predchádzajúce okná a aplikácie.</translation>
 <translation id="5823239091726045201">Úlohy Google na internete</translation>
 <translation id="5825969630400862129">Nastavenia pripojených zariadení</translation>
 <translation id="5837036133683224804">Zastaviť prenos obsahu <ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6469104339369989396">Prepnúť hotspot</translation>
 <translation id="6477681113376365978">Súbor sa nedá stiahnuť</translation>
 <translation id="6482559668224714696">Lupa na celú obrazovku</translation>
+<translation id="6485086611007560630">Počasie (návrhy nie sú k dispozícii)</translation>
 <translation id="6490471652906364588">Zariadenie USB-C (port vpravo)</translation>
 <translation id="649452524636452238">PIN inteligentnej karty</translation>
 <translation id="6495322433318104734">Zobrazuje sa šetrič obrazovky. Ukončíte ho stlačením ľubovoľného klávesa.</translation>
@@ -1781,6 +1789,7 @@ Nová inštalácia</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down (o stránku nadol)</translation>
+<translation id="7518182783647693467">Prepnúť jednotky teploty (Fahrenheit a Celzius)</translation>
 <translation id="7519206258459640379">Centrovanie kamery je zapnuté.</translation>
 <translation id="7519649142417630956">Po vypnutí bude správca odhlásený a nebude môcť ovládať vaše zariadenie.
 
@@ -1921,6 +1930,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7951630946012935453">Stmavenie klávesnice</translation>
 <translation id="7953994493035617347">Chcete potvrdiť nové rozlíšenie?</translation>
 <translation id="795958884516058160">Celoplošná lupa je zapnutá. Vypnete ju opätovným stlačením klávesov <ph name="ACCELERATOR" />.</translation>
+<translation id="7962583092928373823">Skryť všetky návrhy Kalendára Google</translation>
 <translation id="7963689218131240420">Režim bez vyrušení je vypnutý.</translation>
 <translation id="7963992254934562106">Zdroj: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vybrať priečinok…</translation>
@@ -1993,6 +2003,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8214996719228530800">Kanál Canary</translation>
 <translation id="8219451629189078428">Chromebook musíte mať v tomto období zapnutý a pripojený k zásuvke. Uistite sa, či je kábel nabíjačky alebo adaptéra riadne pripojený do Chromebooku aj elektrickej zásuvky. Chromebook nevypínajte.</translation>
 <translation id="8220076512072059941">Pridať <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Skryť tento návrh</translation>
 <translation id="8230305195727960608">Režim inverzie farieb</translation>
 <translation id="8236042855478648955">Čas na prestávku</translation>
 <translation id="8237964652943995219">Nasledujúca plocha: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. plocha z <ph name="DESK_COUNT" />.</translation>
@@ -2178,6 +2189,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, začiarkavacie políčko nie je začiarknuté.</translation>
 <translation id="8949925099261528566">Pripojené, bez internetu</translation>
 <translation id="8951539504029375108">S vaším Chromebookom sú kompatibilné iba schválené zariadenia Thunderbolt</translation>
+<translation id="8956420987536947088">Otvorte predchádzajúce okná a aplikácie</translation>
 <translation id="8959380109429710384">Stlačili ste klávesovú skratku celoplošnej lupy. V priblíženom zobrazení sa môžete pohybovať stlačením klávesov Ctrl + Alt + šípky.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Presunutie označenia na ikonu ponuky</translation>

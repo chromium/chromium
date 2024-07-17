@@ -8,7 +8,6 @@
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1035980983510608210">すべてのタブを閉じると、固定されたタブも閉じます。</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">ログアウトして閲覧データを削除します</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="1053651653201045802">ログアウトしました。再度ログインすると、アカウントのブックマークやパスワードなどを使用できます。</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">パスワード</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> として続行</translation>
+<translation id="1388866984373351434">閲覧履歴データ</translation>
 <translation id="1400642268715879018">過去 4 週間</translation>
 <translation id="1404330357948037222">ログアウトしました</translation>
-<translation id="14066361343057390">ログアウトします</translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="1408847409015257906">[プライバシーとセキュリティ] をタップします。</translation>
 <translation id="1430915738399379752">印刷</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">ファイルを開けません</translation>
 <translation id="2718352093833049315">Wi-Fi接続時のみ</translation>
 <translation id="2738375676495545665">最新情報を非表示</translation>
-<translation id="2740910715135851329">ログアウトしてタブを閉じ、閲覧データを削除します</translation>
 <translation id="2747003861858887689">前の項目</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> をフォローしました</translation>
 <translation id="2754492786623500387">このデバイスのアカウント</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">レンズでカメラ検索</translation>
 <translation id="2958718410589002129">パスワード</translation>
 <translation id="2964349545761222050">サードパーティの Cookie をブロックする</translation>
+<translation id="2965328226365382335">15 分以内</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
 <translation id="2975121486251958312">シークレット モードのみ使用できます</translation>
 <translation id="2982481275546140226">データを削除</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523">作成: <ph name="DATE" /></translation>
 <translation id="374357899112510277">ダウンロードを非表示</translation>
 <translation id="3745190878148784130">[テキストを拡大] を非表示にする</translation>
-<translation id="3747231889390582072">組織のセキュリティを確保するため、保存されていないデータはこのデバイスから削除されます。これには、パスワード、閲覧履歴、Cookie などが含まれます。</translation>
 <translation id="3762232513783804601">iPad 向けの設計</translation>
 <translation id="3768725474733206671">最後に閉じたタブを開く</translation>
 <translation id="3771033907050503522">シークレットタブ</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{リーディング リストの {count} 件のページ}other{リーディング リストの {count} 件のページ}}</translation>
 <translation id="4659667755519643272">タブ切り替え機能を開始</translation>
 <translation id="46614316059270592">パスワードを保存</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">ビジネスに電話で問い合わせる</translation>
 <translation id="4682686630151240767">1. iPhone の [設定] を開く</translation>
 <translation id="4689564913179979534">お支払い方法を管理...</translation>
@@ -1519,7 +1518,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count} 件のパスワードとその他のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のパスワードとその他のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
 <translation id="8522813812888400223">ダウンロードをキャンセル</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />タブ: <ph name="FIRST_VISIBLE_TAB" />～<ph name="LAST_VISIBLE_TAB" />/<ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">ログアウトしてタブを閉じます</translation>
 <translation id="8528009254289981965">他のアプリからのリンクをシークレット モードで開く</translation>
 <translation id="8529767659511976195">新規</translation>
 <translation id="8532105204136943229">有効期限（年）</translation>
@@ -1600,6 +1598,7 @@
 <translation id="8876882697946675716">デバイスを同期したままにする</translation>
 <translation id="8879604564928138696">試すにはダブルタップします</translation>
 <translation id="8881801611828450202">この画像を <ph name="SEARCH_ENGINE" /> で検索</translation>
+<translation id="8887595428614802520">すべてのタブとグループを閉じる</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
 <translation id="890565330728586731">戻る</translation>
 <translation id="8909135823018751308">共有...</translation>

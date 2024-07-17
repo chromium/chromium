@@ -852,7 +852,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="254524874071906077">Ustaw Chrome jako przeglądarkę domyślną</translation>
 <translation id="2545721997179863249">Wybrano opcję wypełnienia wszystkich pól</translation>
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
-<translation id="2546678870939430879">Wynik ponownego wykonania</translation>
 <translation id="254947805923345898">Wartość zasady jest nieprawidłowa.</translation>
 <translation id="2549836668759467704">Doradztwo i usługi budowlane</translation>
 <translation id="255002559098805027">Serwer <ph name="HOST_NAME" /> wysłał nieprawidłową odpowiedź.</translation>
@@ -1035,7 +1034,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2954624054936281172">Tabela zapisanych form płatności</translation>
 <translation id="295526156371527179">Ostrzeżenie: ta zasada nie została scalona jako słownik na podstawie zasady, ponieważ nie jest słownikiem.</translation>
 <translation id="2955913368246107853">Zamknij pasek wyszukiwania</translation>
-<translation id="2958345633099973853">Cofnij wynik</translation>
 <translation id="2958544468932521864">Krykiet</translation>
 <translation id="2959274854674276289">Kuchnia wegetariańska</translation>
 <translation id="2961809451460302960">Ubezpieczenia na życie</translation>
@@ -1166,7 +1164,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3209034400446768650">Strona może powodować naliczanie opłat</translation>
 <translation id="3212581601480735796">Twoja aktywność związana z hostem <ph name="HOSTNAME" /> jest monitorowana</translation>
 <translation id="3215092763954878852">Nie udało się użyć WebAuthn</translation>
-<translation id="3215311088819828484">Wynik został zaktualizowany</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Względna</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Wymagana jest aktualizacja teraz}=2{Wymagana jest aktualizacja do jutra}few{Wymagana jest aktualizacja w ciągu # dni}many{Wymagana jest aktualizacja w ciągu # dni}other{Wymagana jest aktualizacja w ciągu # dnia}}</translation>
@@ -2516,7 +2513,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5772086939108830423">Użyj klucza na innym urządzeniu</translation>
 <translation id="5776313857861697733">Priorytet</translation>
 <translation id="5776574724412881956">Dane karty wirtualnej nie zostały uzupełnione? Kliknij dane karty wirtualnej, aby skopiować je do schowka. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">Wczytuję wynik</translation>
 <translation id="5781136890105823427">Eksperyment włączony</translation>
 <translation id="578305955206182703">Bursztynowy</translation>
 <translation id="5783700460098783980">Walizki i akcesoria podróżne</translation>
@@ -2691,7 +2687,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6116338172782435947">Mieć dostęp do tekstu i obrazów skopiowanych do schowka</translation>
 <translation id="6117833587752089929">Zdjęcie (satyna)</translation>
 <translation id="6118782133429281336">Lista źródeł jest pusta.</translation>
-<translation id="6120950591512958208">Użyj tego kodu w momencie płatności.</translation>
 <translation id="612178891608320683">Kuchnia wegańska</translation>
 <translation id="6122181661879998141">z przodu karty</translation>
 <translation id="6124058285696691147">Pobierz załącznik</translation>

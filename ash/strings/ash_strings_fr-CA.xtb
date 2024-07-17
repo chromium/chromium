@@ -521,6 +521,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2970920913501714344">Installer des applications, des extensions et des thèmes</translation>
 <translation id="2977598380246111477">Prochain numéro</translation>
 <translation id="2985148236010982088">Afficher toutes les applis</translation>
+<translation id="2992272421330787632">Masquer toutes les suggestions de médias</translation>
 <translation id="2992327365391326550">Le bouton du microphone de l'appareil est désactivé.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Modifier la taille de l'écran</translation>
@@ -591,6 +592,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3255483164551725916">Que peux-tu faire?</translation>
 <translation id="3256109297135787951">Supprimer la mise en évidence d'un élément sur votre étagère</translation>
 <translation id="3260969790895726815">La voix est traitée localement et la dictée fonctionne hors ligne, mais certaines commandes vocales ne fonctionneront pas.</translation>
+<translation id="3264031581203585083">Masquer toutes les suggestions de Google Disque</translation>
 <translation id="3265032511221679826">Activer l'accès à la position exacte?</translation>
 <translation id="3269597722229482060">Clic droit</translation>
 <translation id="3274634049061007184">Affichez les applications de votre téléphone</translation>
@@ -742,6 +744,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3738664582935948253">Vous pouvez désormais afficher les clics et les raccourcis-clavier pendant les enregistrements d'écran.</translation>
 <translation id="3742055079367172538">Saisie d'écran enregistrée</translation>
 <translation id="3743775386021959186">Le mode Sans distractions est activé; il reste <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Masquer la suggestion de Météo</translation>
 <translation id="3756485814916578707">Diffusion de l'écran en cours…</translation>
 <translation id="3765841382945324995">L'ancien raccourci <ph name="SIX_PACK_KEY_NAME" /> (<ph name="OLD_SHORTCUT" />) a été mis à jour par <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Modifié aujourd'hui</translation>
@@ -781,6 +784,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3906954721959377182">Tablette</translation>
 <translation id="3923494859158167397">Aucun réseau cellulaire n'est configuré</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, chargement des événements en cours…</translation>
+<translation id="3927049937406914450">Météo n'est pas accessible, car l'accès à la position est désactivé. Vous pouvez modifier cet accès dans les paramètres.</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3934456833412894880">La recharge adaptative est activée. Votre pile restera à 80 % afin de prolonger son autonomie et se rechargera complètement lorsque vous en aurez besoin.</translation>
 <translation id="3943857333388298514">Coller</translation>
@@ -806,6 +810,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="40062176907008878">Écriture manuscrite</translation>
 <translation id="4011112806063830608">Le mode Ne pas déranger est activé.</translation>
+<translation id="4015144849380506405">Mettre en pause/reprendre les touches de la souris lorsque c'est activé</translation>
 <translation id="4017989525502048489">Pointeur laser</translation>
 <translation id="401993194061514265">Marqueur inaccessible. Rouvrez l'enregistreur d'écran.</translation>
 <translation id="4021716437419160885">Faire défiler vers le bas</translation>
@@ -895,6 +900,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4312840429157639164">Caméra alignée sur le coin supérieur droit. Conflit avec la surface du système.</translation>
 <translation id="4316910396681052118">TOUTES LES APPLICATIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Masquer toutes les suggestions du navigateur Chrome</translation>
 <translation id="4322742403972824594">Le raccourci-clavier Ctrl+Alt+flèche vers le haut a changé. Pour utiliser la touche Début, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers la gauche.</translation>
 <translation id="4324840740119394760">Cela donne à l'appareil photo l'accès à <ph name="APP_NAME" /> et à toutes les applications et à tous les sites Web disposant de l'autorisation pour l'appareil photo</translation>
 <translation id="4327147325944669226">Enregistrer le jeu</translation>
@@ -928,6 +934,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
 <translation id="4451374464530248585">Le raccourci-clavier Alt+flèche vers le bas a changé. Pour utiliser la touche Page suivante, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers le bas.</translation>
 <translation id="4453876312474547652">Vous verrez le presse-papiers lorsque vous maintenez enfoncées les touches Ctrl + V. Vous pouvez désactiver ce raccourci en désactivant l'indicateur #clipboard-history-longpress dans chrome://flags (os://flags si vous utilisez Lacros).</translation>
+<translation id="445765352722456792">Personnaliser les suggestions</translation>
 <translation id="445864333228800152">Bonsoir,</translation>
 <translation id="4458688154122353284">Arrêter l'enregistrement de l'écran</translation>
 <translation id="445923051607553918">Connexion à un réseau Wi-Fi</translation>
@@ -1330,6 +1337,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5802516411616338943">Ouvrir les Paramètres rapides</translation>
 <translation id="5804651031882187592">Désactiver le paramètre « Verrouiller la carte SIM »</translation>
 <translation id="5805809050170488595">Cliquez pour activer <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Votre Chromebook a redémarré de manière inattendue. Ouvrez vos fenêtres et vos applis précédentes.</translation>
 <translation id="5823239091726045201">Google Tâches sur le Web</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
@@ -1510,6 +1518,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6469104339369989396">Basculer le point d'accès</translation>
 <translation id="6477681113376365978">Impossible de télécharger le fichier</translation>
 <translation id="6482559668224714696">Loupe en mode plein écran</translation>
+<translation id="6485086611007560630">Météo (non accessible)</translation>
 <translation id="6490471652906364588">Appareil USB-C (port de droite)</translation>
 <translation id="649452524636452238">NIP de la carte à puce</translation>
 <translation id="6495322433318104734">Affichage de l'économiseur d'écran, appuyez sur n'importe quelle touche pour quitter</translation>
@@ -1779,6 +1788,7 @@ Nouvelle installation</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page suivante</translation>
+<translation id="7518182783647693467">Basculer entre les unités de température (F c. C)</translation>
 <translation id="7519206258459640379">Le cadrage de l'appareil photo est activé.</translation>
 <translation id="7519649142417630956">Une fois éteint, l'administrateur sera déconnecté et ne pourra pas contrôler votre appareil.
 
@@ -1919,6 +1929,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7951630946012935453">Assombrir le clavier</translation>
 <translation id="7953994493035617347">Confirmer la nouvelle résolution?</translation>
 <translation id="795958884516058160">Loupe en mode Plein écran activée. Appuyez à nouveau sur <ph name="ACCELERATOR" /> pour la désactiver.</translation>
+<translation id="7962583092928373823">Masquer toutes les suggestions de Google Agenda</translation>
 <translation id="7963689218131240420">Le mode Ne pas déranger est désactivé.</translation>
 <translation id="7963992254934562106">À partir de <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Sélectionner le dossier…</translation>
@@ -1991,6 +2002,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8214996719228530800">Version Canary</translation>
 <translation id="8219451629189078428">Votre Chromebook doit rester allumé et branché sur une source d'alimentation pendant ce temps. Vérifiez que les câbles de l'adaptateur ou du chargeur sont bien branchés sur votre Chromebook et sur la prise de courant. N'éteignez pas votre Chromebook.</translation>
 <translation id="8220076512072059941">Ajouter <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Masquer cette suggestion</translation>
 <translation id="8230305195727960608">Mode d'inversion des couleurs</translation>
 <translation id="8236042855478648955">C'est le moment de prendre une pause</translation>
 <translation id="8237964652943995219">Bureau suivant : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
@@ -2176,6 +2188,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, case non cochée.</translation>
 <translation id="8949925099261528566">Connecté, aucun accès Internet</translation>
 <translation id="8951539504029375108">Seuls les appareils Thunderbolt approuvés sont compatibles avec votre Chromebook</translation>
+<translation id="8956420987536947088">Ouvrir vos fenêtres et vos applis précédentes</translation>
 <translation id="8959380109429710384">Vous avez appuyé sur le raccourci-clavier de la Loupe en mode Plein écran. Utilisez ctrl+alt+flèches pour déplacer le curseur sur l'affichage zoomé.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Mettre l'icône du menu en évidence</translation>

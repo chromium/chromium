@@ -592,7 +592,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="3255483164551725916">Šta sve možete uraditi?</translation>
 <translation id="3256109297135787951">Uklonite oznaku sa stavke na polici</translation>
 <translation id="3260969790895726815">Govor se obrađuje lokalno i diktiranje funkcionira offline, ali neke glasovne komande neće funkcionirati.</translation>
-<translation id="3264031581203585083">Sakrij sve prijedloge Google diska</translation>
+<translation id="3264031581203585083">Sakrij sve prijedloge Google Diska</translation>
 <translation id="3265032511221679826">Uključiti pristup tačnoj lokaciji?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3274634049061007184">Pregledajte aplikacije telefona</translation>
@@ -744,7 +744,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3738664582935948253">Sada možete prikazati klikove i prečice tastature na snimcima ekrana</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
 <translation id="3743775386021959186">Fokusiranje je uključeno. Još <ph name="REMAINING_TIME" /></translation>
-<translation id="3750403286520637847">Sakrij prijedlog vremenske prognoze</translation>
+<translation id="3750403286520637847">Sakrij prijedlog vremena</translation>
 <translation id="3756485814916578707">Emitiranje ekrana</translation>
 <translation id="3765841382945324995">Prečica za radnju <ph name="SIX_PACK_KEY_NAME" /> je ažurirana iz <ph name="NEW_SHORTCUT" /> u <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Uređeno danas</translation>
@@ -784,7 +784,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Nije postavljena nijedna mobilna mreža</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, učitavanje događaja.</translation>
-<translation id="3927049937406914450">Vrijeme nije dostupno jer je pristup lokaciji isključen. To možete promijeniti u postavkama.</translation>
+<translation id="3927049937406914450">Vrijeme nije dostupno jer je pristup lokaciji isključen. Možete promijeniti ovo u postavkama.</translation>
 <translation id="3932043219784172185">Nije povezan nijedan uređaj</translation>
 <translation id="3934456833412894880">Prilagodljivo punjenje je uključeno. Vaša baterija će ostati na 80% radi produžavanja vijeka trajanja baterije, a potpuno će se napuniti kada vam to bude potrebno.</translation>
 <translation id="3943857333388298514">Zalijepi</translation>
@@ -935,7 +935,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="4451374464530248585">Prečica na tastaturi Alt + strelica nadolje je promijenjena. Da koristite tipku Page Down, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu nadolje.</translation>
 <translation id="4453876312474547652">Međumemoriju možete vidjeti ako pritisnete i zadržite Ctrl + V. Možete isključiti tu prečicu onemogućavanjem oznake #clipboard-history-longpress na chrome://flags (os://flags ako koristite Lacros).</translation>
-<translation id="445765352722456792">Prilagodba prijedloga</translation>
+<translation id="445765352722456792">Prilagodite prijedloge</translation>
 <translation id="445864333228800152">Dobro veče,</translation>
 <translation id="4458688154122353284">Zaustavljanje snimanja ekrana</translation>
 <translation id="445923051607553918">Spoji se s Wi-Fi mrežom</translation>
@@ -1338,7 +1338,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5802516411616338943">Otvori Brze postavke</translation>
 <translation id="5804651031882187592">Isključite postavku "Zaključaj SIM"</translation>
 <translation id="5805809050170488595">Kliknite da aktivirate mrežu <ph name="NETWORK_NAME" /></translation>
-<translation id="5819918159912280082">Chromebook se neočekivano ponovo pokrenuo. Otvorite prethodne prozore i aplikacije.</translation>
+<translation id="5819918159912280082">Chromebook se neočekivano ponovo pokrenuo. Otvorite prijašnje prozore i aplikacije.</translation>
 <translation id="5823239091726045201">Google Zadaci na webu</translation>
 <translation id="5825969630400862129">Postavke povezanih uređaja</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na primaocu <ph name="RECEIVER_NAME" /></translation>
@@ -1789,7 +1789,7 @@ Nova instalacija</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page down</translation>
-<translation id="7518182783647693467">Prebacivanje temperaturnih jedinica (F – C)</translation>
+<translation id="7518182783647693467">Promijeni jedinice temperature (F ili C)</translation>
 <translation id="7519206258459640379">Kadriranje kamere je uključeno.</translation>
 <translation id="7519649142417630956">Nakon isključivanja administrator će se odjaviti i neće moći kontrolirati vaš uređaj.
 
@@ -1930,7 +1930,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7951630946012935453">Zatamnjivanje tastature</translation>
 <translation id="7953994493035617347">Potvrditi novu rezoluciju?</translation>
 <translation id="795958884516058160">Povećalo za cijeli ekran je omogućeno. Ponovo pritisnite <ph name="ACCELERATOR" /> da ga isključite.</translation>
-<translation id="7962583092928373823">Sakrij sve prijedloge Google kalendara</translation>
+<translation id="7962583092928373823">Sakrij sve prijedloge Google Kalendara</translation>
 <translation id="7963689218131240420">Funkcija Ne ometaj je isključena</translation>
 <translation id="7963992254934562106">S telefona <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Odaberite folder...</translation>
@@ -2190,7 +2190,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, polje za potvrdu nije označeno.</translation>
 <translation id="8949925099261528566">Povezano, nema internetske veze</translation>
 <translation id="8951539504029375108">Samo su odobreni Thunderbolt uređaji kompatibilni s vašim Chromebookom</translation>
-<translation id="8956420987536947088">Otvorite prethodne prozore i aplikacije</translation>
+<translation id="8956420987536947088">Otvorite prijašnje prozore i aplikacije</translation>
 <translation id="8959380109429710384">Pritisnuli ste prečicu na tastaturi za povećalo za cijeli ekran. Koristite Ctrl + Alt + strelice da se pomičete po uvećanom prikazu.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Postavljanje fokusa na ikonu menija</translation>

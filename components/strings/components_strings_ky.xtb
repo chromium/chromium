@@ -1164,7 +1164,6 @@
 <translation id="3209034400446768650">Барак төлөм өндүрүшү мүмкүн</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> сайтындагы аракеттериңиз көзөмөлдөнүүдө</translation>
 <translation id="3215092763954878852">WebAuthn'ди колдонуу мүмкүн эмес</translation>
-<translation id="3215311088819828484">Натыйжа жаңыртылды</translation>
 <translation id="3216313131063488104">Блюз</translation>
 <translation id="3218181027817787318">Окшош</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Азыр жаңыртуу талап кылынат}=2{Эртең жаңыртуу талап кылынат}other{# күндүн ичинде жаңыртуу талап кылынат}}</translation>
@@ -2687,7 +2686,6 @@
 <translation id="6116338172782435947">Алмашуу буферине көчүрүлгөн текстти жана сүрөттөрдү көрүү</translation>
 <translation id="6117833587752089929">Фотокагаз (сатин)</translation>
 <translation id="6118782133429281336">Түпнуска тизме бош.</translation>
-<translation id="6120950591512958208">Сатып алган нерселериңиздин акысын төлөп жатканда бул кодду колдонуңуз.</translation>
 <translation id="612178891608320683">Вегетариандык ашкана</translation>
 <translation id="6122181661879998141">картаңыздын алдыңкы бети</translation>
 <translation id="6124058285696691147">Тиркемени жүктөп алуу</translation>

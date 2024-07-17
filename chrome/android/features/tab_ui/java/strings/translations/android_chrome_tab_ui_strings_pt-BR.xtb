@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="125153950246128346">Toque para ver outra guia</translation>
 <translation id="1273910660700874265">Opções do grupo de guias <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Convidar pessoas</translation>
 <translation id="1419023007528516122">Essa ação vai excluir permanentemente o grupo do seu dispositivo</translation>
 <translation id="1486715732399361704">Todos os seus grupos de guias vão aparecer aqui</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Criado há <ph name="NUM_MINS_ONE" /> minuto}one{Criado há <ph name="NUM_MINS_MANY" /> minuto}other{Criado há <ph name="NUM_MINS_MANY" /> minutos}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Seus grupos de guias vão aparecer aqui</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Desagrupar <ph name="TABS_COUNT_MANY" /> guia selecionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia}one{<ph name="TABS_COUNT_MANY" /> guia}other{<ph name="TABS_COUNT_MANY" /> guias}}</translation>
+<translation id="6527303717912515753">Compartilhar</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Após 1 dia}one{Após <ph name="DAY_COUNT_MANY" /> dia}other{Após <ph name="DAY_COUNT_MANY" /> dias}}</translation>
 <translation id="6549021453810473782">Ver informações da loja</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

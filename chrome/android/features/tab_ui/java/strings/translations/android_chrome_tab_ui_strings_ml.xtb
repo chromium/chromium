@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">ഓറഞ്ച്</translation>
 <translation id="125153950246128346">മറ്റൊരു ടാബ് കാണാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ഓപ്ഷനുകൾ</translation>
-<translation id="1322824555808364080">ആളുകളെ ക്ഷണിക്കുക</translation>
 <translation id="1419023007528516122">ഇത് നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ഗ്രൂപ്പ് ശാശ്വതമായി ഇല്ലാതാക്കും</translation>
 <translation id="1486715732399361704">നിങ്ങളുടെ എല്ലാ ടാബ് ഗ്രൂപ്പുകളും ഇവിടെ കണ്ടെത്താം</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> മിനിറ്റ് മുമ്പ് സൃഷ്‌ടിച്ചത്}other{<ph name="NUM_MINS_MANY" /> മിനിറ്റ് മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ ഇവിടെ കാണാം</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് അൺഗ്രൂപ്പ് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ അൺഗ്രൂപ്പ് ചെയ്യുക}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
+<translation id="6527303717912515753">പങ്കിടുക</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{ഒരു ദിവസത്തിന് ശേഷം}other{<ph name="DAY_COUNT_MANY" /> ദിവസത്തിന് ശേഷം}}</translation>
 <translation id="6549021453810473782">സ്റ്റോർ വിവരങ്ങൾ കാണുക</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

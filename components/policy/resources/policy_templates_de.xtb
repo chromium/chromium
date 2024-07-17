@@ -1629,6 +1629,13 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 
       Wenn du "<ph name="VARIATIONS_DISABLED_OPTION_NAME" />" festlegst (Wert: 2), werden auf dem Anmeldebildschirm keine Variationen auf den Browser angewendet. Dieser Modus kann die <ph name="PRODUCT_OS_NAME" />-Entwickler möglicherweise daran hindern, wichtige Sicherheitskorrekturen zeitnah durchzuführen. Er wird daher nicht empfohlen.</translation>
 <translation id="2215746393279570703">Floating-SSO-Einstellungen</translation>
+<translation id="2218830243081931587">Mit dieser Richtlinie wird das Verhalten von Tastenkombinationen bei <ph name="PRODUCT_OS_NAME" /> gesteuert.
+
+Wenn diese Richtlinie nicht konfiguriert oder auf „<ph name="NORMAL_SYSTEM_PRIORITY" />“ gesetzt ist, werden alle <ph name="PRODUCT_OS_NAME" />-Tastenkombinationen auf Systemebene immer wie erwartet aktiviert.
+
+Wenn diese Richtlinie auf „<ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />“ gesetzt ist, wird durch eine vordefinierte Liste von Tastenkombinationen mit der Launcher-Taste nie eine Tastenkombination aktiviert.
+
+Wenn diese Richtlinie auf „<ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />“ gesetzt ist, wird durch eine vordefinierte Liste von Tastenkombinationen mit der Launcher-Taste nie eine Tastenkombination aktiviert, während eine App im Vollbildmodus ist.</translation>
 <translation id="2221779615493499989">Mit dieser Richtlinie wird festgelegt, ob der Netzwerkstatus des Nutzers auf angemeldeten Geräten ausgegeben wird.
 
       Wenn sie auf „false“ gesetzt ist, werden keine Informationen ausgegeben.
@@ -2399,6 +2406,7 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="2847788524147474533">Richtlinien für Plattformgeräte haben Vorrang vor Richtlinien für Cloud-Rechner</translation>
 <translation id="2849275596224278787">Optionen für Bedienungshilfen im Taskleistenmenü des Anmeldebildschirms ausblenden</translation>
 <translation id="2853649500575897584">Keine alten Erweiterungspunkte im Browserprozess blockieren</translation>
+<translation id="2853757230661166968">Ermöglicht Anwendungen, standardmäßige Tastenkombinationen auf Systemebene zu erfassen und zu überschreiben.</translation>
 <translation id="285480231336205327">Modus mit hohem Kontrast aktivieren</translation>
 <translation id="285627849510728211">Tageskonfiguration für den intelligenten Akkulademodus festlegen</translation>
 <translation id="2856932965866813330">Teilen von Nutzeranmeldedaten mit anderen Nutzern aktivieren</translation>
@@ -3749,6 +3757,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Hinweis: Diese Richtlinie muss mit <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> verwendet werden.</translation>
 <translation id="3918339829588313389">Nutzer dürfen schwache PIN festlegen</translation>
+<translation id="392227823425989489">Alle Tastenkombinationen auf Systemebene werden immer wie erwartet aktiviert.</translation>
 <translation id="3924506460382372403">Melden des Grafikstatus auf Geräten deaktivieren</translation>
 <translation id="3925377537407648234">Bildschirmauflösung und Skalierungsfaktor festlegen</translation>
 <translation id="3926681471685211524">RSA-Schlüsselverwendung für Serverzertifikate prüfen, die von lokalen Trust-Anchors ausgestellt wurden</translation>
@@ -4161,6 +4170,13 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
       Ist sie auf „false“ gesetzt, wird die DNS-Auflösung des Systems (getaddrinfo()) im Netzwerkprozess und nicht im Browserprozess ausgeführt. Dadurch kann die Deaktivierung der Netzwerkdienst-Sandbox erzwungen werden, wodurch die Sicherheit von <ph name="PRODUCT_NAME" /> beeinträchtigt wird.
 
       Wenn diese Richtlinie nicht konfiguriert ist, kann die DNS-Auflösung des Systems je nach Systemkonfiguration und Funktions-Flags innerhalb, außerhalb oder teils innerhalb, teils außerhalb des Netzwerkprozesses erfolgen.</translation>
+<translation id="4234788818648224034">Liste der Domains, die nicht über DNS-over-HTTPS aufgelöst werden sollen. Diese Richtlinie wird ignoriert, wenn der sichere DNS-Modus deaktiviert ist (immer Nur-Text-DNS verwenden).
+
+Wenn „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ ebenfalls konfiguriert ist, wird eine spezifischere Domain bevorzugt. Die Spezifität bezieht sich auf die Anzahl der Punkte („.“) in der Domain. Wenn eine Domain beide Richtlinien erfüllt, wird standardmäßig DNS-over-HTTPS für die Domain verwendet.
+
+Die Domains sollten in Form eines voll qualifizierten Domainnamens (FQDN) oder als Domain-Suffixe mit einem speziellen Platzhalterpräfix „*“ angegeben werden.
+
+Falsch formatierte Domains werden ignoriert.</translation>
 <translation id="4239720644496144453">Der Cache wird nicht für Android-Apps verwendet. Wenn mehrere Nutzer die gleiche Android-App installieren, wird sie für jeden Nutzer neu heruntergeladen.</translation>
 <translation id="4242583077375244471">Wenn diese Richtlinie aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate mithilfe der integrierten Zertifikatsprüfung und des Chrome Root Store als vertrauenswürdiger Quelle.
 
@@ -4609,11 +4625,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufruf dieser APIs un
 <translation id="4615892138881859957">Tastenkombination zum Auslösen der Taste „Einfügen“ im Sechserblock verwalten</translation>
 <translation id="4617338332148204752">Meta-Tag-Überprüfung in <ph name="PRODUCT_FRAME_NAME" /> überspringen</translation>
 <translation id="461901491675418689">Funktion „NewBaseUrlInheritanceBehavior“ verfügbar</translation>
-<translation id="4624006912948309924">Wenn diese Richtlinie konfiguriert ist, werden die App-IDs festgelegt, die unter <ph name="PRODUCT_OS_NAME" /> als angepinnte Apps in der Launcherleiste angezeigt werden. Sie können nicht von Nutzern geändert werden.
-
-Chrome-Apps werden mit ihrer ID angegeben, z. B. „pjkljhegncpnkpknbcohdijeoejaedia“, Android-Apps mit ihrem Paketnamen, z. B. „com.google.android.gm“, Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. „https://google.com/maps“, und System-Web-Apps mit Ihrer Benennung, in der die Leerzeichen durch Unterstriche ersetzt sind, z. B. <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
-
-Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinnten Apps ändern.</translation>
 <translation id="4624417808625504735">Verwendung von JIT durch JavaScript auf diesen Websites blockieren</translation>
 <translation id="46321462262887935">Tasten der obersten Reihe als Funktionstasten nutzen (Nutzer kann dies ändern)</translation>
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
@@ -5211,6 +5222,15 @@ Falls die Richtlinie nicht konfiguriert oder deaktiviert ist, können Cookies un
 <translation id="5152787786897382519">Sowohl in Chromium als auch in Google Chrome gibt es Richtliniengruppen, die in Abhängigkeit voneinander die Steuerung einer Funktion ermöglichen. Diese Richtliniensätze werden durch die folgenden Richtliniengruppen repräsentiert. Aufgrund der Tatsache, dass Richtlinien mehrere Quellen haben können, werden nur Werte, die aus der Quelle mit der höchsten Priorität stammen, angewendet. Werte aus einer Quelle mit niedrigerer Priorität in derselben Gruppe werden ignoriert. Die Hierarchie wird unter <ph name="POLICY_PRIORITY_DOC_URL" /> definiert.</translation>
 <translation id="5153187201534281749">Symbol für experimentelle Browserfunktionen auf der Symbolleiste</translation>
 <translation id="5159674159887919923">Keine zusätzlichen Hardwaredaten unter ChromeOS Flex senden</translation>
+<translation id="5162982931329320509">Liste der Domains, die über DNS-over-HTTPS aufgelöst werden sollen. Domains, die nicht in der Liste enthalten sind, werden nicht über DNS-over-HTTPS aufgelöst. Diese Richtlinie wird ignoriert, wenn der sichere DNS-Modus deaktiviert ist (immer Nur-Text-DNS verwenden).
+
+Wenn die Liste leer oder nicht konfiguriert ist, werden alle Domains nach Möglichkeit über DNS-over-HTTPS aufgelöst. Das ist das gleiche Verhalten wie bei einer Liste mit eingeschlossenen Domains mit dem Wert [„*“].
+
+Wenn „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ ebenfalls konfiguriert ist, wird eine spezifischere Domain bevorzugt. Die Spezifität bezieht sich auf die Anzahl der Punkte („.“) in der Domain. Wenn eine Domain beide Richtlinien erfüllt, wird standardmäßig DNS-over-HTTPS für die Domain verwendet.
+
+Die Domains sollten in Form eines voll qualifizierten Domainnamens (FQDN) oder als Domain-Suffixe mit einem speziellen Platzhalterpräfix „*“ angegeben werden.
+
+Falsch formatierte Domains werden ignoriert.</translation>
 <translation id="5163002264923337812">Alte webbasierte Anmeldung aktivieren</translation>
 <translation id="5163889437570441600">Hiermit wird das Streamen von Inhalten an das Gerät über <ph name="PRODUCT_NAME" /> erlaubt.
 
@@ -7976,6 +7996,7 @@ Wenn die Richtlinie deaktiviert ist, werden Passwörter nie gespeichert und alle
 <translation id="7146198347561863646">Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, sind Wakelocks für die Energieverwaltung zugelassen. Wakelocks können von Erweiterungen über die Power Management Extension API oder ARC-Apps angefordert werden.
 
       Wenn die Richtlinie deaktiviert wird, werden Wakelock-Anfragen ignoriert.</translation>
+<translation id="7148958378210448356">Eine vordefinierte Liste von Tastenkombinationen mit der Launcher-Taste führt niemals eine Aktion aus.</translation>
 <translation id="7149042336307555519"> Verbindungstypen, die für Betriebssystem-Updates verwendet werden können. Betriebssystem-Updates stellen für Verbindungen aufgrund ihrer Größe eine starke Belastung dar und können zusätzliche Kosten verursachen. Aus diesem Grund sind sie für teure Verbindungstypen (derzeit nur "cellular") standardmäßig nicht aktiviert.
 
       Die unterstützten Verbindungstypen sind <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> und <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -8582,19 +8603,6 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 <translation id="7669630878711068277">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer in „<ph name="PRODUCT_NAME" />“ drucken. Nutzer können diese Einstellung nicht ändern.
 
       Ist die Richtlinie deaktiviert, können die Nutzer in „<ph name="PRODUCT_NAME" />“ nicht drucken. Im Dreipunkt-Menü, in den Erweiterungen und in JavaScript-Anwendungen ist die Option zum Drucken deaktiviert.</translation>
-<translation id="7671234734316758429">Mit dieser Richtlinie können Administratoren Apps festlegen, die als Standard-Handler für die einzelnen Dateiendungen unter <ph name="PRODUCT_OS_NAME" /> dienen und von Nutzern nicht geändert werden können.
-
-Für alle Dateiendungen, die in der Richtlinie nicht angegeben sind, können Nutzer hinsichtlich des üblichen Workflows eigene Standardeinstellungen festlegen.
-
-Chrome-Apps werden mit ihrer ID angegeben, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />“;
-Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />“;
-Android-Apps mit ihrem Paketnamen, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />“;
-System-Web-Apps mit ihrem Snake-Case-Namen, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />“
-und virtuelle Aufgaben mit ihrem vorgesehenen Namen mit vorangestelltem <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />, z. B. „<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />“.
-
-Beachte, dass Apps im Manifest für angegebene Dateiendungen als Datei-Handler deklariert werden MÜSSEN, damit dieses Richtlinienelement wirksam wird (die Richtlinie erweitert also KEINE vorhandenen App-Funktionen).
-
-Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> gemäß der internen Logik Standard-Handler selbst festlegen.</translation>
 <translation id="7673194325208122247">Zeitraum (Millisekunden)</translation>
 <translation id="7677220829878081413">
       Ist diese Richtlinie auf "ArcSession" gesetzt und wurde Android gestartet, wird nach einer Nutzerabmeldung ein Neustart des Geräts erzwungen.
@@ -8988,11 +8996,6 @@ Wenn die Richtlinie „<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />“ deaktivi
           Diese Richtlinie wurde in Chrome 110 entfernt.
                                         </translation>
 <translation id="7976157349247117979">Name des <ph name="PRODUCT_NAME" />-Ziels</translation>
-<translation id="797820628785995988">Wenn du diese Richtlinie konfigurierst, werden alle angegebenen Datentypen von der Synchronisierung ausgeschlossen. Dies gilt sowohl für die <ph name="CHROME_SYNC_NAME" /> als auch für die Synchronisierung von Roaming-Profilen. Dadurch lässt sich die Größe von Roaming-Profilen reduzieren und du kannst einschränken, welche Arten von Daten auf die <ph name="CHROME_SYNC_NAME" />-Server hochgeladen werden.
-
-      Aktuell werden folgende Datentypen unterstützt: „apps“, „autofill“, „bookmarks“, „extensions“, „preferences“, „passwords“, „payments“, „readingList“, „savedTabGroups“, „tabs“, „themes“, „typedUrls“, „wifiConfigurations“. Bei diesen Namen muss die Groß- und Kleinschreibung beachtet werden.
-
-      Hinweis: Die dynamische Richtlinienaktualisierung wird nur in <ph name="PRODUCT_NAME" />-Version 123 oder höher unterstützt. Wenn du „autofill“ deaktivierst, wird auch „payments“ deaktiviert. „typedUrls“ bezieht sich auf den gesamten Browserverlauf.</translation>
 <translation id="7982057585796399404">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Apps und Erweiterungen festgelegt, die automatisch installiert werden, also ohne Interaktion des Nutzers, und die vom Nutzer weder deinstalliert noch deaktiviert werden können. Berechtigungen, auch für die Erweiterungs-APIs „enterprise.deviceAttributes“ und „enterprise.platformKeys“, werden automatisch im Hintergrund gewährt. Diese beiden APIs stehen bei Apps oder Erweiterungen ohne erzwungene Installation nicht zur Verfügung.
 
 Wenn die Richtlinie nicht konfiguriert ist, werden Apps und Erweiterungen nicht automatisch installiert und Nutzer können jede App oder Erweiterung in <ph name="PRODUCT_NAME" /> deinstallieren.
@@ -9133,6 +9136,7 @@ Achtung: Es wird empfohlen, die automatischen Updates aktiviert zu lassen, damit
 <translation id="8089200718228084417">Veraltetes Drucken über Privet aktivieren</translation>
 <translation id="8091982561085048989">Boolescher Parameter, der angibt, ob zum Einrichten des Druckers IPP Everywhere verwendet werden soll. Dieser Parameter wird unter <ph name="PRODUCT_OS_NAME" /> Version 76 und höher unterstützt.</translation>
 <translation id="8094095107731619070">Autokorrektur bei Nutzung der physischen Tastatur beim Tippen aktivieren</translation>
+<translation id="8099833343914898016">Eine vordefinierte Liste von Tastenkombinationen mit der Launcher-Taste führt niemals eine Aktion aus, während der Vollbildmodus aktiv ist.</translation>
 <translation id="8099880303030573137">Inaktivitätsverzögerung im Akkubetrieb</translation>
 <translation id="8101381354936029836">Atomische Richtlinien-Gruppe:</translation>
 <translation id="8102854005031553638">Der PDF-Viewer verwendet den AGG-Renderer.</translation>
@@ -10309,6 +10313,19 @@ Hinweis: Derzeit wird nur der erste Eintrag berücksichtigt. Erweiterungen werde
       Diese Richtlinie betrifft nur Nutzer, die sich über SAML authentifizieren.
 
       Der Wert sollte in Sekunden angegeben werden.</translation>
+<translation id="9015526159640436408">Eine URL zu einem Bild, das als Unternehmenslogo für das Profil verwendet wird. Die URL muss auf ein Bild verweisen.
+
+Dieses Logo wird in der Symbolleiste angezeigt.
+
+Wenn diese Richtlinie auf Browserebene konfiguriert ist, zeigen alle Profile dieses Logo in der Symbolleiste an.
+
+Wenn diese Richtlinie auf Profilebene konfiguriert ist, wird das Logo nur für dieses Profil angezeigt.
+
+Ist die Richtlinie nicht konfiguriert, wird ein standardmäßiges Gebäudesymbol angezeigt.
+
+Wenn beim Versuch, das Bild abzurufen und anzuzeigen, ein Fehler auftritt, wird ebenfalls ein standardmäßiges Gebäudesymbol angezeigt.
+
+Im Gegensatz zu anderen Richtlinien hat hier die Richtlinie, wenn sie auf Profilebene konfiguriert ist, Vorrang vor auf Browserebene konfigurierten Richtlinien.</translation>
 <translation id="9015578113567730893">Häufigkeit der Erhebung der Audiotelemetrie in Millisekunden.</translation>
 <translation id="9015759770696099204">Einstellungen von F11/F12 sind deaktiviert</translation>
 <translation id="9015952763003753868"><ph name="ACAM_HEADER_NAME" />-Abgleich in <ph name="CORS" />-Preflight richtlinienkonform machen</translation>

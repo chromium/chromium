@@ -8,7 +8,6 @@
 <translation id="102916930470544692">പാസ്‌കീ</translation>
 <translation id="1035980983510608210">എല്ലാ ടാബുകളും അടച്ചാൽ പിൻ ചെയ്‌ത ടാബുകളും അടയും.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">നിങ്ങൾ സൈൻ ഔട്ട് ആകും, ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കും</translation>
 <translation id="1044891598689252897">സൈറ്റുകൾ സാധാരണ രീതിയിൽ പ്രവർത്തിക്കും</translation>
 <translation id="1049743911850919806">ആള്‍‌മാറാട്ടം</translation>
 <translation id="1053651653201045802">സൈൻ ഔട്ട് ചെയ്‌തു. നിങ്ങളുടെ അക്കൗണ്ടിലെ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഉപയോഗിക്കാൻ വീണ്ടും സൈൻ ഇൻ ചെയ്യുക.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">പാസ്‌വേഡുകൾ</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ആയി തുടരുക</translation>
+<translation id="1388866984373351434">ഡാറ്റ ബ്രൌസ് ചെയ്യുന്നു</translation>
 <translation id="1400642268715879018">കഴിഞ്ഞ 4 ആഴ്‌ചയിലെ</translation>
 <translation id="1404330357948037222">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്‌തു</translation>
-<translation id="14066361343057390">നിങ്ങൾ സൈൻ ഔട്ട് ആകും</translation>
 <translation id="1407135791313364759">എല്ലാം തുറക്കുക</translation>
 <translation id="1408847409015257906">"സ്വകാര്യതയും സുരക്ഷയും" ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1430915738399379752">പ്രിന്റ് ചെയ്യുക</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">ഫയൽ തുറക്കാനാവുന്നില്ല</translation>
 <translation id="2718352093833049315">Wi-Fi യിൽ മാത്രം</translation>
 <translation id="2738375676495545665">'പുതിയതെന്താണ്' മറയ്ക്കുക</translation>
-<translation id="2740910715135851329">നിങ്ങൾ സൈൻ ഔട്ട് ആകും, ടാബുകൾ അടയ്ക്കും, ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കും</translation>
 <translation id="2747003861858887689">മുൻ ഫീൽഡ്</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> പിന്തുടരുന്നു</translation>
 <translation id="2754492786623500387">ഈ ഉപകരണത്തിലെ അക്കൗണ്ടുകൾ</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">Lens ക്യാമറ ഉപയോഗിച്ചുള്ള തിരയൽ</translation>
 <translation id="2958718410589002129">പാസ്‌വേഡുകൾ</translation>
 <translation id="2964349545761222050">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
+<translation id="2965328226365382335">അവസാന 15 മിനിറ്റ്</translation>
 <translation id="2969979262385602596">സൈൻ ഇൻ ചെയ്യുന്നത് പരാജയപ്പെട്ടു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2975121486251958312">അദൃശ്യ മോഡ് മാത്രമേ ലഭ്യമാകൂ</translation>
 <translation id="2982481275546140226">ഡാറ്റ മായ്‌ക്കുക</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523"><ph name="DATE" />-ന് സൃഷ്ടിച്ചത്</translation>
 <translation id="374357899112510277">ഡൗൺലോഡുകൾ മറയ്ക്കുക</translation>
 <translation id="3745190878148784130">'ടെക്സ്റ്റ് സൂം ചെയ്യുക' മറയ്ക്കുക</translation>
-<translation id="3747231889390582072">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ സുരക്ഷ പരിരക്ഷിക്കുന്നതിന്, ഈ ഉപകരണത്തിൽ നിന്ന് സംരക്ഷിക്കാത്ത ഡാറ്റ ഇല്ലാതാക്കും. ഇതിൽ പാസ്‌വേഡുകൾ, ബ്രൗസിംഗ് ചരിത്രം, കുക്കികൾ എന്നിവയും മറ്റും ഉൾപ്പെട്ടേക്കാം.</translation>
 <translation id="3762232513783804601">നിങ്ങളുടെ iPad-നായി നിർമ്മിച്ചത്</translation>
 <translation id="3768725474733206671">അവസാനം അടച്ച ടാബ് വീണ്ടും തുറക്കുക</translation>
 <translation id="3771033907050503522">ആൾമാറാട്ട ടാബുകൾ</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലെ {count} പേജ്}other{വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലെ {count} പേജുകൾ}}</translation>
 <translation id="4659667755519643272">ടാബ് സ്വിച്ചർ നൽകുക</translation>
 <translation id="46614316059270592">പാസ്‌വേഡ് സംരക്ഷിക്കുക</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">ഫോൺ കോൾ ചെയ്‌ത് ഒരു ബിസിനസുമായി കണക്‌റ്റ് ചെയ്യൂ</translation>
 <translation id="4682686630151240767">1. iPhone ക്രമീകരണം തുറക്കുക</translation>
 <translation id="4689564913179979534">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക...</translation>
@@ -1519,7 +1518,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count} പാസ്‌വേഡും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കുന്നതിന്, നിങ്ങളുടെ {email} എന്ന Google Account-ൽ അവ സംരക്ഷിക്കുക.}other{{count} പാസ്‌വേഡുകളും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കുന്നതിന്, നിങ്ങളുടെ {email} എന്ന Google Account-ൽ അവ സംരക്ഷിക്കുക.}}</translation>
 <translation id="8522813812888400223">ഡൗൺലോഡ് റദ്ദാക്കുക</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" />-ൽ <ph name="FIRST_VISIBLE_TAB" /> മുതൽ <ph name="LAST_VISIBLE_TAB" /> വരെയുള്ള <ph name="INCOGNITO" /> ആൾമാറാട്ട ടാബുകൾ</translation>
-<translation id="852576975834694248">നിങ്ങൾ സൈൻ ഔട്ട് ആകും, ടാബുകൾ അടയ്ക്കും</translation>
 <translation id="8528009254289981965">മറ്റൊരു ആപ്പിൽ നിന്നുള്ള ലിങ്കുകൾ അദൃശ്യ മോഡിൽ തുറക്കുക</translation>
 <translation id="8529767659511976195">പുതിയത്</translation>
 <translation id="8532105204136943229">കാലഹരണപ്പെടുന്ന വർഷം</translation>

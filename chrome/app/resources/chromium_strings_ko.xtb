@@ -14,6 +14,7 @@
 <translation id="113122355610423240">Chromium이 기본 브라우저로 설정되어 있습니다.</translation>
 <translation id="1131805035311359397">암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chromium에 로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="1153368717515616349">Chromium 메뉴를 클릭합니다</translation>
+<translation id="1184145431117212167">지원되지 않는 Windows 버전으로 인해 설치할 수 없습니다.</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1188705220418984327">창을 공유하려면 시스템 환경설정에서 Chromium의 화면 녹화를 허용하세요</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
@@ -204,6 +205,7 @@
 <translation id="421369550622382712">Chromium에 유용한 앱, 게임, 확장 프로그램, 테마를 찾아보세요.</translation>
 <translation id="4216212958613226427">Chromium UI가 이 언어로 표시됩니다.</translation>
 <translation id="4222932583846282852">취소 중...</translation>
+<translation id="4224210481850767180">설치가 취소되었습니다.</translation>
 <translation id="4230135487732243613">Chromium 데이터를 이 계정에 연결하시겠습니까?</translation>
 <translation id="4251772536351901305">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chromium 경고를 건너뛸 수 있습니다.</translation>
 <translation id="4269093074552541569">Chromium에서 로그아웃</translation>

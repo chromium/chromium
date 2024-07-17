@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">สีส้ม</translation>
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
 <translation id="1273910660700874265">ตัวเลือกกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">เชิญผู้อื่น</translation>
 <translation id="1419023007528516122">การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร</translation>
 <translation id="1486715732399361704">คุณดูกลุ่มแท็บทั้งหมดได้ที่นี่</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{สร้างเมื่อ <ph name="NUM_MINS_ONE" /> นาทีที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_MINS_MANY" /> นาทีที่ผ่านมา}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">คุณจะเห็นกลุ่มแท็บที่นี่</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
+<translation id="6527303717912515753">แชร์</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{หลังจาก 1 วัน}other{หลังจาก <ph name="DAY_COUNT_MANY" /> วัน}}</translation>
 <translation id="6549021453810473782">ดูข้อมูลร้านค้า</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

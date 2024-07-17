@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">アプリ、拡張機能、テーマをインストールする</translation>
 <translation id="2977598380246111477">次の番号</translation>
 <translation id="2985148236010982088">アプリをすべて表示</translation>
+<translation id="2992272421330787632">メディアの提案をすべて非表示にする</translation>
 <translation id="2992327365391326550">デバイスのマイクボタンはオフになっています。</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3001391739687111021">画面サイズを編集</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">何ができる？</translation>
 <translation id="3256109297135787951">シェルフのアイテムのハイライト表示を解除する</translation>
 <translation id="3260969790895726815">音声はローカルで処理されました。オフラインで音声入力を使用できますが、一部の音声コマンドは動作しません。</translation>
+<translation id="3264031581203585083">Google ドライブの提案をすべて非表示にする</translation>
 <translation id="3265032511221679826">正確な位置情報へのアクセスをオンにしますか？</translation>
 <translation id="3269597722229482060">右クリック</translation>
 <translation id="3274634049061007184">スマートフォンのアプリを表示する</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">画面の録画でクリックとキーボード ショートカットを表示できるようになりました</translation>
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3743775386021959186">フォーカス モードがオンになっています。残り時間は <ph name="REMAINING_TIME" /> です</translation>
+<translation id="3750403286520637847">天気情報の提案を非表示にする</translation>
 <translation id="3756485814916578707">画面をキャストしています</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> のショートカットが、<ph name="OLD_SHORTCUT" /> から <ph name="NEW_SHORTCUT" /> に変更されました</translation>
 <translation id="3765841986579723851">今日編集したファイル</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3923494859158167397">モバイル ネットワークが設定されていません</translation>
 <translation id="3925540965556789199"><ph name="DATE" />、予定を読み込んでいます。</translation>
+<translation id="3927049937406914450">位置情報へのアクセスがオフになっているため、天気情報をご利用いただけません。これは [設定] で変更できます。</translation>
 <translation id="3932043219784172185">接続されているデバイスはありません</translation>
 <translation id="3934456833412894880">アダプティブ充電がオンになっています。バッテリー寿命を延ばすため、残量は 80% に保たれ、必要なときにフル充電します。</translation>
 <translation id="3943857333388298514">貼り付け</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">カメラは右上にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="4316910396681052118">すべてのアプリ</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Chrome ブラウザの提案をすべて非表示にする</translation>
 <translation id="4322742403972824594">キーボード ショートカット「Ctrl+Alt+上矢印」が変更されました。Home キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+左矢印キーを押してください。</translation>
 <translation id="4324840740119394760">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="4327147325944669226">ゲームを録画</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">次回から表示しない</translation>
 <translation id="4451374464530248585">キーボード ショートカット「Alt+下矢印」が変更されました。PageDown キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+下矢印キーを押してください。</translation>
 <translation id="4453876312474547652">Ctrl+V キーを長押しするとクリップボードが表示されます。このショートカットをオフにするには、chrome://flags（Lacros を使用している場合は os://flags）で #clipboard-history-longpress フラグを無効にします。</translation>
+<translation id="445765352722456792">提案をカスタマイズ</translation>
 <translation id="445864333228800152">こんばんは</translation>
 <translation id="4458688154122353284">画面の録画を停止</translation>
 <translation id="445923051607553918">Wi-Fi ネットワークへの接続</translation>
@@ -1332,6 +1338,7 @@
 <translation id="5802516411616338943">クイック設定を開く</translation>
 <translation id="5804651031882187592">[SIM をロックする] 設定をオフにする</translation>
 <translation id="5805809050170488595">クリックすると <ph name="NETWORK_NAME" /> が有効になります</translation>
+<translation id="5819918159912280082">Chromebook が予期せず再起動されました。前回使用していたウィンドウやアプリを開きます。</translation>
 <translation id="5823239091726045201">ウェブの Google ToDo リスト</translation>
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
@@ -1512,6 +1519,7 @@
 <translation id="6469104339369989396">アクセス ポイントを切り替えます</translation>
 <translation id="6477681113376365978">ファイルをダウンロードできません</translation>
 <translation id="6482559668224714696">全画面拡大鏡</translation>
+<translation id="6485086611007560630">天気情報（利用不可）</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
 <translation id="649452524636452238">スマートカードの PIN</translation>
 <translation id="6495322433318104734">スクリーン セーバーを表示しています。終了するにはどれかキーを押してください</translation>
@@ -1782,6 +1790,7 @@
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">PageDown</translation>
+<translation id="7518182783647693467">温度の単位を切り替える（華氏と摂氏）</translation>
 <translation id="7519206258459640379">カメラのフレーミングはオンです。</translation>
 <translation id="7519649142417630956">シャットダウンすると、管理者はログアウトされ、デバイスを操作できなくなります。
 
@@ -1922,6 +1931,7 @@
 <translation id="7951630946012935453">キーボードを暗くする</translation>
 <translation id="7953994493035617347">新しい解像度を確定しますか？</translation>
 <translation id="795958884516058160">全画面拡大鏡をオンにしました。オフにするには、もう一度 <ph name="ACCELERATOR" /> を押します。</translation>
+<translation id="7962583092928373823">Google カレンダーの提案をすべて非表示にする</translation>
 <translation id="7963689218131240420">サイレント モードはオフになっています。</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> から</translation>
 <translation id="7968693143708939792">フォルダを選択...</translation>
@@ -1994,6 +2004,7 @@
 <translation id="8214996719228530800">Canary チャンネル</translation>
 <translation id="8219451629189078428">この間は Chromebook の電源をオンにしておく必要があります。充電器またはアダプタのケーブルが、Chromebook とコンセントの両方にしっかりと接続されていることを確認してください。また、Chromebook の電源をオフにしないでください。</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> 延長</translation>
+<translation id="8228175756124063692">この提案を非表示にする</translation>
 <translation id="8230305195727960608">色反転モード</translation>
 <translation id="8236042855478648955">休憩の時間です</translation>
 <translation id="8237964652943995219">次のデスク: <ph name="DESK_NAME" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
@@ -2179,6 +2190,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> チェックボックスはオフです。</translation>
 <translation id="8949925099261528566">接続済み、インターネット接続なし</translation>
 <translation id="8951539504029375108">お使いの Chromebook に対応しているのは承認済みの Thunderbolt デバイスのみです</translation>
+<translation id="8956420987536947088">前回使用していたウィンドウやアプリを開きます</translation>
 <translation id="8959380109429710384">全画面拡大鏡のキーボード ショートカットを押しました。拡大した状態で移動するには、Ctrl+Alt+矢印キーを使用します。</translation>
 <translation id="8964525410783593407">1 時間</translation>
 <translation id="8973885907461690937">メニュー アイコンにフォーカスする</translation>

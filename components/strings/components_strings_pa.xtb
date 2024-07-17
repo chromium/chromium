@@ -1162,7 +1162,6 @@
 <translation id="3209034400446768650">ਸ਼ਾਇਦ ਪੰਨੇ ਵੱਲੋਂ ਖਰਚੇ ਲਏ ਜਾਣ</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> 'ਤੇ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3215092763954878852">WebAuthn ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕਦੇ</translation>
-<translation id="3215311088819828484">ਨਤੀਜੇ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3216313131063488104">ਬਲੂਜ਼</translation>
 <translation id="3218181027817787318">ਸੰਬੰਧਿਤ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ਹੁਣੇ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}=2{ਕੱਲ੍ਹ ਤੱਕ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}one{# ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}other{# ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ}}</translation>
@@ -2685,7 +2684,6 @@
 <translation id="6116338172782435947">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="6117833587752089929">ਫ਼ੋਟੋ (ਸਾਟਿਨ)</translation>
 <translation id="6118782133429281336">ਮੂਲ ਸੂਚੀ ਖਾਲੀ ਹੈ।</translation>
-<translation id="6120950591512958208">ਚੈੱਕ-ਆਊਟ 'ਤੇ ਇਸ ਕੋਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="612178891608320683">ਵੀਗਨ ਪਕਵਾਨ</translation>
 <translation id="6122181661879998141">ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਅਗਲੇ ਪਾਸੇ</translation>
 <translation id="6124058285696691147">ਨੱਥੀ ਫ਼ਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>

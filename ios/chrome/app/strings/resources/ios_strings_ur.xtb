@@ -8,7 +8,6 @@
 <translation id="102916930470544692">پاس کی</translation>
 <translation id="1035980983510608210">سبھی ٹیبز کو بند کرنے سے پن کردہ ٹیبز بھی بند ہو جائیں گے۔</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">آپ سائن آؤٹ ہو جائیں گے اور براؤزنگ ڈیٹا کو حذف کر دیا جائے گا</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
 <translation id="1049743911850919806">پوشیدگی</translation>
 <translation id="1053651653201045802">سائن آؤٹ ہو گئے۔ اپنے اکاؤنٹ میں بُک مارکس، پاس ورڈز اور مزید استعمال کرنے کے لیے دوبارہ سائن ان کریں۔</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776">بطور <ph name="USER_NAME" /> جاری رکھیں</translation>
 <translation id="1400642268715879018">گزشتہ 4 ہفتے</translation>
 <translation id="1404330357948037222">آپ سائن آؤٹ ہیں</translation>
-<translation id="14066361343057390">آپ کو سائن آؤٹ کر دیا جائے گا</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="1408847409015257906">"رازداری اور سیکیورٹی" پر تھپتھپائیں۔</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
@@ -341,7 +339,6 @@
 <translation id="2712127207578915686">فائل کو کھولنے سے قاصر</translation>
 <translation id="2718352093833049315">‏صرف Wi-Fi پر</translation>
 <translation id="2738375676495545665">'نیا کیا ہے' کو چھپائیں</translation>
-<translation id="2740910715135851329">آپ سائن آؤٹ ہو جائیں گے، ٹیبز بند ہو جائیں گے، براؤزنگ ڈیٹا حذف ہو جائے گا</translation>
 <translation id="2747003861858887689">پچھلا فیلڈ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> کی پیروی کی جا رہی ہے</translation>
 <translation id="2754492786623500387">اس آلے پر موجود اکاؤنٹس</translation>
@@ -392,6 +389,7 @@
 <translation id="2952278131021475699">لینز کیمرا کے ذریعے تلاش</translation>
 <translation id="2958718410589002129">پاس ورڈز</translation>
 <translation id="2964349545761222050">فریق ثالث کوکیز کو مسدود کریں</translation>
+<translation id="2965328226365382335">آخری 15 منٹ</translation>
 <translation id="2969979262385602596">سائن ان کرنے میں ناکام ہوگیا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2975121486251958312">صرف پوشیدگی وضع دستیاب ہے</translation>
 <translation id="2982481275546140226">ڈیٹا صاف کریں</translation>
@@ -539,7 +537,6 @@
 <translation id="3738428049780661523"><ph name="DATE" /> کو تخلیق کیا گیا</translation>
 <translation id="374357899112510277">ڈاؤن لوڈز کو چھپائیں</translation>
 <translation id="3745190878148784130">ٹیکسٹ زوم کریں کو چھپائیں</translation>
-<translation id="3747231889390582072">آپ کی تنظیم کی سیکیورٹی کی حفاظت کے لیے، غیر محفوظ کردہ ڈیٹا کو اس آلہ سے حذف کر دیا جائے گا۔ اس میں پاس ورڈ، براؤزنگ کی سرگزشت، کوکیز اور بہت کچھ شامل ہو سکتا ہے۔</translation>
 <translation id="3762232513783804601">‏آپ کے iPad کے لیے بنایا گیا</translation>
 <translation id="3768725474733206671">آخری بند کردہ ٹیب دوبارہ کھولیں</translation>
 <translation id="3771033907050503522">پوشیدگی ٹیبز</translation>
@@ -718,6 +715,7 @@
 <translation id="4659194143325814340">{count,plural, =1{آپ کی پڑھنے کی فہرست پر {count} صفحہ}other{آپ کی پڑھنے کی فہرست پر {count} صفحات}}</translation>
 <translation id="4659667755519643272">ٹیب سوئچ کنندہ میں داخل ہوں</translation>
 <translation id="46614316059270592">پاس ورڈ محفوظ کریں</translation>
+<translation id="4668929960204016307">،</translation>
 <translation id="467189612236587057">فون کال شروع کر کے کاروبار سے منسلک ہوں</translation>
 <translation id="4682686630151240767">‏1۔ iPhone ترتیبات کھولیں</translation>
 <translation id="4689564913179979534">ادائیگی کے طریقوں کا نظم کریں...</translation>
@@ -1519,7 +1517,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8522147671363140027">{count,plural, =1{‏{count} پاس ورڈ اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}other{‏{count} پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
 <translation id="8522813812888400223">ڈاؤن لوڈ کو منسوخ کریں</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ٹیبز <ph name="FIRST_VISIBLE_TAB" /> سے <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">آپ سائن آؤٹ ہو جائیں گے اور ٹیبز بند ہو جائیں گے۔</translation>
 <translation id="8528009254289981965">پوشیدگی میں دیگر ایپس کے لنکس کھولیں</translation>
 <translation id="8529767659511976195">نئی</translation>
 <translation id="8532105204136943229">میعاد کے اختتام کا سال</translation>

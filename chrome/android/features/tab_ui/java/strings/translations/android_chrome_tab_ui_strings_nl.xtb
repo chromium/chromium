@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Oranje</translation>
 <translation id="125153950246128346">Tik om nog een tabblad te bekijken</translation>
 <translation id="1273910660700874265">Opties voor tabbladgroep <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Mensen uitnodigen</translation>
 <translation id="1419023007528516122">Hiermee wordt de groep definitief van je apparaat verwijderd</translation>
 <translation id="1486715732399361704">Hier vind je al je tabbladgroepen</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> minuut geleden gemaakt}other{<ph name="NUM_MINS_MANY" /> minuten geleden gemaakt}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Hier vind je je tabbladgroepen</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Groepering van <ph name="TABS_COUNT_ONE" /> geselecteerd tabblad opheffen}other{Groepering van <ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen opheffen}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
+<translation id="6527303717912515753">Delen</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Na 1 dag}other{Na <ph name="DAY_COUNT_MANY" /> dagen}}</translation>
 <translation id="6549021453810473782">Winkelinformatie bekijken</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

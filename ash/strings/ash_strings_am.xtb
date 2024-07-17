@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">መተግበሪያዎችን፣ ቅጥያዎችን እና ገጽታዎችን ይጫኑ</translation>
 <translation id="2977598380246111477">ቀጣይ ቁጥር</translation>
 <translation id="2985148236010982088">ሁሉንም መተግበሪያዎች ይመልከቱ</translation>
+<translation id="2992272421330787632">ሁሉንም የሚዲያ ጥቆማዎች ደብቅ</translation>
 <translation id="2992327365391326550">የመሣሪያው ማይክሮፎን አዝራር ጠፍቷል።</translation>
 <translation id="3000461861112256445">ሞኖ ኦዲዮ</translation>
 <translation id="3001391739687111021">የማያ ገጽ መጠንን አርትዕ</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">ምን ማድረግ ይችላሉ?</translation>
 <translation id="3256109297135787951">በእርስዎ መደርደሪያ ላይ በንጥሉ ላይ ያለውን ማድመቂያ ያስወግዱ</translation>
 <translation id="3260969790895726815">ንግግር የሚሰናዳው በአካባቢ ሲሆን በቃል ማስጻፍ ከመስመር ውጭ ይሰራል ነገር ግን አንዳንድ የድምጽ ትዕዛዞች አይሰሩም።</translation>
+<translation id="3264031581203585083">ሁሉንም የGoogle Drive ጥቆማዎች ደብቅ</translation>
 <translation id="3265032511221679826">የትክክለኛ አካባቢ መዳረሻ ይብራ?</translation>
 <translation id="3269597722229482060">የቀኝ ጠቅታ</translation>
 <translation id="3274634049061007184">የስልክዎን መተግበሪያዎች ይመልከቱ</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">አሁን በማያ ቀረጻዎች ውስጥ ጠቅታዎችን እና የቁልፍ ሰሌዳ አቋራጮችን ማሳየት ይችላሉ</translation>
 <translation id="3742055079367172538">ቅጽበታዊ ገፅ ዕይታ ተነስቷል</translation>
 <translation id="3743775386021959186">ትኩረት በርቷል፣ <ph name="REMAINING_TIME" /> ቀርቷል።</translation>
+<translation id="3750403286520637847">የአየር ሁኔታ ጥቆማን ደብቅ</translation>
 <translation id="3756485814916578707">ማያ ገጽን Cast በማድረግ ላይ</translation>
 <translation id="3765841382945324995">የ<ph name="SIX_PACK_KEY_NAME" /> አቋራጭ ከ<ph name="OLD_SHORTCUT" /> ወደ <ph name="NEW_SHORTCUT" /> ዘምኗል</translation>
 <translation id="3765841986579723851">ዛሬ አርትዖት ተደርጎበታል</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">ጡባዊ</translation>
 <translation id="3923494859158167397">ምንም የተንቀሳቃሽ ስልክ አውታረ መረቦች አልተቀናበሩም</translation>
 <translation id="3925540965556789199">የ<ph name="DATE" /> ክስተቶችን በመጫን ላይ።</translation>
+<translation id="3927049937406914450">የአካባቢ መዳረሻ ስለጠፋ የአየር ሁኔታ አይገኝም። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="3932043219784172185">ምንም መሣሪያ አልተገናኘም</translation>
 <translation id="3934456833412894880">ተስማሚ ኃይል መሙላት በርቷል። የባትሪ ዕድሜን ለማራዘም ባትሪዎ 80% ላይ ይቆያል እና ሲያስፈልግዎት ሙሉ በሙሉ ይሞላል።</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">ካሜራ ላይኛው ቀኝ ጥግ ላይ ገጥሟል። ከስርዓት ወለል ጋር ግጭት።</translation>
 <translation id="4316910396681052118">ሁሉም መተግበሪያዎች</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">ሁሉንም የChrome አሳሽ ጥቆማዎች ደብቅ</translation>
 <translation id="4322742403972824594">የCtrl + Alt + የላይ ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የመነሻ ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የግራ ቀስት ይጫኑ።</translation>
 <translation id="4324840740119394760">ይህ የካሜራ ፈቃድ ላላቸው ለ<ph name="APP_NAME" /> እና ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የካሜራ መዳረሻ ይፈቅዳል</translation>
 <translation id="4327147325944669226">ጨዋታን ቅረጽ</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">ዳግም አታሳይ</translation>
 <translation id="4451374464530248585">የAlt + የታች ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የታች ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፉን + የታች ቀስት ይጫኑ።</translation>
 <translation id="4453876312474547652">Ctrl + Vን ተጭነው ሲይዙ የቅንጥብ ሰሌዳውን ያያሉ። በchrome://flags (Lacros እየተጠቀሙ ከሆነ ደግሞ os://flags) ውስጥ የ#clipboard-history-longpress ጠቋሚን በማሰናከል ይህን አቋራጭ ማጥፋት ይችላሉ።</translation>
+<translation id="445765352722456792">ጥቆማዎችን አብጅ</translation>
 <translation id="445864333228800152">ደህን አመሹ ፣</translation>
 <translation id="4458688154122353284">የማያ ገፅ ቀረጻን አቁም</translation>
 <translation id="445923051607553918">የWi-Fi አውታረ መረብ ይቀላቀሉ</translation>
@@ -1332,6 +1338,7 @@
 <translation id="5802516411616338943">ፈጣን ቅንብሮችን ይክፈቱ</translation>
 <translation id="5804651031882187592">«የሲም ቆልፍ» ቅንብርን አጥፋ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" />ን ለማግበር ጠቅ ያድርጉ</translation>
+<translation id="5819918159912280082">የእርስዎ Chromebook ሳይጠበቅ እንደገና ጀምሯል። የእርስዎን ቀዳሚ መስኮቶች እና መተግበሪያዎች ይክፈቱ።</translation>
 <translation id="5823239091726045201">በድር ላይ ያሉ Google ተግባሮች</translation>
 <translation id="5825969630400862129">የተገናኙ መሣሪያዎች ቅንብሮች</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> ላይ <ph name="ROUTE_TITLE" />ን አስቁም</translation>
@@ -1512,6 +1519,7 @@
 <translation id="6469104339369989396">መገናኛ ነጥብን ቀያይር</translation>
 <translation id="6477681113376365978">ፋይል ማውረድ አልተቻለም</translation>
 <translation id="6482559668224714696">የሙሉ ማያ ገፅ ማጉያ</translation>
+<translation id="6485086611007560630">የአየር ሁኔታ (አይገኝም)</translation>
 <translation id="6490471652906364588">USB-C መሣሪያ (የቀኝ ወደብ)</translation>
 <translation id="649452524636452238">የዘመናዊ ካርድ ፒን</translation>
 <translation id="6495322433318104734">ማያ ገፅ ቆጣቢን በማሳየት ላይ፣ ለመውጣት ማንኛውንም ቁልፍ ይጫኑ</translation>
@@ -1782,6 +1790,7 @@
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">ገጽ ወደታች</translation>
+<translation id="7518182783647693467">የሙቀት ክፍሎችን ቀያይር (ፋ ከሴ ጋር ሲወዳደር)</translation>
 <translation id="7519206258459640379">የካሜራ ክፈፍ መስራት በርቷል።</translation>
 <translation id="7519649142417630956">አንዴ ከተዘጋ በኋላ አስተዳዳሪው የሚወጣ ሲሆን መሣሪያዎን መቆጣጠር የሚችል አይሆንም።
 
@@ -1922,6 +1931,7 @@
 <translation id="7951630946012935453">የቁልፍ ሰሌዳን አደብዝዝ</translation>
 <translation id="7953994493035617347">አዲሱ ጥራት ይረጋገጥ?</translation>
 <translation id="795958884516058160">ባለሙሉ ማያ ገጽ ማጉያ ነቅቷል። በመቀያየሪያው ለመጥፋት <ph name="ACCELERATOR" /> የሚለውን በድጋሚ ይጫኑ።</translation>
+<translation id="7962583092928373823">ሁሉንም የGoogle ቀን መቁጠሪያ ጥቆማዎች ደብቅ</translation>
 <translation id="7963689218131240420">አትረብሽ ጠፍቷል</translation>
 <translation id="7963992254934562106">ከ<ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">አቃፊ ምረጥ...</translation>
@@ -1994,6 +2004,7 @@
 <translation id="8214996719228530800">የካናሪ ሰርጥ</translation>
 <translation id="8219451629189078428">በዚህ ጊዜ የእርስዎ Chromebook እንደበራ መቆየት እና ከኃይል ጋር መገናኘት አለበት። የባትሪ መሙያ ወይም የአስማሚ ገመዶች ከሁለቱም በእርስዎ Chromebook እና በኃይል መሰኪያው ላይ ሙሉ ለሙሉ መሰካታቸውን ያረጋግጡ። የእርስዎን Chromebook አያጥፉት።</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> አክል</translation>
+<translation id="8228175756124063692">ይህን ጥቆማ ደብቅ</translation>
 <translation id="8230305195727960608">የተቃራኒ ቀለም ሁነታ</translation>
 <translation id="8236042855478648955">የዕረፍት ጊዜ</translation>
 <translation id="8237964652943995219">ቀጣዩ ዴስክ፦ <ph name="DESK_NAME" />። <ph name="DESK_INDEX" /> ዴስክ ከ<ph name="DESK_COUNT" />።</translation>
@@ -2181,6 +2192,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> አመልካች ሳጥኑ ላይ ምልክት አልተደረገም።</translation>
 <translation id="8949925099261528566">ተገናኝቷል፣ ምንም በይነመረብ የለም</translation>
 <translation id="8951539504029375108">ከእርስዎ Chromebook ጋር የጸደቁ Thunderbolt መሣሪያዎች ብቻ ተስማሚ ናቸው</translation>
+<translation id="8956420987536947088">የእርስዎን ቀዳሚ መስኮቶች እና መተግበሪያዎች ይክፈቱ</translation>
 <translation id="8959380109429710384">የሙሉ ማያ ገጽ ማጉያ የሆነውን የቁልፍ ሰሌዳ አቋራጭ ተጭነዋል። በጎላው እይታ ውስጥ ለመንቀሳቀስ Ctrl + alt + የአቅጣጫ ቁልፎችን ይጠቀሙ።</translation>
 <translation id="8964525410783593407">1 ሰዓት</translation>
 <translation id="8973885907461690937">በምናሌ አዶው ላይ ያተኩሩ</translation>

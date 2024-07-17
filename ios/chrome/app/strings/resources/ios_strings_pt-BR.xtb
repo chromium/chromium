@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1035980983510608210">Ao fechar todas as guias, as fixadas também vão ser fechadas.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Sua conta será desconectada e os dados de navegação serão excluídos</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
 <translation id="1053651653201045802">Conta desconectada. Faça login novamente para acessar os favoritos, as senhas e outros itens da sua conta.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Senhas</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Dados de navegação</translation>
 <translation id="1400642268715879018">Últimas quatro semanas</translation>
 <translation id="1404330357948037222">Sua conta está desconectada</translation>
-<translation id="14066361343057390">Sua conta será desconectada</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408847409015257906">Toque em "Privacidade e segurança".</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -341,7 +340,6 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2712127207578915686">Não foi possível abrir arquivo</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
 <translation id="2738375676495545665">Ocultar as Novidades</translation>
-<translation id="2740910715135851329">Sua conta será desconectada, as guias serão fechadas e os dados de navegação serão excluídos</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Seguindo <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
@@ -392,6 +390,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2958718410589002129">Senhas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
+<translation id="2965328226365382335">Últimos 15 minutos</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
 <translation id="2975121486251958312">Apenas o modo de navegação anônima está disponível</translation>
 <translation id="2982481275546140226">Remover dados</translation>
@@ -539,7 +538,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3738428049780661523">Criação: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Downloads</translation>
 <translation id="3745190878148784130">Ocultar "Aplicar zoom no texto"</translation>
-<translation id="3747231889390582072">Para proteger a segurança da sua organização, os dados não salvos serão excluídos deste dispositivo. Isso pode incluir senhas, histórico de navegação, cookies e muito mais.</translation>
 <translation id="3762232513783804601">Criado para o iPad</translation>
 <translation id="3768725474733206671">Reabrir a última guia fechada</translation>
 <translation id="3771033907050503522">Guias anônimas</translation>
@@ -718,6 +716,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4659194143325814340">{count,plural, =1{{count} página na sua Lista de leitura}one{{count} página na sua Lista de leitura}other{{count} páginas na sua Lista de leitura}}</translation>
 <translation id="4659667755519643272">Entrar no seletor guias</translation>
 <translation id="46614316059270592">Salvar senha</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Ligue para uma empresa para mais informações</translation>
 <translation id="4682686630151240767">1. Abra o app Ajustes do iPhone</translation>
 <translation id="4689564913179979534">Gerenciar formas de pagamento…</translation>
@@ -1519,7 +1518,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8522147671363140027">{count,plural, =1{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} senha e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} senhas e outros itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
 <translation id="8522813812888400223">Cancelar o download</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Guias <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Sua conta será desconectada e as guias serão fechadas</translation>
 <translation id="8528009254289981965">Abrir links de outros apps na navegação anônima</translation>
 <translation id="8529767659511976195">Novo</translation>
 <translation id="8532105204136943229">Ano de vencimento</translation>
@@ -1600,6 +1598,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8876882697946675716">Manter os dispositivos sincronizados</translation>
 <translation id="8879604564928138696">Toque duas vezes para testar</translation>
 <translation id="8881801611828450202">Pesquisar esta imagem no <ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">Fechar todos os grupos e guias</translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
 <translation id="890565330728586731">Voltar</translation>
 <translation id="8909135823018751308">Compartilhar...</translation>

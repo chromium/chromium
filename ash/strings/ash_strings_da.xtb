@@ -521,6 +521,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2970920913501714344">Installer apps, udvidelser og temaer</translation>
 <translation id="2977598380246111477">Næste tal</translation>
 <translation id="2985148236010982088">Se alle apps</translation>
+<translation id="2992272421330787632">Skjul alle medieforslag</translation>
 <translation id="2992327365391326550">Enhedens mikrofonknap er slået fra.</translation>
 <translation id="3000461861112256445">Monolyd</translation>
 <translation id="3001391739687111021">Rediger skærmstørrelse</translation>
@@ -591,6 +592,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3255483164551725916">Hvad kan du gøre?</translation>
 <translation id="3256109297135787951">Fjern fremhævningen af et element på din hylde</translation>
 <translation id="3260969790895726815">Tale behandles lokalt, og diktering fungerer offline, men visse stemmekommandoer fungerer ikke.</translation>
+<translation id="3264031581203585083">Skjul alle Google Drev-forslag</translation>
 <translation id="3265032511221679826">Vil du aktivere præcis lokationsadgang?</translation>
 <translation id="3269597722229482060">Højreklik</translation>
 <translation id="3274634049061007184">Se din telefons apps</translation>
@@ -742,6 +744,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3738664582935948253">Du kan nu vise klik og tastaturgenveje i skærmoptagelser</translation>
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
 <translation id="3743775386021959186">Fokus er aktiveret, <ph name="REMAINING_TIME" /> tilbage</translation>
+<translation id="3750403286520637847">Skjul vejrforslag</translation>
 <translation id="3756485814916578707">Skærmen castes</translation>
 <translation id="3765841382945324995">Genvejen for <ph name="SIX_PACK_KEY_NAME" /> er opdateret til <ph name="NEW_SHORTCUT" /> fra <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Redigeret i dag</translation>
@@ -781,6 +784,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Der er ikke konfigureret nogen mobilnetværk</translation>
 <translation id="3925540965556789199"><ph name="DATE" /> – indlæser begivenhederne.</translation>
+<translation id="3927049937406914450">Vejrudsigten er ikke tilgængelig, fordi lokationsadgang er deaktiveret. Du kan ændre dette i indstillingerne.</translation>
 <translation id="3932043219784172185">Der er ikke nogen forbundne enheder</translation>
 <translation id="3934456833412894880">Adaptiv opladning er aktiveret. Dit batteri oplades til 80 % for at forlænge batteritiden og oplades helt, når du har brug for det.</translation>
 <translation id="3943857333388298514">Indsæt</translation>
@@ -806,6 +810,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="40062176907008878">Håndskrift</translation>
 <translation id="4011112806063830608">Forstyr ikke er aktiveret.</translation>
+<translation id="4015144849380506405">Sæt musetasterne på pause, eller genoptag dem, når musen er tændt</translation>
 <translation id="4017989525502048489">Lasermarkør</translation>
 <translation id="401993194061514265">Markøren er ikke tilgængelig. Åbn Screencast igen.</translation>
 <translation id="4021716437419160885">Rul ned</translation>
@@ -896,6 +901,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4312840429157639164">Kameraet er fastgjort til hjørnet øverst til højre. Dette er i strid med systemfladen.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Skjul alle forslag i Chrome-browseren</translation>
 <translation id="4322742403972824594">Tastaturgenvejen Ctrl+Alt+pil op er blevet ændret. Hvis du vil bruge Home-tasten, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+venstrepil.</translation>
 <translation id="4324840740119394760">Dette giver <ph name="APP_NAME" /> og alle andre apps samt websites med kameratilladelse adgang til kameraet</translation>
 <translation id="4327147325944669226">Optag spil</translation>
@@ -929,6 +935,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4450893287417543264">Vis ikke igen</translation>
 <translation id="4451374464530248585">Tastaturgenvejen Alt+pil ned er blevet ændret. Hvis du vil bruge tasten Page Down, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+pil ned.</translation>
 <translation id="4453876312474547652">Du kan se udklipsholderen ved at holde fingeren på Ctrl+V. Hvis du vil deaktivere denne genvej, skal du deaktivere demofunktionen #clipboard-history-longpress i chrome://flags (os://flags ved brug af Lacros).</translation>
+<translation id="445765352722456792">Tilpas forslag</translation>
 <translation id="445864333228800152">Godaften</translation>
 <translation id="4458688154122353284">Stop skærmoptagelse</translation>
 <translation id="445923051607553918">Vælg Wi-Fi-netværk</translation>
@@ -1331,6 +1338,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5802516411616338943">Åbn kvikmenuen</translation>
 <translation id="5804651031882187592">Deaktiver indstillingen "Lås SIM-kort"</translation>
 <translation id="5805809050170488595">Klik for at aktivere <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Din Chromebook genstartede uventet. Åbn dine tidligere vinduer og apps.</translation>
 <translation id="5823239091726045201">Google Huskeliste på nettet</translation>
 <translation id="5825969630400862129">Indstillinger for tilsluttede enheder</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
@@ -1511,6 +1519,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6469104339369989396">Slå hotspot til/fra</translation>
 <translation id="6477681113376365978">Filen kan ikke downloades</translation>
 <translation id="6482559668224714696">Forstørrelse af fuld skærm</translation>
+<translation id="6485086611007560630">Vejr (ikke tilgængelige)</translation>
 <translation id="6490471652906364588">USB-C-enhed (højre port)</translation>
 <translation id="649452524636452238">Pinkode til chipkort</translation>
 <translation id="6495322433318104734">Viser pauseskærmen. Tryk på en tast for at afslutte</translation>
@@ -1780,6 +1789,7 @@ Installeret for nylig</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page Down</translation>
+<translation id="7518182783647693467">Skift mellem temperaturenheder (F eller C)</translation>
 <translation id="7519206258459640379">Automatisk zoom er aktiveret.</translation>
 <translation id="7519649142417630956">Når enheden er slukket, logges administratoren ud, og vedkommende kan ikke styre din enhed.
 
@@ -1920,6 +1930,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7951630946012935453">Dæmp tastaturets lys</translation>
 <translation id="7953994493035617347">Vil du bekræfte den nye opløsning?</translation>
 <translation id="795958884516058160">Forstørrelse af fuld skærm er aktiveret. Tryk på <ph name="ACCELERATOR" /> igen for at deaktivere funktionen.</translation>
+<translation id="7962583092928373823">Skjul alle Google Kalender-forslag</translation>
 <translation id="7963689218131240420">Forstyr ikke er deaktiveret.</translation>
 <translation id="7963992254934562106">Fra <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vælg mappe...</translation>
@@ -1992,6 +2003,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Din Chromebook skal være tændt og tilsluttet strøm i dette tidsrum. Sørg for, at opladeren eller adapterkablerne er sat korrekt i, både i din Chromebook og i stikkontakten. Sluk ikke for din Chromebook.</translation>
 <translation id="8220076512072059941">Tilføj <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Skjul dette forslag</translation>
 <translation id="8230305195727960608">Tilstand for ombytning af farver</translation>
 <translation id="8236042855478648955">Det er tid til at tage en pause</translation>
 <translation id="8237964652943995219">Næste skrivebord: <ph name="DESK_NAME" />. Skrivebord <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
@@ -2178,6 +2190,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="894774083269346314">Afkrydsningsfeltet <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> er ikke markeret.</translation>
 <translation id="8949925099261528566">Forbundet – intet internet</translation>
 <translation id="8951539504029375108">Det er kun godkendte Thunderbolt-enheder, der er kompatible med din Chromebook</translation>
+<translation id="8956420987536947088">Åbn dine tidligere vinduer og apps</translation>
 <translation id="8959380109429710384">Du trykkede på tastaturgenvejen for forstørrelse af fuld skærm. Brug Ctrl+Alt+pilene til at navigere i visningen, der er zoomet ind på.</translation>
 <translation id="8964525410783593407">1 t.</translation>
 <translation id="8973885907461690937">Ikon for fokusering på menu</translation>

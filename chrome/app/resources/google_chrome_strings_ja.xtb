@@ -15,6 +15,7 @@
 <translation id="1149651794389918149">Chrome にログインしますアカウントに今回だけログインする場合は、<ph name="GUEST_LINK_BEGIN" />デバイスをゲストとして使用<ph name="GUEST_LINK_END" />できます。</translation>
 <translation id="1152920704813762236">ChromeOS について</translation>
 <translation id="1154147086299354128">Chrome で開く(&amp;O)</translation>
+<translation id="1184145431117212167">Windows のバージョンがサポートされていないためインストールできませんでした。</translation>
 <translation id="1194807384646768652">このダウンロードは Chrome でブロックされました。ファイル形式が一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1229096353876452996">Chrome を既定のブラウザに設定することをおすすめします</translation>
@@ -234,6 +235,7 @@
 <translation id="4191857738314598978">{0,plural, =1{1 日以内に Chrome を再起動してください}other{# 日以内に Chrome を再起動してください}}</translation>
 <translation id="4205939740494406371">Chrome でパスワードを確認できません。24 時間後にもう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウントでパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="4222932583846282852">キャンセルしています...</translation>
+<translation id="4224210481850767180">インストールをキャンセルしました。</translation>
 <translation id="4242034826641750751">このサイトを利用するには、Chrome でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4251615635259297716">Chrome データをこのアカウントにリンクしますか？</translation>

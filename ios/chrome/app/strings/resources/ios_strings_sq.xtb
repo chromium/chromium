@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1035980983510608210">Mbyllja e të gjitha skedave do të mbyllë edhe skedat e gozhduara.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Do të dalësh nga llogaria dhe të dhënat e shfletimit do të fshihen</translation>
 <translation id="1044891598689252897">Sajtet do të punojnë normalisht</translation>
 <translation id="1049743911850919806">I fshehtë</translation>
 <translation id="1053651653201045802">Ke dalë. Identifikohu përsëri për të përdorur faqeshënuesit, fjalëkalimet etj. në llogarinë tënde.</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776">Vazhdo si <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 javët e fundit</translation>
 <translation id="1404330357948037222">Ke dalë</translation>
-<translation id="14066361343057390">Do të dalësh nga llogaria</translation>
 <translation id="1407135791313364759">Hapi të gjitha</translation>
 <translation id="1408847409015257906">Trokit te "Privatësia dhe siguria".</translation>
 <translation id="1430915738399379752">Printo</translation>
@@ -341,7 +339,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2712127207578915686">Skedari nuk mund të hapet</translation>
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
 <translation id="2738375676495545665">Fshih "Ç'të reja ka"</translation>
-<translation id="2740910715135851329">Do të dalësh nga llogaria, skedat do të mbyllen, të dhënat e shfletimit janë fshirë</translation>
 <translation id="2747003861858887689">Fusha e mëparshme</translation>
 <translation id="2749231692441336879">Po ndjek <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Llogaritë në këtë pajisje</translation>
@@ -392,6 +389,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2952278131021475699">Kërkimi me kamerën e "Lentes"</translation>
 <translation id="2958718410589002129">Fjalëkalimet</translation>
 <translation id="2964349545761222050">Blloko kukit e palëve të treta</translation>
+<translation id="2965328226365382335">15 minutat e fundit</translation>
 <translation id="2969979262385602596">Nuk mund të identifikohej. Provo përsëri.</translation>
 <translation id="2975121486251958312">Ofrohet vetëm modaliteti "i fshehtë"</translation>
 <translation id="2982481275546140226">Pastro të dhënat</translation>
@@ -539,7 +537,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3738428049780661523">Krijuar më <ph name="DATE" /></translation>
 <translation id="374357899112510277">Fshih "Shkarkimet"</translation>
 <translation id="3745190878148784130">Fshih "Zmadho tekstin"</translation>
-<translation id="3747231889390582072">Për të mbrojtur sigurinë e organizatës sate, të dhënat e paruajtura do të fshihen nga kjo pajisje. Kjo mund të përfshijë fjalëkalimet, historikun e shfletimit, kukit etj.</translation>
 <translation id="3762232513783804601">Krijuar për iPad tënd</translation>
 <translation id="3768725474733206671">Rihap skedën e fundit të mbyllur</translation>
 <translation id="3771033907050503522">Skedat "e fshehura"</translation>
@@ -718,6 +715,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4659194143325814340">{count,plural, =1{{count} faqe në "Listën e leximit"}other{{count} faqe në "Listën e leximit"}}</translation>
 <translation id="4659667755519643272">Futu te "Ndërruesi i skedave"</translation>
 <translation id="46614316059270592">Ruaj fjalëkalimin</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Lidhu me një biznes duke nisur një telefonatë</translation>
 <translation id="4682686630151240767">1. Hap "Cilësimet e iPhone"</translation>
 <translation id="4689564913179979534">Menaxho mënyrat e pagesës...</translation>
@@ -1326,6 +1324,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7609559547731036746">Faqeshënuesit</translation>
 <translation id="7638584964844754484">Shprehje kalimi e pasaktë</translation>
 <translation id="7640669552036055091">Skedat nga Android</translation>
+<translation id="7643790043444820023">Personalizo faqen kryesore</translation>
 <translation id="7646263789464975852">Menyja → Cilësimet → Kontrolli i sigurisë</translation>
 <translation id="7646772052135772216">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
 <translation id="764827086632467055">Trokit tek "Aplikacioni i parazgjedhur i shfletuesit"</translation>
@@ -1518,7 +1517,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8522147671363140027">{count,plural, =1{{count} fjalëkalim dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", {email}.}other{{count} fjalëkalime dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", {email}.}}</translation>
 <translation id="8522813812888400223">Anulo shkarkimin</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Skeda <ph name="FIRST_VISIBLE_TAB" /> deri <ph name="LAST_VISIBLE_TAB" /> nga <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Do të dalësh nga llogaria dhe skedat do të mbyllen</translation>
 <translation id="8528009254289981965">Hap lidhjet nga aplikacionet e tjera në modalitetin "E fshehtë"</translation>
 <translation id="8529767659511976195">Risi</translation>
 <translation id="8532105204136943229">Viti i skadimit</translation>

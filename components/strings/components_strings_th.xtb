@@ -1164,7 +1164,6 @@
 <translation id="3209034400446768650">อาจมีการเรียกเก็บเงินในหน้านี้</translation>
 <translation id="3212581601480735796">มีการตรวจสอบกิจกรรมที่คุณทำใน <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">ใช้ WebAuthn ไม่ได้</translation>
-<translation id="3215311088819828484">อัปเดตผลลัพธ์แล้ว</translation>
 <translation id="3216313131063488104">บลูส์</translation>
 <translation id="3218181027817787318">Relative</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ต้องอัปเดตเลย}=2{ต้องอัปเดตภายในวันพรุ่งนี้}other{ต้องอัปเดตภายใน # วัน}}</translation>
@@ -2687,7 +2686,6 @@
 <translation id="6116338172782435947">ดูข้อความและรูปภาพที่คัดลอกไปที่คลิปบอร์ด</translation>
 <translation id="6117833587752089929">รูปภาพ (ซาติน)</translation>
 <translation id="6118782133429281336">รายการต้นทางว่างเปล่า</translation>
-<translation id="6120950591512958208">ใช้รหัสนี้เมื่อชำระเงิน</translation>
 <translation id="612178891608320683">อาหารวีแกน</translation>
 <translation id="6122181661879998141">ด้านหน้าบัตร</translation>
 <translation id="6124058285696691147">ดาวน์โหลดไฟล์แนบ</translation>

@@ -852,7 +852,6 @@
 <translation id="254524874071906077">ຕັ້ງ Chrome ເປັນບຣາວ​ເຊີມາດຕະຖານ</translation>
 <translation id="2545721997179863249">ເລືອກຕົວເລືອກຕື່ມຂໍ້ມູນທຸກຢ່າງແລ້ວ</translation>
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
-<translation id="2546678870939430879">ເຮັດຊ້ຳຜົນໄດ້ຮັບ</translation>
 <translation id="254947805923345898">ຄ່ານະໂຍບາຍບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="2549836668759467704">ທີ່ປຶກສາການກໍ່ສ້າງ ແລະ ການເຮັດສັນຍາ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ໄດ້ສົ່ງຄຳຕອບທີ່ບໍ່ຖືກຕ້ອງ.</translation>
@@ -1035,7 +1034,6 @@
 <translation id="2954624054936281172">ຕາຕະລາງວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້</translation>
 <translation id="295526156371527179">ຄຳເຕືອນ: ນະໂຍບາຍນີ້ບໍ່ຖືກຮວມເຂົ້າກັນເປັນພົດຈະນານຸກົມຕາມທີ່ລະບຸໄວ້ໂດຍນະໂຍບາຍ ເພາະວ່າມັນບໍ່ແມ່ນພົດຈະນານຸກົມ.</translation>
 <translation id="2955913368246107853">ປິດຊອກຫາແຖບ</translation>
-<translation id="2958345633099973853">ຍົກເລີກຜົນໄດ້ຮັບ</translation>
 <translation id="2958544468932521864">ຄຣິກເກັດ</translation>
 <translation id="2959274854674276289">ອາຫານມັງສະວິລັດ</translation>
 <translation id="2961809451460302960">ປະກັນໄພຊີວິດ</translation>
@@ -1166,7 +1164,6 @@
 <translation id="3209034400446768650">ໜ້າອາດຈະຮຽກເກັບເງິນ</translation>
 <translation id="3212581601480735796">ກຳລັງມີການຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນ <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">ບໍ່ສາມາດໃຊ້ WebAuthn ໄດ້</translation>
-<translation id="3215311088819828484">ອັບເດດຜົນໄດ້ຮັບແລ້ວ</translation>
 <translation id="3216313131063488104">ສີຟ້າ</translation>
 <translation id="3218181027817787318">ຍາດພີ່ນ້ອງ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ຕ້ອງອັບເດດຕອນນີ້}=2{ຕ້ອງອັບເດດພາຍໃນມື້ອື່ນ}other{ຕ້ອງອັບເດດພາຍໃນ # ມື້}}</translation>
@@ -2516,7 +2513,6 @@
 <translation id="5772086939108830423">ໃຊ້ກະແຈຜ່ານຢູ່ອຸປະກອນອື່ນ</translation>
 <translation id="5776313857861697733">ບຸລິມະສິດ</translation>
 <translation id="5776574724412881956">ບໍ່ໄດ້ຕື່ມຂໍ້ມູນບັດສະເໝືອນບໍ? ຄລິກລາຍລະອຽດບັດສະເໝືອນເພື່ອສຳເນົາໄປໃສ່ຄລິບບອດ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">ກຳລັງໂຫຼດຜົນໄດ້ຮັບ</translation>
 <translation id="5781136890105823427">ເປີດນຳໃຊ້ການທົດລອງແລ້ວ</translation>
 <translation id="578305955206182703">ສີເຫຼືອງອຳພັນ</translation>
 <translation id="5783700460098783980">ກະເປົາ ແລະ ອຸປະກອນສຳລັບການເດີນທາງ</translation>
@@ -2691,7 +2687,6 @@
 <translation id="6116338172782435947">ເຫັນຂໍ້ຄວາມ ແລະ ຮູບພາບທີ່ສຳເນົາໄວ້ໃນຄລິບບອດ</translation>
 <translation id="6117833587752089929">ຮູບພາບ (ຊາຕິນ)</translation>
 <translation id="6118782133429281336">ລາຍຊື່ຕົ້ນທາງຫວ່າງເປົ່າ.</translation>
-<translation id="6120950591512958208">ໃຊ້ລະຫັດນີ້ເພື່ອຈ່າຍເງິນ.</translation>
 <translation id="612178891608320683">ອາຫານເຈ</translation>
 <translation id="6122181661879998141">ດ້ານໜ້າບັດຂອງທ່ານ</translation>
 <translation id="6124058285696691147">ດາວໂຫຼດໄຟລ໌ແນບ</translation>

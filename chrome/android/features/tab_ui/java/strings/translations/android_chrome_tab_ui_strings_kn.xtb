@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">ಕಿತ್ತಳೆ</translation>
 <translation id="125153950246128346">ಇನ್ನೊಂದು ಟ್ಯಾಬ್ ನೋಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪಿನ ಆಯ್ಕೆಗಳು</translation>
-<translation id="1322824555808364080">ಜನರನ್ನು ಆಹ್ವಾನಿಸಿ</translation>
 <translation id="1419023007528516122">ಇದು ನಿಮ್ಮ ಸಾಧನದಿಂದ ಗುಂಪನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸುತ್ತದೆ</translation>
 <translation id="1486715732399361704">ನಿಮ್ಮ ಎಲ್ಲಾ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> ನಿಮಿಷದ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{<ph name="NUM_MINS_MANY" /> ನಿಮಿಷಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}other{<ph name="NUM_MINS_MANY" /> ನಿಮಿಷಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಕಾಣುತ್ತೀರಿ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}one{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}other{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
+<translation id="6527303717912515753">ಹಂಚಿಕೊಳ್ಳು</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 ದಿನದ ನಂತರ}one{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಂತರ}other{<ph name="DAY_COUNT_MANY" /> ದಿನಗಳ ನಂತರ}}</translation>
 <translation id="6549021453810473782">ಸ್ಟೋರ್ ಮಾಹಿತಿಯನ್ನು ನೋಡಿ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

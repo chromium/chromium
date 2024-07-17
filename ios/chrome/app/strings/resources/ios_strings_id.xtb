@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Kunci sandi</translation>
 <translation id="1035980983510608210">Menutup semua tab juga akan menutup tab tersemat.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Anda akan logout dan data penjelajahan akan dihapus</translation>
 <translation id="1044891598689252897">Situs akan berfungsi secara normal</translation>
 <translation id="1049743911850919806">Samaran</translation>
 <translation id="1053651653201045802">Telah Logout. Login kembali untuk menggunakan bookmark, sandi, dan lainnya di akun Anda.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Sandi</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="138618066238211776">Lanjutkan sebagai <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Data Perambanan</translation>
 <translation id="1400642268715879018">4 Minggu Terakhir</translation>
 <translation id="1404330357948037222">Anda Telah Logout</translation>
-<translation id="14066361343057390">Anda akan logout</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1408847409015257906">Ketuk “Privasi &amp; Keamanan”.</translation>
 <translation id="1430915738399379752">Cetak</translation>
@@ -341,7 +340,6 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2712127207578915686">Tidak Dapat Membuka File</translation>
 <translation id="2718352093833049315">Hanya melalui Wi-Fi</translation>
 <translation id="2738375676495545665">Sembunyikan Yang Baru</translation>
-<translation id="2740910715135851329">Anda akan logout, tab akan ditutup, data penjelajahan akan dihapus</translation>
 <translation id="2747003861858887689">Bidang sebelumnya</translation>
 <translation id="2749231692441336879">Mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akun di Perangkat ini</translation>
@@ -392,6 +390,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2952278131021475699">Penelusuran Kamera Lens</translation>
 <translation id="2958718410589002129">Sandi</translation>
 <translation id="2964349545761222050">Blokir Cookie Pihak Ketiga</translation>
+<translation id="2965328226365382335">15 Menit Terakhir</translation>
 <translation id="2969979262385602596">Gagal masuk. Coba lagi nanti.</translation>
 <translation id="2975121486251958312">Hanya Mode Samaran yang Tersedia</translation>
 <translation id="2982481275546140226">Hapus Data</translation>
@@ -539,7 +538,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3738428049780661523">Dibuat <ph name="DATE" /></translation>
 <translation id="374357899112510277">Sembunyikan Download</translation>
 <translation id="3745190878148784130">Sembunyikan Zoom Teks</translation>
-<translation id="3747231889390582072">Untuk melindungi keamanan organisasi Anda, data yang belum disimpan akan dihapus dari perangkat ini. Data ini dapat mencakup sandi, histori penjelajahan, cookie, dan lainnya.</translation>
 <translation id="3762232513783804601">Dibuat untuk iPad Anda</translation>
 <translation id="3768725474733206671">Buka Ulang Tab yang Terakhir Ditutup</translation>
 <translation id="3771033907050503522">Tab Samaran</translation>
@@ -718,6 +716,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4659194143325814340">{count,plural, =1{{count} halaman di Daftar Bacaan Anda}other{{count} halaman di Daftar Bacaan Anda}}</translation>
 <translation id="4659667755519643272">Masuk Pengalih Tab</translation>
 <translation id="46614316059270592">Simpan Sandi</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Terhubung dengan bisnis melalui panggilan telepon</translation>
 <translation id="4682686630151240767">1. Buka Settings di iPhone</translation>
 <translation id="4689564913179979534">Kelola Metode Pembayaran...</translation>
@@ -1519,7 +1518,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8522147671363140027">{count,plural, =1{{count} sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi dan item lainnya di Akun Google Anda, {email}.}other{{count} sandi dan item lainnya hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi dan item lainnya di Akun Google Anda, {email}.}}</translation>
 <translation id="8522813812888400223">Batalkan Download</translation>
 <translation id="8524799873541103884">Tab <ph name="FIRST_VISIBLE_TAB" /> hingga <ph name="LAST_VISIBLE_TAB" /> dari <ph name="NUMBER_OF_OPEN_TABS" /> dalam mode <ph name="INCOGNITO" /></translation>
-<translation id="852576975834694248">Anda akan logout dan tab akan ditutup</translation>
 <translation id="8528009254289981965">Buka link dari aplikasi lain dalam mode Samaran</translation>
 <translation id="8529767659511976195">Baru</translation>
 <translation id="8532105204136943229">Tahun Masa Berlaku Habis</translation>
@@ -1600,6 +1598,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8876882697946675716">Jaga Perangkat Anda Tetap Sinkron</translation>
 <translation id="8879604564928138696">Ketuk dua kali untuk mencoba</translation>
 <translation id="8881801611828450202">Telusuri Gambar Ini di <ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">Tutup Semua Tab dan Grup</translation>
 <translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>
 <translation id="890565330728586731">Kembali</translation>
 <translation id="8909135823018751308">Bagikan...</translation>

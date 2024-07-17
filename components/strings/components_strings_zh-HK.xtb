@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">重新啟動教學課程</translation>
 <translation id="2219735899272417925">必須重設裝置</translation>
 <translation id="2221227930294879156">美食節</translation>
+<translation id="2222604080869344662">登入 OneDrive 繼續下載</translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2225927550500503913">虛擬卡已啟用</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />登入<ph name="END_LINK" /> Wi-Fi 網絡</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">Google Chrome 正嘗試編輯付款方法。</translation>
 <translation id="2400600116338235695">可要求連接序列連接埠</translation>
 <translation id="2404884497378469141">嘗試再次複製檔案</translation>
+<translation id="2412310121876768057">下次自動填寫卡資料？</translation>
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已被撤銷。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="2414886740292270097">灰暗</translation>
@@ -1162,7 +1164,6 @@
 <translation id="3209034400446768650">網頁可能會收取費用</translation>
 <translation id="3212581601480735796">您在 <ph name="HOSTNAME" /> 上進行的活動正受監控</translation>
 <translation id="3215092763954878852">無法使用 WebAuthn</translation>
-<translation id="3215311088819828484">結果已更新</translation>
 <translation id="3216313131063488104">藍調</translation>
 <translation id="3218181027817787318">相對</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{請立即更新}=2{最遲請在明天完成更新}other{請在 # 天內更新}}</translation>
@@ -1241,6 +1242,7 @@
 <translation id="3352881017886802007">體育遊戲</translation>
 <translation id="3355823806454867987">變更 Proxy 設定…</translation>
 <translation id="335809815767823">匯出咗</translation>
+<translation id="3359387651158939842">儲存信用卡資料以用於 Google Pay 後，日後購物時可自動填寫卡資料</translation>
 <translation id="3359565626472459400">婚姻</translation>
 <translation id="3360103848165129075">付款處理常式工作表</translation>
 <translation id="3362968246557010467">此政策是從已淘汰的 <ph name="OLD_POLICY" /> 政策自動複製而來，請改用此政策。</translation>
@@ -2054,6 +2056,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奧運會</translation>
 <translation id="4898742041545089450">此主題已解除封鎖。系統可能根據你的瀏覽記錄，將該主題設定為有效主題</translation>
+<translation id="4899379435492347481">儲存卡資料，以便在各種裝置使用 Google Pay 網上購物</translation>
 <translation id="4900217275619098670">第九卷</translation>
 <translation id="4901052769830245369">標籤 (半光面)</translation>
 <translation id="4901162432287938633">衛生和浴室用品</translation>
@@ -2683,7 +2686,6 @@
 <translation id="6116338172782435947">查看複製到剪貼簿的文字和圖片</translation>
 <translation id="6117833587752089929">相紙 (光滑)</translation>
 <translation id="6118782133429281336">來源清單空白。</translation>
-<translation id="6120950591512958208">在結帳時使用此折扣代碼。</translation>
 <translation id="612178891608320683">純素菜式</translation>
 <translation id="6122181661879998141">信用卡正面</translation>
 <translation id="6124058285696691147">下載附件</translation>
@@ -2717,6 +2719,7 @@
 <translation id="6180316780098470077">重試間隔</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome 會自動限制第三方 Cookie</translation>
+<translation id="6194139058731919563">儲存到 Google 帳戶並用於網上付款時，信用卡資料會加密處理</translation>
 <translation id="6194209731893739467">在此查看您追蹤的所有產品</translation>
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195371403461054755">地質學</translation>
@@ -3618,6 +3621,7 @@
 <translation id="7831993212387676366">什麼是購物清單？</translation>
 <translation id="7832078172950550575">利用日常用語，以「附近的薄餅店」或「適合一家大小的市區公園」等詞組搜尋你的瀏覽記錄。你的搜尋、最相符項目及相應頁面內容會傳送給 Google，並可能送交人手審查以改善有關功能。<ph name="BEGIN_LINK" />管理記錄搜尋設定<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">已開始擷取螢幕截圖</translation>
+<translation id="7840504603489703295">系統會套用你金融機構所設的限制。</translation>
 <translation id="784137052867620416">購物分析資料</translation>
 <translation id="784404208867107517">分類記錄</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>
@@ -3816,6 +3820,7 @@
 <translation id="8241712895048303527">禁止此網站顯示廣告</translation>
 <translation id="8242426110754782860">繼續</translation>
 <translation id="8246482227229072868">指環</translation>
+<translation id="8248406213705193919">想安全地儲存信用卡？</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="824968735947741546">正在將<ph name="SOURCE" /> (自動偵測) 的內容翻譯成<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">此地址目前已儲存在此裝置上。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
@@ -4299,6 +4304,7 @@
 <translation id="9169664750068251925">永遠禁止在這個網站執行</translation>
 <translation id="9169931577761441333">將「<ph name="APP_NAME" />」新增至主畫面</translation>
 <translation id="9170848237812810038">復原(&amp;U)</translation>
+<translation id="9170906125144697215">透過 Pix 付款而無需切換應用程式</translation>
 <translation id="9171296965991013597">要退出應用程式嗎？</translation>
 <translation id="9173282814238175921">單一文件/新工作表</translation>
 <translation id="9173995187295789444">正在掃瞄藍牙裝置…</translation>
@@ -4320,6 +4326,7 @@
 <translation id="9205078245616868884">您已使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="920643408853370361">旅遊保險</translation>
 <translation id="9207861905230894330">無法新增文章。</translation>
+<translation id="9209339767782560829">使用登入憑證時發生問題。</translation>
 <translation id="9210825002219699214">航空旅遊</translation>
 <translation id="9211461151375991073">輸入 @ 可搜尋 <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">自訂外觀</translation>

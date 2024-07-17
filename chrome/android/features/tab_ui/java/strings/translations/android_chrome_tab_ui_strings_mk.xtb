@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Портокалова</translation>
 <translation id="125153950246128346">Допрете за да видите друга картичка</translation>
 <translation id="1273910660700874265">Опции за групата картички <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Поканете луѓе</translation>
 <translation id="1419023007528516122">Ова трајно ќе ја избрише групата од вашиот уред</translation>
 <translation id="1486715732399361704">Сите ваши групи картички може да ги најдете овде</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Создадено пред <ph name="NUM_MINS_ONE" /> минута}one{Создадено пред <ph name="NUM_MINS_MANY" /> минута}other{Создадено пред <ph name="NUM_MINS_MANY" /> минути}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Вашите групи картички ќе ги најдете овде</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Одгрупирајте <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Одгрупирајте <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Одгрупирајте <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
+<translation id="6527303717912515753">Сподели</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{По 1 ден}one{По <ph name="DAY_COUNT_MANY" /> ден}other{По <ph name="DAY_COUNT_MANY" /> дена}}</translation>
 <translation id="6549021453810473782">Прегледајте ги информациите за продавницата</translation>
 <translation id="6557858706263317126">уште <ph name="HIDDEN_TABS_COUNT" /></translation>

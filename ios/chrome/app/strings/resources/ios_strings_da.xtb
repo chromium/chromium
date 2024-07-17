@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Adgangsnøgle</translation>
 <translation id="1035980983510608210">Hvis du lukker alle faner, lukkes de fastgjorte faner også.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Du logges ud, og browserdataene slettes</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Logget ud. Log ind igen for at bruge bogmærkerne, adgangskoderne m.m. på din konto.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Adgangskoder</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="138618066238211776">Fortsæt som <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Browserdata</translation>
 <translation id="1400642268715879018">Seneste fire uger</translation>
 <translation id="1404330357948037222">Du er logget ud</translation>
-<translation id="14066361343057390">Du logges ud</translation>
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="1408847409015257906">Tryk på "Sikkerhed og privatliv".</translation>
 <translation id="1430915738399379752">Udskriv</translation>
@@ -341,7 +340,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2712127207578915686">Filen kan ikke åbnes</translation>
 <translation id="2718352093833049315">Kun på Wi-Fi</translation>
 <translation id="2738375676495545665">Skjul Nyheder</translation>
-<translation id="2740910715135851329">Du logges ud, fanerne lukkes, og browserdataene slettes</translation>
 <translation id="2747003861858887689">Forrige felt</translation>
 <translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konti på denne enhed</translation>
@@ -392,6 +390,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2952278131021475699">Lens-kamerasøgning</translation>
 <translation id="2958718410589002129">Adgangskoder</translation>
 <translation id="2964349545761222050">Bloker cookies fra tredjeparter</translation>
+<translation id="2965328226365382335">De seneste 15 minutter</translation>
 <translation id="2969979262385602596">Login mislykkedes. Prøv igen senere.</translation>
 <translation id="2975121486251958312">Kun inkognitotilstand er tilgængelig</translation>
 <translation id="2982481275546140226">Ryd data</translation>
@@ -539,7 +538,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3738428049780661523">Oprettet <ph name="DATE" /></translation>
 <translation id="374357899112510277">Skjul downloads</translation>
 <translation id="3745190878148784130">Skjul Zoom ind/ud på tekst</translation>
-<translation id="3747231889390582072">Data, der ikke er gemt, slettes fra denne enhed for at beskytte din organisation. Dette kan omfatte adgangskoder, browserhistorik, cookies m.m.</translation>
 <translation id="3762232513783804601">Udviklet til din iPad</translation>
 <translation id="3768725474733206671">Åbn seneste fane</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
@@ -718,6 +716,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4659194143325814340">{count,plural, =1{{count} side på din læseliste}one{{count} side på din læseliste}other{{count} sider på din læseliste}}</translation>
 <translation id="4659667755519643272">Åbn Faneskift</translation>
 <translation id="46614316059270592">Gem adgangskode</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Kom i kontakt med en virksomhed ved at foretage et telefonopkald</translation>
 <translation id="4682686630151240767">1. Åbn iPhone-indstillingerne</translation>
 <translation id="4689564913179979534">Administrer betalingsmetoder…</translation>
@@ -1326,6 +1325,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7609559547731036746">Bogmærker</translation>
 <translation id="7638584964844754484">Forkert adgangssætning</translation>
 <translation id="7640669552036055091">Faner fra Android</translation>
+<translation id="7643790043444820023">Tilpas startside</translation>
 <translation id="7646263789464975852">Menu → Indstillinger → Sikkerhedstjek</translation>
 <translation id="7646772052135772216">Synkronisering af adgangskoder fungerer ikke</translation>
 <translation id="764827086632467055">Tryk på Standardapp til browsing</translation>
@@ -1518,7 +1518,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8522147671363140027">{count,plural, =1{{count} adgangskode og andre elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, {email}.}one{{count} adgangskode og andre elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, {email}.}other{{count} adgangskoder og andre elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, {email}.}}</translation>
 <translation id="8522813812888400223">Annuller download</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-fane <ph name="FIRST_VISIBLE_TAB" /> til <ph name="LAST_VISIBLE_TAB" /> af <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Du logges ud, og fanerne lukkes</translation>
 <translation id="8528009254289981965">Åbn links fra andre apps i inkognito</translation>
 <translation id="8529767659511976195">Ny</translation>
 <translation id="8532105204136943229">Udløbsår</translation>
@@ -1599,6 +1598,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8876882697946675716">Bevar synkroniseringen af dine enheder</translation>
 <translation id="8879604564928138696">Tryk to gange for at prøve</translation>
 <translation id="8881801611828450202">Søg på <ph name="SEARCH_ENGINE" /> efter dette billede</translation>
+<translation id="8887595428614802520">Luk alle faner og grupper</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="890565330728586731">Tilbage</translation>
 <translation id="8909135823018751308">Del…</translation>

@@ -8,7 +8,6 @@
 <translation id="102916930470544692">گذرکلید</translation>
 <translation id="1035980983510608210">با بستن همه برگه‌ها، برگه‌های سنجاق‌شده نیز بسته خواهند شد.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">از سیستم خارج خواهید شد و داده‌های مرور حذف خواهد شد</translation>
 <translation id="1044891598689252897">عملکرد سایت‌ها عادی خواهد بود</translation>
 <translation id="1049743911850919806">ناشناس</translation>
 <translation id="1053651653201045802">از سیستم خارج شده‌اید. برای استفاده از نشانک‌ها، گذرواژه‌ها، و دیگر اطلاعات ذخیره‌شده در حسابتان، دوباره به سیستم وارد شوید.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">گذرواژه‌ها</translation>
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="138618066238211776">ادامه دادن به‌عنوان <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">داده‌های مرور</translation>
 <translation id="1400642268715879018">۴ هفته گذشته</translation>
 <translation id="1404330357948037222">از سیستم خارج شده‌اید</translation>
-<translation id="14066361343057390">از سیستم خارج خواهید شد</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1408847409015257906">روی «حریم خصوصی و امنیت» تک‌ضرب بزنید.</translation>
 <translation id="1430915738399379752">چاپ</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">فایل باز نشد</translation>
 <translation id="2718352093833049315">‏فقط در Wi-Fi</translation>
 <translation id="2738375676495545665">پنهان کردن ویژگی‌های جدید</translation>
-<translation id="2740910715135851329">از سیستم خارج خواهید شد، برگه‌ها بسته خواهد شد، داده‌های مرور حذف خواهد شد</translation>
 <translation id="2747003861858887689">فیلد قبلی</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
 <translation id="2754492786623500387">حساب‌های موجود در این دستگاه</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">جستجوی دوربینی با «لنز»</translation>
 <translation id="2958718410589002129">گذرواژه‌ها</translation>
 <translation id="2964349545761222050">مسدود کردن کوکی‌های شخص ثالث</translation>
+<translation id="2965328226365382335">۱۵ دقیقه گذشته</translation>
 <translation id="2969979262385602596">ورود به سیستم انجام نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="2975121486251958312">فقط «حالت ناشناس» دردسترس است</translation>
 <translation id="2982481275546140226">پاک کردن داده‌ها</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523">تاریخ ایجاد: <ph name="DATE" /></translation>
 <translation id="374357899112510277">پنهان کردن بارگیری‌ها</translation>
 <translation id="3745190878148784130">پنهان کردن «بزرگ‌نمایی نوشتار»</translation>
-<translation id="3747231889390582072">برای حفظ امنیت سازمانتان، داده‌های ذخیره‌نشده از این دستگاه حذف خواهد شد. این داده‌ها می‌تواند شامل گذرواژه‌ها، سابقه مرور، کوکی‌ها، و موارد دیگر باشد.</translation>
 <translation id="3762232513783804601">‏ساخته‌شده برای iPad شما</translation>
 <translation id="3768725474733206671">باز کردن مجدد آخرین برگه بسته‌شده</translation>
 <translation id="3771033907050503522">برگه‌های ناشناس</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{{count} صفحه در «فهرست خواندن»}one{{count} صفحه در «فهرست خواندن»}other{{count} صفحه در «فهرست خواندن»}}</translation>
 <translation id="4659667755519643272">به تعویض‌کننده برگه وارد شود</translation>
 <translation id="46614316059270592">ذخیره گذرواژه</translation>
+<translation id="4668929960204016307">،</translation>
 <translation id="467189612236587057">با شروع تماس تلفنی، با کسب‌وکار ارتباط برقرار کنید</translation>
 <translation id="4682686630151240767">‏۱. iPhone Settings (تنظیمات iPhone) را باز کنید</translation>
 <translation id="4689564913179979534">مدیریت روش‌های پرداخت…</translation>
@@ -1519,7 +1518,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8522147671363140027">{count,plural, =1{‏‫{count} گذرواژه و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود ({email}) ذخیره کنید.}one{‏‫{count} گذرواژه و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «حساب Google» خود ({email}) ذخیره کنید.}other{‏‫{count} گذرواژه و موارد دیگر فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود ({email}) ذخیره کنید.}}</translation>
 <translation id="8522813812888400223">لغو بارگیری</translation>
 <translation id="8524799873541103884">برگه‌های <ph name="INCOGNITO" />،‏ <ph name="FIRST_VISIBLE_TAB" /> تا <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /> برگه</translation>
-<translation id="852576975834694248">از سیستم خارج خواهید شد و برگه‌ها بسته خواهد شد</translation>
 <translation id="8528009254289981965">باز کردن پیوندهای دیگر برنامه‌ها در حالت ناشناس</translation>
 <translation id="8529767659511976195">جدید</translation>
 <translation id="8532105204136943229">سال انقضا</translation>

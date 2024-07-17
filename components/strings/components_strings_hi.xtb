@@ -1164,7 +1164,6 @@
 <translation id="3209034400446768650">पेज पर शुल्क लिया जा सकता है</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> पर की जा रही आपकी गतिविधि पर नज़र रखी जा रही है</translation>
 <translation id="3215092763954878852">WebAuthn का इस्तेमाल नहीं किया जा सका</translation>
-<translation id="3215311088819828484">नतीजा अपडेट किया गया</translation>
 <translation id="3216313131063488104">ब्लूज़</translation>
 <translation id="3218181027817787318">मिलते-जुलते</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{अभी अपडेट करना ज़रूरी है}=2{कल अपडेट करना ज़रूरी है}one{# दिन के अंदर अपडेट करना ज़रूरी है}other{# दिनों के अंदर अपडेट करना ज़रूरी है}}</translation>
@@ -2688,7 +2687,6 @@
 <translation id="6116338172782435947">क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखें</translation>
 <translation id="6117833587752089929">फ़ोटो (सैटिन)</translation>
 <translation id="6118782133429281336">मूल सूची खाली है.</translation>
-<translation id="6120950591512958208">चेकआउट के समय इस कोड का इस्तेमाल करें.</translation>
 <translation id="612178891608320683">वीगन पकवान</translation>
 <translation id="6122181661879998141">अपने कार्ड के आगे के हिस्से</translation>
 <translation id="6124058285696691147">अटैचमेंट डाउनलोड करें</translation>

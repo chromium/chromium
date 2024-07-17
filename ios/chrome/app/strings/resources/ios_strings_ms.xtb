@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Kunci laluan</translation>
 <translation id="1035980983510608210">Penutupan semua tab akan menutup tab tersemat juga.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Anda akan dilog keluar dan data semakan imbas akan dipadamkan</translation>
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Dilog keluar. Log masuk semula untuk menggunakan penanda halaman, kata laluan dan banyak lagi dalam akaun anda.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Kata laluan</translation>
 <translation id="1383876407941801731">Carian</translation>
 <translation id="138618066238211776">Teruskan sebagai <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Menyemak Imbas Data</translation>
 <translation id="1400642268715879018">4 Minggu Yang Lalu</translation>
 <translation id="1404330357948037222">Anda Dilog Keluar</translation>
-<translation id="14066361343057390">Anda akan dilog keluar</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1408847409015257906">Ketik “Privasi &amp; Keselamatan”.</translation>
 <translation id="1430915738399379752">Cetak</translation>
@@ -341,7 +340,6 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2712127207578915686">Tidak Dapat Membuka Fail</translation>
 <translation id="2718352093833049315">Hanya pada Wi-Fi</translation>
 <translation id="2738375676495545665">Sembunyikan Perkara Baharu</translation>
-<translation id="2740910715135851329">Anda akan dilog keluar, tab akan ditutup, data semakan imbas dipadamkan</translation>
 <translation id="2747003861858887689">Medan sebelumnya</translation>
 <translation id="2749231692441336879">Mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Akaun pada Peranti ini</translation>
@@ -392,6 +390,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2952278131021475699">Carian Kamera Lens</translation>
 <translation id="2958718410589002129">Kata laluan</translation>
 <translation id="2964349545761222050">Sekat Kuki Pihak Ketiga</translation>
+<translation id="2965328226365382335">15 Minit Terakhir</translation>
 <translation id="2969979262385602596">Gagal melog masuk. Sila cuba sebentar lagi.</translation>
 <translation id="2975121486251958312">Hanya Mod Inkognito Tersedia</translation>
 <translation id="2982481275546140226">Kosongkan Data</translation>
@@ -539,7 +538,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3738428049780661523">Dibuat <ph name="DATE" /></translation>
 <translation id="374357899112510277">Sembunyikan Muat Turun</translation>
 <translation id="3745190878148784130">Sembunyikan Zum Teks</translation>
-<translation id="3747231889390582072">Untuk melindungi keselamatan organisasi anda, data yang tidak disimpan akan dipadamkan daripada peranti ini. Data tersebut boleh termasuk kata laluan, sejarah penyemakan imbas, kuki dan pelbagai lagi.</translation>
 <translation id="3762232513783804601">Dibina untuk iPad Anda</translation>
 <translation id="3768725474733206671">Buka Semula Tab Terakhir Ditutup</translation>
 <translation id="3771033907050503522">Tab Inkognito</translation>
@@ -718,6 +716,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4659194143325814340">{count,plural, =1{{count} halaman pada Senarai Bacaan anda}other{{count} halaman pada Senarai Bacaan anda}}</translation>
 <translation id="4659667755519643272">Masuk ke Penukar Tab</translation>
 <translation id="46614316059270592">Simpan Kata Laluan</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Berhubung dengan perniagaan dengan memulakan panggilan telefon</translation>
 <translation id="4682686630151240767">1. Buka Tetapan iPhone</translation>
 <translation id="4689564913179979534">Urus Kaedah Pembayaran...</translation>
@@ -1519,7 +1518,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8522147671363140027">{count,plural, =1{{count} kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda, {email}.}other{{count} kata laluan dan item lain disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda, {email}.}}</translation>
 <translation id="8522813812888400223">Batalkan Muat Turun</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Tab <ph name="FIRST_VISIBLE_TAB" /> melalui <ph name="LAST_VISIBLE_TAB" /> daripada <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Anda akan dilog keluar dan tab akan ditutup</translation>
 <translation id="8528009254289981965">Buka pautan daripada apl lain dalam Inkognito</translation>
 <translation id="8529767659511976195">Baharu</translation>
 <translation id="8532105204136943229">Tahun Tamat Tempoh</translation>
@@ -1600,6 +1598,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8876882697946675716">Pastikan Peranti Anda Segerak</translation>
 <translation id="8879604564928138696">Dwiketik untuk mencuba</translation>
 <translation id="8881801611828450202">Cari Imej Ini di <ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">Tutup Semua Tab dan Kumpulan</translation>
 <translation id="8898822736010347272">Menghantar URL sesetengah halaman yang anda lawati, maklumat sistem yang terhad dan sebahagian kandungan halaman kepada Google untuk menemukan ancaman baharu dan melindungi semua pengguna web.</translation>
 <translation id="890565330728586731">Kembali</translation>
 <translation id="8909135823018751308">Kongsi…</translation>

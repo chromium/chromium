@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Orange</translation>
 <translation id="125153950246128346">Appuyer pour afficher un autre onglet</translation>
 <translation id="1273910660700874265">Options du groupe d'onglets <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Inviter des personnes</translation>
 <translation id="1419023007528516122">Le groupe sera définitivement supprimé de votre appareil</translation>
 <translation id="1486715732399361704">Vos groupes d'onglets s'afficheront ici</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Créé il y a <ph name="NUM_MINS_ONE" /> minute}one{Créé il y a <ph name="NUM_MINS_MANY" /> minute}other{Créé il y a <ph name="NUM_MINS_MANY" /> minutes}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Vos groupes d'onglets s'afficheront ici</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dégrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Dégrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Dégrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
+<translation id="6527303717912515753">Partager</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Après 1 jour}one{Après <ph name="DAY_COUNT_MANY" /> jour}other{Après <ph name="DAY_COUNT_MANY" /> jours}}</translation>
 <translation id="6549021453810473782">Afficher les infos sur le magasin</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>

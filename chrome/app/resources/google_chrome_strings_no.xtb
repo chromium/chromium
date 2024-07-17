@@ -15,6 +15,7 @@
 <translation id="1149651794389918149">Logg på Chrome. Hvis du vil logge på en konto bare én gang, kan du <ph name="GUEST_LINK_BEGIN" />bruke enheten som gjest<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Om ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Åpne i Chrome</translation>
+<translation id="1184145431117212167">Installasjonen mislyktes fordi du bruker en Windows-versjon som ikke støttes.</translation>
 <translation id="1194807384646768652">Chrome har blokkert denne nedlastingen fordi filtypen ikke lastes ned ofte, så den kan være farlig</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google anbefaler at du angir Chrome som standard</translation>
@@ -234,6 +235,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Start Chrome på nytt innen en dag}other{Start Chrome på nytt innen # dager}}</translation>
 <translation id="4205939740494406371">Chrome kan ikke sjekke passordene dine. Prøv på nytt om 24 timer, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Avbryter …</translation>
+<translation id="4224210481850767180">Installasjonen er avbrutt.</translation>
 <translation id="4242034826641750751">Chrome trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4251615635259297716">Vil du koble Chrome-dataene dine til denne kontoen?</translation>

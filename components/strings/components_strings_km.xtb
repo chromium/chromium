@@ -855,7 +855,6 @@
 <translation id="254524874071906077">កំណត់ Chrome ជាកម្មវិធីរុករកលំនាំដើម</translation>
 <translation id="2545721997179863249">ជម្រើសបំពេញអ្វីគ្រប់យ៉ាងត្រូវបានជ្រើសរើស</translation>
 <translation id="2546283357679194313">ខុកឃី និងទិន្នន័យគេហទំព័រ</translation>
-<translation id="2546678870939430879">សរសេរលទ្ធផលឡើងវិញ</translation>
 <translation id="254947805923345898">តម្លៃ​របស់គោលការណ៍​គ្មានសុពលភាពទេ។</translation>
 <translation id="2549836668759467704">ការពិគ្រោះ និង​ការម៉ៅការ​សំណង់</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> បានផ្ញើការឆ្លើយតបដែលមិនត្រឹមត្រូវ</translation>
@@ -1038,7 +1037,6 @@
 <translation id="2954624054936281172">បាន​រក្សាទុក​តារាងវិធីបង់ប្រាក់</translation>
 <translation id="295526156371527179">ការព្រមាន៖ គោលការណ៍​នេះ​មិន​ត្រូវបាន​ដាក់បញ្ចូល​គ្នា​ជាវចនានុក្រម ដូច​ដែលបាន​បញ្ជាក់​ដោយ​គោលការណ៍ទេ ដោយសារ​វាមិនមែន​ជាវចនានុក្រម។</translation>
 <translation id="2955913368246107853">បិទរបារស្វែងរក</translation>
-<translation id="2958345633099973853">ត្រឡប់លទ្ធផលវិញ</translation>
 <translation id="2958544468932521864">គ្រីឃីត</translation>
 <translation id="2959274854674276289">ម្ហូបបួស</translation>
 <translation id="2961809451460302960">ធានា​រ៉ាប់រង​អាយុ​ជីវិត</translation>
@@ -1169,7 +1167,6 @@
 <translation id="3209034400446768650">ទំព័រអាច​នឹង​គិតប្រាក់</translation>
 <translation id="3212581601480735796">សកម្មភាព​របស់អ្នក​នៅលើ <ph name="HOSTNAME" /> កំពុងត្រូវ​បានឃ្លាំមើល</translation>
 <translation id="3215092763954878852">មិនអាចប្រើ WebAuthn បានទេ</translation>
-<translation id="3215311088819828484">បានធ្វើបច្ចុប្បន្នភាពលទ្ធផល</translation>
 <translation id="3216313131063488104">ប៊្លូ</translation>
 <translation id="3218181027817787318">ពាក់ព័ន្ធ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{តម្រូវឱ្យដំឡើងកំណែឥឡូវនេះ}=2{តម្រូវឱ្យដំឡើងកំណែត្រឹមថ្ងៃស្អែក}other{តម្រូវឱ្យដំឡើងកំណែក្នុងរយៈពេល # ថ្ងៃ}}</translation>
@@ -2520,7 +2517,6 @@
 <translation id="5772086939108830423">ប្រើ​កូដ​សម្ងាត់​នៅលើ​ឧបករណ៍​ផ្សេង</translation>
 <translation id="5776313857861697733">អាទិភាព</translation>
 <translation id="5776574724412881956">មិនបានបំពេញ​កាតនិម្មិតឬ? សូមចុច​ព័ត៌មានលម្អិតអំពី​កាតនិម្មិត ដើម្បីចម្លង​ទៅឃ្លីបបត។ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">កំពុងផ្ទុកលទ្ធផល</translation>
 <translation id="5781136890105823427">បានបើក​ការពិសោធ</translation>
 <translation id="578305955206182703">លឿងទុំ</translation>
 <translation id="5783700460098783980">អីវ៉ាន់ និង​សម្ភារៈធ្វើ​ដំណើរ</translation>
@@ -2695,7 +2691,6 @@
 <translation id="6116338172782435947">មើល​អត្ថបទ និង​រូបភាព​ដែល​បានចម្លង​ទៅ​អង្គ​ចងចាំ</translation>
 <translation id="6117833587752089929">រូបថត (សាទីន)</translation>
 <translation id="6118782133429281336">បញ្ជី​ដើម​ទទេ។</translation>
-<translation id="6120950591512958208">ប្រើប្រាស់​លេខកូដនេះ នៅពេល​បង់ប្រាក់ចេញ។</translation>
 <translation id="612178891608320683">ម្ហូបអ្នកតមសាច់ និងស៊ុត</translation>
 <translation id="6122181661879998141">ផ្នែកខាងមុខ​កាតរបស់អ្នក</translation>
 <translation id="6124058285696691147">ទាញ​យកឯកសារ​ភ្ជាប់</translation>

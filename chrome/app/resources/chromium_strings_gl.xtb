@@ -14,6 +14,7 @@
 <translation id="113122355610423240">Chromium é o teu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Fai clic no menú de Chromium</translation>
+<translation id="1184145431117212167">Produciuse un erro durante a instalación porque a versión de Windows non é compatible.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1188705220418984327">Para compartir a ventá, vai a System Preferences (Preferencias do sistema) e activa a función de gravación de pantalla para Chromium.</translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
@@ -204,6 +205,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="421369550622382712">Descubre aplicacións, xogos, extensións e temas fantásticos para Chromium.</translation>
 <translation id="4216212958613226427">Este é o idioma no que se mostra a IU de Chromium</translation>
 <translation id="4222932583846282852">Cancelando…</translation>
+<translation id="4224210481850767180">Cancelouse a instalación.</translation>
 <translation id="4230135487732243613">Queres ligar os teus datos de Chromium a esta conta?</translation>
 <translation id="4251772536351901305">Analiza máis datos de sitios que a protección estándar para avisarte sobre os que sexan perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chromium.</translation>
 <translation id="4269093074552541569">Pechar sesión en Chromium</translation>

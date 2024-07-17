@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Tu sesión se cerrará y los datos de navegación se eliminarán</translation>
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1053651653201045802">Se ha cerrado la sesión. Vuelve a iniciar sesión para usar los marcadores, las contraseñas y más en tu cuenta.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Contraseñas</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Datos de navegación</translation>
 <translation id="1400642268715879018">Últimas 4 semanas</translation>
 <translation id="1404330357948037222">Se ha cerrado tu sesión</translation>
-<translation id="14066361343057390">Tu sesión se cerrará</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408847409015257906">Toca Privacidad y seguridad.</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -341,7 +340,6 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2712127207578915686">No se puede abrir archivo</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
 <translation id="2738375676495545665">Ocultar Novedades</translation>
-<translation id="2740910715135851329">Tu sesión y tus pestañas se cerrarán y se eliminarán los datos de navegación</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Ahora sigues a <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2754492786623500387">Cuentas en este dispositivo</translation>
@@ -392,6 +390,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2952278131021475699">Búsqueda mediante la cámara con Lens</translation>
 <translation id="2958718410589002129">Contraseñas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceros</translation>
+<translation id="2965328226365382335">Últimos 15 minutos</translation>
 <translation id="2969979262385602596">Error al iniciar sesión. Inténtalo más tarde.</translation>
 <translation id="2975121486251958312">Solo está disponible el modo Incógnito</translation>
 <translation id="2982481275546140226">Borrar datos</translation>
@@ -539,7 +538,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3738428049780661523">Creado: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Descargas</translation>
 <translation id="3745190878148784130">Ocultar Ampliar texto</translation>
-<translation id="3747231889390582072">Para proteger la seguridad de tu organización, los datos no guardados se eliminarán de este dispositivo. Esto podría incluir las contraseñas, el historial de navegación, las cookies y más.</translation>
 <translation id="3762232513783804601">Diseñado para tu iPad</translation>
 <translation id="3768725474733206671">Volver a abrir última pestaña cerrada</translation>
 <translation id="3771033907050503522">Pestañas incógnito</translation>
@@ -718,6 +716,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4659194143325814340">{count,plural, =1{{count} página en tu lista de lectura}other{{count} páginas en tu lista de lectura}}</translation>
 <translation id="4659667755519643272">Acceder a la función de cambio de pestaña</translation>
 <translation id="46614316059270592">Guardar contraseña</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Conecta con una empresa iniciando una llamada telefónica</translation>
 <translation id="4682686630151240767">1. Abre los ajustes del iPhone</translation>
 <translation id="4689564913179979534">Gestionar métodos de pago...</translation>
@@ -1326,6 +1325,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7609559547731036746">Marcadores</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
 <translation id="7640669552036055091">Pestañas de Android</translation>
+<translation id="7643790043444820023">Personalizar la página principal</translation>
 <translation id="7646263789464975852">Menú → Configuración → Comprobación de seguridad</translation>
 <translation id="7646772052135772216">La sincronización de contraseñas no funciona</translation>
 <translation id="764827086632467055">Toca App del navegador por omisión</translation>
@@ -1518,7 +1518,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8522147671363140027">{count,plural, =1{{count} contraseña y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google: {email}.}other{{count} contraseñas y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google: {email}.}}</translation>
 <translation id="8522813812888400223">Cancelar descarga</translation>
 <translation id="8524799873541103884">Pestañas de <ph name="INCOGNITO" />: de <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Tu sesión y tus pestañas se cerrarán</translation>
 <translation id="8528009254289981965">Abre enlaces de otras aplicaciones en Incógnito</translation>
 <translation id="8529767659511976195">Nuevo</translation>
 <translation id="8532105204136943229">Año de caducidad</translation>
@@ -1599,6 +1598,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8876882697946675716">Mantén tus dispositivos sincronizados</translation>
 <translation id="8879604564928138696">Toca dos veces para probar</translation>
 <translation id="8881801611828450202">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">Cerrar todas las pestañas y grupos</translation>
 <translation id="8898822736010347272">Envía a Google las URL de las páginas que visitas, información limitada del sistema y contenido de las páginas para ayudar a descubrir nuevas amenazas y proteger a los usuarios de la Web.</translation>
 <translation id="890565330728586731">Atrás</translation>
 <translation id="8909135823018751308">Compartir…</translation>

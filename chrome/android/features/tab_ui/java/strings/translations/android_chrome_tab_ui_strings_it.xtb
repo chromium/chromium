@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Arancione</translation>
 <translation id="125153950246128346">Tocca per visualizzare un'altra scheda</translation>
 <translation id="1273910660700874265">Opzioni del gruppo di schede <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Invita persone</translation>
 <translation id="1419023007528516122">Il gruppo verrà eliminato definitivamente dal tuo dispositivo</translation>
 <translation id="1486715732399361704">Qui troverai tutti i tuoi gruppi di schede</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Creato <ph name="NUM_MINS_ONE" /> minuto fa}other{Creato <ph name="NUM_MINS_MANY" /> minuti fa}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Qui troverai i tuoi gruppi di schede</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Separa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Separa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
+<translation id="6527303717912515753">Condividi</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Dopo 1 giorno}other{Dopo <ph name="DAY_COUNT_MANY" /> giorni}}</translation>
 <translation id="6549021453810473782">Visualizza informazioni sul negozio</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

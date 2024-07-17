@@ -8,7 +8,6 @@
 <translation id="102916930470544692">પાસકી</translation>
 <translation id="1035980983510608210">બધી ટૅબ બંધ કરવાથી પિન કરેલી ટૅબ પણ બંધ થઈ જશે.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">તમને સાઇન આઉટ કરવામાં આવશે અને બધો બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="1044891598689252897">સાઇટ સામાન્ય રીતે કાર્ય કરશે</translation>
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="1053651653201045802">સાઇન આઉટ થયા. તમારા એકાઉન્ટમાં બુકમાર્ક, પાસવર્ડ વગેરેનો ઉપયોગ કરવા માટે ફરી સાઇન ઇન કરો.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">પાસવર્ડ</translation>
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> તરીકે ચાલુ રાખો</translation>
+<translation id="1388866984373351434">બ્રાઉઝિંગ ડેટા:</translation>
 <translation id="1400642268715879018">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="1404330357948037222">તમે સાઇન આઉટ થઈ ગયા છો</translation>
-<translation id="14066361343057390">તમને સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="1408847409015257906">"પ્રાઇવસી અને સુરક્ષા" પર ટૅપ કરો.</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">ફાઇલ ખોલવામાં અસમર્થ છે</translation>
 <translation id="2718352093833049315">ફક્ત વાઇ-ફાઇ પર</translation>
 <translation id="2738375676495545665">"નવું શું છે" છુપાવો</translation>
-<translation id="2740910715135851329">તમને સાઇન આઉટ કરવામાં આવશે, ટૅબ બંધ કરવામાં આવશે, બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="2747003861858887689">પાછલી ફીલ્ડ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ફૉલો કરી રહ્યાં છીએ</translation>
 <translation id="2754492786623500387">આ ડિવાઇસ પરના એકાઉન્ટ</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">Lens કૅમેરા વડે શોધની સુવિધા</translation>
 <translation id="2958718410589002129">પાસવર્ડ</translation>
 <translation id="2964349545761222050">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
+<translation id="2965328226365382335">છેલ્લી 15 મિનિટ</translation>
 <translation id="2969979262385602596">સાઇન ઇન કરવામાં નિષ્ફળ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="2975121486251958312">ફક્ત છૂપો મોડ ઉપલબ્ધ છે</translation>
 <translation id="2982481275546140226">ડેટા સાફ કરો</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523"><ph name="DATE" />ના રોજ બનાવ્યું</translation>
 <translation id="374357899112510277">ડાઉનલોડ છુપાવો</translation>
 <translation id="3745190878148784130">'ટેક્સ્ટ નાની-મોટી કરો' છુપાવો</translation>
-<translation id="3747231889390582072">તમારી સંસ્થાને સુરક્ષિત રાખવા માટે, સાચવ્યો ન હોય એવો ડેટા આ ડિવાઇસમાંથી કાઢી નાખવામાં આવશે. આમાં પાસવર્ડ, બ્રાઉઝિંગ ઇતિહાસ, કુકી અને બીજું ઘણું શામેલ હોઈ શકે છે.</translation>
 <translation id="3762232513783804601">તમારા iPad માટે બનાવાયેલું</translation>
 <translation id="3768725474733206671">છેલ્લે બંધ કરેલું ટૅબ ફરીથી ખોલો</translation>
 <translation id="3771033907050503522">છૂપા ટેબ્સ</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{તમારી વાંચન સૂચિમાં {count} પેજ}one{તમારી વાંચન સૂચિમાં {count} પેજ}other{તમારી વાંચન સૂચિમાં {count} પેજ}}</translation>
 <translation id="4659667755519643272">ટેબ સ્વિચરમાં દાખલ થાઓ</translation>
 <translation id="46614316059270592">પાસવર્ડ સાચવો</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">ફોન કૉલ શરૂ કરીને કોઈ વ્યવસાય સાથે કનેક્ટ થાઓ</translation>
 <translation id="4682686630151240767">1. iPhone સેટિંગ ખોલો</translation>
 <translation id="4689564913179979534">ચુકવણી પદ્ધતિઓ મેનેજ કરો…</translation>
@@ -1519,7 +1518,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count} પાસવર્ડ અને અન્ય આઇટમ ફક્ત આ ડિવાઇસમાં જ સાચવેલા છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {email}માં સાચવો.}one{{count} પાસવર્ડ અને અન્ય આઇટમ ફક્ત આ ડિવાઇસમાં જ સાચવેલા છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {email}માં સાચવો.}other{{count} પાસવર્ડ અને અન્ય આઇટમ ફક્ત આ ડિવાઇસમાં જ સાચવેલા છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {email}માં સાચવો.}}</translation>
 <translation id="8522813812888400223">ડાઉનલોડ રદ કરો</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> ના  <ph name="FIRST_VISIBLE_TAB" /> થી <ph name="LAST_VISIBLE_TAB" /> સુધી <ph name="INCOGNITO" /> ટેબ્સ</translation>
-<translation id="852576975834694248">તમને સાઇન આઉટ કરવામાં આવશે અને ટૅબ બંધ કરવામાં આવશે</translation>
 <translation id="8528009254289981965">અન્ય ઍપમાંની લિંકને છૂપા મોડમાં ખોલો</translation>
 <translation id="8529767659511976195">નવી</translation>
 <translation id="8532105204136943229">સમય સમાપ્તિ વર્ષ</translation>

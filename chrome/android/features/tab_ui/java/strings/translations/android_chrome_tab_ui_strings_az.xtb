@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Narıncı</translation>
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> tab qrupu seçimləri</translation>
-<translation id="1322824555808364080">İnsanlar dəvət edin</translation>
 <translation id="1419023007528516122">Bununla qrup cihazdan həmişəlik silinəcək</translation>
 <translation id="1486715732399361704">Bütün tab qruplarını burada tapa bilərsiniz</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> dəqiqə əvvəl yaradıldı}other{<ph name="NUM_MINS_MANY" /> dəqiqə əvvəl yaradıldı}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Tab qruplarınız burada tapa bilərsiniz</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı ayırın}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı ayırın}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="6527303717912515753">Paylaşın</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 gün sonra}other{<ph name="DAY_COUNT_MANY" /> gün sonra}}</translation>
 <translation id="6549021453810473782">Mağaza məlumatlarına baxın</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

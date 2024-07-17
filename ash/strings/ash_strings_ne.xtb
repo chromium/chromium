@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">एप, विस्तार र विषयवस्तुहरू स्थापना गर्नुहोस्</translation>
 <translation id="2977598380246111477">अर्को नम्बर</translation>
 <translation id="2985148236010982088">सबै एपहरू हेर्नुहोस्</translation>
+<translation id="2992272421330787632">मिडियासम्बन्धी सबै सुझावहरू लुकाउनुहोस्</translation>
 <translation id="2992327365391326550">डिभाइसको माइक्रोफोन बटन अफ गरिएको छ।</translation>
 <translation id="3000461861112256445">मोनो अडियो</translation>
 <translation id="3001391739687111021">स्क्रिनको आकार परिवर्तन गर्नुहोस्</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">तपाईं के गर्न सक्नुहुन्छ?</translation>
 <translation id="3256109297135787951">आफ्नो सेल्फमा भएको कुनै वस्तुबाट हाइलाइट हटाउनुहोस्‌</translation>
 <translation id="3260969790895726815">बोलेको कुरा डिभाइसभित्रै प्रोसेस गरिन्छ र स्पिच-टु-टेक्स्टले अफलाइनमा काम गर्छ तर डिभाइसलाई बोलेर दिइने केही निर्देशनहरू दिँदा भने त्यसले काम गर्दैन।</translation>
+<translation id="3264031581203585083">Google Drive का सबै सुझावहरू लुकाउनुहोस्</translation>
 <translation id="3265032511221679826">सटीक लोकेसन प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="3269597722229482060">दायाँ क्लिक गर्नुहोस्</translation>
 <translation id="3274634049061007184">आफ्नो फोनमा भएका एपहरू हेर्नुहोस्</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">तपाईं अब स्क्रिन रेकर्डिङमा क्लिक तथा किबोर्डका सर्टकटहरू देखाउन सक्नुहुन्छ</translation>
 <translation id="3742055079367172538">स्क्रिनसट लिइयो</translation>
 <translation id="3743775386021959186">फोकस अन छ, <ph name="REMAINING_TIME" /> बाँकी छ</translation>
+<translation id="3750403286520637847">मौसमसम्बन्धी सुझाव लुकाउनुहोस्</translation>
 <translation id="3756485814916578707">स्क्रिन कास्ट गरिँदै छ</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> को सर्टकट <ph name="OLD_SHORTCUT" /> बाट बदलेर <ph name="NEW_SHORTCUT" /> बनाइएको छ</translation>
 <translation id="3765841986579723851">आज सम्पादन गरिएको</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">ट्याब्लेट</translation>
 <translation id="3923494859158167397">कुनै पनि मोबाइल नेटवर्क सेटअप गरिएको छैन</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, कार्यक्रमहरू लोड गरिँदै छन्।</translation>
+<translation id="3927049937406914450">लोकेसन एक्सेस अफ गरिएकाले Weather उपलब्ध छैन। तपाईं सेटिङमा गई यो कुरा परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="3932043219784172185">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="3934456833412894880">एड्याप्टिभ चार्जिङ अन छ। तपाईंको डिभाइसको ब्याट्रीको आयु बढाउन ब्याट्री ८०% चार्ज भएर बस्ने छ र तपाईंलाई आवश्यक पर्दा ब्याट्री फुल चार्ज हुने छ।</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">क्यामेरा सिरानको दायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="4316910396681052118">सबै एपहरू</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Chrome ब्राउजरका सबै सुझावहरू लुकाउनुहोस्</translation>
 <translation id="4322742403972824594">Ctrl + Alt + अप एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Home की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + लेफ्ट एरो थिच्नुहोस्।</translation>
 <translation id="4324840740119394760">यसले <ph name="APP_NAME" /> र क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="4327147325944669226">गेम रेकर्ड गर्नुहोस्</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">फेरि नदेखाउनुहोस्</translation>
 <translation id="4451374464530248585">Alt + डाउन एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Page Down की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + डाउन एरो की थिच्नुहोस्।</translation>
 <translation id="4453876312474547652">Ctrl + V थिचिराख्दा क्लिपबोर्ड देखाइन्छ। तपाईं chrome://flags मा गई (वा Lacros प्रयोग गर्दै हुनुहुन्छ भने os://flags मा गई) #clipboard-history-longpress फ्ल्याग अफ गरेर यो सर्टकट अफ गर्न सक्नुहुन्छ।</translation>
+<translation id="445765352722456792">सुझावहरू कस्टमाइज गर्नुहोस्</translation>
 <translation id="445864333228800152">नमस्ते,</translation>
 <translation id="4458688154122353284">स्क्रिन रेकर्ड गर्न छोड्नुहोस्</translation>
 <translation id="445923051607553918">Wi-Fi सञ्जालमा संयोग गर्नुहोस्</translation>
@@ -1332,6 +1338,7 @@
 <translation id="5802516411616338943">द्रुत सेटिङ खोल्नुहोस्</translation>
 <translation id="5804651031882187592">"SIM लक गर्नुहोस्" सेटिङ अफ गर्नुहोस्</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अन गर्न क्लिक गर्नुहोस्</translation>
+<translation id="5819918159912280082">तपाईंको Chromebook अनपेक्षित रूपमा रिस्टार्ट भयो। आफूले यसअघि खोलेका विन्डो तथा एपहरू खोल्नुहोस्।</translation>
 <translation id="5823239091726045201">वेबमा उपलब्ध Google Tasks</translation>
 <translation id="5825969630400862129">कनेक्ट गरिएका यन्त्रहरूसम्बन्धी सेटिङ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /> बन्द गर्नुहोस्</translation>
@@ -1512,6 +1519,7 @@
 <translation id="6469104339369989396">हटस्पट टगल गर्नुहोस्</translation>
 <translation id="6477681113376365978">यो फाइल डाउनलोड गर्न सकिएन</translation>
 <translation id="6482559668224714696">फुल स्क्रिन म्याग्निफायर</translation>
+<translation id="6485086611007560630">Weather (उपलब्ध छैन)</translation>
 <translation id="6490471652906364588">USB-C यन्त्र (दायाँ पोर्ट)</translation>
 <translation id="649452524636452238">स्मार्ट कार्डको PIN</translation>
 <translation id="6495322433318104734">स्क्रिन सेभर देखाइँदै छ। तपाईं बाहिरिन चाहनुहुन्छ भने कुनै पनि की थिच्नुहोस्</translation>
@@ -1781,6 +1789,7 @@
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">पेज डाउन</translation>
+<translation id="7518182783647693467">तापक्रमको एकाइ (फ. र से.) अदलबदल गर्नुहोस्</translation>
 <translation id="7519206258459640379">क्यामेरा फ्रेमिङ अन छ।</translation>
 <translation id="7519649142417630956">डिभाइस सट डाउन भएपछि यी एड्मिनलाई लग आउट गरिने छ र उहाँ तपाईंको डिभाइस नियन्त्रण गर्न सक्नु हुने छैन।
 
@@ -1921,6 +1930,7 @@
 <translation id="7951630946012935453">किबोर्डको चमक घटाउनुहोस्</translation>
 <translation id="7953994493035617347">नयाँ रिजोल्युसन पुष्टि गर्ने हो?</translation>
 <translation id="795958884516058160">फुल स्क्रिन म्याग्निफायर अन गरिएको छ। यसलाई अफ गर्न फेरि <ph name="ACCELERATOR" /> थिच्नुहोस्।</translation>
+<translation id="7962583092928373823">Google पात्रोका सबै सुझावहरू लुकाउनुहोस्</translation>
 <translation id="7963689218131240420">Do Not Disturb अफ छ।</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> मार्फत</translation>
 <translation id="7968693143708939792">फोल्डर चयन गर्नुहोस्...</translation>
@@ -1993,6 +2003,7 @@
 <translation id="8214996719228530800">क्यानरी च्यानल</translation>
 <translation id="8219451629189078428">त्यतिन्जेल तपाईंको Chromebook खुला हुनु पर्छ र बिजुलीको स्रोतमा जोडिएको हुनु पर्छ। चार्जर वा एड्याप्टर केबल तपाईंको Chromebook र पावर सकेट दुवैतिर राम्ररी जोडिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्। आफ्नो Chromebook बन्द नगर्नुहोला।</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> हाल्नुहोस्</translation>
+<translation id="8228175756124063692">यो सुझाव लुकाउनुहोस्</translation>
 <translation id="8230305195727960608">कलर इन्भर्सन मोड</translation>
 <translation id="8236042855478648955">आराम गर्ने समय भयो</translation>
 <translation id="8237964652943995219">अर्को डेस्क: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" /> वटामध्ये <ph name="DESK_INDEX" /> औँ डेस्क।</translation>
@@ -2179,6 +2190,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> जाँच बाकसमा चिन्ह लगाइएको छैन।</translation>
 <translation id="8949925099261528566">कनेक्ट भयो, इन्टरनेट छैन</translation>
 <translation id="8951539504029375108">तपाईंको Chromebook मा स्वीकृत Thunderbolt यन्त्रहरू मात्र चल्छन्</translation>
+<translation id="8956420987536947088">आफूले यसअघि खोलेका विन्डो तथा एपहरू खोल्नुहोस्</translation>
 <translation id="8959380109429710384">तपाईंले फुल स्क्रिन म्याग्निफायर अन/अफ गर्ने किबोर्ड सर्टकट थिच्नुभयो। जुम इन गरिएका बेला यताउता सार्न Ctrl + Alt + एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="8964525410783593407">१ घण्टा</translation>
 <translation id="8973885907461690937">मेनु जनाउने आइकनमा फोकस गर्नुहोस्</translation>

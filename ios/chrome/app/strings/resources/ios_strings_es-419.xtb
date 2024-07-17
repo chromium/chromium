@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Saldrás de tu cuenta y se borrarán los datos de navegación</translation>
 <translation id="1044891598689252897">Los sitios funcionarán normalmente</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1053651653201045802">Saliste de tu cuenta. Vuelve a acceder para usar los favoritos, las contraseñas y otros datos de tu cuenta.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Contraseñas</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Datos de navegación</translation>
 <translation id="1400642268715879018">Últimas cuatro semanas</translation>
 <translation id="1404330357948037222">No accediste</translation>
-<translation id="14066361343057390">Saldrás de tu cuenta</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408847409015257906">Presiona "Privacidad y seguridad".</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -341,7 +340,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2712127207578915686">Error al abrir el archivo</translation>
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
 <translation id="2738375676495545665">Ocultar la opción Novedades</translation>
-<translation id="2740910715135851329">Saldrás de tu cuenta, se cerrarán las pestañas y se borrarán los datos de navegación</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Siguiendo <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Cuentas en este dispositivo</translation>
@@ -392,6 +390,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2952278131021475699">Búsqueda con cámara de Lens</translation>
 <translation id="2958718410589002129">Contraseñas</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceros</translation>
+<translation id="2965328226365382335">Últimos 15 minutos</translation>
 <translation id="2969979262385602596">Error al iniciar la sesión. Inténtalo más tarde.</translation>
 <translation id="2975121486251958312">Solo está disponible el modo Incógnito</translation>
 <translation id="2982481275546140226">Borrar datos</translation>
@@ -539,7 +538,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3738428049780661523">Creación: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar la opción Descargas</translation>
 <translation id="3745190878148784130">Ocultar la opción Hacer zoom en el texto</translation>
-<translation id="3747231889390582072">Para proteger la seguridad de tu organización, se borrarán los datos no guardados de este dispositivo. Esto puede incluir las contraseñas, el historial de navegación, las cookies y mucho más.</translation>
 <translation id="3762232513783804601">Diseñado para tu iPad</translation>
 <translation id="3768725474733206671">Volver a abrir última pestaña</translation>
 <translation id="3771033907050503522">Pestañas de incógnito</translation>
@@ -718,6 +716,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4659194143325814340">{count,plural, =1{{count} página en tu Lista de lectura}other{{count} páginas en tu Lista de lectura}}</translation>
 <translation id="4659667755519643272">Acceder al alternador de pestañas</translation>
 <translation id="46614316059270592">Guardar contraseña</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Iniciar una llamada telefónica para conectarte con una empresa</translation>
 <translation id="4682686630151240767">1. Abre Configuración en el iPhone.</translation>
 <translation id="4689564913179979534">Administrar formas de pago…</translation>
@@ -1519,7 +1518,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8522147671363140027">{count,plural, =1{{count} contraseña y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google, {email}.}other{{count} contraseñas y otros elementos se guardan solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu Cuenta de Google, {email}.}}</translation>
 <translation id="8522813812888400223">Cancelar descarga</translation>
 <translation id="8524799873541103884">Pestaña de <ph name="INCOGNITO" />: <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Saldrás de tu cuenta y se cerrarán las pestañas</translation>
 <translation id="8528009254289981965">Abre vínculos de otras apps en el modo Incógnito</translation>
 <translation id="8529767659511976195">Nuevo</translation>
 <translation id="8532105204136943229">Año vencimiento</translation>

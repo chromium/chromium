@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Olintshi</translation>
 <translation id="125153950246128346">Thepha ukuze ubone enye ithebhu</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> iqembu lamathebhu ongakhetha kuwo</translation>
-<translation id="1322824555808364080">Mema abantu</translation>
 <translation id="1419023007528516122">Lokhu kuzosula unomphela iqembu edivayisini yakho</translation>
 <translation id="1486715732399361704">Ungathola wonke amaqembu akho amathebhu lapha</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Kusungulwe emzuzwini ongu-<ph name="NUM_MINS_ONE" /> odlule}one{Kusungulwe emizuzwini engu-<ph name="NUM_MINS_MANY" /> edlule}other{Kusungulwe emizuzwini engu-<ph name="NUM_MINS_MANY" /> edlule}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Uzothola amaqembu wakho amathebhu lapha</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Hlukanisa ithebhu e-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{Ithebhu e-<ph name="TABS_COUNT_ONE" />}one{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}other{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="6527303717912515753">Yabelana</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Ngemva kosuku olu-1}one{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}other{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="6549021453810473782">Buka ulwazi lwesitolo</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

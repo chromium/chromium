@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Аранжавы</translation>
 <translation id="125153950246128346">Націсніце, каб паглядзець іншую ўкладку</translation>
 <translation id="1273910660700874265">Дзеянні з групай укладак "<ph name="TITLE_OF_GROUP" />"</translation>
-<translation id="1322824555808364080">Запрасіць карыстальнікаў</translation>
 <translation id="1419023007528516122">Гэта дзеянне незваротна выдаліць групу з вашай прылады</translation>
 <translation id="1486715732399361704">Тут знаходзяцца ўсе вашы групы ўкладак</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Створана <ph name="NUM_MINS_ONE" /> хвіліну таму}one{Створана <ph name="NUM_MINS_MANY" /> хвіліну таму}few{Створана <ph name="NUM_MINS_MANY" /> хвіліны таму}many{Створана <ph name="NUM_MINS_MANY" /> хвілін таму}other{Створана <ph name="NUM_MINS_MANY" /> хвіліны таму}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Тут будуць знаходзіцца групы ўкладак</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Скасаваць групаванне для <ph name="TABS_COUNT_ONE" /> выбранай укладкі}one{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбранай укладкі}few{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбраных укладак}many{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
+<translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Праз 1 дзень}one{Праз <ph name="DAY_COUNT_MANY" /> дзень}few{Праз <ph name="DAY_COUNT_MANY" /> дні}many{Праз <ph name="DAY_COUNT_MANY" /> дзён}other{Праз <ph name="DAY_COUNT_MANY" /> дня}}</translation>
 <translation id="6549021453810473782">Паказаць звесткі пра краму</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

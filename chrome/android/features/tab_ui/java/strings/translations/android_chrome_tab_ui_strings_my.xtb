@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">လိမ္မော်ရောင်</translation>
 <translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စု ရွေးစရာများ</translation>
-<translation id="1322824555808364080">လူများကို ဖိတ်ကြားရန်</translation>
 <translation id="1419023007528516122">၎င်းသည် သင့်စက်မှအဖွဲ့ကို အပြီးဖျက်ပါမည်</translation>
 <translation id="1486715732399361704">သင့်တဘ်အုပ်စုအားလုံးကို ဤနေရာတွင် တွေ့နိုင်သည်</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ပြီးခဲ့သော <ph name="NUM_MINS_ONE" /> မိနစ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_MINS_MANY" /> မိနစ်က ပြုလုပ်ထားသည်}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">တဘ်အုပ်စုများကို ဤနေရာတွင် မြင်ရမည်</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖြုတ်ရန်}other{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖြုတ်ရန်}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
+<translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{၁ ရက် ကြာပြီးနောက်}other{<ph name="DAY_COUNT_MANY" /> ရက် ကြာပြီးနောက်}}</translation>
 <translation id="6549021453810473782">ဆိုင်အချက်အလက် ကြည့်ရန်</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

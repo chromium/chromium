@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1035980983510608210">Hvis du lukker alle faner, blir også festede faner lukket.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Du blir logget av, og nettlesingsdata blir slettet</translation>
 <translation id="1044891598689252897">Nettsteder kommer til å fungere som normalt</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Logget av. Logg på igjen for å bruke blant annet bokmerkene og passordene i kontoen din.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Passord</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="138618066238211776">Fortsett som <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Nettlesingsdata</translation>
 <translation id="1400642268715879018">De siste 4 ukene</translation>
 <translation id="1404330357948037222">Du er logget av</translation>
-<translation id="14066361343057390">Du blir logget av</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1408847409015257906">Trykk på «Personvern og sikkerhet».</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
@@ -341,7 +340,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2712127207578915686">Kan ikke åpne filen</translation>
 <translation id="2718352093833049315">Bare når Wifi er på</translation>
 <translation id="2738375676495545665">Skjul «Hva er nytt?»</translation>
-<translation id="2740910715135851329">Du blir logget av, faner blir lukket, og nettlesingsdata blir slettet</translation>
 <translation id="2747003861858887689">Forrige felt</translation>
 <translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Kontoer på denne enheten</translation>
@@ -392,6 +390,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2952278131021475699">Lens-kamerasøk</translation>
 <translation id="2958718410589002129">Passord</translation>
 <translation id="2964349545761222050">Blokkér informasjonskapsler fra tredjeparter</translation>
+<translation id="2965328226365382335">De siste 15 minuttene</translation>
 <translation id="2969979262385602596">Kunne ikke logge på. Prøv på nytt senere.</translation>
 <translation id="2975121486251958312">Kun inkognitomodus er tilgjengelig</translation>
 <translation id="2982481275546140226">Slett data</translation>
@@ -539,7 +538,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3738428049780661523">Opprettet <ph name="DATE" /></translation>
 <translation id="374357899112510277">Skjul nedlastinger</translation>
 <translation id="3745190878148784130">Skjul Zoom inn på teksten</translation>
-<translation id="3747231889390582072">For å ivareta organisasjonens sikkerhet blir data som ikke er lagret, slettet fra denne enheten. Dette kan inkludere passord, nettleserloggen, informasjonskapsler med mer.</translation>
 <translation id="3762232513783804601">Laget for iPaden din</translation>
 <translation id="3768725474733206671">Åpne sist lukkede fane på nytt</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
@@ -718,6 +716,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4659194143325814340">{count,plural, =1{{count} side på leselisten din}other{{count} sider på leselisten din}}</translation>
 <translation id="4659667755519643272">Åpne fanevelgeren</translation>
 <translation id="46614316059270592">Lagre passordet</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Start telefonsamtaler for å komme i kontakt med bedrifter</translation>
 <translation id="4682686630151240767">1. Åpne iPhone-innstillingene</translation>
 <translation id="4689564913179979534">Administrer betalingsmåter…</translation>
@@ -1519,7 +1518,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8522147671363140027">{count,plural, =1{{count} passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}other{{count} passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
 <translation id="8522813812888400223">Avbryt nedlastingen</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />fane <ph name="FIRST_VISIBLE_TAB" /> til og med <ph name="LAST_VISIBLE_TAB" /> av <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Du blir logget av, og faner blir lukket</translation>
 <translation id="8528009254289981965">Åpne linker fra andre apper i Inkognito</translation>
 <translation id="8529767659511976195">Ny</translation>
 <translation id="8532105204136943229">Utløpsår</translation>
@@ -1600,6 +1598,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8876882697946675716">Hold enhetene dine synkronisert</translation>
 <translation id="8879604564928138696">Dobbelttrykk for å prøve</translation>
 <translation id="8881801611828450202">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
+<translation id="8887595428614802520">Lukk alle faner og grupper</translation>
 <translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
 <translation id="890565330728586731">Tilbake</translation>
 <translation id="8909135823018751308">Del</translation>

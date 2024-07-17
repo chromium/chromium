@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Oranž</translation>
 <translation id="125153950246128346">Puudutage muu vahelehe vaatamiseks</translation>
 <translation id="1273910660700874265">Vahelehegrupi <ph name="TITLE_OF_GROUP" /> valikud</translation>
-<translation id="1322824555808364080">Kutsuge inimesi</translation>
 <translation id="1419023007528516122">See kustutab grupi jäädavalt teie seadmest.</translation>
 <translation id="1486715732399361704">Siit leiate kõik oma vahelegrupid</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Loodud <ph name="NUM_MINS_ONE" /> minut tagasi}other{Loodud <ph name="NUM_MINS_MANY" /> minutit tagasi}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Leiate oma vahelehegrupid siit</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Tühista <ph name="TABS_COUNT_ONE" /> valitud vahelehe grupeerimine}other{Tühista <ph name="TABS_COUNT_MANY" /> valitud vahelehe grupeerimine}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
+<translation id="6527303717912515753">Jaga</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 päeva pärast}other{<ph name="DAY_COUNT_MANY" /> päeva pärast}}</translation>
 <translation id="6549021453810473782">Kuva poe teave</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>

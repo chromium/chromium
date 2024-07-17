@@ -1164,7 +1164,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3209034400446768650">Siden kan belaste deg for penger</translation>
 <translation id="3212581601480735796">Aktiviteten din på <ph name="HOSTNAME" /> overvåkes</translation>
 <translation id="3215092763954878852">Kunne ikke bruke WebAuthn</translation>
-<translation id="3215311088819828484">Resultatet er oppdatert</translation>
 <translation id="3216313131063488104">Blåfarger</translation>
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Må oppdateres nå}=2{Må oppdateres innen i morgen}other{Må oppdateres innen # dager}}</translation>
@@ -2688,7 +2687,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6116338172782435947">Se tekst og bilder som er kopiert til utklippstavlen</translation>
 <translation id="6117833587752089929">Foto (sateng)</translation>
 <translation id="6118782133429281336">Opphavslisten er tom.</translation>
-<translation id="6120950591512958208">Bruk denne koden i kassen.</translation>
 <translation id="612178891608320683">Vegansk mat</translation>
 <translation id="6122181661879998141">forsiden av kortet</translation>
 <translation id="6124058285696691147">Last ned vedlegget</translation>

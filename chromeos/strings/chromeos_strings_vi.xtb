@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Nền</translation>
 <translation id="3027578600144895987">Tắt máy ảnh</translation>
 <translation id="3031560714565892478">Thiết bị là máy quay video.</translation>
-<translation id="3051968340259309715">Quyền này cho phép các dịch vụ hệ thống sử dụng chế độ Độ chính xác của vị trí để xác định vị trí của bạn. Chế độ Độ chính xác của vị trí sử dụng thông tin về tín hiệu không dây (chẳng hạn như điểm truy cập Wi-Fi, trạm phát sóng mạng di động và GPS) cùng với dữ liệu cảm biến trên thiết bị (chẳng hạn như gia tốc kế và con quay hồi chuyển) để ước chừng vị trí của thiết bị. Bạn có thể tắt dịch vụ vị trí trong phần Cài đặt &gt; Quyền riêng tư và bảo mật &gt; Chế độ kiểm soát quyền riêng tư &gt; Quyền truy cập thông tin vị trí. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Điểm cuối</translation>
 <translation id="3060579846059757016">Dàn ý</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">Thiết bị mạng</translation>
 <translation id="7344788170842919262">nâu đất</translation>
 <translation id="7346768383111016081">Thiết lập chế độ điều khiển cho hành động trong trò chơi để chơi bằng bàn phím</translation>
+<translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7353413232959255829">Kết quả tìm kiếm <ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Nhấn Enter để chuyển đến lối tắt.</translation>
 <translation id="7359657277149375382">Loại tệp</translation>
 <translation id="73631062356239394">Chia sẻ dữ liệu chẩn đoán</translation>

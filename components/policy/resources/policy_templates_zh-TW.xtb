@@ -678,6 +678,7 @@
 <translation id="1539343118617844331">學校</translation>
 <translation id="1542491165152947087">允許使用者在裝置上開啟或關閉 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告主題設定。</translation>
 <translation id="1542958897137600427">啟用用戶端憑證佈建作業</translation>
+<translation id="1548431234399786388">控管瀏覽器事件回報功能的設定。</translation>
 <translation id="1550295162561011575">如果設定這項政策，系統管理員將可指定要在 <ph name="PRODUCT_NAME" /> 裝置上自動啟動的應用程式。這些應用程式可在使用者登入時啟動，使用者也可以透過啟動器一起啟動這些應用程式。</translation>
 <translation id="1551782388466447648">在登入畫面上啟用觸控虛擬鍵盤</translation>
 <translation id="1552418937045050762">如果啟用這項設定，使用者將可使用「鄰近分享」功能，與附近的使用者互相傳送檔案。
@@ -1598,6 +1599,13 @@
 
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法在登入畫面上將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_OS_NAME" />開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
 <translation id="2215746393279570703">浮動單一登入 (SSO) 設定</translation>
+<translation id="2218830243081931587">這項政策會控管快速鍵在 <ph name="PRODUCT_OS_NAME" /> 上的行為。
+
+如果不設定這項政策或設為 <ph name="NORMAL_SYSTEM_PRIORITY" />，所有 <ph name="PRODUCT_OS_NAME" /> 系統快速鍵都一律會正常啟動。
+
+如果將這項政策設為 <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />，預先設定的啟動鍵快速鍵清單將一律不會啟動快速鍵。
+
+如果將這項政策設為 <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />，在全螢幕顯示應用程式時，預先設定的啟動鍵快速鍵清單將一律不會啟動快速鍵。</translation>
 <translation id="2221779615493499989">回報已註冊裝置上的使用者網路狀態。
 
       如果將這項政策設為 False，系統不會回報這項資訊。
@@ -2362,6 +2370,7 @@
 <translation id="2847788524147474533">平台機器政策的優先順序高於雲端機器政策</translation>
 <translation id="2849275596224278787">隱藏登入畫面系統匣選單中的無障礙選項</translation>
 <translation id="2853649500575897584">不要封鎖瀏覽器程序中的舊版擴充點</translation>
+<translation id="2853757230661166968">允許應用程式擷取及覆寫預設的系統快速鍵。</translation>
 <translation id="285480231336205327">啟用高反差模式</translation>
 <translation id="285627849510728211">設定日間進階充電模式配置</translation>
 <translation id="2856932965866813330">允許與其他使用者共用使用者憑證</translation>
@@ -3670,6 +3679,7 @@
 
       注意：這項政策必須與 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 搭配使用。</translation>
 <translation id="3918339829588313389">允許使用者設定低強度 PIN 碼</translation>
+<translation id="392227823425989489">所有系統快速鍵都一律會正常啟動。</translation>
 <translation id="3924506460382372403">停用裝置圖像狀態回報功能</translation>
 <translation id="3925377537407648234">設定螢幕解析度和縮放比例</translation>
 <translation id="3926681471685211524">檢查本機信任錨點核發的伺服器憑證 RSA 金鑰用途</translation>
@@ -3732,6 +3742,9 @@
 <translation id="3979738908158213640">可在 SAML 驗證期間取得執行裝置認證存取權的網址</translation>
 <translation id="3982322576186033243">不允許在 TLS 握手程序中使用不安全的雜湊</translation>
 <translation id="3982465141749620677">分頁中提示重新驗證</translation>
+<translation id="3982849521386211220">允許你在清單中設定 Reporting API 端點[1]，指定可傳送企業報告的位置。
+
+[1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
 <translation id="398294729592983401">允許使用者在裝置上開啟或關閉 <ph name="PRIVACY_SANDBOX_NAME" /> 數位指紋採集防護設定。</translation>
 <translation id="3983162212222338509">系統 DNS 解析可能會在網路服務內部或外部執行，也可能部分在內部執行，部分在外部執行，實際情況取決於系統設定和功能旗標。</translation>
 <translation id="3986700049001404598">允許使用者透過 Chrome 工作管理員結束程序</translation>
@@ -4070,6 +4083,13 @@
       如果將這項政策設為 False，系統 DNS 解析 (getaddrinfo()) 可能會在網路程序內執行，而非瀏覽器程序。這可能會強制停用網路服務沙箱，導致 <ph name="PRODUCT_NAME" /> 的安全性降低。
 
       如果未設定這項政策，系統 DNS 解析可能會在網路服務內部或外部執行，也可能部分在內部執行，部分在外部執行，實際情況取決於系統設定和功能旗標。</translation>
+<translation id="4234788818648224034">不要使用 DNS-over-HTTPS 解析的網域清單。如果將安全 DNS 模式設為關閉 (一律使用純文字 DNS)，系統就會忽略這項政策。
+
+如果同時設定了 <ph name="DOH_TEMPLATES_POLICY_NAME" />，系統會優先採用更明確的網域。具體來說，這是指網域中的點 (「.」) 數量。如果網域同時符合這兩項政策，系統預設會針對該網域使用 DNS-over-HTTPS。
+
+網域格式應為完整網域名稱 (FQDN)，或使用特殊萬用字元「*」，在前面標註的網域字尾。
+
+系統會忽略格式不正確的網域。</translation>
 <translation id="4239720644496144453">這個快取不會供 Android 應用程式使用。如有多位使用者安裝同一個 Android 應用程式，則會針對每位使用者重新下載快取。</translation>
 <translation id="4242583077375244471">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會在驗證伺服器憑證時使用內建憑證驗證器和 Chrome Root Store 做為公開信任來源。
 如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 將使用系統憑證驗證器和系統根憑證。
@@ -4204,6 +4224,7 @@
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。不過，從 M85 版開始，系統針對這項政策已停止支援主機中包含「*」和「[*.]」萬用字元的模式。</translation>
 <translation id="4369307906396795087">工作站 (網路工作站、Service Worker 等) 指令碼會採用寬鬆的 MIME 類型檢查。使用舊版 MIME 類型的工作站指令碼 (例如 <ph name="MIMETYPE_TEXT_ASCII" />) 可正常運作。</translation>
+<translation id="4370908590951861085">回報端點</translation>
 <translation id="4370937370030117032">禁止將使用者名稱和檔案名稱傳送給原生印表機</translation>
 <translation id="4372704773119750918">不允許企業使用者使用多重設定檔 (主要或次要)</translation>
 <translation id="4373332965635821723">啟用無障礙捷徑</translation>
@@ -4508,11 +4529,6 @@
 <translation id="4615892138881859957">控制用於觸發「六鍵組」內 Insert 鍵的快速鍵</translation>
 <translation id="4617338332148204752">在 <ph name="PRODUCT_FRAME_NAME" /> 內略過中繼標記檢查</translation>
 <translation id="461901491675418689">NewBaseUrlInheritanceBehavior 功能已可使用</translation>
-<translation id="4624006912948309924">如果設定這項政策，就能修正 <ph name="PRODUCT_OS_NAME" /> 會在啟動器列中將哪些應用程式 ID 顯示為固定的應用程式，而且使用者無法進行變更。
-
-如要指定 Chrome 應用程式，可以使用應用程式的 ID，例如 pjkljhegncpnkpknbcohdijeoejaedia；如要指定 Android 應用程式，可以使用應用程式的套件名稱，例如 com.google.android.gm；如要指定網頁應用程式，可以使用「<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />」中所使用的網址，例如 https://google.com/maps；如要指定系統網頁應用程式，可以使用應用程式的蛇形命名名稱，例如 <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />。
-
-如果不設定這項政策，使用者將可變更啟動器中的固定應用程式清單。</translation>
 <translation id="4624417808625504735">禁止 JavaScript 在這些網站上使用 JIT</translation>
 <translation id="46321462262887935">將最上排按鍵設為功能鍵，但允許使用者變更</translation>
 <translation id="4632343302005518762">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理下列內容類型</translation>
@@ -5109,6 +5125,15 @@
 <translation id="5152787786897382519">Chromium 和 Google Chrome 有部分政策群組具有相依關係，依此共同管控特定功能。這些組合如下列政策群組所示。由於政策可能具有多個來源，系統只會套用群組中最高優先來源所提供的值，忽略同個群組中優先順序較低的來源所提供的值。請參閱 <ph name="POLICY_PRIORITY_DOC_URL" /> 瞭解來源的優先順序。</translation>
 <translation id="5153187201534281749">工具列中的瀏覽器實驗功能圖示</translation>
 <translation id="5159674159887919923">不要傳送 ChromeOS Flex 上的其他硬體資料</translation>
+<translation id="5162982931329320509">要使用 DNS-over-HTTPS 解析的網域清單。系統不會使用 DNS-over-HTTPS 解析未納入清單的其他網域。如果將安全 DNS 模式設為關閉 (一律使用純文字 DNS)，系統就會忽略這項政策。
+
+如果清單空白或未設定，系統將盡可能使用 DNS-over-HTTPS 解析所有網域。這項行為與內含 ["*"] 值的已納入網域清單相同。
+
+如果同時設定了 <ph name="DOH_TEMPLATES_POLICY_NAME" />，系統會優先採用更明確的網域。具體來說，這是指網域中的點 (「.」) 數量。如果網域同時符合這兩項政策，系統預設會針對該網域使用 DNS-over-HTTPS。
+
+網域格式應為完整網域名稱 (FQDN)，或使用特殊萬用字元「*」，在前面標註的網域字尾。
+
+系統會忽略格式不正確的網域。</translation>
 <translation id="5163002264923337812">啟用舊版網頁式登入流程</translation>
 <translation id="5163889437570441600">允許透過 <ph name="PRODUCT_NAME" /> 將內容投放至裝置。
 
@@ -7409,6 +7434,7 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
       這項政策已遭淘汰，請改用 <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="6847379587945465889">允許在登入過程中將 SAML 單一登入 (SSO) Cookie 傳輸至使用者工作階段</translation>
 <translation id="684856667300805181">這項政策已在 <ph name="PRODUCT_NAME" /> 68 中遭到移除，並已由 <ph name="ARC_GLS_POLICY_NAME" /> 取代。</translation>
+<translation id="684882090733715433">瀏覽器事件回報功能</translation>
 <translation id="6850300477973481112">桌面連接器設定</translation>
 <translation id="6851199885688265233">啟用游標醒目顯示無障礙功能</translation>
 <translation id="6851315055469993882">啟用全域範圍的 HTTP 驗證快取</translation>
@@ -7833,6 +7859,7 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 <translation id="7146198347561863646">如果將這項政策設為啟用或不設定，系統會允許電源管理的 Wake Lock。擴充功能可透過電源管理擴充功能 API 和 ARC 應用程式，要求使用 Wake Lock。
 
       如果將這項政策設為停用，系統會忽略 Wake Lock 使用要求。</translation>
+<translation id="7148958378210448356">預先設定的含啟動鍵快速鍵清單一律不會執行動作。</translation>
 <translation id="7149042336307555519">允許用來進行作業系統更新的連線類型。由於作業系統更新檔案較大，可能會對連線流量造成沉重負荷，也可能會產生額外費用。因此當使用者使用較昂貴的連線類型 (目前僅有「cellular」) 時，系統預設不會啟用作業系統更新。
 
       系統可識別的連線類型 ID 包括 <ph name="CONNECTION_TYPE_ETHERNET_NAME" />、<ph name="CONNECTION_TYPE_WIFI_NAME" /> 和 <ph name="CONNECTION_TYPE_CELLULAR_NAME" />。</translation>
@@ -8434,15 +8461,6 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 <translation id="7669630878711068277">如果將這項政策設為啟用或不設定，使用者將可在 <ph name="PRODUCT_NAME" /> 中列印，且無法變更這項設定。
 
       如果將這項政策設為停用，則使用者無法透過 <ph name="PRODUCT_NAME" /> 列印。在三點圖示選單、擴充功能和 JavaScript 應用程式中，列印功能皆會關閉。</translation>
-<translation id="7671234734316758429">這項政策可允許管理員針對 <ph name="PRODUCT_OS_NAME" /> 上的各個副檔名，指定對應的應用程式做為預設處理常式，但使用者無法變更這項設定。
-
-凡是這項政策未指定的副檔名，使用者都能按照一般工作流程自行設定預設處理常式。
-
-如果要指定的是 Chrome 應用程式，請使用應用程式的 ID，例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />；如果要指定的是網頁應用程式，請使用「<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />」所用的網址，例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />；如果要指定的是 Android 應用程式，請使用套件名稱，例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />；如果要指定的是系統網頁應用程式，請使用蛇形命名名稱，例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />；如果要指定的是虛擬工作，請使用虛擬工作的指定名稱，並在前方加上 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />，例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />。
-
-請注意，應用程式「必須」在資訊清單中宣告自身為特定副檔名的檔案處理常式，該政策項目才能生效。換言之，這項政策「不會」擴充現有的應用程式功能。
-
-如果未設定這項政策，<ph name="PRODUCT_OS_NAME" /> 會根據內部邏輯選取預設處理常式。</translation>
 <translation id="7673194325208122247">時間範圍 (毫秒)</translation>
 <translation id="7677220829878081413">
       如果將這項政策設為 [ArcSession]，在 Android 已啟動的情況下，系統會在使用者登出時強制重新啟動裝置。
@@ -8828,11 +8846,6 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
           這項政策已在 Chrome 110 版中移除。
                                         </translation>
 <translation id="7976157349247117979">「<ph name="PRODUCT_NAME" />」目的地名稱</translation>
-<translation id="797820628785995988">如果設定這項政策，所有指定的資料類型都會從同步處理作業 (包含 <ph name="CHROME_SYNC_NAME" />和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 <ph name="CHROME_SYNC_NAME" />伺服器的資料類型。
-
-      這項政策目前的資料類型為：「apps」、「autofill」、「bookmarks」、「extensions」、「preferences」、「passwords」、「payments」、「readingList」、「savedTabGroups」、「tabs」、「themes」、「typedUrls」和「wifiConfigurations」。這些名稱有大小寫之分！
-
-      注意：動態政策重新整理功能僅適用於 <ph name="PRODUCT_NAME" /> 123 以上版本。停用「autofill」也會一併停用「payments」。「typedUrls」是指所有的瀏覽記錄。</translation>
 <translation id="7982057585796399404">你可以透過這項政策，指定要以無訊息方式 (使用者不用操作) 安裝的應用程式和擴充功能清單，使用者無法解除安裝或停用這些應用程式和擴充功能。系統會直接授予權限給 enterprise.deviceAttributes 和 enterprise.platformKeys 擴充功能 API 等項目 (非強制安裝的應用程式和擴充功能無法取得這 2 個 API 的權限)。
 
 如果未設定這項政策，系統不會自動安裝任何應用程式或擴充功能，且使用者可以在 <ph name="PRODUCT_NAME" /> 中解除安裝任何應用程式或擴充功能。
@@ -8968,6 +8981,7 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 <translation id="8089200718228084417">啟用已淘汰的 Privet 列印功能</translation>
 <translation id="8091982561085048989">布林值標記，表示是否要使用 IPP Everywhere 設定印表機。<ph name="PRODUCT_OS_NAME" /> 76 以上版本支援這個標記。</translation>
 <translation id="8094095107731619070">使用者在實體鍵盤上輸入內容時提供自動更正</translation>
+<translation id="8099833343914898016">只有在全螢幕模式下，預先設定的含啟動鍵快速鍵清單一律不會執行動作。</translation>
 <translation id="8099880303030573137">在電池供電環境下執行時的閒置延遲時間</translation>
 <translation id="8101381354936029836">政策不可部分完成的群組：</translation>
 <translation id="8102854005031553638">PDF 檢視器會使用 AGG 轉譯器。</translation>
@@ -10116,6 +10130,19 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
       這項政策只會影響採用 SAML 進行驗證的使用者。
 
       指定政策值時，請以秒為單位進行設定。</translation>
+<translation id="9015526159640436408">用於設定檔企業徽章的圖片網址。該網址必須指向圖片。
+
+工具列會顯示這個徽章。
+
+如果是在瀏覽器層級設定這項政策，所有設定檔的工具列都會顯示這個標誌。
+
+如果是在設定檔層級設定這項政策，只有該設定檔會顯示這個標誌。
+
+如果未設定這項政策，會顯示預設的建築物圖示。
+
+如果擷取及顯示圖片時發生錯誤，則會顯示預設的建築物圖示。
+
+如果這項政策是在設定檔層級設定，優先順序會高於在瀏覽器層級設定的政策，這點與其他政策不同。</translation>
 <translation id="9015578113567730893">以毫秒為單位的音訊遙測收集率。</translation>
 <translation id="9015759770696099204">F11/F12 設定已停用</translation>
 <translation id="9015952763003753868">讓符合 <ph name="CORS" /> 預檢規格的 <ph name="ACAM_HEADER_NAME" /> 相容</translation>

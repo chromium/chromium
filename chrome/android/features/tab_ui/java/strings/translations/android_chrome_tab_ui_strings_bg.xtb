@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">оранжево</translation>
 <translation id="125153950246128346">Докоснете, за да видите друг раздел</translation>
 <translation id="1273910660700874265">Опции за групата раздели „<ph name="TITLE_OF_GROUP" />“</translation>
-<translation id="1322824555808364080">Поканване на хора</translation>
 <translation id="1419023007528516122">Това действие ще изтрие групата за постоянно от устройството ви</translation>
 <translation id="1486715732399361704">Тук можете да намерите всичките си групи раздели</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Създадено преди <ph name="NUM_MINS_ONE" /> минута}other{Създадено преди <ph name="NUM_MINS_MANY" /> минути}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Тук ще намерите групите си раздели</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Разгрупиране на <ph name="TABS_COUNT_ONE" /> избран раздел}other{Разгрупиране на <ph name="TABS_COUNT_MANY" /> избрани раздела}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
+<translation id="6527303717912515753">Споделяне</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{След 1 ден}other{След <ph name="DAY_COUNT_MANY" /> дни}}</translation>
 <translation id="6549021453810473782">Преглед на информацията за магазина</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>

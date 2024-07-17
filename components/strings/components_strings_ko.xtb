@@ -1164,7 +1164,6 @@
 <translation id="3209034400446768650">페이지에서 요금을 청구할 수 있음</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />에서의 활동이 모니터링되고 있음</translation>
 <translation id="3215092763954878852">WebAuthn을 사용할 수 없음</translation>
-<translation id="3215311088819828484">결과가 업데이트됨</translation>
 <translation id="3216313131063488104">블루스</translation>
 <translation id="3218181027817787318">상대</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{지금 업데이트 필요함}=2{내일까지 업데이트 필요}other{#일 이내로 업데이트 필요}}</translation>
@@ -2688,7 +2687,6 @@
 <translation id="6116338172782435947">클립보드에 복사된 텍스트 및 이미지를 확인합니다.</translation>
 <translation id="6117833587752089929">사진(새틴)</translation>
 <translation id="6118782133429281336">원본 목록이 비어 있습니다.</translation>
-<translation id="6120950591512958208">결제 시 이 코드를 사용하세요.</translation>
 <translation id="612178891608320683">비건 요리</translation>
 <translation id="6122181661879998141">카드 앞면</translation>
 <translation id="6124058285696691147">첨부파일 다운로드</translation>

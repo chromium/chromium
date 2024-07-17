@@ -1161,7 +1161,6 @@
 <translation id="3209034400446768650">यो पृष्ठले शुल्क लिन सक्छ</translation>
 <translation id="3212581601480735796">तपाईंले <ph name="HOSTNAME" /> मा गर्ने क्रियाकलापमाथि निगरानी गरिँदै छ</translation>
 <translation id="3215092763954878852">WebAuthn प्रयोग गर्न सकिएन</translation>
-<translation id="3215311088819828484">परिणाम परिवर्तन गरिएको छ</translation>
 <translation id="3216313131063488104">ब्लुज</translation>
 <translation id="3218181027817787318">सापेक्ष</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{अहिले नै अपडेट गर्नु पर्ने हुन्छ}=2{भोलिसम्ममा अपडेट गर्नु पर्ने हुन्छ}other{# दिनभित्र अपडेट गर्नु पर्ने हुन्छ}}</translation>
@@ -2686,7 +2685,6 @@
 <translation id="6116338172782435947">क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र फोटो हेर्नुहोस्</translation>
 <translation id="6117833587752089929">फोटो (स्याटिन)</translation>
 <translation id="6118782133429281336">मूल सूची खाली छ।</translation>
-<translation id="6120950591512958208">चेक आउट गर्दा यो कोड प्रयोग गर्नुहोस्।</translation>
 <translation id="612178891608320683">शुद्ध शाकाहारी परिकार</translation>
 <translation id="6122181661879998141">आफ्नो कार्डको अगाडिको भाग</translation>
 <translation id="6124058285696691147">एट्याचमेन्ट डाउनलोड गर्नुहोस्</translation>

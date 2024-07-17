@@ -1161,7 +1161,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3209034400446768650">Stránka môže účtovať peniaze</translation>
 <translation id="3212581601480735796">Vaša aktivita v zariadení <ph name="HOSTNAME" /> je sledovaná</translation>
 <translation id="3215092763954878852">WebAuthn sa nepodarilo použiť</translation>
-<translation id="3215311088819828484">Výsledok bol aktualizovaný</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatívne</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Okamžite je potrebné vykonať aktualizáciu}=2{Do zajtra je potrebné vykonať aktualizáciu}few{Do # dní je potrebné vykonať aktualizáciu}many{Do # dňa je potrebné vykonať aktualizáciu}other{Do # dní je potrebné vykonať aktualizáciu}}</translation>
@@ -2684,7 +2683,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6116338172782435947">Prístup k textu a obrázkom skopírovaným do schránky</translation>
 <translation id="6117833587752089929">Fotka (saténová)</translation>
 <translation id="6118782133429281336">Zoznam zdrojov je prázdny.</translation>
-<translation id="6120950591512958208">Tento kód použite pri platbe.</translation>
 <translation id="612178891608320683">Vegánska kuchyňa</translation>
 <translation id="6122181661879998141">prednej strany karty</translation>
 <translation id="6124058285696691147">Stiahnuť prílohu</translation>

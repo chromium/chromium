@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Πορτοκαλί</translation>
 <translation id="125153950246128346">Πατήστε για να δείτε μια άλλη καρτέλα</translation>
 <translation id="1273910660700874265">Επιλογές ομάδας καρτελών <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Πρόσκληση ατόμων</translation>
 <translation id="1419023007528516122">Με αυτή την ενέργεια θα διαγραφεί οριστικά η ομάδα από τη συσκευή σας</translation>
 <translation id="1486715732399361704">Μπορείτε να βρείτε εδώ όλες τις ομάδες καρτελών</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_MINS_ONE" /> λεπτό}other{Δημιουργήθηκε πριν από <ph name="NUM_MINS_MANY" /> λεπτά}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Εδώ θα βρείτε τις ομάδες καρτελών</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Κατάργηση ομαδοποίησης <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κατάργηση ομαδοποίησης <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
+<translation id="6527303717912515753">Κοινοποίηση</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Μετά από μία ημέρα}other{Μετά από <ph name="DAY_COUNT_MANY" /> ημέρες}}</translation>
 <translation id="6549021453810473782">Προβολή πληροφοριών καταστήματος</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">Практик хичээлийг дахин эхлүүлэх</translation>
 <translation id="2219735899272417925">Төхөөрөмжийг шинэчлэх шаардлагатай</translation>
 <translation id="2221227930294879156">Хоол хүнс болон уух зүйлийн арга хэмжээнүүд</translation>
+<translation id="2222604080869344662">Үргэлжлүүлэн татахын тулд OneDrive-т нэвтэрнэ үү</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2225927550500503913">Виртуал картыг асаасан</translation>
 <translation id="2226636330183131181">Wi-Fi сүлжээнд <ph name="BEGIN_LINK" />нэвтрэх<ph name="END_LINK" /></translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">Google Chrome төлбөрийн хэрэгслийг засахаар оролдож байна.</translation>
 <translation id="2400600116338235695">Цуваа портуудад холбогдохыг хүсэх боломжтой</translation>
 <translation id="2404884497378469141">Файлуудаа дахин хуулж үзнэ үү</translation>
+<translation id="2412310121876768057">Картыг дараагийн удаа автоматаар бөглөх үү?</translation>
 <translation id="2413155254802890957">Хуучин</translation>
 <translation id="2413528052993050574">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; хамгаалалтын сертификат хүчингүй болсон байж болзошгүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтон саад учруулж байж болох юм.</translation>
 <translation id="2414886740292270097">Хар</translation>
@@ -1162,7 +1164,6 @@
 <translation id="3209034400446768650">Хуудас төлбөр нэхэмжилж болзошгүй</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> дээрх таны үйл ажиллагааг хянаж байна</translation>
 <translation id="3215092763954878852">WebAuthn-г ашиглаж чадсангүй</translation>
-<translation id="3215311088819828484">Үр дүнг шинэчилсэн</translation>
 <translation id="3216313131063488104">Блюз</translation>
 <translation id="3218181027817787318">Харьцангуй</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Одоо шинэчлэх шаардлагатай}=2{Маргааш гэхэд шинэчлэх шаардлагатай}other{# хоногийн дотор шинэчлэх шаардлагатай}}</translation>
@@ -1242,6 +1243,7 @@
 <translation id="3352881017886802007">Спортын тоглоомууд</translation>
 <translation id="3355823806454867987">Прокси-ийн тохиргоонуудыг өөрчлөх ...</translation>
 <translation id="335809815767823">Экспорт хийлээ</translation>
+<translation id="3359387651158939842">Та картаа Google Pay-р ашиглахын тулд хадгалахдаа ирээдүйн худалдан авалтад зориулж автоматаар бөглөнө үү</translation>
 <translation id="3359565626472459400">Гэрлэлт</translation>
 <translation id="3360103848165129075">Төлбөр хариуцагчийн хүснэгт</translation>
 <translation id="3362968246557010467">Энэ удирдамжийг зогсоосон <ph name="OLD_POLICY" /> удирдамжаас автоматаар хуулсан байна. Та оронд нь энэ удирдамжийг ашиглавал зохино.</translation>
@@ -2056,6 +2058,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимп</translation>
 <translation id="4898742041545089450">Энэ сэдвийг блокоос гаргасан бөгөөд энэ нь таны хөтчийн түүхэд тулгуурлан идэвхтэй болж магадгүй</translation>
+<translation id="4899379435492347481">Энэ картыг өөрийн төхөөрөмжүүд дээрх худалдан авалтад зориулж Google Pay-р онлайнаар ашиглахын тулд хадгална уу</translation>
 <translation id="4900217275619098670">Ес дэх хуйлмал</translation>
 <translation id="4901052769830245369">Шошго (хагас гялгар)</translation>
 <translation id="4901162432287938633">Эрүүл ахуйн болон ариун цэврийн хэрэгслүүд</translation>
@@ -2685,7 +2688,6 @@
 <translation id="6116338172782435947">Түр санах ойд хуулсан текст, зургийг харах</translation>
 <translation id="6117833587752089929">Гэрэл зураг (сатин)</translation>
 <translation id="6118782133429281336">Эхийн жагсаалт хоосон байна.</translation>
-<translation id="6120950591512958208">Тооцоо хийхэд энэ кодыг ашиглана уу.</translation>
 <translation id="612178891608320683">Веган хоол</translation>
 <translation id="6122181661879998141">таны картын урд тал</translation>
 <translation id="6124058285696691147">Хавсралтыг татах</translation>
@@ -2718,6 +2720,7 @@
 <translation id="6180316780098470077">Дахин оролдлого хоорондох интервал</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome гуравдагч талын күүкинүүдийг автоматаар хязгаарлана</translation>
+<translation id="6194139058731919563">Таны картын дэлгэрэнгүй мэдээллийг Google Бүртгэлд тань шифрлэн хадгалж, онлайнаар төлбөр хийхэд ашигладаг.</translation>
 <translation id="6194209731893739467">Хянаж буй бүх бүтээгдэхүүнээ эндээс харна уу</translation>
 <translation id="6195163219142236913">Гуравдагч талын күүкинүүдийг хязгаарласан</translation>
 <translation id="6195371403461054755">Геологи</translation>
@@ -3619,6 +3622,7 @@
 <translation id="7831993212387676366">Авах зүйлийн жагсаалт гэж юу вэ?</translation>
 <translation id="7832078172950550575">Та өдөр тутмын хэрэглээний хэлээр "миний ойролцоох пиццаны газар", “гэр бүлд ээлтэй хотын төвийн цэцэрлэгт хүрээлэн" зэрэг хэллэгийг ашиглан хөтчийн түүхээсээ хайх боломжтой. Таны хайлт, хамгийн сайн таарах илэрц болон тэдгээрийн хуудасны контентыг Google рүү илгээдэг бөгөөд энэ онцлогийг сайжруулахын тулд тухайн өгөгдлийг хянагч хүмүүс харж магадгүй. <ph name="BEGIN_LINK" />Түүхийн хайлтын тохиргоогоо удирдах<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Дэлгэцийн зураг авч эхэллээ</translation>
+<translation id="7840504603489703295">Танай санхүүгийн байгууллагаас тогтоосон хязгаарлалт хэрэгжинэ.</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="784404208867107517">Бүлэглэсэн түүх</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Байхгүй}=1{1 апп (<ph name="EXAMPLE_APP_1" />)}=2{2 апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3817,6 +3821,7 @@
 <translation id="8241712895048303527">Энэ сайтад блоклох</translation>
 <translation id="8242426110754782860">Үргэлжлүүлнэ үү</translation>
 <translation id="8246482227229072868">Бөгжнүүд</translation>
+<translation id="8248406213705193919">Картыг аюулгүй хадгалах уу?</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
 <translation id="824968735947741546"><ph name="SOURCE" />-с (автоматаар илрүүлсэн) <ph name="TARGET" /> руу орчуулж байна</translation>
 <translation id="8250094606476360498">Энэ хаягийг одоогоор энэ төхөөрөмжид хадгалсан. Үүнийг Google-н бүтээгдэхүүнүүдэд ашиглахын тулд <ph name="ACCOUNT" /> Google Бүртгэлдээ хадгална уу.</translation>
@@ -4301,6 +4306,7 @@
 <translation id="9169664750068251925">Энэ сайт дээр үргэлж хориглох</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" />-г Үндсэн нүүрэнд нэмэх</translation>
 <translation id="9170848237812810038">&amp; Буцаах</translation>
+<translation id="9170906125144697215">Апп сэлгэхгүйгээр Pix-р төлөөрэй</translation>
 <translation id="9171296965991013597">Аппыг орхих уу?</translation>
 <translation id="9173282814238175921">Дан документ/Шинэ хүснэгт</translation>
 <translation id="9173995187295789444">Bluetooth төхөөрөмжүүдийг хайж байна...</translation>
@@ -4322,6 +4328,7 @@
 <translation id="9205078245616868884">Таны өгөгдлийг таны синк хийх нэвтрэх үгтэй шифрлэсэн. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
 <translation id="920643408853370361">Аяллын даатгал</translation>
 <translation id="9207861905230894330">Өгүүллийг нэмэх явц амжилтгүй боллоо.</translation>
+<translation id="9209339767782560829">Таны нэвтрэх сертификатыг ашиглахад асуудал гарлаа.</translation>
 <translation id="9210825002219699214">Агаарын аялал</translation>
 <translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" />-г хайхын тулд @ гэж бичнэ үү</translation>
 <translation id="9213433120051936369">Харагдах байдлыг өөрчлөх</translation>

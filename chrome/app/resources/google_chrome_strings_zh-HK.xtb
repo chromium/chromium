@@ -22,6 +22,7 @@
 <translation id="1229096353876452996">Google 建議將 Chrome 設定為預設瀏覽器</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
+<translation id="1290883685122687410">設定錯誤：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
 <translation id="1335640173511558774">在使用這部裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Google ChromeOS Flex 條款》。</translation>
 <translation id="1341711321000856656">您可切換查看其他 Chrome 個人檔案的密碼</translation>
@@ -194,6 +195,7 @@
 <translation id="3583751698304738917">你已在另一個 Chrome 個人檔案中以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入</translation>
 <translation id="3595784445906693824">要在新個人檔案中登入 Chrome 嗎？</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{管理員要求您重新啟動 Chrome，以套用更新}=1{管理員要求您重新啟動 Chrome，以套用更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chrome，以套用更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
+<translation id="3597003331831379823">無法按更高權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">由於最近沒有瀏覽記錄，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和、<ph name="PERMISSION_3" />權限</translation>
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都更輕而易舉。</translation>
 <translation id="3635073343384702370">儲存密碼時，Chrome 可檢查你的密碼</translation>

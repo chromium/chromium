@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Fundo</translation>
 <translation id="3027578600144895987">Fechar câmara</translation>
 <translation id="3031560714565892478">O dispositivo é uma câmara de vídeo.</translation>
-<translation id="3051968340259309715">Isto permite que os serviços do sistema usem a Precisão da localização para determinar a sua localização. A Precisão da localização usa informações sobre sinais sem fios, como pontos de acesso Wi-Fi, torres de redes móveis e GPS, juntamente com dados de sensores do dispositivo, como o acelerómetro e o giroscópio, para estimar a localização do dispositivo. Pode desativar a localização em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Ponto final</translation>
 <translation id="3060579846059757016">Destaques</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7344788170842919262">terrosos</translation>
 <translation id="7346768383111016081">Coloque o controlo na ação do jogo para jogar com o teclado</translation>
+<translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7353413232959255829">Resultado da pesquisa <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Prima Enter para navegar para o atalho.</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="73631062356239394">Partilhar dados de diagnóstico</translation>

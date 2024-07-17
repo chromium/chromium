@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">ສີໝາກກ້ຽງ</translation>
 <translation id="125153950246128346">ແຕະເພື່ອເບິ່ງແຖບອື່ນ</translation>
 <translation id="1273910660700874265">ຕົວເລືອກກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">ເຊີນຊວນຄົນອື່ນ</translation>
 <translation id="1419023007528516122">ການດຳເນີນການນີ້ຈະລຶບກຸ່ມອອກຈາກອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ</translation>
 <translation id="1486715732399361704">ທ່ານສາມາດຊອກຫາກຸ່ມແຖບທັງໝົດໄດ້ທີ່ນີ້</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_MINS_ONE" /> ນາທີກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_MINS_MANY" /> ນາທີກ່ອນ}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">ທ່ານຈະເຫັນກຸ່ມແຖບຂອງທ່ານບ່ອນນີ້</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກໄວ້}other{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກໄວ້}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
+<translation id="6527303717912515753">ແຊຣ໌</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{ຫຼັງຈາກ 1 ມື້}other{ຫຼັງຈາກ <ph name="DAY_COUNT_MANY" /> ມື້}}</translation>
 <translation id="6549021453810473782">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

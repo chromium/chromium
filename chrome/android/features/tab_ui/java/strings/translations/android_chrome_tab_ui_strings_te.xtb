@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">నారింజ రంగు</translation>
 <translation id="125153950246128346">మరొక ట్యాబ్‌ను చూడటానికి నొక్కండి</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్ ఆప్షన్‌లు</translation>
-<translation id="1322824555808364080">వ్యక్తులను ఆహ్వానించండి</translation>
 <translation id="1419023007528516122">ఇలా చేస్తే, మీ పరికరం నుండి గ్రూప్ శాశ్వతంగా తొలగించబడుతుంది</translation>
 <translation id="1486715732399361704">మీరు మీ అన్ని ట్యాబ్ గ్రూప్‌లను ఇక్కడ కనుగొనవచ్చు</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> నిమిషం క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_MINS_MANY" /> నిమిషాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">మీరు ఇక్కడ మీ ట్యాబ్ గ్రూప్‌లను కనుగొంటారు</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ఎంచుకున్న ట్యాబ్‌ను అన్‌గ్రూప్ చేయండి}other{<ph name="TABS_COUNT_MANY" /> ఎంచుకున్న ట్యాబ్‌లను అన్‌గ్రూప్ చేయండి}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
+<translation id="6527303717912515753">షేర్ చేయండి</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 రోజు తర్వాత}other{<ph name="DAY_COUNT_MANY" /> రోజుల తర్వాత}}</translation>
 <translation id="6549021453810473782">స్టోర్ సమాచారాన్ని చూడండి</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

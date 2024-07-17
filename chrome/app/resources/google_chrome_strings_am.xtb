@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">ወደ Chrome በመለያ ይግቡ። ወደ መለያ አንድ ጊዜ ብቻ መግባት ከፈለጉ <ph name="GUEST_LINK_BEGIN" />መሣሪያውን እንደ እንግዳ መጠቀም<ph name="GUEST_LINK_END" /> ይችላሉ።</translation>
 <translation id="1152920704813762236">ስለ ChromeOS</translation>
 <translation id="1154147086299354128">&amp;በChrome ውስጥ ክፈት</translation>
+<translation id="1184145431117212167">የእርስዎ የመስኮቶች ሥሪት ስለማይደገፍ ጭነቱ ተሰናክሏል።</translation>
 <translation id="1194807384646768652">የፋይል ዓይነቱ በተለምዶ ስላማይወርድ እና አደገኛ ሊሆን ስለሚችል Chrome ይህን ውርድ አግዷል</translation>
 <translation id="1203500561924088507">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት አሳሽዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="1229096353876452996">Google እንደ ነባሪ Chromeን እንዲያቀናብሩ ይመክራል</translation>
@@ -238,6 +239,7 @@
 <translation id="4191857738314598978">{0,plural, =1{በአንድ ቀን ውስጥ Chromeን ዳግም አስጀምር}one{በ# ቀኖች ውስጥ Chromeን ዳግም አስጀምር}other{በ# ቀኖች ውስጥ Chromeን ዳግም አስጀምር}}</translation>
 <translation id="4205939740494406371">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። ከ24 ሰዓቶች በኋላ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይፈትሹ<ph name="END_LINK" />።</translation>
 <translation id="4222932583846282852">በመሰረዝ ላይ...</translation>
+<translation id="4224210481850767180">ጭነቱ ተሰርዟል።</translation>
 <translation id="4242034826641750751">Chrome ለዚህ ጣቢያ የካሜራ እና የማይክሮፎን ፈቃዶች ያስፈልጉታል</translation>
 <translation id="424864128008805179">ከChrome ተዘግቶ ይወጣ?</translation>
 <translation id="4251615635259297716">የChrome ውሂብዎ ከዚህ መለያ ጋር ይገናኝ?</translation>

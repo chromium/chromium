@@ -1655,6 +1655,13 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 
       <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (2 değeri) ayarlanırsa giriş ekranında tarayıcıya hiçbir varyasyonun uygulanmasına izin verilmez. Bu modun, <ph name="PRODUCT_OS_NAME" /> geliştiricilerinin kritik güvenlik düzeltmelerini zamanında sağlamalarını engelleyebileceğini ve dolayısıyla önerilmediğini lütfen unutmayın.</translation>
 <translation id="2215746393279570703">Kayan TOA ayarları</translation>
+<translation id="2218830243081931587">Bu politika, <ph name="PRODUCT_OS_NAME" /> üzerindeki kısayol davranışını kontrol eder.
+
+Bu politika ayarlanmadan bırakılır veya <ph name="NORMAL_SYSTEM_PRIORITY" /> değerine ayarlanırsa tüm <ph name="PRODUCT_OS_NAME" /> sistem kısayolları her zaman beklendiği gibi etkinleştirilir.
+
+Bu politika <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" /> değerine ayarlanırsa önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları hiçbir zaman kısayolları etkinleştirmez.
+
+Bu politika <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" /> değerine ayarlanırsa önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları, uygulamalar tam ekran modundayken hiçbir zaman kısayolları etkinleştirmez.</translation>
 <translation id="2221779615493499989">Kayıtlı cihazlardaki kullanıcıların ağ durumunu raporla.
 
       Bu politika yanlış değerine ayarlanırsa bilgi raporlanmaz.
@@ -2443,6 +2450,7 @@ Bu politika yalnızca bulut kullanıcı politikası olarak ayarlanabilir.</trans
 <translation id="2847788524147474533">Platform makinesi politikaları, bulut makinesi politikaları karşısında öncelikli olur</translation>
 <translation id="2849275596224278787">Giriş ekranı sistem tepsisi menüsünde erişilebilirlik seçeneklerini gizle</translation>
 <translation id="2853649500575897584">Tarayıcı işlemindeki eski uzantı noktalarını engelleme</translation>
+<translation id="2853757230661166968">Uygulamaların, varsayılan sistem kısayollarını yakalamasına ve geçersiz kılmasına olanak tanır.</translation>
 <translation id="285480231336205327">Yüksek kontrast modunu etkinleştir</translation>
 <translation id="285627849510728211">Gelişmiş pil şarj modu gün yapılandırmasını ayarla</translation>
 <translation id="2856932965866813330">Kullanıcı kimlik bilgilerinin diğer kullanıcılarla paylaşılmasını etkinleştir</translation>
@@ -3822,6 +3830,7 @@ Hem <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> hem de <ph name="HOMEPAGE_IS_NEW
 
       Not: Bu politika, <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> politikası ile birlikte kullanılmalıdır.</translation>
 <translation id="3918339829588313389">Kullanıcıların zayıf bir PIN belirlemesine izin ver</translation>
+<translation id="392227823425989489">Tüm sistem kısayolları her zaman beklendiği gibi etkinleştirilir.</translation>
 <translation id="3924506460382372403">Cihaz grafik durumu raporlamasını devre dışı bırak</translation>
 <translation id="3925377537407648234">Ekran çözünürlüğünü ve ölçek faktörünü ayarlama</translation>
 <translation id="3926681471685211524">Yerel güven çapalarının yayınladığı sunucu sertifikaları için RSA anahtarı kullanımını kontrol et</translation>
@@ -4252,6 +4261,13 @@ Not: Dahili chrome://* ile chrome-untrusted://* URL'lerinin engellenmesi beklenm
       Bu politikanın Yanlış değerine ayarlanması, sistem DNS çözümlemesinin (getaddrinfo()) tarayıcı işlemi yerine ağ işleminde çalışmasına neden olur. Bu durum, ağ hizmeti korumalı alanının zorla devre dışı bırakılmasına ve <ph name="PRODUCT_NAME" /> güvenliğinin azalmasına yol açabilir.
 
       Bu politika ayarlanmazsa sistem DNS çözümlemesi, sistem yapılandırmasına ve özellik bayraklarına bağlı olarak ağ hizmetinin içinde veya dışında ya da kısmen içinde kısmen dışında çalışabilir.</translation>
+<translation id="4234788818648224034">DNS-over-HTTPS kullanılarak çözümlenmeyecek alanların listesi. Güvenli DNS modu kapalı (her zaman düz metin DNS kullan) olarak ayarlandığında bu politika yoksayılır.
+
+<ph name="DOH_TEMPLATES_POLICY_NAME" /> politikası da ayarlanmışsa daha belirli bir alan tercih edilir. Belirlilik, alandaki nokta (".") sayısını ifade eder. Bir alan iki politikayla da eşleşirse alan için varsayılan olarak DNS-over-HTTPS kullanılır.
+
+Alanların, tam etki alan adı (FQDN) biçiminde veya özel joker karakter öneki "*" kullanılarak belirtilen alan adı son eki biçiminde olması gerekir.
+
+Yanlış biçimlendirilmiş alanlar yoksayılır.</translation>
 <translation id="4239720644496144453">Önbellek, Android uygulamaları için kullanılmaz. Birden fazla kullanıcı aynı Android uygulamasını yüklerse bu uygulama her kullanıcı için yeniden indirilir.</translation>
 <translation id="4242583077375244471">Bu politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />, sunucu sertifikalarının doğrulamasını, herkese açık güven kaynağı Chrome Root Store olacak şekilde yerleşik sertifika doğrulayıcıyı kullanarak gerçekleştirir.
 
@@ -4715,14 +4731,6 @@ zorunlu kılar.</translation>
 <translation id="4615892138881859957">Insert "altılı paket" tuşunu tetiklemek için kullanılan kısayolu kontrol et</translation>
 <translation id="4617338332148204752"><ph name="PRODUCT_FRAME_NAME" /> cihazında meta etiket kontrolünü atla</translation>
 <translation id="461901491675418689">NewBaseUrlInheritanceBehavior özelliği kullanılabilir</translation>
-<translation id="4624006912948309924">Politikanın ayarlanması, <ph name="PRODUCT_OS_NAME" /> ürününün başlatıcı çubuğunda sabitlenmiş uygulamalar olarak gösterdiği uygulama tanımlayıcılarını sabitler ve kullanıcılar bunları değiştiremez.
-
-Chrome uygulamalarını kimliklerine göre (ör. pjkljhegncpnkpknbcohdijeoejaedia),
-Android uygulamalarını paket adlarına göre (ör. com.google.android.gm),
-web uygulamalarını <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> politikasında kullanılan URL'lere göre (ör. https://google.com/maps),
-sistem web uygulamalarını ise snake case adlarına göre (ör. <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />) belirtin.
-
-Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uygulamalar listesini değiştirmesine izin verir.</translation>
 <translation id="4624417808625504735">Bu sitelerde JavaScript'in JIT kullanmasını engelle</translation>
 <translation id="46321462262887935">Üst sıradaki tuşlara işlev tuşu olarak davran, ancak kullanıcının değişiklik yapmasına izin ver</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> için listelenen içerik türlerini işlemeye izin ver</translation>
@@ -5323,6 +5331,15 @@ Politika ayarlanmadan bırakılırsa ya da devre dışı bırakılırsa çerezle
 <translation id="5152787786897382519">Hem Chromium hem de Google Chrome, bir özellik üzerinde kontrol sağlamak için birbirine bağlı bazı politika gruplarına sahiptir. Bu kümeler, aşağıdaki politika grupları tarafından temsil edilir. Politikaların birden çok kaynağı olabileceği düşünülürse, yalnızca en yüksek öncelikli kaynaktan gelen değerler geçerlidir. Aynı gruptaki daha düşük öncelikli kaynaktan gelen değerler, yok sayılır. Öncelik sırası, <ph name="POLICY_PRIORITY_DOC_URL" /> adresinde tanımlanmıştır.</translation>
 <translation id="5153187201534281749">Araç çubuğundaki tarayıcı deneyleri simgesi</translation>
 <translation id="5159674159887919923">ChromeOS Flex'te ek donanım verisi gönderme</translation>
+<translation id="5162982931329320509">DNS-over-HTTPS kullanılarak çözümlenecek alanların listesi. Listede yer almayan diğer alanlar DNS-over-HTTPS kullanılarak çözümlenmez. Güvenli DNS modu kapalı (her zaman düz metin DNS kullan) olarak ayarlandığında bu politika yoksayılır.
+
+Liste boşsa veya ayarlanmadan bırakılırsa tüm alanlar mümkün olduğunda DNS-over-HTTPS kullanılarak çözümlenir. ["*"] değerine sahip dahil edilen alanlar listesinde de aynı davranış söz konusudur.
+
+<ph name="DOH_TEMPLATES_POLICY_NAME" /> politikası da ayarlanmışsa daha belirli bir alan tercih edilir. Belirlilik, alandaki nokta (".") sayısını ifade eder. Bir alan iki politikayla da eşleşirse alan için varsayılan olarak DNS-over-HTTPS kullanılır.
+
+Alanların, tam etki alan adı (FQDN) biçiminde veya özel joker karakter öneki "*" kullanılarak belirtilen alan adı son eki biçiminde olması gerekir.
+
+Yanlış biçimlendirilmiş alanlar yoksayılır.</translation>
 <translation id="5163002264923337812">Eski web tabanlı oturum açmayı etkinleştir</translation>
 <translation id="5163889437570441600"><ph name="PRODUCT_NAME" /> kullanarak içeriğin cihaza yayınlanmasına izin verin.
 
@@ -8151,6 +8168,7 @@ Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve
 <translation id="7146198347561863646">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa güç yönetimi için uyanık kalma kilitlerine izin verilir. Uzantılar, güç yönetimi uzantı API'si ve ARC uygulamaları aracılığıyla uyandırma kilitleri isteyebilir.
 
       Politika, Devre Dışı değerine ayarlanırsa uyanık kalma kilidi istekleri yok sayılır.</translation>
+<translation id="7148958378210448356">Önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları hiçbir zaman işlem gerçekleştirmez.</translation>
 <translation id="7149042336307555519"> OS güncellemeleri için kullanılmasına izin verilen bağlantı türleri. OS güncellemeleri, boyutları nedeniyle muhtemelen bağlantı üzerine ağır yük getirir ve ek maliyete neden olabilir. Bu nedenle, pahalı kabul edilen bağlantı türleri için (şu anda yalnızca "hücresel" bağlantı) varsayılan olarak etkin değildir.
 
       Tanınan bağlantı türü tanımlayıcıları şunlardır: <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> ve <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -8772,19 +8790,6 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 <translation id="7669630878711068277">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar <ph name="PRODUCT_NAME" /> üzerinde yazdırabilir ve bu ayarı değiştiremez.
 
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar <ph name="PRODUCT_NAME" /> üzerinden yazdırma işlemi gerçekleştiremez. Üç nokta menüsünde, uzantılarda ve JavaScript uygulamalarında yazdırma işlemi devre dışı bırakılır.</translation>
-<translation id="7671234734316758429">Bu politika ile yöneticiler, <ph name="PRODUCT_OS_NAME" /> ürününde kullanıcıların değiştiremeyeceği ilgili dosya uzantıları için varsayılan işleyici görevi gören uygulamaları belirtebilir.
-
-Kullanıcılar, politikada belirtilmeyen tüm dosya uzantıları için normal iş akışına göre kendi varsayılanlarını ayarlayabilir.
-
-Chrome uygulamalarını kimliklerine göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />),
-web uygulamalarını <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> politikasında kullanılan URL'lere göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />), Android uygulamalarını
-paket adlarına göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />), sistem web uygulamalarını
-snake case adlarına göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />), sanal görevleri de başına <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />
-eklenmiş tanımlanan adına göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />) belirtin.
-
-İlgili politika öğesinin etkili olması için (politika, mevcut uygulama özelliklerini ARTIRMAZ) uygulamaların, manifest dosyalarında belirtilen dosya uzantılarının dosya işleyicisi olarak beyan edilmeleri GEREKİR.
-
-Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, dahili mantık doğrultusunda varsayılan işleyiciler seçebilir.</translation>
 <translation id="7673194325208122247">Dönem (milisaniye)</translation>
 <translation id="7677220829878081413">
       Bu politika ArcSession değerine ayarlandığında, Android başlatılmışsa kullanıcı oturumu kapatıldığında cihazı yeniden başlamaya zorlar.
@@ -9186,11 +9191,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ku
           Bu politika Chrome 110'da kaldırıldı.
                                         </translation>
 <translation id="7976157349247117979"><ph name="PRODUCT_NAME" /> hedefinin adı</translation>
-<translation id="797820628785995988">Bu politika ayarlanırsa belirtilen tüm veri türleri hem <ph name="CHROME_SYNC_NAME" /> senkronizasyonunun hem de dolaşım profili senkronizasyonunun dışında tutulur. Bu, dolaşım profilinin boyutunu küçültmeye veya <ph name="CHROME_SYNC_NAME" /> sunucularına yüklenen veri türlerini sınırlandırmaya yarayabilir.
-
-      Şu anda bu politika kapsamında bulunan veri türleri şunlardır: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "readingList", "savedTabGroups", "tabs", "themes", "typedUrls", "wifiConfigurations". Bu adlar büyük/küçük harfe duyarlıdır.
-
-      Notlar: Dinamik politika yenileme yalnızca <ph name="PRODUCT_NAME" /> 123 sürümünde ve sonraki sürümlerde desteklenir. "autofill" veri türü devre dışı bırakıldığında "payments" türü de devre dışı bırakılır. "typedUrls", tüm tarama geçmişini ifade eder.</translation>
 <translation id="7982057585796399404">Politikanın ayarlanması, kullanıcı etkileşimi olmadan sessizce yüklenen, kullanıcı tarafından yüklemesi kaldırılamayan veya kapatılamayan uygulamaların ve uzantıların bir listesini belirtir. İzinler, enterprise.deviceAttributes ve enterprise.platformKeys uzantı API'leri için dolaylı olarak verilir. (Bu iki API zorunlu olarak yüklenmemiş uygulamalar ve uzantılar tarafından kullanılamaz.)
 
 Bu politika ayarlanmadan bırakılırsa hiçbir uygulama veya uzantı otomatik olarak yüklenmez ve kullanıcılar <ph name="PRODUCT_NAME" /> ürünündeki uygulama veya uzantıları kaldırabilirler.
@@ -9344,6 +9344,7 @@ Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzel
 <translation id="8089200718228084417">Kullanımdan kaldırılan privet yazdırmayı etkinleştir</translation>
 <translation id="8091982561085048989">Yazıcıyı kurmak için IPP Everywhere'in kullanılıp kullanılmayacağını belirten boole flag'i. Bu işaret, <ph name="PRODUCT_OS_NAME" /> sürüm 76 ve sonrasındaki sürümlerde desteklenir.</translation>
 <translation id="8094095107731619070">Kullanıcılar yazarken fiziksel klavyede otomatik düzeltme özelliğini etkinleştir</translation>
+<translation id="8099833343914898016">Önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları, yalnızca tam ekran modundayken hiçbir zaman işlem gerçekleştirmez.</translation>
 <translation id="8099880303030573137">Pil gücüyle çalışırken boşta kalma gecikmesi</translation>
 <translation id="8101381354936029836">Politika atom grubu:</translation>
 <translation id="8102854005031553638">PDF görüntüleyici AGG oluşturucuyu kullanır.</translation>
@@ -10530,6 +10531,19 @@ Not: Şu anda yalnızca ilk giriş dikkate alınır. Gelecekteki uzantılar bird
       Bu politika sadece SAML kullanarak kimlik doğrulaması yapan kullanıcıları etkiler.
 
       Politika değeri saniye olarak belirtilmelidir.</translation>
+<translation id="9015526159640436408">Profilde kurumsal rozet olarak kullanılacak resmin URL'sidir. URL bir resme yönlendirmelidir.
+
+Bu rozet, araç çubuğunda gösterilir.
+
+Bu politika, tarayıcı düzeyinde ayarlanırsa logo araç çubuğundaki tüm profillerde gösterilir.
+
+Bu politika, profil düzeyinde ayarlanırsa logo yalnızca ilgili profilde gösterilir.
+
+Bu politika ayarlanmazsa varsayılan bina simgesi gösterilir.
+
+Resmi alıp göstermeye çalışırken bir hata oluşursa varsayılan bina simgesi gösterilir.
+
+Diğer politikaların aksine, profil düzeyinde ayarlanan bu politika, tarayıcı düzeyinde ayarlanan bir politikaya göre daha önceliklidir.</translation>
 <translation id="9015578113567730893">Milisaniye olarak ses telemetri toplama hızı.</translation>
 <translation id="9015759770696099204">F11/F12 ayarları devre dışı</translation>
 <translation id="9015952763003753868"><ph name="CORS" /> ön kontrolünde eşleşen <ph name="ACAM_HEADER_NAME" /> yanıt başlığını spesifikasyonla uyumlu hale getir</translation>

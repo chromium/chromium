@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1035980983510608210">Wenn du alle Tabs schließt, werden auch angepinnte Tabs geschlossen.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Du wirst abgemeldet und Browserdaten werden gelöscht</translation>
 <translation id="1044891598689252897">Websites funktionieren normal</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Abgemeldet. Melde dich wieder an, um die Lesezeichen, Passwörter und sonstigen Informationen in deinem Konto zu verwenden.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Passwörter</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="138618066238211776">Als „<ph name="USER_NAME" />“ fortfahren</translation>
+<translation id="1388866984373351434">Browserdaten</translation>
 <translation id="1400642268715879018">Letzte 4 Wochen</translation>
 <translation id="1404330357948037222">Du bist abgemeldet</translation>
-<translation id="14066361343057390">Du wirst abgemeldet</translation>
 <translation id="1407135791313364759">Alle öffnen</translation>
 <translation id="1408847409015257906">Tippe auf „Datenschutz und Sicherheit“.</translation>
 <translation id="1430915738399379752">Drucken</translation>
@@ -341,7 +340,6 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2712127207578915686">Fehler beim Öffnen der Datei</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2738375676495545665">„Das ist neu“ ausblenden</translation>
-<translation id="2740910715135851329">Du wirst abgemeldet, Tabs werden geschlossen und Browserdaten gelöscht</translation>
 <translation id="2747003861858887689">Vorheriges Feld</translation>
 <translation id="2749231692441336879">Du folgst <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konten auf diesem Gerät</translation>
@@ -392,6 +390,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2958718410589002129">Passwörter</translation>
 <translation id="2964349545761222050">Drittanbieter-Cookies blockieren</translation>
+<translation id="2965328226365382335">Letzte 15 Minuten</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
 <translation id="2975121486251958312">Nur der Inkognitomodus ist verfügbar</translation>
 <translation id="2982481275546140226">Daten löschen</translation>
@@ -539,7 +538,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3738428049780661523">Erstellt: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Downloads ausblenden</translation>
 <translation id="3745190878148784130">„Text zoomen“ ausblenden</translation>
-<translation id="3747231889390582072">Nicht gespeicherte Daten werden von diesem Gerät gelöscht, um deine Organisation zu schützen. Dazu können Passwörter, der Browserverlauf, Cookies und weitere Daten gehören.</translation>
 <translation id="3762232513783804601">Für dein iPad entwickelt</translation>
 <translation id="3768725474733206671">Zuletzt geschlossenen Tab wieder öffnen</translation>
 <translation id="3771033907050503522">Inkognito-Tabs</translation>
@@ -718,6 +716,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4659194143325814340">{count,plural, =1{{count} Seite in deiner Leseliste}other{{count} Seiten in deiner Leseliste}}</translation>
 <translation id="4659667755519643272">Tab-Wechsler starten</translation>
 <translation id="46614316059270592">Passwort speichern</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Unternehmen anrufen</translation>
 <translation id="4682686630151240767">1. Öffne die iPhone-Einstellungen</translation>
 <translation id="4689564913179979534">Zahlungsmethoden verwalten…</translation>
@@ -1326,6 +1325,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7609559547731036746">Lesezeichen</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7640669552036055091">Tabs von Android</translation>
+<translation id="7643790043444820023">Startseite anpassen</translation>
 <translation id="7646263789464975852">Menü → Einstellungen → Sicherheitscheck</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="764827086632467055">Tippe auf „Standard-Browser-App“</translation>
@@ -1518,7 +1518,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8522147671363140027">{count,plural, =1{{count} Passwort und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}other{{count} Passwörter und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
 <translation id="8522813812888400223">Download abbrechen</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-Tabs <ph name="FIRST_VISIBLE_TAB" /> bis <ph name="LAST_VISIBLE_TAB" /> von <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Du wirst abgemeldet und Tabs werden geschlossen</translation>
 <translation id="8528009254289981965">Links aus anderen Apps inkognito öffnen</translation>
 <translation id="8529767659511976195">Neu</translation>
 <translation id="8532105204136943229">Ablaufjahr</translation>

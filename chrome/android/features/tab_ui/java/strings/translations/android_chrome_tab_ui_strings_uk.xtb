@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Оранжевий</translation>
 <translation id="125153950246128346">Натисніть, щоб побачити іншу вкладку</translation>
 <translation id="1273910660700874265">Дії з групою вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
-<translation id="1322824555808364080">Запросити користувачів</translation>
 <translation id="1419023007528516122">Групу буде назавжди видалено з вашого пристрою</translation>
 <translation id="1486715732399361704">Тут можна переглянути всі групи вкладок</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Створено <ph name="NUM_MINS_ONE" /> хвилину тому}one{Створено <ph name="NUM_MINS_MANY" /> хвилину тому}few{Створено <ph name="NUM_MINS_MANY" /> хвилини тому}many{Створено <ph name="NUM_MINS_MANY" /> хвилин тому}other{Створено <ph name="NUM_MINS_MANY" /> хвилини тому}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Тут зберігатимуться групи вкладок</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Розгрупувати <ph name="TABS_COUNT_ONE" /> вибрану вкладку}one{Розгрупувати <ph name="TABS_COUNT_MANY" /> вибрану вкладку}few{Розгрупувати <ph name="TABS_COUNT_MANY" /> вибрані вкладки}many{Розгрупувати <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Розгрупувати <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
+<translation id="6527303717912515753">Надіслати</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Через 1 день}one{Через <ph name="DAY_COUNT_MANY" /> день}few{Через <ph name="DAY_COUNT_MANY" /> дні}many{Через <ph name="DAY_COUNT_MANY" /> днів}other{Через <ph name="DAY_COUNT_MANY" /> дня}}</translation>
 <translation id="6549021453810473782">Переглянути інформацію про магазин</translation>
 <translation id="6557858706263317126">Ще <ph name="HIDDEN_TABS_COUNT" /></translation>

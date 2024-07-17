@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Oranžinė</translation>
 <translation id="125153950246128346">Palieskite, kad peržiūrėtumėte kitą skirtuką</translation>
 <translation id="1273910660700874265">„<ph name="TITLE_OF_GROUP" />“ skirtukų grupės parinktys</translation>
-<translation id="1322824555808364080">Žmonių kvietimas</translation>
 <translation id="1419023007528516122">Atlikus šį veiksmą grupė bus visam laikui ištrinta iš įrenginio</translation>
 <translation id="1486715732399361704">Visas skirtukų grupes rasite čia</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Sukurta prieš <ph name="NUM_MINS_ONE" /> minutę}one{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutę}few{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutes}many{Sukurta prieš <ph name="NUM_MINS_MANY" /> minutės}other{Sukurta prieš <ph name="NUM_MINS_MANY" /> minučių}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Čia rasite skirtukų grupes</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Išgrupuoti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Po 1 dienos}one{Po <ph name="DAY_COUNT_MANY" /> dienos}few{Po <ph name="DAY_COUNT_MANY" /> dienų}many{Po <ph name="DAY_COUNT_MANY" /> dienos}other{Po <ph name="DAY_COUNT_MANY" /> dienų}}</translation>
 <translation id="6549021453810473782">Peržiūrėti parduotuvės informaciją</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>

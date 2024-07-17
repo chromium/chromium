@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">नारिंगी</translation>
 <translation id="125153950246128346">दुसरा टॅब पाहण्यासाठी टॅप करा</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> टॅब गटाशी संबंधित पर्याय</translation>
-<translation id="1322824555808364080">लोकांना आमंत्रित करा</translation>
 <translation id="1419023007528516122">यामुळे तुमच्या डिव्हाइसमधून गट कायमचा हटवला जाईल</translation>
 <translation id="1486715732399361704">तुम्हाला तुमचे सर्व टॅब गट इथे सापडू शकतात</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनिटापूर्वी तयार केला आहे}other{<ph name="NUM_MINS_MANY" /> मिनिटांपूर्वी तयार केला आहे}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">तुम्हाला तुमचे टॅब गट इथे दिसतील</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब गटामधून काढून टाका}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब गटामधून काढून टाका}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
+<translation id="6527303717912515753">शेअर करा</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{एका दिवसानंतर}other{<ph name="DAY_COUNT_MANY" /> दिवसांनंतर}}</translation>
 <translation id="6549021453810473782">स्टोअरची माहिती पहा</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

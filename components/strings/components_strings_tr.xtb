@@ -679,6 +679,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2219658597883514593">Eğitimi baştan başlat</translation>
 <translation id="2219735899272417925">Cihazın sıfırlanması gerekiyor</translation>
 <translation id="2221227930294879156">Yiyecek ve İçecek Etkinlikleri</translation>
+<translation id="2222604080869344662">İndirme işlemine devam etmek için OneDrive'da oturum açın</translation>
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="2225927550500503913">Sanal kart etkin</translation>
 <translation id="2226636330183131181">Kablosuz ağda <ph name="BEGIN_LINK" />oturum açma<ph name="END_LINK" /></translation>
@@ -778,6 +779,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2399868464369312507">Google Chrome ödeme yöntemlerini düzenlemeye çalışıyor.</translation>
 <translation id="2400600116338235695">Seri bağlantı noktalarına bağlanmak isteyebilir</translation>
 <translation id="2404884497378469141">Dosyalarınızı tekrar kopyalamayı deneyin</translation>
+<translation id="2412310121876768057">Kart bilgileri bundan sonra otomatik olarak doldurulsun mu?</translation>
 <translation id="2413155254802890957">Eski</translation>
 <translation id="2413528052993050574">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası iptal edilmiş olabilir. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="2414886740292270097">Koyu</translation>
@@ -1162,7 +1164,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3209034400446768650">Sayfa sizden ücret alabilir</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> sitesinde etkinliğiniz izleniyor</translation>
 <translation id="3215092763954878852">WebAuthn kullanılamadı</translation>
-<translation id="3215311088819828484">Sonuç güncellendi</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Akraba</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Şimdi güncellenmesi gerekiyor}=2{Yarın güncellenmesi gerekiyor}other{# gün içinde güncellenmesi gerekiyor}}</translation>
@@ -1241,6 +1242,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3352881017886802007">Spor Oyunları</translation>
 <translation id="3355823806454867987">Proxy ayarlarını değiştir...</translation>
 <translation id="335809815767823">Dışa aktarıldı</translation>
+<translation id="3359387651158939842">Kartınızı Google Pay ile kullanılmak üzere kaydettiğinizde bundan sonraki alışverişlerinizde kart bilgileriniz otomatik olarak doldurulur</translation>
 <translation id="3359565626472459400">Evlilik</translation>
 <translation id="3360103848165129075">Ödeme işleyici sayfası</translation>
 <translation id="3362968246557010467">Bu politika, kullanımdan kaldırılmış <ph name="OLD_POLICY" /> politikasından otomatik olarak kopyalanmıştır. Onun yerine bu politikayı kullanmalısınız.</translation>
@@ -2055,6 +2057,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiyatlar</translation>
 <translation id="4898742041545089450">Bu konunun engellemesi kaldırıldı ve tarama geçmişinize bağlı olarak etkin hale gelebilir</translation>
+<translation id="4899379435492347481">Bu kartı kaydederek cihazlarınızda Google Pay ile online alışveriş yapabilirsiniz</translation>
 <translation id="4900217275619098670">Dokuzuncu Rulo</translation>
 <translation id="4901052769830245369">Etiketler (Yarı Parlak)</translation>
 <translation id="4901162432287938633">Hijyen ve Kişisel Bakım Malzemeleri</translation>
@@ -2684,7 +2687,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6116338172782435947">Panoya kopyalanan metin ve resimleri görme</translation>
 <translation id="6117833587752089929">Fotoğraf (Saten)</translation>
 <translation id="6118782133429281336">Kaynak listesi boş.</translation>
-<translation id="6120950591512958208">Ödeme sırasında bu kodu kullanın.</translation>
 <translation id="612178891608320683">Vegan Mutfağı</translation>
 <translation id="6122181661879998141">kartınızın önünde</translation>
 <translation id="6124058285696691147">Eklentiyi indir</translation>
@@ -2718,6 +2720,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6180316780098470077">Deneme aralığı</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome, üçüncü taraf çerezlerini otomatik olarak sınırlandırır</translation>
+<translation id="6194139058731919563">Kart bilgileriniz Google Hesabınıza kaydedilirken şifrelenir ve online alışverişlerde ödeme yapmak için kullanılır</translation>
 <translation id="6194209731893739467">Takip edilen ürünlerinizin tamamını burada görün</translation>
 <translation id="6195163219142236913">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="6195371403461054755">Jeoloji</translation>
@@ -3619,6 +3622,7 @@ Ek ayrıntılar:
 <translation id="7831993212387676366">Alışveriş listesi nedir?</translation>
 <translation id="7832078172950550575">"Yakınımdaki pizzacılar" veya "şehir merkezinde aileye uygun parklar" gibi günlük dilde ifadeler kullanarak tarama geçmişinizde arama yapabilirsiniz. Aramalarınız, en iyi eşleşmeler ve sayfa içerikleri Google'a gönderilerek bu özelliğin geliştirilmesi için inceleme uzmanları tarafından görüntülenebilir. <ph name="BEGIN_LINK" />Geçmişte arama ayarınızı yönetin<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Ekran görüntüsü başlatıldı</translation>
+<translation id="7840504603489703295">Finans kurumunuz tarafından belirlenen sınırlar uygulanır.</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="784404208867107517">Gruplandırılmış geçmiş</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Yok}=1{1 uygulama (<ph name="EXAMPLE_APP_1" />)}=2{2 uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3817,6 +3821,7 @@ Ek ayrıntılar:
 <translation id="8241712895048303527">Bu sitede engelle</translation>
 <translation id="8242426110754782860">Devam et</translation>
 <translation id="8246482227229072868">Yüzükler</translation>
+<translation id="8248406213705193919">Kart güvenli bir şekilde kaydedilsin mi?</translation>
 <translation id="8249296373107784235">İptal Et</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> dilindeki metin (otomatik algılandı) <ph name="TARGET" /> diline çevriliyor</translation>
 <translation id="8250094606476360498">Bu adres şu anda bu cihazda kayıtlı. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="ACCOUNT" />) kaydedin.</translation>
@@ -4301,6 +4306,7 @@ Ek ayrıntılar:
 <translation id="9169664750068251925">Bu sitede her zaman engelle</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> uygulamasını Ana ekrana ekle</translation>
 <translation id="9170848237812810038">&amp;Geri al</translation>
+<translation id="9170906125144697215">Uygulama değiştirmeden Pix ile ödeme yapın</translation>
 <translation id="9171296965991013597">Uygulamadan çıkılsın mı?</translation>
 <translation id="9173282814238175921">Tek doküman/Yeni sayfa</translation>
 <translation id="9173995187295789444">Bluetooth cihazları taranıyor...</translation>
@@ -4322,6 +4328,7 @@ Ek ayrıntılar:
 <translation id="9205078245616868884">Verileriniz senkronizasyon parolanızla şifrelendi. Senkronizasyonu başlatmak için senkronizasyon parolanızı girin.</translation>
 <translation id="920643408853370361">Seyahat Sigortası</translation>
 <translation id="9207861905230894330">Makale eklenemedi.</translation>
+<translation id="9209339767782560829">Giriş sertifikanız kullanılırken bir sorun oluştu.</translation>
 <translation id="9210825002219699214">Havayoluyla Seyahat</translation>
 <translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> üzerinde arama yapmak için @ yazın</translation>
 <translation id="9213433120051936369">Görünümü özelleştir</translation>

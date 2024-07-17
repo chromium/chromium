@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">安装应用、扩展程序和主题背景</translation>
 <translation id="2977598380246111477">下一个代码</translation>
 <translation id="2985148236010982088">查看所有应用</translation>
+<translation id="2992272421330787632">隐藏所有媒体建议</translation>
 <translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
 <translation id="3000461861112256445">单声道音频</translation>
 <translation id="3001391739687111021">修改屏幕尺寸</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">你能做些什么？</translation>
 <translation id="3256109297135787951">取消任务栏中某项内容的突出显示状态</translation>
 <translation id="3260969790895726815">系统会在本地处理语音，并支持离线语音输入，但部分语音指令会不起作用。</translation>
+<translation id="3264031581203585083">隐藏所有 Google 云端硬盘建议</translation>
 <translation id="3265032511221679826">开启确切位置信息访问权限？</translation>
 <translation id="3269597722229482060">右键点击</translation>
 <translation id="3274634049061007184">查看手机中的应用</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">现在，您可在录制的屏幕内容中显示点击操作和键盘快捷键</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3743775386021959186">已开启专注模式，还剩 <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">隐藏天气信息建议</translation>
 <translation id="3756485814916578707">正在投放屏幕</translation>
 <translation id="3765841382945324995">“<ph name="SIX_PACK_KEY_NAME" />”对应的快捷键原为 <ph name="OLD_SHORTCUT" />，现已更新为 <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">今天修改过</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">平板电脑</translation>
 <translation id="3923494859158167397">未设置任何移动网络</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在加载活动。</translation>
+<translation id="3927049937406914450">由于位置信息权限已关闭，无法获取天气信息。您可以在设置中开启此权限。</translation>
 <translation id="3932043219784172185">未连接任何设备</translation>
 <translation id="3934456833412894880">已开启“自适应充电”功能。电池电量将会保持在 80% 以延长电池寿命，并会在您需要时完全充满。</translation>
 <translation id="3943857333388298514">粘贴</translation>
@@ -806,6 +810,7 @@
 <translation id="4002066346123236978">标题</translation>
 <translation id="40062176907008878">手写</translation>
 <translation id="4011112806063830608">“勿扰”模式处于开启状态。</translation>
+<translation id="4015144849380506405">处于开启状态时暂停/恢复使用鼠标按键</translation>
 <translation id="4017989525502048489">激光笔</translation>
 <translation id="401993194061514265">无法使用标记。请重新打开“屏幕录制”应用。</translation>
 <translation id="4021716437419160885">向下滚动</translation>
@@ -895,6 +900,7 @@
 <translation id="4312840429157639164">相机已对准右上角。与系统界面冲突。</translation>
 <translation id="4316910396681052118">所有应用</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">隐藏所有 Chrome 浏览器建议</translation>
 <translation id="4322742403972824594">键盘快捷键“Ctrl + Alt + 向上键”已更改。若要使用 Home 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向左键。</translation>
 <translation id="4324840740119394760">如果您开启摄像头，即意味着允许“<ph name="APP_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="4327147325944669226">录制游戏</translation>
@@ -928,6 +934,7 @@
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="4451374464530248585">键盘快捷键“Alt + 向下键”已更改。若要使用 Page Down 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向下键。</translation>
 <translation id="4453876312474547652">按住 Ctrl + V 即可查看剪贴板。若要停用此快捷键，您可前往 chrome://flags（如果使用 Lacros，则前往 os://flags）停用 #clipboard-history-longpress flag。</translation>
+<translation id="445765352722456792">自定义建议</translation>
 <translation id="445864333228800152">晚上好！</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
 <translation id="445923051607553918">加入Wi-Fi网络</translation>
@@ -1329,6 +1336,7 @@
 <translation id="5802516411616338943">打开“快捷设置”</translation>
 <translation id="5804651031882187592">关闭“锁定 SIM 卡”设置</translation>
 <translation id="5805809050170488595">点击即可激活“<ph name="NETWORK_NAME" />”</translation>
+<translation id="5819918159912280082">Chromebook 意外重启了。打开之前的窗口和应用。</translation>
 <translation id="5823239091726045201">Google Tasks 网页版</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
@@ -1509,6 +1517,7 @@
 <translation id="6469104339369989396">开启/关闭热点</translation>
 <translation id="6477681113376365978">无法下载文件</translation>
 <translation id="6482559668224714696">全屏放大镜</translation>
+<translation id="6485086611007560630">天气信息（无法获取）</translation>
 <translation id="6490471652906364588">USB-C 设备（右侧端口）</translation>
 <translation id="649452524636452238">智能卡 PIN 码</translation>
 <translation id="6495322433318104734">正在显示屏保，按任意键即可退出</translation>
@@ -1778,6 +1787,7 @@
 <translation id="7514365320538308">下载</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">向下翻页</translation>
+<translation id="7518182783647693467">切换温度单位（华氏度/摄氏度）</translation>
 <translation id="7519206258459640379">相机取景功能已开启。</translation>
 <translation id="7519649142417630956">一旦关机，管理员将被强制退出登录，并且无法再控制您的设备。
 
@@ -1918,6 +1928,7 @@
 <translation id="7951630946012935453">调暗键盘</translation>
 <translation id="7953994493035617347">确认使用新分辨率？</translation>
 <translation id="795958884516058160">已启用全屏放大镜。再按一次 <ph name="ACCELERATOR" />即可将其关闭。</translation>
+<translation id="7962583092928373823">隐藏所有 Google 日历建议</translation>
 <translation id="7963689218131240420">“勿扰”模式处于关闭状态。</translation>
 <translation id="7963992254934562106">来自 <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">选择文件夹…</translation>
@@ -1990,6 +2001,7 @@
 <translation id="8214996719228530800">Canary 渠道</translation>
 <translation id="8219451629189078428">在此期间，您的 Chromebook 需要保持开机和通电状态。请确保充电器和适配器线缆都已完全插好 - 既已连接到您的 Chromebook，也已连接到电源插座。切勿关闭您的 Chromebook。</translation>
 <translation id="8220076512072059941">增加 <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">隐藏此建议</translation>
 <translation id="8230305195727960608">颜色反转模式</translation>
 <translation id="8236042855478648955">该休息了</translation>
 <translation id="8237964652943995219">下一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
@@ -2176,6 +2188,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 复选框未选中。</translation>
 <translation id="8949925099261528566">已连接，但无法访问互联网</translation>
 <translation id="8951539504029375108">只有已获批准的 Thunderbolt 设备能与您的 Chromebook 兼容</translation>
+<translation id="8956420987536947088">打开之前的窗口和应用</translation>
 <translation id="8959380109429710384">您按下了全屏放大镜的键盘快捷键。使用 Ctrl + Alt + 箭头键可在放大后的视图中四处移动。</translation>
 <translation id="8964525410783593407">1 小时</translation>
 <translation id="8973885907461690937">将焦点移至菜单图标</translation>

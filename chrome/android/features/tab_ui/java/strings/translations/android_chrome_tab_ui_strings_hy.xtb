@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Նարնջագույն</translation>
 <translation id="125153950246128346">Հպեք՝ այլ ներդիրի անցնելու համար</translation>
 <translation id="1273910660700874265">Ներդիրների «<ph name="TITLE_OF_GROUP" />» խմբի ընտրանքներ</translation>
-<translation id="1322824555808364080">Հրավիրել մարդկանց</translation>
 <translation id="1419023007528516122">Խումբն ընդմիշտ կջնջվի ձեր սարքից</translation>
 <translation id="1486715732399361704">Այստեղ կգտնեք ձեր բոլոր ներդիրների խմբերը</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Ստեղծվել է <ph name="NUM_MINS_ONE" /> րոպե առաջ}one{Ստեղծվել է <ph name="NUM_MINS_MANY" /> րոպե առաջ}other{Ստեղծվել է <ph name="NUM_MINS_MANY" /> րոպե առաջ}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Այստեղ կգտնեք ձեր ներդիրների խմբերը</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ապախմբավորել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Ապախմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Ապախմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
+<translation id="6527303717912515753">Կիսվել</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 օր հետո}one{<ph name="DAY_COUNT_MANY" /> օր հետո}other{<ph name="DAY_COUNT_MANY" /> օր հետո}}</translation>
 <translation id="6549021453810473782">Դիտել խանութի մասին տեղեկությունները</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

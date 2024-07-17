@@ -8,7 +8,6 @@
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1035980983510608210">سيؤدي إغلاق جميع علامات التبويب إلى إغلاق علامات التبويب المثبّتة أيضًا.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">سيتم تسجيل خروجك من الحساب وحذف بيانات التصفُّح</translation>
 <translation id="1044891598689252897">ستعمل المواقع الإلكترونية بشكلٍ طبيعي.</translation>
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="1053651653201045802">تم تسجيل الخروج. يمكنك تسجيل الدخول مرة أخرى لاستخدام الإشارات المرجعية وكلمات المرور وغيرها في حسابك.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">كلمات المرور</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="138618066238211776">المتابعة بحساب "<ph name="USER_NAME" />"</translation>
+<translation id="1388866984373351434">بيانات التصفح</translation>
 <translation id="1400642268715879018">الأسابيع الأربعة الأخيرة</translation>
 <translation id="1404330357948037222">لقد سجّلت الخروج من حسابك.</translation>
-<translation id="14066361343057390">سيتم تسجيل خروجك من الحساب</translation>
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="1408847409015257906">انقر على "الخصوصية والأمان".</translation>
 <translation id="1430915738399379752">طباعة</translation>
@@ -343,7 +342,6 @@
 <translation id="2712127207578915686">تعذر فتح الملف</translation>
 <translation id="2718352093833049315">‏باستخدام شبكة Wi-Fi فقط</translation>
 <translation id="2738375676495545665">إخفاء الميزات الجديدة</translation>
-<translation id="2740910715135851329">سيتم تسجيل خروجك من الحساب وإغلاق علامات التبويب وحذف بيانات التصفُّح</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
 <translation id="2749231692441336879">تتم متابعة <ph name="CHANNEL_NAME" /> حاليًا.</translation>
 <translation id="2754492786623500387">الحسابات على هذا الجهاز</translation>
@@ -394,6 +392,7 @@
 <translation id="2952278131021475699">‏البحث باستخدام الكاميرا من خلال "عدسة Google"</translation>
 <translation id="2958718410589002129">كلمات المرور</translation>
 <translation id="2964349545761222050">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
+<translation id="2965328226365382335">آخر 15 دقيقة</translation>
 <translation id="2969979262385602596">تعذّر تسجيل الدخول. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2975121486251958312">لا يتوفّر سوى "وضع التصفُّح المتخفي"</translation>
 <translation id="2982481275546140226">محو البيانات</translation>
@@ -541,7 +540,6 @@
 <translation id="3738428049780661523">‏تاريخ الإنشاء: ‎<ph name="DATE" /></translation>
 <translation id="374357899112510277">إخفاء المحتوى الذي تم تنزيله</translation>
 <translation id="3745190878148784130">إحفاء ميزة "تصغير/تكبير النص"</translation>
-<translation id="3747231889390582072">للحفاظ على أمان مؤسستك، سيتم حذف البيانات غير المحفوظة من هذا الجهاز. ويمكن أن يشمل ذلك كلمات المرور وسجلّ التصفّح وملفات تعريف الارتباط وغير ذلك.</translation>
 <translation id="3762232513783804601">‏المتصفِّح مصمَّم خصيصًا لأجهزة iPad</translation>
 <translation id="3768725474733206671">إعادة فتح آخر علامة تبويب تم إغلاقها</translation>
 <translation id="3771033907050503522">علامات تبويب التصفح المتخفي</translation>
@@ -720,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{"قائمة القراءة" تتضمّن صفحة واحدة ({count})}zero{"قائمة القراءة" تتضمّن {count} صفحة}two{"قائمة القراءة" تتضمّن صفحتين ({count})}few{"قائمة القراءة" تتضمّن {count} صفحات}many{"قائمة القراءة" تتضمّن {count} صفحة}other{"قائمة القراءة" تتضمّن {count} صفحة}}</translation>
 <translation id="4659667755519643272">دخول أداة تغيير علامات التبويب</translation>
 <translation id="46614316059270592">حفظ كلمة المرور</translation>
+<translation id="4668929960204016307">،</translation>
 <translation id="467189612236587057">التواصل مع نشاط تجاري من خلال بدء مكالمة هاتفية</translation>
 <translation id="4682686630151240767">‏1- فتح iPhone Settings (إعدادات iPhone)</translation>
 <translation id="4689564913179979534">جارٍ إدارة طُرق الدفع...</translation>
@@ -1521,7 +1520,6 @@
 <translation id="8522147671363140027">{count,plural, =1{‏تم حفظ كلمة مرور واحدة ({count}) وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}zero{‏تم حفظ {count} كلمة مرور وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}two{‏تم حفظ كلمتَي مرور ({count}) وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}few{‏تم حفظ {count} كلمات مرور وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}many{‏تم حفظ {count} كلمة مرور وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}other{‏تم حفظ {count} كلمة مرور وعناصر أخرى على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}}</translation>
 <translation id="8522813812888400223">إلغاء التنزيل</translation>
 <translation id="8524799873541103884">علامات تبويب <ph name="INCOGNITO" /><ph name="FIRST_VISIBLE_TAB" /> عبر <ph name="LAST_VISIBLE_TAB" /> من <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">سيتم تسجيل خروجك من الحساب وإغلاق علامات التبويب</translation>
 <translation id="8528009254289981965">فتح الروابط من التطبيقات الأخرى في "وضع التصفّح المتخفي"</translation>
 <translation id="8529767659511976195">جديد</translation>
 <translation id="8532105204136943229">عام انتهاء الصلاحية</translation>
@@ -1602,6 +1600,7 @@
 <translation id="8876882697946675716">مواصلة مزامنة الأجهزة</translation>
 <translation id="8879604564928138696">انقر مرّتين للتجربة</translation>
 <translation id="8881801611828450202">البحث في <ph name="SEARCH_ENGINE" /> عن هذه الصورة</translation>
+<translation id="8887595428614802520">إغلاق جميع علامات التبويب والمجموعات</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="890565330728586731">رجوع</translation>
 <translation id="8909135823018751308">مشاركة…</translation>

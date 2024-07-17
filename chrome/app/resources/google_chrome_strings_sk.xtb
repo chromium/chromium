@@ -17,6 +17,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1149651794389918149">Prihláste sa do Chromu. Ak sa chcete prihlásiť do účtu iba jednorazovo, môžete <ph name="GUEST_LINK_BEGIN" />použiť dané zariadenie ako hosť<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">O systéme ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Otvoriť v Chrome</translation>
+<translation id="1184145431117212167">Nepodarilo sa nainštalovať, pretože vaša verzia systému Windows nie je podporovaná.</translation>
 <translation id="1194807384646768652">Chrome toto sťahovanie zablokoval, pretože používatelia tento typ súboru bežne nesťahujú a môže byť nebezpečný</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
 <translation id="1229096353876452996">Google odporúča nastaviť Chrome ako predvolený prehliadač</translation>
@@ -237,6 +238,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4191857738314598978">{0,plural, =1{Chrome znova spustite do jedného dňa}few{Chrome znova spustite do # dní}many{Chrome znova spustite do # dňa}other{Chrome znova spustite do # dní}}</translation>
 <translation id="4205939740494406371">Chrome nemôže skontrolovať heslá. Skúste to znova o 24 hodín alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Ruší sa...</translation>
+<translation id="4224210481850767180">Inštalácia bola zrušená.</translation>
 <translation id="4242034826641750751">Chrome vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
 <translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
 <translation id="4251615635259297716">Chcete prepojiť údaje prehliadača Chrome s týmto účtom?</translation>

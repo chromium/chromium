@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Кызгылт сары</translation>
 <translation id="125153950246128346">Башка өтмөктү көрүү үчүн таптап коюңуз</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобунун параметрлери</translation>
-<translation id="1322824555808364080">Колдонуучуларды чакыруу</translation>
 <translation id="1419023007528516122">Бул топ ушуну менен бул түзмөктөн биротоло өчүрүлөт</translation>
 <translation id="1486715732399361704">Өтмөктөр топторун ушул жерден таба аласыз</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> мүнөт мурун түзүлдү}other{<ph name="NUM_MINS_MANY" /> мүнөт мурун түзүлдү}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Өтмөк топторун ушул жерден табасыз</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү топтон ажыратуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү топтон ажыратуу}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
+<translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 күндөн кийин}other{<ph name="DAY_COUNT_MANY" /> күндөн кийин}}</translation>
 <translation id="6549021453810473782">Дүкөн жөнүндө маалыматты көрүү</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

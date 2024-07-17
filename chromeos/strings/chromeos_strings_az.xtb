@@ -381,7 +381,6 @@
 <translation id="3017079585324758401">Arxa fon</translation>
 <translation id="3027578600144895987">Kameranı bağlayın</translation>
 <translation id="3031560714565892478">Cihaz video kameradır.</translation>
-<translation id="3051968340259309715">Bu, sistem xidmətlərinə məkanı müəyyən etmək üçün Məkan Dəqiqliyindən istifadə etmək imkanı verir. Məkan Dəqiqliyi cihazın məkanını təxmin etmək üçün Wi-Fi giriş nöqtələri, mobil şəbəkə qüllələri və GPS kimi simsiz siqnallar haqqında məlumatlardan, eləcə də akselerometr və giroskop kimi cihaz sensor datasından istifadə edir. Məkanı Ayarlar &gt; Məxfilik və güvənlik &gt; Məxfilik nizamlayıcıları &gt; Məkana giriş bölməsində söndürə bilərsiniz. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Son nöqtə</translation>
 <translation id="3060579846059757016">Haşiyələr</translation>
@@ -1191,6 +1190,7 @@
 <translation id="7343649194310845056">Şəbəkə Cihazları</translation>
 <translation id="7344788170842919262">torpaq</translation>
 <translation id="7346768383111016081">Klaviatura ilə oynamaq üçün oyun əməliyyatına nizamlayıcı yerləşdirin</translation>
+<translation id="7352651011704765696">Xəta oldu</translation>
 <translation id="7353413232959255829">Axtarış nəticəsi <ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Qısayola keçmək üçün Enter basın.</translation>
 <translation id="7359657277149375382">Fayl növü</translation>
 <translation id="73631062356239394">Diaqnostika datasını paylaşın</translation>

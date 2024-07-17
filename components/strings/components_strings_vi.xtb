@@ -852,7 +852,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="254524874071906077">Đặt Chrome là trình duyệt mặc định</translation>
 <translation id="2545721997179863249">Đã chọn tuỳ chọn điền mọi thông tin</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
-<translation id="2546678870939430879">Làm lại để có kết quả khác</translation>
 <translation id="254947805923345898">Giá trị của chính sách là không hợp lệ.</translation>
 <translation id="2549836668759467704">Tư vấn và hợp đồng xây dựng</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> đã gửi ý kiến phản hồi không hợp lệ.</translation>
@@ -1035,7 +1034,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2954624054936281172">Bảng phương thức thanh toán đã lưu</translation>
 <translation id="295526156371527179">Cảnh báo: Chính sách này không phải là từ điển nên không được hợp nhất dưới dạng từ điển như chỉ định trong chính sách.</translation>
 <translation id="2955913368246107853">Đóng thanh tìm</translation>
-<translation id="2958345633099973853">Huỷ kết quả</translation>
 <translation id="2958544468932521864">Crikê</translation>
 <translation id="2959274854674276289">Món chay</translation>
 <translation id="2961809451460302960">Bảo hiểm nhân thọ</translation>
@@ -1166,7 +1164,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3209034400446768650">Trang này có thể tính phí</translation>
 <translation id="3212581601480735796">Hoạt động của bạn trên <ph name="HOSTNAME" /> sẽ bị giám sát</translation>
 <translation id="3215092763954878852">Không thể dùng WebAuthn</translation>
-<translation id="3215311088819828484">Đã cập nhật kết quả</translation>
 <translation id="3216313131063488104">Nhạc blue</translation>
 <translation id="3218181027817787318">Tương đối</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Cần cập nhật ngay}=2{Cần cập nhật chậm nhất vào ngày mai}other{Cần cập nhật trong vòng # ngày}}</translation>
@@ -2516,7 +2513,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5772086939108830423">Sử dụng khoá đăng nhập trên một thiết bị khác</translation>
 <translation id="5776313857861697733">Mức độ ưu tiên</translation>
 <translation id="5776574724412881956">Thẻ ảo chưa được điền? Hãy nhấp vào thông tin về thẻ ảo để sao chép vào bảng nhớ tạm. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">Đang tải kết quả</translation>
 <translation id="5781136890105823427">Đã bật tính năng thử nghiệm</translation>
 <translation id="578305955206182703">Hổ phách</translation>
 <translation id="5783700460098783980">Hành lý và phụ kiện du lịch</translation>
@@ -2691,7 +2687,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6116338172782435947">Xem văn bản và hình ảnh đã sao chép sang bảng nhớ tạm</translation>
 <translation id="6117833587752089929">Ảnh (Satin)</translation>
 <translation id="6118782133429281336">Danh sách nguồn gốc đang trống.</translation>
-<translation id="6120950591512958208">Sử dụng mã này khi thanh toán.</translation>
 <translation id="612178891608320683">Món thuần chay</translation>
 <translation id="6122181661879998141">mặt trước thẻ</translation>
 <translation id="6124058285696691147">Tải tệp đính kèm xuống</translation>

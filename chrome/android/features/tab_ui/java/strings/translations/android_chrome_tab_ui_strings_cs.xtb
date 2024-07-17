@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Oranžová</translation>
 <translation id="125153950246128346">Další kartu zobrazíte klepnutím</translation>
 <translation id="1273910660700874265">Možnosti skupiny karet <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">Pozvat lidi</translation>
 <translation id="1419023007528516122">Tímto skupinu trvale smažete ze svého zařízení</translation>
 <translation id="1486715732399361704">Tady najdete všechny své skupiny karet</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vytvořeno před <ph name="NUM_MINS_ONE" /> minutou}few{Vytvořeno před <ph name="NUM_MINS_MANY" /> minutami}many{Vytvořeno před <ph name="NUM_MINS_MANY" /> minuty}other{Vytvořeno před <ph name="NUM_MINS_MANY" /> minutami}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Tady najdete své skupiny karet</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Zrušit seskupení <ph name="TABS_COUNT_ONE" /> vybrané karty}few{Zrušit seskupení <ph name="TABS_COUNT_MANY" /> vybraných karet}many{Zrušit seskupení <ph name="TABS_COUNT_MANY" /> vybrané karty}other{Zrušit seskupení <ph name="TABS_COUNT_MANY" /> vybraných karet}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
+<translation id="6527303717912515753">Sdílet</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Po 1 dni}few{Po <ph name="DAY_COUNT_MANY" /> dnech}many{Po <ph name="DAY_COUNT_MANY" /> dne}other{Po <ph name="DAY_COUNT_MANY" /> dnech}}</translation>
 <translation id="6549021453810473782">Zobrazit informace o prodejně</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

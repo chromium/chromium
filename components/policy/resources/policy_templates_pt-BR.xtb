@@ -726,6 +726,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="1539343118617844331">Escola</translation>
 <translation id="1542491165152947087">Permitir que os usuários ativem ou desativem a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.</translation>
 <translation id="1542958897137600427">Ativar o provisionamento de certificado do cliente</translation>
+<translation id="1548431234399786388">Controla as configurações dos relatórios de eventos do navegador.</translation>
 <translation id="1550295162561011575">Se a política for definida, os administradores poderão configurar a automação para iniciar apps em dispositivos <ph name="PRODUCT_NAME" />. Esses apps podem ser iniciados no login ou pelo usuário na tela de início.</translation>
 <translation id="1551782388466447648">Ativar o teclado virtual de toque na tela de login</translation>
 <translation id="1552418937045050762">Se esta configuração estiver ativada, os usuários poderão usar o recurso "Compartilhar por proximidade", que permite que eles enviem e recebam arquivos de pessoas próximas.
@@ -3963,6 +3964,10 @@ Observação: se a configuração resultar em métodos de autenticação aceitos
 <translation id="3979738908158213640">URLs que terão acesso para realizar o atestado do dispositivo durante a autenticação SAML</translation>
 <translation id="3982322576186033243">Não permitir hashes não seguros em handshakes do TLS</translation>
 <translation id="3982465141749620677">Pedir a reautenticação em uma guia</translation>
+<translation id="3982849521386211220">Permite configurar a lista de endpoints da API Reporting[1] para
+enviar relatórios corporativos.
+
+[1] https://www.w3.org/TR/reporting-1/#endpoint (link em inglês)</translation>
 <translation id="398294729592983401">Permitir que os usuários ativem ou desativem o recurso Proteção contra técnicas de impressão digital do <ph name="PRIVACY_SANDBOX_NAME" /> no dispositivo.</translation>
 <translation id="3983162212222338509">A resolução de DNS pode ser executada dentro ou fora do processo de rede, ou parcialmente dentro e parcialmente fora, dependendo da configuração do sistema e das flags de recursos.</translation>
 <translation id="3986700049001404598">Permitir que os usuários encerrem processos no gerenciador de tarefas do Chrome</translation>
@@ -4504,6 +4509,7 @@ Observação: esta política substituiu a política <ph name="ARC_GLS_POLICY_NAM
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. A partir da versão M85, padrões com caracteres curinga "*" e "[*.]" no host não serão mais compatíveis com esta política.</translation>
 <translation id="4369307906396795087">Os scripts para workers (como Web workers, service workers etc.) usam a verificação não rigorosa de tipo MIME. Os scripts de worker com tipos MIME legados, como <ph name="MIMETYPE_TEXT_ASCII" />, vão funcionar.</translation>
+<translation id="4370908590951861085">Endpoints de relatórios</translation>
 <translation id="4370937370030117032">Desativar o envio do nome de usuário e do nome de arquivo para impressoras nativas</translation>
 <translation id="4372704773119750918">Não permitir que o usuário corporativo faça parte de diversos perfis (primários ou secundários)</translation>
 <translation id="4373332965635821723">Ativar atalhos de acessibilidade</translation>
@@ -4834,14 +4840,6 @@ essas APIs.</translation>
 <translation id="4615892138881859957">Controla o atalho usado para acionar a tecla "Insert"</translation>
 <translation id="4617338332148204752">Ignorar a verificação de metatags em <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Recurso NewBaseUrlInheritanceBehavior disponível</translation>
-<translation id="4624006912948309924">A definição da política estabelece quais identificadores de aplicativo do <ph name="PRODUCT_OS_NAME" /> são mostrados como apps fixados na barra de acesso rápido, e eles não podem ser editados pelos usuários.
-
-Especifique os apps do Chrome pelos IDs deles (como pjkljhegncpnkpknbcohdijeoejaedia),
-apps Android pelo nome do pacote (como com.google.android.gm),
-apps da Web pelo URL usado na <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (como https://google.com.br/maps) e
-apps da Web do sistema pelo nome de snake case, (como <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />).
-
-Se a política for deixada sem definição, os usuários poderão mudar a lista de apps fixados no acesso rápido.</translation>
 <translation id="4624417808625504735">Bloquear o uso de JIT pelo JavaScript nestes sites</translation>
 <translation id="46321462262887935">Tratar teclas da linha superior como teclas de função, mas permitir que os usuários façam mudanças</translation>
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
@@ -7277,13 +7275,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       O teclado virtual pode mudar para um layout compacto, dependendo do método de entrada.</translation>
 <translation id="6404064917675764807">Não informar eventos de sessões de CRD</translation>
 <translation id="6404360891305375004">Permitir o compartilhamento de arquivos pela rede</translation>
-<translation id="640519320513485101">Esta política controla se o gerenciador de senhas integrado pode excluir senhas não descriptografáveis do banco de dados. Isso é necessário para restaurar a funcionalidade completa do gerenciador de senhas integrado, mas pode incluir uma perda permanente de dados. Se for possível corrigir os valores de senhas não descriptografáveis para que possam ser descriptografados, geralmente será necessário que o usuário realize ações complexas.
-
-Se a política for ativada, as senhas não descriptografáveis salvas no gerenciador de senhas integrado do usuário serão perdidas. As senhas que ainda estiverem em um estado funcional não serão modificadas.
-
-Se a política for desativada, os dados do gerenciador de senhas dos usuários vão continuar intactos, mas a funcionalidade será interrompida.
-
-Se a política for definida, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6407093060083181305">Configurar lista de bloqueio para instalação de extensões</translation>
 <translation id="640827304541402854">Desativar travessia de firewall do host de acesso remoto</translation>
 <translation id="6410847321564585975">Lista de permissões de relatórios de atividade do site</translation>
@@ -7943,6 +7934,7 @@ política enquanto o navegador estiver em execução.</translation>
       Esta política está obsoleta. Use a <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6847379587945465889">Ativar a transferência de cookies do SSO SAML na sessão do usuário durante o login</translation>
 <translation id="684856667300805181">Esta política foi removida no <ph name="PRODUCT_NAME" /> 68 e substituída por <ph name="ARC_GLS_POLICY_NAME" />.</translation>
+<translation id="684882090733715433">Relatórios de eventos do navegador</translation>
 <translation id="6850300477973481112">Configurações do conector do espaço de trabalho</translation>
 <translation id="6851199885688265233">Ativar o recurso de acessibilidade que destaca o cursor</translation>
 <translation id="6851315055469993882">Ativa o cache de autenticação de HTTP com escopo global</translation>
@@ -9001,24 +8993,6 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 <translation id="7669630878711068277">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão imprimir com o <ph name="PRODUCT_NAME" /> e não poderão mudar esta configuração.
 
       Se a política for definida como "Desativada", os usuários não poderão imprimir usando o <ph name="PRODUCT_NAME" />. A impressão ficará desativada no menu de três pontos, nas extensões e nos aplicativos JavaScript.</translation>
-<translation id="7671234734316758429">Essa política permite que os administradores especifiquem apps que funcionam como gerenciadores padrão das respectivas extensões de arquivo
-no <ph name="PRODUCT_OS_NAME" /> e que os usuários não podem mudar.
-
-Para todas as extensões de arquivo não especificadas na política, os usuários podem definir os próprios padrões do
-fluxo de trabalho comum.
-
-Especificar apps do Chrome pelos IDs deles, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />;
-apps da Web pelo URL usado na <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />;
-apps Android pelo nome de pacote, como<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />;
-apps da Web do sistema
-pelo nome no formato snake case, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />;
-tarefas virtuais pelo nome designado, prefixado por
-<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />.
-
-Os apps PRECISAM ser declarados no manifesto como gerenciadores de extensões de arquivo especificadas para que
-o item da política entre em vigor. A política NÃO amplia os recursos atuais do app.
-
-Caso a política seja deixada sem definição, é possível que o <ph name="PRODUCT_OS_NAME" /> selecione gerenciadores padrão de acordo com a lógica interna.</translation>
 <translation id="7673194325208122247">Período (milissegundos)</translation>
 <translation id="7677220829878081413">
       Esta política, quando definida como ArcSession, força o dispositivo a reinicializar depois que o usuário sai, se o Android tiver sido iniciado.
@@ -9416,11 +9390,6 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
           Esta política foi removida no Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nome do destino do <ph name="PRODUCT_NAME" /></translation>
-<translation id="797820628785995988">Se esta política for definida, todos os tipos de dados especificados serão excluídos da sincronização, tanto para a <ph name="CHROME_SYNC_NAME" /> quanto para a sincronização de perfil de roaming. Isso pode ajudar a reduzir o tamanho do perfil de roaming ou limitar o tipo de dado que será enviado por upload aos servidores da <ph name="CHROME_SYNC_NAME" />.
-
-      Atualmente, os tipos de dados para esta política são: "apps", "autofill", "bookmarks", "extensions", "preferences", "passwords", "payments", "readingList", "savedTabGroups", "tabs", "themes", "typedUrls" e "wifiConfigurations". Esses nomes têm diferenciação entre letras maiúsculas e minúsculas.
-
-      Observações: a atualização dinâmica de políticas está disponível apenas na versão 123 e mais recentes do <ph name="PRODUCT_NAME" />. Desativar a opção "autofill" também desativa "payments". "typedUrls" refere-se a todo o histórico de navegação.</translation>
 <translation id="7982057585796399404">Se definida, a política especificará uma lista de apps e extensões com instalação silenciosa, sem interação do usuário, e que não podem ser desinstalados ou desativados. As permissões são concedidas implicitamente, inclusive para as APIs de extensão enterprise.deviceAttributes e enterprise.platformKeys. Essas duas APIs não estão disponíveis para apps e extensões que não sejam de instalação forçada.
 
 Se a política não for definida, nenhum app ou extensão será instalado automaticamente e o usuário poderá desinstalar qualquer app ou extensão no <ph name="PRODUCT_NAME" />.

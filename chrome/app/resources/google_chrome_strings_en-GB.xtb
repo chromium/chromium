@@ -17,6 +17,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1149651794389918149">Sign in to Chrome. If you'd just like to sign in an account once, you can <ph name="GUEST_LINK_BEGIN" />use the device as guest<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">About ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
+<translation id="1184145431117212167">Installation failed because your version of Windows is not supported.</translation>
 <translation id="1194807384646768652">Chrome blocked this download because the file type isn't commonly downloaded and it may be dangerous</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google recommends setting Chrome as default</translation>
@@ -238,6 +239,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4191857738314598978">{0,plural, =1{Relaunch Chrome within a day}other{Relaunch Chrome within # days}}</translation>
 <translation id="4205939740494406371">Chrome can't check your passwords. Try again after 24 hours or <ph name="BEGIN_LINK" />check passwords in your Google Account<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Cancelling...</translation>
+<translation id="4224210481850767180">The installation has been cancelled.</translation>
 <translation id="4242034826641750751">Chrome needs camera and microphone permissions for this site</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4251615635259297716">Link my Chrome data to this account</translation>

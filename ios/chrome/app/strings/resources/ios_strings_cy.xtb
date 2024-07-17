@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Cod pas</translation>
 <translation id="1035980983510608210">Bydd cau pob tab yn cau tabiau sydd wedi'u pinio hefyd.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Byddwch yn cael eich allgofnodi a bydd data pori yn cael eu dileu</translation>
 <translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
 <translation id="1049743911850919806">Anhysbys</translation>
 <translation id="1053651653201045802">Rydych wedi'ch allgofnodi. Mewngofnodwch eto i ddefnyddio'r nodau tudalen, y cyfrineiriau a rhagor yn eich cyfrif.</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776">Parhau fel <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Y 4 wythnos ddiwethaf</translation>
 <translation id="1404330357948037222">Rydych wedi'ch Allgofnodi</translation>
-<translation id="14066361343057390">Byddwch yn cael eich allgofnodi</translation>
 <translation id="1407135791313364759">Agor pob un</translation>
 <translation id="1408847409015257906">Tapio "Preifatrwydd a Diogelwch."</translation>
 <translation id="1430915738399379752">Argraffu</translation>
@@ -341,7 +339,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2712127207578915686">Methu ag Agor y Ffeil</translation>
 <translation id="2718352093833049315">Dim ond ar Wi-Fi</translation>
 <translation id="2738375676495545665">Cuddio Beth Sy'n Newydd</translation>
-<translation id="2740910715135851329">Byddwch yn cael eich allgofnodi, bydd tabiau'n cael eu cau, bydd data pori yn cael eu dileu</translation>
 <translation id="2747003861858887689">Maes blaenorol</translation>
 <translation id="2749231692441336879">Yn dilyn <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Cyfrifon ar y Ddyfais hon</translation>
@@ -539,7 +536,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3738428049780661523">Crëwyd <ph name="DATE" /></translation>
 <translation id="374357899112510277">Cuddio Lawrlwythiadau</translation>
 <translation id="3745190878148784130">Cuddio Chwyddo Testun</translation>
-<translation id="3747231889390582072">I amddiffyn diogelwch eich sefydliad, bydd data sydd heb eu cadw yn cael eu dileu o'r ddyfais hon. Gallai hyn gynnwys cyfrineiriau, hanes pori, cwcis a rhagor.</translation>
 <translation id="3762232513783804601">Wedi'i Ddatblygu ar gyfer Eich iPad</translation>
 <translation id="3768725474733206671">Ailagor y Tab a Gaewyd Ddiwethaf</translation>
 <translation id="3771033907050503522">Tabiau Anhysbys</translation>
@@ -718,6 +714,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4659194143325814340">{count,plural, =1{{count} dudalen ar eich Rhestr Ddarllen}zero{{count} tudalen ar eich Rhestr Ddarllen}two{{count} dudalen ar eich Rhestr Ddarllen}few{{count} tudalen ar eich Rhestr Ddarllen}many{{count} thudalen ar eich Rhestr Ddarllen}other{{count} tudalen ar eich Rhestr Ddarllen}}</translation>
 <translation id="4659667755519643272">Rhowch Newidydd Tabiau</translation>
 <translation id="46614316059270592">Cadw'r Cyfrinair</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Cysylltwch â busnes trwy gychwyn galwad ffôn</translation>
 <translation id="4682686630151240767">1. Agorwch y Gosodiadau iPhone</translation>
 <translation id="4689564913179979534">Rheoli dulliau talu...</translation>
@@ -1519,7 +1516,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8522147671363140027">{count,plural, =1{Mae {count} cyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}zero{Mae {count} cyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}two{Mae {count} gyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}few{Mae {count} chyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}many{Mae {count} chyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}other{Mae {count} cyfrinair ac eitemau eraill wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}}</translation>
 <translation id="8522813812888400223">Canslo Lawrlwytho</translation>
 <translation id="8524799873541103884">Tabiau <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> drwy <ph name="LAST_VISIBLE_TAB" /> o <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Byddwch yn cael eich allgofnodi a bydd y tabiau'n cael eu cau</translation>
 <translation id="8528009254289981965">Agor dolenni o apiau eraill yn Anhysbys</translation>
 <translation id="8529767659511976195">Newydd</translation>
 <translation id="8532105204136943229">Blwyddyn Darfod</translation>
@@ -1600,6 +1596,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8876882697946675716">Cadwch Eich Dyfeisiau Yn Gyson</translation>
 <translation id="8879604564928138696">Tapiwch ddwywaith i roi cynnig arni</translation>
 <translation id="8881801611828450202">Chwilio <ph name="SEARCH_ENGINE" /> ar gyfer y Llun Hwn</translation>
+<translation id="8887595428614802520">Cau Pob Tab a Grŵp</translation>
 <translation id="8898822736010347272">Yn anfon cyfeiriadau URL o rai tudalennau rydych yn ymweld â nhw, gwybodaeth system gyfyngedig, a rhywfaint o gynnwys tudalen at Google, i helpu i ddarganfod bygythiadau newydd ac i amddiffyn pawb ar y we.</translation>
 <translation id="890565330728586731">Nôl</translation>
 <translation id="8909135823018751308">Rhannu…</translation>

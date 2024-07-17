@@ -852,7 +852,6 @@
 <translation id="254524874071906077">Chrome ને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="2545721997179863249">'બધું ભરો' વિકલ્પ પસંદ કરવામાં આવ્યો હતો</translation>
 <translation id="2546283357679194313">કૂકીઝ અને સાઇટ ડેટા</translation>
-<translation id="2546678870939430879">પરિણામ ફરીથી લાગુ કરો</translation>
 <translation id="254947805923345898">પૉલિસી મૂલ્ય માન્ય નથી.</translation>
 <translation id="2549836668759467704">બાંધકામ સંબંધિત પરામર્શ અને કોન્ટ્રાક્ટિંગ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> એ અમાન્ય પ્રતિસાદ મોકલ્યો.</translation>
@@ -1035,7 +1034,6 @@
 <translation id="2954624054936281172">સાચવેલી ચુકવણી પદ્ધતિઓનું કોષ્ટક</translation>
 <translation id="295526156371527179">ચેતવણી: નીતિમાં ઉલ્લેખ કર્યા મુજબ આ નીતિને શબ્દકોશ તરીકે મર્જ કરવામાં આવી ન હતી, કારણ કે તે શબ્દકોશ નથી.</translation>
 <translation id="2955913368246107853">શોધ બાર બંધ કરો</translation>
-<translation id="2958345633099973853">પરિણામમાંનો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2958544468932521864">ક્રિકેટ</translation>
 <translation id="2959274854674276289">શાકાહારી ભોજન</translation>
 <translation id="2961809451460302960">જીવન વીમો</translation>
@@ -1166,7 +1164,6 @@
 <translation id="3209034400446768650">પેજ કદાચ નાણાં વસૂલી શકે છે</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> પરની તમારી પ્રવૃત્તિનું નિરીક્ષણ કરવામાં આવી રહ્યું છે</translation>
 <translation id="3215092763954878852">WebAuthnનો ઉપયોગ કરી શક્યાં નથી</translation>
-<translation id="3215311088819828484">પરિણામ અપડેટ કર્યું</translation>
 <translation id="3216313131063488104">બ્લૂઝ</translation>
 <translation id="3218181027817787318">સંબંધિત</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{હમણાં અપડેટ જરૂરી છે}=2{આવતીકાલ સુધીમાં અપડેટ જરૂરી છે}one{# દિવસની અંદર અપડેટ જરૂરી છે}other{# દિવસની અંદર અપડેટ જરૂરી છે}}</translation>
@@ -2516,7 +2513,6 @@
 <translation id="5772086939108830423">કોઈ અલગ ડિવાઇસ પર પાસકીનો ઉપયોગ કરો</translation>
 <translation id="5776313857861697733">પ્રાધાન્યતા</translation>
 <translation id="5776574724412881956">શું વર્ચ્યુઅલ કાર્ડ સંબંધિત વિગતો ભરી નથી? ક્લિપબોર્ડ પર કૉપિ કરવા માટે, વર્ચ્યુઅલ કાર્ડની વિગતો પર ક્લિક કરો. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">પરિણામ લોડ થઈ રહ્યું છે</translation>
 <translation id="5781136890105823427">પ્રયોગ ચાલુ કર્યો</translation>
 <translation id="578305955206182703">પીળાશ પડતો નારંગી</translation>
 <translation id="5783700460098783980">સામાન અને મુસાફરીની વસ્તુઓ</translation>
@@ -2691,7 +2687,6 @@
 <translation id="6116338172782435947">ક્લિપબોર્ડ પર કૉપિ કરેલી ટેક્સ્ટ અને છબીઓને જુઓ</translation>
 <translation id="6117833587752089929">ફોટો (સાટિન)</translation>
 <translation id="6118782133429281336">મૂળ સૂચિ ખાલી છે.</translation>
-<translation id="6120950591512958208">ચેકઆઉટ વખતે આ કોડનો ઉપયોગ કરો.</translation>
 <translation id="612178891608320683">શુદ્ધ શાકાહારી ભોજન</translation>
 <translation id="6122181661879998141">તમારા કાર્ડની આગળનો ભાગ</translation>
 <translation id="6124058285696691147">જોડાણ ડાઉનલોડ કરો</translation>

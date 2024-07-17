@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Oranža</translation>
 <translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
 <translation id="1273910660700874265">Ciļņu grupas “<ph name="TITLE_OF_GROUP" />” iespējas</translation>
-<translation id="1322824555808364080">Uzaicināt personas</translation>
 <translation id="1419023007528516122">Tādējādi šī grupa tiks neatgriezeniski dzēsta no jūsu ierīces</translation>
 <translation id="1486715732399361704">Šeit varat skatīt visas savas ciļņu grupas.</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Izveidota pirms <ph name="NUM_MINS_ONE" /> minūtes}zero{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}one{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtes}other{Izveidota pirms <ph name="NUM_MINS_MANY" /> minūtēm}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Šeit varēsiet skatīt savas ciļņu grupas</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Atcelt <ph name="TABS_COUNT_ONE" /> atlasītās cilnes grupēšanu}zero{Atcelt <ph name="TABS_COUNT_MANY" /> atlasīto ciļņu grupēšanu}one{Atcelt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes grupēšanu}other{Atcelt <ph name="TABS_COUNT_MANY" /> atlasīto ciļņu grupēšanu}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> ciļņu}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="6527303717912515753">Kopīgot</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Pēc 1 dienas}zero{Pēc <ph name="DAY_COUNT_MANY" /> dienām}one{Pēc <ph name="DAY_COUNT_MANY" /> dienas}other{Pēc <ph name="DAY_COUNT_MANY" /> dienām}}</translation>
 <translation id="6549021453810473782">Skatīt veikala informāciju</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

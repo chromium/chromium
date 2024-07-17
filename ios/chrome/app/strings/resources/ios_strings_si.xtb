@@ -8,7 +8,6 @@
 <translation id="102916930470544692">මුරයතුර</translation>
 <translation id="1035980983510608210">සියලු පටිති වැසීමෙන් අමුණන ලද පටිති ද වැසෙනු ඇත.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">ඔබ වරනය වන අතර බ්‍රවුස් කිරීමේ දත්ත මකා දැමෙනු ඇත</translation>
 <translation id="1044891598689252897">වෙබ් අඩවි සාමාන්‍යයෙන් ක්‍රියා කරයි</translation>
 <translation id="1049743911850919806">අප්‍රකට</translation>
 <translation id="1053651653201045802">වරන ලදි. ඔබේ ගිණුම තුළ පිටුසන්, මුරපද, සහ තවත් ඒවා භාවිත කිරීමට ආපසු පුරන්න.</translation>
@@ -83,7 +82,6 @@
 <translation id="138618066238211776"><ph name="USER_NAME" /> ලෙස ඉදිරියට යන්න</translation>
 <translation id="1400642268715879018">පසුගිය සති 4</translation>
 <translation id="1404330357948037222">ඔබ වරනු ලැබීය</translation>
-<translation id="14066361343057390">ඔබ වරනය වනු ඇත</translation>
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="1408847409015257906">“පෞද්ගලිකත්වය සහ ආරක්ෂාව” වෙත තට්ටු කරන්න.</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
@@ -341,7 +339,6 @@
 <translation id="2712127207578915686">ගොනුව විවෘත කිරීමට නොහැකිය</translation>
 <translation id="2718352093833049315">Wi-Fi මත පමනි</translation>
 <translation id="2738375676495545665">අලුත් දේ සඟවන්න</translation>
-<translation id="2740910715135851329">ඔබ වරනය වනු ඇත, පටිති වැසෙනු ඇත, බ්‍රවුස් කිරීමේ දත්ත මකා දැමෙනු ඇත</translation>
 <translation id="2747003861858887689">පෙර ක්ෂේත්‍රය</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> අනුගමනය කරමින්</translation>
 <translation id="2754492786623500387">මෙම උපාංගයෙහි ගිණුම්</translation>
@@ -392,6 +389,7 @@
 <translation id="2952278131021475699">Lens කැමරා සෙවීම</translation>
 <translation id="2958718410589002129">මුරපද</translation>
 <translation id="2964349545761222050">තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
+<translation id="2965328226365382335">අවසන් විනාඩි 15</translation>
 <translation id="2969979262385602596">පුරනය අසාර්ථක විය, කරුණාකර පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="2975121486251958312">අප්‍රසිද්ධ ප්‍රකාරය පමණක් ලබා ගත හැකිය</translation>
 <translation id="2982481275546140226">දත්ත හිස් කිරීම</translation>
@@ -539,7 +537,6 @@
 <translation id="3738428049780661523">තනන ලද්දේ: <ph name="DATE" /></translation>
 <translation id="374357899112510277">බාගැනීම් සඟවන්න</translation>
 <translation id="3745190878148784130">පෙළ විශාලනය සඟවන්න</translation>
-<translation id="3747231889390582072">ඔබේ සංවිධානයේ සුරක්‍ෂිත භාවය ආරක්‍ෂා කිරීමට, නොසුරැකි දත්ත මෙම උපාංගයෙන් මකනු ලැබේ. මෙයට මුරපද, බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකී, සහ තවත් ඒවා ඇතුළු විය හැක.</translation>
 <translation id="3762232513783804601">ඔබගේ iPad සඳහා තනා ඇත</translation>
 <translation id="3768725474733206671">අවසන් වර වැසූ පටිත්ත යළි විවෘත කරන්න</translation>
 <translation id="3771033907050503522">අප්‍රකට පටිති</translation>
@@ -718,6 +715,7 @@
 <translation id="4659194143325814340">{count,plural, =1{ඔබේ කියවීම් ලැයිස්තුවෙහි {count} පිටුවක්}one{ඔබේ කියවීම් ලැයිස්තුවෙහි පිටු {count}ක්}other{ඔබේ කියවීම් ලැයිස්තුවෙහි පිටු {count}ක්}}</translation>
 <translation id="4659667755519643272">පටිති මාරුකරවනය වෙත ඇතුළත් වන්න</translation>
 <translation id="46614316059270592">මුරපදය සුරකින්න</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">දුරකථන ඇමතුමක් ආරම්භ කිරීමෙන් ව්‍යාපාරයක් සමග සම්බන්ධ වන්න</translation>
 <translation id="4682686630151240767">1. iPhone සැකසීම් විවෘත කරන්න</translation>
 <translation id="4689564913179979534">ගෙවීමේ ක්‍රම කළමනා කරන්න...</translation>
@@ -1326,6 +1324,7 @@
 <translation id="7609559547731036746">පිටුසන්</translation>
 <translation id="7638584964844754484">රහස්පදය වැරදියි</translation>
 <translation id="7640669552036055091">Android වෙතින් පටිති</translation>
+<translation id="7643790043444820023">මුල් පිටුව අභිරුචිකරණය කරන්න</translation>
 <translation id="7646263789464975852">මෙනුව → සැකසීම් → ආරක්ෂක පරීක්ෂාව</translation>
 <translation id="7646772052135772216">මුරපද සමමුහූර්තය ක්‍රියා නොකරයි</translation>
 <translation id="764827086632467055">පෙරනිමි බ්‍රව්සර යෙදුම තට්ටු කරන්න</translation>
@@ -1518,7 +1517,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count}ක් මුරපදයක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිත කිරීමට, ඒවා ඔබේ Google ගිණුමේ, {email}සුරකින්න}one{මුරපද {count}ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිත කිරීමට, ඒවා ඔබේ Google ගිණුමේ, {email}සුරකින්න}other{මුරපද {count}ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිත කිරීමට, ඒවා ඔබේ Google ගිණුමේ, {email}සුරකින්න}}</translation>
 <translation id="8522813812888400223">බාගැනීම අවලංගු කරන්න</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> ක <ph name="FIRST_VISIBLE_TAB" /> හරහා <ph name="LAST_VISIBLE_TAB" /> <ph name="INCOGNITO" /> පටිති</translation>
-<translation id="852576975834694248">ඔබ වරනය වන අතර පටිති වසා දමනු ඇත</translation>
 <translation id="8528009254289981965">Incognito හි වෙනත් යෙදුම්වලින් සබැඳි විවෘත කරන්න</translation>
 <translation id="8529767659511976195">නව</translation>
 <translation id="8532105204136943229">කල් ඉකුත් වන වසර</translation>

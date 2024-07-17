@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">חזרה על המדריך</translation>
 <translation id="2219735899272417925">יש לאתחל את המכשיר</translation>
 <translation id="2221227930294879156">אירועים בתחום המזון והמשקאות</translation>
+<translation id="2222604080869344662">‏כדי להמשיך בהורדה, צריך להיכנס לחשבון ב-OneDrive</translation>
 <translation id="2224337661447660594">אין אינטרנט</translation>
 <translation id="2225927550500503913">הכרטיס הווירטואלי מופעל</translation>
 <translation id="2226636330183131181">‏<ph name="BEGIN_LINK" />התחברות<ph name="END_LINK" /> לרשת ה-Wi-Fi</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">‏Google Chrome מנסה לערוך את אמצעי התשלום.</translation>
 <translation id="2400600116338235695">האתר יכול לבקש הרשאה להתחבר ליציאות טוריות</translation>
 <translation id="2404884497378469141">רוצה לנסות שוב להעתיק את הקבצים?</translation>
+<translation id="2412310121876768057">למלא אוטומטית את פרטי הכרטיס בפעם הבאה?</translation>
 <translation id="2413155254802890957">ישנה</translation>
 <translation id="2413528052993050574">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. ייתכן שאישור האבטחה שלו בוטל. הסיבה לכך עשויה להיות הגדרה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="2414886740292270097">כהה</translation>
@@ -850,7 +852,6 @@
 <translation id="254524874071906077">‏הגדר את Chrome כדפדפן ברירת המחדל</translation>
 <translation id="2545721997179863249">נבחרה האפשרות 'מילוי כל הפרטים'</translation>
 <translation id="2546283357679194313">‏קובצי Cookie ונתונים מאתרים</translation>
-<translation id="2546678870939430879">ביצוע מחדש של התוצאה</translation>
 <translation id="254947805923345898">ערך המדיניות לא חוקי.</translation>
 <translation id="2549836668759467704">ייעוץ וקבלנות בתחום הבנייה</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> שלח תגובה לא חוקית.</translation>
@@ -1033,7 +1034,6 @@
 <translation id="2954624054936281172">טבלה של אמצעי התשלום שנשמרו</translation>
 <translation id="295526156371527179">אזהרה: המדיניות הזו לא עברה מיזוג כמילון בהתאם למדיניות, מאחר שהיא אינה מילון.</translation>
 <translation id="2955913368246107853">סגירת סרגל החיפוש</translation>
-<translation id="2958345633099973853">ביטול התוצאה</translation>
 <translation id="2958544468932521864">קריקט</translation>
 <translation id="2959274854674276289">מטבח צמחוני</translation>
 <translation id="2961809451460302960">ביטוח חיים</translation>
@@ -1164,7 +1164,6 @@
 <translation id="3209034400446768650">כניסה לדף עשויה להיות כרוכה בתשלום</translation>
 <translation id="3212581601480735796">הפעילות שלך ב-<ph name="HOSTNAME" /> מנוטרת</translation>
 <translation id="3215092763954878852">‏לא ניתן להשתמש ב-WebAuthn</translation>
-<translation id="3215311088819828484">התוצאה עודכנה</translation>
 <translation id="3216313131063488104">בלוז</translation>
 <translation id="3218181027817787318">יחסי</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{נדרש עדכון עכשיו}=2{נדרש עדכון עד מחר}one{נדרש עדכון תוך # ימים}other{נדרש עדכון תוך # ימים}}</translation>
@@ -1243,6 +1242,7 @@
 <translation id="3352881017886802007">משחקי ספורט</translation>
 <translation id="3355823806454867987">‏שינוי הגדרות שרת Proxy...</translation>
 <translation id="335809815767823">הייצוא בוצע</translation>
+<translation id="3359387651158939842">‏אפשר למלא באופן אוטומטי את פרטי הכרטיס לביצוע רכישות עתידיות כששומרים אותו לשימוש ב-Google Pay</translation>
 <translation id="3359565626472459400">נישואים</translation>
 <translation id="3360103848165129075">גיליון פרטי התשלום</translation>
 <translation id="3362968246557010467">המדיניות הזו הועתקה באופן אוטומטי ממדיניות <ph name="OLD_POLICY" /> שהוצאה משימוש. צריך להשתמש במדיניות הזו במקומה.</translation>
@@ -2061,6 +2061,7 @@ Del</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">אולימפיאדה</translation>
 <translation id="4898742041545089450">בוטלה חסימת הנושא הזה ויכול להיות שהוא יהיה פעיל, בהתאם להיסטוריית הגלישה שלך</translation>
+<translation id="4899379435492347481">‏אפשר לשמור את הכרטיס הזה כדי להשתמש בו אונליין באמצעות Google Pay לביצוע רכישות בכל המכשירים שלך</translation>
 <translation id="4900217275619098670">הגליל התשיעי</translation>
 <translation id="4901052769830245369">Labels (Semi-Gloss)</translation>
 <translation id="4901162432287938633">היגיינה ותמרוקים</translation>
@@ -2517,7 +2518,6 @@ Del</translation>
 <translation id="5772086939108830423">שימוש במפתח גישה במכשיר אחר</translation>
 <translation id="5776313857861697733">עדיפות</translation>
 <translation id="5776574724412881956">האם הכרטיס הווירטואלי לא מולא? יש ללחוץ על פרטי הכרטיס הווירטואלי כדי להעתיק אותו ללוח. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">התוצאה בטעינה</translation>
 <translation id="5781136890105823427">הניסוי מופעל</translation>
 <translation id="578305955206182703">ענבר</translation>
 <translation id="5783700460098783980">מזוודות ואביזרים לנסיעה</translation>
@@ -2692,7 +2692,6 @@ Del</translation>
 <translation id="6116338172782435947">גישה אל טקסט ותמונות שהועתקו ללוח</translation>
 <translation id="6117833587752089929">Photo (Satin)</translation>
 <translation id="6118782133429281336">רשימת המקורות ריקה.</translation>
-<translation id="6120950591512958208">בקופה צריך להזין את הקוד הבא.</translation>
 <translation id="612178891608320683">מטבח טבעוני</translation>
 <translation id="6122181661879998141">החלק הקדמי של הכרטיס</translation>
 <translation id="6124058285696691147">הורדת הקובץ המצורף</translation>
@@ -2726,6 +2725,7 @@ Del</translation>
 <translation id="6180316780098470077">מרווח בין ניסיונות חוזרים</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">‏Chrome מגביל באופן אוטומטי קובצי cookie של צד שלישי</translation>
+<translation id="6194139058731919563">‏פרטי הכרטיס שלך מוצפנים כשהם נשמרים בחשבון Google ומשמשים לתשלום אונליין</translation>
 <translation id="6194209731893739467">כאן יופיעו כל המוצרים שבמעקב</translation>
 <translation id="6195163219142236913">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="6195371403461054755">גיאולוגיה</translation>
@@ -3627,6 +3627,7 @@ Del</translation>
 <translation id="7831993212387676366">מהי רשימת הקניות?</translation>
 <translation id="7832078172950550575">‏כשמשתמשים בשפה יומיומית, אפשר לחפש בהיסטוריית הגלישה באמצעות ביטויים כמו "פיצריות בסביבה" או "פארקים שמתאימים למשפחות במרכז העיר". החיפושים שלך, ההתאמות הטובות ביותר ותוכן הדפים שלהם נשלחים אל Google. יכול להיות שבודקים אנושיים יראו אותם כדי לשפר את התכונה הזו. <ph name="BEGIN_LINK" />ניהול ההגדרה של היסטוריית החיפושים<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">צילום המסך התחיל</translation>
+<translation id="7840504603489703295">חלות מגבלות של המוסד הפיננסי שלך.</translation>
 <translation id="784137052867620416">תובנות בנושא קניות</translation>
 <translation id="784404208867107517">הצגת ההיסטוריה באופן מקובץ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ללא}=1{אפליקציה אחת (<ph name="EXAMPLE_APP_1" />)}=2{2 אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# אפליקציות (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -3825,6 +3826,7 @@ Del</translation>
 <translation id="8241712895048303527">חסימה באתר הזה</translation>
 <translation id="8242426110754782860">המשך</translation>
 <translation id="8246482227229072868">טבעות</translation>
+<translation id="8248406213705193919">לשמור את הכרטיס באופן מאובטח?</translation>
 <translation id="8249296373107784235">ביטול</translation>
 <translation id="824968735947741546">מתבצע תרגום של <ph name="SOURCE" /> (לפי הזיהוי האוטומטי) ל<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">‏הכתובת הזו שמורה במכשיר הזה. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="ACCOUNT" />.</translation>
@@ -4309,6 +4311,7 @@ Del</translation>
 <translation id="9169664750068251925">אני רוצה לחסום תמיד באתר זה</translation>
 <translation id="9169931577761441333">הוספה של <ph name="APP_NAME" /> למסך דף הבית</translation>
 <translation id="9170848237812810038">&amp;ביטול</translation>
+<translation id="9170906125144697215">‏אפשר לשלם באמצעות Pix בלי לעבור בין אפליקציות</translation>
 <translation id="9171296965991013597">לצאת מהאפליקציה?</translation>
 <translation id="9173282814238175921">מסמך יחיד/גיליון חדש</translation>
 <translation id="9173995187295789444">‏מתבצע חיפוש של מכשירי Bluetooth...</translation>
@@ -4330,6 +4333,7 @@ Del</translation>
 <translation id="9205078245616868884">הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
 <translation id="920643408853370361">ביטוח נסיעות</translation>
 <translation id="9207861905230894330">הוספת הפריט נכשלה.</translation>
+<translation id="9209339767782560829">הייתה בעיה בשימוש באישור ההתחברות שלך.</translation>
 <translation id="9210825002219699214">טיסות</translation>
 <translation id="9211461151375991073">אפשר להזין @ כדי לחפש <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">התאמה אישית של המראה</translation>

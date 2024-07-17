@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
 <translation id="125153950246128346">अर्को ट्याब हेर्न ट्याप गर्नुहोस्</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ट्याब समूहका विकल्पहरू</translation>
-<translation id="1322824555808364080">मान्छेहरूलाई निम्तो गर्नुहोस्</translation>
 <translation id="1419023007528516122">तपाईंले यसो गर्नुभयो भने तपाईंको डिभाइसबाट यो समूह सदाका लागि मेटाइने छ</translation>
 <translation id="1486715732399361704">तपाईं आफ्ना सबै ट्याब समूहहरू यहाँ भेट्टाउन सक्नुहुन्छ</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनेटअघि बनाइएको}other{<ph name="NUM_MINS_MANY" /> मिनेटअघि बनाइएको}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">तपाईं आफ्ना ट्याब समूहहरू यहाँ भेट्टाउनु हुने छ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब समूहबाट हटाउनुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबाट हटाउनुहोस्}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> वटा ट्याब}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब}}</translation>
+<translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{१ दिनपछि}other{<ph name="DAY_COUNT_MANY" /> दिनपछि}}</translation>
 <translation id="6549021453810473782">स्टोरसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

@@ -847,7 +847,6 @@
 <translation id="254524874071906077">Chromeని డిఫాల్ట్ బ్రౌజర్‌గా సెట్ చేయి</translation>
 <translation id="2545721997179863249">అన్నింటినీ పూరించే ఆప్షన్‌ను ఎంచుకున్నారు</translation>
 <translation id="2546283357679194313">కుక్కీలు మరియు సైట్ డేటా</translation>
-<translation id="2546678870939430879">ఫలితాన్ని మళ్లీ చేయండి</translation>
 <translation id="254947805923345898">విధానం విలువ చెల్లుబాటు కాదు.</translation>
 <translation id="2549836668759467704">నిర్మాణం కోసం సంప్రదించడం &amp; ఒప్పందం చేసుకోవడం</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> చెల్లని ప్రతిస్పందనను పంపింది.</translation>
@@ -1030,7 +1029,6 @@
 <translation id="2954624054936281172">సేవ్ చేయబడిన పేమెంట్ ఆప్షన్‌ల టేబుల్</translation>
 <translation id="295526156371527179">హెచ్చరిక: ఈ విధానం ఒక నిఘంటువు కానందున, విధానంలో పేర్కొన్నట్లు నిఘంటువు లాగా విలీనం చేయబడలేదు.</translation>
 <translation id="2955913368246107853">కనుగొనండి బార్‌ను మూసివేయండి</translation>
-<translation id="2958345633099973853">ఫలితాన్ని చర్య రద్దు చేయండి</translation>
 <translation id="2958544468932521864">క్రికెట్</translation>
 <translation id="2959274854674276289">శాకాహార వంటకాలు</translation>
 <translation id="2961809451460302960">జీవిత బీమా</translation>
@@ -1161,7 +1159,6 @@
 <translation id="3209034400446768650">పేజీ, నగదును ఛార్జ్ చేయవచ్చు</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />లోని మీ యాక్టివిటీ పర్యవేక్షించబడుతోంది</translation>
 <translation id="3215092763954878852">WebAuthn ఉపయోగించడం సాధ్యం కాలేదు</translation>
-<translation id="3215311088819828484">ఫలితం అప్‌డేట్ చేయబడింది</translation>
 <translation id="3216313131063488104">బ్లూస్</translation>
 <translation id="3218181027817787318">సంబంధిత</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ఇప్పుడే అప్‌డేట్ చేయాలి}=2{రేపుటి లోపు అప్‌డేట్ చేయాలి}other{# రోజులలోపు అప్‌డేట్ చేయాలి}}</translation>
@@ -2511,7 +2508,6 @@
 <translation id="5772086939108830423">వేరే పరికరంలో పాస్-కీని ఉపయోగించండి</translation>
 <translation id="5776313857861697733">ప్రాధాన్యత</translation>
 <translation id="5776574724412881956">వర్చువల్ కార్డ్ ఫిల్ కాలేదా? క్లిప్‌బోర్డ్‌కు కాపీ చేయడానికి వర్చువల్ కార్డ్ వివరాలను క్లిక్ చేయండి. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">ఫలితం లోడ్ అవుతోంది</translation>
 <translation id="5781136890105823427">ప్రయోగం ప్రారంభించబడింది</translation>
 <translation id="578305955206182703">కాషాయ రంగు</translation>
 <translation id="5783700460098783980">లగేజీ &amp; ట్రావెల్ యాక్సెసరీలు</translation>
@@ -2686,7 +2682,6 @@
 <translation id="6116338172782435947">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను చూడండి</translation>
 <translation id="6117833587752089929">ఫోటో (శాటిన్)</translation>
 <translation id="6118782133429281336">ఆరిజిన్ లిస్ట్‌ ఖాళీగా ఉంది.</translation>
-<translation id="6120950591512958208">చెక్ అవుట్ వద్ద ఈ కోడ్‌ను ఉపయోగించండి.</translation>
 <translation id="612178891608320683">వేగన్ వంటకాలు</translation>
 <translation id="6122181661879998141">మీ కార్డ్ ముందు వైపు</translation>
 <translation id="6124058285696691147">అటాచ్‌మెంట్‌ను డౌన్‌లోడ్ చేయండి</translation>

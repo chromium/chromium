@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">Apelsinrang</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> varaqlar guruhi sozlamalari</translation>
-<translation id="1322824555808364080">Odamlarni taklif qilish</translation>
 <translation id="1419023007528516122">Bunda guruh qurilmadan butunlay oʻchirib tashlanadi.</translation>
 <translation id="1486715732399361704">Barcha varaqlar guruhi shu yerda chiqadi</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> daqiqa oldin yaratilgan}other{<ph name="NUM_MINS_MANY" /> daqiqa oldin yaratilgan}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">Varaqlar guruhini shu yerdan topasiz</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaq guruhini yechish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaq guruhini yechish}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
+<translation id="6527303717912515753">Ulashish</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 kundan keyin}other{<ph name="DAY_COUNT_MANY" /> kundan keyin}}</translation>
 <translation id="6549021453810473782">Doʻkon axborotini ochish</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

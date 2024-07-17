@@ -8,7 +8,6 @@
 <translation id="102916930470544692">கடவுச்சாவி</translation>
 <translation id="1035980983510608210">அனைத்துப் பக்கங்களையும் மூடுவது இடம் மாறாத பக்கங்களையும் மூடும்.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">நீங்கள் வெளியேற்றப்படுவீர்கள் மற்றும் உலாவிய தரவு அழிக்கப்படும்</translation>
 <translation id="1044891598689252897">தளங்கள் இயல்பாகவே செயல்படும்</translation>
 <translation id="1049743911850919806">மறைநிலை</translation>
 <translation id="1053651653201045802">வெளியேறிவிட்டீர்கள். உங்கள் கணக்கில் புக்மார்க்குகள், கடவுச்சொற்கள் மற்றும் பலவற்றைப் பயன்படுத்த மீண்டும் உள்நுழையவும்.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">கடவுச்சொற்கள்</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ஆகத் தொடர்க</translation>
+<translation id="1388866984373351434">உலாவல் தரவு</translation>
 <translation id="1400642268715879018">கடந்த 4 வாரங்கள்</translation>
 <translation id="1404330357948037222">வெளியேறிவிட்டீர்கள்</translation>
-<translation id="14066361343057390">நீங்கள் வெளியேற்றப்படுவீர்கள்</translation>
 <translation id="1407135791313364759">எல்லாவற்றையும் திற</translation>
 <translation id="1408847409015257906">"தனியுரிமையும் பாதுகாப்பும்" என்பதைத் தட்டவும்.</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">ஃபைலைத் திறக்க முடியவில்லை</translation>
 <translation id="2718352093833049315">வைஃபையில் மட்டும்</translation>
 <translation id="2738375676495545665">‘புதியவை’ என்பதை மறை</translation>
-<translation id="2740910715135851329">நீங்கள் வெளியேற்றப்படுவீர்கள், பங்கங்கள் மூடப்படும், உலாவிய தரவு நீக்கப்படும்</translation>
 <translation id="2747003861858887689">முந்தைய புலம்</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ஐப் பின்தொடர்கிறீர்கள்</translation>
 <translation id="2754492786623500387">இந்தச் சாதனத்தில் உள்ள கணக்குகள்</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">Lens கேமரா மூலம் தேடுதல்</translation>
 <translation id="2958718410589002129">கடவுச்சொற்கள்</translation>
 <translation id="2964349545761222050">மூன்றாம் தரப்புக் குக்கீகளைத் தடு</translation>
+<translation id="2965328226365382335">கடந்த 15 நிமிடங்கள்</translation>
 <translation id="2969979262385602596">உள்நுழைவு தோல்வி. பிறகு மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="2975121486251958312">மறைநிலைப் பயன்முறையை மட்டுமே பயன்படுத்த முடியும்</translation>
 <translation id="2982481275546140226">தரவை அழி</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523">உருவாக்கியது: <ph name="DATE" /></translation>
 <translation id="374357899112510277">பதிவிறக்கங்களை மறை</translation>
 <translation id="3745190878148784130">‘வார்த்தையின் அளவை மாற்று’ என்பதை மறை</translation>
-<translation id="3747231889390582072">உங்கள் நிறுவனத்தின் பாதுகாப்பை உறுதிப்படுத்த, சேமிக்காத தரவுகள் உங்கள் சாதனத்தில் இருந்து நீக்கப்படும். கடவுச்சொற்கள், இதுவரை இணையத்தில் பார்த்தவை, குக்கீகள் மற்றும் பலவும் இதில் அடங்கும்.</translation>
 <translation id="3762232513783804601">iPadக்காக உருவாக்கப்பட்டது</translation>
 <translation id="3768725474733206671">கடைசியாக மூடிய பக்கத்தைத் திற</translation>
 <translation id="3771033907050503522">மறைநிலைத் தாவல்கள்</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{உங்கள் வாசிப்புப் பட்டியலில் உள்ள {count} பக்கம்}other{உங்கள் வாசிப்புப் பட்டியலில் உள்ள {count} பக்கங்கள்}}</translation>
 <translation id="4659667755519643272">தாவல் மாற்றியைத் துவக்கு</translation>
 <translation id="46614316059270592">கடவுச்சொல்லைச் சேமி</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">ஃபோன் அழைப்பு மூலம் பிசினஸைத் தொடர்புகொள்ளலாம்</translation>
 <translation id="4682686630151240767">1. iPhone அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="4689564913179979534">கட்டண முறைகளை நிர்வகிக்கவும்...</translation>
@@ -1326,6 +1325,7 @@
 <translation id="7609559547731036746">புக்மார்க்குகள்</translation>
 <translation id="7638584964844754484">தவறான கடவுத்தொடர்</translation>
 <translation id="7640669552036055091">Androidல் செயலில் இருந்த பக்கங்கள்</translation>
+<translation id="7643790043444820023">முகப்புப் பக்கத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="7646263789464975852">மெனு → அமைப்புகள் → பாதுகாப்புச் சரிபார்ப்பு</translation>
 <translation id="7646772052135772216">கடவுச்சொல் ஒத்திசைவு இயங்கவில்லை</translation>
 <translation id="764827086632467055">இயல்பு உலாவி ஆப்ஸ் என்பதைத் தட்டவும்</translation>
@@ -1518,7 +1518,6 @@
 <translation id="8522147671363140027">{count,plural, =1{{count} கடவுச்சொல்லும் பிற தரவுகளும் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படுகின்றன. பிற சாதனங்களில் பயன்படுத்த, உங்கள் Google கணக்கில் ({email}) அவற்றைச் சேமிக்கவும்.}other{{count} கடவுச்சொற்களும் பிற தரவுகளும் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படுகின்றன. பிற சாதனங்களில் பயன்படுத்த, உங்கள் Google கணக்கில் ({email}) அவற்றைச் சேமிக்கவும்.}}</translation>
 <translation id="8522813812888400223">பதிவிறக்கத்தை ரத்துசெய்யும்</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> தாவல்கள்: <ph name="NUMBER_OF_OPEN_TABS" /> இல் <ph name="FIRST_VISIBLE_TAB" /> முதல் <ph name="LAST_VISIBLE_TAB" /> வரை</translation>
-<translation id="852576975834694248">நீங்கள் வெளியேற்றப்படுவீர்கள் மற்றும் பக்கங்கள் மூடப்படும்</translation>
 <translation id="8528009254289981965">வேறொரு ஆப்ஸில் இருந்து வரும் இணைப்புகளை மறைநிலைப் பயன்முறையில் திறக்கலாம்</translation>
 <translation id="8529767659511976195">புதிது</translation>
 <translation id="8532105204136943229">காலாவதியாகும் ஆண்டு</translation>

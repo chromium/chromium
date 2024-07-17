@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">橘色</translation>
 <translation id="125153950246128346">輕觸即可查看另一個分頁</translation>
 <translation id="1273910660700874265">「<ph name="TITLE_OF_GROUP" />」分頁群組選項</translation>
-<translation id="1322824555808364080">邀請其他人</translation>
 <translation id="1419023007528516122">這麼做會將群組從裝置中永久刪除</translation>
 <translation id="1486715732399361704">你可以在這裡找到所有分頁群組</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前建立}other{<ph name="NUM_MINS_MANY" /> 分鐘前建立}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">你可以在這裡找到分頁群組</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個所選分頁移出群組}other{將 <ph name="TABS_COUNT_MANY" /> 個所選分頁移出群組}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="6527303717912515753">分享</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 天後}other{<ph name="DAY_COUNT_MANY" /> 天後}}</translation>
 <translation id="6549021453810473782">查看商店資訊</translation>
 <translation id="6557858706263317126">還有 <ph name="HIDDEN_TABS_COUNT" /> 個</translation>

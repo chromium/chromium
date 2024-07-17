@@ -20,6 +20,7 @@
 <translation id="1229096353876452996">Google empfiehlt, Chrome als Standardbrowser festzulegen</translation>
 <translation id="1265739287306757398">Weitere Informationen</translation>
 <translation id="1278833599417554002">Neu starten, um &amp;Chrome zu aktualisieren</translation>
+<translation id="1290883685122687410">Einrichtungsfehler: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Bitte warte, bis die aktuellen Systemupdates von Chrome installiert wurden.</translation>
 <translation id="1335640173511558774">Für <ph name="MANAGER" /> ist es erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen liest und akzeptierst. Durch diese Nutzungsbedingungen werden die Google Chrome OS Flex-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
 <translation id="1341711321000856656">Wenn du das Profil wechselst, kannst du dir Passwörter anderer Chrome-Profile anzeigen lassen</translation>
@@ -191,6 +192,7 @@
 <translation id="3583751698304738917">Du bist in einem anderen Chrome-Profil bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet</translation>
 <translation id="3595784445906693824">In einem neuen Profil in Chrome anmelden?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen}=1{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
+<translation id="3597003331831379823">Die Einrichtung konnte nicht mit erhöhten Berechtigungen ausgeführt werden. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
 <translation id="3622797965165704966">Du kannst Chrome jetzt noch einfacher mit deinem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
 <translation id="3635073343384702370">Chrome kann deine Passwörter prüfen, wenn du sie speicherst</translation>

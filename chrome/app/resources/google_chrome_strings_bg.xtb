@@ -15,11 +15,13 @@
 <translation id="1149651794389918149">Влезте в Chrome. Ако искате да влезете в профил само веднъж, можете <ph name="GUEST_LINK_BEGIN" />да използвате устройството като гост<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Всичко за ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Отваряне в Chrome</translation>
+<translation id="1184145431117212167">Инсталирането не бе успешно, защото използваната от вас версия на Windows не се поддържа.</translation>
 <translation id="1194807384646768652">Chrome блокира това изтегляне, защото файловият тип не се изтегля често и може да е опасен</translation>
 <translation id="1203500561924088507">Благодарим ви, че инсталирахте <ph name="BUNDLE_NAME" />. Трябва да рестартирате браузъра си, преди да използвате това приложение.</translation>
 <translation id="1229096353876452996">Google препоръчва да зададете Chrome като браузър по подразбиране</translation>
 <translation id="1265739287306757398">Научете как</translation>
 <translation id="1278833599417554002">Повторно стартиране за актуализиране на &amp;Chrome</translation>
+<translation id="1290883685122687410">Грешка при настройването: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Моля, изчакайте, докато Chrome инсталира най-новите системни актуализации.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Можете да превключите, за да видите паролите от друг потребителски профил в Chrome</translation>
@@ -193,6 +195,7 @@
 <translation id="3583751698304738917">Вече сте влезли като <ph name="USER_EMAIL_ADDRESS" /> в друг потребителски профил в Chrome</translation>
 <translation id="3595784445906693824">Искате ли да влезете в Chrome с нов потребителски профил?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Администраторът ви изисква да рестартирате Chrome, за да се приложи актуализация}=1{Администраторът ви изисква да рестартирате Chrome, за да се приложи актуализация. Прозорецът ви в режим „инкогнито“ няма да бъде отворен отново.}other{Администраторът ви изисква да рестартирате Chrome, за да се приложи актуализация. Вашите # прозореца в режим „инкогнито“ няма да бъдат отворени отново.}}</translation>
+<translation id="3597003331831379823">Настройването с администраторски права не бе изпълнено успешно. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Не сте посещавали този сайт наскоро. Chrome премахна разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“</translation>
 <translation id="3622797965165704966">Вече е по-лесно да използвате Chrome с профила си в Google и на споделени компютри.</translation>
 <translation id="3635073343384702370">Chrome може да проверява паролите ви, когато ги запазите</translation>
@@ -235,6 +238,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Повторно стартиране на Chrome до 1 ден}other{Повторно стартиране на Chrome до # дни}}</translation>
 <translation id="4205939740494406371">Chrome не може да провери паролите ви. Опитайте отново след 24 часа или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Анулира се...</translation>
+<translation id="4224210481850767180">Инсталирането е анулирано.</translation>
 <translation id="4242034826641750751">За този сайт Chrome се нуждае от разрешения за достъп до камерата и микрофона</translation>
 <translation id="424864128008805179">Искате ли да излезете от Chrome?</translation>
 <translation id="4251615635259297716">Да се свържат ли данните ви в Chrome с този профил?</translation>

@@ -8,7 +8,6 @@
 <translation id="102916930470544692">通行密钥</translation>
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">您将自动退出账号，而且浏览数据将被删除</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
 <translation id="1049743911850919806">无痕</translation>
 <translation id="1053651653201045802">已退出账号。重新登录即可使用账号中的书签、密码等信息。</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">密码</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="138618066238211776">继续以<ph name="USER_NAME" />的身份登录</translation>
+<translation id="1388866984373351434">浏览数据</translation>
 <translation id="1400642268715879018">过去 4 周</translation>
 <translation id="1404330357948037222">您已退出登录</translation>
-<translation id="14066361343057390">您将自动退出账号</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408847409015257906">点按“隐私与安全”。</translation>
 <translation id="1430915738399379752">打印</translation>
@@ -341,7 +340,6 @@
 <translation id="2712127207578915686">无法打开该文件</translation>
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
 <translation id="2738375676495545665">隐藏“新变化”</translation>
-<translation id="2740910715135851329">您将自动退出账号，标签页将被关闭，而且浏览数据将被删除</translation>
 <translation id="2747003861858887689">上一个字段</translation>
 <translation id="2749231692441336879">已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="2754492786623500387">此设备上的账号</translation>
@@ -392,6 +390,7 @@
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2958718410589002129">密码</translation>
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
+<translation id="2965328226365382335">过去 15 分钟</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
 <translation id="2975121486251958312">仅无痕模式可用</translation>
 <translation id="2982481275546140226">清除数据</translation>
@@ -539,7 +538,6 @@
 <translation id="3738428049780661523">创建时间：<ph name="DATE" /></translation>
 <translation id="374357899112510277">隐藏“下载内容”</translation>
 <translation id="3745190878148784130">隐藏“缩放文字”</translation>
-<translation id="3747231889390582072">为保护贵组织的安全，未保存的数据将从此设备中删除。此类数据可能包括密码、浏览记录、Cookie 等。</translation>
 <translation id="3762232513783804601">专为 iPad 打造</translation>
 <translation id="3768725474733206671">重新打开最后关闭的标签页</translation>
 <translation id="3771033907050503522">无痕模式标签页</translation>
@@ -718,6 +716,7 @@
 <translation id="4659194143325814340">{count,plural, =1{您的阅读清单中有 {count} 个页面}other{您的阅读清单中有 {count} 个页面}}</translation>
 <translation id="4659667755519643272">进入标签页切换器</translation>
 <translation id="46614316059270592">保存密码</translation>
+<translation id="4668929960204016307">、</translation>
 <translation id="467189612236587057">拨打电话联系商家</translation>
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
 <translation id="4689564913179979534">管理付款方式…</translation>
@@ -1326,6 +1325,7 @@
 <translation id="7609559547731036746">书签</translation>
 <translation id="7638584964844754484">密码不正确</translation>
 <translation id="7640669552036055091">Android 设备中的标签页</translation>
+<translation id="7643790043444820023">自定义首页</translation>
 <translation id="7646263789464975852">菜单 → 设置 → 安全检查</translation>
 <translation id="7646772052135772216">无法同步密码</translation>
 <translation id="764827086632467055">点按“默认浏览器应用”</translation>
@@ -1518,7 +1518,6 @@
 <translation id="8522147671363140027">{count,plural, =1{有 {count} 个密码和其他内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}other{有 {count} 个密码和其他内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
 <translation id="8522813812888400223">取消下载</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />标签页<ph name="FIRST_VISIBLE_TAB" />-<ph name="LAST_VISIBLE_TAB" />（共<ph name="NUMBER_OF_OPEN_TABS" />个）</translation>
-<translation id="852576975834694248">您将自动退出账号，而且标签页将被关闭</translation>
 <translation id="8528009254289981965">在无痕模式下打开来自其他应用的链接</translation>
 <translation id="8529767659511976195">新功能</translation>
 <translation id="8532105204136943229">到期年份</translation>

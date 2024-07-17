@@ -521,6 +521,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2970920913501714344">să instaleze aplicații, extensii și teme;</translation>
 <translation id="2977598380246111477">Următorul număr</translation>
 <translation id="2985148236010982088">Vezi toate aplicațiile</translation>
+<translation id="2992272421330787632">Ascunde toate sugestiile media</translation>
 <translation id="2992327365391326550">Butonul pentru microfonul dispozitivului este dezactivat.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Editează dimensiunea ecranului</translation>
@@ -591,6 +592,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
 <translation id="3256109297135787951">Elimină evidențierea de pe un element de pe raft</translation>
 <translation id="3260969790895726815">Vorbirea este procesată local și dictarea funcționează offline, dar unele comenzi vocale nu vor funcționa.</translation>
+<translation id="3264031581203585083">Ascunde toate sugestiile din Google Drive</translation>
 <translation id="3265032511221679826">Activezi accesul la locația exactă?</translation>
 <translation id="3269597722229482060">Clic dreapta</translation>
 <translation id="3274634049061007184">Afișează aplicațiile telefonului</translation>
@@ -742,6 +744,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3738664582935948253">Acum poți afișa clicurile și comenzile rapide de la tastatură în înregistrările ecranului</translation>
 <translation id="3742055079367172538">Captură de ecran efectuată</translation>
 <translation id="3743775386021959186">Modul Focus este activat, timp rămas: <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Ascunde sugestia meteo</translation>
 <translation id="3756485814916578707">Se proiectează ecranul</translation>
 <translation id="3765841382945324995">Comanda rapidă <ph name="SIX_PACK_KEY_NAME" /> este actualizată la <ph name="NEW_SHORTCUT" /> de la <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Editat astăzi</translation>
@@ -781,6 +784,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3906954721959377182">Tabletă</translation>
 <translation id="3923494859158167397">Nu a fost configurată nicio rețea mobilă</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Se încarcă evenimentele.</translation>
+<translation id="3927049937406914450">Aplicația Meteo nu este disponibilă, deoarece accesul la locație este dezactivat. Poți modifica opțiunea în setări.</translation>
 <translation id="3932043219784172185">Niciun dispozitiv conectat</translation>
 <translation id="3934456833412894880">S-a activat încărcarea adaptabilă. Bateria va rămâne la 80 % pentru o autonomie mai mare și se va încărca la capacitate maximă când ai nevoie.</translation>
 <translation id="3943857333388298514">Inserează</translation>
@@ -897,6 +901,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4312840429157639164">Camera foto este aliniată cu colțul din dreapta sus. Conflict cu platforma de sistem.</translation>
 <translation id="4316910396681052118">TOATE APLICAȚIILE</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Ascunde toate sugestiile de browser Chrome</translation>
 <translation id="4322742403972824594">Comanda rapidă de la tastatură Ctrl + Alt + săgeată în sus s-a schimbat. Pentru a folosi tasta Home, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata spre stânga.</translation>
 <translation id="4324840740119394760">Astfel, accesul la cameră este permis pentru <ph name="APP_NAME" /> și toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="4327147325944669226">Înregistrează jocul</translation>
@@ -930,6 +935,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4450893287417543264">Nu mai afișa</translation>
 <translation id="4451374464530248585">Comanda rapidă de la tastatură Alt + săgeată în jos s-a schimbat. Ca să folosești tasta Page Down, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata în jos.</translation>
 <translation id="4453876312474547652">Vei vedea clipboardul când apeși lung Ctrl + V. Poți să dezactivezi această comandă rapidă dezactivând semnalizatorul #clipboard-history-longpress în chrome://flags (os://flags dacă folosești Lacros).</translation>
+<translation id="445765352722456792">Personalizează sugestiile</translation>
 <translation id="445864333228800152">Bună seara!</translation>
 <translation id="4458688154122353284">Oprește înregistrarea ecranului</translation>
 <translation id="445923051607553918">Conectează-te la rețeaua Wi-Fi</translation>
@@ -1332,6 +1338,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5802516411616338943">Deschide Setările rapide</translation>
 <translation id="5804651031882187592">Dezactivează setarea Blochează cardul SIM</translation>
 <translation id="5805809050170488595">Dă clic pentru a activa <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Chromebookul a repornit în mod neașteptat. Deschide ferestrele și aplicațiile anterioare.</translation>
 <translation id="5823239091726045201">Google Tasks pe web</translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6469104339369989396">Comută hotspotul</translation>
 <translation id="6477681113376365978">Nu s-a putut descărca fișierul</translation>
 <translation id="6482559668224714696">Lupă de ecran complet</translation>
+<translation id="6485086611007560630">Vreme (indisponibilă)</translation>
 <translation id="6490471652906364588">Dispozitiv USB-C (portul din dreapta)</translation>
 <translation id="649452524636452238">Codul PIN al cardului inteligent</translation>
 <translation id="6495322433318104734">Se afișează screensaverul, apasă orice tastă pentru a ieși</translation>
@@ -1781,6 +1789,7 @@ Instalare nouă</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">o pagină mai jos</translation>
+<translation id="7518182783647693467">Comută unitățile de temperatură (F vs. C)</translation>
 <translation id="7519206258459640379">Încadrarea camerei este activată.</translation>
 <translation id="7519649142417630956">După închidere, administratorul va fi deconectat și nu va mai putea controla dispozitivul.
 
@@ -1921,6 +1930,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7951630946012935453">Redu luminozitatea tastaturii</translation>
 <translation id="7953994493035617347">Confirmi noua rezoluție?</translation>
 <translation id="795958884516058160">S-a activat lupa de ecran complet. Apasă din nou <ph name="ACCELERATOR" /> pentru a o dezactiva.</translation>
+<translation id="7962583092928373823">Ascunde toate sugestiile din Google Calendar</translation>
 <translation id="7963689218131240420">Funcția Nu deranja este dezactivată.</translation>
 <translation id="7963992254934562106">De la <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selectează dosarul...</translation>
@@ -1993,6 +2003,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8214996719228530800">Canalul Canary</translation>
 <translation id="8219451629189078428">În această perioadă, Chromebookul trebuie să rămână deschis și conectat la o sursă de alimentare. Asigură-te că ai conectat corect cablurile de la încărcător sau de la adaptor, atât la Chromebook, cât și la priza electrică. Nu opri Chromebookul.</translation>
 <translation id="8220076512072059941">Adaugă <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Ascunde sugestia</translation>
 <translation id="8230305195727960608">Modul de inversare a culorilor</translation>
 <translation id="8236042855478648955">E timpul pentru o pauză</translation>
 <translation id="8237964652943995219">Desktopul următor: <ph name="DESK_NAME" />. Desktopul <ph name="DESK_INDEX" /> din <ph name="DESK_COUNT" />.</translation>
@@ -2179,6 +2190,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="894774083269346314">Caseta de selectare <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> nebifată.</translation>
 <translation id="8949925099261528566">Conectat, fără internet</translation>
 <translation id="8951539504029375108">Numai dispozitivele Thunderbolt aprobate sunt compatibile cu Chromebookul</translation>
+<translation id="8956420987536947088">Deschide ferestrele și aplicațiile anterioare</translation>
 <translation id="8959380109429710384">Ai apăsat pe comanda rapidă de la tastatură pentru lupa de ecran complet. Folosește ctrl + alt + săgețile pentru a te deplasa în vizualizarea mărită.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Focalizează pe pictograma meniu</translation>

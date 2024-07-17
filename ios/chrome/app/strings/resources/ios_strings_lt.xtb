@@ -8,7 +8,6 @@
 <translation id="102916930470544692">Prieigos raktas</translation>
 <translation id="1035980983510608210">Uždarius visus skirtukus, taip pat bus uždaryti prisegti skirtukai.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1043592663436934089">Būsite atjungti, o naršymo duomenys bus ištrinti</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Atsijungta. Vėl prisijunkite, kad paskyroje naudotumėte žymes, slaptažodžius ir kt.</translation>
@@ -81,9 +80,9 @@
 <translation id="1377508275003315939">Slaptažodžiai</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="138618066238211776">Tęsti kaip <ph name="USER_NAME" /></translation>
+<translation id="1388866984373351434">Naršymo duomenys</translation>
 <translation id="1400642268715879018">Pastarosios 4 savaitės</translation>
 <translation id="1404330357948037222">Esate atsijungę</translation>
-<translation id="14066361343057390">Būsite atjungti</translation>
 <translation id="1407135791313364759">Atidaryti viską</translation>
 <translation id="1408847409015257906">Palieskite „Privatumas ir sauga“.</translation>
 <translation id="1430915738399379752">Spausdinti</translation>
@@ -341,7 +340,6 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2712127207578915686">Nepavyko atidaryti failo</translation>
 <translation id="2718352093833049315">Tik su „Wi–Fi“</translation>
 <translation id="2738375676495545665">Slėpti naujienas</translation>
-<translation id="2740910715135851329">Būsite atjungti, skirtukai bus uždaryti, naršymo duomenys ištrinti</translation>
 <translation id="2747003861858887689">Ankstesnis laukas</translation>
 <translation id="2749231692441336879">Stebima: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Šiame įrenginyje naudojamos paskyros</translation>
@@ -392,6 +390,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2952278131021475699">„Lens“ fotoaparato paieška</translation>
 <translation id="2958718410589002129">Slaptažodžiai</translation>
 <translation id="2964349545761222050">Trečiosios šalies slapukų blokavimas</translation>
+<translation id="2965328226365382335">Pastarosios 15 min.</translation>
 <translation id="2969979262385602596">Nepavyko prisijungti. Bandykite dar kartą vėliau.</translation>
 <translation id="2975121486251958312">Pasiekiamas tik inkognito režimas</translation>
 <translation id="2982481275546140226">Išvalyti duomenis</translation>
@@ -539,7 +538,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3738428049780661523">Sukurta: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Slėpti atsisiuntimus</translation>
 <translation id="3745190878148784130">Slėpti parinktį „Keisti teksto mastelį“</translation>
-<translation id="3747231889390582072">Siekiant užtikrinti organizacijos saugą, neišsaugoti duomenys bus ištrinti iš šio įrenginio. Tai gali būti slaptažodžiai, naršymo istorija, slapukai ir kt.</translation>
 <translation id="3762232513783804601">Sukurta specialiai „iPad“</translation>
 <translation id="3768725474733206671">Iš naujo atidaryti pastarąjį uždarytą skirtuką</translation>
 <translation id="3771033907050503522">Inkognito skirt.</translation>
@@ -718,6 +716,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4659194143325814340">{count,plural, =1{{count} puslapis skaitymo sąraše}one{{count} puslapis skaitymo sąraše}few{{count} puslapiai skaitymo sąraše}many{{count} puslapio skaitymo sąraše}other{{count} puslapių skaitymo sąraše}}</translation>
 <translation id="4659667755519643272">Įjungti skirtukų perjungiklį</translation>
 <translation id="46614316059270592">Išsaugoti slaptažodį</translation>
+<translation id="4668929960204016307">,</translation>
 <translation id="467189612236587057">Susisiekite su įmone pradėdami telefono skambutį</translation>
 <translation id="4682686630151240767">1. Atidarykite „iPhone“ nustatymus</translation>
 <translation id="4689564913179979534">Tvarkyti mokėjimo metodus...</translation>
@@ -1519,7 +1518,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8522147671363140027">{count,plural, =1{{count} slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}one{{count} slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}few{{count} slaptažodžiai ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}many{{count} slaptažodžio ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}other{{count} slaptažodžių ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}}</translation>
 <translation id="8522813812888400223">Atšaukti atsisiuntimą</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> skirtukai: <ph name="FIRST_VISIBLE_TAB" />–<ph name="LAST_VISIBLE_TAB" /> iš <ph name="NUMBER_OF_OPEN_TABS" /></translation>
-<translation id="852576975834694248">Būsite atjungti, o skirtukai bus uždaryti</translation>
 <translation id="8528009254289981965">Atidaryti nuorodas iš kitų programų inkognito režimu</translation>
 <translation id="8529767659511976195">Nauja</translation>
 <translation id="8532105204136943229">Gal. pab. metai</translation>

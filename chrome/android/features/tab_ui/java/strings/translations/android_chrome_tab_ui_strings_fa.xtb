@@ -9,7 +9,6 @@
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="125153950246128346">برای دیدن برگه دیگر تک‌ضرب بزنید</translation>
 <translation id="1273910660700874265">گزینه‌های گروه برگه <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="1322824555808364080">دعوت از افراد</translation>
 <translation id="1419023007528516122">با این کار، گروه برای همیشه از دستگاهتان حذف خواهد شد</translation>
 <translation id="1486715732399361704">می‌توانید همه گروه‌های برگه‌تان را در اینجا پیدا کنید</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{‫<ph name="NUM_MINS_ONE" /> دقیقه پیش ایجاد شد}one{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش ایجاد شد}other{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش ایجاد شد}}</translation>
@@ -109,6 +108,7 @@
 <translation id="6381032505162537930">گروه‌های برگه‌تان را اینجا خواهید دید</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{لغو گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
+<translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{پس‌از ۱ روز}one{پس‌از <ph name="DAY_COUNT_MANY" /> روز}other{پس‌از <ph name="DAY_COUNT_MANY" /> روز}}</translation>
 <translation id="6549021453810473782">مشاهده اطلاعات فروشگاه</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

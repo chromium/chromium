@@ -15,6 +15,7 @@
 <translation id="1149651794389918149">Login ke Chrome. Jika Anda hanya ingin login ke akun sekali, Anda dapat <ph name="GUEST_LINK_BEGIN" />menggunakan perangkat sebagai tamu<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Tentang ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Buka di Chrome</translation>
+<translation id="1184145431117212167">Penginstalan gagal karena versi Windows Anda tidak didukung.</translation>
 <translation id="1194807384646768652">Chrome memblokir download ini karena jenis file tersebut tidak biasa didownload dan mungkin berbahaya</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google merekomendasikan setelan Chrome sebagai default</translation>
@@ -235,6 +236,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Luncurkan ulang Chrome dalam satu hari}other{Luncurkan ulang Chrome dalam # hari}}</translation>
 <translation id="4205939740494406371">Chrome tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Membatalkan...</translation>
+<translation id="4224210481850767180">Penginstalan telah dibatalkan.</translation>
 <translation id="4242034826641750751">Chrome memerlukan izin mikrofon dan kamera untuk situs ini</translation>
 <translation id="424864128008805179">Logout dari Chrome?</translation>
 <translation id="4251615635259297716">Tautkan data Chrome Anda ke akun ini?</translation>

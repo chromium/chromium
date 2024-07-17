@@ -679,6 +679,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2219658597883514593">Herbegin tutoriaal</translation>
 <translation id="2219735899272417925">Toestelterugstelling word vereis</translation>
 <translation id="2221227930294879156">Kos- en drankgeleenthede</translation>
+<translation id="2222604080869344662">Meld aan by OneDrive om aan te hou om af te laai</translation>
 <translation id="2224337661447660594">Geen internet nie</translation>
 <translation id="2225927550500503913">Virtuele kaart is aangeskakel</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Meld aan<ph name="END_LINK" /> by die wi-fi netwerk</translation>
@@ -778,6 +779,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2399868464369312507">Google Chrome probeer tans om betaalmetodes te wysig.</translation>
 <translation id="2400600116338235695">Kan vra om aan reekspoorte te koppel</translation>
 <translation id="2404884497378469141">Probeer jou lêers weer kopieer</translation>
+<translation id="2412310121876768057">Outovul volgende keer kaart?</translation>
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is dalk herroep. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="2414886740292270097">Donker</translation>
@@ -1162,7 +1164,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3209034400446768650">Bladsy kan geld hef</translation>
 <translation id="3212581601480735796">Jou aktiwiteit op <ph name="HOSTNAME" /> word gemonitor</translation>
 <translation id="3215092763954878852">Kon nie in WebAuthn gebruik nie</translation>
-<translation id="3215311088819828484">Resultaat is opgedateer</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatief</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Opdatering word nou verlang}=2{Opdatering word teen môre versoek}other{Opdatering word benodig binne # dae}}</translation>
@@ -1241,6 +1242,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3352881017886802007">Sportspeletjies</translation>
 <translation id="3355823806454867987">Verander instaanbedienerinstellings …</translation>
 <translation id="335809815767823">Uitgevoer</translation>
+<translation id="3359387651158939842">Outovul jou kaart vir toekomstige aankope wanneer jy dit stoor om met Google Pay te gebruik</translation>
 <translation id="3359565626472459400">Huwelik</translation>
 <translation id="3360103848165129075">Betalinghanteerdersigblad</translation>
 <translation id="3362968246557010467">Hierdie beleid is outomaties van die opgeskorte <ph name="OLD_POLICY" />-beleid af gekopieer. Jy moet liewer hierdie beleid gebruik.</translation>
@@ -2055,6 +2057,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiese Spele</translation>
 <translation id="4898742041545089450">Hierdie onderwerp is gedeblokkeer en kan op grond van jou blaaigeskiedenis aktief word</translation>
+<translation id="4899379435492347481">Stoor hierdie kaart om aanlyn met Google Pay te gebruik vir aankope op al jou toestelle</translation>
 <translation id="4900217275619098670">Negende rol</translation>
 <translation id="4901052769830245369">Etikette (semiglans)</translation>
 <translation id="4901162432287938633">Higiëne en toiletware</translation>
@@ -2684,7 +2687,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6116338172782435947">Sien teks en prente wat na die knipbord gekopieer is</translation>
 <translation id="6117833587752089929">Foto (satyn)</translation>
 <translation id="6118782133429281336">Oorspronglys is leeg.</translation>
-<translation id="6120950591512958208">Gebruik hierdie kode by die betaalpunt.</translation>
 <translation id="612178891608320683">Vegetariese kookkuns</translation>
 <translation id="6122181661879998141">voorkant van jou kaart</translation>
 <translation id="6124058285696691147">Laai die aanhegsel af</translation>
@@ -2718,6 +2720,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6180316780098470077">Herprobeer-interval</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome beperk outomaties derdepartywebkoekies</translation>
+<translation id="6194139058731919563">Jou kaartbesonderhede word geënkripteer wanneer dit in jou Google-rekening gestoor is en gebruik word om aanlyn te betaal</translation>
 <translation id="6194209731893739467">Sien al jou nagespoorde produkte hier</translation>
 <translation id="6195163219142236913">Derdepartywebkoekies is beperk</translation>
 <translation id="6195371403461054755">Geologie</translation>
@@ -3619,6 +3622,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7831993212387676366">Wat is die inkopielys?</translation>
 <translation id="7832078172950550575">Jy kan alledaagse taal gebruik om deur jou blaaigeskiedenis te soek met bewoording soos “pizzaplekke naby my” of “gesinsvriendelike parke in die middestad”. Jou soektogte, beste passings en hul bladsyinhoud word na Google toe gestuur en kan gesien word deur ’n mens wat kontrolering uitvoer om hierdie kenmerk te verbeter. <ph name="BEGIN_LINK" />Bestuur jou geskiedenissoekinstelling<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Skermskoot het begin</translation>
+<translation id="7840504603489703295">Beperkings van jou finansiële instelling af word toegepas.</translation>
 <translation id="784137052867620416">Shopping-insigte</translation>
 <translation id="784404208867107517">Gegroepeerde geskiedenis</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 program (<ph name="EXAMPLE_APP_1" />)}=2{2 programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3817,6 +3821,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8241712895048303527">Blokkeer op hierdie werf</translation>
 <translation id="8242426110754782860">Gaan voort</translation>
 <translation id="8246482227229072868">Ringe</translation>
+<translation id="8248406213705193919">Stoor kaart veilig?</translation>
 <translation id="8249296373107784235">Staak</translation>
 <translation id="824968735947741546">Vertaal tans <ph name="SOURCE" /> (outobespeur) in <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Hierdie adres is tans op hierdie toestel gestoor. Stoor dit in jou Google-rekening, <ph name="ACCOUNT" />, om dit in alle Google-produkte te gebruik.</translation>
@@ -4301,6 +4306,7 @@ Bykomende besonderhede:
 <translation id="9169664750068251925">Blokkeer altyd op hierdie werf</translation>
 <translation id="9169931577761441333">Voeg <ph name="APP_NAME" /> by tuisskerm</translation>
 <translation id="9170848237812810038">Ontdoen</translation>
+<translation id="9170906125144697215">Betaal met Pix sonder om apps te wissel</translation>
 <translation id="9171296965991013597">Verlaat program?</translation>
 <translation id="9173282814238175921">Een dokument/Nuwe bladsy</translation>
 <translation id="9173995187295789444">Soek tans na Bluetooth-toestelle …</translation>
@@ -4322,6 +4328,7 @@ Bykomende besonderhede:
 <translation id="9205078245616868884">Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om sinkronisering te begin.</translation>
 <translation id="920643408853370361">Reisversekering</translation>
 <translation id="9207861905230894330">Kon nie artikel bevoeg nie.</translation>
+<translation id="9209339767782560829">Kon nie jou aanmeldsertifikaat gebruik nie.</translation>
 <translation id="9210825002219699214">Lugreise</translation>
 <translation id="9211461151375991073">Tik @ om <ph name="FEATURED_SEARCH_LIST" /> te soek</translation>
 <translation id="9213433120051936369">Pasmaak voorkoms</translation>

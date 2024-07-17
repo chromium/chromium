@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">Увайдзіце ў Chrome. Калі вам трэба ўвайсці ва ўліковы запіс толькі адзін раз, вы можаце <ph name="GUEST_LINK_BEGIN" />карыстацца прыладай як госць<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Пра ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Адкрыць у браўзеры Chrome</translation>
+<translation id="1184145431117212167">Не ўдалося выканаць усталяванне, бо гэта версія Windows не падтрымліваецца.</translation>
 <translation id="1194807384646768652">Браўзер Chrome заблакіраваў спампоўку, бо гэты тып файлаў спампоўваюць рэдка і ён можа быць небяспечным</translation>
 <translation id="1203500561924088507">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце браўзер.</translation>
 <translation id="1229096353876452996">Google рэкамендуе зрабіць Chrome стандартным браўзерам</translation>
@@ -238,6 +239,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Перазапусціце Chrome на працягу дня}one{Перазапусціце Chrome на працягу # дня}few{Перазапусціце Chrome на працягу # дзён}many{Перазапусціце Chrome на працягу # дзён}other{Перазапусціце Chrome на працягу # дня}}</translation>
 <translation id="4205939740494406371">Браўзеру Chrome не ўдаецца праверыць паролі. Паўтарыце спробу праз 24 гадзіны або <ph name="BEGIN_LINK" />праверце паролі ва Уліковым запісе Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Адмяняецца...</translation>
+<translation id="4224210481850767180">Усталяванне скасавана.</translation>
 <translation id="4242034826641750751">Chrome запытвае дазвол на доступ да камеры і мікрафона для гэтага сайта</translation>
 <translation id="424864128008805179">Выйсці з Chrome?</translation>
 <translation id="4251615635259297716">Звязаць вашы даныя Chrome з гэтым уліковым запісам?</translation>

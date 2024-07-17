@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">Аппууд, өргөтгөлүүд болон загваруудыг суулгах</translation>
 <translation id="2977598380246111477">Дараагийн тоо</translation>
 <translation id="2985148236010982088">Бүх аппыг харах</translation>
+<translation id="2992272421330787632">Медиагийн бүх зөвлөмжийг нуух</translation>
 <translation id="2992327365391326550">Төхөөрөмжийн микрофоны товчлуур унтраалттай байна.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Дэлгэцийн хэмжээг засах</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">Та юу хийх боломжтой вэ?</translation>
 <translation id="3256109297135787951">Тавиур дээрх зүйлээсээ тодруулгыг устгах</translation>
 <translation id="3260969790895726815">Яриаг дотоодод боловсруулдаг ба дуу хоолойгоор бичих офлайн үед ажилладаг хэдий ч зарим дуут тушаал ажиллахгүй.</translation>
+<translation id="3264031581203585083">Google Драйвын бүх зөвлөмжийг нуух</translation>
 <translation id="3265032511221679826">Нарийвчилсан байршлын хандалтыг асаах уу?</translation>
 <translation id="3269597722229482060">Баруун талыг товших</translation>
 <translation id="3274634049061007184">Утасныхаа аппуудыг харах</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">Та одоо дэлгэцийн бичлэгт товшилт болон товчлуурын шууд холбоос харуулах боломжтой</translation>
 <translation id="3742055079367172538">Дэлгэцний зургийг авсан болно (Screenshot)</translation>
 <translation id="3743775386021959186">Төвлөрөх горим асаалттай байна. <ph name="REMAINING_TIME" /> үлдсэн</translation>
+<translation id="3750403286520637847">Цаг агаарын зөвлөмжийг нуух</translation>
 <translation id="3756485814916578707">Дэлгэцийг дамжуулж байна</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> товчлолыг <ph name="OLD_SHORTCUT" />-с <ph name="NEW_SHORTCUT" /> болгож шинэчилсэн</translation>
 <translation id="3765841986579723851">Өнөөдөр зассан</translation>
@@ -782,6 +785,7 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3923494859158167397">Ямар ч хөдөлгөөнт холбооны сүлжээ тохируулаагүй</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Үйл явдлыг ачаалж байна.</translation>
+<translation id="3927049937406914450">Байршлын хандалтыг унтраасан тул цаг агаар боломжгүй байна. Та үүнийг тохиргоонд өөрчлөх боломжтой.</translation>
 <translation id="3932043219784172185">Холбогдсон төхөөрөмж алга</translation>
 <translation id="3934456833412894880">Орчинтой тохируулан цэнэглэх онцлог асаалттай байна. Таны батарейн ажиллах хугацааг уртасгахын тулд батарейг 80% байлгаж, шаардлагатай үед бүрэн цэнэглэнэ.</translation>
 <translation id="3943857333388298514">Хуулан буулгах</translation>
@@ -807,6 +811,7 @@
 <translation id="4002066346123236978">Гарчиг</translation>
 <translation id="40062176907008878">Гараар бичих</translation>
 <translation id="4011112806063830608">Бүү саад бол онцлог асаалттай байна.</translation>
+<translation id="4015144849380506405">Үүнийг асаалттай үед хулганын товчийг түр зогсоох/үргэлжлүүлэх</translation>
 <translation id="4017989525502048489">Лазер заагч</translation>
 <translation id="401993194061514265">Тэмдэглэгч боломжгүй байна. Дэлгэцийн видео бичлэгийг дахин нээнэ үү.</translation>
 <translation id="4021716437419160885">Доош гүйлгэх</translation>
@@ -897,6 +902,7 @@
 <translation id="4312840429157639164">Камерыг баруун дээд булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
 <translation id="4316910396681052118">БҮХ АПП</translation>
 <translation id="4321179778687042513">Ctrl</translation>
+<translation id="4322385711258710213">Chrome хөтчийн бүх зөвлөмжийг нуух</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Дээш сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Home товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Зүүн сумыг дарна уу.</translation>
 <translation id="4324840740119394760">Энэ нь <ph name="APP_NAME" /> болон камерын зөвшөөрөлтэй бүх апп болон вебсайтад камерын хандалтыг зөвшөөрнө</translation>
 <translation id="4327147325944669226">Тоглоомыг бичих</translation>
@@ -930,6 +936,7 @@
 <translation id="4450893287417543264">Дахиж бүү харуул</translation>
 <translation id="4451374464530248585">Alt + Доош сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Page Down товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Доош сумыг дарна уу.</translation>
 <translation id="4453876312474547652">Та Ctrl + V-г удаан дарах үедээ түр санах ой харна. Та энэ товчлолыг #clipboard-history-longpress flag in chrome://flags-г (Lacros ашиглаж байгаа бол os://flags) идэвхгүй болгосноор унтраах боломжтой.</translation>
+<translation id="445765352722456792">Зөвлөмжүүдийг өөрчлөх</translation>
 <translation id="445864333228800152">Оройн мэнд,</translation>
 <translation id="4458688154122353284">Дэлгэцийн үйлдэл бичихийг зогсоох</translation>
 <translation id="445923051607553918">Wi-Fi сүлжээнд холбогдох</translation>
@@ -1332,6 +1339,7 @@
 <translation id="5802516411616338943">Шуурхай тохиргоог нээх</translation>
 <translation id="5804651031882187592">"SIM-г түгжих" тохиргоог унтраах</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" />-г идэвхжүүлэхийн тулд товших</translation>
+<translation id="5819918159912280082">Таны Chromebook гэнэт дахин эхэлсэн. Өмнөх цонх болон аппуудаа нээнэ үү.</translation>
 <translation id="5823239091726045201">Веб дээрх Google tasks</translation>
 <translation id="5825969630400862129">Холбогдсон төхөөрөмжүүдийн тохиргоо</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-г <ph name="ROUTE_TITLE" />-д дамжуулахаа зогсоох</translation>
@@ -1512,6 +1520,7 @@
 <translation id="6469104339369989396">Сүлжээний цэгийг асаана уу/унтраана уу</translation>
 <translation id="6477681113376365978">Файлыг татах боломжгүй</translation>
 <translation id="6482559668224714696">Бүтэн дэлгэц томруулагч</translation>
+<translation id="6485086611007560630">Цаг агаар (боломжгүй)</translation>
 <translation id="6490471652906364588">USB-C төхөөрөмж (баруун талын порт)</translation>
 <translation id="649452524636452238">Ухаалаг картын ПИН</translation>
 <translation id="6495322433318104734">Дэлгэц амраагчийг үзүүлж байна. Гарахын тулд дурын товчийг дарна уу</translation>
@@ -1781,6 +1790,7 @@
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">хуудас доошлуулах</translation>
+<translation id="7518182783647693467">Температур хэмжих нэгжийг асаах/унтраах (Ф/Ц)</translation>
 <translation id="7519206258459640379">Камерын хүрээлэх онцлог асаалттай байна.</translation>
 <translation id="7519649142417630956">Унтраасны дараа администраторыг гаргах бөгөөд таны төхөөрөмжийг хянах боломжгүй болно.
 
@@ -1921,6 +1931,7 @@
 <translation id="7951630946012935453">Гарын гэрлийг бүдгэрүүлэх</translation>
 <translation id="7953994493035617347">Шинэ нягтралыг баталгаажуулах уу?</translation>
 <translation id="795958884516058160">Бүтэн дэлгэц томруулагчийг идэвхжүүлсэн. Үүнийг унтраахын тулд <ph name="ACCELERATOR" /> дээр дахин дарна уу.</translation>
+<translation id="7962583092928373823">Google Календарийн бүх зөвлөмжийг нуух</translation>
 <translation id="7963689218131240420">Бүү саад бол онцлог унтраалттай байна.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-с</translation>
 <translation id="7968693143708939792">Фолдер сонгох...</translation>
@@ -1993,6 +2004,7 @@
 <translation id="8214996719228530800">Канар суваг</translation>
 <translation id="8219451629189078428">Энэ хугацаанд Chromebook тань асаалттай, мөн тэжээлд залгаатай байх шаардлагатай. Цэнэглэгчийн эсвэл адаптерын утас Chromebook, цахилгааны залгуур хоёрт хоёуланд нь бүрэн залгаатай байгаа эсэхийг шалгаарай. Chromebook-ээ унтрааж болохгүй.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> нэмэх</translation>
+<translation id="8228175756124063692">Энэ зөвлөмжийг нуух</translation>
 <translation id="8230305195727960608">Өнгө урвуулах горим</translation>
 <translation id="8236042855478648955">Завсарлах цаг</translation>
 <translation id="8237964652943995219">Дараагийн дэлгэц: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />-н <ph name="DESK_INDEX" />-р дэлгэц.</translation>
@@ -2180,6 +2192,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Тэмдэглэх нүдийг тэмдэглээгүй.</translation>
 <translation id="8949925099261528566">Холбогдсон хэдий ч интернэт алга</translation>
 <translation id="8951539504029375108">Зөвхөн зөвшөөрөлтэй Thunderbolt төхөөрөмжүүд таны Chromebook-тэй тохиромжтой</translation>
+<translation id="8956420987536947088">Өмнөх цонх болон аппуудаа нээнэ үү</translation>
 <translation id="8959380109429710384">Та бүтэн дэлгэц томруулагчийн товчлуурын шууд холбоосыг дарсан. Томруулсан харагдах байдлын эргэн тойронд очихын тулд ctrl + alt + сумуудыг ашиглана уу.</translation>
 <translation id="8964525410783593407">1 цаг</translation>
 <translation id="8973885907461690937">Цэсийн дүрс тэмдэгт сонголтыг байрлуулах</translation>

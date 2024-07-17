@@ -852,7 +852,6 @@
 <translation id="254524874071906077">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್‌ನ ರೀತಿಯಲ್ಲಿ Chrome ಅನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="2545721997179863249">ಎಲ್ಲವನ್ನೂ ತುಂಬುವ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಲಾಗಿದೆ</translation>
 <translation id="2546283357679194313">ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾ</translation>
-<translation id="2546678870939430879">ಫಲಿತಾಂಶವನ್ನು ಪುನಃ ಪಡೆಯಿರಿ</translation>
 <translation id="254947805923345898">ಕಾರ್ಯನೀತಿಯ ಮೌಲ್ಯವು ಮಾನ್ಯವಾಗಿಲ್ಲ.</translation>
 <translation id="2549836668759467704">ನಿರ್ಮಾಣ ಸಲಹೆ ಮತ್ತು ಗುತ್ತಿಗೆ</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ಅಮಾನ್ಯ ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿದೆ.</translation>
@@ -1035,7 +1034,6 @@
 <translation id="2954624054936281172">ಉಳಿಸಲಾದ ಪಾವತಿ ವಿಧಾನಗಳ ಟೇಬಲ್</translation>
 <translation id="295526156371527179">ಎಚ್ಚರಿಕೆ: ಈ ಕಾರ್ಯನೀತಿಯು ನಿಘಂಟು ಆಗಿಲ್ಲದಿರುವ ಕಾರಣದಿಂದಾಗಿ, ಕಾರ್ಯನೀತಿಯ ಮೂಲಕ ನಿರ್ದಿಷ್ಟಪಡಿಸಿರುವಂತೆ ಅದನ್ನು ವಿಲೀನಗೊಳಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="2955913368246107853">ಹುಡುಕಿ ಬಾರ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
-<translation id="2958345633099973853">ಫಲಿತಾಂಶವನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="2958544468932521864">ಕ್ರಿಕೆಟ್</translation>
 <translation id="2959274854674276289">ಸಸ್ಯಾಹಾರಿ ಉಪಹಾರ ಮಂದಿರ</translation>
 <translation id="2961809451460302960">ಜೀವ ವಿಮೆ</translation>
@@ -1164,7 +1162,6 @@
 <translation id="3209034400446768650">ಈ ಪುಟವು, ಶುಲ್ಕ ವಿಧಿಸಬಹುದು</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> ನಲ್ಲಿ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯ ಮೇಲೆ ನಿಗಾ ಇಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3215092763954878852">WebAuthn ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
-<translation id="3215311088819828484">ಫಲಿತಾಂಶವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3216313131063488104">ಬ್ಲೂಸ್</translation>
 <translation id="3218181027817787318">ಸಂಬಂಧಿತ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ಇದೀಗ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}=2{ನಾಳೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}one{# ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}other{# ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ}}</translation>
@@ -2513,7 +2510,6 @@
 <translation id="5772086939108830423">ಬೇರೆ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="5776313857861697733">ಆದ್ಯತೆ</translation>
 <translation id="5776574724412881956">ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ನಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು ತುಂಬಿಲ್ಲವೇ? ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸುವುದಕ್ಕಾಗಿ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="577804500166306874">ಫಲಿತಾಂಶ ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="5781136890105823427">ಪ್ರಾಯೋಗಿಕವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="578305955206182703">ಕಿತ್ತಳೆ ಹಳದಿ</translation>
 <translation id="5783700460098783980">ಲಗೇಜ್ ಮತ್ತು ಪ್ರಯಾಣಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಆ್ಯಕ್ಸೆಸ್ಸರಿಗಳು</translation>
@@ -2688,7 +2684,6 @@
 <translation id="6116338172782435947">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿರುವ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="6117833587752089929">ಫೋಟೋ (ಸ್ಯಾಟಿನ್)</translation>
 <translation id="6118782133429281336">ಮೂಲ ಪಟ್ಟಿ ಖಾಲಿಯಾಗಿದೆ.</translation>
-<translation id="6120950591512958208">ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ಈ ಕೋಡ್ ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="612178891608320683">ವೀಗನ್ ಆಹಾರ</translation>
 <translation id="6122181661879998141">ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಮುಂಭಾಗ</translation>
 <translation id="6124058285696691147">ಲಗತ್ತನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
