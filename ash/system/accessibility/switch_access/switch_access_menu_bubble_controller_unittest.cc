@@ -12,6 +12,7 @@
 #include "ash/system/accessibility/switch_access/switch_access_menu_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -46,10 +47,6 @@ class SwitchAccessMenuBubbleControllerTest : public AshTestBase {
     for (views::View* button : GetMenuView()->children())
       buttons.push_back(static_cast<SwitchAccessMenuButton*>(button));
     return buttons;
-  }
-
-  std::string GetName(SwitchAccessMenuButton* button) {
-    return button->action_name_;
   }
 
   gfx::Rect GetBackButtonBounds() {
@@ -100,9 +97,6 @@ TEST_F(SwitchAccessMenuBubbleControllerTest, SetActions) {
 
   std::vector<SwitchAccessMenuButton*> buttons = GetMenuButtons();
   EXPECT_EQ(3ul, buttons.size());
-  EXPECT_EQ("select", GetName(buttons[0]));
-  EXPECT_EQ("scrollDown", GetName(buttons[1]));
-  EXPECT_EQ("settings", GetName(buttons[2]));
 
   GetBubbleController()->ShowMenu(
       anchor_rect,
@@ -110,11 +104,6 @@ TEST_F(SwitchAccessMenuBubbleControllerTest, SetActions) {
 
   buttons = GetMenuButtons();
   EXPECT_EQ(5ul, buttons.size());
-  EXPECT_EQ("keyboard", GetName(buttons[0]));
-  EXPECT_EQ("dictation", GetName(buttons[1]));
-  EXPECT_EQ("increment", GetName(buttons[2]));
-  EXPECT_EQ("decrement", GetName(buttons[3]));
-  EXPECT_EQ("settings", GetName(buttons[4]));
 }
 
 TEST_F(SwitchAccessMenuBubbleControllerTest, AvoidsShelfBubble) {
@@ -147,6 +136,21 @@ TEST_F(SwitchAccessMenuBubbleControllerTest, AvoidsShelfBubble) {
     // tray bubble.
     EXPECT_FALSE(menu_bounds.Intersects(tray_bubble_bounds)) << test.name;
   }
+}
+
+TEST_F(SwitchAccessMenuBubbleControllerTest, AccessibleValueTest) {
+  gfx::Rect anchor_rect(10, 10, 0, 0);
+  GetBubbleController()->ShowMenu(anchor_rect,
+                                  {"select", "scrollDown", "settings"});
+  EXPECT_TRUE(GetMenuView());
+
+  std::vector<SwitchAccessMenuButton*> buttons = GetMenuButtons();
+
+  // kValue attribute gets initialised in SwitchAccessMenuButton constructor.
+  ui::AXNodeData node_data = ui::AXNodeData();
+  buttons[0]->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(std::string("select"),
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
 }  // namespace ash
