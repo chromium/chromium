@@ -35,6 +35,10 @@ struct SparseDataWithExplicitCtor
   T value;
 };
 
+// Tests internal::IsSparseNodeInlineData.
+static_assert(!internal::IsSparseNodeInlineData<DataWithDefaultCtor<int>>);
+static_assert(internal::IsSparseNodeInlineData<SparseDataWithDefaultCtor<int>>);
+
 template <class... Args>
 class DummyTestSupportsNodeInlineData : public SupportsNodeInlineData<Args...> {
  public:
