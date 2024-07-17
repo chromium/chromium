@@ -16,6 +16,7 @@
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/ip_protection_proxy_config_retriever.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
@@ -139,11 +140,6 @@ class IpProtectionConfigProvider
       std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
       quiche::BlindSignAuthInterface* bsa);
 
-  // Timeout for failures from GetProxyConfig. This is doubled for
-  // each subsequent failure.
-  static constexpr base::TimeDelta kGetProxyConfigFailureTimeout =
-      base::Minutes(1);
-
  private:
   friend class IpProtectionConfigProviderTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderTest, CalculateBackoff);
@@ -157,25 +153,6 @@ class IpProtectionConfigProvider
   // This accomplishes lazy loading of these components to break dependency
   // loops in browser startup.
   void SetUp();
-
-  // Wrapping `ip_protection_config_http_->GetProxyConfig()` method
-  // to enable OAuth Token inclusion in the GetProxyConfig API call to Phosphor.
-  void CallGetProxyConfig(GetProxyListCallback callback,
-                          std::optional<std::string> oauth_token);
-
-  void OnGetProxyConfigCompleted(
-      GetProxyListCallback callback,
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>
-          response);
-
-  // Returns true if the GetProxyConfigResponse contains an error or is invalid.
-  // In order for a response to be valid, the following must be true:
-  //    1. !response.has_value()
-  //    2. If a response has a value and the proxy chain is NOT empty, the
-  //       GeoHint must be present.
-  bool IsProxyConfigResponseError(
-      const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
-          response);
 
   // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
   // request a blind-signed auth token for use at the IP Protection proxies.
@@ -276,8 +253,8 @@ class IpProtectionConfigProvider
   // scoped_refptr here.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http_;
-  std::unique_ptr<IpProtectionProxyConfigRetriever>
-      ip_protection_proxy_config_retriever_;
+  std::unique_ptr<IpProtectionProxyConfigFetcher>
+      ip_protection_proxy_config_fetcher_;
   std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;
 
   // For testing, BlindSignAuth is accessed via its interface. In production,
@@ -295,12 +272,6 @@ class IpProtectionConfigProvider
   IpProtectionTryGetAuthTokensResult last_try_get_auth_tokens_result_ =
       IpProtectionTryGetAuthTokensResult::kSuccess;
   std::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
-
-  // The time before the retriever's GetProxyConfig should not be called, and
-  // the exponential backoff to be applied next time such a call fails.
-  base::Time no_get_proxy_config_until_;
-  base::TimeDelta next_get_proxy_config_backoff_ =
-      kGetProxyConfigFailureTimeout;
 
   // The `mojo::Receiver` objects allowing the network service to call methods
   // on `this`.

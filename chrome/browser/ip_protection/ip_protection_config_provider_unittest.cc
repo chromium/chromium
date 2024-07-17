@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -757,259 +758,11 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   check(kFailedBSA400, IpProtectionConfigProviderHelper::kBugBackoff, true);
 }
 
-TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-  ip_protection::GetProxyConfigResponse response;
-  auto* chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy1");
-  chain->set_proxy_b("proxy1b");
-  chain->set_chain_id(1);
-  chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy2");
-  chain->set_proxy_b("proxy2b");
-  chain->set_chain_id(2);
-
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
-
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      std::make_unique<IpProtectionConfigHttp>(
-          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
-      bsa_.get());
-
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionConfigProviderHelper::MakeChainForTesting(
-          {"proxy1", "proxy1b"}, 1),
-      IpProtectionConfigProviderHelper::MakeChainForTesting(
-          {"proxy2", "proxy2b"}, 2)};
-
-  // Extract tuple elements for individual comparison.
-  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
-
-  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
-  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
-
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
-}
-
-TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-  ip_protection::GetProxyConfigResponse response;
-  auto* chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy1");
-  chain->set_proxy_b("proxy1b");
-  chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy2:80");
-  chain->set_proxy_b("proxy2");
-  chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy3:0");
-  chain->set_proxy_b("proxy4:443");
-  chain->set_chain_id(3);
-
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
-
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      std::make_unique<IpProtectionConfigHttp>(
-          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
-      bsa_.get());
-
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionConfigProviderHelper::MakeChainForTesting(
-          {"proxy1", "proxy1b"})};
-  exp_proxy_list.push_back(net::ProxyChain::ForIpProtection(
-      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxy2", 80),
-       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxy2", std::nullopt)}));
-  exp_proxy_list.push_back(net::ProxyChain::ForIpProtection(
-      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxy3", "0"),
-       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                               "proxy4", "443")},
-      3));
-
-  // Extract tuple elements for individual comparison.
-  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
-
-  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
-  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
-
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
-}
-
-TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-  ip_protection::GetProxyConfigResponse response;
-  auto* chain = response.add_proxy_chain();
-  chain->set_proxy_a("]INVALID[");
-  chain->set_proxy_b("not-invalid");
-  chain = response.add_proxy_chain();
-  chain->set_proxy_a("valid");
-  chain->set_proxy_b("valid");
-
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
-
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      std::make_unique<IpProtectionConfigHttp>(
-          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
-      bsa_.get());
-
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionConfigProviderHelper::MakeChainForTesting(
-          {"valid", "valid"})};
-
-  // Extract tuple elements for individual comparison.
-  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
-
-  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
-  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
-
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
-}
-
-TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalidChainId) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-  ip_protection::GetProxyConfigResponse response;
-  auto* chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxya");
-  chain->set_proxy_b("proxyb");
-  chain->set_chain_id(999);
-
-  response.mutable_geo_hint()->set_country_code(geo_hint_->country_code);
-  response.mutable_geo_hint()->set_iso_region(geo_hint_->iso_region);
-  response.mutable_geo_hint()->set_city_name(geo_hint_->city_name);
-
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      std::make_unique<IpProtectionConfigHttp>(
-          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
-      bsa_.get());
-
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  // The proxy chain is still used, but the chain ID is set to the default.
-  std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionConfigProviderHelper::MakeChainForTesting(
-          {"proxya", "proxyb"}, net::ProxyChain::kDefaultIpProtectionChainId)};
-
-  // Extract tuple elements for individual comparison.
-  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
-
-  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
-  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
-
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*geo_hint_));
-}
-
-TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyCountryLevelGeo) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-  ip_protection::GetProxyConfigResponse response;
-  auto* chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy1");
-  chain->set_proxy_b("proxy1b");
-  chain->set_chain_id(1);
-  chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy2");
-  chain->set_proxy_b("proxy2b");
-  chain->set_chain_id(2);
-
-  // Geo is only country level.
-  response.mutable_geo_hint()->set_country_code("US");
-
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      std::make_unique<IpProtectionConfigHttp>(
-          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
-      bsa_.get());
-
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {
-      IpProtectionConfigProviderHelper::MakeChainForTesting(
-          {"proxy1", "proxy1b"}, 1),
-      IpProtectionConfigProviderHelper::MakeChainForTesting(
-          {"proxy2", "proxy2b"}, 2)};
-
-  // Country level geo only.
-  auto exp_geo_hint = network::mojom::GeoHint::New("US", "", "");
-
-  // Extract tuple elements for individual comparison.
-  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
-
-  ASSERT_TRUE(proxy_list.has_value());  // Check if optional has value.
-  EXPECT_THAT(proxy_list.value(), testing::ElementsAreArray(exp_proxy_list));
-
-  ASSERT_TRUE(geo_hint);  // Check that GeoHintPtr is not null.
-  EXPECT_TRUE(geo_hint->Equals(*exp_geo_hint));
-}
-
-TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyGeoMissingFailure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-
-  // The error case in this situation should be a valid response with a missing
-  // geo hint and non-empty proxy chain vector.
-  ip_protection::GetProxyConfigResponse response;
-  auto* chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy1");
-  chain->set_proxy_b("proxy1b");
-  chain->set_chain_id(1);
-  chain = response.add_proxy_chain();
-  chain->set_proxy_a("proxy2");
-  chain->set_proxy_b("proxy2b");
-  chain->set_chain_id(2);
-
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionProxyConfigRetriever>(response),
-      std::make_unique<IpProtectionConfigHttp>(
-          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
-      bsa_.get());
-
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-
-  // Extract tuple elements for individual comparison.
-  const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
-
-  // A failure means both of these values will be null.
-  EXPECT_EQ(proxy_list, std::nullopt);
-  EXPECT_TRUE(geo_hint.is_null());
-}
-
 TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   std::vector<net::ProxyChain> proxy_override_list = {
-      IpProtectionConfigProviderHelper::MakeChainForTesting(
+      IpProtectionProxyConfigFetcher::MakeChainForTesting(
           {"proxyAOverride", "proxyBOverride"}),
-      IpProtectionConfigProviderHelper::MakeChainForTesting(
+      IpProtectionProxyConfigFetcher::MakeChainForTesting(
           {"proxyAOverride", "proxyBOverride"}),
   };
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1111,7 +864,7 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
   EXPECT_EQ(get_proxy_config_calls, 1);
 
   const base::TimeDelta timeout =
-      IpProtectionConfigProvider::kGetProxyConfigFailureTimeout;
+      IpProtectionProxyConfigFetcher::kGetProxyConfigFailureTimeout;
 
   // A call after the timeout is allowed to proceed, but fails so the new
   // backoff is 2*timeout.

@@ -9,6 +9,8 @@ source_set("ip_protection") {
   sources = [
     "ip_protection_config_provider_helper.cc",
     "ip_protection_config_provider_helper.h",
+    "ip_protection_proxy_config_fetcher.cc",
+    "ip_protection_proxy_config_fetcher.h",
     "ip_protection_proxy_config_retriever.cc",
     "ip_protection_proxy_config_retriever.h",
   ]
@@ -43,7 +45,10 @@ source_set("ip_protection") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "ip_protection_proxy_config_retriever_unittest.cc" ]
+  sources = [
+    "ip_protection_proxy_config_fetcher_unittest.cc",
+    "ip_protection_proxy_config_retriever_unittest.cc",
+  ]
 
   if (is_android) {
     sources += [ "blind_sign_message_android_impl_unittest.cc" ]

@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "components/ip_protection/blind_sign_message_android_impl.h"
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/ip_protection_proxy_config_retriever.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -121,23 +122,6 @@ class AwIpProtectionConfigProvider
   // and `bsa_`, if not already initialized.
   void SetUp();
 
-  // Get proxy configuration that is necessary for IP Protection from the
-  // server.
-  void CallGetProxyConfig(GetProxyListCallback callback);
-  void OnGetProxyConfigCompleted(
-      GetProxyListCallback callback,
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>
-          response);
-
-  // Returns true if the GetProxyConfigResponse contains an error or is invalid.
-  // In order for a response to be valid, the following must be true:
-  //    1. response.has_value()
-  //    2. If a response has a value and the proxy chain is NOT empty, the
-  //       GeoHint must be present.
-  bool IsProxyConfigResponseError(
-      const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
-          response);
-
   // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
   // request a blind-signed auth token for use at the IP Protection proxies.
   void FetchBlindSignedToken(int batch_size,
@@ -161,8 +145,8 @@ class AwIpProtectionConfigProvider
   std::optional<base::TimeDelta> CalculateBackoff(
       AwIpProtectionTryGetAuthTokensResult result);
 
-  std::unique_ptr<IpProtectionProxyConfigRetriever>
-      ip_protection_proxy_config_retriever_;
+  std::unique_ptr<IpProtectionProxyConfigFetcher>
+      ip_protection_proxy_config_fetcher_;
   std::unique_ptr<BlindSignMessageAndroidImpl> blind_sign_message_android_impl_;
   std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;
 

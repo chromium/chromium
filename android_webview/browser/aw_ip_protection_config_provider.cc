@@ -22,6 +22,7 @@
 #include "base/strings/strcat.h"
 #include "components/ip_protection/blind_sign_message_android_impl.h"
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -62,10 +63,10 @@ void AwIpProtectionConfigProvider::SetUp() {
         std::make_unique<BlindSignMessageAndroidImpl>();
   }
 
-  if (!ip_protection_proxy_config_retriever_) {
+  if (!ip_protection_proxy_config_fetcher_) {
     CHECK(aw_browser_context_);
-    ip_protection_proxy_config_retriever_ =
-        std::make_unique<IpProtectionProxyConfigRetriever>(
+    ip_protection_proxy_config_fetcher_ =
+        std::make_unique<IpProtectionProxyConfigFetcher>(
             aw_browser_context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get(),
@@ -94,10 +95,11 @@ void AwIpProtectionConfigProvider::SetUpForTesting(
   bsa_ = nullptr;
   blind_sign_auth_ = nullptr;
   blind_sign_message_android_impl_ = nullptr;
-  ip_protection_proxy_config_retriever_ = nullptr;
+  ip_protection_proxy_config_fetcher_ = nullptr;
 
-  ip_protection_proxy_config_retriever_ =
-      std::move(ip_protection_proxy_config_retriever);
+  ip_protection_proxy_config_fetcher_ =
+      std::make_unique<IpProtectionProxyConfigFetcher>(
+          std::move(ip_protection_proxy_config_retriever));
   blind_sign_message_android_impl_ = std::move(blind_sign_message_android_impl);
   bsa_ = bsa;
 }
@@ -114,51 +116,8 @@ void AwIpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
     return;
   }
 
-  CallGetProxyConfig(std::move(callback));
-}
-
-void AwIpProtectionConfigProvider::CallGetProxyConfig(
-    GetProxyListCallback callback) {
-  ip_protection_proxy_config_retriever_->GetProxyConfig(
-      /*oauth_token=*/std::nullopt,
-      base::BindOnce(&AwIpProtectionConfigProvider::OnGetProxyConfigCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void AwIpProtectionConfigProvider::OnGetProxyConfigCompleted(
-    GetProxyListCallback callback,
-    base::expected<ip_protection::GetProxyConfigResponse, std::string>
-        response) {
-  if (AwIpProtectionConfigProvider::IsProxyConfigResponseError(response)) {
-    VLOG(2) << "AwIpProtectionConfigProvider::GetProxyList failed: "
-            << response.error();
-    std::move(callback).Run(/*array<ProxyChain>?=*/std::nullopt,
-                            /*GeoHint?=*/nullptr);
-    return;
-  }
-
-  std::vector<net::ProxyChain> proxy_list =
-      IpProtectionConfigProviderHelper::GetProxyListFromProxyConfigResponse(
-          response.value());
-  network::mojom::GeoHintPtr geo_hint =
-      IpProtectionConfigProviderHelper::GetGeoHintFromProxyConfigResponse(
-          response.value());
-  std::move(callback).Run(std::move(proxy_list), std::move(geo_hint));
-}
-
-bool AwIpProtectionConfigProvider::IsProxyConfigResponseError(
-    const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
-        response) {
-  if (!response.has_value()) {
-    return true;
-  }
-
-  // Returns true for an error when a geo hint is missing but is required b/c
-  // the proxy chain is NOT empty.
-  const ip_protection::GetProxyConfigResponse& config_response =
-      response.value();
-  return !config_response.has_geo_hint() &&
-         !config_response.proxy_chain().empty();
+  ip_protection_proxy_config_fetcher_->CallGetProxyConfig(
+      std::move(callback), /*oauth_token=*/std::nullopt);
 }
 
 void AwIpProtectionConfigProvider::TryGetAuthTokens(

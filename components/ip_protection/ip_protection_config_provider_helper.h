@@ -11,7 +11,6 @@
 
 #include "base/time/time.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
-#include "net/base/proxy_chain.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -31,15 +30,6 @@ class IpProtectionConfigProviderHelper {
  public:
   virtual ~IpProtectionConfigProviderHelper() = default;
 
-  // Creates a list of ProxyChains from GetProxyConfigResponse.
-  static std::vector<net::ProxyChain> GetProxyListFromProxyConfigResponse(
-      ip_protection::GetProxyConfigResponse response);
-
-  // Creates a GeoHint by converting the GeoHint from the
-  // `GetProxyConfigResponse` to a `network::mojom::GeoHint`.
-  static network::mojom::GeoHintPtr GetGeoHintFromProxyConfigResponse(
-      const ip_protection::GetProxyConfigResponse& response);
-
   // Creates a blind-signed auth token by converting token fetched using the
   // `quiche::BlindSignAuth` library to a
   // `network::mojom::BlindSignedAuthToken`.
@@ -55,11 +45,6 @@ class IpProtectionConfigProviderHelper {
 
   static privacy::ppn::PrivacyPassTokenData CreatePrivacyPassTokenForTesting(
       std::string token_value);
-
-  // Shortcut to create a ProxyChain from hostnames for unit tests.
-  static net::ProxyChain MakeChainForTesting(
-      std::vector<std::string> hostnames,
-      int chain_id = net::ProxyChain::kDefaultIpProtectionChainId);
 
   // Converts a mock token value and expiration time into the struct that will
   // be passed to the network service.

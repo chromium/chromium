@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/ip_protection/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -73,9 +74,9 @@ void IpProtectionConfigProvider::SetUp() {
     ip_protection_config_http_ =
         std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get());
   }
-  if (!ip_protection_proxy_config_retriever_) {
-    ip_protection_proxy_config_retriever_ =
-        std::make_unique<IpProtectionProxyConfigRetriever>(
+  if (!ip_protection_proxy_config_fetcher_) {
+    ip_protection_proxy_config_fetcher_ =
+        std::make_unique<IpProtectionProxyConfigFetcher>(
             url_loader_factory_.get(),
             IpProtectionConfigProviderHelper::kChromeIpBlinding, GetAPIKey());
   }
@@ -97,11 +98,12 @@ void IpProtectionConfigProvider::SetUpForTesting(
     std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
     quiche::BlindSignAuthInterface* bsa) {
   // Carefully destroy any existing values in the correct order.
-  ip_protection_proxy_config_retriever_ = nullptr;
+  ip_protection_proxy_config_fetcher_ = nullptr;
   ip_protection_config_http_ = nullptr;
   url_loader_factory_ = nullptr;
-  ip_protection_proxy_config_retriever_ =
-      std::move(ip_protection_proxy_config_retriever);
+  ip_protection_proxy_config_fetcher_ =
+      std::make_unique<IpProtectionProxyConfigFetcher>(
+          std::move(ip_protection_proxy_config_retriever));
   ip_protection_config_http_ = std::move(ip_protection_config_http);
 
   bsa_ = nullptr;
@@ -184,14 +186,16 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   }
 
   // If we are not able to call `GetProxyConfig` yet, return early.
-  if (no_get_proxy_config_until_ > base::Time::Now()) {
+  if (ip_protection_proxy_config_fetcher_->GetNoGetProxyConfigUntilTime() >
+      base::Time::Now()) {
     std::move(callback).Run(std::nullopt, nullptr);
     return;
   }
 
   // This feature flag is false by default.
   if (!net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.Get()) {
-    CallGetProxyConfig(std::move(callback), std::nullopt);
+    ip_protection_proxy_config_fetcher_->CallGetProxyConfig(std::move(callback),
+                                                            std::nullopt);
     return;
   }
 
@@ -289,63 +293,8 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompletedForGetProxyConfig(
     std::move(callback).Run(std::nullopt, nullptr);
     return;
   }
-
-  CallGetProxyConfig(std::move(callback), access_token_info.token);
-}
-
-void IpProtectionConfigProvider::CallGetProxyConfig(
-    GetProxyListCallback callback,
-    std::optional<std::string> oauth_token) {
-  ip_protection_proxy_config_retriever_->GetProxyConfig(
-      oauth_token,
-      base::BindOnce(&IpProtectionConfigProvider::OnGetProxyConfigCompleted,
-                     base::Unretained(this), std::move(callback)));
-}
-
-void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
-    GetProxyListCallback callback,
-    base::expected<ip_protection::GetProxyConfigResponse, std::string>
-        response) {
-  // If either there is an empty response or no geo hint present, it should be
-  // treated as an error and cause a retry.
-  if (IpProtectionConfigProvider::IsProxyConfigResponseError(response)) {
-    VLOG(2) << "IPATP::GetProxyList failed: " << response.error();
-
-    // Apply exponential backoff to this sort of failure.
-    no_get_proxy_config_until_ =
-        base::Time::Now() + next_get_proxy_config_backoff_;
-    next_get_proxy_config_backoff_ *= 2;
-
-    std::move(callback).Run(std::nullopt, nullptr);
-    return;
-  }
-
-  // Cancel any backoff on success.
-  no_get_proxy_config_until_ = base::Time();
-  next_get_proxy_config_backoff_ = kGetProxyConfigFailureTimeout;
-
-  std::vector<net::ProxyChain> proxy_list =
-      IpProtectionConfigProviderHelper::GetProxyListFromProxyConfigResponse(
-          response.value());
-  network::mojom::GeoHintPtr geo_hint =
-      IpProtectionConfigProviderHelper::GetGeoHintFromProxyConfigResponse(
-          response.value());
-  std::move(callback).Run(std::move(proxy_list), std::move(geo_hint));
-}
-
-bool IpProtectionConfigProvider::IsProxyConfigResponseError(
-    const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
-        response) {
-  if (!response.has_value()) {
-    return true;
-  }
-
-  // Returns true for an error when a geo hint is missing but is required b/c
-  // the proxy chain is NOT empty.
-  const ip_protection::GetProxyConfigResponse& config_response =
-      response.value();
-  return !config_response.has_geo_hint() &&
-         !config_response.proxy_chain().empty();
+  ip_protection_proxy_config_fetcher_->CallGetProxyConfig(
+      std::move(callback), access_token_info.token);
 }
 
 void IpProtectionConfigProvider::FetchBlindSignedToken(
