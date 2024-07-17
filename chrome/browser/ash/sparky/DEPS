@@ -19,6 +19,7 @@ include_rules = [
   "+chrome/browser/ash/mahi",
   "+chrome/browser/ash/profiles/profile_helper.h",
   "+chrome/browser/extensions/api/settings_private",
+  "+chrome/browser/ash/file_manager",
   "+chrome/browser/manta",
   "+chrome/browser/profiles",
   "+chrome/browser/signin/identity_manager_factory.h",
