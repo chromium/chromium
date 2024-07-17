@@ -35,8 +35,12 @@ struct DISPLAY_MANAGER_EXPORT DisplayConfigureRequest {
                           const DisplayMode* mode,
                           const gfx::Point& origin);
 
+  DisplayConfigureRequest(const DisplayConfigureRequest& other);
+
+  ~DisplayConfigureRequest();
+
   raw_ptr<DisplaySnapshot> display;
-  raw_ptr<const DisplayMode> mode;
+  std::unique_ptr<const DisplayMode> mode;
   gfx::Point origin;
   bool enable_vrr;
 };
@@ -109,8 +113,12 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
     RequestToOriginalMode(DisplayConfigureRequest* request,
                           const DisplayMode* original_mode);
 
+    RequestToOriginalMode(const RequestToOriginalMode& other);
+
+    ~RequestToOriginalMode();
+
     raw_ptr<DisplayConfigureRequest> request;
-    const raw_ptr<const DisplayMode> original_mode;
+    const std::unique_ptr<const DisplayMode> original_mode;
   };
   using PartitionedRequestsQueue =
       std::queue<std::vector<RequestToOriginalMode>>;

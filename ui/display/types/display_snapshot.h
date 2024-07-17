@@ -38,7 +38,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
     // members.
     gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
-    // Primaries and gamma indicicated by the EDID.
+    // Primaries and gamma indicated by the EDID.
     SkColorSpacePrimaries edid_primaries = SkNamedPrimariesExt::kSRGB;
     float edid_gamma = 2.2;
 
@@ -127,7 +127,7 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   PanelOrientation panel_orientation() const { return panel_orientation_; }
   const std::vector<uint8_t>& edid() const { return edid_; }
   const DisplayMode* current_mode() const { return current_mode_; }
-  void set_current_mode(const DisplayMode* mode) { current_mode_ = mode; }
+  void set_current_mode(const DisplayMode* mode);
   const DisplayMode* native_mode() const { return native_mode_; }
   int64_t product_code() const { return product_code_; }
   int32_t year_of_manufacture() const { return year_of_manufacture_; }
@@ -248,7 +248,14 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   const base::FilePath sys_path_;
 
+  // List of modes which natively exist on the display (i.e. have been extracted
+  // from the display's EDID blob).
   DisplayModeList modes_;
+  // List of modes which do not natively exist on the display. Modes are added
+  // to this list as-needed due to either panel fitting from other displays or
+  // from creating virtual modes. Once added, modes are not removed from this
+  // list for the lifetime of the snapshot.
+  DisplayModeList nonnative_modes_;
 
   // The orientation of the panel in respect to the natural device orientation.
   PanelOrientation panel_orientation_;

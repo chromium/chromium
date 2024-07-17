@@ -295,8 +295,9 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
 
       for (size_t i = 0; i < states.size(); ++i) {
         const DisplayState* state = &states[i];
-        (*requests)[i].mode =
-            display_power[i] ? state->selected_mode.get() : NULL;
+        (*requests)[i].mode = display_power[i] && state->selected_mode
+                                  ? state->selected_mode->Clone()
+                                  : nullptr;
 
         if (display_power[i] || states.size() == 1) {
           const DisplayMode* mode_info = state->selected_mode;
@@ -345,8 +346,9 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
 
       for (size_t i = 0; i < states.size(); ++i) {
         const DisplayState* state = &states[i];
-        (*requests)[i].mode =
-            display_power[i] ? state->mirror_mode.get() : NULL;
+        (*requests)[i].mode = display_power[i] && state->mirror_mode
+                                  ? state->mirror_mode->Clone()
+                                  : nullptr;
       }
       break;
     }
@@ -362,8 +364,9 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
         const DisplayState* state = &states[i];
         (*requests)[i].origin.set_y(size.height() ? size.height() + kVerticalGap
                                                   : 0);
-        (*requests)[i].mode =
-            display_power[i] ? state->selected_mode.get() : NULL;
+        (*requests)[i].mode = display_power[i] && state->selected_mode
+                                  ? state->selected_mode->Clone()
+                                  : nullptr;
 
         // Retain the full screen size even if all displays are off so the
         // same desktop configuration can be restored when the displays are

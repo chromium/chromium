@@ -73,7 +73,7 @@ bool ResolveOverrides(
                     "refresh rate override";
       return false;
     }
-    request.mode = override_mode;
+    request.mode = override_mode->Clone();
   }
   return true;
 }
