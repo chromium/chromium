@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<link rel="help" href="https://issues.chromium.org/353294036">
+<link rel="match" href="monolithic-overflow-001-print-ref.html">
+<meta name="reftest-pages" content="-6">
+<!-- This is based on css/css-page/monolithic-overflow-032-print.tentative.html,
+     but omitting the last page, because Blink doesn't get it right. See
+     https://issues.chromium.org/353294036 . Once this issue has been fixed so
+     that the other tests starts passing, this test can be removed.-->
+<style>
+  body {
+    margin: 0;
+  }
+  @page {
+    size: 400px 300px;
+    margin: 0;
+  }
+</style>
+<div style="box-decoration-break:clone; height:1800px; border:solid black; border-width:10px 0; border-bottom-color:gray;">
+  <div style="contain:size; width:50%; box-sizing:border-box; border:solid hotpink; height:850px; background:yellow;"></div>
+  <div style="width:25%; height:300px; background:cyan;"></div>
+</div>

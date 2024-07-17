@@ -164,6 +164,29 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     return initial_fragment_geometry_->border_box_size;
   }
 
+  BoxStrut ExcludedSidesTruncated(const BoxStrut& strut) const {
+    // Note that this only truncates along the block axis for now. When it comes
+    // to the inline axis, BoxStrut has inline_start/inline_end, whereas
+    // LogicalBoxSides has line_left/line_right, so it's a bit more work.
+    return BoxStrut(
+        strut.inline_start, strut.inline_end,
+        sides_to_include_.block_start ? strut.block_start : LayoutUnit(),
+        sides_to_include_.block_end ? strut.block_end : LayoutUnit());
+  }
+
+  BoxStrut ApplicableBorders() const {
+    DCHECK(initial_fragment_geometry_);
+    return ExcludedSidesTruncated(initial_fragment_geometry_->border);
+  }
+  BoxStrut ApplicableScrollbar() const {
+    DCHECK(initial_fragment_geometry_);
+    return ExcludedSidesTruncated(initial_fragment_geometry_->scrollbar);
+  }
+  BoxStrut ApplicablePadding() const {
+    DCHECK(initial_fragment_geometry_);
+    return ExcludedSidesTruncated(initial_fragment_geometry_->padding);
+  }
+
   // Get border+padding for each box side.
   //
   // This value is node-specific (not for an individual fragment), and is used

@@ -3523,6 +3523,7 @@ crbug.com/1191124 external/wpt/css/css-multicol/spanner-fragmentation-012.html [
 crbug.com/1224888 external/wpt/css/css-multicol/spanner-in-opacity.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-multicol/table/balance-table-with-border-spacing.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/layers-003-print.html [ Failure ]
+crbug.com/353294036 external/wpt/css/css-page/monolithic-overflow-032-print.tentative.html [ Failure ]
 crbug.com/1494858 external/wpt/css/css-page/page-name-abspos-002-print.html [ Failure ]
 crbug.com/1494838 external/wpt/css/css-page/page-name-canvas-003-print.html [ Failure ]
 crbug.com/1494838 external/wpt/css/css-page/page-name-canvas-004-print.html [ Failure ]

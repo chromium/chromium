@@ -194,13 +194,13 @@ PhysicalSize LayoutTableColumn::Size() const {
 
       found_geometries = true;
       size.inline_size = geometry.inline_size;
-      size.block_size -=
-          table->StyleRef().TableBorderSpacing().block_size * 2 +
-          fragment.Padding().ConvertToLogical(direction).BlockSum() +
-          fragment.Borders().ConvertToLogical(direction).BlockSum();
+      size.block_size -= table->StyleRef().TableBorderSpacing().block_size * 2;
     }
 
-    size.block_size += fragment.TableGridRect().size.block_size;
+    size.block_size +=
+        fragment.TableGridRect().size.block_size -
+        (fragment.Padding().ConvertToLogical(direction).BlockSum() +
+         fragment.Borders().ConvertToLogical(direction).BlockSum());
   }
 
   return ToPhysicalSize(size, table->StyleRef().GetWritingMode());
@@ -227,6 +227,8 @@ LayoutPoint LayoutTableColumn::LocationInternal() const {
   bool found_geometries = false;
 
   for (auto& fragment : table->PhysicalFragments()) {
+    BoxStrut decorations =
+        (fragment.Padding() + fragment.Borders()).ConvertToLogical(direction);
     if (!found_geometries && fragment.TableColumnGeometries()) {
       // If there was a table relayout, and this column box doesn't have a
       // corresponding column in the table anymore, the column_idx_ will not
@@ -251,21 +253,19 @@ LayoutPoint LayoutTableColumn::LocationInternal() const {
       }
       size.inline_size = geometry.inline_size;
 
-      BoxStrut fragment_bp =
-          (fragment.Padding() + fragment.Borders()).ConvertToLogical(direction);
       LogicalSize table_border_spacing = table->StyleRef().TableBorderSpacing();
-      size.block_size -=
-          table_border_spacing.block_size * 2 + fragment_bp.BlockSum();
+      size.block_size -= table_border_spacing.block_size * 2;
       if (!parent_colgroup) {
         offset.inline_offset +=
-            fragment_bp.inline_start + table_border_spacing.inline_size;
-        offset.block_offset += fragment_bp.block_start +
+            decorations.inline_start + table_border_spacing.inline_size;
+        offset.block_offset += decorations.block_start +
                                table_border_spacing.block_size +
                                fragment.TableGridRect().offset.block_offset;
       }
     }
 
-    size.block_size += fragment.TableGridRect().size.block_size;
+    size.block_size +=
+        fragment.TableGridRect().size.block_size - decorations.BlockSum();
   }
 
   PhysicalSize outer_size;

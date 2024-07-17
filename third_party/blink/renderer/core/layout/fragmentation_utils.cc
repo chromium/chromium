@@ -408,14 +408,28 @@ void SetupFragmentBuilderForFragmentation(
     builder->SetIsFirstForNode(false);
   }
 
+  LayoutUnit space_left =
+      FragmentainerSpaceLeft(*builder, /*is_for_children=*/false);
+
   // If box decorations are to be cloned, both block-start and block-end should
   // obviosuly be present in every fragment, but whether block-end decorations
   // count as being cloned or not depends on whether the fragment currently
   // being built is known to be the last fragment. If it is, block-end box
   // decorations will behave as normally, so that child content may overflow it.
-  bool clone_box_start_decorations =
-      node.Style().BoxDecorationBreak() == EBoxDecorationBreak::kClone &&
-      (!previous_break_token || !previous_break_token->IsAtBlockEnd());
+  bool clone_box_start_decorations = [&] {
+    if (node.Style().BoxDecorationBreak() != EBoxDecorationBreak::kClone) {
+      return false;
+    }
+    if (!previous_break_token) {
+      return true;
+    }
+    if (previous_break_token->MonolithicOverflow() &&
+        space_left < builder->BorderScrollbarPadding().BlockSum()) {
+      return false;
+    }
+    return !previous_break_token->IsAtBlockEnd();
+  }();
+
   bool clone_box_end_decorations = clone_box_start_decorations;
 
   if (clone_box_start_decorations) {
@@ -451,8 +465,6 @@ void SetupFragmentBuilderForFragmentation(
       // incorrectly seems to be enough to contain the remaining fragment when
       // subtracting previously consumed block-size from its max size.
       if (max_block_size != LayoutUnit::Max()) {
-        LayoutUnit space_left =
-            FragmentainerSpaceLeft(*builder, /*is_for_children=*/false);
         LayoutUnit previously_consumed_block_size;
         if (previous_break_token) {
           previously_consumed_block_size =
@@ -541,6 +553,26 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
 
   LayoutUnit final_block_size = desired_block_size;
 
+  LayoutUnit subtractable_border_padding;
+  if ((desired_block_size > trailing_border_padding && !node.IsTableCell()) ||
+      (previous_break_token && previous_break_token->MonolithicOverflow())) {
+    if (!builder->ShouldCloneBoxEndDecorations() || node.IsTable()) {
+      subtractable_border_padding = trailing_border_padding;
+    }
+  }
+
+  if (space_left != kIndefiniteSize) {
+    // If intrinsic block-size is larger than space left, it means that we have
+    // some tall unbreakable child content (otherwise it would already have
+    // broken to stay within the limits). In such cases, this fragment will be
+    // allowed to take up more space (within applicable constraints) in a
+    // similarly unbreakable manner, to encompass the unbreakable content. This
+    // effectively increases the fragmentainer space available, as far as this
+    // node is concerned.
+    space_left = std::max(
+        space_left, desired_intrinsic_block_size - subtractable_border_padding);
+  }
+
   if (space.IsPaginated()) {
     // Descendants take precedence, but if none of them propagated a page name,
     // use the one specified on this element (or on something in the ancestry)
@@ -608,14 +640,6 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
     DCHECK_GE(desired_intrinsic_block_size, trailing_border_padding);
     DCHECK_GE(desired_block_size, trailing_border_padding);
 
-    LayoutUnit subtractable_border_padding;
-    if ((desired_block_size > trailing_border_padding && !node.IsTableCell()) ||
-        (previous_break_token && previous_break_token->MonolithicOverflow())) {
-      if (!builder->ShouldCloneBoxEndDecorations() || node.IsTable()) {
-        subtractable_border_padding = trailing_border_padding;
-      }
-    }
-
     LayoutUnit modified_intrinsic_block_size = std::max(
         space_left, desired_intrinsic_block_size - subtractable_border_padding);
     builder->SetIntrinsicBlockSize(modified_intrinsic_block_size);
@@ -672,11 +696,9 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
     // if we need to steer clear of at least some of it in the next
     // fragmentainer as well. This only happens when printing monolithic
     // content.
-    //
-    // TODO(mstensho): is_for_children should be false.
     LayoutUnit remaining_overflow =
         previous_break_token->MonolithicOverflow() -
-        FragmentainerCapacity(*builder, /*is_for_children=*/true);
+        FragmentainerCapacity(*builder, /*is_for_children=*/false);
     if (remaining_overflow > LayoutUnit()) {
       builder->ReserveSpaceForMonolithicOverflow(remaining_overflow);
     }

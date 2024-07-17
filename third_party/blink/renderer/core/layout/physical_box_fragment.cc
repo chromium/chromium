@@ -102,14 +102,11 @@ const PhysicalBoxFragment* PhysicalBoxFragment::Create(
     WritingMode block_or_line_writing_mode) {
   const auto writing_direction = builder->GetWritingDirection();
   const PhysicalBoxStrut borders =
-      builder->initial_fragment_geometry_->border.ConvertToPhysical(
-          writing_direction);
+      builder->ApplicableBorders().ConvertToPhysical(writing_direction);
   const PhysicalBoxStrut scrollbar =
-      builder->initial_fragment_geometry_->scrollbar.ConvertToPhysical(
-          writing_direction);
+      builder->ApplicableScrollbar().ConvertToPhysical(writing_direction);
   const PhysicalBoxStrut padding =
-      builder->initial_fragment_geometry_->padding.ConvertToPhysical(
-          writing_direction);
+      builder->ApplicablePadding().ConvertToPhysical(writing_direction);
 
   const PhysicalSize physical_size =
       ToPhysicalSize(builder->Size(), builder->GetWritingMode());
