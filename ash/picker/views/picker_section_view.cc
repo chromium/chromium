@@ -335,6 +335,7 @@ void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
 
 void PickerSectionView::AddTitleTrailingLink(
     const std::u16string& link_text,
+    const std::u16string& accessible_name,
     views::Link::ClickedCallback link_callback) {
   title_trailing_link_ = title_container_->AddChildView(
       views::Builder<views::Link>()
@@ -346,6 +347,8 @@ void PickerSectionView::AddTitleTrailingLink(
           .SetForceUnderline(false)
           .SetProperty(views::kMarginsKey, kSectionTitleTrailingLinkMargins)
           .Build());
+  title_trailing_link_->GetViewAccessibility().SetProperties(
+      ax::mojom::Role::kButton, accessible_name);
 }
 
 PickerListItemView* PickerSectionView::AddListItem(

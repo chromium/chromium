@@ -304,6 +304,30 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingSectionShowAllAnnounces) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
+          /*section_width=*/100, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+  ash::PickerSectionView* section_view = view->AddSection();
+  section_view->AddTitleLabel(u"Section");
+  section_view->AddTitleTrailingLink(u"Show all", u"cat", base::DoNothing());
+
+  sm_.Call([section_view]() {
+    section_view->title_trailing_link_for_testing()->RequestFocus();
+  });
+
+  sm_.ExpectSpeechPattern("cat");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("Press * to activate");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
                        ListItemAnnouncesTextWithAction) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()

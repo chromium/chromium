@@ -162,11 +162,14 @@ void PickerSearchResultsView::AppendSearchResults(
     PickerSearchResultsSection section) {
   StopLoadingAnimation();
   auto* section_view = section_list_view_->AddSection();
-  section_view->AddTitleLabel(
-      GetSectionTitleForPickerSectionType(section.type()));
+  std::u16string section_title =
+      GetSectionTitleForPickerSectionType(section.type());
+  section_view->AddTitleLabel(section_title);
   if (section.has_more_results()) {
     section_view->AddTitleTrailingLink(
         l10n_util::GetStringUTF16(IDS_PICKER_SEE_MORE_BUTTON_TEXT),
+        l10n_util::GetStringFUTF16(IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME,
+                                   section_title),
         base::BindRepeating(&PickerSearchResultsView::OnTrailingLinkClicked,
                             base::Unretained(this), section.type()));
   }

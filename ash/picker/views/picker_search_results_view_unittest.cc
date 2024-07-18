@@ -324,7 +324,8 @@ TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
       view->section_views_for_testing(),
       ElementsAre(Pointee(Property(
           "title_trailing_link_for_testing",
-          &PickerSectionView::title_trailing_link_for_testing, NotNull()))));
+          &PickerSectionView::title_trailing_link_for_testing,
+          Property(&views::View::GetAccessibleName, u"Show all Files")))));
 }
 
 TEST_F(PickerSearchResultsViewTest,

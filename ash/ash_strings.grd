@@ -7389,6 +7389,9 @@ New install
       <message name="IDS_PICKER_SEE_MORE_BUTTON_TEXT" translateable="false" desc="Button text shown in a section when there are more results.">
         Show all
       </message>
+      <message name="IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button that shows all results for a section.">
+        Show all <ph name="SECTION_NAME">$1<ex>Drive Files</ex></ph>
+      </message>
       <message name="IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button which opens a panel with more emojis, symbols and emoticons.">
         Open emojis and more
       </message>

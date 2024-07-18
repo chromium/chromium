@@ -63,6 +63,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   void AddTitleLabel(const std::u16string& title_text);
   void AddTitleTrailingLink(const std::u16string& link_text,
+                            const std::u16string& accessible_name,
                             views::Link::ClickedCallback link_callback);
 
   // Adds a list item. These are displayed in a vertical list, each item
