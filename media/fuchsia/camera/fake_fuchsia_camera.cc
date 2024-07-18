@@ -596,7 +596,7 @@ void FakeCameraDeviceWatcher::DisconnectClients() {
 std::unique_ptr<FakeCameraDevice> FakeCameraDeviceWatcher::RemoveDevice(
     uint64_t device_id) {
   auto device_it = devices_.find(device_id);
-  DCHECK(device_it != devices_.end());
+  CHECK(device_it != devices_.end());
 
   // Queue an event for each client to inform about the device removal.
   for (auto& binding : bindings_.bindings()) {
