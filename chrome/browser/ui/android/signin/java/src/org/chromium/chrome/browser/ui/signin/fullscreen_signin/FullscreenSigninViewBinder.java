@@ -40,25 +40,27 @@ class FullscreenSigninViewBinder {
         } else if (propertyKey == FullscreenSigninProperties.ON_DISMISS_CLICKED) {
             view.getDismissButtonView()
                     .setOnClickListener(model.get(FullscreenSigninProperties.ON_DISMISS_CLICKED));
-        } else
-            if (propertyKey == FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT) {
+        } else if (propertyKey
+                == FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT) {
             updateVisibilityOnButtonClick(view, model);
+            updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER) {
             updateVisibilityOnButtonClick(view, model);
+            updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.ON_SELECTED_ACCOUNT_CLICKED) {
             view.getSelectedAccountView()
                     .setOnClickListener(
                             model.get(FullscreenSigninProperties.ON_SELECTED_ACCOUNT_CLICKED));
         } else if (propertyKey == FullscreenSigninProperties.SELECTED_ACCOUNT_DATA) {
             updateSelectedAccount(view, model);
-            updateVisibility(view, model);
+            updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED) {
             final boolean isSelectedAccountSupervised =
                     model.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
             view.getSelectedAccountView().setEnabled(!isSelectedAccountSupervised);
 
             updateBrowserManagedHeaderView(view, model);
-            updateVisibility(view, model);
+            updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER) {
             final boolean showInitialLoadProgressSpinner =
                     model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
@@ -76,12 +78,12 @@ class FullscreenSigninViewBinder {
                 TransitionManager.beginDelayedTransition(view);
                 initialLoadProgressSpinner.setVisibility(View.GONE);
             }
-            updateVisibility(view, model);
+            updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE) {
             updateBrowserManagedHeaderView(view, model);
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
             updateSelectedAccount(view, model);
-            updateVisibility(view, model);
+            updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.TITLE_STRING_ID) {
             @StringRes int textId = model.get(FullscreenSigninProperties.TITLE_STRING_ID);
             view.getTitle().setText(textId);
@@ -144,7 +146,18 @@ class FullscreenSigninViewBinder {
         }
     }
 
-    private static void updateVisibility(FullscreenSigninView view, PropertyModel model) {
+    private static void updateBottomGroupVisibility(
+            FullscreenSigninView view, PropertyModel model) {
+        // TODO(crbug.com/349973162): Add a regression test that updates profile data after continue
+        // button has been pressed.
+        final boolean showSigninProgressSpinner =
+                model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)
+                        || model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
+        if (showSigninProgressSpinner) {
+            // Don't update the bottom group when sign-in progress spinner is being shown.
+            return;
+        }
+
         final boolean showInitialLoadProgressSpinner =
                 model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
         final boolean isSelectedAccountSupervised =
