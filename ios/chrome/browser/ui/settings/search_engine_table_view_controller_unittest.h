@@ -16,7 +16,6 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "url/gurl.h"
 
@@ -99,7 +98,6 @@ class SearchEngineTableViewControllerTest
   [[nodiscard]] bool DeleteItemsAndWait(NSArray<NSIndexPath*>* indexes,
                                         ConditionBlock condition);
 
-  IOSChromeScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList feature_list_{
       switches::kSearchEngineChoiceTrigger};
   web::WebTaskEnvironment task_environment_;

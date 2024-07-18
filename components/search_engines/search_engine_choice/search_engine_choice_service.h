@@ -34,10 +34,10 @@ class SearchEngineChoiceService : public KeyedService {
   // This constructor should only be used in tests.
   SearchEngineChoiceService(
       PrefService& profile_prefs,
-      PrefService& local_state,
+      PrefService* local_state,
       int variations_country_id = country_codes::kCountryIDUnknown);
   SearchEngineChoiceService(PrefService& profile_prefs,
-                            PrefService& local_state,
+                            PrefService* local_state,
                             variations::VariationsService* variations_service);
   ~SearchEngineChoiceService() override;
 
@@ -101,7 +101,7 @@ class SearchEngineChoiceService : public KeyedService {
   // the choice are cleared, which triggers a reprompt on the next page load.
   void PreprocessPrefsForReprompt();
 
-  void ProcessPendingChoiceScreenDisplayState(PrefService& local_state);
+  void ProcessPendingChoiceScreenDisplayState(PrefService* local_state);
 
   int GetCountryIdInternal();
 

@@ -126,15 +126,9 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    search_engines::SearchEngineChoiceServiceFactory::GetInstance()
-        ->SetTestingFactory(profile(),
-                            search_engines::SearchEngineChoiceServiceFactory::
-                                GetDefaultFactory());
     TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-    SearchEngineChoiceDialogServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), SearchEngineChoiceDialogServiceFactory::GetDefaultFactory());
 
     // The search engine choice feature is only enabled for countries in the
     // EEA region.

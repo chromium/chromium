@@ -19,11 +19,9 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector_mock.h"
-#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -40,9 +38,6 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             std::move(policy_service_), &schema_registry_));
-    builder.AddTestingFactory(
-        ios::SearchEngineChoiceServiceFactory::GetInstance(),
-        ios::SearchEngineChoiceServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -72,7 +67,6 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   policy::SchemaRegistry schema_registry_;
-  IOSChromeScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList feature_list_{
       switches::kSearchEngineChoiceTrigger};
   std::unique_ptr<TestChromeBrowserState> browser_state_;

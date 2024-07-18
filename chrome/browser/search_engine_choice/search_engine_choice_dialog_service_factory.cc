@@ -78,34 +78,6 @@ bool IsProfileEligibleForChoiceScreen(Profile& profile) {
   return eligibility_conditions ==
          search_engines::SearchEngineChoiceScreenConditions::kEligible;
 }
-
-std::unique_ptr<KeyedService> BuildSearchEngineChoiceDialogService(
-    content::BrowserContext* context) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(CHROME_FOR_TESTING)
-  return nullptr;
-#else
-  if (!g_is_chrome_build && !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                                switches::kForceSearchEngineChoiceScreen)) {
-    return nullptr;
-  }
-
-  auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
-  search_engines::SearchEngineChoiceService& search_engine_choice_service =
-      CHECK_DEREF(
-          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-              &profile));
-
-  if (!IsProfileEligibleForChoiceScreen(profile)) {
-    return nullptr;
-  }
-
-  TemplateURLService& template_url_service =
-      CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(&profile));
-  return std::make_unique<SearchEngineChoiceDialogService>(
-      profile, search_engine_choice_service, template_url_service);
-#endif
-}
-
 }  // namespace
 
 SearchEngineChoiceDialogServiceFactory::SearchEngineChoiceDialogServiceFactory()
@@ -155,20 +127,27 @@ bool SearchEngineChoiceDialogServiceFactory::
 std::unique_ptr<KeyedService>
 SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildSearchEngineChoiceDialogService(context);
-}
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(CHROME_FOR_TESTING)
+  return nullptr;
+#else
+  if (!g_is_chrome_build && !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                switches::kForceSearchEngineChoiceScreen)) {
+    return nullptr;
+  }
 
-// `SearchEngineChoiceService` is null in tests. We create it in
-// `SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext`
-// so we need to stop creating the `SearchEngineChoiceDialogService` by
-// default in tests and create it when needed.
-bool SearchEngineChoiceDialogServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
-}
+  Profile& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
+  search_engines::SearchEngineChoiceService& search_engine_choice_service =
+      CHECK_DEREF(
+          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+              &profile));
 
-// static
-BrowserContextKeyedServiceFactory::TestingFactory
-SearchEngineChoiceDialogServiceFactory::GetDefaultFactory() {
-  CHECK_IS_TEST();
-  return base::BindRepeating(&BuildSearchEngineChoiceDialogService);
+  if (!IsProfileEligibleForChoiceScreen(profile)) {
+    return nullptr;
+  }
+
+  TemplateURLService& template_url_service =
+      CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(&profile));
+  return std::make_unique<SearchEngineChoiceDialogService>(
+      profile, search_engine_choice_service, template_url_service);
+#endif
 }

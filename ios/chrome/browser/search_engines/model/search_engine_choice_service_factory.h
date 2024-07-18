@@ -24,10 +24,6 @@ class SearchEngineChoiceServiceFactory
   SearchEngineChoiceServiceFactory& operator=(
       const SearchEngineChoiceServiceFactory&) = delete;
 
-  // Returns the default factory used to build SearchEngineChoiceService. Can be
-  // registered with SetTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
-
   static search_engines::SearchEngineChoiceService* GetForBrowserState(
       ChromeBrowserState* browser_state);
 
@@ -44,12 +40,6 @@ class SearchEngineChoiceServiceFactory
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-  // The service uses the browser local state which is null in unit tests. If
-  // the service was non null in unittests, then tests using `TestingProfile`
-  // would cause the `SearchEngineChoiceService` to crash, unless they
-  // explicitly create the local state. We stop creating the service by default
-  // in tests and create it when needed.
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace ios

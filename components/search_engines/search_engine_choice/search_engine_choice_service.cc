@@ -168,7 +168,7 @@ using NativeCallbackType = base::OnceCallback<void(int)>;
 }  // namespace
 
 SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs,
-                                                     PrefService& local_state,
+                                                     PrefService* local_state,
                                                      int variations_country_id)
     : profile_prefs_(profile_prefs),
       variations_country_id_(variations_country_id) {
@@ -178,7 +178,7 @@ SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs,
 
 SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
-    PrefService& local_state,
+    PrefService* local_state,
     variations::VariationsService* variations_service)
     : SearchEngineChoiceService(profile_prefs,
                                 local_state,
@@ -564,15 +564,20 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
 }
 
 void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState(
-    PrefService& local_state) {
+    PrefService* local_state) {
   if (!profile_prefs_->HasPrefPath(
           prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState)) {
     return;
   }
 
-  // The display state should not be cached when UMA is disabled.
-  if (!SearchEngineChoiceMetricsServiceAccessor::IsMetricsReportingEnabled(
-          &local_state)) {
+  if (!local_state) {
+    // `g_browser_process->local_state()` is null in unit tests unless properly
+    // set up.
+    CHECK_IS_TEST();
+  } else if (!SearchEngineChoiceMetricsServiceAccessor::
+                 IsMetricsReportingEnabled(local_state)) {
+    // The display state should not be cached when UMA is disabled.
+
     profile_prefs_->ClearPref(
         prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
     return;
