@@ -161,7 +161,7 @@ File* DataObjectItem::GetAsFile() const {
     auto data = std::make_unique<BlobData>();
     data->SetContentType(type_);
     for (const auto& span : *shared_buffer_)
-      data->AppendBytes(span.data(), span.size());
+      data->AppendBytes(base::as_bytes(span));
     const uint64_t length = data->length();
     auto blob = BlobDataHandle::Create(std::move(data), length);
     return MakeGarbageCollected<File>(
@@ -177,7 +177,7 @@ File* DataObjectItem::GetAsFile() const {
 
     auto data = std::make_unique<BlobData>();
     data->SetContentType(kMimeTypeImagePng);
-    data->AppendBytes(png_data.data(), png_data.size());
+    data->AppendBytes(png_data);
 
     const uint64_t length = data->length();
     auto blob = BlobDataHandle::Create(std::move(data), length);

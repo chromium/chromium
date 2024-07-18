@@ -170,6 +170,10 @@ void BlobData::AppendText(const String& text,
   }
 }
 
+void BlobData::AppendBytes(base::span<const uint8_t> bytes) {
+  AppendDataInternal(base::as_chars(bytes));
+}
+
 void BlobData::AppendBytes(const void* bytes, size_t length) {
   AppendDataInternal(base::make_span(static_cast<const char*>(bytes), length));
 }

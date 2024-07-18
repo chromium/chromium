@@ -405,7 +405,7 @@ Blob* XMLHttpRequest::ResponseBlob() {
     size_t size = 0;
     if (binary_response_builder_ && binary_response_builder_->size()) {
       for (const auto& span : *binary_response_builder_)
-        blob_data->AppendBytes(span.data(), span.size());
+        blob_data->AppendBytes(base::as_bytes(span));
       size = binary_response_builder_->size();
       binary_response_builder_ = nullptr;
       ReportMemoryUsageToV8();

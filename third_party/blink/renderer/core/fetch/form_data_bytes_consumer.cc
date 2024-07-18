@@ -100,7 +100,7 @@ class SimpleFormDataBytesConsumer : public BytesConsumer {
     form_data_->Flatten(data);
     form_data_ = nullptr;
     auto blob_data = std::make_unique<BlobData>();
-    blob_data->AppendBytes(data.data(), data.size());
+    blob_data->AppendBytes(base::as_byte_span(data));
     auto length = blob_data->length();
     state_ = PublicState::kClosed;
     return BlobDataHandle::Create(std::move(blob_data), length);
@@ -409,7 +409,7 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
     for (const auto& element : form_data_->Elements()) {
       switch (element.type_) {
         case FormDataElement::kData:
-          blob_data->AppendBytes(element.data_.data(), element.data_.size());
+          blob_data->AppendBytes(base::as_byte_span(element.data_));
           break;
         case FormDataElement::kEncodedFile: {
           auto file_length = element.file_length_;

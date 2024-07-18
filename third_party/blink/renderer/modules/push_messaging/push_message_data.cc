@@ -76,7 +76,7 @@ DOMArrayBuffer* PushMessageData::arrayBuffer() const {
 
 Blob* PushMessageData::blob() const {
   auto blob_data = std::make_unique<BlobData>();
-  blob_data->AppendBytes(data_.data(), data_.size());
+  blob_data->AppendBytes(base::as_byte_span(data_));
 
   // Note that the content type of the Blob object is deliberately not being
   // provided, following the specification.

@@ -184,14 +184,12 @@ void Blob::PopulateBlobData(BlobData* blob_data,
     switch (item->GetContentType()) {
       case V8BlobPart::ContentType::kArrayBuffer: {
         DOMArrayBuffer* array_buffer = item->GetAsArrayBuffer();
-        blob_data->AppendBytes(array_buffer->Data(),
-                               array_buffer->ByteLength());
+        blob_data->AppendBytes(array_buffer->ByteSpan());
         break;
       }
       case V8BlobPart::ContentType::kArrayBufferView: {
         auto&& array_buffer_view = item->GetAsArrayBufferView();
-        blob_data->AppendBytes(array_buffer_view->BaseAddress(),
-                               array_buffer_view->byteLength());
+        blob_data->AppendBytes(array_buffer_view->ByteSpan());
         break;
       }
       case V8BlobPart::ContentType::kBlob: {

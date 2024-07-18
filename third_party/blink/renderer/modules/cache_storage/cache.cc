@@ -621,8 +621,7 @@ class Cache::CodeCacheHandleCallbackForPut final
       base::span<const uint8_t> serialized_data =
           cached_metadata->SerializedData();
       auto side_data_blob_data = std::make_unique<BlobData>();
-      side_data_blob_data->AppendBytes(serialized_data.data(),
-                                       serialized_data.size());
+      side_data_blob_data->AppendBytes(serialized_data);
 
       batch_operation->response->side_data_blob_for_cache_put =
           BlobDataHandle::Create(std::move(side_data_blob_data),

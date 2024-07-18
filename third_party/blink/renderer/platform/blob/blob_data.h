@@ -120,6 +120,7 @@ class PLATFORM_EXPORT BlobData {
   }
   Vector<mojom::blink::DataElementPtr> ReleaseElements();
 
+  void AppendBytes(base::span<const uint8_t> bytes);
   void AppendBytes(const void*, size_t length);
   void AppendData(scoped_refptr<RawData>);
 
