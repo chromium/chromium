@@ -112,6 +112,31 @@ base::Value::Dict ConvertCpuValue(const mojom::CpuInfoPtr& info) {
   return out_cpu;
 }
 
+base::Value::List ConvertFanValue(const std::vector<mojom::FanInfoPtr>& info) {
+  base::Value::List out_fans;
+  for (const auto& fan : info) {
+    if (fan) {
+      base::Value::Dict fan_result;
+      fan_result.Set("speedRpm", base::NumberToString(fan->speed_rpm));
+      out_fans.Append(std::move(fan_result));
+    }
+  }
+  return out_fans;
+}
+
+base::Value::Dict ConvertMemoryValue(const mojom::MemoryInfoPtr& info) {
+  base::Value::Dict out_memory;
+  if (info) {
+    out_memory.Set("availableMemoryKib",
+                   base::NumberToString(info->available_memory_kib));
+    out_memory.Set("freeMemoryKib",
+                   base::NumberToString(info->free_memory_kib));
+    out_memory.Set("totalMemoryKib",
+                   base::NumberToString(info->total_memory_kib));
+  }
+  return out_memory;
+}
+
 base::Value::List ConvertThermalValue(const mojom::ThermalInfoPtr& info) {
   base::Value::List out_thermals;
   if (info) {
@@ -179,6 +204,7 @@ void HealthdInternalsMessageHandler::HandleGetHealthdTelemetryInfo(
 
   service->ProbeTelemetryInfo(
       {mojom::ProbeCategoryEnum::kBattery, mojom::ProbeCategoryEnum::kCpu,
+       mojom::ProbeCategoryEnum::kFan, mojom::ProbeCategoryEnum::kMemory,
        mojom::ProbeCategoryEnum::kThermal},
       base::BindOnce(&HealthdInternalsMessageHandler::HandleTelemetryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
@@ -200,6 +226,13 @@ void HealthdInternalsMessageHandler::HandleTelemetryResult(
   }
   if (info->cpu_result && info->cpu_result->is_cpu_info()) {
     result.Set("cpu", ConvertCpuValue(info->cpu_result->get_cpu_info()));
+  }
+  if (info->fan_result && info->fan_result->is_fan_info()) {
+    result.Set("fans", ConvertFanValue(info->fan_result->get_fan_info()));
+  }
+  if (info->memory_result && info->memory_result->is_memory_info()) {
+    result.Set("memory",
+               ConvertMemoryValue(info->memory_result->get_memory_info()));
   }
   if (info->thermal_result && info->thermal_result->is_thermal_info()) {
     result.Set("thermals",

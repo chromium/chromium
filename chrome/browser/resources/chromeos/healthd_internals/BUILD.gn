@@ -17,6 +17,8 @@ build_webui("build") {
     "app.ts",
     "info_card/info_card.ts",
     "info_card/cpu_card.ts",
+    "info_card/fan_card.ts",
+    "info_card/memory_card.ts",
     "info_card/power_thermal_card.ts",
     "line_chart/line_chart.ts",
     "line_chart/menu.ts",

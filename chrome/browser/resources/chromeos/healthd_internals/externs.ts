@@ -47,6 +47,22 @@ export interface HealthdApiCpuExecutionTimeUserHz {
 }
 
 /**
+ * `getHealthdTelemetryInfo` fan result.
+ */
+export interface HealthdApiFanResult {
+  speedRpm: string;
+}
+
+/**
+ * `getHealthdTelemetryInfo` memory result.
+ */
+export interface HealthdApiMemoryResult {
+  availableMemoryKib: string;
+  freeMemoryKib: string;
+  totalMemoryKib: string;
+}
+
+/**
  * `getHealthdTelemetryInfo` thermal result.
  */
 export interface HealthdApiThermalResult {
@@ -61,6 +77,8 @@ export interface HealthdApiThermalResult {
 export interface HealthdApiTelemetryResult {
   battery: HealthdApiBatteryResult;
   cpu: HealthdApiCpuResult;
+  fans: HealthdApiFanResult[];
+  memory: HealthdApiMemoryResult;
   thermals: HealthdApiThermalResult[];
 }
 
