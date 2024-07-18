@@ -578,6 +578,32 @@ TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndReentry) {
                           kTwoPageVerticalLayoutPageExitAndReentrySegment2)))));
 }
 
+TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndReentryWithQuickMoves) {
+  EnableAnnotationMode();
+  InitializeVerticalTwoPageLayout();
+
+  // Start out without any strokes.
+  EXPECT_TRUE(StrokeInputPositions().empty());
+
+  // When the mouse cursor moves quickly, PdfInkModule gets fewer input events.
+  // Simulate that here with fewer movement inputs compared to
+  // `kTwoPageVerticalLayoutPageExitAndReentryPoints`.
+  constexpr gfx::PointF kQuickPageExitAndReentryPoints[] = {
+      kTwoPageVerticalLayoutPointOutsidePages,
+      kTwoPageVerticalLayoutPoint2InsidePage0};
+  ApplyStrokeWithMouseAtPoints(kTwoPageVerticalLayoutPoint1InsidePage0,
+                               kQuickPageExitAndReentryPoints,
+                               kTwoPageVerticalLayoutPoint2InsidePage0);
+
+  // TODO(crbug.com/352578791): The strokes should be:
+  // 1) `kTwoPageVerticalLayoutPageExitAndReentrySegment1`
+  // 2) {gfx::PointF(6.666667f, 0.0f), gfx::PointF(10.0f, 10.0f)}
+  EXPECT_THAT(StrokeInputPositions(),
+              ElementsAre(Pair(
+                  0, ElementsAre(ElementsAre(gfx::PointF(5.0f, 5.0f)),
+                                 ElementsAre(gfx::PointF(10.0f, 10.0f))))));
+}
+
 TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
