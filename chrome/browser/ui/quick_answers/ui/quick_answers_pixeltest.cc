@@ -18,9 +18,11 @@
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/widget/widget.h"
@@ -189,14 +191,34 @@ class QuickAnswersPixelTestBase
             .is_internal = IsInternal(GetParam()),
         });
     read_write_cards_ui_controller.SetContextMenuBounds(GetContextMenuRect());
-    views::Widget* widget = read_write_cards_ui_controller.widget_for_test();
-    ASSERT_TRUE(widget);
+    ASSERT_TRUE(read_write_cards_ui_controller.widget_for_test())
+        << "A widget must be created to show a UI.";
 
     QuickAnswersController* quick_answers_controller =
         QuickAnswersController::Get();
     ASSERT_TRUE(quick_answers_controller);
     quick_answers_controller->SetVisibility(
         QuickAnswersVisibility::kQuickAnswersVisible);
+  }
+
+  void CreateAndShowUserConsentView() {
+    QuickAnswersUiController* quick_answers_ui_controller =
+        GetQuickAnswersUiController();
+    ASSERT_TRUE(quick_answers_ui_controller);
+    chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller =
+        quick_answers_ui_controller->GetReadWriteCardsUiController();
+
+    QuickAnswersController* quick_answers_controller =
+        QuickAnswersController::Get();
+    ASSERT_TRUE(quick_answers_controller);
+    quick_answers_controller->SetVisibility(QuickAnswersVisibility::kPending);
+    quick_answers_ui_controller->CreateUserConsentView(
+        GetContextMenuRect(),
+        l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_DEFINITION_INTENT),
+        u"Test");
+    read_write_cards_ui_controller.SetContextMenuBounds(GetContextMenuRect());
+    ASSERT_TRUE(read_write_cards_ui_controller.widget_for_test())
+        << "A widget must be created to show a UI.";
   }
 
   gfx::Rect GetContextMenuRect() {
@@ -307,6 +329,25 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Retry) {
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("Retry", GetParam()), GetWidget()->GetContentsView()));
+}
+
+IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, UserConsent) {
+  QuickAnswersView::Design design = GetDesign(GetParam());
+  if (design == QuickAnswersView::Design::kMagicBoost) {
+    GTEST_SKIP()
+        << "User consent is handled by MagicBoost UI if MagicBoost is on";
+  }
+  if (design == QuickAnswersView::Design::kRefresh) {
+    GTEST_SKIP() << "TODO(b/340628664): Implement kRefreshed UserConsentView.";
+  }
+
+  CreateAndShowUserConsentView();
+
+  // For Narrow layout, we intentionally let it overflow in x-axis. See comments
+  // in user_consent_view.cc.
+  EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
+      GetScreenshotName("UserConsent", GetParam()),
+      GetWidget()->GetContentsView()));
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestInternal, InternalUi) {

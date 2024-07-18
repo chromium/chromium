@@ -22,7 +22,9 @@
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -34,7 +36,12 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -76,16 +83,15 @@ bool ShouldUseCompactButtonLayout(int anchor_view_width) {
   return GetActualLabelWidth(anchor_view_width) < kCompactButtonLayoutThreshold;
 }
 
-// Create and return a simple label with provided specs.
-std::unique_ptr<views::Label> CreateLabel(const std::u16string& text,
-                                          int font_size_delta) {
-  auto label = std::make_unique<views::Label>(text);
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetLineHeight(kLineHeightDip);
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  label->SetFontList(
-      views::Label::GetDefaultFontList().DeriveWithSizeDelta(font_size_delta));
-  return label;
+views::Builder<views::Label> GetConfiguredLabelBuilder(int font_size_delta) {
+  return views::Builder<views::Label>()
+      // TODO(b/340628664): This is from old code. Consider if we can remove
+      // AutoColorReadabilityEnabled=false.
+      .SetAutoColorReadabilityEnabled(false)
+      .SetLineHeight(kLineHeightDip)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetFontList(views::Label::GetDefaultFontList().DeriveWithSizeDelta(
+          font_size_delta));
 }
 
 // views::LabelButton with custom line-height, color and font-list for the
@@ -123,7 +129,6 @@ END_METADATA
 // -------------------------------------------------------------
 
 UserConsentView::UserConsentView(
-    const gfx::Rect& context_menu_bounds,
     const std::u16string& intent_type,
     const std::u16string& intent_text,
     base::WeakPtr<QuickAnswersUiController> controller)
@@ -136,6 +141,9 @@ UserConsentView::UserConsentView(
     title_text_ = l10n_util::GetStringUTF16(
         IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT);
   } else {
+    // TODO(b/340628664): pass intent type enum and stop building a UI string
+    // with string concatenation as it can cause complications in UI
+    // translations.
     title_text_ = l10n_util::GetStringFUTF16(
         IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_TITLE_TEXT_WITH_INTENT, intent_type,
         intent_text);
@@ -155,14 +163,6 @@ UserConsentView::UserConsentView(
 
 UserConsentView::~UserConsentView() = default;
 
-gfx::Size UserConsentView::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  // View should match width of the context menu.
-  auto width = context_menu_bounds().width();
-  return gfx::Size(width,
-                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
-}
-
 void UserConsentView::OnFocus() {
   // Unless screen-reader mode is enabled, transfer the focus to an actionable
   // button, otherwise retain to read out its contents.
@@ -174,11 +174,13 @@ void UserConsentView::OnFocus() {
 void UserConsentView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
+  // TODO(b/340628664): Delete `UserConsentView::OnThemeChanged`. Let
+  // `views::Label`, etc handle those color changes.
   SetBackground(views::CreateSolidBackground(
       GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
   title_->SetEnabledColor(
       GetColorProvider()->GetColor(ui::kColorLabelForeground));
-  desc_->SetEnabledColor(
+  description_->SetEnabledColor(
       GetColorProvider()->GetColor(ui::kColorLabelForegroundSecondary));
 }
 
@@ -196,7 +198,7 @@ void UserConsentView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void UserConsentView::UpdateBoundsForQuickAnswers() {
-  PreferredSizeChanged();
+  // TODO(b/331271987): Remove this and the interface.
 }
 
 std::vector<views::View*> UserConsentView::GetFocusableViews() {
@@ -211,8 +213,9 @@ std::vector<views::View*> UserConsentView::GetFocusableViews() {
 }
 
 void UserConsentView::InitLayout() {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
 
+  // TODO(b/340628664): Use views::Builder.
   // Main-view Layout.
   main_view_ = AddChildView(std::make_unique<views::View>());
   auto* layout =
@@ -235,42 +238,54 @@ void UserConsentView::InitLayout() {
 }
 
 void UserConsentView::InitContent() {
-  // Layout.
-  content_ = main_view_->AddChildView(std::make_unique<views::View>());
+  const gfx::Insets margin = gfx::Insets::TLBR(0, 0, kContentSpacingDip, 0);
 
-  auto* layout =
-      content_->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      .SetInteriorMargin(kContentInsets)
-      .SetCollapseMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(0, 0, kContentSpacingDip, 0));
+  views::Label* title;
+  views::Label* description;
 
-  // Title.
-  title_ =
-      content_->AddChildView(CreateLabel(title_text_, kTitleFontSizeDelta));
-  // Set the maximum width of the label to the width it would need to be for the
-  // UserConsentView to be the same width as the anchor, so its preferred size
-  // will be calculated correctly.
-  // TODO(b/331271987): Remove the usage of `context_menu_bounds()` in this view
-  // (use layout manager instead).
-  int maximum_width = GetActualLabelWidth(context_menu_bounds().width());
-  title_->SetMaximumWidthSingleLine(maximum_width);
+  content_ = main_view_->AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetIgnoreDefaultMainAxisMargins(true)
+          .SetInteriorMargin(kContentInsets)
+          .SetCollapseMargins(true)
+          .AddChild(
+              GetConfiguredLabelBuilder(kTitleFontSizeDelta)
+                  .CopyAddressTo(&title)
+                  .SetText(title_text_)
+                  .SetProperty(views::kMarginsKey, margin)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToMinimum,
+                                   views::MaximumFlexSizeRule::kPreferred)))
+          .AddChild(
+              GetConfiguredLabelBuilder(kDescFontSizeDelta)
+                  .CopyAddressTo(&description)
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT))
+                  .SetMultiLine(true)
+                  .SetProperty(views::kMarginsKey, margin)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToMinimum,
+                                   views::MaximumFlexSizeRule::kPreferred,
+                                   /*adjust_height_for_width=*/true)))
+          .Build());
 
-  // Description.
-  desc_ = content_->AddChildView(CreateLabel(
-      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT),
-      kDescFontSizeDelta));
-  desc_->SetMultiLine(true);
+  CHECK(!title_) << "Title label is already created";
+  CHECK(title);
+  title_ = title;
 
-  desc_->SetMaximumWidth(maximum_width);
+  CHECK(!description_) << "Description label is already created";
+  CHECK(description);
+  description_ = description;
 
   // Button bar.
   InitButtonBar();
 }
 
 void UserConsentView::InitButtonBar() {
+  // TODO(b/340628664): Use views::Builder.
   // Layout.
   auto* button_bar = content_->AddChildView(std::make_unique<views::View>());
   auto* layout =
@@ -290,6 +305,22 @@ void UserConsentView::InitButtonBar() {
       l10n_util::GetStringUTF16(
           IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_NO_THANKS_BUTTON),
       ShouldUseCompactButtonLayout(context_menu_bounds().width()));
+  // TODO(b/340628664): Consider if we can set min size for UserConsentView
+  // itself.
+  // Use MinimumFlexSizeRule=kPreferred instead of kScaleToZero, etc to avoid
+  // making an un-readable but actionable button. This is to avoid showing
+  // following UI:
+  //
+  // Title
+  // Description
+  // [] []
+  //
+  // Two buttons are shown without text because all button texts get truncated
+  // for insufficient space.
+  no_thanks_button->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred));
   no_thanks_button_ = button_bar->AddChildView(std::move(no_thanks_button));
 
   // Allow button
@@ -310,7 +341,22 @@ void UserConsentView::InitButtonBar() {
           IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON),
       ShouldUseCompactButtonLayout(context_menu_bounds().width()));
   allow_button->SetStyle(ui::ButtonStyle::kProminent);
+  // TODO(b/340628664): Consider if we can set min size for UserConsentView
+  // itself.
+  // Use MinimumFlexSizeRule=kPreferred instead of kScaleToZero, etc to avoid
+  // making an un-readable but actionable button.
+  allow_button->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred));
   allow_button_ = button_bar->AddChildView(std::move(allow_button));
+
+  // Set preferred size of `button_bar` as a minimum x-axis size of `content_`.
+  // We intentionally let the layout overflow in x-axis. Without this,
+  // `content_` will try to render in the available size and end up in a wrong
+  // height.
+  CHECK(content_);
+  content_->SetMinimumCrossAxisSize(button_bar->GetPreferredSize().width());
 }
 
 BEGIN_METADATA(UserConsentView)

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/focus_search.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -32,8 +33,7 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
 
  public:
   static constexpr char kWidgetName[] = "UserConsentViewWidget";
-  UserConsentView(const gfx::Rect& anchor_view_bounds,
-                  const std::u16string& intent_type,
+  UserConsentView(const std::u16string& intent_type,
                   const std::u16string& intent_text,
                   base::WeakPtr<QuickAnswersUiController> controller);
 
@@ -44,8 +44,6 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
   ~UserConsentView() override;
 
   // chromeos::ReadWriteCardsView:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
   void OnFocus() override;
   void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
@@ -71,9 +69,9 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
 
   // Owned by view hierarchy.
   raw_ptr<views::View> main_view_ = nullptr;
-  raw_ptr<views::View> content_ = nullptr;
+  raw_ptr<views::FlexLayoutView> content_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
-  raw_ptr<views::Label> desc_ = nullptr;
+  raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<views::LabelButton> no_thanks_button_ = nullptr;
   raw_ptr<views::LabelButton> allow_button_ = nullptr;
 };

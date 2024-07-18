@@ -241,7 +241,7 @@ void QuickAnswersUiController::CreateUserConsentView(
 
   auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
       std::make_unique<quick_answers::UserConsentView>(
-          anchor_bounds, intent_type, intent_text, weak_factory_.GetWeakPtr()));
+          intent_type, intent_text, weak_factory_.GetWeakPtr()));
   user_consent_view_.SetView(view);
 }
 
