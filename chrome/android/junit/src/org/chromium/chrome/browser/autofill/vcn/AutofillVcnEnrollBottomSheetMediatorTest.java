@@ -32,6 +32,8 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetMediator.VirtualCardEnrollmentBubbleResult;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -138,5 +140,75 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         mMediator.hide();
 
         verifyNoInteractions(mBottomSheetController);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VCN_ENROLL_LOADING_AND_CONFIRMATION})
+    public void testMetrics_hideAfterOnAccept_RecordsMetric() {
+        HistogramWatcher loadingShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillVcnEnrollBottomSheetMediator.LOADING_SHOWN_HISTOGRAM, true);
+        HistogramWatcher loadingResultHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillVcnEnrollBottomSheetMediator.LOADING_RESULT_HISTOGRAM,
+                        VirtualCardEnrollmentBubbleResult.ACCEPTED);
+
+        mMediator.requestShowContent(mWindow);
+        mMediator.onAccept();
+        mMediator.hide();
+
+        loadingShownHistogram.assertExpected();
+        loadingResultHistogram.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VCN_ENROLL_LOADING_AND_CONFIRMATION})
+    public void testMetrics_hideAfterOnAccept_NoRecords() {
+        HistogramWatcher loadingShownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                AutofillVcnEnrollBottomSheetMediator.LOADING_SHOWN_HISTOGRAM)
+                        .build();
+        HistogramWatcher loadingResultHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                AutofillVcnEnrollBottomSheetMediator.LOADING_RESULT_HISTOGRAM)
+                        .build();
+
+        mMediator.requestShowContent(mWindow);
+        mMediator.onAccept();
+        mMediator.hide();
+
+        loadingShownHistogram.assertExpected();
+        loadingResultHistogram.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VCN_ENROLL_LOADING_AND_CONFIRMATION})
+    public void testMetrics_onCanceledAfterOnAccept_RecordsClosedLoadingResult() {
+        HistogramWatcher loadingResultHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillVcnEnrollBottomSheetMediator.LOADING_RESULT_HISTOGRAM,
+                        VirtualCardEnrollmentBubbleResult.CLOSED);
+
+        mMediator.requestShowContent(mWindow);
+        mMediator.onAccept();
+        mMediator.onCancel();
+
+        loadingResultHistogram.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_hideWithoutCallbacks_NoRecords() {
+        HistogramWatcher loadingResultHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                AutofillVcnEnrollBottomSheetMediator.LOADING_RESULT_HISTOGRAM)
+                        .build();
+
+        mMediator.requestShowContent(mWindow);
+        mMediator.hide();
+
+        loadingResultHistogram.assertExpected();
     }
 }
