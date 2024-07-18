@@ -8065,8 +8065,8 @@ const char kOzonePlatformHintChoiceWayland[] = "Wayland";
 
 const char kOzonePlatformHintName[] = "Preferred Ozone platform";
 const char kOzonePlatformHintDescription[] =
-    "Selects the preferred platform backend used on Linux. The default one is "
-    "\"X11\". \"Auto\" selects Wayland if possible, X11 otherwise. ";
+    "Selects the preferred platform backend used on Linux. \"Auto\" selects "
+    "Wayland if possible, X11 otherwise. ";
 
 const char kPulseaudioLoopbackForCastName[] =
     "Linux System Audio Loopback for Cast (pulseaudio)";
