@@ -479,7 +479,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // status that was encountered.
   void UnregisterServiceWorkerImpl(const GURL& scope,
                                    const blink::StorageKey& key,
-                                   bool is_immediate,
                                    ResultCallback callback);
   void UnregisterServiceWorkerImmediatelyImpl(const GURL& scope,
                                               const blink::StorageKey& key,
