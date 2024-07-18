@@ -72,7 +72,8 @@ public class DigitalIdentitySafetyInterstitialController {
         String bodyText =
                 context.getString(
                         bodyTextResourceId,
-                        UrlFormatter.formatOriginForSecurityDisplay(mOrigin, SchemeDisplay.SHOW));
+                        UrlFormatter.formatOriginForSecurityDisplay(
+                                mOrigin, SchemeDisplay.OMIT_CRYPTOGRAPHIC));
 
         Resources resources = context.getResources();
         PropertyModel.Builder dialogModelBuilder =
@@ -105,7 +106,8 @@ public class DigitalIdentitySafetyInterstitialController {
         String abortedMessage =
                 context.getString(
                         R.string.digital_identity_interstitial_request_aborted_dialog_text,
-                        UrlFormatter.formatOriginForSecurityDisplay(mOrigin, SchemeDisplay.SHOW));
+                        UrlFormatter.formatOriginForSecurityDisplay(
+                                mOrigin, SchemeDisplay.OMIT_CRYPTOGRAPHIC));
         mDialogModel.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2, abortedMessage);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
     }

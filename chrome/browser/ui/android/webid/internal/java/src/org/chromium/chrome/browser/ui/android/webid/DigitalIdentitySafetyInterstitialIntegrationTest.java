@@ -191,7 +191,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     private String getPageOriginString() {
         String pageUrl = mTestServer.getURL(TEST_PAGE);
         Origin pageOrigin = Origin.create(new GURL(pageUrl));
-        return pageOrigin.getScheme() + "://" + pageOrigin.getHost() + ":" + pageOrigin.getPort();
+        return pageOrigin.getHost() + ":" + pageOrigin.getPort();
     }
 
     public void checkDigitalIdentityRequestWithDialogFieldTrialParam(
