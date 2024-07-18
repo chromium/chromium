@@ -8,11 +8,20 @@ bool ExtensionOpenURL(NSURL* url,
                       UIResponder* responder,
                       BlockWithBoolean pre_open_block) {
   while ((responder = responder.nextResponder)) {
-    if ([responder respondsToSelector:@selector(openURL:)]) {
+    SEL open_url_selector = @selector(openURL:options:completionHandler:);
+    if ([responder respondsToSelector:open_url_selector]) {
       if (pre_open_block) {
         pre_open_block(YES);
       }
-      [responder performSelector:@selector(openURL:) withObject:url];
+      NSMethodSignature* method_signature =
+          [responder methodSignatureForSelector:open_url_selector];
+      NSInvocation* open_invocation =
+          [NSInvocation invocationWithMethodSignature:method_signature];
+      open_invocation.target = responder;
+      open_invocation.selector = open_url_selector;
+      [open_invocation setArgument:&url atIndex:2];
+      [open_invocation retainArguments];
+      [open_invocation invoke];
       return YES;
     }
   }
