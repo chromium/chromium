@@ -382,7 +382,7 @@
     },
     {
       name: "AudioContextOnError",
-      status: "experimental",
+      status: "stable",
     },
     {
       // AudioContext.playoutStats interface.

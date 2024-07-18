@@ -60,5 +60,6 @@ dictionary AudioSinkOptions {
 
     [MeasureAs=AudioContextSinkId, SecureContext] readonly attribute (DOMString or AudioSinkInfo) sinkId;
     [MeasureAs=AudioContextSetSinkId, RaisesException, CallWith=ScriptState, SecureContext] Promise<undefined> setSinkId((DOMString or AudioSinkOptions) sinkId);
+    [RuntimeEnabled=AudioContextOnError, MeasureAs=AudioContextOnError] attribute EventHandler onerror;
     [SecureContext] attribute EventHandler onsinkchange;
 };

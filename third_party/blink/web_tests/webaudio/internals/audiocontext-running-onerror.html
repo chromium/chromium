@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+  <title>Test AudioContext.onerror on a running AudioContext</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+    promise_test(async () => {
+      const context = new AudioContext();
+      await context.resume();
+      assert_equals(context.state, 'running',
+                    'The initial context state should be "running".');
+
+      let isOnErrorDispatched = false;
+      let eventsDispatched = [];
+      const handleDispatchedEvent = (resolve, newMessage) => {
+        eventsDispatched.push(newMessage);
+        if (eventsDispatched.length < 2) {
+          return;
+        }
+
+        // The second `statechange` event is caused by the render error.
+        assert_equals(eventsDispatched[0], 'AUDIO_CONTEXT_ERROR');
+        assert_equals(eventsDispatched[1], 'AUDIO_CONTEXT_STATE_CHANGE');
+
+        resolve();
+        context.onerror = null;
+        context.onstatechange = null;
+        context.close();
+      };
+
+      return new Promise(async (resolve) => {
+        context.onerror = () => {
+          isOnErrorDispatched = true;
+          handleDispatchedEvent(resolve, 'AUDIO_CONTEXT_ERROR');
+        };
+
+        context.onstatechange = () => {
+          // Do not care about what happens before the error event.
+          if (!isOnErrorDispatched) {
+            return;
+          }
+
+          handleDispatchedEvent(resolve, 'AUDIO_CONTEXT_STATE_CHANGE');
+        };
+
+        // Trigger a fake device error.
+        internals.emulateDeviceFailureOnAudioContext(context);
+      });
+    }, 'Test AudioContext.onerror on a running AudioContext');
+  </script>
+</body>
+</html>

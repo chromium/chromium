@@ -11252,6 +11252,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5033" label="ButtonTypeAttrEmptyString"/>
   <int value="5034" label="ProtectedAudienceDirectFromSellerSignals"/>
   <int value="5035" label="WebGPUSubgroupsFeatures"/>
+  <int value="5036" label="AudioContextOnError"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

@@ -62,6 +62,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
                WebAudioSinkDescriptor sink_descriptor);
   ~AudioContext() override;
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(sinkchange, kSinkchange)
 
   void Trace(Visitor*) const override;
@@ -306,6 +307,8 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // Passes `audio_frame_stats_` to be absorbed by `receiver`.
   void TransferAudioFrameStatsTo(AudioFrameStats& receiver);
 
+  void HandleRenderError();
+
   unsigned context_id_;
   Member<ScriptPromiseResolver<IDLUndefined>> close_resolver_;
 
@@ -398,7 +401,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   // To keep the record of any render errors reported from the infra during
   // the life cycle of the context.
-  bool render_error_occoured_ = false;
+  bool render_error_occurred_ = false;
 };
 
 }  // namespace blink

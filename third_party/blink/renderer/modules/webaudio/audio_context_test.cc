@@ -278,7 +278,7 @@ TEST_F(AudioContextTest, OnRenderErrorFromPlatformDestination) {
             AudioContext::AudioContextState::kRunning);
 
   audio_context->invoke_onrendererror_from_platform_for_testing();
-  EXPECT_TRUE(audio_context->render_error_occoured_);
+  EXPECT_TRUE(audio_context->render_error_occurred_);
 }
 
 class ContextRenderer : public GarbageCollected<ContextRenderer> {

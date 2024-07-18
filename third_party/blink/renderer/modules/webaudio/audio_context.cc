@@ -1195,22 +1195,18 @@ bool AudioContext::IsValidSinkDescriptor(
 }
 
 void AudioContext::OnRenderError() {
+  DCHECK(IsMainThread());
+
   if (!RuntimeEnabledFeatures::AudioContextOnErrorEnabled()) {
     return;
   }
 
-  DCHECK(IsMainThread());
-
   CHECK(GetExecutionContext());
-  render_error_occoured_ = true;
-  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
-  if (window && window->GetFrame()) {
-    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "The AudioContext encountered an error from the audio device or the "
-        "WebAudio renderer."));
-  }
+  render_error_occurred_ = true;
+  GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent)
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&AudioContext::HandleRenderError,
+                               WrapPersistent(this)));
 }
 
 void AudioContext::ResumeOnPrerenderActivation() {
@@ -1231,6 +1227,33 @@ void AudioContext::TransferAudioFrameStatsTo(
     AudioContext::AudioFrameStats& receiver) {
   DeferredTaskHandler::GraphAutoLocker locker(this);
   receiver.Absorb(audio_frame_stats_);
+}
+
+void AudioContext::HandleRenderError() {
+  DCHECK(IsMainThread());
+
+  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
+  if (window && window->GetFrame()) {
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "The AudioContext encountered an error from the audio device or the "
+        "WebAudio renderer."));
+  }
+
+  // Implements
+  // https://webaudio.github.io/web-audio-api/#error-handling-on-a-running-audio-context
+  if (ContextState() == kRunning) {
+    // TODO(https://crbug.com/353641602): starting or stopping the renderer
+    // should happen on the render thread, but this is the current convention.
+    destination()->GetAudioDestinationHandler().StopRendering();
+
+    DispatchEvent(*Event::Create(event_type_names::kError));
+    suspended_by_user_ = false;
+    SetContextState(kSuspended);
+  } else if (ContextState() == kSuspended) {
+    DispatchEvent(*Event::Create(event_type_names::kError));
+  }
 }
 
 void AudioContext::invoke_onrendererror_from_platform_for_testing() {

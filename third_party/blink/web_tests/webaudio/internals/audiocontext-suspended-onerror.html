@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <title>Test AudioContext.onerror on a suspended AudioContext</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+    promise_test(async () => {
+      const context = new AudioContext();
+      await context.suspend();
+      assert_equals(context.state, 'suspended',
+                    'The initial context state should be "suspended".');
+
+      let isOnErrorDispatched = false;
+
+      return new Promise(async (resolve) => {
+        context.onerror = () => {
+          isOnErrorDispatched = true;
+          resolve();
+          context.close();
+        };
+
+        context.onstatechange = () => {
+          // Do not care about what happens before the error event.
+          if (!isOnErrorDispatched) {
+            return;
+          }
+
+          // The only state change expected the `closed` state.
+          assert_equals(context.state, 'closed');
+        };
+
+        // Trigger a fake device error.
+        internals.emulateDeviceFailureOnAudioContext(context);
+      });
+    }, 'Test AudioContext.onerror on a suspended AudioContext');
+  </script>
+</body>
+</html>
