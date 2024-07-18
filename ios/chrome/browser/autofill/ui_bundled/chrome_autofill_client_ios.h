@@ -159,14 +159,18 @@ class ChromeAutofillClientIOS : public AutofillClient {
   raw_ptr<web::WebState> web_state_;
   __weak id<AutofillClientIOSBridge> bridge_;
   raw_ptr<signin::IdentityManager> identity_manager_;
-  std::unique_ptr<payments::IOSChromePaymentsAutofillClient>
-      payments_autofill_client_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   scoped_refptr<AutofillWebDataService> autofill_web_data_service_;
   raw_ptr<infobars::InfoBarManager> infobar_manager_;
   std::unique_ptr<LogManager> log_manager_;
   const AutofillAblationStudy ablation_study_;
   std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
+
+  // Order matters for this initialization. This initialization must happen
+  // after all of the members passed into the constructor of
+  // `payments_autofill_client_` are initialized, other than `this`.
+  payments::IOSChromePaymentsAutofillClient payments_autofill_client_{
+      this, web_state_, infobar_manager_, pref_service_};
 
   // A weak reference to the view controller used to present UI.
   __weak UIViewController* base_view_controller_;

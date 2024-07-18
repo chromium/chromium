@@ -140,13 +140,7 @@ FormDataImporter* WebViewAutofillClientIOS::GetFormDataImporter() {
 
 payments::PaymentsAutofillClient*
 WebViewAutofillClientIOS::GetPaymentsAutofillClient() {
-  if (!payments_autofill_client_) {
-    payments_autofill_client_ =
-        std::make_unique<payments::IOSWebViewPaymentsAutofillClient>(
-            this, bridge_, web_state_);
-  }
-
-  return payments_autofill_client_.get();
+  return &payments_autofill_client_;
 }
 
 StrikeDatabase* WebViewAutofillClientIOS::GetStrikeDatabase() {
@@ -297,9 +291,7 @@ LogManager* WebViewAutofillClientIOS::GetLogManager() const {
 void WebViewAutofillClientIOS::set_bridge(
     id<CWVAutofillClientIOSBridge> bridge) {
   bridge_ = bridge;
-  if (payments_autofill_client_) {
-    payments_autofill_client_->set_bridge(bridge);
-  }
+  payments_autofill_client_.set_bridge(bridge);
 }
 
 }  // namespace autofill

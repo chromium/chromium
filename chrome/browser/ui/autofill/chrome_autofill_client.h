@@ -222,11 +222,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-  std::unique_ptr<payments::ChromePaymentsAutofillClient>
-      payments_autofill_client_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   std::unique_ptr<payments::MandatoryReauthManager>
       payments_mandatory_reauth_manager_;
+
+  payments::ChromePaymentsAutofillClient payments_autofill_client_{this};
 
   base::WeakPtr<AutofillSuggestionController> suggestion_controller_;
   FormInteractionsFlowId flow_id_;

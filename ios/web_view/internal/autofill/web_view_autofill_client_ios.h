@@ -122,12 +122,16 @@ class WebViewAutofillClientIOS : public AutofillClient {
   web::WebState* web_state_;
   __weak id<CWVAutofillClientIOSBridge> bridge_;
   signin::IdentityManager* identity_manager_;
-  std::unique_ptr<payments::IOSWebViewPaymentsAutofillClient>
-      payments_autofill_client_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   StrikeDatabase* strike_database_;
   syncer::SyncService* sync_service_ = nullptr;
   std::unique_ptr<LogManager> log_manager_;
+
+  // Order matters for this initialization. This initialization must happen
+  // after all of the members passed into the constructor of
+  // `payments_autofill_client_` are initialized, other than `this`.
+  payments::IOSWebViewPaymentsAutofillClient payments_autofill_client_{
+      this, bridge_, web_state_};
 };
 
 }  // namespace autofill

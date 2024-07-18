@@ -163,13 +163,7 @@ FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
 
 payments::IOSChromePaymentsAutofillClient*
 ChromeAutofillClientIOS::GetPaymentsAutofillClient() {
-  if (!payments_autofill_client_) {
-    payments_autofill_client_ =
-        std::make_unique<payments::IOSChromePaymentsAutofillClient>(
-            this, web_state_, infobar_manager_, pref_service_);
-  }
-
-  return payments_autofill_client_.get();
+  return &payments_autofill_client_;
 }
 
 StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {

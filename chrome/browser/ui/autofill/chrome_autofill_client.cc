@@ -318,11 +318,7 @@ FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
 
 payments::ChromePaymentsAutofillClient*
 ChromeAutofillClient::GetPaymentsAutofillClient() {
-  if (!payments_autofill_client_) {
-    payments_autofill_client_ =
-        std::make_unique<payments::ChromePaymentsAutofillClient>(this);
-  }
-  return payments_autofill_client_.get();
+  return &payments_autofill_client_;
 }
 
 StrikeDatabase* ChromeAutofillClient::GetStrikeDatabase() {
