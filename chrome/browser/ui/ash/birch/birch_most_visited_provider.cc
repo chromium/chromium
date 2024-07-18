@@ -30,6 +30,12 @@ BirchMostVisitedProvider::BirchMostVisitedProvider(Profile* profile)
 BirchMostVisitedProvider::~BirchMostVisitedProvider() = default;
 
 void BirchMostVisitedProvider::RequestBirchDataFetch() {
+  // `history_service_` can be null in some tests, so check that here.
+  if (!history_service_) {
+    Shell::Get()->birch_model()->SetMostVisitedItems({});
+    return;
+  }
+
   // Get the most frequently accessed URL.
   history_service_->QueryMostVisitedURLs(
       /*result_count=*/1,

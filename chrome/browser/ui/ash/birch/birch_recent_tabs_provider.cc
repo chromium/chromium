@@ -77,10 +77,12 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
     return;
   }
 
-  bool tab_sync_enabled = SyncServiceFactory::GetForProfile(profile_)
-                              ->GetUserSettings()
-                              ->GetSelectedTypes()
-                              .Has(syncer::UserSelectableType::kTabs);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  // `sync_service_` can be null in some tests, so check that here.
+  bool tab_sync_enabled =
+      sync_service && sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                          syncer::UserSelectableType::kTabs);
   if (!tab_sync_enabled) {
     // Complete the request with an empty set of tabs when tab sync is
     // disabled

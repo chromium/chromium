@@ -31,6 +31,12 @@ BirchLastActiveProvider::BirchLastActiveProvider(Profile* profile)
 BirchLastActiveProvider::~BirchLastActiveProvider() = default;
 
 void BirchLastActiveProvider::RequestBirchDataFetch() {
+  // `history_service_` can be null in some tests, so check that here.
+  if (!history_service_) {
+    Shell::Get()->birch_model()->SetLastActiveItems({});
+    return;
+  }
+
   // Get the last active URL. The query results are sorted most-recent first, so
   // we only need to get the first entry to find the last active URL. We only
   // care about URLs in the last week.
