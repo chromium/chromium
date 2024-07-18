@@ -35,6 +35,10 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
         type: Number,
         observer: 'onDataPollingCycleChanged',
       },
+      dataRetentionDuration: {
+        type: Number,
+        observer: 'onDataRetentionDurationChanged',
+      },
     };
   }
 
@@ -84,6 +88,11 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
   private onDataPollingCycleChanged() {
     this.dispatchEvent(new CustomEvent(
         'polling-cycle-updated', {bubbles: true, composed: true}));
+  }
+
+  private onDataRetentionDurationChanged() {
+    this.dispatchEvent(new CustomEvent(
+        'data-retention-updated', {bubbles: true, composed: true}));
   }
 }
 

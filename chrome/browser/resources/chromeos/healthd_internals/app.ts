@@ -72,6 +72,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
     super.connectedCallback();
 
     this.dataManager = new DataManager(
+        this.$.settingsDialog.getDataRetentionDuration(),
         this.$.telemetryPage,
         this.$.batteryChart,
         this.$.cpuFrequencyChart,
@@ -80,6 +81,10 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
     this.$.settingsDialog.addEventListener('polling-cycle-updated', () => {
       this.setupFetchDataRequests();
+    });
+
+    this.$.settingsDialog.addEventListener('data-retention-updated', () => {
+      this.updateDataRetentionDuration();
     });
 
     sendWithPromise('getHealthdInternalsFeatureFlag')
@@ -102,6 +107,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
           this.updateSelectedIndex(this.currentPath);
           this.handleVisibilityChanged(this.currentPath, true);
           this.setupFetchDataRequests();
+          this.updateDataRetentionDuration();
         });
   }
 
@@ -179,6 +185,17 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
   private openSettingsDialog() {
     this.$.settingsDialog.openSettingsDialog();
+  }
+
+  private updateDataRetentionDuration() {
+    if (!this.pageList.length) {
+      console.warn(
+          'Data retention duration is ignored when tabs are not displayed.');
+      return;
+    }
+
+    const duration: number = this.$.settingsDialog.getDataRetentionDuration();
+    this.dataManager.updateDataRetentionDuration(duration);
   }
 }
 

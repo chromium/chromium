@@ -36,10 +36,13 @@ function sortThermals(
  */
 export class DataManager {
   constructor(
+      dataRetentionDuration: number,
       telemetryPage: HealthdInternalsTelemetryElement,
       batteryChart: HealthdInternalsBatteryChartElement,
       cpuFrequencyChart: HealthdInternalsCpuFrequencyChartElement,
       thermalChart: HealthdInternalsThermalChartElement) {
+    this.dataRetentionDuration = dataRetentionDuration;
+
     this.telemetryPage = telemetryPage;
     this.batteryChart = batteryChart;
     this.cpuFrequencyChart = cpuFrequencyChart;
@@ -69,6 +72,9 @@ export class DataManager {
   // The data fetching interval ID used for cancelling the running interval.
   private fetchDataInternalId: number|undefined = undefined;
 
+  // The duration (in milliseconds) that the data will be retained.
+  private dataRetentionDuration: number;
+
   /**
    * Set up periodic fetch data requests to the backend to get required info.
    *
@@ -89,6 +95,11 @@ export class DataManager {
     this.fetchDataInternalId = setInterval(fetchData, pollingCycle);
   }
 
+  updateDataRetentionDuration(durationHours: number) {
+    this.dataRetentionDuration = durationHours * 60 * 60 * 1000;
+    this.removeOutdatedData(Date.now());
+  }
+
   private handleHealthdTelemetryInfo(data: HealthdApiTelemetryResult) {
     data.thermals.sort(sortThermals);
 
@@ -99,9 +110,24 @@ export class DataManager {
     this.updateCpuFrequencyData(data.cpu, timestamp);
     this.updateThermalData(data.thermals, timestamp);
 
+    this.removeOutdatedData(timestamp);
+
     this.batteryChart.updateEndTime(timestamp);
     this.cpuFrequencyChart.updateEndTime(timestamp);
     this.thermalChart.updateEndTime(timestamp);
+  }
+
+  private removeOutdatedData(endTime: number) {
+    const newStartTime = endTime - this.dataRetentionDuration;
+    for (const dataSeries of this.batteryDataSeries) {
+      dataSeries.removeOutdatedData(newStartTime);
+    }
+    for (const dataSeries of this.cpuFrequencyDataSeries) {
+      dataSeries.removeOutdatedData(newStartTime);
+    }
+    for (const dataSeries of this.thermalDataSeries) {
+      dataSeries.removeOutdatedData(newStartTime);
+    }
   }
 
   private updateBatteryData(

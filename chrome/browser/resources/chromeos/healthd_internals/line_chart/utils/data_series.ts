@@ -65,8 +65,6 @@ export class DataSeries {
           '. Time must be non-strictly increasing.');
       return;
     }
-    // TODO(b/350423216): To avoid hitting performance issue, we should keep a
-    // limited number of data points and delete outdated data points.
     this.dataPoints.push({value: value, time: time});
     this.clearCacheValue();
   }
@@ -247,5 +245,23 @@ export class DataSeries {
     const startTime: number = this.cacheStartTime;
     const stepSize: number = this.cacheStepSize;
     return Math.floor((time - startTime) / stepSize) * stepSize;
+  }
+
+  /**
+   * Filter out data points which the `time` field is earlier than startTime.
+   */
+  removeOutdatedData(startTime: number) {
+    // TODO(b/353871773): Improve the performance of data points removing.
+    let numRemovedPoints: number = 0;
+    for (let i = 0; i < this.dataPoints.length; ++i) {
+      if (this.dataPoints[i].time <= startTime) {
+        numRemovedPoints += 1;
+      } else {
+        break;
+      }
+    }
+    if (numRemovedPoints !== 0) {
+      this.dataPoints.splice(0, numRemovedPoints);
+    }
   }
 }
