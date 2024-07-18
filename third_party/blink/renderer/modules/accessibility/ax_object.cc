@@ -4356,11 +4356,33 @@ bool AXObject::IsProhibited(
   return false;
 }
 
+std::string AXObject::GetProhibitedNameError(
+    const String& prohibited_name,
+    ax::mojom::blink::NameFrom& prohibited_name_from) const {
+  std::ostringstream error;
+  error << "An accessible name was placed on a prohibited role. This "
+           "causes inconsistent behavior in screen readers. For example, "
+           "<div aria-label=\"foo\"> is invalid as it is not accessible in "
+           "every screen reader, because they expect only to read the inner "
+           "contents of certain types of containers. Please add a valid role "
+           "or put the name on a different object. As a repair technique, "
+           "the browser will place the prohibited name in the accessible "
+           "description field. To learn more, see the section 'Roles which "
+           "cannot be named' in the ARIA specification at "
+           "https://w3c.github.io/aria/#namefromprohibited."
+        << "\nError details:" << "\n* Element: " << GetElement()
+        << "\n* Role: " << InternalRoleName(RoleValue())
+        << "\n* Prohibited name: " << prohibited_name
+        << "\n* Name from = " << prohibited_name_from << "\n";
+  return error.str();
+}
+
 // Simplify whitespace, but preserve a single leading and trailing whitespace
 // character if it's present.
-String AXObject::SimplifyName(const String& str) const {
+String AXObject::SimplifyName(const String& str,
+                              ax::mojom::blink::NameFrom& name_from) const {
   if (str.empty())
-    return "";
+    return "";  // Fast path / early return for many objects in tree.
 
   // Do not simplify name for text, unless it is pseudo content.
   // TODO(accessibility) There seems to be relatively little value for the
@@ -4369,33 +4391,68 @@ String AXObject::SimplifyName(const String& str) const {
   if (GetNode() && ui::IsText(RoleValue()))
     return str;
 
+  String simplified = str.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+
+#if DCHECK_IS_ON()
+  if (GetElement() && !simplified.empty() && IsNameProhibited()) {
+    // Enforce that names cannot occur on prohibited roles in Web UI.
+    static bool name_on_prohibited_role_error_shown;
+    if (!name_on_prohibited_role_error_shown) {
+      name_on_prohibited_role_error_shown = true;  // Reduce console spam.
+#if DCHECK_IS_ON()
+      if (AXObjectCache().IsInternalUICheckerOn()) {
+        DCHECK(false)
+            << "A prohibited accessible name was used in chromium web UI:\n"
+            << GetProhibitedNameError(str, name_from)
+            << "* URL: " << GetDocument()->Url()
+            << "\n* Outer html: " << GetElement()->outerHTML()
+            << "\n* AXObject ancestry:\n"
+            << ParentChainToStringHelper(this);
+      }
+#endif
+      if (RuntimeEnabledFeatures::AccessibilityProhibitedNamesEnabled()) {
+        // Log error on dev tools console the first time.
+        GetElement()->AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kRendering,
+            mojom::blink::ConsoleMessageLevel::kError,
+            String(GetProhibitedNameError(str, name_from)));
+      }
+    }
+
+    // TODO(crbug.com/350528330): Uncomment the following in a future CL.
+    // Prohibited names are repaired by moving them to the description field,
+    // where they will not override the contents of the element for screen
+    // reader users.
+    // name_from = ax::mojom::blink::NameFrom::kProhibited;
+    // return "";
+  }
+#endif
+
   bool has_before_space = IsHTMLSpace<UChar>(str[0]);
   bool has_after_space = IsHTMLSpace<UChar>(str[str.length() - 1]);
-  String simplified = str.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
-  if (!has_before_space && !has_after_space)
+  if (!has_before_space && !has_after_space) {
     return simplified;
+  }
 
   // Preserve a trailing and/or leading space.
   StringBuilder result;
-  if (has_before_space)
+  if (has_before_space) {
     result.Append(' ');
+  }
   result.Append(simplified);
-  if (has_after_space)
+  if (has_after_space) {
     result.Append(' ');
+  }
   return result.ToString();
 }
 
-String AXObject::ComputedName() const {
+String AXObject::ComputedName(ax::mojom::blink::NameFrom* name_from_out) const {
   ax::mojom::blink::NameFrom name_from;
   AXObjectVector name_objects;
-  return GetName(name_from, &name_objects);
+  return GetName(name_from_out ? *name_from_out : name_from, &name_objects);
 }
 
 bool AXObject::IsNameProhibited() const {
-  if (!RuntimeEnabledFeatures::AccessibilityProhibitedNamesEnabled()) {
-    return false;
-  }
-
   if (CanSetFocusAttribute()) {
     // Make an exception for focusable elements. ATs will likely read the name
     // of a focusable element even if it has the wrong role.
@@ -4460,16 +4517,17 @@ String AXObject::GetName(ax::mojom::blink::NameFrom& name_from,
       name_objects->push_back(related_object->object);
   }
 
-  return SimplifyName(text);
+  return SimplifyName(text, name_from);
 }
 
 String AXObject::GetName(NameSources* name_sources) const {
   AXObjectSet visited;
-  ax::mojom::blink::NameFrom tmp_name_from;
+  ax::mojom::blink::NameFrom name_from;
   AXRelatedObjectVector tmp_related_objects;
-  String text = TextAlternative(false, nullptr, visited, tmp_name_from,
+  String text = TextAlternative(false, nullptr, visited, name_from,
                                 &tmp_related_objects, name_sources);
-  return SimplifyName(text);
+
+  return SimplifyName(text, name_from);
 }
 
 String AXObject::RecursiveTextAlternative(
@@ -8126,7 +8184,12 @@ String AXObject::ToString(bool verbose) const {
     }
 
     if (!cached_values_only) {
-      string_builder = string_builder + " name=";
+      ax::mojom::blink::NameFrom name_from;
+      String name = ComputedName(&name_from);
+      std::ostringstream name_from_str;
+      name_from_str << name_from;
+      return string_builder + " nameFrom=" + String(name_from_str.str()) +
+             " name=" + name;
     }
   } else {
     string_builder = string_builder + ": ";

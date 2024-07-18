@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {ariaLabel, normalizeURL, TabData, TabItemType} from './tab_data.js';
+import {normalizeURL, TabData, TabItemType} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
 import type {Tab} from './tab_search.mojom-webui.js';
 import {getCss} from './tab_search_item.css.js';
@@ -223,10 +223,6 @@ export class TabSearchItemElement extends TabSearchItemBase {
     if (protocol === 'chrome:') {
       this.$.secondaryText.prepend(document.createTextNode('chrome://'));
     }
-  }
-
-  protected ariaLabelForText_(): string {
-    return ariaLabel(this.data);
   }
 
   protected ariaLabelForButton_(): string {

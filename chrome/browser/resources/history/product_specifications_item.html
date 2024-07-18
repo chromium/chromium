@@ -31,6 +31,7 @@
     </cr-checkbox>
     <div id="link-container">
       <div id="link" on-click="onLinkClick_"
+          role="link" tabindex="0"
           aria-label="[[getMenuAriaLabel_(item)]]">
         <cr-icon icon="history:table-chart-organize"></cr-icon>
         [[getItemTitle_(item)]] [[item.uuid.value]]

@@ -628,7 +628,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Returns result of Accessible Name Calculation algorithm.
   // This is a simpler high-level interface to |name| used by Inspector.
-  String ComputedName() const;
+  // If name_from_out is non-null, it will contain the source of the name.
+  String ComputedName(
+      ax::mojom::blink::NameFrom* name_from_out = nullptr) const;
 
   // Internal function used to determine whether the element supports deriving
   // its accessible name from its descendants. The result of calling |GetName|
@@ -1498,10 +1500,15 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void AddChildren() = 0;
 
   // Collapses multiple whitespace characters into one. Used by GetName().
-  String SimplifyName(const String&) const;
+  String SimplifyName(const String&,
+                      ax::mojom::blink::NameFrom& name_from) const;
   // Returns true if the object's role prohibits it from being named, even by
   // the author. See https://w3c.github.io/aria/#namefromprohibited
   bool IsNameProhibited() const;
+  std::string GetProhibitedNameError(
+      const String& prohibited_name,
+      ax::mojom::blink::NameFrom& prohibited_name_from) const;
+
   static String RecursiveTextAlternative(
       const AXObject&,
       const AXObject* aria_label_or_description_root,

@@ -4761,7 +4761,8 @@ String AXNodeObject::TextAlternative(
   // change the spec to be more explicit about this.
   // Note: if this is part of another label or description, it needs to be
   // computed as a name, in order to contribute to that.
-  if (aria_label_or_description_root || !IsNameProhibited()) {
+  if (!RuntimeEnabledFeatures::AccessibilityProhibitedNamesEnabled() ||
+      aria_label_or_description_root || !IsNameProhibited()) {
     String resulting_text = TextAlternativeFromTooltip(
         name_from, name_sources, &found_text_alternative, &text_alternative,
         related_objects);

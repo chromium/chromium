@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {ariaLabel, TabGroupData} from './tab_data.js';
+import {TabGroupData} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
 import {Color} from './tab_group_types.mojom-webui.js';
 import {getCss} from './tab_search_group_item.css.js';
@@ -69,10 +69,6 @@ export class TabSearchGroupItemElement extends TabSearchGroupItemBase {
           this.$.primaryText, this.data.tabGroup.title,
           this.data.highlightRanges['tabGroup.title']);
     }
-  }
-
-  protected ariaLabelForText_(): string {
-    return ariaLabel(this.data);
   }
 
   protected tabCountText_(): string {

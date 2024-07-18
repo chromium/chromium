@@ -24,7 +24,6 @@ export function getHtml(this: TabSearchGroupItemElement) {
     </g>
   </svg>
 </div>
-<div id="textAriaLabel" title="${this.ariaLabelForText_()}"></div>
 <div class="text-container" aria-hidden="true">
   <div id="primaryText" title="${this.data.tabGroup.title}"></div>
   <div id="secondaryTextContainer">

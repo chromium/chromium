@@ -12,7 +12,6 @@ export function getHtml(this: TabSearchItemElement) {
 <div id="iconContainer">
   <div class="favicon" .style="background-image:${this.faviconUrl_()}"></div>
 </div>
-<div id="textAriaLabel" title="${this.ariaLabelForText_()}"></div>
 <div class="text-container" aria-hidden="true">
   <div id="primaryContainer">
     <div id="primaryText" title="${this.data.tab.title}"></div>

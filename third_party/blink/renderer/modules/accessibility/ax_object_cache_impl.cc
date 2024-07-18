@@ -800,6 +800,12 @@ AXObjectCache* AXObjectCacheImpl::Create(Document& document,
 AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
                                      const ui::AXMode& ax_mode)
     : document_(document),
+#if DCHECK_IS_ON()
+      // TODO(accessibility): turn on the UI checker for devtools.
+      internal_ui_checker_on_(GetDocument().Url().Protocol() == "chrome"),
+#else
+      internal_ui_checker_on_(false),
+#endif
       ax_mode_(ax_mode),
       validation_message_axid_(0),
       active_aria_modal_dialog_(nullptr),
