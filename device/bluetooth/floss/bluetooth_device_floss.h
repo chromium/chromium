@@ -201,6 +201,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
  private:
   // Invoked when no connection established during connecting.
   void ConnectionIncomplete();
+  // Connects with specified transport
+  void ConnectWithTransport(
+      device::BluetoothDevice::PairingDelegate* pairing_delegate,
+      ConnectCallback callback,
+      FlossAdapterClient::BluetoothTransport transport);
   // Method to connect profiles.
   void ConnectAllEnabledProfiles();
   // Updates the state of connecting and calls callbacks accordingly.
