@@ -13,6 +13,29 @@
 
 namespace ash::input_method {
 
+const std::vector<std::string>& DanishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      "xkb:dk::dan",  // Danish
+  });
+  return *input_methods;
+}
+
+const std::vector<std::string>& DutchInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      "xkb:be::nld",         // Dutch (Belgium)
+      "xkb:us:intl_pc:nld",  // Dutch (Netherlands) with US intl pc keyboard
+      "xkb:us:intl:nld",     // Dutch (Netherlands)
+  });
+  return *input_methods;
+}
+
+const std::vector<std::string>& FinnishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      "xkb:fi::fin",  // Finnish
+  });
+  return *input_methods;
+}
+
 const std::vector<std::string>& EnglishInputMethods() {
   static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:ca:eng:eng",           // Canada
@@ -57,6 +80,13 @@ const std::vector<std::string>& GermanInputMethods() {
   return *input_methods;
 }
 
+const std::vector<std::string>& ItalianInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      "xkb:it::ita",  // Italian
+  });
+  return *input_methods;
+}
+
 const std::vector<std::string>& JapaneseInputMethods() {
   static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:jp::jpn",   // Alphanumeric with Japanese keyboard
@@ -66,9 +96,50 @@ const std::vector<std::string>& JapaneseInputMethods() {
   return *input_methods;
 }
 
+const std::vector<std::string>& NorwegianInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      "xkb:no::nob",  // Norwegian
+  });
+  return *input_methods;
+}
+
+const std::vector<std::string>& PortugeseInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      "xkb:br::por",         // Portugese (Brazil)
+      "xkb:pt::por",         // Portugese (Portugal)
+      "xkb:us:intl_pc:por",  // Portugese with US intl pc keyboard
+      "xkb:us:intl:por",     // Portugese with US intl keyboard
+  });
+  return *input_methods;
+}
+
+const std::vector<std::string>& SpanishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      "xkb:latam::spa",  // Spanish (Latin America)
+      "xkb:es::spa",     // Spanish (Spain)
+  });
+  return *input_methods;
+}
+
+const std::vector<std::string>& SwedishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      "xkb:se::swe",  // Swedish
+  });
+  return *input_methods;
+}
+
 LanguageCategory InputMethodToLanguageCategory(std::string_view input_method) {
+  if (base::Contains(DanishInputMethods(), input_method)) {
+    return LanguageCategory::kDanish;
+  }
+  if (base::Contains(DutchInputMethods(), input_method)) {
+    return LanguageCategory::kDutch;
+  }
   if (base::Contains(EnglishInputMethods(), input_method)) {
     return LanguageCategory::kEnglish;
+  }
+  if (base::Contains(FinnishInputMethods(), input_method)) {
+    return LanguageCategory::kFinnish;
   }
   if (base::Contains(FrenchInputMethods(), input_method)) {
     return LanguageCategory::kFrench;
@@ -76,8 +147,23 @@ LanguageCategory InputMethodToLanguageCategory(std::string_view input_method) {
   if (base::Contains(GermanInputMethods(), input_method)) {
     return LanguageCategory::kGerman;
   }
+  if (base::Contains(ItalianInputMethods(), input_method)) {
+    return LanguageCategory::kItalian;
+  }
   if (base::Contains(JapaneseInputMethods(), input_method)) {
     return LanguageCategory::kJapanese;
+  }
+  if (base::Contains(NorwegianInputMethods(), input_method)) {
+    return LanguageCategory::kNorwegian;
+  }
+  if (base::Contains(PortugeseInputMethods(), input_method)) {
+    return LanguageCategory::kPortugese;
+  }
+  if (base::Contains(SpanishInputMethods(), input_method)) {
+    return LanguageCategory::kSpanish;
+  }
+  if (base::Contains(SwedishInputMethods(), input_method)) {
+    return LanguageCategory::kSwedish;
   }
   return LanguageCategory::kOther;
 }

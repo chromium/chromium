@@ -50,14 +50,38 @@ constexpr char kImeAllowlistLabel[] = "ime_allowlist";
 std::vector<std::string> AllowedInputMethods() {
   std::vector<std::string> input_methods = EnglishInputMethods();
 
+  if (base::FeatureList::IsEnabled(features::kOrcaDanish)) {
+    base::Extend(input_methods, DanishInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaDutch)) {
+    base::Extend(input_methods, DutchInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaFinnish)) {
+    base::Extend(input_methods, FinnishInputMethods());
+  }
   if (base::FeatureList::IsEnabled(features::kOrcaFrench)) {
     base::Extend(input_methods, FrenchInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaGerman)) {
     base::Extend(input_methods, GermanInputMethods());
   }
+  if (base::FeatureList::IsEnabled(features::kOrcaItalian)) {
+    base::Extend(input_methods, ItalianInputMethods());
+  }
   if (base::FeatureList::IsEnabled(features::kOrcaJapanese)) {
     base::Extend(input_methods, JapaneseInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaNorwegian)) {
+    base::Extend(input_methods, NorwegianInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaPortugese)) {
+    base::Extend(input_methods, PortugeseInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaSpanish)) {
+    base::Extend(input_methods, SpanishInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaSwedish)) {
+    base::Extend(input_methods, SwedishInputMethods());
   }
 
   return input_methods;

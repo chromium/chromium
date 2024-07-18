@@ -94,6 +94,7 @@ std::string_view AsString(const LanguageCategory& category) {
     case LanguageCategory::kJapanese:
       return "Japanese";
     case LanguageCategory::kOther:
+    default:
       return "Other";
   }
 }

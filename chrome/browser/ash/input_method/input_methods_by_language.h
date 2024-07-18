@@ -11,12 +11,26 @@
 namespace ash::input_method {
 
 enum class LanguageCategory {
+  kDanish,
+  kDutch,
+  kFinnish,
   kEnglish,
   kFrench,
   kGerman,
+  kItalian,
   kJapanese,
+  kNorwegian,
+  kPortugese,
+  kSpanish,
+  kSwedish,
   kOther,
 };
+
+const std::vector<std::string>& DanishInputMethods();
+
+const std::vector<std::string>& DutchInputMethods();
+
+const std::vector<std::string>& FinnishInputMethods();
 
 const std::vector<std::string>& EnglishInputMethods();
 
@@ -24,7 +38,17 @@ const std::vector<std::string>& FrenchInputMethods();
 
 const std::vector<std::string>& GermanInputMethods();
 
+const std::vector<std::string>& ItalianInputMethods();
+
 const std::vector<std::string>& JapaneseInputMethods();
+
+const std::vector<std::string>& NorwegianInputMethods();
+
+const std::vector<std::string>& PortugeseInputMethods();
+
+const std::vector<std::string>& SpanishInputMethods();
+
+const std::vector<std::string>& SwedishInputMethods();
 
 LanguageCategory InputMethodToLanguageCategory(std::string_view input_method);
 

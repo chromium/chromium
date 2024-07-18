@@ -664,287 +664,10 @@ class InternationalizeTestSuite : public TestWithParam<InputMethodTestCase> {
   EditorContext context_;
 };
 
-class EnglishOnlyEnabledTest : public InternationalizeTestSuite {};
+class EditorSwitchDefaultFlagsTest : public InternationalizeTestSuite {};
 
-INSTANTIATE_TEST_SUITE_P(EnglishOnlyEnabled,
-                         EnglishOnlyEnabledTest,
-                         testing::ValuesIn<InputMethodTestCase>({
-                             // English
-                             {"xkb:ca:eng:eng", EditorMode::kWrite},
-                             {"xkb:gb::eng", EditorMode::kWrite},
-                             {"xkb:gb:extd:eng", EditorMode::kWrite},
-                             {"xkb:gb:dvorak:eng", EditorMode::kWrite},
-                             {"xkb:in::eng", EditorMode::kWrite},
-                             {"xkb:pk::eng", EditorMode::kWrite},
-                             {"xkb:us:altgr-intl:eng", EditorMode::kWrite},
-                             {"xkb:us:colemak:eng", EditorMode::kWrite},
-                             {"xkb:us:dvorak:eng", EditorMode::kWrite},
-                             {"xkb:us:dvp:eng", EditorMode::kWrite},
-                             {"xkb:us:intl_pc:eng", EditorMode::kWrite},
-                             {"xkb:us:intl:eng", EditorMode::kWrite},
-                             {"xkb:us:workman-intl:eng", EditorMode::kWrite},
-                             {"xkb:us:workman:eng", EditorMode::kWrite},
-                             {"xkb:us::eng", EditorMode::kWrite},
-                             {"xkb:za:gb:eng", EditorMode::kWrite},
-                             // French
-                             {"xkb:be::fra", EditorMode::kBlocked},
-                             {"xkb:ca::fra", EditorMode::kBlocked},
-                             {"xkb:ca:multix:fra", EditorMode::kBlocked},
-                             {"xkb:fr::fra", EditorMode::kBlocked},
-                             {"xkb:fr:bepo:fra", EditorMode::kBlocked},
-                             {"xkb:ch:fr:fra", EditorMode::kBlocked},
-                             // German
-                             {"xkb:be::ger", EditorMode::kBlocked},
-                             {"xkb:de::ger", EditorMode::kBlocked},
-                             {"xkb:de:neo:ger", EditorMode::kBlocked},
-                             {"xkb:ch::ger", EditorMode::kBlocked},
-                             // Japanese
-                             {"xkb:jp::jpn", EditorMode::kBlocked},
-                             {"nacl_mozc_us", EditorMode::kBlocked},
-                             {"nacl_mozc_jp", EditorMode::kBlocked},
-                             // Dutch (example case where always disabled)
-                             {"xkb:be::nld", EditorMode::kBlocked},
-                             {"xkb:us:intl_pc:nld", EditorMode::kBlocked},
-                             {"xkb:us:intl:nld", EditorMode::kBlocked},
-                         }));
-
-TEST_P(EnglishOnlyEnabledTest, EditorModeHasCorrectState) {
-  const InputMethodTestCase& test_case = GetParam();
-  const std::string& engine_id = std::get<0>(test_case);
-  const EditorMode& expected_mode = std::get<1>(test_case);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca,
-                            chromeos::features::kFeatureManagementOrca},
-      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
-                             ash::features::kOrcaFrench,
-                             ash::features::kOrcaGerman,
-                             ash::features::kOrcaJapanese});
-
-  EditorSwitch editor_switch(&switch_observer_, profile_.get(), &context_);
-  context_.OnTabletModeUpdated(false);
-  context_.OnActivateIme(engine_id);
-  context_.OnInputContextUpdated(
-      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(chromeos::AppType::BROWSER,
-                                        kAllowedTestUrl, ""));
-  context_.OnTextSelectionLengthChanged(0);
-
-  EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_EQ(editor_switch.GetEditorMode(), expected_mode);
-}
-
-class FrenchEnabledTest : public InternationalizeTestSuite {};
-
-INSTANTIATE_TEST_SUITE_P(FrenchEnabled,
-                         FrenchEnabledTest,
-                         testing::ValuesIn<InputMethodTestCase>({
-                             // English
-                             {"xkb:ca:eng:eng", EditorMode::kWrite},
-                             {"xkb:gb::eng", EditorMode::kWrite},
-                             {"xkb:gb:extd:eng", EditorMode::kWrite},
-                             {"xkb:gb:dvorak:eng", EditorMode::kWrite},
-                             {"xkb:in::eng", EditorMode::kWrite},
-                             {"xkb:pk::eng", EditorMode::kWrite},
-                             {"xkb:us:altgr-intl:eng", EditorMode::kWrite},
-                             {"xkb:us:colemak:eng", EditorMode::kWrite},
-                             {"xkb:us:dvorak:eng", EditorMode::kWrite},
-                             {"xkb:us:dvp:eng", EditorMode::kWrite},
-                             {"xkb:us:intl_pc:eng", EditorMode::kWrite},
-                             {"xkb:us:intl:eng", EditorMode::kWrite},
-                             {"xkb:us:workman-intl:eng", EditorMode::kWrite},
-                             {"xkb:us:workman:eng", EditorMode::kWrite},
-                             {"xkb:us::eng", EditorMode::kWrite},
-                             {"xkb:za:gb:eng", EditorMode::kWrite},
-                             // French
-                             {"xkb:be::fra", EditorMode::kWrite},
-                             {"xkb:ca::fra", EditorMode::kWrite},
-                             {"xkb:ca:multix:fra", EditorMode::kWrite},
-                             {"xkb:fr::fra", EditorMode::kWrite},
-                             {"xkb:fr:bepo:fra", EditorMode::kWrite},
-                             {"xkb:ch:fr:fra", EditorMode::kWrite},
-                             // German
-                             {"xkb:be::ger", EditorMode::kBlocked},
-                             {"xkb:de::ger", EditorMode::kBlocked},
-                             {"xkb:de:neo:ger", EditorMode::kBlocked},
-                             {"xkb:ch::ger", EditorMode::kBlocked},
-                             // Japanese
-                             {"xkb:jp::jpn", EditorMode::kBlocked},
-                             {"nacl_mozc_us", EditorMode::kBlocked},
-                             {"nacl_mozc_jp", EditorMode::kBlocked},
-                             // Dutch (example case where always disabled)
-                             {"xkb:be::nld", EditorMode::kBlocked},
-                             {"xkb:us:intl_pc:nld", EditorMode::kBlocked},
-                             {"xkb:us:intl:nld", EditorMode::kBlocked},
-                         }));
-
-TEST_P(FrenchEnabledTest, EditorModeHasCorrectState) {
-  const InputMethodTestCase& test_case = GetParam();
-  const std::string& engine_id = std::get<0>(test_case);
-  const EditorMode& expected_mode = std::get<1>(test_case);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca,
-                            chromeos::features::kFeatureManagementOrca},
-      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
-                             ash::features::kOrcaGerman,
-                             ash::features::kOrcaJapanese});
-
-  EditorSwitch editor_switch(&switch_observer_, profile_.get(), &context_);
-  context_.OnTabletModeUpdated(false);
-  context_.OnActivateIme(engine_id);
-  context_.OnInputContextUpdated(
-      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(chromeos::AppType::BROWSER,
-                                        kAllowedTestUrl, ""));
-  context_.OnTextSelectionLengthChanged(0);
-
-  EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_EQ(editor_switch.GetEditorMode(), expected_mode);
-}
-
-class GermanEnabledTest : public InternationalizeTestSuite {};
-
-INSTANTIATE_TEST_SUITE_P(GermanEnabled,
-                         GermanEnabledTest,
-                         testing::ValuesIn<InputMethodTestCase>({
-                             // English
-                             {"xkb:ca:eng:eng", EditorMode::kWrite},
-                             {"xkb:gb::eng", EditorMode::kWrite},
-                             {"xkb:gb:extd:eng", EditorMode::kWrite},
-                             {"xkb:gb:dvorak:eng", EditorMode::kWrite},
-                             {"xkb:in::eng", EditorMode::kWrite},
-                             {"xkb:pk::eng", EditorMode::kWrite},
-                             {"xkb:us:altgr-intl:eng", EditorMode::kWrite},
-                             {"xkb:us:colemak:eng", EditorMode::kWrite},
-                             {"xkb:us:dvorak:eng", EditorMode::kWrite},
-                             {"xkb:us:dvp:eng", EditorMode::kWrite},
-                             {"xkb:us:intl_pc:eng", EditorMode::kWrite},
-                             {"xkb:us:intl:eng", EditorMode::kWrite},
-                             {"xkb:us:workman-intl:eng", EditorMode::kWrite},
-                             {"xkb:us:workman:eng", EditorMode::kWrite},
-                             {"xkb:us::eng", EditorMode::kWrite},
-                             {"xkb:za:gb:eng", EditorMode::kWrite},
-                             // French
-                             {"xkb:be::fra", EditorMode::kBlocked},
-                             {"xkb:ca::fra", EditorMode::kBlocked},
-                             {"xkb:ca:multix:fra", EditorMode::kBlocked},
-                             {"xkb:fr::fra", EditorMode::kBlocked},
-                             {"xkb:fr:bepo:fra", EditorMode::kBlocked},
-                             {"xkb:ch:fr:fra", EditorMode::kBlocked},
-                             // German
-                             {"xkb:be::ger", EditorMode::kWrite},
-                             {"xkb:de::ger", EditorMode::kWrite},
-                             {"xkb:de:neo:ger", EditorMode::kWrite},
-                             {"xkb:ch::ger", EditorMode::kWrite},
-                             // Japanese
-                             {"xkb:jp::jpn", EditorMode::kBlocked},
-                             {"nacl_mozc_us", EditorMode::kBlocked},
-                             {"nacl_mozc_jp", EditorMode::kBlocked},
-                             // Dutch (example case where always disabled)
-                             {"xkb:be::nld", EditorMode::kBlocked},
-                             {"xkb:us:intl_pc:nld", EditorMode::kBlocked},
-                             {"xkb:us:intl:nld", EditorMode::kBlocked},
-                         }));
-
-TEST_P(GermanEnabledTest, EditorModeHasCorrectState) {
-  const InputMethodTestCase& test_case = GetParam();
-  const std::string& engine_id = std::get<0>(test_case);
-  const EditorMode& expected_mode = std::get<1>(test_case);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca,
-                            chromeos::features::kFeatureManagementOrca},
-      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
-                             ash::features::kOrcaFrench,
-                             ash::features::kOrcaJapanese});
-
-  EditorSwitch editor_switch(&switch_observer_, profile_.get(), &context_);
-  context_.OnTabletModeUpdated(false);
-  context_.OnActivateIme(engine_id);
-  context_.OnInputContextUpdated(
-      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(chromeos::AppType::BROWSER,
-                                        kAllowedTestUrl, ""));
-  context_.OnTextSelectionLengthChanged(0);
-
-  EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_EQ(editor_switch.GetEditorMode(), expected_mode);
-}
-
-class JapaneseEnabledTest : public InternationalizeTestSuite {};
-
-INSTANTIATE_TEST_SUITE_P(JapaneseEnabled,
-                         JapaneseEnabledTest,
-                         testing::ValuesIn<InputMethodTestCase>({
-                             // English
-                             {"xkb:ca:eng:eng", EditorMode::kWrite},
-                             {"xkb:gb::eng", EditorMode::kWrite},
-                             {"xkb:gb:extd:eng", EditorMode::kWrite},
-                             {"xkb:gb:dvorak:eng", EditorMode::kWrite},
-                             {"xkb:in::eng", EditorMode::kWrite},
-                             {"xkb:pk::eng", EditorMode::kWrite},
-                             {"xkb:us:altgr-intl:eng", EditorMode::kWrite},
-                             {"xkb:us:colemak:eng", EditorMode::kWrite},
-                             {"xkb:us:dvorak:eng", EditorMode::kWrite},
-                             {"xkb:us:dvp:eng", EditorMode::kWrite},
-                             {"xkb:us:intl_pc:eng", EditorMode::kWrite},
-                             {"xkb:us:intl:eng", EditorMode::kWrite},
-                             {"xkb:us:workman-intl:eng", EditorMode::kWrite},
-                             {"xkb:us:workman:eng", EditorMode::kWrite},
-                             {"xkb:us::eng", EditorMode::kWrite},
-                             {"xkb:za:gb:eng", EditorMode::kWrite},
-                             // French
-                             {"xkb:be::fra", EditorMode::kBlocked},
-                             {"xkb:ca::fra", EditorMode::kBlocked},
-                             {"xkb:ca:multix:fra", EditorMode::kBlocked},
-                             {"xkb:fr::fra", EditorMode::kBlocked},
-                             {"xkb:fr:bepo:fra", EditorMode::kBlocked},
-                             {"xkb:ch:fr:fra", EditorMode::kBlocked},
-                             // German
-                             {"xkb:be::ger", EditorMode::kBlocked},
-                             {"xkb:de::ger", EditorMode::kBlocked},
-                             {"xkb:de:neo:ger", EditorMode::kBlocked},
-                             {"xkb:ch::ger", EditorMode::kBlocked},
-                             // Japanese
-                             {"xkb:jp::jpn", EditorMode::kWrite},
-                             {"nacl_mozc_us", EditorMode::kWrite},
-                             {"nacl_mozc_jp", EditorMode::kWrite},
-                             // Dutch (example case where always disabled)
-                             {"xkb:be::nld", EditorMode::kBlocked},
-                             {"xkb:us:intl_pc:nld", EditorMode::kBlocked},
-                             {"xkb:us:intl:nld", EditorMode::kBlocked},
-                         }));
-
-TEST_P(JapaneseEnabledTest, EditorModeHasCorrectState) {
-  const InputMethodTestCase& test_case = GetParam();
-  const std::string& engine_id = std::get<0>(test_case);
-  const EditorMode& expected_mode = std::get<1>(test_case);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca,
-                            chromeos::features::kFeatureManagementOrca},
-      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
-                             ash::features::kOrcaFrench,
-                             ash::features::kOrcaGerman});
-
-  EditorSwitch editor_switch(&switch_observer_, profile_.get(), &context_);
-  context_.OnTabletModeUpdated(false);
-  context_.OnActivateIme(engine_id);
-  context_.OnInputContextUpdated(
-      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(chromeos::AppType::BROWSER,
-                                        kAllowedTestUrl, ""));
-  context_.OnTextSelectionLengthChanged(0);
-
-  EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_EQ(editor_switch.GetEditorMode(), expected_mode);
-}
-
-class AllAreEnabledTest : public InternationalizeTestSuite {};
-
-INSTANTIATE_TEST_SUITE_P(AllAreEnabled,
-                         AllAreEnabledTest,
+INSTANTIATE_TEST_SUITE_P(EditorSwitchDefaultFlags,
+                         EditorSwitchDefaultFlagsTest,
                          testing::ValuesIn<InputMethodTestCase>({
                              // English
                              {"xkb:ca:eng:eng", EditorMode::kWrite},
@@ -979,13 +702,34 @@ INSTANTIATE_TEST_SUITE_P(AllAreEnabled,
                              {"xkb:jp::jpn", EditorMode::kWrite},
                              {"nacl_mozc_us", EditorMode::kWrite},
                              {"nacl_mozc_jp", EditorMode::kWrite},
-                             // Dutch (example case where always disabled)
+                             // Danish
+                             {"xkb:dk::dan", EditorMode::kBlocked},
+                             // Dutch
                              {"xkb:be::nld", EditorMode::kBlocked},
                              {"xkb:us:intl_pc:nld", EditorMode::kBlocked},
                              {"xkb:us:intl:nld", EditorMode::kBlocked},
+                             // Finnish
+                             {"xkb:fi::fin", EditorMode::kBlocked},
+                             // Italian
+                             {"xkb:it::ita", EditorMode::kBlocked},
+                             // Norwegian
+                             {"xkb:no::nob", EditorMode::kBlocked},
+                             // Portugese
+                             {"xkb:br::por", EditorMode::kBlocked},
+                             {"xkb:pt::por", EditorMode::kBlocked},
+                             {"xkb:us:intl_pc:por", EditorMode::kBlocked},
+                             {"xkb:us:intl:por", EditorMode::kBlocked},
+                             // Spanish
+                             {"xkb:latam::spa", EditorMode::kBlocked},
+                             {"xkb:es::spa", EditorMode::kBlocked},
+                             // Swedish
+                             {"xkb:se::swe", EditorMode::kBlocked},
+                             // Turkish (example case where always disabled)
+                             {"xkb:tr::tur", EditorMode::kBlocked},
+                             {"xkb:tr:f:tur", EditorMode::kBlocked},
                          }));
 
-TEST_P(AllAreEnabledTest, EditorModeHasCorrectState) {
+TEST_P(EditorSwitchDefaultFlagsTest, EditorModeHasCorrectState) {
   const InputMethodTestCase& test_case = GetParam();
   const std::string& engine_id = std::get<0>(test_case);
   const EditorMode& expected_mode = std::get<1>(test_case);
@@ -993,6 +737,98 @@ TEST_P(AllAreEnabledTest, EditorModeHasCorrectState) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kOrca,
                             chromeos::features::kFeatureManagementOrca},
+      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities});
+
+  EditorSwitch editor_switch(&switch_observer_, profile_.get(), &context_);
+  context_.OnTabletModeUpdated(false);
+  context_.OnActivateIme(engine_id);
+  context_.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(chromeos::AppType::BROWSER,
+                                        kAllowedTestUrl, ""));
+  context_.OnTextSelectionLengthChanged(0);
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_EQ(editor_switch.GetEditorMode(), expected_mode);
+}
+
+class EditorSwitchAllFlagsEnabledTest : public InternationalizeTestSuite {};
+
+INSTANTIATE_TEST_SUITE_P(EditorSwitchAllFlagsEnabled,
+                         EditorSwitchAllFlagsEnabledTest,
+                         testing::ValuesIn<InputMethodTestCase>({
+                             // English
+                             {"xkb:ca:eng:eng", EditorMode::kWrite},
+                             {"xkb:gb::eng", EditorMode::kWrite},
+                             {"xkb:gb:extd:eng", EditorMode::kWrite},
+                             {"xkb:gb:dvorak:eng", EditorMode::kWrite},
+                             {"xkb:in::eng", EditorMode::kWrite},
+                             {"xkb:pk::eng", EditorMode::kWrite},
+                             {"xkb:us:altgr-intl:eng", EditorMode::kWrite},
+                             {"xkb:us:colemak:eng", EditorMode::kWrite},
+                             {"xkb:us:dvorak:eng", EditorMode::kWrite},
+                             {"xkb:us:dvp:eng", EditorMode::kWrite},
+                             {"xkb:us:intl_pc:eng", EditorMode::kWrite},
+                             {"xkb:us:intl:eng", EditorMode::kWrite},
+                             {"xkb:us:workman-intl:eng", EditorMode::kWrite},
+                             {"xkb:us:workman:eng", EditorMode::kWrite},
+                             {"xkb:us::eng", EditorMode::kWrite},
+                             {"xkb:za:gb:eng", EditorMode::kWrite},
+                             // French
+                             {"xkb:be::fra", EditorMode::kWrite},
+                             {"xkb:ca::fra", EditorMode::kWrite},
+                             {"xkb:ca:multix:fra", EditorMode::kWrite},
+                             {"xkb:fr::fra", EditorMode::kWrite},
+                             {"xkb:fr:bepo:fra", EditorMode::kWrite},
+                             {"xkb:ch:fr:fra", EditorMode::kWrite},
+                             // German
+                             {"xkb:be::ger", EditorMode::kWrite},
+                             {"xkb:de::ger", EditorMode::kWrite},
+                             {"xkb:de:neo:ger", EditorMode::kWrite},
+                             {"xkb:ch::ger", EditorMode::kWrite},
+                             // Japanese
+                             {"xkb:jp::jpn", EditorMode::kWrite},
+                             {"nacl_mozc_us", EditorMode::kWrite},
+                             {"nacl_mozc_jp", EditorMode::kWrite},
+                             // Danish
+                             {"xkb:dk::dan", EditorMode::kWrite},
+                             // Dutch
+                             {"xkb:be::nld", EditorMode::kWrite},
+                             {"xkb:us:intl_pc:nld", EditorMode::kWrite},
+                             {"xkb:us:intl:nld", EditorMode::kWrite},
+                             // Finnish
+                             {"xkb:fi::fin", EditorMode::kWrite},
+                             // Italian
+                             {"xkb:it::ita", EditorMode::kWrite},
+                             // Norwegian
+                             {"xkb:no::nob", EditorMode::kWrite},
+                             // Portugese
+                             {"xkb:br::por", EditorMode::kWrite},
+                             {"xkb:pt::por", EditorMode::kWrite},
+                             {"xkb:us:intl_pc:por", EditorMode::kWrite},
+                             {"xkb:us:intl:por", EditorMode::kWrite},
+                             // Spanish
+                             {"xkb:latam::spa", EditorMode::kWrite},
+                             {"xkb:es::spa", EditorMode::kWrite},
+                             // Swedish
+                             {"xkb:se::swe", EditorMode::kWrite},
+                             // Turkish (example case where always disabled)
+                             {"xkb:tr::tur", EditorMode::kBlocked},
+                             {"xkb:tr:f:tur", EditorMode::kBlocked},
+                         }));
+
+TEST_P(EditorSwitchAllFlagsEnabledTest, EditorModeHasCorrectState) {
+  const InputMethodTestCase& test_case = GetParam();
+  const std::string& engine_id = std::get<0>(test_case);
+  const EditorMode& expected_mode = std::get<1>(test_case);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kOrca,
+                            chromeos::features::kFeatureManagementOrca,
+                            features::kOrcaDanish, features::kOrcaDutch,
+                            features::kOrcaFinnish, features::kOrcaItalian,
+                            features::kOrcaNorwegian, features::kOrcaPortugese,
+                            features::kOrcaSpanish, features::kOrcaSwedish},
       /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities});
 
   EditorSwitch editor_switch(&switch_observer_, profile_.get(), &context_);

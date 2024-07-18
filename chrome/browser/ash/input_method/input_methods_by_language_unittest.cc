@@ -21,6 +21,14 @@ INSTANTIATE_TEST_SUITE_P(
     InputMethodsByLanguage,
     MapToLanguageCategoryTest,
     testing::ValuesIn<LanguageCategoryTestCase>({
+        // Danish
+        {"xkb:dk::dan", LanguageCategory::kDanish},
+        // Dutch
+        {"xkb:be::nld", LanguageCategory::kDutch},
+        {"xkb:us:intl_pc:nld", LanguageCategory::kDutch},
+        {"xkb:us:intl:nld", LanguageCategory::kDutch},
+        // Finnish
+        {"xkb:fi::fin", LanguageCategory::kFinnish},
         // English
         {"xkb:ca:eng:eng", LanguageCategory::kEnglish},
         {"xkb:gb::eng", LanguageCategory::kEnglish},
@@ -50,14 +58,24 @@ INSTANTIATE_TEST_SUITE_P(
         {"xkb:de::ger", LanguageCategory::kGerman},
         {"xkb:de:neo:ger", LanguageCategory::kGerman},
         {"xkb:ch::ger", LanguageCategory::kGerman},
+        // Italian
+        {"xkb:it::ita", LanguageCategory::kItalian},
         // Japanese
         {"xkb:jp::jpn", LanguageCategory::kJapanese},
         {"nacl_mozc_us", LanguageCategory::kJapanese},
         {"nacl_mozc_jp", LanguageCategory::kJapanese},
-        // Dutch
-        {"xkb:be::nld", LanguageCategory::kOther},
-        {"xkb:us:intl_pc:nld", LanguageCategory::kOther},
-        {"xkb:us:intl:nld", LanguageCategory::kOther},
+        // Norwegian
+        {"xkb:no::nob", LanguageCategory::kNorwegian},
+        // Portugese
+        {"xkb:br::por", LanguageCategory::kPortugese},
+        {"xkb:pt::por", LanguageCategory::kPortugese},
+        {"xkb:us:intl_pc:por", LanguageCategory::kPortugese},
+        {"xkb:us:intl:por", LanguageCategory::kPortugese},
+        // Spanish
+        {"xkb:latam::spa", LanguageCategory::kSpanish},
+        {"xkb:es::spa", LanguageCategory::kSpanish},
+        // Swedish
+        {"xkb:se::swe", LanguageCategory::kSwedish},
     }));
 
 TEST_P(MapToLanguageCategoryTest, IsCorrectCategory) {
