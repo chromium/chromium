@@ -130,10 +130,16 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
       histogram_name + "HmrOnly",
       magic_boost::OptInCardAction::kAcceptButtonPressed, 0);
 
+  EXPECT_EQ(chromeos::HMRConsentStatus::kUnset,
+            mock_magic_boost_state_->hmr_consent_status());
+
   EXPECT_CALL(crosapi_controller_, ShowDisclaimerUi);
 
   LeftClickOn(primary_button);
   EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
+
+  EXPECT_EQ(chromeos::HMRConsentStatus::kPending,
+            mock_magic_boost_state_->hmr_consent_status());
 
   // Records the `kAcceptButtonPressed` metrics.
   histogram_tester->ExpectTotalCount(histogram_name + "Total", 2);
