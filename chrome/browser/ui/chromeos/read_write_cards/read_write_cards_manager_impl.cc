@@ -109,12 +109,22 @@ ReadWriteCardsManagerImpl::GetControllers(
   auto opt_in_features = GetMagicBoostOptInFeatures(params, editor_mode);
 
   if (opt_in_features) {
-    // Show Editor Panel after completing the opt-in flow for Orca.
-    magic_boost_card_controller_->set_transition_action(
-        should_show_editor_menu ? crosapi::mojom::MagicBoostController::
-                                      TransitionAction::kShowEditorPanel
-                                : crosapi::mojom::MagicBoostController::
-                                      TransitionAction::kDoNothing);
+    crosapi::mojom::MagicBoostController::TransitionAction action =
+        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing;
+
+    // Calculate the action to take after the opt-in flow.
+    if (should_show_editor_menu) {
+      action = crosapi::mojom::MagicBoostController::TransitionAction::
+          kShowEditorPanel;
+    } else if (ShouldShowMahi(params)) {
+      action =
+          crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel;
+    }
+
+    // Always set the transition action to handle the edge case that this code
+    // path is hit more than once with different actions.
+    magic_boost_card_controller_->set_transition_action(action);
+
     magic_boost_card_controller_->SetOptInFeature(opt_in_features.value());
 
     return {magic_boost_card_controller_->GetWeakPtr()};

@@ -15,6 +15,10 @@
 #include "components/manta/sparky/sparky_util.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace ash {
 
 // The Mahi UI will be temporarily re-used for this feature which is an
@@ -44,6 +48,8 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
   void OnContextMenuClicked(
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
   void OpenFeedbackDialog() override;
+  void OpenMahiPanel(int64_t display_id,
+                     const gfx::Rect& mahi_menu_bounds) override {}
   bool IsEnabled() override;
   void SetMediaAppPDFFocused() override;
 

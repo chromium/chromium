@@ -6,7 +6,6 @@
 #include <set>
 #include <string>
 
-#include "ash/system/magic_boost/magic_boost_constants.h"
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
@@ -21,7 +20,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/mahi/mahi_test_util.h"
 #include "chrome/browser/ash/mahi/mahi_ui_browser_test_base.h"
@@ -56,19 +54,6 @@ namespace {
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithParamInterface;
-
-// MockMagicBoostStateObserver -------------------------------------------------
-
-class MockMagicBoostStateObserver : public chromeos::MagicBoostState::Observer {
- public:
-  // chromeos::MagicBoostState::Observer:
-  MOCK_METHOD(void,
-              OnHMRConsentStatusUpdated,
-              (chromeos::HMRConsentStatus),
-              (override));
-  MOCK_METHOD(void, OnHMREnabledUpdated, (bool), (override));
-  MOCK_METHOD(void, OnIsDeleting, (), (override));
-};
 
 // ViewDeletionObserver --------------------------------------------------------
 
@@ -129,27 +114,6 @@ void WaitUntilMahiMenuClosed(views::Widget* menu_view_widget) {
   ViewDeletionObserver view_observer(
       menu_view_widget->GetContentsView(),
       base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
-  run_loop.Run();
-}
-
-// Applies the given HMR consent status and waits until the new status becomes
-// in effect. NOTE: This function should be called only when the magic boost
-// feature is enabled.
-void ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus status) {
-  CHECK(chromeos::features::IsMagicBoostEnabled());
-
-  NiceMock<MockMagicBoostStateObserver> magic_boost_state_observer;
-  base::ScopedObservation<chromeos::MagicBoostState,
-                          MockMagicBoostStateObserver>
-      scoped_magic_boost_state_observation{&magic_boost_state_observer};
-  scoped_magic_boost_state_observation.Observe(
-      chromeos::MagicBoostState::Get());
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(magic_boost_state_observer, OnHMRConsentStatusUpdated(status))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-
-  chromeos::MagicBoostState::Get()->AsyncWriteConsentStatus(status);
   run_loop.Run();
 }
 
@@ -466,24 +430,7 @@ IN_PROC_BROWSER_TEST_F(PendingConsentStatusMahiUiBrowserTest,
 
 class MahiUiWithDisclaimerViewBrowserTest
     : public PendingConsentStatusMahiUiBrowserTest,
-      public WithParamInterface</*accept=*/bool> {
- protected:
-  // Mouse clicks on the disclaimer view's accept button or the declination
-  // button, specified by `accept`.
-  void ClickDisclaimerViewButton(bool accept) {
-    views::Widget* const disclaimer_view_widget =
-        FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName());
-    ASSERT_TRUE(disclaimer_view_widget);
-
-    const views::View* const button =
-        disclaimer_view_widget->GetContentsView()->GetViewByID(
-            accept ? magic_boost::DisclaimerViewAcceptButton
-                   : magic_boost::DisclaimerViewDeclineButton);
-    ASSERT_TRUE(button);
-    event_generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-    event_generator().ClickLeftButton();
-  }
-};
+      public WithParamInterface</*accept=*/bool> {};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          MahiUiWithDisclaimerViewBrowserTest,

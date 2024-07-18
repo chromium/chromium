@@ -283,7 +283,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
     EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kHmrOnly,
               magic_boost_card_controller()->GetOptInFeatures());
     EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
         magic_boost_card_controller()->transition_action_for_test());
 
     // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
@@ -296,7 +296,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
     EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
     EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
         magic_boost_card_controller()->transition_action_for_test());
     return;
   }
@@ -325,7 +325,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
     EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kHmrOnly,
               magic_boost_card_controller()->GetOptInFeatures());
     EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
         magic_boost_card_controller()->transition_action_for_test());
 
     // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
@@ -341,7 +341,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
     EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
     EXPECT_EQ(
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        crosapi::mojom::MagicBoostController::TransitionAction::kShowHmrPanel,
         magic_boost_card_controller()->transition_action_for_test());
 
     return;

@@ -39,6 +39,7 @@ class MockMahiManager : public chromeos::MahiManager {
               (crosapi::mojom::MahiContextMenuRequestPtr),
               (override));
   MOCK_METHOD(void, OpenFeedbackDialog, (), (override));
+  MOCK_METHOD(void, OpenMahiPanel, (int64_t, const gfx::Rect&), (override));
   MOCK_METHOD(void,
               SetCurrentFocusedPageInfo,
               (crosapi::mojom::MahiPageInfoPtr),

@@ -11,7 +11,11 @@
 #include "ash/system/mahi/test/mock_mahi_ui_controller_delegate.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/test/gmock_callback_support.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -26,6 +30,19 @@ using ::testing::NiceMock;
 
 constexpr char kFakeSummary[] = "fake summary";
 constexpr char kFakeAnswer[] = "fake answer";
+
+// MockMagicBoostStateObserver -------------------------------------------------
+
+class MockMagicBoostStateObserver : public chromeos::MagicBoostState::Observer {
+ public:
+  // chromeos::MagicBoostState::Observer:
+  MOCK_METHOD(void,
+              OnHMRConsentStatusUpdated,
+              (chromeos::HMRConsentStatus),
+              (override));
+  MOCK_METHOD(void, OnHMREnabledUpdated, (bool), (override));
+  MOCK_METHOD(void, OnIsDeleting, (), (override));
+};
 
 // UiUpdateRecorder ------------------------------------------------------------
 
@@ -59,6 +76,24 @@ MahiManagerImpl* GetMahiManager() {
 }
 
 }  // namespace
+
+void ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus status) {
+  CHECK(chromeos::features::IsMagicBoostEnabled());
+
+  NiceMock<MockMagicBoostStateObserver> magic_boost_state_observer;
+  base::ScopedObservation<chromeos::MagicBoostState,
+                          MockMagicBoostStateObserver>
+      scoped_magic_boost_state_observation{&magic_boost_state_observer};
+  scoped_magic_boost_state_observation.Observe(
+      chromeos::MagicBoostState::Get());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(magic_boost_state_observer, OnHMRConsentStatusUpdated(status))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  chromeos::MagicBoostState::Get()->AsyncWriteConsentStatus(status);
+  run_loop.Run();
+}
 
 const char* GetMahiDefaultTestAnswer() {
   return kFakeAnswer;

@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 
 namespace ash {
@@ -49,7 +50,7 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
       /*press_accept_button_callback=*/
       base::BindRepeating(
           &MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed,
-          weak_ptr_factory_.GetWeakPtr(), action),
+          weak_ptr_factory_.GetWeakPtr(), display_id, action),
       /*press_decline_button_callback=*/
       base::BindRepeating(
           &MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed,
@@ -69,6 +70,7 @@ void MagicBoostControllerAsh::CloseDisclaimerUi() {
 }
 
 void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
+    int64_t display_id,
     TransitionAction action) {
   auto* magic_boost_state =
       static_cast<MagicBoostStateAsh*>(chromeos::MagicBoostState::Get());
@@ -84,6 +86,10 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
       break;
     case TransitionAction::kShowEditorPanel:
       magic_boost_state->GetEditorPanelManager()->StartEditingFlow();
+      break;
+    case TransitionAction::kShowHmrPanel:
+      chromeos::MahiManager::Get()->OpenMahiPanel(
+          display_id, disclaimer_widget_->GetWindowBoundsInScreen());
       break;
   }
 

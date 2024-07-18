@@ -44,9 +44,14 @@ class MagicBoostControllerAsh : public crosapi::mojom::MagicBoostController {
  private:
   friend class MagicBoostControllerAshTest;
 
-  // Callbacks for clicking on disclaimer widget's buttons.
+  // Called when the disclaimer view's accept button is clicked. `display_id`
+  // indicates the display where the disclaimer view shows. `action` specifies
+  // the action to take after the opt-in flow.
   void OnDisclaimerAcceptButtonPressed(
+      int64_t display_id,
       crosapi::mojom::MagicBoostController::TransitionAction action);
+
+  // Called when the diclaimer view's declination button is clicked.
   void OnDisclaimerDeclineButtonPressed();
   void OnLinkPressed(const std::string& url);
 

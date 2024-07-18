@@ -5,11 +5,20 @@
 #ifndef CHROME_BROWSER_ASH_MAHI_MAHI_TEST_UTIL_H_
 #define CHROME_BROWSER_ASH_MAHI_MAHI_TEST_UTIL_H_
 
+namespace chromeos {
+enum class HMRConsentStatus;
+}  // namespace chromeos
+
 namespace ash {
 
 class MahiManagerImpl;
 class MahiUiController;
 enum class MahiUiUpdateType;
+
+// Applies the given HMR consent status and waits until the new status becomes
+// in effect. NOTE: This function should be called only when the magic boost
+// feature is enabled.
+void ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus status);
 
 // Returns the default Mahi answer used in tests.
 const char* GetMahiDefaultTestAnswer();

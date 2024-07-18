@@ -9,10 +9,15 @@
 #include "ash/shell.h"
 #include "ash/system/magic_boost/magic_boost_constants.h"
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
+#include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_panel_widget.h"
+#include "ash/system/mahi/mahi_ui_update.h"
 #include "ash/test/ash_test_util.h"
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/mahi/mahi_test_util.h"
+#include "chrome/browser/ash/mahi/mahi_ui_browser_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
@@ -26,7 +31,9 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -316,6 +323,94 @@ IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, FindNothingOnBlankWebPage) {
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
   EXPECT_FALSE(FindWidgetWithName(
       chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+}
+
+// MahiUiWithOptInViewBrowserTest ----------------------------------------------
+
+class MahiUiWithOptInCardBrowserTest
+    : public MahiUiBrowserTestBase,
+      public ::testing::WithParamInterface</*accept=*/bool> {
+ private:
+  // MahiUiBrowserTestBase:
+  void SetUp() override {
+    // Enable Orca to ensure the existence of the write editor controller which
+    // is required to show the opt-in card.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
+                              chromeos::features::kMahi,
+                              chromeos::features::kMagicBoost,
+                              chromeos::features::kOrca},
+        /*disabled_features=*/{});
+
+    MahiUiBrowserTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    MahiUiBrowserTestBase::SetUpOnMainThread();
+    ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus::kUnset);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MahiUiWithOptInCardBrowserTest,
+                         /*accept=*/::testing::Bool());
+
+// Verifies Mahi UI features by accepting or declining the disclaimer view that
+// is launched by the opt-in flow.
+IN_PROC_BROWSER_TEST_P(MahiUiWithOptInCardBrowserTest, Basics) {
+  EXPECT_FALSE(
+      FindWidgetWithName(chromeos::MagicBoostOptInCard::GetWidgetName()));
+
+  ui::ScopedAnimationDurationScaleMode zero_duration(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Open the opt-in card by mouse right click on the web contents.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  views::Widget* const opt_in_card_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::MagicBoostOptInCard::GetWidgetName());
+  ASSERT_TRUE(opt_in_card_widget);
+
+  const views::View* const opt_in_button =
+      opt_in_card_widget->GetContentsView()->GetViewByID(
+          chromeos::magic_boost::OptInCardPrimaryButton);
+
+  // Show the disclaimer view by clicking the `opt_in_button`.
+  ASSERT_TRUE(opt_in_button);
+  event_generator().MoveMouseTo(
+      opt_in_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+
+  WaitUntilViewClosed(opt_in_card_widget);
+  EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+  const bool accept = GetParam();
+  ClickDisclaimerViewButton(accept);
+
+  // If user clicks the declination button, the Mahi panel should not show.
+  if (!accept) {
+    EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+    return;
+  }
+
+  // The code below checks the Mahi panel.
+
+  WaitUntilUiUpdateReceived(MahiUiUpdateType::kSummaryLoaded);
+  views::Widget* panel_widget =
+      FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
+  ASSERT_TRUE(panel_widget);
+
+  const auto* const summary_label = views::AsViewClass<views::Label>(
+      panel_widget->GetContentsView()->GetViewByID(
+          mahi_constants::ViewId::kSummaryLabel));
+  ASSERT_TRUE(summary_label);
+  EXPECT_EQ(base::UTF16ToUTF8(summary_label->GetText()),
+            GetMahiDefaultTestSummary());
 }
 
 }  // namespace ash

@@ -15,6 +15,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace ash {
 
 // FakeMahiManager -------------------------------------------------------------
@@ -46,6 +50,8 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   void OnContextMenuClicked(
       crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
   void OpenFeedbackDialog() override {}
+  void OpenMahiPanel(int64_t display_id,
+                     const gfx::Rect& mahi_menu_bounds) override;
   bool IsEnabled() override;
   void SetMediaAppPDFFocused() override;
 

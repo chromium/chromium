@@ -110,17 +110,16 @@ void FakeMahiManager::OnContextMenuClicked(
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
-      ui_controller_.OpenMahiPanel(
+      OpenMahiPanel(
           context_menu_request->display_id,
           context_menu_request->mahi_menu_bounds.value_or(gfx::Rect()));
 
       return;
     case MahiContextMenuActionType::kQA:
-      ui_controller_.OpenMahiPanel(
-          context_menu_request->display_id,
-          context_menu_request->mahi_menu_bounds.has_value()
-              ? context_menu_request->mahi_menu_bounds.value()
-              : gfx::Rect());
+      OpenMahiPanel(context_menu_request->display_id,
+                    context_menu_request->mahi_menu_bounds.has_value()
+                        ? context_menu_request->mahi_menu_bounds.value()
+                        : gfx::Rect());
 
       // Ask question.
       if (!context_menu_request->question) {
@@ -148,6 +147,11 @@ void FakeMahiManager::OnContextMenuClicked(
     case MahiContextMenuActionType::kNone:
       return;
   }
+}
+
+void FakeMahiManager::OpenMahiPanel(int64_t display_id,
+                                    const gfx::Rect& mahi_menu_bounds) {
+  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds);
 }
 
 bool FakeMahiManager::IsEnabled() {
