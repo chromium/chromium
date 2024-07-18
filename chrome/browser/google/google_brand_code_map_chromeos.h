@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_GOOGLE_GOOGLE_BRAND_CODE_MAP_CHROMEOS_H_
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
@@ -16,8 +16,8 @@ namespace chromeos {
 // Returns |static_brand_code| if it is not found in the map. Otherwise, returns
 // a variation of the brand code based on |market_segment| (an empty value
 // indicates the device is not enrolled).
-std::string GetRlzBrandCode(
-    const std::string& static_brand_code,
+std::string_view GetRlzBrandCode(
+    std::string_view static_brand_code,
     std::optional<policy::MarketSegment> market_segment);
 
 }  // namespace chromeos

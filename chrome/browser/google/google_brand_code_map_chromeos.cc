@@ -4,7 +4,7 @@
 
 #include "chrome/browser/google/google_brand_code_map_chromeos.h"
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -12,17 +12,18 @@
 namespace google_brand {
 namespace chromeos {
 
-std::string GetRlzBrandCode(
-    const std::string& static_brand_code,
+std::string_view GetRlzBrandCode(
+    std::string_view static_brand_code,
     std::optional<policy::MarketSegment> market_segment) {
   struct BrandCodeValueEntry {
-    const char* unenrolled_brand_code;
-    const char* education_enrolled_brand_code;
-    const char* enterprise_enrolled_brand_code;
+    std::string_view unenrolled_brand_code;
+    std::string_view education_enrolled_brand_code;
+    std::string_view enterprise_enrolled_brand_code;
   };
-  static const base::NoDestructor<
-      base::flat_map<std::string, BrandCodeValueEntry>>
-      kBrandCodeMap({{"ACAC", {"CFZM", "BEUH", "GUTN"}},
+  static constexpr auto kBrandCodeMap =
+      base::MakeFixedFlatMap<std::string_view, BrandCodeValueEntry>(
+          // clang-format off
+                    {{"ACAC", {"CFZM", "BEUH", "GUTN"}},
                      {"ACAG", {"KSOU", "MUHR", "YYJR"}},
                      {"ACAH", {"KEFG", "RYNH", "HHAZ"}},
                      {"ACAI", {"BKWQ", "CMVE", "VNFQ"}},
@@ -721,14 +722,17 @@ std::string GetRlzBrandCode(
                      {"ZZAD", {"KSTH", "CBJY", "TSID"}},
                      {"ZZAF", {"OTWH", "RRNB", "VNXA"}},
                      {"ZZTB", {"MXQT", "JUUX", "FMFR"}}});
+  // clang-format on
 
-  const auto it = kBrandCodeMap->find(static_brand_code);
-  if (it == kBrandCodeMap->end())
+  const auto it = kBrandCodeMap.find(static_brand_code);
+  if (it == kBrandCodeMap.end()) {
     return static_brand_code;
+  }
   const auto& entry = it->second;
   // An empty value indicates the device is not enrolled.
-  if (!market_segment.has_value())
+  if (!market_segment.has_value()) {
     return entry.unenrolled_brand_code;
+  }
 
   switch (market_segment.value()) {
     case policy::MarketSegment::EDUCATION:

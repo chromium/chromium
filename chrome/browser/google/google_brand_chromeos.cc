@@ -84,7 +84,7 @@ std::string GetRlzBrand() {
   // The rlz brand code may change over time (e.g. when device goes from
   // unenrolled to enrolled status in OOBE). Prefer not to save it in pref to
   // avoid using outdated value.
-  return GetRlzBrandCode(GetBrand(), market_segment);
+  return std::string(GetRlzBrandCode(GetBrand(), market_segment));
 }
 
 void InitBrand(base::OnceClosure callback) {
