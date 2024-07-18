@@ -439,7 +439,6 @@ static_library("ash") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/media/webrtc",
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_icon",
@@ -1297,7 +1296,6 @@ static_library("ash") {
     "//chrome/browser/google",
     "//chrome/browser/icon_transcoder",
     "//chrome/browser/image_fetcher",
-    "//chrome/browser/media/webrtc",
     "//chrome/browser/metrics/structured:features",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/pdf:pdf_pref_names",

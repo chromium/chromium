@@ -74,7 +74,6 @@ static_library("router") {
     "presentation/chrome_local_presentation_manager_factory.h",
   ]
   public_deps = [
-    "//chrome/browser/media/webrtc",
     "//components/media_router/browser",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",

@@ -423,7 +423,6 @@ static_library("ui") {
   public_deps = [
     "//chrome/browser:lcp_critical_path_predictor_proto",
     "//chrome/browser/headless",
-    "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/tabs:tab_enums",
     "//components/cross_device/logging",
     "//components/dom_distiller/core",
@@ -781,9 +780,6 @@ static_library("ui") {
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
-
-    # TODO(crbug.com/353284909): Remove this circular dependency.
-    "//chrome/browser/media/webrtc",
   ]
 
   if (enable_vr && is_win) {
