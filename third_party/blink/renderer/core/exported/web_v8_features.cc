@@ -7,29 +7,11 @@
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
-#include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
 
 namespace blink {
-namespace {
-
-v8::Isolate::Priority ToIsolatePriority(base::Process::Priority priority) {
-  switch (priority) {
-    case base::Process::Priority::kBestEffort:
-      return v8::Isolate::Priority::kBestEffort;
-    case base::Process::Priority::kUserVisible:
-      return v8::Isolate::Priority::kUserVisible;
-    case base::Process::Priority::kUserBlocking:
-      return v8::Isolate::Priority::kUserBlocking;
-  }
-}
-
-}  // namespace
 
 // static
 void WebV8Features::EnableMojoJS(v8::Local<v8::Context> context, bool enable) {
@@ -122,20 +104,6 @@ void WebV8Features::EnableMojoJSWithoutSecurityChecksForTesting(
       ExecutionContext::From(script_state),
       ContextFeatureSettings::CreationMode::kCreateIfNotExists)
       ->EnableMojoJS(true);
-}
-
-// static
-void WebV8Features::SetIsolatePriority(base::Process::Priority priority) {
-  auto isolate_priority = ToIsolatePriority(priority);
-  Thread::MainThread()
-      ->Scheduler()
-      ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          [](v8::Isolate::Priority priority, v8::Isolate* isolate) {
-            isolate->SetPriority(priority);
-          },
-          isolate_priority));
-  WorkerBackingThread::SetWorkerThreadIsolatesPriority(isolate_priority);
 }
 
 }  // namespace blink

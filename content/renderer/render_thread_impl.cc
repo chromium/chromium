@@ -39,7 +39,6 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
-#include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -1353,9 +1352,6 @@ void RenderThreadImpl::SetProcessState(
       restrict_thread_pool_.emplace();
     }
   }
-  if (base::FeatureList::IsEnabled(features::kSetIsolatesPriority)) {
-    blink::WebV8Features::SetIsolatePriority(process_priority);
-  }
 
   if (!process_priority_.has_value() || is_backgrounded != was_backgrounded) {
     if (is_backgrounded) {
@@ -1696,10 +1692,7 @@ bool RenderThreadImpl::RendererIsHidden() const {
 }
 
 void RenderThreadImpl::OnRendererHidden() {
-  if (!base::FeatureList::IsEnabled(features::kSetIsolatesPriority)) {
-    blink::WebV8Features::SetIsolatePriority(
-        base::Process::Priority::kBestEffort);
-  }
+  blink::IsolateInBackgroundNotification();
 
   // TODO(rmcilroy): Remove IdleHandler and replace it with an IdleTask
   // scheduled by the RendererScheduler - http://crbug.com/469210.
@@ -1709,10 +1702,7 @@ void RenderThreadImpl::OnRendererHidden() {
 }
 
 void RenderThreadImpl::OnRendererVisible() {
-  if (!base::FeatureList::IsEnabled(features::kSetIsolatesPriority)) {
-    blink::WebV8Features::SetIsolatePriority(
-        base::Process::Priority::kUserBlocking);
-  }
+  blink::IsolateInForegroundNotification();
 
   if (!GetContentClient()->renderer()->RunIdleHandlerWhenWidgetsHidden())
     return;

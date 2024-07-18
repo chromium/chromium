@@ -45,11 +45,9 @@ HashSet<v8::Isolate*>& ForegroundedIsolates()
   return foregrounded_isolates;
 }
 
-v8::Isolate::Priority& IsolateCurrentPriority()
-    EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(v8::Isolate::Priority,
-                                  isolate_current_priority, ());
-  return isolate_current_priority;
+bool& IsolateCurrentlyInBackground() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(bool, isolate_currently_in_background, ());
+  return isolate_currently_in_background;
 }
 
 bool& BatterySaverModeEnabled() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
@@ -59,7 +57,9 @@ bool& BatterySaverModeEnabled() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
 
 void AddWorkerIsolate(v8::Isolate* isolate) {
   base::AutoLock locker(IsolatesLock());
-  isolate->SetPriority(IsolateCurrentPriority());
+  if (IsolateCurrentlyInBackground()) {
+    isolate->IsolateInBackgroundNotification();
+  }
   if (BatterySaverModeEnabled()) {
     isolate->SetBatterySaverMode(true);
   }
@@ -94,6 +94,26 @@ void MemoryPressureNotificationToAllIsolates(v8::MemoryPressureLevel level) {
           },
           level));
   WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(level);
+}
+
+void IsolateInBackgroundNotification() {
+  Thread::MainThread()
+      ->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ForEachMainThreadIsolate(WTF::BindRepeating([](v8::Isolate* isolate) {
+        isolate->IsolateInBackgroundNotification();
+      }));
+  WorkerBackingThread::IsolateInBackgroundNotificationToWorkerThreadIsolates();
+}
+
+void IsolateInForegroundNotification() {
+  Thread::MainThread()
+      ->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ForEachMainThreadIsolate(WTF::BindRepeating([](v8::Isolate* isolate) {
+        isolate->IsolateInForegroundNotification();
+      }));
+  WorkerBackingThread::IsolateInForegroundNotificationToWorkerThreadIsolates();
 }
 
 void SetBatterySaverModeForAllIsolates(bool battery_saver_mode_enabled) {
@@ -163,7 +183,7 @@ void WorkerBackingThread::ShutdownOnBackingThread() {
 
 void WorkerBackingThread::SetForegrounded() {
   AddForegroundedWorkerIsolate(isolate_);
-  isolate_->SetPriority(v8::Isolate::Priority::kUserBlocking);
+  isolate_->IsolateInForegroundNotification();
 }
 
 // static
@@ -175,13 +195,25 @@ void WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(
 }
 
 // static
-void WorkerBackingThread::SetWorkerThreadIsolatesPriority(
-    v8::Isolate::Priority priority) {
+void WorkerBackingThread::
+    IsolateInBackgroundNotificationToWorkerThreadIsolates() {
   base::AutoLock locker(IsolatesLock());
-  IsolateCurrentPriority() = priority;
+  IsolateCurrentlyInBackground() = true;
   for (v8::Isolate* isolate : Isolates()) {
     if (!ForegroundedIsolates().Contains(isolate)) {
-      isolate->SetPriority(priority);
+      isolate->IsolateInBackgroundNotification();
+    }
+  }
+}
+
+// static
+void WorkerBackingThread::
+    IsolateInForegroundNotificationToWorkerThreadIsolates() {
+  base::AutoLock locker(IsolatesLock());
+  IsolateCurrentlyInBackground() = false;
+  for (v8::Isolate* isolate : Isolates()) {
+    if (!ForegroundedIsolates().Contains(isolate)) {
+      isolate->IsolateInForegroundNotification();
     }
   }
 }

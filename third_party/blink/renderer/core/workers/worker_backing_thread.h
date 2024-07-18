@@ -47,7 +47,8 @@ class CORE_EXPORT WorkerBackingThread final {
 
   static void MemoryPressureNotificationToWorkerThreadIsolates(
       v8::MemoryPressureLevel);
-  static void SetWorkerThreadIsolatesPriority(v8::Isolate::Priority priority);
+  static void IsolateInBackgroundNotificationToWorkerThreadIsolates();
+  static void IsolateInForegroundNotificationToWorkerThreadIsolates();
   static void SetBatterySaverModeForWorkerThreadIsolates(
       bool battery_saver_mode_enabled);
 

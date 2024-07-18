@@ -102,7 +102,6 @@ _CONFIG = [
             'base::PersistentHash',
             'base::PlatformThread',
             'base::PlatformThreadId',
-            'base::Process',
             'base::RadToDeg',
             'base::RefCountedData',
             'base::RunLoop',

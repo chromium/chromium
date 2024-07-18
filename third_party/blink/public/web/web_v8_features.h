@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_FEATURES_H_
 
-#include "base/process/process.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -54,9 +53,6 @@ class BLINK_EXPORT WebV8Features {
   // stage protected memory check code paths.
   static void EnableMojoJSWithoutSecurityChecksForTesting(
       v8::Local<v8::Context>);
-
-  // Send isolate priority change notification to worker thread isolates.
-  static void SetIsolatePriority(base::Process::Priority priority);
 
  private:
   WebV8Features() = delete;
