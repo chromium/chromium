@@ -320,6 +320,19 @@ void SetupFragmentBuilderForFragmentation(
 // fragment being generated. Only one of the fragments should include this.
 bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder&);
 
+// Return the size of the block-start box decorations, if they are cloned. In
+// the cloning box decoration model, block-start box decoration are considered
+// cloned in all fragments but the first.
+inline LayoutUnit ClonedBlockStartDecoration(
+    const BoxFragmentBuilder& builder) {
+  const BlockBreakToken* break_token = builder.PreviousBreakToken();
+  if (builder.Style().BoxDecorationBreak() == EBoxDecorationBreak::kClone &&
+      IsBreakInside(break_token) && !break_token->IsAtBlockEnd()) {
+    return builder.BorderScrollbarPadding().block_start;
+  }
+  return LayoutUnit();
+}
+
 // Outcome of considering (and possibly attempting) breaking before or inside a
 // child.
 enum class BreakStatus {

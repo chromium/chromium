@@ -111,7 +111,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   //
   // https://www.w3.org/TR/css-break-3/#box-splitting
   void ConsumeRemainingFragmentainerSpace(
-      LayoutUnit previously_consumed_block_size,
+      LayoutUnit offset_in_stitched_container,
       NGFlexLine* flex_line,
       const FlexColumnBreakInfo* column_break_info = nullptr);
 

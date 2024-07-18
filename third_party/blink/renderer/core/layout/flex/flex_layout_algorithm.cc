@@ -1126,8 +1126,8 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   }
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    BreakStatus break_status =
-        FinishFragmentation(BorderPadding().block_end, &container_builder_);
+    BreakStatus break_status = FinishFragmentation(
+        BorderScrollbarPadding().block_end, &container_builder_);
     if (break_status != BreakStatus::kContinue) {
       if (break_status == BreakStatus::kNeedsEarlierBreak) {
         return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
@@ -1524,8 +1524,28 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   }
 
   LayoutUnit previously_consumed_block_size;
-  if (GetBreakToken()) {
+  LayoutUnit offset_in_stitched_container;
+  if (IsBreakInside(GetBreakToken())) {
     previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
+    offset_in_stitched_container = previously_consumed_block_size;
+
+    if (Style().BoxDecorationBreak() == EBoxDecorationBreak::kClone &&
+        offset_in_stitched_container != LayoutUnit::Max()) {
+      // We want to deal with item offsets that we would have had had we not
+      // been fragmented, and then add unused space caused by fragmentation, and
+      // then calculate a block-offset relatively to the current fragment. In
+      // the slicing box decoration model, that's simply about adding and
+      // subtracting previously consumed block-size.
+      //
+      // For the cloning box decoration model, we need to subtract space used by
+      // all cloned box decorations that wouldn't have been there in the slicing
+      // model. That is: all box decorations from previous fragments, except the
+      // initial block-start decoration of the first fragment.
+      int preceding_fragment_count = GetBreakToken()->SequenceNumber() + 1;
+      offset_in_stitched_container -=
+          preceding_fragment_count * BorderScrollbarPadding().BlockSum() -
+          BorderScrollbarPadding().block_start;
+    }
   }
 
   BaselineAccumulator baseline_accumulator(Style());
@@ -1584,7 +1604,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         // block size in the previous fragmentainer to get the total amount
         // the item or row expanded by. This allows for things like margins
         // and alignment offsets to not get sliced by a forced break.
-        line_output.item_offset_adjustment += previously_consumed_block_size;
+        line_output.item_offset_adjustment += offset_in_stitched_container;
       } else if (!is_column_ && flex_item_idx == 0 && broke_before_row) {
         // If this is the first time we are handling a break before a row,
         // adjust the offset of items in the row to accommodate the break. The
@@ -1612,25 +1632,26 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
               is_first_line
                   ? LayoutUnit()
                   : (*flex_line_outputs)[flex_line_idx - 1].LineCrossEnd();
-          LayoutUnit fragmentainer_space_remaining =
-              (previously_consumed_block_size - previous_row_end)
+          LayoutUnit previous_fragmentainer_unused_space =
+              (offset_in_stitched_container - previous_row_end)
                   .ClampNegativeToZero();
 
           // If there was any remaining space after the previous flex line,
           // determine how much of the row gap was consumed in the previous
           // fragmentainer, if any.
           LayoutUnit consumed_row_gap;
-          if (fragmentainer_space_remaining) {
+          if (previous_fragmentainer_unused_space) {
             LayoutUnit total_row_block_offset =
                 row_block_offset + line_output.item_offset_adjustment;
             LayoutUnit row_gap = total_row_block_offset - previous_row_end;
             DCHECK_GE(row_gap, LayoutUnit());
-            consumed_row_gap = std::min(row_gap, fragmentainer_space_remaining);
+            consumed_row_gap =
+                std::min(row_gap, previous_fragmentainer_unused_space);
           }
 
           // Adjust the item offsets to account for any overflow or consumed row
           // gap in the previous fragmentainer.
-          LayoutUnit row_adjustment = previously_consumed_block_size -
+          LayoutUnit row_adjustment = offset_in_stitched_container -
                                       previous_row_end - consumed_row_gap;
           line_output.item_offset_adjustment += row_adjustment;
         }
@@ -1638,7 +1659,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         LayoutUnit total_item_block_offset =
             offset.block_offset + line_output.item_offset_adjustment;
         individual_item_adjustment =
-            (previously_consumed_block_size - total_item_block_offset)
+            (offset_in_stitched_container - total_item_block_offset)
                 .ClampNegativeToZero();
         // For items in a row, the offset adjustment due to a break before
         // should only apply to the item itself and not to the entire row.
@@ -1649,14 +1670,20 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     if (IsBreakInside(item_break_token)) {
-      offset.block_offset = LayoutUnit();
+      offset.block_offset = BorderScrollbarPadding().block_start;
     } else if (IsBreakInside(GetBreakToken())) {
       LayoutUnit offset_adjustment =
-          previously_consumed_block_size - line_output.item_offset_adjustment;
-      offset.block_offset -= offset_adjustment;
+          offset_in_stitched_container - line_output.item_offset_adjustment;
+
+      // Convert block offsets from stitched coordinate system offsets to being
+      // relative to the current fragment. Include space taken up by any cloned
+      // block-start decorations.
+      offset.block_offset +=
+          BorderScrollbarPadding().block_start - offset_adjustment;
       if (!is_column_) {
         offset.block_offset += individual_item_adjustment;
-        row_block_offset -= offset_adjustment;
+        row_block_offset +=
+            BorderScrollbarPadding().block_start - offset_adjustment;
       }
     }
 
@@ -1672,7 +1699,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         if (early_break_->Type() == EarlyBreak::kLine) {
           *break_before_row = FlexBreakTokenData::kAtStartOfBreakBeforeRow;
         }
-        ConsumeRemainingFragmentainerSpace(previously_consumed_block_size,
+        ConsumeRemainingFragmentainerSpace(offset_in_stitched_container,
                                            &line_output);
         // For column flex containers, continue to the next column. For rows,
         // continue until we've processed all items in the current row.
@@ -1725,9 +1752,10 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       LayoutUnit updated_cross_size_for_stretch =
           line_cross_size_for_stretch.value();
       updated_cross_size_for_stretch -=
-          previously_consumed_block_size -
+          offset_in_stitched_container -
           (original_offset.block_offset + line_output.item_offset_adjustment) -
           item_break_token->ConsumedBlockSize();
+
       line_cross_size_for_stretch = updated_cross_size_for_stretch;
     }
 
@@ -1765,7 +1793,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
               flex_item->ng_input_node, row_container_separation,
               is_first_for_row);
           if (row_break_status == BreakStatus::kBrokeBefore) {
-            ConsumeRemainingFragmentainerSpace(previously_consumed_block_size,
+            ConsumeRemainingFragmentainerSpace(offset_in_stitched_container,
                                                &line_output);
             if (broke_before_row) {
               *break_before_row =
@@ -1830,7 +1858,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     if (break_status == BreakStatus::kBrokeBefore) {
-      ConsumeRemainingFragmentainerSpace(previously_consumed_block_size,
+      ConsumeRemainingFragmentainerSpace(offset_in_stitched_container,
                                          &line_output,
                                          current_column_break_info);
       // For column flex containers, continue to the next column. For rows,
@@ -1868,7 +1896,19 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     // This item may have expanded due to fragmentation. Record how large the
     // shift was (if any). Only do this if the item has completed layout.
     if (is_column_) {
-      flex_item->total_remaining_block_size -= fragment.BlockSize();
+      LayoutUnit cloned_block_decorations;
+      if (!is_at_block_end) {
+        cloned_block_decorations += fragment.BoxDecorations().BlockSum();
+      }
+
+      // Cloned box decorations grow the border-box size of the flex item. In
+      // flex layout, the main-axis size of a flex item is fixed (in the
+      // constraint space). Make sure that this fixed size remains correct, by
+      // adding cloned box decorations from each fragment.
+      flex_item->main_axis_final_size += cloned_block_decorations;
+
+      flex_item->total_remaining_block_size -=
+          fragment.BlockSize() - cloned_block_decorations;
       if (flex_item->total_remaining_block_size < LayoutUnit() &&
           !physical_fragment.GetBreakToken()) {
         LayoutUnit expansion = -flex_item->total_remaining_block_size;
@@ -1879,11 +1919,20 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
                     ->has_descendant_that_depends_on_percentage_block_size) {
       // For rows, keep track of any expansion past the block-end of each
       // row so that we can re-run layout with the new row block-size.
-      LayoutUnit line_block_end =
-          line_output.LineCrossEnd() - previously_consumed_block_size;
+      //
+      // Include any cloned block-start box decorations. The line offset is in
+      // the imaginary stitched container that we would have had had we not been
+      // fragmented, and now we won't actual layout offsets for the current
+      // fragment.
+      LayoutUnit cloned_block_start_decoration =
+          ClonedBlockStartDecoration(container_builder_);
+
+      LayoutUnit line_block_end = line_output.LineCrossEnd() -
+                                  offset_in_stitched_container +
+                                  cloned_block_start_decoration;
       if (line_block_end <= fragmentainer_space &&
           line_block_end >= LayoutUnit() &&
-          previously_consumed_block_size != LayoutUnit::Max()) {
+          offset_in_stitched_container != LayoutUnit::Max()) {
         LayoutUnit item_expansion;
         if (is_at_block_end) {
           item_expansion = item_block_end - line_block_end;
@@ -2243,7 +2292,7 @@ LayoutUnit FlexLayoutAlgorithm::FragmentainerSpaceAvailable(
 }
 
 void FlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
-    LayoutUnit previously_consumed_block_size,
+    LayoutUnit offset_in_stitched_container,
     NGFlexLine* flex_line,
     const FlexColumnBreakInfo* column_break_info) {
   if (To<BlockBreakToken>(container_builder_.LastChildBreakToken())
@@ -2256,8 +2305,17 @@ void FlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
       DCHECK(is_column_);
       intrinsic_block_size = column_break_info->column_intrinsic_block_size;
     }
-    flex_line->item_offset_adjustment -=
-        intrinsic_block_size + previously_consumed_block_size;
+
+    // Any cloned block-start box decorations shouldn't count here, since we're
+    // calculating an offset into the imaginary stitched container that we would
+    // have had had we not been fragmented. The space taken up by a cloned
+    // border is unavailable to child content (flex items in this case).
+    LayoutUnit cloned_block_start_decoration =
+        ClonedBlockStartDecoration(container_builder_);
+
+    flex_line->item_offset_adjustment -= intrinsic_block_size +
+                                         offset_in_stitched_container -
+                                         cloned_block_start_decoration;
   }
 
   if (!GetConstraintSpace().HasKnownFragmentainerBlockSize()) {
@@ -2500,8 +2558,12 @@ void FlexLayoutAlgorithm::CheckFlexLines(
 
       DCHECK_EQ(flex_item_output.offset, *flex_item.offset_);
       DCHECK_EQ(flex_item_output.ng_input_node, flex_item.ng_input_node_);
-      DCHECK_EQ(flex_item_output.main_axis_final_size,
-                flex_item.FlexedBorderBoxSize());
+      // Cloned box decorations may cause the border box of a flex item to grow.
+      if (flex_item_output.ng_input_node.Style().BoxDecorationBreak() !=
+          EBoxDecorationBreak::kClone) {
+        DCHECK_EQ(flex_item_output.main_axis_final_size,
+                  flex_item.FlexedBorderBoxSize());
+      }
     }
   }
 }
