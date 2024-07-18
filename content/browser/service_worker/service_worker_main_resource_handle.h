@@ -7,13 +7,14 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 
 namespace content {
 
+class ScopedServiceWorkerClient;
+class ServiceWorkerClient;
 class ServiceWorkerContextWrapper;
 
 // The lifetime of the ServiceWorkerMainResourceHandle:

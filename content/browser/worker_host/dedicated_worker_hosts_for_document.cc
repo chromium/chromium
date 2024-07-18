@@ -5,7 +5,7 @@
 #include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
+#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 
 namespace content {

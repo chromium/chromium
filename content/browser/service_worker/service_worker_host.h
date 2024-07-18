@@ -15,7 +15,6 @@
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -29,6 +28,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -47,6 +47,7 @@
 
 namespace content {
 
+class ServiceWorkerContainerHostForServiceWorker;
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
 struct ServiceWorkerVersionBaseInfo;
@@ -99,7 +100,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
   void BindUsbService(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
-  content::ServiceWorkerContainerHostForServiceWorker* container_host() {
+  ServiceWorkerContainerHostForServiceWorker* container_host() {
     return container_host_.get();
   }
 
@@ -145,7 +146,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
  private:
   RenderProcessHost* GetProcessHost() const;
 
-  int worker_process_id_ = ChildProcessHost::kInvalidUniqueID;
+  int worker_process_id_;
 
   // The service worker being hosted. Raw pointer is safe because the version
   // owns |this|.

@@ -36,8 +36,12 @@ class StorageKey;
 namespace content {
 
 class EmbeddedWorkerTestHelper;
+class ScopedServiceWorkerClient;
+class ServiceWorkerClient;
+class ServiceWorkerContainerHost;
 class ServiceWorkerContext;
 class ServiceWorkerHost;
+class ServiceWorkerRegistration;
 class ServiceWorkerRegistry;
 class ServiceWorkerVersion;
 
@@ -89,10 +93,7 @@ class CommittedServiceWorkerClient final {
     return service_worker_client_.get();
   }
 
-  ServiceWorkerContainerHost& container_host() const {
-    CHECK(service_worker_client_->container_host());
-    return *service_worker_client_->container_host();
-  }
+  ServiceWorkerContainerHost& container_host() const;
 
   // NOTE: These pipes are usable only for Window clients, because for workers
   // the mojo call is not emulated and thus the associated mojo pipes here don't

@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_consts.h"
+#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/webtransport/web_transport_connector_impl.h"
@@ -43,7 +44,8 @@ ServiceWorkerHost::ServiceWorkerHost(
         host_receiver,
     ServiceWorkerVersion& version,
     base::WeakPtr<ServiceWorkerContextCore> context)
-    : version_(&version),
+    : worker_process_id_(ChildProcessHost::kInvalidUniqueID),
+      version_(&version),
       token_(blink::ServiceWorkerToken()),
       broker_(this),
       container_host_(
