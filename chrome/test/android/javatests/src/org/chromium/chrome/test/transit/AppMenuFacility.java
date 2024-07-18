@@ -32,6 +32,9 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
@@ -152,8 +155,11 @@ public abstract class AppMenuFacility<HostStationT extends Station>
     }
 
     /** Default behavior for "Open new tab". */
-    protected NewTabPageStation createNewTabPageStation() {
-        return NewTabPageStation.newBuilder().withIsOpeningTabs(1).withIsSelectingTabs(1).build();
+    protected RegularNewTabPageStation createNewTabPageStation() {
+        return RegularNewTabPageStation.newBuilder()
+                .withIsOpeningTabs(1)
+                .withIsSelectingTabs(1)
+                .build();
     }
 
     /** Default behavior for "Open new Incognito tab". */

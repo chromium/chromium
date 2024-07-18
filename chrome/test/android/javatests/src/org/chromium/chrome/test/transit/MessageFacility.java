@@ -29,6 +29,7 @@ import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;

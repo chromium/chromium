@@ -28,13 +28,13 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
-import org.chromium.chrome.test.transit.HubIncognitoTabSwitcherStation;
-import org.chromium.chrome.test.transit.HubTabSwitcherAppMenuFacility;
-import org.chromium.chrome.test.transit.HubTabSwitcherStation;
-import org.chromium.chrome.test.transit.IncognitoNewTabPageStation;
-import org.chromium.chrome.test.transit.NewTabPageStation;
-import org.chromium.chrome.test.transit.PageAppMenuFacility;
-import org.chromium.chrome.test.transit.PageStation;
+import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
+import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 
 /** Public transit instrumentation/integration test of Hub. */
@@ -55,7 +55,7 @@ public class HubLayoutPublicTransitTest {
     public void testEnterAndExitHub() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
-        HubTabSwitcherStation tabSwitcher = page.openHub(HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = page.openHub(RegularTabSwitcherStation.class);
 
         PageStation previousTab = tabSwitcher.leaveHubToPreviousTabViaBack();
 
@@ -67,11 +67,11 @@ public class HubLayoutPublicTransitTest {
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
-        HubTabSwitcherStation tabSwitcher = page.openHub(HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = page.openHub(RegularTabSwitcherStation.class);
 
-        HubTabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
+        TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
 
-        NewTabPageStation newTab = appMenu.openNewTab();
+        RegularNewTabPageStation newTab = appMenu.openNewTab();
 
         assertFinalDestination(newTab);
     }
@@ -81,9 +81,9 @@ public class HubLayoutPublicTransitTest {
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
-        HubTabSwitcherStation tabSwitcher = page.openHub(HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = page.openHub(RegularTabSwitcherStation.class);
 
-        HubTabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
+        TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
 
         IncognitoNewTabPageStation newIncognitoTab = appMenu.openNewIncognitoTab();
 
@@ -98,15 +98,16 @@ public class HubLayoutPublicTransitTest {
         PageAppMenuFacility appMenu = page.openGenericAppMenu();
         IncognitoNewTabPageStation incognitoNewTabPage = appMenu.openNewIncognitoTab();
 
-        HubIncognitoTabSwitcherStation incognitoTabSwitcher =
-                incognitoNewTabPage.openHub(HubIncognitoTabSwitcherStation.class);
+        IncognitoTabSwitcherStation incognitoTabSwitcher =
+                incognitoNewTabPage.openHub(IncognitoTabSwitcherStation.class);
         assertEquals(
                 incognitoTabSwitcher,
                 incognitoTabSwitcher.selectPane(
-                        PaneId.INCOGNITO_TAB_SWITCHER, HubIncognitoTabSwitcherStation.class));
+                        PaneId.INCOGNITO_TAB_SWITCHER, IncognitoTabSwitcherStation.class));
 
-        HubTabSwitcherStation tabSwitcher =
-                incognitoTabSwitcher.selectPane(PaneId.TAB_SWITCHER, HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher =
+                incognitoTabSwitcher.selectPane(
+                        PaneId.TAB_SWITCHER, RegularTabSwitcherStation.class);
 
         // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
         PageStation blankTab = tabSwitcher.selectTabAtIndex(0);
@@ -122,20 +123,23 @@ public class HubLayoutPublicTransitTest {
         PageStation page = mInitialStateRule.startOnBlankPage();
 
         PageAppMenuFacility appMenu = page.openGenericAppMenu();
-        NewTabPageStation newTabPage = appMenu.openNewTab();
+        RegularNewTabPageStation newTabPage = appMenu.openNewTab();
 
-        HubTabSwitcherStation tabSwitcher = newTabPage.openHub(HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher = newTabPage.openHub(RegularTabSwitcherStation.class);
         page = tabSwitcher.selectTabAtIndex(0);
 
-        tabSwitcher = page.openHub(HubTabSwitcherStation.class);
+        tabSwitcher = page.openHub(RegularTabSwitcherStation.class);
         newTabPage = pauseAndResumeActivity(tabSwitcher);
 
         assertFinalDestination(newTabPage);
     }
 
-    private NewTabPageStation pauseAndResumeActivity(Station currentStation) {
-        NewTabPageStation destination =
-                NewTabPageStation.newBuilder().withIsOpeningTabs(0).withIsSelectingTabs(1).build();
+    private RegularNewTabPageStation pauseAndResumeActivity(Station currentStation) {
+        RegularNewTabPageStation destination =
+                RegularNewTabPageStation.newBuilder()
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
+                        .build();
         currentStation.travelToSync(
                 destination,
                 () -> {

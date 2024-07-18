@@ -21,12 +21,12 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
-import org.chromium.chrome.test.transit.HubTabSwitcherListEditorFacility;
-import org.chromium.chrome.test.transit.HubTabSwitcherStation;
-import org.chromium.chrome.test.transit.NewTabPageStation;
-import org.chromium.chrome.test.transit.PageStation;
-import org.chromium.chrome.test.transit.WebPageStation;
-import org.chromium.chrome.test.transit.hub.HubNewTabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 /** Public transit tests for the Hub's tab switcher list editor. */
@@ -46,8 +46,8 @@ public class TabSwitcherListEditorPTTest {
     @MediumTest
     public void testLeaveEditorViaBackPress() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        HubTabSwitcherStation tabSwitcher = firstPage.openHub(HubTabSwitcherStation.class);
-        HubTabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        RegularTabSwitcherStation tabSwitcher = firstPage.openHub(RegularTabSwitcherStation.class);
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor.pressBackToExit();
 
         // Go back to PageStation for InitialStateRule to reset
@@ -60,8 +60,8 @@ public class TabSwitcherListEditorPTTest {
     public void testCreateTabGroupOf1() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
-        HubTabSwitcherStation tabSwitcher = firstPage.openHub(HubTabSwitcherStation.class);
-        HubTabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        RegularTabSwitcherStation tabSwitcher = firstPage.openHub(RegularTabSwitcherStation.class);
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
 
         editor.openAppMenuWithEditor().groupTabs();
@@ -76,10 +76,10 @@ public class TabSwitcherListEditorPTTest {
     public void testCreateTabGroupOf2() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
-        NewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
         int secondTabId = secondPage.getLoadedTab().getId();
-        HubTabSwitcherStation tabSwitcher = secondPage.openHub(HubTabSwitcherStation.class);
-        HubTabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        RegularTabSwitcherStation tabSwitcher = secondPage.openHub(RegularTabSwitcherStation.class);
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
 
@@ -96,14 +96,14 @@ public class TabSwitcherListEditorPTTest {
     public void testCreateTabGroupOf2_parity() {
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
-        NewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
         int secondTabId = secondPage.getLoadedTab().getId();
-        HubTabSwitcherStation tabSwitcher = secondPage.openHub(HubTabSwitcherStation.class);
-        HubTabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        RegularTabSwitcherStation tabSwitcher = secondPage.openHub(RegularTabSwitcherStation.class);
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
 
-        HubNewTabGroupDialogFacility dialog =
+        NewTabGroupDialogFacility dialog =
                 editor.openAppMenuWithEditor().groupTabsWithParityEnabled();
         dialog = dialog.inputName("test_tab_group_name");
         dialog = dialog.pickColor(TabGroupColorId.RED);

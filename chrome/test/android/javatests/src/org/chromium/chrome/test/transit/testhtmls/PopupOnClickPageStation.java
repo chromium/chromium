@@ -6,9 +6,9 @@ package org.chromium.chrome.test.transit.testhtmls;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.PageStation;
-import org.chromium.chrome.test.transit.PopupBlockedMessageFacility;
-import org.chromium.chrome.test.transit.WebPageStation;
+import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.PopupBlockedMessageFacility;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.transit.HtmlElement;
 import org.chromium.content_public.browser.test.transit.HtmlElementInState;
 

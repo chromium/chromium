@@ -42,16 +42,16 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
-import org.chromium.chrome.test.transit.HubIncognitoTabSwitcherStation;
-import org.chromium.chrome.test.transit.HubTabSwitcherBaseStation;
-import org.chromium.chrome.test.transit.HubTabSwitcherListEditorFacility;
-import org.chromium.chrome.test.transit.HubTabSwitcherStation;
 import org.chromium.chrome.test.transit.Journeys;
-import org.chromium.chrome.test.transit.NewTabPageStation;
-import org.chromium.chrome.test.transit.PageStation;
-import org.chromium.chrome.test.transit.TabThumbnailsCapturedCarryOn;
-import org.chromium.chrome.test.transit.WebPageStation;
-import org.chromium.chrome.test.transit.hub.HubNewTabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
+import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabThumbnailsCapturedCarryOn;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -112,11 +112,10 @@ public class TabSwitcherLayoutPTTest {
      * Enters the HubTabSwitcher. Like {@link TabUiTestHelper#enterTabSwitcher}, but make sure all
      * tabs have thumbnail.
      */
-    private <T extends HubTabSwitcherBaseStation> T enterHTSWithThumbnailChecking(
+    private <T extends TabSwitcherStation> T enterHTSWithThumbnailChecking(
             PageStation currentStation, Class<T> destinationType) {
         T tabSwitcherStation = currentStation.openHub(destinationType);
-        boolean isIncognito =
-                destinationType.isAssignableFrom(HubIncognitoTabSwitcherStation.class);
+        boolean isIncognito = destinationType.isAssignableFrom(IncognitoTabSwitcherStation.class);
         CarryOn.pickUp(new TabThumbnailsCapturedCarryOn(isIncognito), /* trigger= */ null);
         return tabSwitcherStation;
     }
@@ -129,11 +128,11 @@ public class TabSwitcherLayoutPTTest {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         PageStation pageStation = Journeys.prepareTabs(mStartPage, 10, 0, "about:blank");
         // Make sure all thumbnails are there before switching tabs.
-        HubTabSwitcherStation tabSwitcherStation =
-                enterHTSWithThumbnailChecking(pageStation, HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcherStation =
+                enterHTSWithThumbnailChecking(pageStation, RegularTabSwitcherStation.class);
         pageStation = tabSwitcherStation.selectTabAtIndex(0);
 
-        tabSwitcherStation = pageStation.openHub(HubTabSwitcherStation.class);
+        tabSwitcherStation = pageStation.openHub(RegularTabSwitcherStation.class);
         mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "10_web_tabs");
 
         PageStation previousPage = tabSwitcherStation.leaveHubToPreviousTabViaBack();
@@ -148,8 +147,8 @@ public class TabSwitcherLayoutPTTest {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         PageStation pageStation = Journeys.prepareTabs(mStartPage, 10, 0, "about:blank");
         assertEquals(9, cta.getTabModelSelector().getCurrentModel().index());
-        HubTabSwitcherStation tabSwitcherStation =
-                enterHTSWithThumbnailChecking(pageStation, HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcherStation =
+                enterHTSWithThumbnailChecking(pageStation, RegularTabSwitcherStation.class);
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
         mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "10_web_tabs-select_last");
 
@@ -166,11 +165,11 @@ public class TabSwitcherLayoutPTTest {
         PageStation pageStation =
                 Journeys.prepareTabs(mStartPage, 3, 0, sTestServer.getURL(TEST_URL));
         // Make sure all thumbnails are there before switching tabs.
-        HubTabSwitcherStation tabSwitcherStation =
-                enterHTSWithThumbnailChecking(pageStation, HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcherStation =
+                enterHTSWithThumbnailChecking(pageStation, RegularTabSwitcherStation.class);
         pageStation = tabSwitcherStation.selectTabAtIndex(0);
 
-        tabSwitcherStation = pageStation.openHub(HubTabSwitcherStation.class);
+        tabSwitcherStation = pageStation.openHub(RegularTabSwitcherStation.class);
 
         mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_web_tabs");
 
@@ -186,11 +185,11 @@ public class TabSwitcherLayoutPTTest {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         PageStation pageStation = Journeys.prepareTabs(mStartPage, 3, 0, UrlConstants.NTP_URL);
         // Make sure all thumbnails are there before switching tabs.
-        HubTabSwitcherStation tabSwitcherStation =
-                enterHTSWithThumbnailChecking(pageStation, HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcherStation =
+                enterHTSWithThumbnailChecking(pageStation, RegularTabSwitcherStation.class);
         pageStation = tabSwitcherStation.selectTabAtIndex(0);
 
-        tabSwitcherStation = pageStation.openHub(HubTabSwitcherStation.class);
+        tabSwitcherStation = pageStation.openHub(RegularTabSwitcherStation.class);
 
         mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_native_tabs");
 
@@ -208,10 +207,10 @@ public class TabSwitcherLayoutPTTest {
         PageStation pageStation = Journeys.prepareTabs(mStartPage, 1, 3, "about:blank");
         assertTrue(cta.getCurrentTabModel().isIncognito());
         // Make sure all thumbnails are there before switching tabs.
-        HubIncognitoTabSwitcherStation tabSwitcherStation =
-                enterHTSWithThumbnailChecking(pageStation, HubIncognitoTabSwitcherStation.class);
+        IncognitoTabSwitcherStation tabSwitcherStation =
+                enterHTSWithThumbnailChecking(pageStation, IncognitoTabSwitcherStation.class);
         pageStation = tabSwitcherStation.selectTabAtIndex(0);
-        tabSwitcherStation = pageStation.openHub(HubIncognitoTabSwitcherStation.class);
+        tabSwitcherStation = pageStation.openHub(IncognitoTabSwitcherStation.class);
         ChromeRenderTestRule.sanitize(cta.findViewById(R.id.pane_frame));
         mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_incognito_web_tabs");
 
@@ -229,16 +228,16 @@ public class TabSwitcherLayoutPTTest {
 
         WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
-        NewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
         int secondTabId = secondPage.getLoadedTab().getId();
         // Make sure all thumbnails are there before switching tabs.
-        HubTabSwitcherStation tabSwitcher =
-                enterHTSWithThumbnailChecking(secondPage, HubTabSwitcherStation.class);
-        HubTabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        RegularTabSwitcherStation tabSwitcher =
+                enterHTSWithThumbnailChecking(secondPage, RegularTabSwitcherStation.class);
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
 
-        HubNewTabGroupDialogFacility dialog =
+        NewTabGroupDialogFacility dialog =
                 editor.openAppMenuWithEditor().groupTabsWithParityEnabled();
         dialog = dialog.inputName("test_tab_group_name");
         dialog = dialog.pickColor(TabGroupColorId.RED);
@@ -291,7 +290,7 @@ public class TabSwitcherLayoutPTTest {
     @EnableAnimations
     public void testTabToGridAndBack_SoftCleanup_Ntp() {
         WebPageStation page = mInitialStateRule.startOnBlankPage();
-        NewTabPageStation ntp = page.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation ntp = page.openRegularTabAppMenu().openNewTab();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         Runnable resetHTSStateOnUiThread =
                 () -> {
@@ -361,8 +360,8 @@ public class TabSwitcherLayoutPTTest {
 
     private PageStation roundtripToHTSWithThumbnailChecks(
             PageStation page, Runnable resetHTSStateOnUiThread, boolean canGarbageCollectBitmaps) {
-        HubTabSwitcherStation tabSwitcher =
-                enterHTSWithThumbnailChecking(page, HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher =
+                enterHTSWithThumbnailChecking(page, RegularTabSwitcherStation.class);
 
         // TODO(crbug.com/324919909): Migrate this to a HubTabSwitcherCardFacility with a tab
         // thumbnail as a view element.
@@ -391,7 +390,7 @@ public class TabSwitcherLayoutPTTest {
             assertFalse(canBeGarbageCollected(mBitmap));
         }
 
-        tabSwitcher = enterHTSWithThumbnailChecking(page, HubTabSwitcherStation.class);
+        tabSwitcher = enterHTSWithThumbnailChecking(page, RegularTabSwitcherStation.class);
         return tabSwitcher.leaveHubToPreviousTabViaBack();
     }
 }

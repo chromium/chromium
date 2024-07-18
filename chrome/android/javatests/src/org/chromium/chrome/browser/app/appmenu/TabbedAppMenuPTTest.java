@@ -25,14 +25,14 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
-import org.chromium.chrome.test.transit.IncognitoNewTabPageStation;
-import org.chromium.chrome.test.transit.NewTabPageIncognitoAppMenuFacility;
-import org.chromium.chrome.test.transit.NewTabPageRegularAppMenuFacility;
-import org.chromium.chrome.test.transit.NewTabPageStation;
-import org.chromium.chrome.test.transit.SettingsStation;
-import org.chromium.chrome.test.transit.WebPageIncognitoAppMenuFacility;
-import org.chromium.chrome.test.transit.WebPageRegularAppMenuFacility;
-import org.chromium.chrome.test.transit.WebPageStation;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageAppMenuFacility;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.IncognitoWebPageAppMenuFacility;
+import org.chromium.chrome.test.transit.page.RegularWebPageAppMenuFacility;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 
 /** Public Transit tests for the app menu. */
@@ -52,7 +52,7 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     public void testOpenNewTab() {
-        NewTabPageStation newTabPage =
+        RegularNewTabPageStation newTabPage =
                 mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewTab();
 
         assertEquals(2, sActivityTestRule.tabsCount(/* incognito= */ false));
@@ -99,8 +99,8 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testNewTabPageRegularAppMenuItems() {
         WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
-        NewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
-        NewTabPageRegularAppMenuFacility menu = newTabPage.openAppMenu();
+        RegularNewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageAppMenuFacility menu = newTabPage.openAppMenu();
 
         verifyPresentItems(menu);
         assertFinalDestination(newTabPage, menu);
@@ -118,7 +118,7 @@ public class TabbedAppMenuPTTest {
     public void testNewTabPageIncognitoAppMenuItems() {
         IncognitoNewTabPageStation incognitoNewTabPage =
                 mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
-        NewTabPageIncognitoAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
+        IncognitoNewTabPageAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
 
         verifyPresentItems(menu);
         assertFinalDestination(incognitoNewTabPage, menu);
@@ -136,7 +136,7 @@ public class TabbedAppMenuPTTest {
     @RequiresRestart
     public void testWebPageRegularAppMenuItems() {
         WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
-        WebPageRegularAppMenuFacility menu = blankPage.openRegularTabAppMenu();
+        RegularWebPageAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
         verifyPresentItems(menu);
         assertFinalDestination(blankPage, menu);
@@ -159,7 +159,7 @@ public class TabbedAppMenuPTTest {
                 incognitoNtp.loadPageProgramatically(
                         NavigatePageStations.newNavigateOnePageBuilder(),
                         sActivityTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE));
-        WebPageIncognitoAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
+        IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
         verifyPresentItems(menu);
         assertFinalDestination(pageOne, menu);

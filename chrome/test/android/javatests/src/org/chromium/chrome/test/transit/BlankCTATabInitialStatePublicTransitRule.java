@@ -14,6 +14,9 @@ import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Wraps BlankCTATabInitialStateRule to be used in Public Transit batched tests. */
@@ -65,9 +68,9 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
      *
      * <p>From the second test onwards, state was reset by {@link BlankCTATabInitialStateRule}.
      */
-    public NewTabPageStation startOnNtp() {
+    public RegularNewTabPageStation startOnNtp() {
         WebPageStation blankPage = startOnBlankPage();
         return blankPage.loadPageProgramatically(
-                NewTabPageStation.newBuilder(), UrlConstants.NTP_URL);
+                RegularNewTabPageStation.newBuilder(), UrlConstants.NTP_URL);
     }
 }

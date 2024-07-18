@@ -10,6 +10,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 
 /* Helper class for extended multi-stage Trips. */

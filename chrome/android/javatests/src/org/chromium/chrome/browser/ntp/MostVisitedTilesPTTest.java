@@ -27,9 +27,9 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
-import org.chromium.chrome.test.transit.NewTabPageStation;
-import org.chromium.chrome.test.transit.WebPageStation;
 import org.chromium.chrome.test.transit.ntp.MvtsFacility;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -47,8 +47,9 @@ public class MostVisitedTilesPTTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public BatchedPublicTransitRule<NewTabPageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(NewTabPageStation.class, /* expectResetByTest= */ true);
+    public BatchedPublicTransitRule<RegularNewTabPageStation> mBatchedRule =
+            new BatchedPublicTransitRule<>(
+                    RegularNewTabPageStation.class, /* expectResetByTest= */ true);
 
     private final ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
             new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
@@ -82,7 +83,7 @@ public class MostVisitedTilesPTTest {
     }
 
     private void doClickMVTTest(int index) {
-        NewTabPageStation page = mEntryPoints.startOnNtp(mBatchedRule);
+        RegularNewTabPageStation page = mEntryPoints.startOnNtp(mBatchedRule);
         MvtsFacility mvts = page.focusOnMvts(sSiteSuggestions);
         WebPageStation mostVisitedPage;
         try (var histogram =
@@ -94,7 +95,7 @@ public class MostVisitedTilesPTTest {
         // Reset back to the NTP for batching
         page =
                 mostVisitedPage.pressBack(
-                        NewTabPageStation.newBuilder()
+                        RegularNewTabPageStation.newBuilder()
                                 .withIncognito(false)
                                 .withIsOpeningTabs(0)
                                 .withTabAlreadySelected(mostVisitedPage.getLoadedTab())

@@ -24,14 +24,13 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
-import org.chromium.chrome.test.transit.NewTabPageStation;
-import org.chromium.chrome.test.transit.WebPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Represents the Most Visited Tiles section in the New Tab Page. */
-public class MvtsFacility extends ScrollableFacility<NewTabPageStation> {
+public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
 
     // 1% visibility is enough because this layout is clipped by being inside scroll view in
     // tablets.
@@ -43,14 +42,14 @@ public class MvtsFacility extends ScrollableFacility<NewTabPageStation> {
     private ArrayList<Item<WebPageStation>> mTiles;
 
     /** Constructor. Expects the tiles to show the given |siteSuggestions|. */
-    public MvtsFacility(NewTabPageStation station, List<SiteSuggestion> siteSuggestions) {
+    public MvtsFacility(RegularNewTabPageStation station, List<SiteSuggestion> siteSuggestions) {
         super(station);
         mSiteSuggestions = siteSuggestions;
     }
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(NewTabPageStation.MOST_VISITED_TILES_CONTAINER);
+        elements.declareView(RegularNewTabPageStation.MOST_VISITED_TILES_CONTAINER);
         Supplier<View> tilesViewSupplier = elements.declareView(MOST_VISITED_TILES_LAYOUT);
         elements.declareEnterCondition(
                 new ViewHasChildrenCountCondition(tilesViewSupplier, mSiteSuggestions.size()));
@@ -58,7 +57,7 @@ public class MvtsFacility extends ScrollableFacility<NewTabPageStation> {
     }
 
     @Override
-    protected void declareItems(ScrollableFacility<NewTabPageStation>.ItemsBuilder items) {
+    protected void declareItems(ScrollableFacility<RegularNewTabPageStation>.ItemsBuilder items) {
         mTiles = new ArrayList<>();
         for (int i = 0; i < mSiteSuggestions.size(); i++) {
             Matcher<View> tileMatcher =

@@ -24,10 +24,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
-import org.chromium.chrome.test.transit.HubTabSwitcherStation;
-import org.chromium.chrome.test.transit.PageAppMenuFacility;
-import org.chromium.chrome.test.transit.PageStation;
-import org.chromium.chrome.test.transit.TabSwitcherActionMenuFacility;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
+import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 
 /**
  * Instrumentation tests for tab switcher long-press menu popup.
@@ -82,7 +82,8 @@ public class TabSwitcherActionMenuPTTest {
 
         // Closing the only tab should lead to the Tab Switcher.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        HubTabSwitcherStation tabSwitcher = actionMenu.selectCloseTab(HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher =
+                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
 
         assertEquals(0, getCurrentTabModel().getCount());
         assertFinalDestination(tabSwitcher);
@@ -111,7 +112,8 @@ public class TabSwitcherActionMenuPTTest {
 
         // Close first regular tab opened.
         actionMenu = page.openTabSwitcherActionMenu();
-        HubTabSwitcherStation tabSwitcher = actionMenu.selectCloseTab(HubTabSwitcherStation.class);
+        RegularTabSwitcherStation tabSwitcher =
+                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
 
         // Only the incognito tab should still remain.
         assertEquals(0, regularTabModel.getCount());

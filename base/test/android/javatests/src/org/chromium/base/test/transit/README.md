@@ -75,7 +75,7 @@ org.chromium.base.test.transit.TravelException: Did not complete Trip 11 (<S9: W
     at org.chromium.base.test.transit.Transition.performTransitionWithRetries(Transition.java:95)
     at org.chromium.base.test.transit.Transition.transitionSync(Transition.java:55)
     at org.chromium.base.test.transit.Station.travelToSync(Station.java:102)
-    at org.chromium.chrome.test.transit.PageStation.loadPageProgrammatically(PageStation.java:358)
+    at org.chromium.chrome.test.transit.page.PageStation.loadPageProgrammatically(PageStation.java:358)
     at org.chromium.chrome.test.transit.testhtmls.PopupOnLoadPageStation.loadInCurrentTabExpectPopups(PopupOnLoadPageStation.java:70)
     at org.chromium.chrome.browser.PopupPTTest.test900PopupWindowsAppearWhenAllowed(PopupPTTest.java:130)
     ... 47 trimmed

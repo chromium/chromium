@@ -29,11 +29,11 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHel
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.TabInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
-import org.chromium.chrome.test.transit.HubTabSwitcherListEditorFacility;
-import org.chromium.chrome.test.transit.HubTabSwitcherStation;
-import org.chromium.chrome.test.transit.NewTabPageStation;
-import org.chromium.chrome.test.transit.WebPageStation;
-import org.chromium.chrome.test.transit.hub.HubNewTabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
@@ -87,19 +87,19 @@ public class TabGroupSyncLocalToRemoteTest {
         String firstTabTitle = ChromeTabUtils.getTitleOnUiThread(firstTab);
         String firstTabUrl = ChromeTabUtils.getUrlStringOnUiThread(firstTab);
 
-        NewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
+        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
         Tab secondTab = secondPage.getLoadedTab();
         int secondTabId = secondTab.getId();
         String secondTabTitle = ChromeTabUtils.getTitleOnUiThread(secondTab);
         String secondTabUrl = ChromeTabUtils.getUrlStringOnUiThread(secondTab);
 
-        HubTabSwitcherStation tabSwitcher = secondPage.openHub(HubTabSwitcherStation.class);
-        HubTabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        RegularTabSwitcherStation tabSwitcher = secondPage.openHub(RegularTabSwitcherStation.class);
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
 
         String title = "test_tab_group_name";
-        HubNewTabGroupDialogFacility dialog =
+        NewTabGroupDialogFacility dialog =
                 editor.openAppMenuWithEditor().groupTabsWithParityEnabled();
         dialog = dialog.inputName(title);
         dialog = dialog.pickColor(TabGroupColorId.RED);

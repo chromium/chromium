@@ -7,9 +7,9 @@ package org.chromium.chrome.test.transit.testhtmls;
 import android.util.Pair;
 
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.PageStation;
-import org.chromium.chrome.test.transit.PopupBlockedMessageFacility;
-import org.chromium.chrome.test.transit.WebPageStation;
+import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.PopupBlockedMessageFacility;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /**
  * PageStation for popup_test.html, which opens two pop-ups (one.html and two.html) upon loading.
