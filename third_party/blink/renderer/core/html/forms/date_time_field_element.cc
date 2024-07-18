@@ -82,11 +82,14 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     return;
 
   const AtomicString key(keyboard_event.key());
-  bool is_horizontal =
-      GetComputedStyle() ? GetComputedStyle()->IsHorizontalWritingMode() : true;
+  WritingMode writing_mode = GetComputedStyle()
+                                 ? GetComputedStyle()->GetWritingMode()
+                                 : WritingMode::kHorizontalTb;
+  const PhysicalToLogical<const AtomicString*> key_mapper(
+      {writing_mode, TextDirection::kLtr}, &keywords::kArrowUp,
+      &keywords::kArrowRight, &keywords::kArrowDown, &keywords::kArrowLeft);
 
-  if ((is_horizontal && key == keywords::kArrowLeft) ||
-      (!is_horizontal && key == keywords::kArrowUp)) {
+  if (key == *key_mapper.InlineStart()) {
     if (!field_owner_)
       return;
     // FIXME: We'd like to use FocusController::advanceFocus(FocusDirectionLeft,
@@ -96,8 +99,7 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     return;
   }
 
-  if ((is_horizontal && key == keywords::kArrowRight) ||
-      (!is_horizontal && key == keywords::kArrowDown)) {
+  if (key == *key_mapper.InlineEnd()) {
     if (!field_owner_)
       return;
     // FIXME: We'd like to use
@@ -111,8 +113,7 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
   if (IsFieldOwnerReadOnly())
     return;
 
-  if ((is_horizontal && key == keywords::kArrowDown) ||
-      (!is_horizontal && key == keywords::kArrowLeft)) {
+  if (key == *key_mapper.LineUnder()) {
     if (keyboard_event.getModifierState("Alt"))
       return;
     keyboard_event.SetDefaultHandled();
@@ -120,8 +121,7 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
     return;
   }
 
-  if ((is_horizontal && key == keywords::kArrowUp) ||
-      (!is_horizontal && key == keywords::kArrowRight)) {
+  if (key == *key_mapper.LineOver()) {
     keyboard_event.SetDefaultHandled();
     StepUp();
     return;

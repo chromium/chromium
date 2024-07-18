@@ -17,6 +17,11 @@ function testKeyOperations(writingMode) {
       stepUpKey = 'ArrowUp';
       focusNextKey = 'ArrowRight';
       focusPrevKey = 'ArrowLeft';
+    } else if (writingMode == 'sideways-lr') {
+      stepDownKey = 'ArrowRight';
+      stepUpKey = 'ArrowLeft';
+      focusNextKey = 'ArrowUp';
+      focusPrevKey = 'ArrowDown';
     } else {
       stepDownKey = 'ArrowLeft';
       stepUpKey = 'ArrowRight';
@@ -204,5 +209,7 @@ function testKeyOperations(writingMode) {
 testKeyOperations('horizontal-tb');
 testKeyOperations('vertical-lr');
 testKeyOperations('vertical-rl');
+testKeyOperations('sideways-lr');
+testKeyOperations('sideways-rl');
 </script>
 </html>
