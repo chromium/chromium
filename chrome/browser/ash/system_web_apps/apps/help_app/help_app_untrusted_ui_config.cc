@@ -122,6 +122,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
         "isVcBackgroundReplaceAllowed",
         ash::features::IsVcBackgroundReplaceEnabled() &&
             ash::personalization_app::IsEligibleForSeaPen(profile));
+    source->AddBoolean("isCrosSwitcherEnabled",
+                       ash::features::IsCrosSwitcherEnabled());
     source->AddBoolean(
         "featureManagementShowoff",
         base::FeatureList::IsEnabled(ash::features::kFeatureManagementShowoff));
