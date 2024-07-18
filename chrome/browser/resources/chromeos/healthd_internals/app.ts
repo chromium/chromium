@@ -17,7 +17,6 @@ import './pages/thermal_chart.js';
 import './settings/settings_dialog.js';
 
 import {sendWithPromise} from '//resources/js/cr.js';
-import {CrRouter} from '//resources/js/cr_router.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -71,8 +70,6 @@ export class HealthdInternalsAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    const router = CrRouter.getInstance();
-    this.updateSelectedIndex(router.getPath());
     this.setupFetchDataRequests();
 
     this.$.settingsDialog.addEventListener('polling-cycle-updated', () => {
