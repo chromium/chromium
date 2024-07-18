@@ -75,7 +75,7 @@
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
     <provider  # DIFF-ANCHOR: d3ae412b
         android:name="androidx.core.content.FileProvider"
-        android:authorities="$PACKAGE.fileprovider"
+        android:authorities="$PACKAGE.net_logs_provider"
         android:exported="false"
         android:grantUriPermissions="true"
         android:process=":webview_service"

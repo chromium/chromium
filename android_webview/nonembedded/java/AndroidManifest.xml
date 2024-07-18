@@ -126,7 +126,7 @@ by a child template that "extends" this file.
             <provider android:name="androidx.core.content.FileProvider"
                       android:visibleToInstantApps="true"
                       android:exported="false"
-                      android:authorities="{{ manifest_package }}.fileprovider"
+                      android:authorities="{{ manifest_package }}.net_logs_provider"
                       android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
                       android:grantUriPermissions="true"
                       tools:ignore="ExportedContentProvider">

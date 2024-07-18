@@ -260,7 +260,7 @@ public class NetLogsFragment extends DevUiBaseFragment {
             try {
                 Uri contentUri =
                         FileProvider.getUriForFile(
-                                mContext, mContext.getPackageName() + ".fileprovider", file);
+                                mContext, mContext.getPackageName() + ".net_logs_provider", file);
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("application/json");
                 intent.putExtra(Intent.EXTRA_STREAM, contentUri);
