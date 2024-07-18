@@ -51,8 +51,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
   // accepts a HRESULT from it to handle.
   void WaitAsync(base::OnceCallback<void(HRESULT hr)> callback);
 
+  // The referenced resources will be released by command queue after the GPU
+  // work using those resources has been completed.
   void ReferenceUntilCompleted(Microsoft::WRL::ComPtr<IUnknown> object);
-  void ReleaseCompletedResources();
 
   uint64_t GetCompletedValue() const;
   uint64_t GetLastFenceValue() const;
@@ -64,6 +65,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
   CommandQueue(Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
                Microsoft::WRL::ComPtr<ID3D12Fence> fence);
   ~CommandQueue() override;
+
+  void ReleaseCompletedResources();
 
   struct QueuedObject {
     QueuedObject() = delete;

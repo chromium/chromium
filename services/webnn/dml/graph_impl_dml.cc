@@ -5342,8 +5342,6 @@ HRESULT GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread(
                "dml::GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread");
   RETURN_IF_FAILED(init_command_recorder_for_npu->Execute());
   RETURN_IF_FAILED(init_command_recorder_for_npu->command_queue()->WaitSync());
-  // Release the resources used for graph initialization.
-  init_command_recorder_for_npu->command_queue()->ReleaseCompletedResources();
   return S_OK;
 }
 
@@ -5592,13 +5590,6 @@ void GraphImplDml::OnInitializationComplete(
         "Failed to wait for the initialization to complete.",
         std::move(callback), context.get(), hr);
     return;
-  }
-
-  // Release the resources used for graph initialization. For NPU adapter, the
-  // resources have been released in `ExecuteAndWaitSyncOnBackgroundThread`
-  // method.
-  if (!adapter->IsNPU()) {
-    adapter->command_queue()->ReleaseCompletedResources();
   }
 
   base::expected<std::unique_ptr<ComputeResources>, HRESULT>
@@ -6209,9 +6200,6 @@ void GraphImplDml::OnComputationComplete(
 
   buffer_to_map->Unmap(0, nullptr);
 
-  compute_resources->command_recorder->command_queue()
-      ->ReleaseCompletedResources();
-
   // If there is an existing available compute resource, release this compute
   // resource. Otherwise, recycle this compute resource for the next call.
   if (!compute_resources_) {
@@ -6398,7 +6386,5 @@ void GraphImplDml::OnDispatchComplete(
   if (!graph_resources_) {
     graph_resources_ = std::move(graph_resources);
   }
-
-  command_recorder_->command_queue()->ReleaseCompletedResources();
 }
 }  // namespace webnn::dml

@@ -136,17 +136,20 @@ HRESULT CommandQueue::ExecuteCommandLists(
 HRESULT CommandQueue::WaitSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (fence_->GetCompletedValue() >= last_fence_value_) {
+    ReleaseCompletedResources();
     return S_OK;
   }
 
   HRESULT hr =
       fence_->SetEventOnCompletion(last_fence_value_, fence_event_.get());
   if (FAILED(hr)) {
+    ReleaseCompletedResources();
     LOG(ERROR) << "Failed to set event on completion : "
                << logging::SystemErrorCodeToString(hr);
     return hr;
   }
   CHECK_EQ(WaitForSingleObject(fence_event_.get(), INFINITE), WAIT_OBJECT_0);
+  ReleaseCompletedResources();
   return S_OK;
 }
 
@@ -155,6 +158,7 @@ void CommandQueue::OnObjectSignaled(HANDLE object) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "dml::CommandQueue::WaitAsync",
                                   TRACE_ID_LOCAL(this));
   CHECK_EQ(object, fence_event_.get());
+  ReleaseCompletedResources();
 
   // If the owning document has shutdown by the time we get here, the only
   // remaining references to CommandQueue are inside of the queued_callbacks_
@@ -180,6 +184,7 @@ void CommandQueue::WaitAsync(base::OnceCallback<void(HRESULT hr)> callback) {
   HRESULT hr =
       fence_->SetEventOnCompletion(last_fence_value_, fence_event_.get());
   if (FAILED(hr)) {
+    ReleaseCompletedResources();
     LOG(ERROR) << "[WebNN] Failed to set event on completion: "
                << logging::SystemErrorCodeToString(hr);
     std::move(callback).Run(hr);

@@ -237,10 +237,6 @@ void ContextImplDml::OnReadbackComplete(
     size_t read_byte_size,
     mojom::WebNNBuffer::ReadBufferCallback callback,
     HRESULT hr) {
-  // Tell the queue to release the downloaded buffer so it may be finally
-  // released at the end of this function.
-  adapter_->command_queue()->ReleaseCompletedResources();
-
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
@@ -337,10 +333,6 @@ void ContextImplDml::WriteBuffer(BufferImplDml* dst_buffer,
 }
 
 void ContextImplDml::OnUploadComplete(HRESULT hr) {
-  // Once the upload is complete, tell the queue to de-queue the dst_buffer and
-  // upload buffer which immediately releases it.
-  adapter_->command_queue()->ReleaseCompletedResources();
-
   if (FAILED(hr)) {
     HandleRecordingError("Failed to upload the buffer.", hr);
     return;
