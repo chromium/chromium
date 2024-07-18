@@ -736,8 +736,9 @@ class BidirectionalStreamQuicImplTest
   std::unique_ptr<quic::QuicReceivedPacket> ConstructClientAckPacket(
       uint64_t largest_received,
       uint64_t smallest_received) {
-    return client_maker_.MakeAckPacket(++packet_number_, largest_received,
-                                       smallest_received);
+    return client_maker_.Packet(++packet_number_)
+        .AddAckFrame(1, largest_received, smallest_received)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerAckPacket(
@@ -745,8 +746,9 @@ class BidirectionalStreamQuicImplTest
       uint64_t largest_received,
       uint64_t smallest_received,
       uint64_t least_unacked) {
-    return server_maker_.MakeAckPacket(packet_number, largest_received,
-                                       smallest_received, least_unacked);
+    return server_maker_.Packet(packet_number)
+        .AddAckFrame(largest_received, smallest_received, least_unacked)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructInitialSettingsPacket() {

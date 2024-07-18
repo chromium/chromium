@@ -1791,8 +1791,9 @@ TEST_P(QuicSessionPoolTest, MaxOpenStream) {
                                                      /*stream_count=*/52,
                                                      /*unidirectional=*/false)
                                  .Build());
-  socket_data.AddWrite(SYNCHRONOUS,
-                       client_maker_.MakeAckPacket(packet_num++, 2, 1));
+  socket_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num++).AddAckFrame(1, 2, 1).Build());
   socket_data.AddReadPauseForever();
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -3774,7 +3775,8 @@ TEST_P(QuicSessionPoolTest,
       ConstructOkResponsePacket(from_proxy_packet_num++, stream_id, true));
 
   socket_data.AddWrite(
-      "ack-ok", client_maker_.MakeAckPacket(to_proxy_packet_num++, 1, 2, 1));
+      "ack-ok",
+      client_maker_.Packet(to_proxy_packet_num++).AddAckFrame(1, 2, 1).Build());
 
   quiche::HttpHeaderBlock headers =
       to_endpoint_maker.GetRequestHeaders("GET", "https", "/");
@@ -3992,7 +3994,8 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
       ConstructOkResponsePacket(from_proxy_packet_num++, stream_id, true));
 
   socket_data.AddWrite(
-      "ack-ok", client_maker_.MakeAckPacket(to_proxy_packet_num++, 1, 2, 1));
+      "ack-ok",
+      client_maker_.Packet(to_proxy_packet_num++).AddAckFrame(1, 2, 1).Build());
 
   quiche::HttpHeaderBlock headers =
       to_endpoint_maker.GetRequestHeaders("GET", "https", "/");
@@ -4990,7 +4993,8 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
                       client_maker_.Packet(5)
                           .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
                           .Build());
-  quic_data2.AddRead(ASYNC, server_maker_.MakeAckPacket(3, 5, 1));
+  quic_data2.AddRead(ASYNC,
+                     server_maker_.Packet(3).AddAckFrame(1, 5, 1).Build());
   quic_data2.AddReadPauseForever();
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     quic_data2.AddWrite(
@@ -6576,8 +6580,9 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
                                     .AddPathResponseFrame()
                                     .AddPaddingFrame()
                                     .Build());
-      quic_data2.AddWrite(SYNCHRONOUS,
-                          client_maker_.MakeAckPacket(packet_number++, 9, 9));
+      quic_data2.AddWrite(
+          SYNCHRONOUS,
+          client_maker_.Packet(packet_number++).AddAckFrame(1, 9, 9).Build());
     }
     quic_data2.AddReadPauseForever();
     quic_data2.AddSocketDataToFactory(socket_factory_.get());
@@ -7014,8 +7019,9 @@ void QuicSessionPoolTest::TestMigrateSessionWithDrainingStream(
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
-  quic_data2.AddWrite(SYNCHRONOUS,
-                      client_maker_.MakeAckPacket(packet_number++, 1, 3, 1));
+  quic_data2.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_number++).AddAckFrame(1, 3, 1).Build());
   quic_data2.AddReadPauseForever();
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -8053,11 +8059,12 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   quic_data3.AddReadPauseForever();
   // There is no other data to retransmit as they have been acknowledged by
   // the packet containing NEW_CONNECTION_ID frame from the server.
-  quic_data3.AddWrite(ASYNC, client_maker_.MakeAckPacket(
-                                 packet_num++,
-                                 /*first_received=*/1,
-                                 /*largest_received=*/peer_packet_num - 1,
-                                 /*smallest_received=*/1));
+  quic_data3.AddWrite(ASYNC,
+                      client_maker_.Packet(packet_num++)
+                          .AddAckFrame(/*first_received=*/1,
+                                       /*largest_received=*/peer_packet_num - 1,
+                                       /*smallest_received=*/1)
+                          .Build());
 
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     quic_data3.AddWrite(
@@ -10701,10 +10708,12 @@ TEST_P(QuicSessionPoolTest, DefaultRetransmittableOnWireTimeoutForMigration) {
                                   false, "Hello World"));
 
   // Read an ACK from server which acks all client data.
-  socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(
-                                        peer_packet_num++, packet_num, 1));
-  socket_data1.AddWrite(
-      ASYNC, client_maker_.MakeAckPacket(packet_num++, peer_packet_num - 2, 1));
+  socket_data1.AddRead(SYNCHRONOUS, server_maker_.Packet(peer_packet_num++)
+                                        .AddAckFrame(1, packet_num, 1)
+                                        .Build());
+  socket_data1.AddWrite(ASYNC, client_maker_.Packet(packet_num++)
+                                   .AddAckFrame(1, peer_packet_num - 2, 1)
+                                   .Build());
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
@@ -10877,10 +10886,12 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeoutForMigration) {
                                   GetNthClientInitiatedBidirectionalStreamId(0),
                                   /*fin=*/false, "Hello World"));
   // Read an ACK from server which acks all client data.
-  socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(
-                                        peer_packet_num++, packet_num, 1));
-  socket_data1.AddWrite(
-      ASYNC, client_maker_.MakeAckPacket(packet_num++, peer_packet_num - 2, 1));
+  socket_data1.AddRead(SYNCHRONOUS, server_maker_.Packet(peer_packet_num++)
+                                        .AddAckFrame(1, packet_num, 1)
+                                        .Build());
+  socket_data1.AddWrite(ASYNC, client_maker_.Packet(packet_num++)
+                                   .AddAckFrame(1, peer_packet_num - 2, 1)
+                                   .Build());
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
@@ -11021,8 +11032,10 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeout) {
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false,
                  "Hello World"));
   // Read an ACK from server which acks all client data.
-  socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 2, 1));
-  socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
+  socket_data1.AddRead(SYNCHRONOUS,
+                       server_maker_.Packet(3).AddAckFrame(1, 2, 1).Build());
+  socket_data1.AddWrite(
+      ASYNC, client_maker_.Packet(packet_num++).AddAckFrame(1, 2, 1).Build());
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
@@ -11162,8 +11175,10 @@ TEST_P(QuicSessionPoolTest, NoRetransmittableOnWireTimeout) {
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false,
                  "Hello World"));
   // Read an ACK from server which acks all client data.
-  socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 2, 1));
-  socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
+  socket_data1.AddRead(SYNCHRONOUS,
+                       server_maker_.Packet(3).AddAckFrame(1, 2, 1).Build());
+  socket_data1.AddWrite(
+      ASYNC, client_maker_.Packet(packet_num++).AddAckFrame(1, 2, 1).Build());
   std::string header = ConstructDataHeader(6);
   socket_data1.AddRead(
       ASYNC, ConstructServerDataPacket(
@@ -11296,8 +11311,10 @@ TEST_P(QuicSessionPoolTest,
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false,
                  "Hello World"));
   // Read an ACK from server which acks all client data.
-  socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 2, 1));
-  socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
+  socket_data1.AddRead(SYNCHRONOUS,
+                       server_maker_.Packet(3).AddAckFrame(1, 2, 1).Build());
+  socket_data1.AddWrite(
+      ASYNC, client_maker_.Packet(packet_num++).AddAckFrame(1, 2, 1).Build());
   // The PING packet sent for retransmittable on wire.
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
@@ -11439,8 +11456,10 @@ TEST_P(QuicSessionPoolTest,
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false,
                  "Hello World"));
   // Read an ACK from server which acks all client data.
-  socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 2, 1));
-  socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
+  socket_data1.AddRead(SYNCHRONOUS,
+                       server_maker_.Packet(3).AddAckFrame(1, 2, 1).Build());
+  socket_data1.AddWrite(
+      ASYNC, client_maker_.Packet(packet_num++).AddAckFrame(1, 2, 1).Build());
   std::string header = ConstructDataHeader(6);
   socket_data1.AddRead(
       ASYNC, ConstructServerDataPacket(
@@ -13956,7 +13975,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   socket_data1.AddRead(ASYNC, ConstructServerSettingsPacket(3));
   socket_data1.AddRead(ASYNC, ConstructOkResponsePacket(4, stream_id, true));
   socket_data1.AddReadPauseForever();
-  socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(3, 3, 4, 3));
+  socket_data1.AddWrite(ASYNC,
+                        client_maker_.Packet(3).AddAckFrame(3, 4, 3).Build());
   socket_data1.AddWrite(ASYNC,
                         ConstructClientH3DatagramPacket(
                             4, stream_id, kConnectUdpContextId,
@@ -13981,7 +14001,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   socket_data2.AddRead(ASYNC, ConstructServerSettingsPacket(3));
   socket_data2.AddRead(ASYNC, ConstructOkResponsePacket(4, stream_id, true));
   socket_data2.AddReadPauseForever();
-  socket_data2.AddWrite(ASYNC, client_maker_.MakeAckPacket(3, 3, 4, 3));
+  socket_data2.AddWrite(ASYNC,
+                        client_maker_.Packet(3).AddAckFrame(3, 4, 3).Build());
   socket_data2.AddWrite(ASYNC,
                         ConstructClientH3DatagramPacket(
                             4, stream_id, kConnectUdpContextId,

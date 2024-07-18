@@ -341,8 +341,9 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructAckPacket(uint64_t packet_number,
                                                   uint64_t largest_received,
                                                   uint64_t smallest_received) {
-  return client_maker_.MakeAckPacket(packet_number, largest_received,
-                                     smallest_received);
+  return client_maker_.Packet(packet_number)
+      .AddAckFrame(1, largest_received, smallest_received)
+      .Build();
 }
 
 // Helper functions for constructing packets sent by the server

@@ -467,8 +467,9 @@ QuicSessionPoolTestBase::ConstructAckPacket(
     uint64_t packet_num_received,
     uint64_t smallest_received,
     uint64_t largest_received) {
-  return packet_maker.MakeAckPacket(packet_number, packet_num_received,
-                                    smallest_received, largest_received);
+  return packet_maker.Packet(packet_number)
+      .AddAckFrame(packet_num_received, smallest_received, largest_received)
+      .Build();
 }
 
 std::string QuicSessionPoolTestBase::ConstructDataHeader(size_t body_len) {

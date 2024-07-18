@@ -392,8 +392,9 @@ class QuicNetworkTransactionTest
       uint64_t packet_number,
       uint64_t largest_received,
       uint64_t smallest_received) {
-    return client_maker_->MakeAckPacket(packet_number, largest_received,
-                                        smallest_received);
+    return client_maker_->Packet(packet_number)
+        .AddAckFrame(1, largest_received, smallest_received)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientAckAndRstPacket(
@@ -6367,8 +6368,9 @@ class QuicNetworkTransactionWithDestinationTest
       uint64_t largest_received,
       uint64_t smallest_received,
       QuicTestPacketMaker* maker) {
-    return maker->MakeAckPacket(packet_number, largest_received,
-                                smallest_received);
+    return maker->Packet(packet_number)
+        .AddAckFrame(1, largest_received, smallest_received)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructInitialSettingsPacket(
@@ -7054,20 +7056,20 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectQuicServer) {
       .Sync();
 
   socket_data
-      .AddWrite(
-          "ack-endpoint-response",
-          client_maker_
-              ->Packet(to_proxy_packet_num++)
-              // Ack to proxy
-              .AddAckFrame(1, from_proxy_packet_num - 1,
-                           from_proxy_packet_num - 1)
-              // Ack to endpoint
-              .AddMessageFrame(ConstructH3Datagram(
-                  GetNthClientInitiatedBidirectionalStreamId(0), 0,
-                  to_endpoint_maker.MakeAckPacket(
-                      to_endpoint_packet_num++, from_endpoint_packet_num - 1,
-                      from_endpoint_packet_num - 1)))
-              .Build())
+      .AddWrite("ack-endpoint-response",
+                client_maker_
+                    ->Packet(to_proxy_packet_num++)
+                    // Ack to proxy
+                    .AddAckFrame(1, from_proxy_packet_num - 1,
+                                 from_proxy_packet_num - 1)
+                    // Ack to endpoint
+                    .AddMessageFrame(ConstructH3Datagram(
+                        GetNthClientInitiatedBidirectionalStreamId(0), 0,
+                        to_endpoint_maker.Packet(to_endpoint_packet_num++)
+                            .AddAckFrame(1, from_endpoint_packet_num - 1,
+                                         from_endpoint_packet_num - 1)
+                            .Build()))
+                    .Build())
       .Sync();
 
   socket_factory_.AddSocketDataProvider(&socket_data);
@@ -7673,7 +7675,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectNoReuseDifferentChains) {
                  2, GetNthClientInitiatedBidirectionalStreamId(0), true,
                  ConstructDataFrame(kTrans2RespData)));
   mock_quic_data_2.AddWrite(
-      SYNCHRONOUS, client_maker2.MakeAckPacket(write_packet_index++, 2, 1));
+      SYNCHRONOUS,
+      client_maker2.Packet(write_packet_index++).AddAckFrame(1, 2, 1).Build());
   mock_quic_data_2.AddRead(SYNCHRONOUS,
                            ERR_IO_PENDING);  // No more data to read
 
@@ -8183,8 +8186,9 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
                            false, "0123456789"));
     }
 
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            client_maker.MakeAckPacket(packet_num++, 2, 1));
+    mock_quic_data.AddWrite(
+        SYNCHRONOUS,
+        client_maker.Packet(packet_num++).AddAckFrame(1, 2, 1).Build());
 
     if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
       mock_quic_data.AddWrite(
@@ -8480,7 +8484,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
                    2, GetNthClientInitiatedBidirectionalStreamId(0), true,
                    ConstructDataFrame(kRespData1)));
     partitioned_mock_quic_data1.AddWrite(
-        SYNCHRONOUS, client_maker2.MakeAckPacket(packet_num2++, 2, 1));
+        SYNCHRONOUS,
+        client_maker2.Packet(packet_num2++).AddAckFrame(1, 2, 1).Build());
 
     partitioned_mock_quic_data1.AddWrite(
         SYNCHRONOUS,
@@ -8497,7 +8502,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
                    4, GetNthClientInitiatedBidirectionalStreamId(1), true,
                    ConstructDataFrame(kRespData3)));
     partitioned_mock_quic_data1.AddWrite(
-        SYNCHRONOUS, client_maker2.MakeAckPacket(packet_num2++, 4, 3));
+        SYNCHRONOUS,
+        client_maker2.Packet(packet_num2++).AddAckFrame(1, 4, 3).Build());
 
     partitioned_mock_quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
 
@@ -8534,7 +8540,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
                    2, GetNthClientInitiatedBidirectionalStreamId(0), true,
                    ConstructDataFrame(kRespData2)));
     partitioned_mock_quic_data2.AddWrite(
-        SYNCHRONOUS, client_maker3.MakeAckPacket(packet_num3++, 2, 1));
+        SYNCHRONOUS,
+        client_maker3.Packet(packet_num3++).AddAckFrame(1, 2, 1).Build());
 
     partitioned_mock_quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
 
@@ -8679,7 +8686,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
                          3, GetNthClientInitiatedBidirectionalStreamId(0),
                          false, ConstructDataFrame(kRespData)));
     mock_quic_data[index]->AddWrite(
-        SYNCHRONOUS, client_maker.MakeAckPacket(packet_num++, 3, 2));
+        SYNCHRONOUS,
+        client_maker.Packet(packet_num++).AddAckFrame(1, 3, 2).Build());
     mock_quic_data[index]->AddRead(SYNCHRONOUS,
                                    ERR_IO_PENDING);  // No more data to read
 
@@ -9076,8 +9084,9 @@ TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
   mock_quic_data2.AddRead(ASYNC, server_maker2.MakeDataPacket(
                                      read_packet_number2++, stream_id1, true,
                                      ConstructDataFrame(kRespData2)));
-  mock_quic_data2.AddWrite(
-      ASYNC, client_maker2.MakeAckPacket(write_packet_number2++, 2, 1));
+  mock_quic_data2.AddWrite(ASYNC, client_maker2.Packet(write_packet_number2++)
+                                      .AddAckFrame(1, 2, 1)
+                                      .Build());
   mock_quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
   mock_quic_data2.AddRead(ASYNC, 0);               // EOF
   mock_quic_data2.AddSocketDataToFactory(&socket_factory_);

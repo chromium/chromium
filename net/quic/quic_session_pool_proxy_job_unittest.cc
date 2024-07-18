@@ -93,7 +93,8 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
   socket_data.AddRead("server-settings", ConstructServerSettingsPacket(3));
   socket_data.AddRead("ok-response",
                       ConstructOkResponsePacket(4, stream_id, true));
-  socket_data.AddWrite("ack", client_maker_.MakeAckPacket(3, 3, 4, 3));
+  socket_data.AddWrite("ack",
+                       client_maker_.Packet(3).AddAckFrame(3, 4, 3).Build());
   socket_data.AddWrite("endpoint-initial-settings",
                        ConstructClientH3DatagramPacket(
                            4, stream_id, kConnectUdpContextId,
@@ -524,7 +525,8 @@ TEST_P(QuicSessionPoolProxyJobTest,
   socket_data.AddRead("server-settings", ConstructServerSettingsPacket(3));
   socket_data.AddRead("ok-response",
                       ConstructOkResponsePacket(4, stream_id, true));
-  socket_data.AddWrite("ack", client_maker_.MakeAckPacket(3, 3, 4, 3));
+  socket_data.AddWrite("ack",
+                       client_maker_.Packet(3).AddAckFrame(3, 4, 3).Build());
   socket_data.AddWrite("datagram",
                        ConstructClientH3DatagramPacket(
                            4, stream_id, kConnectUdpContextId,

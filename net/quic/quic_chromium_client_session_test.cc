@@ -1869,7 +1869,8 @@ TEST_P(QuicChromiumClientSessionTest, RetransmittableOnWireTimeout) {
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.Packet(packet_num++).AddPingFrame().Build());
 
-  quic_data.AddRead(ASYNC, server_maker_.MakeAckPacket(1, packet_num - 1, 1));
+  quic_data.AddRead(
+      ASYNC, server_maker_.Packet(1).AddAckFrame(1, packet_num - 1, 1).Build());
 
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.Packet(packet_num++).AddPingFrame().Build());
@@ -2244,8 +2245,9 @@ TEST_P(QuicChromiumClientSessionTest, ReportsReceivedEcn) {
   server_maker_.set_ecn_codepoint(quic::ECN_ECT0);
   mock_quic_data.AddRead(
       ASYNC, server_maker_.Packet(read_packet_num++).AddPingFrame().Build());
-  mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeAckPacket(
-                                           write_packet_num++, 0, 1, 0, ecn));
+  mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.Packet(write_packet_num++)
+                                           .AddAckFrame(0, 1, 0, ecn)
+                                           .Build());
   server_maker_.set_ecn_codepoint(quic::ECN_ECT1);
   mock_quic_data.AddRead(
       ASYNC, server_maker_.Packet(read_packet_num++).AddPingFrame().Build());
@@ -2254,8 +2256,9 @@ TEST_P(QuicChromiumClientSessionTest, ReportsReceivedEcn) {
       ASYNC, server_maker_.Packet(read_packet_num++).AddPingFrame().Build());
   ecn.ect1 = 1;
   ecn.ce = 1;
-  mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeAckPacket(
-                                           write_packet_num++, 0, 3, 0, ecn));
+  mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.Packet(write_packet_num++)
+                                           .AddAckFrame(0, 3, 0, ecn)
+                                           .Build());
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);

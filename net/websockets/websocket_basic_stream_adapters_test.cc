@@ -1221,8 +1221,9 @@ class WebSocketQuicStreamAdapterTest
       uint64_t packet_number,
       uint64_t largest_received,
       uint64_t smallest_received) {
-    return client_maker_.MakeAckPacket(packet_number, largest_received,
-                                       smallest_received);
+    return client_maker_.Packet(packet_number)
+        .AddAckFrame(1, largest_received, smallest_received)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndRstPacket(

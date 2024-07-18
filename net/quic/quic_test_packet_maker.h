@@ -97,18 +97,6 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::QuicReceivedPacket> MakeDummyCHLOPacket(
       uint64_t packet_number);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckPacket(
-      uint64_t packet_number,
-      uint64_t largest_received,
-      uint64_t smallest_received);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckPacket(
-      uint64_t packet_number,
-      uint64_t first_received,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      std::optional<quic::QuicEcnCounts> ecn = std::nullopt);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataPacket(
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
