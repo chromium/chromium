@@ -360,10 +360,8 @@ bool ExecuteSelectSingleFile(HWND owner,
                              const std::vector<FileFilterSpec>& filter,
                              int* filter_index,
                              std::vector<base::FilePath>* paths) {
-  // Note: The title is not passed down for historical reasons.
-  // TODO(pmonette): Figure out if it's a worthwhile improvement.
-  return RunOpenFileDialog(owner, std::u16string(), std::u16string(),
-                           default_path, filter, 0, filter_index, paths);
+  return RunOpenFileDialog(owner, title, std::u16string(), default_path, filter,
+                           0, filter_index, paths);
 }
 
 bool ExecuteSelectMultipleFile(HWND owner,
@@ -373,15 +371,12 @@ bool ExecuteSelectMultipleFile(HWND owner,
                                int* filter_index,
                                std::vector<base::FilePath>* paths) {
   DWORD dialog_options = FOS_ALLOWMULTISELECT;
-
-  // Note: The title is not passed down for historical reasons.
-  // TODO(pmonette): Figure out if it's a worthwhile improvement.
-  return RunOpenFileDialog(owner, std::u16string(), std::u16string(),
-                           default_path, filter, dialog_options, filter_index,
-                           paths);
+  return RunOpenFileDialog(owner, title, std::u16string(), default_path, filter,
+                           dialog_options, filter_index, paths);
 }
 
 bool ExecuteSaveFile(HWND owner,
+                     const std::u16string& title,
                      const base::FilePath& default_path,
                      const std::vector<FileFilterSpec>& filter,
                      const std::wstring& def_ext,
@@ -394,10 +389,8 @@ bool ExecuteSaveFile(HWND owner,
 
   DWORD dialog_options = FOS_OVERWRITEPROMPT;
 
-  // Note: The title is not passed down for historical reasons.
-  // TODO(pmonette): Figure out if it's a worthwhile improvement.
-  return RunSaveFileDialog(owner, std::u16string(), default_path, filter,
-                           dialog_options, def_ext, filter_index, path);
+  return RunSaveFileDialog(owner, title, default_path, filter, dialog_options,
+                           def_ext, filter_index, path);
 }
 
 }  // namespace
@@ -421,7 +414,7 @@ void ExecuteSelectFile(
       break;
     case SelectFileDialog::SELECT_SAVEAS_FILE: {
       base::FilePath path;
-      if (ExecuteSaveFile(owner, default_path, filter, default_extension,
+      if (ExecuteSaveFile(owner, title, default_path, filter, default_extension,
                           &file_type_index, &path)) {
         paths.push_back(std::move(path));
       }

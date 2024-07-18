@@ -313,9 +313,9 @@ TEST_F(SelectFileDialogWinTest, SpecifyTitle) {
   dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, kTitle,
                      default_path, nullptr, 0, L"", native_window(), nullptr);
 
-  // Wait for the window to open. The title is unchanged. Note that if this
-  // hangs, it possibly is because the title changed.
-  HWND window = WaitForDialogWindow(kSelectFileDefaultTitle);
+  // Wait for the window to open. The title should be `kTitle`. Note that if
+  // this hangs, it possibly is because the title changed.
+  HWND window = WaitForDialogWindow(base::UTF16ToWide(kTitle));
 
   // Close the dialog and the result doesn't matter.
   SendCommand(window, IDCANCEL);
