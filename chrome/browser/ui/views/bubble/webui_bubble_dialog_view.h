@@ -39,7 +39,9 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
       // the contents wrapper is destroyed before `this`.
       base::WeakPtr<WebUIContentsWrapper> contents_wrapper,
       const std::optional<gfx::Rect>& anchor_rect = std::nullopt,
-      views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT);
+      views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT,
+      bool autosize = true);
+
   WebUIBubbleDialogView(const WebUIBubbleDialogView&) = delete;
   WebUIBubbleDialogView& operator=(const WebUIBubbleDialogView&) = delete;
   ~WebUIBubbleDialogView() override;
