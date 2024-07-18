@@ -103,9 +103,6 @@ void DeviceImageDownloader::DownloadImage(
                      std::move(callback)));
 }
 
-// TODO(b/329686601): Store image as data URL in local state.
-// TODO(b/329686601): Implement error handling for cases where the image
-// download fails.
 void DeviceImageDownloader::OnImageDownloaded(
     const std::string& device_key,
     base::OnceCallback<void(const DeviceImage& image)> callback,

@@ -2775,7 +2775,6 @@ void InputDeviceSettingsControllerImpl::OnDeviceNotificationImageDownloaded(
   }
 }
 
-// TODO(b/329686601): Dispatch updates to observers.
 void InputDeviceSettingsControllerImpl::DeviceBatteryChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
