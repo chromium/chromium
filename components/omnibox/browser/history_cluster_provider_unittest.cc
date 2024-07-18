@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -57,7 +58,7 @@ class HistoryClustersProviderTest : public testing::Test,
 
     autocomplete_provider_client_ =
         std::make_unique<FakeAutocompleteProviderClient>();
-    static_cast<TestingPrefServiceSimple*>(
+    static_cast<sync_preferences::TestingPrefServiceSyncable*>(
         autocomplete_provider_client_->GetPrefs())
         ->registry()
         ->RegisterBooleanPref(history_clusters::prefs::kVisible, true);

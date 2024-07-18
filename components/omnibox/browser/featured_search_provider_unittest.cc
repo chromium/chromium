@@ -29,6 +29,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -78,7 +79,8 @@ class FeaturedSearchProviderTest : public testing::Test {
         search_engines_test_environment_.ReleaseTemplateURLService());
     provider_ = new FeaturedSearchProvider(client_.get());
     omnibox::RegisterProfilePrefs(
-        static_cast<TestingPrefServiceSimple*>(client_->GetPrefs())
+        static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+            client_->GetPrefs())
             ->registry());
   }
   void TearDown() override { provider_ = nullptr; }
