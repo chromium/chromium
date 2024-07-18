@@ -282,18 +282,9 @@ base::Process::Priority RenderProcessPriority::GetProcessPriority() const {
 }
 
 bool RenderProcessPriority::operator==(
-    const RenderProcessPriority& other) const {
-  return visible == other.visible &&
-         has_media_stream == other.has_media_stream &&
-         has_foreground_service_worker == other.has_foreground_service_worker &&
-         frame_depth == other.frame_depth &&
-         intersects_viewport == other.intersects_viewport &&
-         boost_for_pending_views == other.boost_for_pending_views &&
-         boost_for_loading == other.boost_for_loading
-#if BUILDFLAG(IS_ANDROID)
-         && importance == other.importance
-#endif
-      ;
-}
+    const RenderProcessPriority& other) const = default;
+
+bool RenderProcessPriority::operator!=(
+    const RenderProcessPriority& other) const = default;
 
 }  // namespace content

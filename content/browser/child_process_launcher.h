@@ -114,9 +114,7 @@ struct RenderProcessPriority {
   base::Process::Priority GetProcessPriority() const;
 
   bool operator==(const RenderProcessPriority& other) const;
-  bool operator!=(const RenderProcessPriority& other) const {
-    return !(*this == other);
-  }
+  bool operator!=(const RenderProcessPriority& other) const;
 
   using TraceProto = perfetto::protos::pbzero::ChildProcessLauncherPriority;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
