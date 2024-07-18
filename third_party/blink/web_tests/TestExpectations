@@ -7592,3 +7592,6 @@ crbug.com/353392059 [ Linux ] fast/forms/select-popup/select-many-options-hang.h
 
 # Flaky on Linux
 crbug.com/352481804 [ Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-image-only-for-print.html [ Failure Pass ]
+
+# Gardener 2024-07-17
+crbug.com/353790533 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/handle_user_prompt/handle_user_prompt.py [ Timeout Failure ]
