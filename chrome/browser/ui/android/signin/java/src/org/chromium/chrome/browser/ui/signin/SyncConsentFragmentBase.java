@@ -326,7 +326,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         // By default this is set to true so that when system back button is pressed user action
         // is recorded in onDestroy().
         mRecordUndoSignin = true;
-        SigninMetricsUtils.logSigninStartAccessPoint(mSigninAccessPoint);
+        SigninMetricsUtils.logSyncConsentStarted(mSigninAccessPoint);
         SigninMetricsUtils.logSigninUserActionForAccessPoint(mSigninAccessPoint);
     }
 

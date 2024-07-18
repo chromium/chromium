@@ -490,6 +490,9 @@ public class SigninAndHistorySyncIntegrationTest {
     @MediumTest
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testWithNoAccount_instantSignin_requiredHistorySync() {
+        HistogramWatcher signinStartedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SignIn.Started", mSigninAccessPoint);
         mSigninTestRule.setResultForNextAddAccountFlow(
                 Activity.RESULT_OK, AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
 
@@ -499,6 +502,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 HistoryOptInMode.REQUIRED);
 
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+        signinStartedWatcher.assertExpected();
     }
 
     @Test
@@ -535,9 +539,6 @@ public class SigninAndHistorySyncIntegrationTest {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SignIn.Started", mSigninAccessPoint);
-        HistogramWatcher signinAccessPointWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SigninStartedAccessPoint", mSigninAccessPoint);
         // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
         onView(
                         allOf(
@@ -546,7 +547,6 @@ public class SigninAndHistorySyncIntegrationTest {
                                 isCompletelyDisplayed()))
                 .perform(click());
         signinStartedWatcher.assertExpected();
-        signinAccessPointWatcher.assertExpected();
 
         // Verify signed-in state.
         mSigninTestRule.waitForSignin(accountInfo);
@@ -556,9 +556,6 @@ public class SigninAndHistorySyncIntegrationTest {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SignIn.Started", mSigninAccessPoint);
-        HistogramWatcher signinAccessPointWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SigninStartedAccessPoint", mSigninAccessPoint);
         mSigninTestRule.setResultForNextAddAccountFlow(
                 Activity.RESULT_OK,
                 AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail(),
@@ -571,7 +568,6 @@ public class SigninAndHistorySyncIntegrationTest {
                                 isCompletelyDisplayed()))
                 .perform(click());
         signinStartedWatcher.assertExpected();
-        signinAccessPointWatcher.assertExpected();
 
         mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
     }

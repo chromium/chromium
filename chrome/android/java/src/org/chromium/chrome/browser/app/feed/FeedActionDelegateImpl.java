@@ -238,7 +238,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                                         .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin_old)
                         .setDismissButtonStringId(R.string.close)
                         .build();
-        SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
+        SigninMetricsUtils.logSigninStarted(signinAccessPoint);
         SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
         SigninBottomSheetCoordinator signinCoordinator =
                 new SigninBottomSheetCoordinator(

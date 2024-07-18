@@ -53,14 +53,24 @@ public class SigninMetricsUtils {
     }
 
     /**
-     * Logs the access point when the user see the view of choosing account to sign in. Sign-in
-     * completion histogram is recorded by {@link SigninManager#signinAndEnableSync}.
+     * Logs Signin.SigninStartedAccessPoint histogram (used to record that the sync consent screen
+     * was shown). Sign-in completion histogram is recorded by {@link
+     * SigninManager#signinAndEnableSync}.
      *
      * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
      */
-    public static void logSigninStartAccessPoint(@SigninAccessPoint int accessPoint) {
+    public static void logSyncConsentStarted(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.SigninStartedAccessPoint", accessPoint, SigninAccessPoint.MAX);
+    }
+
+    /**
+     * Logs Signin.SignIn.Started histogram (used to record that a signin UI was displayed). Sign-in
+     * completion histogram is recorded by {@link SigninManager#signin}.
+     *
+     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
+     */
+    public static void logSigninStarted(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.SignIn.Started", accessPoint, SigninAccessPoint.MAX);
     }

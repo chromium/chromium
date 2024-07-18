@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -144,8 +145,7 @@ public class FullscreenSigninMediator
         updateAccounts(
                 AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
                         mAccountManagerFacade.getCoreAccountInfos()));
-        RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SignIn.Started", accessPoint, SigninAccessPoint.MAX);
+        SigninMetricsUtils.logSigninStarted(accessPoint);
     }
 
     PropertyModel getModel() {

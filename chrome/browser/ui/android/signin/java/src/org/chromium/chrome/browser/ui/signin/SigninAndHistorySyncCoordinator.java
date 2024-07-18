@@ -348,19 +348,19 @@ public class SigninAndHistorySyncCoordinator implements SigninAccountPickerCoord
 
                             if (!coreAccountInfos.isEmpty()) {
                                 showSigninBottomSheet();
-                                SigninMetricsUtils.logSigninStartAccessPoint(mSigninAccessPoint);
+                                SigninMetricsUtils.logSigninStarted(mSigninAccessPoint);
                                 return;
                             }
 
                             switch (mNoAccountSigninMode) {
                                 case NoAccountSigninMode.BOTTOM_SHEET:
                                     showSigninBottomSheet();
-                                    SigninMetricsUtils.logSigninStartAccessPoint(
-                                            mSigninAccessPoint);
+                                    SigninMetricsUtils.logSigninStarted(mSigninAccessPoint);
                                     break;
                                 case NoAccountSigninMode.ADD_ACCOUNT:
                                     addAccount();
                                     mDidShowSigninStep = true;
+                                    SigninMetricsUtils.logSigninStarted(mSigninAccessPoint);
                                     break;
                                 case NoAccountSigninMode.NO_SIGNIN:
                                     // TODO(crbug.com/41493768): Implement the error state UI.
