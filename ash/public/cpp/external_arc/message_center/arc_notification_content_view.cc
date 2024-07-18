@@ -288,7 +288,7 @@ ArcNotificationContentView::ArcNotificationContentView(
   // defined in `ArcNotificationWrapperView` class in Android side.
   assert(
       GetNotificationInMessageCenterWidth() ==
-      (chromeos::features::IsNotificationWidthIncreaseEnabled() ? 400 : 344));
+      (chromeos::features::IsNotificationWidthIncreaseEnabled() ? 384 : 344));
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);

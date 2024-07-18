@@ -61,9 +61,12 @@ inline constexpr float kDarkModeMinContrastRatio = 6.0;
 
 // Constants for `ash_notification_view`.
 
-// The width of notification that displayed inside the message center.
+// The width of notification that is displayed inside the message center.
 // (Deprecated)
 inline constexpr int kDeprecatedNotificationInMessageCenterWidth = 344;
+
+// The width of notification that is displayed inside the message center.
+inline constexpr int kNotificationInMessageCenterWidth = 384;
 
 inline constexpr int kProgressBarWithActionButtonsBottomPadding = 16;
 inline constexpr int kProgressBarExpandedBottomPadding =
@@ -165,7 +168,7 @@ const char kLockScreenNotifierId[] = "ash.lockscreen_notification_controller";
 // Returns the width of the notification in the message center.
 inline int GetNotificationInMessageCenterWidth() {
   return chromeos::features::IsNotificationWidthIncreaseEnabled()
-             ? message_center::kChromeOSNotificationWidth
+             ? kNotificationInMessageCenterWidth
              : kDeprecatedNotificationInMessageCenterWidth;
 }
 
