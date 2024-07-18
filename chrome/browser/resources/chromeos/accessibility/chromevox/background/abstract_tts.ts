@@ -6,57 +6,50 @@ import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import * as ttsTypes from '../common/tts_types.js';
 
-import {TtsInterface} from './tts_interface.js';
+import {TtsCapturingEventListener, TtsInterface} from './tts_interface.js';
 
-/**
- * @typedef {{
- *     pitch: number,
- *     rate: number,
- *     volume: number,
- * }}
- */
-let PropertyValues;
+interface PropertyValues {
+  pitch: number;
+  rate: number;
+  volume: number;
+
+  [key: string]: number | undefined;
+}
+
+interface Properties {
+  [key: string]: number | undefined;
+}
 
 /**
  * Base class for Text-to-Speech engines that actually transform
  * text to speech (as opposed to logging or other behaviors).
- * @implements {TtsInterface}
  */
-export class AbstractTts {
+export class AbstractTts implements TtsInterface {
+  /**
+   * Default value for TTS properties.
+   * Note that these as well as the subsequent properties might be different
+   * on different host platforms (like Chrome, Android, etc.).
+   */
+  protected propertyDefault: PropertyValues;
+  /** Min value for TTS properties. */
+  protected propertyMin: PropertyValues;
+  /** Max value for TTS properties. */
+  protected propertyMax: PropertyValues;
+  /** Step value for TTS properties. */
+  protected propertyStep: PropertyValues;
+  /** Default TTS properties for this TTS engine. */
+  protected ttsProperties: Properties = {};
+
+  /** Substitution dictionary regexp. */
+  private static substitutionDictionaryRegexp_: RegExp;
+  /** Repetition filter regexp. */
+  private static repetitionRegexp_: RegExp =
+      /([-\/\\|!@#$%^&*\(\)=_+\[\]\{\}.?;'":<>\u2022\u25e6\u25a0])\1{2,}/g;
+  /** Regexp filter for negative dollar and pound amounts. */
+  private static negativeCurrencyAmountRegexp_: RegExp =
+      /-[£\$](\d{1,3})(\d+|(,\d{3})*)(\.\d{1,})?/g;
+
   constructor() {
-    this.ttsProperties = new Object();
-
-    /**
-     * Default value for TTS properties.
-     * Note that these as well as the subsequent properties might be different
-     * on different host platforms (like Chrome, Android, etc.).
-     * @protected {PropertyValues}
-     */
-    this.propertyDefault;
-
-    /**
-     * Min value for TTS properties.
-     * @protected {PropertyValues}
-     */
-    this.propertyMin;
-
-    /**
-     * Max value for TTS properties.
-     * @protected {PropertyValues}
-     */
-    this.propertyMax;
-
-    /**
-     * Step value for TTS properties.
-     * @protected {PropertyValues}
-     */
-    this.propertyStep;
-
-    this.init_();
-  }
-
-  /** @private */
-  init_() {
     const pitchDefault = 1;
     const pitchMin = 0.2;
     const pitchMax = 2.0;
@@ -95,7 +88,7 @@ export class AbstractTts {
     if (AbstractTts.substitutionDictionaryRegexp_ === undefined) {
       // Create an expression that matches all words in the substitution
       // dictionary.
-      const symbols = [];
+      const symbols: string[] = [];
       for (const symbol in ttsTypes.SubstitutionDictionary) {
         symbols.push(symbol);
       }
@@ -104,65 +97,64 @@ export class AbstractTts {
     }
   }
 
-  /**
-   * @param {string} textString
-   * @param {ttsTypes.QueueMode} queueMode
-   * @param {ttsTypes.TtsSpeechProperties=} properties
-   * @override
-   */
-  speak(textString, queueMode, properties) {
+  /** TtsInterface implementation. */
+  speak(
+      _textString: string, _queueMode: ttsTypes.QueueMode,
+      _properties?: ttsTypes.TtsSpeechProperties): AbstractTts {
     return this;
   }
 
-  /** @override */
-  isSpeaking() {
+  /** TtsInterface implementation. */
+  isSpeaking(): boolean {
     return false;
   }
 
-  /** @override */
-  stop() {}
+  /** TtsInterface implementation. */
+  stop(): void {}
 
-  /** @override */
-  addCapturingEventListener(listener) {}
+  /** TtsInterface implementation. */
+  addCapturingEventListener(_listener: TtsCapturingEventListener): void {}
 
-  /** @override */
-  removeCapturingEventListener(listener) {}
+  /** TtsInterface implementation. */
+  removeCapturingEventListener(_listener: TtsCapturingEventListener): void {}
 
-  /** @override */
-  increaseOrDecreaseProperty(propertyName, increase) {
-    const step = this.propertyStep[propertyName];
-    let current = this.ttsProperties[propertyName];
+  /** TtsInterface implementation. */
+  increaseOrDecreaseProperty(propertyName: string, increase: boolean): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const step = this.propertyStep[propertyName]!;
+    let current = this.ttsProperties[propertyName]!;
     current = increase ? current + step : current - step;
     this.setProperty(propertyName, current);
   }
 
-  /** @override */
-  setProperty(propertyName, value) {
-    const min = this.propertyMin[propertyName];
-    const max = this.propertyMax[propertyName];
+  /** TtsInterface implementation. */
+  setProperty(propertyName: string, value: number): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const min = this.propertyMin[propertyName]!;
+    const max = this.propertyMax[propertyName]!;
     this.ttsProperties[propertyName] = Math.max(Math.min(value, max), min);
   }
 
   /**
    * Converts an engine property value to a percentage from 0.00 to 1.00.
-   * @param {string} property The property to convert.
-   * @return {?number} The percentage of the property.
+   * @param property The property to convert.
+   * @return The percentage of the property.
    */
-  propertyToPercentage(property) {
-    return (this.ttsProperties[property] - this.propertyMin[property]) /
-        Math.abs(this.propertyMax[property] - this.propertyMin[property]);
+  propertyToPercentage(property: string): number|null {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    return (this.ttsProperties[property]! - this.propertyMin[property]!) /
+        Math.abs(this.propertyMax[property]! - this.propertyMin[property]!);
   }
 
   /**
    * Merges the given properties with the default ones. Always returns a
    * new object, so that you can safely modify the result of mergeProperties
    * without worrying that you're modifying an object used elsewhere.
-   * @param {Object=} properties The properties to merge with the current ones.
-   * @return {Object} The merged properties.
-   * @protected
+   * @param properties The properties to merge with the current ones.
+   * @return The merged properties.
    */
-  mergeProperties(properties) {
-    const mergedProperties = new Object();
+  protected mergeProperties(properties: Properties): Properties {
+    const mergedProperties: Properties = {};
     let p;
     if (this.ttsProperties) {
       for (p in this.ttsProperties) {
@@ -185,12 +177,13 @@ export class AbstractTts {
       }
 
       const context = this;
-      const mergeRelativeProperty = function(abs, rel) {
+      const mergeRelativeProperty = function(abs: string, rel: string): void {
         if (typeof (properties[rel]) === 'number' &&
             typeof (mergedProperties[abs]) === 'number') {
           mergedProperties[abs] += properties[rel];
-          const min = context.propertyMin[abs];
-          const max = context.propertyMax[abs];
+          // TODO(b/314203187): Not null asserted, check that this is correct.
+          const min = context.propertyMin[abs]!;
+          const max = context.propertyMax[abs]!;
           if (mergedProperties[abs] > max) {
             mergedProperties[abs] = max;
           } else if (mergedProperties[abs] < min) {
@@ -222,20 +215,18 @@ export class AbstractTts {
    * 2. Convert all-caps words to lowercase if they don't look like an
    *    acronym / abbreviation.
    *
-   * @param {string} text A text string to be spoken.
-   * @param {Object=} properties Out parameter populated with how to speak the
-   *     string.
-   * @return {string} The text formatted in a way that will sound better by
-   *     most speech engines.
-   * @protected
+   * @param text A text string to be spoken.
+   * @param properties Out parameter populated with how to speak the string.
+   * @return The text formatted in a way that will sound better by most speech
+   *     engines.
    */
-  preprocess(text, properties) {
+  protected preprocess(text: string, properties: Properties = {}): string {
     if (text.length === 1 && text.toLowerCase() !== text) {
       // Describe capital letters according to user's setting.
       if (SettingsManager.getString('capitalStrategy') === 'increasePitch') {
         // Closure doesn't allow the use of for..in or [] with structs, so
         // convert to a pure JSON object.
-        const CAPITAL = ttsTypes.Personality.CAPITAL.toJSON();
+        const CAPITAL = ttsTypes.Personality.CAPITAL.toJSON() as PropertyValues;
         for (const prop in CAPITAL) {
           if (properties[prop] === undefined) {
             properties[prop] = CAPITAL[prop];
@@ -248,7 +239,7 @@ export class AbstractTts {
     }
 
     if (!SettingsManager.getBoolean('usePitchChanges')) {
-      delete properties.relativePitch;
+      delete properties['relativePitch'];
     }
 
     // Since dollar and sterling pound signs will be replaced with text, move
@@ -287,57 +278,24 @@ export class AbstractTts {
   /**
    * Constructs a description of a repeated character. Use as a param to
    * string.replace.
-   * @param {string} match The matching string.
-   * @return {string} The description.
-   * @private
+   * @param match The matching string.
+   * @return The description.
    */
-  static repetitionReplace_(match) {
+  private static repetitionReplace_(match: string): string {
     const count = match.length;
     return ' ' +
         Msgs.getMsgWithCount(ttsTypes.CharacterDictionary[match[0]], count) +
         ' ';
   }
 
-  /** @override */
-  getDefaultProperty(property) {
-    return this.propertyDefault[property];
+  /** TtsInterface implementation. */
+  getDefaultProperty(property: string): number {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    return this.propertyDefault[property]!;
   }
 
-  /** @override */
-  toggleSpeechOnOrOff() {
+  /** TtsInterface implementation. */
+  toggleSpeechOnOrOff(): boolean {
     return true;
   }
 }
-
-/**
- * Default TTS properties for this TTS engine.
- * @type {Object}
- * @protected
- */
-AbstractTts.prototype.ttsProperties;
-
-/**
- * Pronunciation dictionary regexp.
- * @private {RegExp}
- */
-AbstractTts.pronunciationDictionaryRegexp_;
-
-/**
- * Substitution dictionary regexp.
- * @private {RegExp}
- */
-AbstractTts.substitutionDictionaryRegexp_;
-
-/**
- * repetition filter regexp.
- * @private {RegExp}
- */
-AbstractTts.repetitionRegexp_ =
-    /([-\/\\|!@#$%^&*\(\)=_+\[\]\{\}.?;'":<>\u2022\u25e6\u25a0])\1{2,}/g;
-
-/**
- * Regexp filter for negative dollar and pound amounts.
- * @private {RegExp}
- */
-AbstractTts.negativeCurrencyAmountRegexp_ =
-    /-[£\$](\d{1,3})(\d+|(,\d{3})*)(\.\d{1,})?/g;
