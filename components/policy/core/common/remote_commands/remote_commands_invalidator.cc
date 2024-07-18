@@ -75,6 +75,8 @@ void RemoteCommandsInvalidator::Shutdown() {
 
   Stop();
 
+  std::visit([](auto& v) { v = nullptr; }, invalidation_service_or_listener_);
+
   state_ = SHUT_DOWN;
   OnShutdown();
 }

@@ -249,15 +249,8 @@ void CloudPolicyInvalidator::Shutdown() {
     policy_invalidation_handler_.CancelInvalidationHandling();
   }
   core_observation_.Reset();
+  std::visit([](auto& v) { v = nullptr; }, invalidation_service_or_listener_);
   state_ = State::SHUT_DOWN;
-  if (std::holds_alternative<InvalidationServicePtr>(
-          invalidation_service_or_listener_)) {
-    invalidation_service_or_listener_ =
-        static_cast<InvalidationServicePtr>(nullptr);
-  } else {
-    invalidation_service_or_listener_ =
-        static_cast<InvalidationListenerPtr>(nullptr);
-  }
 }
 
 void CloudPolicyInvalidator::OnInvalidatorStateChange(
