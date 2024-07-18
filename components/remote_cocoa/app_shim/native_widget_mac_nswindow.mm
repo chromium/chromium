@@ -183,12 +183,14 @@ void OrderChildWindow(NSWindow* child_window,
   return [super initWithFrame:frame styleMask:styleMask owner:owner];
 }
 - (void)_surrenderToolbarViewForFullScreenWindow {
-  static crash_reporter::CrashKeyString<64> initStackTraceKey(
+  static crash_reporter::CrashKeyString<1024> initStackTraceKey(
       "NativeWidgetMacNSWindowBorderlessFrame_initStackTrace");
   static crash_reporter::CrashKeyString<11> initStyleMaskKey(
       "NativeWidgetMacNSWindowBorderlessFrame_initStyleMask");
   static crash_reporter::CrashKeyString<11> currentStyleMaskKey(
-      "NativeWidgetMacNSWindowBorderlessFrame_currentStyleMaskKey");
+      "NativeWidgetMacNSWindowBorderlessFrame_currentStyleMask");
+  static crash_reporter::CrashKeyString<11> collectionBehaviorKey(
+      "NativeWidgetMacNSWindowBorderlessFrame_collectionBehavior");
   static crash_reporter::CrashKeyString<11> windowDebugDescriptionKey(
       "NativeWidgetMacNSWindowBorderlessFrame_windowDebugDescription");
   static crash_reporter::CrashKeyString<5> initHasParentWindowKey(
@@ -197,6 +199,8 @@ void OrderChildWindow(NSWindow* child_window,
                                                 _initStackTrace);
   initStyleMaskKey.Set(base::NumberToString(_initStyleMask));
   currentStyleMaskKey.Set(base::NumberToString(self.window.styleMask));
+  collectionBehaviorKey.Set(
+      base::NumberToString(self.window.collectionBehavior));
   windowDebugDescriptionKey.Set(self.window.debugDescription.UTF8String);
   initHasParentWindowKey.Set(self.window.parentWindow ? "true" : "false");
   NOTREACHED();
