@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/browser_sync/common_controller_builder.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_api_component_factory.h"
 #include "components/version_info/channel.h"
@@ -20,38 +21,6 @@ class ModelTypeController;
 class SyncInvalidationsService;
 class SyncService;
 }  // namespace syncer
-
-namespace autofill {
-class AutofillWebDataService;
-}
-
-namespace commerce {
-class ProductSpecificationsService;
-}
-
-namespace password_manager {
-class PasswordStoreInterface;
-}
-
-namespace plus_addresses {
-class PlusAddressSettingService;
-class PlusAddressWebDataService;
-}
-
-namespace sync_bookmarks {
-class BookmarkSyncService;
-}
-
-namespace power_bookmarks {
-class PowerBookmarkService;
-}
-namespace supervised_user {
-class SupervisedUserSettingsService;
-}  // namespace supervised_user
-
-namespace data_sharing {
-class DataSharingService;
-}
 
 namespace browser_sync {
 
@@ -113,37 +82,11 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       const signin::GaiaIdHash& gaia_id_hash) override;
 
  private:
-  // Client/platform specific members.
   const raw_ptr<BrowserSyncClient> sync_client_;
   const version_info::Channel channel_;
-  // TODO(crbug.com/335688372): Remove all members once the builder is
-  // implemented in a separate file and can be added as member field.
-  const scoped_refptr<base::SequencedTaskRunner> ui_thread_;
-  const scoped_refptr<base::SequencedTaskRunner> db_thread_;
   const scoped_refptr<base::SequencedTaskRunner>
       engines_and_directory_deletion_thread_;
-  const scoped_refptr<autofill::AutofillWebDataService>
-      web_data_service_on_disk_;
-  const scoped_refptr<autofill::AutofillWebDataService>
-      web_data_service_in_memory_;
-  const scoped_refptr<password_manager::PasswordStoreInterface>
-      profile_password_store_;
-  const scoped_refptr<password_manager::PasswordStoreInterface>
-      account_password_store_;
-  const raw_ptr<sync_bookmarks::BookmarkSyncService>
-      local_or_syncable_bookmark_sync_service_;
-  const raw_ptr<sync_bookmarks::BookmarkSyncService>
-      account_bookmark_sync_service_;
-  const raw_ptr<power_bookmarks::PowerBookmarkService> power_bookmark_service_;
-  const raw_ptr<supervised_user::SupervisedUserSettingsService>
-      supervised_user_settings_service_;
-  const raw_ptr<plus_addresses::PlusAddressSettingService>
-      plus_address_setting_service_;
-  const scoped_refptr<plus_addresses::PlusAddressWebDataService>
-      plus_address_webdata_service_;
-  const raw_ptr<commerce::ProductSpecificationsService>
-      product_specifications_service_;
-  const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
+  CommonControllerBuilder controller_builder_;
 };
 
 }  // namespace browser_sync
