@@ -3346,12 +3346,17 @@ const cc::slim::SurfaceLayer* RenderWidgetHostViewAndroid::GetSurfaceLayer()
   return delegated_frame_host_->content_layer();
 }
 
-void RenderWidgetHostViewAndroid::OnControlsConstraintsChanged(
-    const cc::BrowserControlsOffsetTagsInfo& old_tags_info,
+void RenderWidgetHostViewAndroid::RegisterOffsetTags(
     const cc::BrowserControlsOffsetTagsInfo& tags_info) {
   if (delegated_frame_host_) {
-    delegated_frame_host_->UnregisterOffsetTags(old_tags_info);
     delegated_frame_host_->RegisterOffsetTags(tags_info);
+  }
+}
+
+void RenderWidgetHostViewAndroid::UnregisterOffsetTags(
+    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
+  if (delegated_frame_host_) {
+    delegated_frame_host_->UnregisterOffsetTags(tags_info);
   }
 }
 

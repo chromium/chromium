@@ -434,9 +434,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   const cc::slim::SurfaceLayer* GetSurfaceLayer() const;
 
-  void OnControlsConstraintsChanged(
-      const cc::BrowserControlsOffsetTagsInfo& old_tags_info,
-      const cc::BrowserControlsOffsetTagsInfo& tags_info);
+  void RegisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
+  void UnregisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
 
  protected:
   ~RenderWidgetHostViewAndroid() override;

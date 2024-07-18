@@ -23,9 +23,11 @@
 #include "base/metrics/user_metrics.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "cc/input/android/offset_tag_android.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/renderer_host/view_transition_opt_in_state.h"
 #include "content/browser/web_contents/view_structure_builder_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -246,6 +248,7 @@ WebContentsAndroid::~WebContentsAndroid() {
   DCHECK(g_allocated_web_contents_androids.Get().find(this) !=
       g_allocated_web_contents_androids.Get().end());
   g_allocated_web_contents_androids.Get().erase(this);
+  offset_tag_mediator_ = nullptr;
   for (auto& observer : destruction_observers_)
     observer.WebContentsAndroidDestroyed(this);
   Java_WebContentsImpl_clearNativePtr(AttachCurrentThread(), obj_);
@@ -254,6 +257,11 @@ WebContentsAndroid::~WebContentsAndroid() {
 base::android::ScopedJavaLocalRef<jobject>
 WebContentsAndroid::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
+}
+
+void WebContentsAndroid::Init() {
+  offset_tag_mediator_ = new BrowserControlsOffsetTagMediator(web_contents_);
+  offset_tag_mediator_->Initialize();
 }
 
 void WebContentsAndroid::ClearNativeReference(JNIEnv* env) {
@@ -919,16 +927,41 @@ void WebContentsAndroid::NotifyControlsConstraintsChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jold_tags_info,
     const base::android::JavaParamRef<jobject>& jtags_info) {
-  RenderWidgetHostViewAndroid* rwhva = GetRenderWidgetHostViewAndroid();
-  if (!rwhva) {
-    return;
-  }
-
-  cc::BrowserControlsOffsetTagsInfo old_tags_info =
-      cc::android::FromJavaBrowserControlsOffsetTagsInfo(env, jold_tags_info);
   cc::BrowserControlsOffsetTagsInfo tags_info =
       cc::android::FromJavaBrowserControlsOffsetTagsInfo(env, jtags_info);
-  rwhva->OnControlsConstraintsChanged(old_tags_info, tags_info);
+  if (!offset_tag_mediator_) {
+    Init();
+  }
+  offset_tag_mediator_->SetOffsetTagsInfo(tags_info);
+}
+
+WebContentsAndroid::BrowserControlsOffsetTagMediator::
+    BrowserControlsOffsetTagMediator(WebContents* web_contents)
+    : RenderWidgetHostConnector(web_contents) {}
+
+WebContentsAndroid::BrowserControlsOffsetTagMediator::
+    ~BrowserControlsOffsetTagMediator() = default;
+
+void WebContentsAndroid::BrowserControlsOffsetTagMediator::SetOffsetTagsInfo(
+    const cc::BrowserControlsOffsetTagsInfo& new_offset_tags_info) {
+  if (rwhva_) {
+    rwhva_->UnregisterOffsetTags(offset_tags_info_);
+    rwhva_->RegisterOffsetTags(new_offset_tags_info);
+  }
+
+  offset_tags_info_ = new_offset_tags_info;
+}
+
+void WebContentsAndroid::BrowserControlsOffsetTagMediator::
+    UpdateRenderProcessConnection(RenderWidgetHostViewAndroid* old_rwhva,
+                                  RenderWidgetHostViewAndroid* new_rwhva) {
+  if (old_rwhva) {
+    old_rwhva->UnregisterOffsetTags(offset_tags_info_);
+  }
+  if (new_rwhva) {
+    new_rwhva->RegisterOffsetTags(offset_tags_info_);
+  }
+  rwhva_ = new_rwhva;
 }
 
 }  // namespace content
