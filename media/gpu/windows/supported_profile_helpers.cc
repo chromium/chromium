@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/gpu/windows/av1_guids.h"
 
 namespace media {
@@ -354,9 +355,15 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     if (!workarounds.disable_accelerated_hevc_decode &&
         base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+      // Per DirectX Video Acceleration Specification for High Efficiency Video
+      // Coding - 7.4, DXVA_ModeHEVC_VLD_Main GUID can be used for both main and
+      // main still picture profile.
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN) {
-        supported_resolutions[HEVCPROFILE_MAIN] = GetResolutionsForGUID(
+        auto supported_resolution = GetResolutionsForGUID(
             video_device_wrapper, profile_id, kModernResolutions);
+        supported_resolutions[HEVCPROFILE_MAIN] = supported_resolution;
+        supported_resolutions[HEVCPROFILE_MAIN_STILL_PICTURE] =
+            supported_resolution;
         continue;
       }
       // For range extensions only test main10_422 with P010, and apply

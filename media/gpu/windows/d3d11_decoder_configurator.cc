@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/av1_guids.h"
 #include "media/gpu/windows/d3d11_status.h"
@@ -49,7 +50,11 @@ GUID GetD3D11DecoderGUID(const VideoCodecProfile& profile,
     case AV1PROFILE_PROFILE_PRO:
       return DXVA_ModeAV1_VLD_Profile2;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    // Per DirectX Video Acceleration Specification for High Efficiency Video
+    // Coding - 7.4, DXVA_ModeHEVC_VLD_Main GUID can be used for both main and
+    // main still picture profile.
     case HEVCPROFILE_MAIN:
+    case HEVCPROFILE_MAIN_STILL_PICTURE:
       return D3D11_DECODER_PROFILE_HEVC_VLD_MAIN;
     case HEVCPROFILE_MAIN10:
       return D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10;
