@@ -1354,6 +1354,7 @@ void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
   // This isn't really an error, but we should keep it like this for
   // backward compatability.
   Respond(Error(kFileSelectionCanceled));
+  // TODO(crbug.com/353743644): Test needed to verify that it's safe to Release.
   Release();  // Balanced in Run().
 }
 
@@ -1491,6 +1492,10 @@ bool DeveloperPrivateChooseEntryFunction::ShowPicker(
   // and subsequent sending of the function response) until the user has
   // selected a file or cancelled the picker. At that point, the picker will
   // delete itself.
+  // TODO(crbug.com/353743644): This causes a dangling pointer when file dialog
+  // is cancelled and DeveloperPrivateLoadUnpackedFunction() is destructed
+  // before EntryPicker is destructed, which still holds a pointer to this
+  // function instance.
   new EntryPicker(
       this, web_contents, picker_type,
       DeveloperPrivateAPI::Get(browser_context())->last_unpacked_directory(),
