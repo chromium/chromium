@@ -27,6 +27,7 @@
 #include "pdf/document_metadata.h"
 #include "pdf/loader/document_loader.h"
 #include "pdf/pdf_engine.h"
+#include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_print.h"
@@ -74,7 +75,7 @@ class PDFiumEngine : public PDFEngine,
   enum class FocusElementType { kNone, kDocument, kPage };
 
   // NOTE: `script_option` is ignored when PDF_ENABLE_V8 is not defined.
-  PDFiumEngine(PDFEngine::Client* client,
+  PDFiumEngine(PDFiumEngineClient* client,
                PDFiumFormFiller::ScriptOption script_option);
   PDFiumEngine(const PDFiumEngine&) = delete;
   PDFiumEngine& operator=(const PDFiumEngine&) = delete;
@@ -549,7 +550,7 @@ class PDFiumEngine : public PDFEngine,
   void SetSelecting(bool selecting);
 
   // Sets the type of field that has focus.
-  void SetFieldFocus(PDFEngine::FocusFieldType type);
+  void SetFieldFocus(PDFiumEngineClient::FocusFieldType type);
 
   // Sets whether or not left mouse button is currently being held down.
   void SetMouseLeftButtonDown(bool is_mouse_left_button_down);
@@ -639,7 +640,7 @@ class PDFiumEngine : public PDFEngine,
   // requests the thumbnail for that page.
   void MaybeRequestPendingThumbnail(int page_index);
 
-  const raw_ptr<PDFEngine::Client> client_;
+  const raw_ptr<PDFiumEngineClient> client_;
 
   // The current document layout.
   DocumentLayout layout_;
@@ -748,7 +749,8 @@ class PDFiumEngine : public PDFEngine,
   bool editable_form_text_area_ = false;
 
   // The type of the currently focused form field.
-  FocusFieldType focus_field_type_ = FocusFieldType::kNoFocus;
+  PDFiumEngineClient::FocusFieldType focus_field_type_ =
+      PDFiumEngineClient::FocusFieldType::kNoFocus;
 
   // The focus element type for the currently focused object.
   FocusElementType focus_element_type_ = FocusElementType::kNone;

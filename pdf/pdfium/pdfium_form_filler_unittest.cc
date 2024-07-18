@@ -36,7 +36,7 @@ class FormFillerTestClient : public TestClient {
   FormFillerTestClient(const FormFillerTestClient&) = delete;
   FormFillerTestClient& operator=(const FormFillerTestClient&) = delete;
 
-  // Mock PDFEngine::Client methods.
+  // Mock PDFiumEngineClient methods.
   MOCK_METHOD(void, Beep, (), (override));
   MOCK_METHOD(std::string, GetURL, (), (override));
   MOCK_METHOD(void, ScrollToX, (int), (override));

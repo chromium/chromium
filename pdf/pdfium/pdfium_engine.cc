@@ -108,6 +108,8 @@ using printing::kPointsPerInch;
 
 namespace chrome_pdf {
 
+using FocusFieldType = PDFiumEngineClient::FocusFieldType;
+
 namespace {
 
 constexpr SkColor kHighlightColor = SkColorSetRGB(153, 193, 218);
@@ -546,7 +548,7 @@ void ShutdownSDK() {
 #endif  // defined(PDF_ENABLE_V8)
 }
 
-PDFiumEngine::PDFiumEngine(PDFEngine::Client* client,
+PDFiumEngine::PDFiumEngine(PDFiumEngineClient* client,
                            PDFiumFormFiller::ScriptOption script_option)
     : client_(client),
       form_filler_(this, script_option),
@@ -1976,7 +1978,7 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
   if (adjusted_page_text.empty())
     return;
 
-  std::vector<PDFEngine::Client::SearchStringResult> results =
+  std::vector<PDFiumEngineClient::SearchStringResult> results =
       client_->SearchString(adjusted_page_text.c_str(), adjusted_term.c_str(),
                             case_sensitive);
   for (const auto& result : results) {
@@ -3840,7 +3842,7 @@ void PDFiumEngine::EnteredEditMode() {
   client_->EnteredEditMode();
 }
 
-void PDFiumEngine::SetFieldFocus(PDFEngine::FocusFieldType type) {
+void PDFiumEngine::SetFieldFocus(PDFiumEngineClient::FocusFieldType type) {
   // If focus was previously in form text area, clear form text selection.
   // Clearing needs to be done before changing focus to ensure the correct
   // observer is notified of the change in selection. When `focus_field_type_`

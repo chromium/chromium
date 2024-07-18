@@ -119,6 +119,7 @@ if (enable_pdf) {
       "pdfium/pdfium_document_metadata.h",
       "pdfium/pdfium_engine.cc",
       "pdfium/pdfium_engine.h",
+      "pdfium/pdfium_engine_client.h",
       "pdfium/pdfium_engine_exports.cc",
       "pdfium/pdfium_engine_exports.h",
       "pdfium/pdfium_form_filler.cc",

@@ -29,7 +29,7 @@ class TestPDFiumEngine : public PDFiumEngine {
   // Dummy save data.
   static constexpr uint8_t kSaveData[] = {'s', 'a', 'v', 'e'};
 
-  explicit TestPDFiumEngine(PDFEngine::Client* client);
+  explicit TestPDFiumEngine(PDFiumEngineClient* client);
 
   TestPDFiumEngine(const TestPDFiumEngine&) = delete;
 

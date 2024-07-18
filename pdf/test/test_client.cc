@@ -47,7 +47,7 @@ v8::Isolate* TestClient::GetIsolate() {
   return GetBlinkIsolate();
 }
 
-std::vector<PDFEngine::Client::SearchStringResult> TestClient::SearchString(
+std::vector<PDFiumEngineClient::SearchStringResult> TestClient::SearchString(
     const char16_t* string,
     const char16_t* term,
     bool case_sensitive) {

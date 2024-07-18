@@ -29,7 +29,7 @@ const uint8_t TestPDFiumEngine::kLoadedData[];
 // static
 const uint8_t TestPDFiumEngine::kSaveData[];
 
-TestPDFiumEngine::TestPDFiumEngine(PDFEngine::Client* client)
+TestPDFiumEngine::TestPDFiumEngine(PDFiumEngineClient* client)
     : PDFiumEngine(client, PDFiumFormFiller::ScriptOption::kNoJavaScript) {}
 
 TestPDFiumEngine::~TestPDFiumEngine() = default;

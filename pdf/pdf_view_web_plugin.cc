@@ -285,7 +285,7 @@ std::unique_ptr<PdfInkModule> MaybeCreatePdfInkModule(
 }  // namespace
 
 std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(
-    PDFEngine::Client* client,
+    PDFiumEngineClient* client,
     PDFiumFormFiller::ScriptOption script_option) {
   return std::make_unique<PDFiumEngine>(client, script_option);
 }
@@ -1121,7 +1121,7 @@ v8::Isolate* PdfViewWebPlugin::GetIsolate() {
   return client_->GetIsolate();
 }
 
-std::vector<PDFEngine::Client::SearchStringResult>
+std::vector<PDFiumEngineClient::SearchStringResult>
 PdfViewWebPlugin::SearchString(const char16_t* string,
                                const char16_t* term,
                                bool case_sensitive) {
@@ -1142,7 +1142,7 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
   client_->RecordComputedAction("PDF.LoadSuccess");
 
   // Clear the focus state for on-screen keyboards.
-  FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus);
+  FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kNoFocus);
 
   if (IsPrintPreview()) {
     // Scroll location is retained across document loads in Print Preview, so
@@ -1232,13 +1232,14 @@ void PdfViewWebPlugin::DocumentLoadProgress(uint32_t available,
   SendLoadingProgress(progress);
 }
 
-void PdfViewWebPlugin::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
+void PdfViewWebPlugin::FormFieldFocusChange(
+    PDFiumEngineClient::FocusFieldType type) {
   base::Value::Dict message;
   message.Set("type", "formFocusChange");
-  message.Set("focused", type != PDFEngine::FocusFieldType::kNoFocus);
+  message.Set("focused", type != PDFiumEngineClient::FocusFieldType::kNoFocus);
   client_->PostMessage(std::move(message));
 
-  text_input_type_ = type == PDFEngine::FocusFieldType::kText
+  text_input_type_ = type == PDFiumEngineClient::FocusFieldType::kText
                          ? blink::WebTextInputType::kWebTextInputTypeText
                          : blink::WebTextInputType::kWebTextInputTypeNone;
   client_->UpdateTextInputState();

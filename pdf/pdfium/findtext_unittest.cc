@@ -27,7 +27,7 @@ class FindTextTestClient : public TestClient {
   FindTextTestClient& operator=(const FindTextTestClient&) = delete;
   ~FindTextTestClient() override = default;
 
-  // PDFEngine::Client:
+  // PDFiumEngineClient:
   MOCK_METHOD(void, NotifyNumberOfFindResultsChanged, (int, bool), (override));
   MOCK_METHOD(void, NotifySelectedFindResultChanged, (int, bool), (override));
 

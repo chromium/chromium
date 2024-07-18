@@ -1120,7 +1120,7 @@ class PDFiumEngineTabbingTest : public PDFiumTestBase {
     return engine->last_focused_annot_index_;
   }
 
-  PDFEngine::FocusFieldType FormFocusFieldType(PDFiumEngine* engine) {
+  PDFiumEngineClient::FocusFieldType FormFocusFieldType(PDFiumEngine* engine) {
     return engine->focus_field_type_;
   }
 
@@ -1591,7 +1591,7 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
   ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
   EXPECT_EQ(PDFiumEngine::FocusElementType::kDocument,
             GetFocusedElementType(engine.get()));
-  EXPECT_EQ(PDFEngine::FocusFieldType::kNoFocus,
+  EXPECT_EQ(PDFiumEngineClient::FocusFieldType::kNoFocus,
             FormFocusFieldType(engine.get()));
   EXPECT_FALSE(engine->CanEditText());
 
@@ -1600,7 +1600,8 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
   EXPECT_EQ(PDFiumEngine::FocusElementType::kPage,
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(0, GetLastFocusedPage(engine.get()));
-  EXPECT_EQ(PDFEngine::FocusFieldType::kText, FormFocusFieldType(engine.get()));
+  EXPECT_EQ(PDFiumEngineClient::FocusFieldType::kText,
+            FormFocusFieldType(engine.get()));
   EXPECT_TRUE(engine->CanEditText());
 
   // Bring focus to the button on the page.
@@ -1608,7 +1609,7 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
   EXPECT_EQ(PDFiumEngine::FocusElementType::kPage,
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(0, GetLastFocusedPage(engine.get()));
-  EXPECT_EQ(PDFEngine::FocusFieldType::kNonText,
+  EXPECT_EQ(PDFiumEngineClient::FocusFieldType::kNonText,
             FormFocusFieldType(engine.get()));
   EXPECT_FALSE(engine->CanEditText());
 }
@@ -1668,7 +1669,7 @@ class ScrollingTestClient : public TestClient {
   ScrollingTestClient(const ScrollingTestClient&) = delete;
   ScrollingTestClient& operator=(const ScrollingTestClient&) = delete;
 
-  // Mock PDFEngine::Client methods.
+  // Mock PDFiumEngineClient methods.
   MOCK_METHOD(void, ScrollToX, (int), (override));
   MOCK_METHOD(void, ScrollToY, (int), (override));
 };
@@ -1782,10 +1783,10 @@ class ReadOnlyTestClient : public TestClient {
   ReadOnlyTestClient(const ReadOnlyTestClient&) = delete;
   ReadOnlyTestClient& operator=(const ReadOnlyTestClient&) = delete;
 
-  // Mock PDFEngine::Client methods.
+  // Mock PDFiumEngineClient methods.
   MOCK_METHOD(void,
               FormFieldFocusChange,
-              (PDFEngine::FocusFieldType),
+              (PDFiumEngineClient::FocusFieldType),
               (override));
   MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
 };
@@ -1800,15 +1801,15 @@ TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
 
   // Setting read-only mode should kill form focus.
   EXPECT_FALSE(engine->IsReadOnly());
-  EXPECT_CALL(client,
-              FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus));
+  EXPECT_CALL(client, FormFieldFocusChange(
+                          PDFiumEngineClient::FocusFieldType::kNoFocus));
   engine->SetReadOnly(true);
 
   // Attempting to focus during read-only mode should once more trigger a
   // killing of form focus.
   EXPECT_TRUE(engine->IsReadOnly());
-  EXPECT_CALL(client,
-              FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus));
+  EXPECT_CALL(client, FormFieldFocusChange(
+                          PDFiumEngineClient::FocusFieldType::kNoFocus));
   engine->UpdateFocus(true);
 }
 

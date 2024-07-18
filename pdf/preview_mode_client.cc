@@ -129,7 +129,7 @@ v8::Isolate* PreviewModeClient::GetIsolate() {
   NOTREACHED_NORETURN();
 }
 
-std::vector<PDFEngine::Client::SearchStringResult>
+std::vector<PDFiumEngineClient::SearchStringResult>
 PreviewModeClient::SearchString(const char16_t* string,
                                 const char16_t* term,
                                 bool case_sensitive) {
@@ -150,7 +150,8 @@ void PreviewModeClient::DocumentHasUnsupportedFeature(
   NOTREACHED_IN_MIGRATION();
 }
 
-void PreviewModeClient::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
+void PreviewModeClient::FormFieldFocusChange(
+    PDFiumEngineClient::FocusFieldType type) {
   NOTREACHED_IN_MIGRATION();
 }
 

@@ -30,6 +30,7 @@
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_engine.h"
+#include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/preview_mode_client.h"
@@ -81,7 +82,7 @@ class PDFiumEngine;
 class PdfAccessibilityDataHandler;
 class Thumbnail;
 
-class PdfViewWebPlugin final : public PDFEngine::Client,
+class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public blink::WebPlugin,
                                public pdf::mojom::PdfListener,
                                public UrlLoader::Client,
@@ -120,7 +121,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
 
     // Creates a new `PDFiumEngine`.
     virtual std::unique_ptr<PDFiumEngine> CreateEngine(
-        PDFEngine::Client* client,
+        PDFiumEngineClient* client,
         PDFiumFormFiller::ScriptOption script_option);
 
     // Passes the plugin container to the client. This is first called in
@@ -305,7 +306,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
       int relative_cursor_pos) override;
   void ImeFinishComposingTextForPlugin(bool keep_selection) override;
 
-  // PDFEngine::Client:
+  // PDFiumEngineClient:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
   void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
@@ -351,7 +352,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void DocumentLoadFailed() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
-  void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
+  void FormFieldFocusChange(PDFiumEngineClient::FocusFieldType type) override;
   bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() const override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;

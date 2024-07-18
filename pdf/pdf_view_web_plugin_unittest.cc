@@ -132,8 +132,8 @@ struct PaintParams {
 };
 
 MATCHER(SearchStringResultEq, "") {
-  PDFEngine::Client::SearchStringResult l = std::get<0>(arg);
-  PDFEngine::Client::SearchStringResult r = std::get<1>(arg);
+  PDFiumEngineClient::SearchStringResult l = std::get<0>(arg);
+  PDFiumEngineClient::SearchStringResult r = std::get<1>(arg);
   return l.start_index == r.start_index && l.length == r.length;
 }
 
@@ -231,7 +231,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
 
   MOCK_METHOD(std::unique_ptr<PDFiumEngine>,
               CreateEngine,
-              (PDFEngine::Client*, PDFiumFormFiller::ScriptOption),
+              (PDFiumEngineClient*, PDFiumFormFiller::ScriptOption),
               (override));
 
   MOCK_METHOD(void,
@@ -367,7 +367,7 @@ class PdfViewWebPluginWithoutInitializeTest
         });
     ON_CALL(*client_ptr_, CreateEngine)
         .WillByDefault([this](
-                           PDFEngine::Client* client,
+                           PDFiumEngineClient* client,
                            PDFiumFormFiller::ScriptOption /*script_option*/) {
           auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(client);
           engine_ptr_ = engine.get();
@@ -1605,16 +1605,16 @@ TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
             plugin_->GetPluginTextInputType());
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeText);
-  plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kText);
+  plugin_->FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText);
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
-  plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus);
+  plugin_->FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kNoFocus);
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeText);
-  plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kText);
+  plugin_->FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText);
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
-  plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kNonText);
+  plugin_->FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kNonText);
 }
 
 TEST_F(PdfViewWebPluginTest, SearchString) {
@@ -1623,14 +1623,14 @@ TEST_F(PdfViewWebPluginTest, SearchString) {
       u"The quick brown fox jumped over the lazy Fox";
 
   {
-    static constexpr PDFEngine::Client::SearchStringResult kExpectation[] = {
+    static constexpr PDFiumEngineClient::SearchStringResult kExpectation[] = {
         {16, 3}};
     EXPECT_THAT(
         plugin_->SearchString(kTarget, kPattern, /*case_sensitive=*/true),
         Pointwise(SearchStringResultEq(), kExpectation));
   }
   {
-    static constexpr PDFEngine::Client::SearchStringResult kExpectation[] = {
+    static constexpr PDFiumEngineClient::SearchStringResult kExpectation[] = {
         {16, 3}, {41, 3}};
     EXPECT_THAT(
         plugin_->SearchString(kTarget, kPattern, /*case_sensitive=*/false),
@@ -1743,7 +1743,7 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
  protected:
   class TestPDFiumEngineWithDocInfo : public TestPDFiumEngine {
    public:
-    explicit TestPDFiumEngineWithDocInfo(PDFEngine::Client* client)
+    explicit TestPDFiumEngineWithDocInfo(PDFiumEngineClient* client)
         : TestPDFiumEngine(client) {
       InitializeDocumentAttachments();
       InitializeDocumentMetadata();
@@ -2285,7 +2285,7 @@ class PdfViewWebPluginPrintPreviewTest : public PdfViewWebPluginTest {
 
 TEST_F(PdfViewWebPluginPrintPreviewTest, HandleResetPrintPreviewModeMessage) {
   EXPECT_CALL(*client_ptr_, CreateEngine)
-      .WillOnce([](PDFEngine::Client* client,
+      .WillOnce([](PDFiumEngineClient* client,
                    PDFiumFormFiller::ScriptOption script_option) {
         EXPECT_EQ(PDFiumFormFiller::ScriptOption::kNoJavaScript, script_option);
 
@@ -2308,7 +2308,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, HandleResetPrintPreviewModeMessage) {
 TEST_F(PdfViewWebPluginPrintPreviewTest,
        HandleResetPrintPreviewModeMessageForPdf) {
   EXPECT_CALL(*client_ptr_, CreateEngine)
-      .WillOnce([](PDFEngine::Client* client,
+      .WillOnce([](PDFiumEngineClient* client,
                    PDFiumFormFiller::ScriptOption script_option) {
         EXPECT_EQ(PDFiumFormFiller::ScriptOption::kNoJavaScript, script_option);
 
@@ -2335,7 +2335,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
 TEST_F(PdfViewWebPluginPrintPreviewTest,
        HandleResetPrintPreviewModeMessageSetGrayscale) {
   EXPECT_CALL(*client_ptr_, CreateEngine)
-      .WillOnce([](PDFEngine::Client* client,
+      .WillOnce([](PDFiumEngineClient* client,
                    PDFiumFormFiller::ScriptOption /*script_option*/) {
         auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(client);
         EXPECT_CALL(*engine, SetGrayscale(true));

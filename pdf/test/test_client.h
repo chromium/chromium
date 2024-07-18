@@ -10,10 +10,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "pdf/pdf_engine.h"
+#include "pdf/pdfium/pdfium_engine_client.h"
 
 namespace chrome_pdf {
 
-class TestClient : public PDFEngine::Client {
+class TestClient : public PDFiumEngineClient {
  public:
   TestClient();
 
@@ -25,7 +26,7 @@ class TestClient : public PDFEngine::Client {
   PDFEngine* engine() const { return engine_; }
   void set_engine(PDFEngine* engine) { engine_ = engine; }
 
-  // PDFEngine::Client:
+  // PDFiumEngineClient:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
