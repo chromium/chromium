@@ -17,6 +17,46 @@ namespace content {
 // `NavigationEntry` (i.e. can't be restored).
 class NavigationTransitionData {
  public:
+  // Used for recording UMA for cache hit/miss.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CacheHitOrMissReason {
+    // The screenshot is captured and placed in the cache.
+    kCacheHit = 0,
+
+    // Sent a request to capture a screenshot in
+    // `CaptureNavigationEntryScreenshotForCrossDocumentNavigations`.
+    kSentScreenshotRequest = 1,
+
+    // Received an empty bitmap when capturing the screenshot.
+    kCapturedEmptyBitmap = 2,
+
+    // Screenshot is not captured for subframes.
+    kCacheMissSubframe = 3,
+
+    // Screenshot was evicted because of memory constraints.
+    kCacheMissEvicted = 4,
+
+    // Screenshot was purged along with all other screenshots because of memory
+    // pressure.
+    kCacheMissPurgedMemoryPressure = 5,
+
+    // Screenshot is not available because the app was restarted/killed in the
+    // background and we don't persist them to disk.
+    // TODO(baranerf): Implement tracking of this case.
+    kCacheMissColdStart = 6,
+
+    // Screenshot is not captured for cloned navigations.
+    kCacheMissClonedNavigationEntry = 7,
+
+    // Screenshot is not captured for embedded pages.
+    kCacheMissEmbeddedPages = 8,
+
+    // TODO(crbug.com/40268228): Add a value for "Cache-Control: no-store".
+
+    kMaxValue = kCacheMissEmbeddedPages
+  };
+
   NavigationTransitionData() = default;
   ~NavigationTransitionData() = default;
   NavigationTransitionData(NavigationTransitionData&&) = delete;
@@ -46,6 +86,14 @@ class NavigationTransitionData {
     return main_frame_background_color_;
   }
 
+  void set_cache_hit_or_miss_reason(
+      std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason) {
+    cache_hit_or_miss_reason_ = cache_hit_or_miss_reason;
+  }
+  std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason() const {
+    return cache_hit_or_miss_reason_;
+  }
+
  private:
   // Whether this screenshot is supplied by the embedder.
   bool is_copied_from_embedder_ = false;
@@ -64,6 +112,9 @@ class NavigationTransitionData {
   // TODO(https://crbug.com/40262175): We might want to move the
   // `NavigationEntryScreenshot` here as well when we make the screenshot
   // disk-persistent.
+
+  // Used to record UMA in `BackForwardTransitionAnimator`
+  std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason_;
 };
 
 }  // namespace content

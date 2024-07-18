@@ -4,6 +4,7 @@
 
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
@@ -24,6 +25,8 @@
 namespace content {
 
 namespace {
+
+using CacheHitOrMissReason = NavigationTransitionData::CacheHitOrMissReason;
 
 using NavigationDirection =
     BackForwardTransitionAnimationManager::NavigationDirection;
@@ -1008,6 +1011,18 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
   CHECK_EQ(use_fallback_screenshot_, !preview);
   CHECK(use_fallback_screenshot_ ||
         preview->navigation_entry_id() == destination_entry_id_);
+
+  const std::optional<NavigationTransitionData::CacheHitOrMissReason>&
+      cache_hit_or_miss_reason = destination_entry->navigation_transition_data()
+                                     .cache_hit_or_miss_reason();
+  CHECK(use_fallback_screenshot_ ||
+        cache_hit_or_miss_reason == CacheHitOrMissReason::kCacheHit);
+
+  // TODO(baranerf): Consider other ways to capture `kCacheColdStart` metric.
+  UMA_HISTOGRAM_ENUMERATION("Navigation.GestureTransition.CacheHitOrMissReason",
+                            cache_hit_or_miss_reason.value_or(
+                                CacheHitOrMissReason::kCacheMissColdStart));
+
   if (!use_fallback_screenshot_) {
     auto* cache = nav_controller->GetNavigationEntryScreenshotCache();
     screenshot_ = cache->RemoveScreenshot(destination_entry);
@@ -1221,7 +1236,7 @@ void BackForwardTransitionAnimator::CloneOldSurfaceLayer(
   parent_for_web_widgets->parent()->AddChild(old_surface_clone_);
 }
 
-// TODO(baranerf): Refactor this function and
+// TODO(crbug.com/350750205): Refactor this function and
 // `OnRenderFrameMetadataChangedAfterActivation` to the manager
 void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
     NavigationRequest* navigation_request) {

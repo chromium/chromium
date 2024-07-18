@@ -854,6 +854,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.GestureTransition.CacheHitOrMissReason"
+    enum="NavigationTransitionCacheHitOrMissReason" expires_after="M140">
+  <owner>liuwilliam@google.com</owner>
+  <owner>baranerf@google.com</owner>
+  <owner>chrome-seamless-core@google.com</owner>
+  <summary>
+    Counts the occurrence of cache hit or cache miss reasons when the user
+    starts a back/forward navigation gesture. This is recorded once per user
+    gesture.
+  </summary>
+</histogram>
+
 <histogram
     name="Navigation.GetFrameHostForNavigationTime.InDidCreateNavigationRequest.IsHTTPOrHTTPS"
     units="microseconds" expires_after="2025-01-05">

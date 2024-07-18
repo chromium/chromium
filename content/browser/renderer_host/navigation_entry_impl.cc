@@ -859,6 +859,16 @@ NavigationEntryImpl::CloneAndReplaceInternal(
   copy->should_skip_on_back_forward_ui_ = should_skip_on_back_forward_ui_;
   copy->initial_navigation_entry_state_ = initial_navigation_entry_state_;
 
+  if (navigation_transition_data().cache_hit_or_miss_reason() ==
+      NavigationTransitionData::CacheHitOrMissReason::kCacheHit) {
+    copy->navigation_transition_data().set_cache_hit_or_miss_reason(
+        NavigationTransitionData::CacheHitOrMissReason::
+            kCacheMissClonedNavigationEntry);
+  } else {
+    copy->navigation_transition_data().set_cache_hit_or_miss_reason(
+        navigation_transition_data().cache_hit_or_miss_reason());
+  }
+
   return copy;
 }
 

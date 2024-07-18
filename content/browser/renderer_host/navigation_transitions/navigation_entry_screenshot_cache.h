@@ -37,7 +37,7 @@ class NavigationEntryScreenshotCacheEvictor {
 
   // Deletes all the tracked screenshots in this cache, and notifies the global
   // manager to stop tracking this cache.
-  virtual void Purge() = 0;
+  virtual void PurgeForMemoryPressure() = 0;
 
   virtual bool IsEmpty() const = 0;
 };
@@ -83,14 +83,15 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
 
   // `NavigationEntryScreenshotCacheEvictor`:
   //
-  // The cost of `EvictScreenshotsUntilUnderBudgetOrEmpty` and `Purge` is linear
-  // with respect to the number of navigation entries in the primary
-  // `NavigationController`. This is because for each navigation entry's ID this
-  // cache tracks, we need to query `NavigationController` using
+  // The cost of `EvictScreenshotsUntilUnderBudgetOrEmpty` and
+  // `PurgeForMemoryPressure` is linear with respect to the number of navigation
+  // entries in the primary `NavigationController`. This is because for each
+  // navigation entry's ID this cache tracks, we need to query
+  // `NavigationController` using
   // `NavigationControllerImpl::GetEntryWithUniqueID`, which performs a linear
   // scan on all the navigation entries.
   void EvictScreenshotsUntilUnderBudgetOrEmpty() override;
-  void Purge() override;
+  void PurgeForMemoryPressure() override;
   bool IsEmpty() const override;
 
   // Allows the browsertests to be notified when a screenshot is cached.
@@ -102,6 +103,10 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   void SetScreenshotInternal(
       std::unique_ptr<NavigationEntryScreenshot> screenshot,
       bool is_copied_from_embedder);
+
+  // Helper function to differentiate between purge because of memory pressure
+  // and purge called by the destructor.
+  void PurgeInternal(bool for_memory_pressure);
 
   // Tracks the unique IDs of the navigation entries, for which we have captured
   // screenshots.

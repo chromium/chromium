@@ -126,10 +126,6 @@ void NavigationEntryScreenshotManager::Unregister(
 // One alternative is to always evict the navigation entries in LRU order,
 // regardless of which tab the entry is from. The pro of this alternative is to
 // have all the eviction logic inside the global manager.
-//
-// TODO(crbug.com/40259040): We need some metrics to understand if the
-// currently implementation affects the cache hit rate. (I.e., would the
-// alternative be a better approach?)
 void NavigationEntryScreenshotManager::EvictIfOutOfMemoryBudget() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!IsEmpty());
@@ -157,11 +153,11 @@ void NavigationEntryScreenshotManager::OnMemoryPressure(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
-  // Using a while loop because `Purge` erases the iterator.
+  // Using a while loop because `PurgeForMemoryPressure` erases the iterator.
   auto it = managed_caches_.begin();
   while (it != managed_caches_.end()) {
     auto* cache = *it;
-    cache->Purge();
+    cache->PurgeForMemoryPressure();
     CHECK(cache->IsEmpty());
     it = managed_caches_.begin();
   }

@@ -46,7 +46,7 @@ NavigationEntryScreenshotCache::NavigationEntryScreenshotCache(
 
 NavigationEntryScreenshotCache::~NavigationEntryScreenshotCache() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Purge();
+  PurgeInternal(/*for_memory_pressure=*/false);
 }
 
 void NavigationEntryScreenshotCache::SetScreenshot(
@@ -129,6 +129,8 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
       is_copied_from_embedder);
   entry->navigation_transition_data()
       .SetSameDocumentNavigationEntryScreenshotToken(std::nullopt);
+  entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+      NavigationTransitionData::CacheHitOrMissReason::kCacheHit);
   cached_screenshots_.insert(entry->GetUniqueID());
   manager_->OnScreenshotCached(this, size);
 
@@ -151,6 +153,9 @@ NavigationEntryScreenshotCache::RemoveScreenshot(
   cached_screenshots_.erase(it);
   auto screenshot = RemoveScreenshotFromEntry(navigation_entry);
   manager_->OnScreenshotRemoved(this, screenshot->SizeInBytes());
+  static_cast<NavigationEntryImpl*>(navigation_entry)
+      ->navigation_transition_data()
+      .set_cache_hit_or_miss_reason(std::nullopt);
   return screenshot;
 }
 
@@ -226,11 +231,20 @@ void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
       CHECK_LE(evicted_screenshot->SizeInBytes(),
                manager_->GetCurrentCacheSize());
       manager_->OnScreenshotRemoved(this, evicted_screenshot->SizeInBytes());
+
+      candidate_entry->navigation_transition_data()
+          .set_cache_hit_or_miss_reason(
+              NavigationTransitionData::CacheHitOrMissReason::
+                  kCacheMissEvicted);
     }
   }
 }
 
-void NavigationEntryScreenshotCache::Purge() {
+void NavigationEntryScreenshotCache::PurgeForMemoryPressure() {
+  PurgeInternal(/*for_memory_pressure=*/true);
+}
+
+void NavigationEntryScreenshotCache::PurgeInternal(bool for_memory_pressure) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = cached_screenshots_.begin();
   while (!IsEmpty()) {
@@ -240,6 +254,18 @@ void NavigationEntryScreenshotCache::Purge() {
     cached_screenshots_.erase(it);
     CHECK_LE(purged->SizeInBytes(), manager_->GetCurrentCacheSize());
     manager_->OnScreenshotRemoved(this, purged->SizeInBytes());
+
+    if (for_memory_pressure) {
+      evicted_entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+          NavigationTransitionData::CacheHitOrMissReason::
+              kCacheMissPurgedMemoryPressure);
+    } else {
+      // Resetting the UMA enum since at this point `this` is getting destroyed
+      // by the destructor which invalidates the enum value.
+      evicted_entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+          std::nullopt);
+    }
+
     it = cached_screenshots_.begin();
   }
 }
