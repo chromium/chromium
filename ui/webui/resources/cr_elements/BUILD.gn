@@ -140,6 +140,7 @@ build_webui("build") {
 
     css_files = [
       "action_link.css",
+      "action_link_lit.css",
       "cr_actionable_row_style.css",
       "cr_actionable_row_style_lit.css",
       "cr_hidden_style.css",

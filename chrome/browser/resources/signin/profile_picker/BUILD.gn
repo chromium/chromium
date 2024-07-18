@@ -40,9 +40,13 @@ build_webui("build") {
   icons_html_files = [ "icons.html" ]
 
   css_files = [
+    "profile_card_menu.css",
     "profile_creation_flow/profile_creation_shared.css",
     "profile_picker_shared.css",
+    "profile_picker_shared_lit.css",
   ]
+
+  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_definitions = [
@@ -50,6 +54,7 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

@@ -2,36 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/action_link.css.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/js/action_link.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './profile_picker_shared.css.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 // clang-format off
 // <if expr="chromeos_lacros">
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // </if>
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 // clang-format on
 
 
 
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
-import {getTemplate} from './profile_card_menu.html.js';
+import {getCss} from './profile_card_menu.css.js';
+import {getHtml} from './profile_card_menu.html.js';
 
 export interface Statistics {
   BrowsingHistory: number;
@@ -68,87 +65,75 @@ export interface ProfileCardMenuElement {
 }
 
 const ProfileCardMenuElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   static get is() {
     return 'profile-card-menu';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      profileState: Object,
+      profileState: {type: Object},
 
       /**
        * Results of profile statistics, keyed by the suffix of the corresponding
        * data type, as reported by the C++ side.
        */
-      statistics_: {
-        type: Object,
-        // Will be filled as results are reported.
-        value() {
-          return {};
-        },
-      },
+      statistics_: {type: Object},
 
       /**
        * List of selected data types.
        */
-      profileStatistics_: {
-        type: Array,
-        value: [
-          ProfileStatistics.BROWSING_HISTORY,
-          ProfileStatistics.PASSWORDS,
-          ProfileStatistics.BOOKMARKS,
-          ProfileStatistics.AUTOFILL,
-        ],
-      },
+      profileStatistics_: {type: Array},
 
-      moreActionsButtonAriaLabel_: {
-        type: String,
-        computed: 'computeMoreActionsButtonAriaLabel_(profileState)',
-      },
-
-      removeWarningText_: {
-        type: String,
-        // <if expr="chromeos_lacros">
-        value() {
-          return sanitizeInnerHtml(
-              loadTimeData.getString('removeWarningProfileLacros'),
-              {attrs: ['is']});
-        },
-        // </if>
-        // <if expr="not chromeos_lacros">
-        computed: 'computeRemoveWarningText_(profileState)',
-        // </if>
-      },
-
-      removeWarningTitle_: {
-        type: String,
-        computed: 'computeRemoveWarningTitle_(profileState)',
-      },
-
+      moreActionsButtonAriaLabel_: {type: String},
+      removeWarningText_: {type: String},
+      removeWarningTitle_: {type: String},
       // <if expr="chromeos_lacros">
-      removePrimaryLacrosProfileWarning_: {
-        type: String,
-        computed: 'computeRemovePrimaryLacrosProfileWarning_(profileState)',
-      },
+      removePrimaryLacrosProfileWarning_: {type: String},
       // </if>
-
     };
   }
 
-  profileState: ProfileState;
-  private statistics_: Statistics;
-  private profileStatistics_: ProfileStatistics[];
-  private removeWarningText_: string;
-  private removeWarningTitle_: string;
+  profileState: ProfileState = {
+    profilePath: '',
+    localProfileName: '',
+    isSyncing: false,
+    needsSignin: false,
+    gaiaName: '',
+    userName: '',
+    avatarBadge: '',
+    avatarIcon: '',
+    // <if expr="chromeos_lacros">
+    isPrimaryLacrosProfile: false,
+    // </if>
+  };
+  private statistics_: Statistics = {
+    BrowsingHistory: 0,
+    Passwords: 0,
+    Bookmarks: 0,
+    Autofill: 0,
+  };
+  protected moreActionsButtonAriaLabel_: string = '';
+  protected profileStatistics_: ProfileStatistics[] = [
+    ProfileStatistics.BROWSING_HISTORY,
+    ProfileStatistics.PASSWORDS,
+    ProfileStatistics.BOOKMARKS,
+    ProfileStatistics.AUTOFILL,
+  ];
+  protected removeWarningText_: string = '';
+  protected removeWarningTitle_: string = '';
   // <if expr="chromeos_lacros">
-  private removePrimaryLacrosProfileWarning_: string;
+  protected removePrimaryLacrosProfileWarning_: string;
   // </if>
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
@@ -164,13 +149,27 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         this.handleProfileStatsReceived_.bind(this));
   }
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('profileState')) {
+      this.moreActionsButtonAriaLabel_ =
+          this.computeMoreActionsButtonAriaLabel_();
+      this.removeWarningTitle_ = this.computeRemoveWarningTitle_();
+      // <if expr="chromeos_lacros">
+      this.removePrimaryLacrosProfileWarning_ =
+          this.computeRemovePrimaryLacrosProfileWarning_();
+      // </if>
+      // <if expr="not chromeos_lacros">
+      this.removeWarningText_ = this.computeRemoveWarningText_();
+      // </if>
+    }
+  }
+
+  override firstUpdated() {
     // <if expr="chromeos_lacros">
-    afterNextRender(this, () => {
-      this.shadowRoot!.querySelector('#removeWarningHeader a')!
-          .addEventListener('click', () => this.onAccountSettingsClicked_());
-    });
+    this.shadowRoot!.querySelector('#removeWarningHeader a')!.addEventListener(
+        'click', () => this.onAccountSettingsClicked_());
     // </if>
   }
 
@@ -178,6 +177,12 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     return this.i18n(
         'profileMenuAriaLabel', this.profileState.localProfileName);
   }
+
+  // <if expr="chromeos_lacros">
+  protected getRemoveWarningTextForLacros_(): TrustedHTML {
+    return this.i18nAdvanced('removeWarningProfileLacros', {attrs: ['is']});
+  }
+  // </if>
 
   // <if expr="not chromeos_lacros">
   private computeRemoveWarningText_(): string {
@@ -201,7 +206,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   }
   // </if>
 
-  private onMoreActionsButtonClicked_(e: Event) {
+  protected onMoreActionsButtonClicked_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.$.actionMenu.showAt(this.$.moreActionsButton);
@@ -209,7 +214,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         'ProfilePicker_ThreeDottedMenuClicked');
   }
 
-  private onRemoveButtonClicked_(e: Event) {
+  protected onRemoveButtonClicked_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.manageProfilesBrowserProxy_.getProfileStatistics(
@@ -235,7 +240,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     this.statistics_ = result.statistics;
   }
 
-  private getProfileStatisticText_(dataType: ProfileStatistics): string {
+  protected getProfileStatisticText_(dataType: ProfileStatistics): string {
     switch (dataType) {
       case ProfileStatistics.BROWSING_HISTORY:
         return this.i18n('removeWarningHistory');
@@ -250,26 +255,26 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     }
   }
 
-  private getProfileStatisticCount_(dataType: keyof Statistics): string {
+  protected getProfileStatisticCount_(dataType: keyof Statistics): string {
     const count = this.statistics_[dataType];
     return (count === undefined) ? this.i18n('removeWarningCalculating') :
                                    count.toString();
   }
 
-  private onRemoveConfirmationClicked_(e: Event) {
+  protected onRemoveConfirmationClicked_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.manageProfilesBrowserProxy_.removeProfile(
         this.profileState.profilePath);
   }
 
-  private onRemoveCancelClicked_() {
+  protected onRemoveCancelClicked_() {
     this.$.removeConfirmationDialog.cancel();
     this.manageProfilesBrowserProxy_.closeProfileStatistics();
   }
 
   // <if expr="chromeos_lacros">
-  private onRemovePrimaryLacrosProfileCancelClicked_() {
+  protected onRemovePrimaryLacrosProfileCancelClicked_() {
     this.$.removePrimaryLacrosProfileDialog.cancel();
   }
   // </if>
@@ -291,7 +296,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     }
   }
 
-  private onCustomizeButtonClicked_() {
+  protected onCustomizeButtonClicked_() {
     this.manageProfilesBrowserProxy_.openManageProfileSettingsSubPage(
         this.profileState.profilePath);
     this.$.actionMenu.close();

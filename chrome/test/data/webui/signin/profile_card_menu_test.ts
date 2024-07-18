@@ -8,11 +8,7 @@ import type {ProfileCardMenuElement, ProfileState, Statistics, StatisticsResult}
 import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {
-  // <if expr="chromeos_lacros">
-  waitAfterNextRender,
-  // </if>
-  waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
@@ -28,12 +24,11 @@ suite('ProfileCardMenuTest', function() {
   const statisticsDataTypes: string[] =
       ['BrowsingHistory', 'Passwords', 'Bookmarks', 'Autofill'];
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     profileCardMenuElement = document.createElement('profile-card-menu');
-    document.body.appendChild(profileCardMenuElement);
     const testProfileState: ProfileState = {
       profilePath: `profilePath`,
       localProfileName: `profile`,
@@ -48,7 +43,7 @@ suite('ProfileCardMenuTest', function() {
       // </if>
     };
     profileCardMenuElement.profileState = testProfileState;
-    return waitBeforeNextRender(profileCardMenuElement);
+    document.body.appendChild(profileCardMenuElement);
   });
 
   // Checks basic layout of the action menu.
@@ -129,6 +124,7 @@ suite('ProfileCardMenuTest', function() {
     updatedProfileState.localProfileName = 'updatedProfile';
     updatedProfileState.gaiaName = 'updatedUser';
     profileCardMenuElement.profileState = updatedProfileState;
+    await microtasksFinished();
 
     assertEquals(
         dialog.querySelector<HTMLElement>('#profileName')!.innerText,
@@ -156,6 +152,7 @@ suite('ProfileCardMenuTest', function() {
       statistics: statistics,
     };
     webUIListenerCallback('profile-statistics-received', statisticsResult);
+    await microtasksFinished();
 
     const statisticsCountElements =
         dialog.querySelector('.statistics')!.querySelectorAll<HTMLElement>(
@@ -206,7 +203,6 @@ suite('ProfileCardMenuLacrosTest', function() {
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     primaryProfileCardMenuElement = document.createElement('profile-card-menu');
-    document.body.appendChild(primaryProfileCardMenuElement);
     const testPrimaryProfileState: ProfileState = {
       profilePath: `primaryProfilePath`,
       localProfileName: `profile`,
@@ -219,10 +215,9 @@ suite('ProfileCardMenuLacrosTest', function() {
       isPrimaryLacrosProfile: true,
     };
     primaryProfileCardMenuElement.profileState = testPrimaryProfileState;
-    await waitAfterNextRender(primaryProfileCardMenuElement);
+    document.body.appendChild(primaryProfileCardMenuElement);
     secondaryProfileCardMenuElement =
         document.createElement('profile-card-menu');
-    document.body.appendChild(secondaryProfileCardMenuElement);
     const testSecondaryProfileState: ProfileState = {
       profilePath: `secondaryProfilePath`,
       localProfileName: `profile`,
@@ -235,7 +230,7 @@ suite('ProfileCardMenuLacrosTest', function() {
       isPrimaryLacrosProfile: false,
     };
     secondaryProfileCardMenuElement.profileState = testSecondaryProfileState;
-    return waitAfterNextRender(secondaryProfileCardMenuElement);
+    document.body.appendChild(secondaryProfileCardMenuElement);
   });
 
   // The primary profile cannot be deleted in Lacros. The delete button should
@@ -252,7 +247,7 @@ suite('ProfileCardMenuLacrosTest', function() {
         primaryProfileCardMenuElement.$.removePrimaryLacrosProfileDialog;
     assertTrue(dialog.open);
     dialog.querySelector<HTMLElement>('.action-button')!.click();
-    waitBeforeNextRender(primaryProfileCardMenuElement);
+    await microtasksFinished();
     assertFalse(dialog.open);
   });
 
