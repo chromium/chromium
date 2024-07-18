@@ -4,10 +4,18 @@
 
 package org.chromium.chrome.test.transit.hub;
 
+import static androidx.test.espresso.action.ViewActions.click;
+
+import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
+import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AppMenuFacility;
+import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
+
+import java.util.List;
 
 /**
  * App menu shown when in the "Select Tabs" state in the Hub Tab Switcher.
@@ -18,6 +26,7 @@ import org.chromium.chrome.test.transit.AppMenuFacility;
 public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
 
     private final TabSwitcherListEditorFacility mListEditor;
+    private Item<Void> mCloseMenuItem;
     private Item<TabSwitcherGroupCardFacility> mGroupMenuItem;
     private Item<NewTabGroupDialogFacility> mGroupWithParityMenuItem;
 
@@ -34,9 +43,11 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
         // "Select all" usually, or "Deselect all" if all tabs are selected.
         items.declarePossibleStubItem();
 
-        items.declareStubItem(
-                itemViewMatcher("Close " + tabOrTabs),
-                itemDataMatcher(R.id.tab_list_editor_close_menu_item));
+        mCloseMenuItem =
+                items.declareItem(
+                        itemViewMatcher("Close " + tabOrTabs),
+                        itemDataMatcher(R.id.tab_list_editor_close_menu_item),
+                        this::doCloseTabs);
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             mGroupWithParityMenuItem =
@@ -91,5 +102,31 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
     /** Factory for the result of {@link #groupTabsWithParityEnabled()}. */
     private NewTabGroupDialogFacility doGroupTabsWithParityEnabled() {
         return new NewTabGroupDialogFacility(mHostStation, mListEditor.getTabIdsSelected());
+    }
+
+    /**
+     * Select "Close tabs" to close all selected tabs.
+     *
+     * @return the next state of the TabSwitcher as a Station and the newly created tab group card
+     *     as a Facility.
+     */
+    public Void closeTabs() {
+        return mCloseMenuItem.scrollToAndSelect();
+    }
+
+    public Void doCloseTabs(ItemOnScreenFacility<Void> itemOnScreen) {
+        TabModel tabModel =
+                mHostStation
+                        .getTabModelSelectorSupplier()
+                        .get()
+                        .getModel(mHostStation.isIncognito());
+        Condition tabCountDecreased =
+                new TabCountChangedCondition(tabModel, -mListEditor.getNumTabsSelected());
+        mHostStation.exitFacilitiesSync(
+                List.of(this, mListEditor, itemOnScreen),
+                Transition.conditionOption(tabCountDecreased),
+                () -> itemOnScreen.getItem().getViewElement().perform(click()));
+
+        return null;
     }
 }

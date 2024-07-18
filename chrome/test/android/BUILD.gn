@@ -264,6 +264,7 @@ android_library("chrome_java_transit") {
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/messages/android:java",
     "//components/embedder_support/android:util_java",
     "//components/messages/android:java",
     "//components/messages/android/internal:java",

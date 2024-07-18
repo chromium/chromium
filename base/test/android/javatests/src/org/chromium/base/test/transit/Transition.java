@@ -201,6 +201,15 @@ public abstract class Transition {
         return newOptions().withRetry().build();
     }
 
+    /** Convenience method equivalent to newOptions().withCondition().withCondition().build(). */
+    public static TransitionOptions conditionOption(Condition... conditions) {
+        TransitionOptions.Builder builder = newOptions();
+        for (Condition condition : conditions) {
+            builder = builder.withCondition(condition);
+        }
+        return builder.build();
+    }
+
     /** Options to configure the Transition. */
     public static class TransitionOptions {
 

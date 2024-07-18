@@ -451,5 +451,10 @@ public abstract class ScrollableFacility<HostStationT extends Station>
                 throw TravelException.newTravelException("Select handler threw an exception:", e);
             }
         }
+
+        /** Return the {@link Item} that is on the screen. */
+        public Item<SelectReturnT> getItem() {
+            return mItem;
+        }
     }
 }

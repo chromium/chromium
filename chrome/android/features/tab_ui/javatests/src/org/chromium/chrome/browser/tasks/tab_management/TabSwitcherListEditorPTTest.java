@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -88,6 +89,30 @@ public class TabSwitcherListEditorPTTest {
         // Go back to PageStation for InitialStateRule to reset
         PageStation previousPage = tabSwitcher.leaveHubToPreviousTabViaBack();
         assertFinalDestination(previousPage);
+    }
+
+    @Test
+    @MediumTest
+    public void testClose2Tabs() {
+        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        int firstTabId = firstPage.getLoadedTab().getId();
+        RegularNewTabPageStation secondPage = firstPage.openRegularTabAppMenu().openNewTab();
+        int secondTabId = secondPage.getLoadedTab().getId();
+        RegularTabSwitcherStation tabSwitcher = secondPage.openHub(RegularTabSwitcherStation.class);
+        TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+        editor = editor.addTabToSelection(1, secondTabId);
+
+        editor.openAppMenuWithEditor().closeTabs();
+
+        // Go back to PageStation for InitialStateRule to reset
+
+        // Dismiss the undo snackbar because it might overlap with the New Tab button.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> tabSwitcher.getActivity().getSnackbarManager().dismissAllSnackbars());
+
+        PageStation newPage = tabSwitcher.openNewTab();
+        assertFinalDestination(newPage);
     }
 
     @Test

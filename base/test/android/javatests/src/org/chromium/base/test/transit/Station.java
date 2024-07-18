@@ -117,21 +117,36 @@ public abstract class Station extends ConditionalState {
     }
 
     /**
-     * Starts a transition out of the {@link Facility}, runs the transition |trigger| and blocks
-     * until the facility is considered FINISHED (exit Conditions are fulfilled).
+     * Starts a transition out of a {@link Facility}, runs the transition |trigger| and blocks until
+     * the facility is considered FINISHED (exit Conditions are fulfilled).
      *
      * @param facility the {@link Facility} to exit.
      * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @param <F> the type of {@link Facility} exited.
      */
-    public <F extends Facility> void exitFacilitySync(F facility, Trigger trigger) {
+    public void exitFacilitySync(Facility facility, Trigger trigger) {
         exitFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
     }
 
-    /** Version of {@link #exitFacilitySync(F, Trigger)} with extra TransitionOptions. */
-    public <F extends Facility> void exitFacilitySync(
-            F facility, TransitionOptions options, Trigger trigger) {
-        FacilityCheckOut checkOut = new FacilityCheckOut(facility, options, trigger);
+    /** Version of {@link #exitFacilitySync(Facility, Trigger)} with extra TransitionOptions. */
+    public void exitFacilitySync(Facility facility, TransitionOptions options, Trigger trigger) {
+        exitFacilitiesSync(List.of(facility), options, trigger);
+    }
+
+    /**
+     * Starts a transition out of multiple {@link Facility}s, runs the transition |trigger| and
+     * blocks until the facilities are considered FINISHED (exit Conditions are fulfilled).
+     *
+     * @param facilities the {@link Facility}s to exit.
+     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     */
+    public void exitFacilitiesSync(List<Facility> facilities, Trigger trigger) {
+        exitFacilitiesSync(facilities, TransitionOptions.DEFAULT, trigger);
+    }
+
+    /** Version of {@link #exitFacilitiesSync(List, Trigger)} with extra TransitionOptions. */
+    public void exitFacilitiesSync(
+            List<Facility> facilities, TransitionOptions options, Trigger trigger) {
+        FacilityCheckOut checkOut = new FacilityCheckOut(facilities, options, trigger);
         checkOut.transitionSync();
     }
 

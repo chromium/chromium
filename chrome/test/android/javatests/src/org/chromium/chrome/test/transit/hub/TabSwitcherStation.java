@@ -18,13 +18,11 @@ import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import android.view.View;
 
-import org.chromium.chrome.test.transit.page.PageStation;
-import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.hamcrest.Matcher;
 
+import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Transition;
-import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
@@ -33,6 +31,8 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 
 /** The base station for Hub tab switcher stations. */
 public abstract class TabSwitcherStation extends HubBaseStation {
@@ -160,16 +160,13 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                                         : PaneId.TAB_SWITCHER,
                                 expectedRegularTabs > 0,
                                 expectedIncognitoTabs > 0));
-        TransitionOptions transitionOptions =
-                Transition.newOptions()
-                        .withCondition(
-                                new TabCountChangedCondition(
-                                        tabModelSelector.getModel(incognitoModelSelected),
-                                        /* expectedChange= */ -1))
-                        .build();
+        Condition tabCountDecremented =
+                new TabCountChangedCondition(
+                        tabModelSelector.getModel(incognitoModelSelected),
+                        /* expectedChange= */ -1);
         return travelToSync(
                 tabSwitcher,
-                transitionOptions,
+                Transition.conditionOption(tabCountDecremented),
                 () -> {
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
                             TAB_LIST_RECYCLER_VIEW.getViewMatcher(),
