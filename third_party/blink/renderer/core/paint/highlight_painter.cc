@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/highlight_painter.h"
 
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -1094,8 +1093,8 @@ LineRelativeRect HighlightPainter::LocalRectInWritingModeSpace(
                        [](const HighlightEdgeInfo& info, unsigned offset) {
                          return info.offset < offset;
                        });
-  CHECK_NE(from_info, edges_info_.end(), base::NotFatalUntil::M130);
-  CHECK_NE(to_info, edges_info_.end(), base::NotFatalUntil::M130);
+  DCHECK_NE(from_info, edges_info_.end());
+  DCHECK_NE(to_info, edges_info_.end());
 
   // This rect is used for 2 purposes: To set the offset and width for
   // text decoration painting, and the set the clip. The former uses the

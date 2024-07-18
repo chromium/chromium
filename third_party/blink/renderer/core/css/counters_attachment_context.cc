@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 
 #include "base/containers/adapters.h"
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/html/html_directory_element.h"
@@ -414,7 +413,7 @@ int CountersAttachmentContext::GetCounterValue(
   DCHECK_NE(counter_value_it, counter_value_table_->end());
   CounterValues& counter_values = *counter_value_it->value;
   auto current_value_it = counter_values.find(&element);
-  CHECK_NE(current_value_it, counter_values.end(), base::NotFatalUntil::M130);
+  DCHECK_NE(current_value_it, counter_values.end());
   return current_value_it->value;
 }
 
@@ -448,7 +447,7 @@ void CountersAttachmentContext::UpdateCounterValue(
   DCHECK_NE(counter_value_it, counter_value_table_->end());
   CounterValues& counter_values = *counter_value_it->value;
   auto current_value_it = counter_values.find(current);
-  CHECK_NE(current_value_it, counter_values.end(), base::NotFatalUntil::M130);
+  DCHECK_NE(current_value_it, counter_values.end());
   current_value_it->value = CalculateCounterValue(counter_type, counter_value,
                                                   current_value_it->value);
 }

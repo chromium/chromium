@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -23,8 +22,9 @@
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "ui/display/display.h"
 #include "ui/gfx/geometry/transform.h"
+
+#include "ui/display/display.h"
 
 namespace blink {
 
@@ -407,7 +407,7 @@ void XRFrameProvider::RequestNonImmersiveFrameData(XRSession* session) {
   // The requesting_sessions_ entry for this session must have already
   // been created in |RequestFrame|.
   auto request = requesting_sessions_.find(session);
-  CHECK(request != requesting_sessions_.end(), base::NotFatalUntil::M130);
+  DCHECK(request != requesting_sessions_.end());
 
   auto provider = non_immersive_data_providers_.find(session);
   if (provider == non_immersive_data_providers_.end()) {

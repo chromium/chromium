@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/token.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
@@ -372,7 +371,7 @@ void BrowserCaptureMediaStreamTrack::OnSubCaptureTargetVersionObserved(
 void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
     BrowserCaptureMediaStreamTrack::PromiseMapIterator iter) {
   DCHECK(IsMainThread());
-  CHECK_NE(iter, pending_promises_.end(), base::NotFatalUntil::M130);
+  DCHECK_NE(iter, pending_promises_.end());
 
   PromiseInfo* const info = iter->value;
 

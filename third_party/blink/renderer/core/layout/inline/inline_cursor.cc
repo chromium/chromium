@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 
 #include "base/containers/adapters.h"
-#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -450,7 +449,7 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
         block_flow.GetInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
     const auto* const item = base::ranges::find(items, GetLayoutObject(),
                                                 &InlineItem::GetLayoutObject);
-    CHECK(item != items.end(), base::NotFatalUntil::M130) << this;
+    DCHECK(item != items.end()) << this;
     return item->BidiLevel();
   }
 
@@ -1321,7 +1320,7 @@ void InlineCursor::MoveToNext() {
   DCHECK(HasRoot());
   if (UNLIKELY(!current_.item_))
     return;
-  CHECK(current_.item_iter_ != items_.end(), base::NotFatalUntil::M130);
+  DCHECK(current_.item_iter_ != items_.end());
   if (++current_.item_iter_ != items_.end()) {
     current_.item_ = &*current_.item_iter_;
     return;
