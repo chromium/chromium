@@ -38,6 +38,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -217,6 +218,36 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
         }
     }
 
+    /**
+     * Factory used to create a new footer inside the ListView inside the
+     * FacilitatedPaymentsPaymentMethodsView.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createFooterItemView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(
+                        R.layout.facilitated_payments_payment_methods_sheet_footer_item,
+                        parent,
+                        false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindFooterView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK) {
+            setShowPaymentMethodsSettingsCallback(
+                    view, model.get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
     static SpannableString getSpannableStringWithClickableSpansToOpenLinks(
             Context context, int stringResourceId, Runnable callback) {
         return SpanApplier.applySpans(
@@ -225,5 +256,10 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
                         "<link1>",
                         "</link1>",
                         new NoUnderlineClickableSpan(context, unused -> callback.run())));
+    }
+
+    private static void setShowPaymentMethodsSettingsCallback(View view, Runnable callback) {
+        View managePaymentMethodsButton = view.findViewById(R.id.manage_payment_methods);
+        managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
     }
 }

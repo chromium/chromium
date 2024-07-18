@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/touch_to_fill_footer_item"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_marginTop="@dimen/facilitated_payments_footer_margin_top"
+    android:layout_marginBottom="@dimen/facilitated_payments_footer_margin_bottom"
+    android:orientation="vertical">
+  <TextView
+      android:id="@+id/manage_payment_methods"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/ttf_buttons_height"
+      android:clickable="true"
+      android:drawablePadding="@dimen/facilitated_payments_footer_drawable_padding"
+      android:focusable="true"
+      android:gravity="center_vertical|start"
+      android:paddingHorizontal="@dimen/facilitated_payments_footer_text_padding_horizontal"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      android:text="@string/autofill_bottom_sheet_manage_payment_methods"
+      app:drawableStartCompat="@drawable/infobar_chrome"
+      app:drawableTint="@color/default_icon_color_secondary_tint_list"
+      android:background="?android:attr/selectableItemBackground"
+      android:textDirection="locale"
+      android:textAlignment="viewStart"/>
+</LinearLayout>

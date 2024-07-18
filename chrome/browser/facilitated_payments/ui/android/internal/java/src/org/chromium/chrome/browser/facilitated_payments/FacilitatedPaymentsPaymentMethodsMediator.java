@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.AccountType;
@@ -93,6 +94,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         maybeShowContinueButton(screenItems);
 
         screenItems.add(0, buildHeader());
+        screenItems.add(buildFooter());
 
         mModel.set(VISIBLE_STATE, SHOWN);
         mInputProtector.markShowTime();
@@ -142,6 +144,16 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .with(DESCRIPTION_ID, R.string.pix_payment_methods_bottom_sheet_description)
                         .with(IMAGE_DRAWABLE_ID, R.drawable.pix_gpay_logo)
                         .with(TITLE_ID, R.string.pix_payment_methods_bottom_sheet_title)
+                        .build());
+    }
+
+    private ListItem buildFooter() {
+        return new ListItem(
+                FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER,
+                new PropertyModel.Builder(FooterProperties.ALL_KEYS)
+                        .with(
+                                FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
+                                () -> mDelegate.showFinancialAccountsManagementSettings(mContext))
                         .build());
     }
 

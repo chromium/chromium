@@ -63,6 +63,7 @@ android_resources("java_resources") {
     "java/res/layout/facilitated_payments_error_screen.xml",
     "java/res/layout/facilitated_payments_fop_selector.xml",
     "java/res/layout/facilitated_payments_payment_methods_additional_info.xml",
+    "java/res/layout/facilitated_payments_payment_methods_sheet_footer_item.xml",
     "java/res/layout/facilitated_payments_payment_methods_sheet_header_item.xml",
     "java/res/layout/facilitated_payments_progress_screen.xml",
     "java/res/layout/facilitated_payments_sequence_view.xml",

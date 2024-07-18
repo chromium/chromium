@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
@@ -56,6 +57,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FooterProperties;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
@@ -168,11 +170,12 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         // Verify the screen contents set in the model when 2 bank accounts exist.
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertThat(itemList.size(), is(4));
+        assertThat(itemList.size(), is(5));
         assertEquals(itemList.get(0).type, HEADER);
         assertEquals(itemList.get(1).type, BANK_ACCOUNT);
         assertEquals(itemList.get(2).type, BANK_ACCOUNT);
         assertEquals(itemList.get(3).type, ADDITIONAL_INFO);
+        assertEquals(itemList.get(4).type, FOOTER);
     }
 
     @Test
@@ -182,11 +185,12 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         // Verify the screen contents set in the model when only 1 bank account exists.
         ModelList itemList =
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        assertThat(itemList.size(), is(4));
+        assertThat(itemList.size(), is(5));
         assertEquals(itemList.get(0).type, HEADER);
         assertEquals(itemList.get(1).type, BANK_ACCOUNT);
         assertEquals(itemList.get(2).type, ADDITIONAL_INFO);
         assertEquals(itemList.get(3).type, CONTINUE_BUTTON);
+        assertEquals(itemList.get(4).type, FOOTER);
     }
 
     @Test
@@ -203,13 +207,12 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
 
         // The additional info is the last item of the screen items list right now.
-        // TODO(b/340576718): The position needs to minus 2 after the footer is added.
         int lastItemPos =
                 mFacilitatedPaymentsPaymentMethodsModel
                                 .get(SCREEN_VIEW_MODEL)
                                 .get(SCREEN_ITEMS)
                                 .size()
-                        - 1;
+                        - 2;
         mFacilitatedPaymentsPaymentMethodsModel
                 .get(SCREEN_VIEW_MODEL)
                 .get(SCREEN_ITEMS)
@@ -249,6 +252,28 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         getModelsOfType(itemList, CONTINUE_BUTTON).get(0).get(ON_BANK_ACCOUNT_CLICK_ACTION).run();
 
         verify(mDelegateMock).onBankAccountSelected(BANK_ACCOUNT_1.getInstrumentId());
+    }
+
+    @Test
+    public void testShowFinancialAccountsManagementSettingsOnFooter() {
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 1;
+
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        verify(mDelegateMock).showFinancialAccountsManagementSettings(mContext);
     }
 
     @Test

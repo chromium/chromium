@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 
 import android.view.LayoutInflater;
@@ -86,6 +87,10 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
                 CONTINUE_BUTTON,
                 FacilitatedPaymentsPaymentMethodsViewBinder::createContinueButtonView,
                 FacilitatedPaymentsPaymentMethodsViewBinder::bindContinueButtonView);
+        adapter.registerType(
+                FOOTER,
+                FacilitatedPaymentsPaymentMethodsViewBinder::createFooterItemView,
+                FacilitatedPaymentsPaymentMethodsViewBinder::bindFooterView);
         mView.setAdapter(adapter);
         return new PropertyModel.Builder(FopSelectorProperties.ALL_KEYS)
                 .with(SCREEN_ITEMS, viewData)

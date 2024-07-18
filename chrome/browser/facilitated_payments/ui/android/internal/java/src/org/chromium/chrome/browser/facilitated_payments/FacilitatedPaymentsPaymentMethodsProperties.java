@@ -48,7 +48,7 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         int CONTINUE_BUTTON = 3;
 
         // A footer section containing additional actions.
-        int FOOTER = 3;
+        int FOOTER = 4;
     }
 
     // The visible state of the Facilitated Payments bottom sheet.
@@ -154,7 +154,11 @@ class FacilitatedPaymentsPaymentMethodsProperties {
      * bottom sheet for payments.
      */
     static class FooterProperties {
-        static final PropertyKey[] ALL_KEYS = {};
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable>
+                SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK =
+                        new ReadableObjectPropertyKey<>("show_payment_method_settings_callback");
+
+        static final PropertyKey[] ALL_KEYS = {SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK};
 
         private FooterProperties() {}
     }
