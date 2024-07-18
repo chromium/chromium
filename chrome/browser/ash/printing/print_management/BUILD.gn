@@ -55,8 +55,6 @@ source_set("unit_tests") {
   deps = [
     ":print_management",
     "//chrome/browser/ash:test_support",
-    "//chrome/browser/ash/printing",
-    "//chrome/browser/ash/printing:test_support",
   ]
 }
 

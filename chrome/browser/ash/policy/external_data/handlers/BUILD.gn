@@ -60,7 +60,6 @@ source_set("unit_tests") {
     ":handlers",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing/enterprise",
     "//chromeos/ash/components/settings",
     "//chromeos/printing",

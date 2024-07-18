@@ -89,7 +89,6 @@ static_library("dbus") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/power/ml",
-    "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos",
     "//chrome/browser/profiles:profile",
