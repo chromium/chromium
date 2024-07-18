@@ -94,14 +94,11 @@
       initWithRootViewController:_viewController];
   _navigationController.delegate = self;
 
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-  if (idiom == UIUserInterfaceIdiomPad) {
-    _navigationController.modalPresentationStyle = UIModalPresentationPopover;
-    _navigationController.popoverPresentationController.sourceView =
-        self.anchorView;
-    _navigationController.popoverPresentationController
-        .permittedArrowDirections = UIPopoverArrowDirectionUp;
-  }
+  _navigationController.modalPresentationStyle = UIModalPresentationPopover;
+  _navigationController.popoverPresentationController.sourceView =
+      self.anchorView;
+  _navigationController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionUp;
   _navigationController.presentationController.delegate = self;
 
   _mediator =

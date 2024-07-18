@@ -290,13 +290,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 // Returns the sheet presentation controller if it exists.
 - (UISheetPresentationController*)sheetPresentationController {
-  UISheetPresentationController* presentationController =
-      self.navigationController.sheetPresentationController;
-  if (presentationController) {
-    return presentationController;
-  }
-  // The sheet presentation controller when the popover is adapted as a sheet on
-  // compact width screen.
   return self.navigationController.popoverPresentationController
       .adaptiveSheetPresentationController;
 }
