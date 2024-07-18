@@ -260,8 +260,7 @@ SBOX_TESTS_COMMAND int AppContainerEvent_Open(int argc, wchar_t** argv) {
   return SBOX_TEST_FAILED;
 }
 
-// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
-TEST_F(AppContainerTest, DISABLED_DenyOpenEventForLowBox) {
+TEST(LowBoxTest, DenyOpenEventForLowBox) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
@@ -531,20 +530,19 @@ TEST(AppContainerLaunchTest, CreateTempFileNoFirewall) {
   EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
 }
 
-// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
-TEST_F(AppContainerTest, DISABLED_ChildProcessMitigationLowBox) {
+TEST(LowBoxTest, ChildProcessMitigationLowBox) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
 
   TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
 
-#if defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+#if defined(ARCH_CPU_ARM64)
   // TODO(crbug.com/41497342) A DPLOG issued when CreateProcess() fails
   // conflicts with Csrss lockdown on Win11 ARM64 - so allow Csrss to allow the
   // process to run the right exitcode and not an access violation crash.
   runner.SetDisableCsrss(false);
-#endif  // defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+#endif  // defined(ARCH_CPU_ARM64)
 
   EXPECT_EQ(SBOX_ALL_OK,
             runner.GetPolicy()->GetConfig()->SetLowBox(kAppContainerSid));
