@@ -174,12 +174,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   if (_inactiveTabsCount == 0) {
     return;
   }
-  [snapshot
-      insertSectionsWithIdentifiers:@[ kInactiveTabButtonSectionIdentifier ]
-        beforeSectionWithIdentifier:kGridOpenTabsSectionIdentifier];
-  GridItemIdentifier* item = [GridItemIdentifier inactiveTabsButtonIdentifier];
-  [snapshot appendItemsWithIdentifiers:@[ item ]
-             intoSectionWithIdentifier:kInactiveTabButtonSectionIdentifier];
+  [self addInactiveTabsButtonToSnapshot:snapshot];
 }
 
 #pragma mark - InactiveTabsInfoConsumer
@@ -192,7 +187,8 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   _inactiveTabsCount = count;
 
   if (IsInactiveTabButtonRefactoringEnabled()) {
-    // TODO(crbug.com/352722446): reset the snapshot.
+    BOOL inactiveTabsButtonVisible = count != 0;
+    [self updateInactiveTabsButtonVisible:inactiveTabsButtonVisible];
   } else {
     // Update the layout.
     [self updateTabsSectionHeaderType];
@@ -217,7 +213,9 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   _inactiveTabsDaysThreshold = daysThreshold;
 
   if (IsInactiveTabButtonRefactoringEnabled()) {
-    // TODO(crbug.com/352722446): Update the item if necessary.
+    BOOL inactiveTabsButtonVisible =
+        daysThreshold != kInactiveTabsDisabledByUser;
+    [self updateInactiveTabsButtonVisible:inactiveTabsButtonVisible];
   } else {
     // Update the header.
     if (oldDaysThreshold == kInactiveTabsDisabledByUser ||
@@ -248,6 +246,53 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 }
 
 #pragma mark - Private
+
+// Updates the inactive tabs button based on its `visible` state (i.e.
+// reconfigure, show or remove).
+- (void)updateInactiveTabsButtonVisible:(BOOL)visible {
+  GridSnapshot* snapshot = [self.diffableDataSource snapshot];
+  if (visible) {
+    GridItemIdentifier* item =
+        [GridItemIdentifier inactiveTabsButtonIdentifier];
+
+    if ([snapshot indexOfItemIdentifier:item] != NSNotFound) {
+      [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
+    } else {
+      [self addInactiveTabsButtonToSnapshot:snapshot];
+    }
+  } else {
+    BOOL isSectionInSnapshot =
+        [snapshot
+            indexOfSectionIdentifier:kInactiveTabButtonSectionIdentifier] !=
+        NSNotFound;
+
+    if (isSectionInSnapshot) {
+      [snapshot deleteSectionsWithIdentifiers:@[
+        kInactiveTabButtonSectionIdentifier
+      ]];
+    }
+  }
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+// Adds the inactive tabs button to `snapshot` if it is not there yet.
+- (void)addInactiveTabsButtonToSnapshot:(GridSnapshot*)snapshot {
+  NSInteger sectionIndex =
+      [snapshot indexOfSectionIdentifier:kInactiveTabButtonSectionIdentifier];
+
+  if (sectionIndex == NSNotFound) {
+    [snapshot
+        insertSectionsWithIdentifiers:@[ kInactiveTabButtonSectionIdentifier ]
+          beforeSectionWithIdentifier:kGridOpenTabsSectionIdentifier];
+  }
+
+  GridItemIdentifier* item = [GridItemIdentifier inactiveTabsButtonIdentifier];
+
+  if ([snapshot indexOfItemIdentifier:item] == NSNotFound) {
+    [snapshot appendItemsWithIdentifiers:@[ item ]
+               intoSectionWithIdentifier:kInactiveTabButtonSectionIdentifier];
+  }
+}
 
 - (void)showInactiveTabsButtonHeader {
   CHECK(!IsInactiveTabButtonRefactoringEnabled());
