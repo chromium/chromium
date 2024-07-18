@@ -15,8 +15,6 @@
 
 namespace base {
 
-BASE_EXPORT extern const std::array<uint32_t, 256> kCrcTable;
-
 // This provides a simple, fast CRC-32 calculation that can be used for checking
 // the integrity of data.  It is not a "secure" calculation!  |sum| can start
 // with any seed or be used to continue an operation began with previous data.

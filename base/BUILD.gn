@@ -1062,6 +1062,10 @@ component("base") {
     "//build/config/compiler:compiler_buildflags",
     "//third_party/modp_b64",
   ]
+  if (!is_nacl) {
+    # Used by metrics/crc32, except on NaCl builds.
+    deps += ["//third_party/zlib"]
+  }
 
   # `raw_ptr` cannot be made a component due to CRT symbol issues.
   # Its gateway to being a component is through `//base`, so we have

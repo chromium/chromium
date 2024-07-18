@@ -4,10 +4,33 @@
 
 #include "base/metrics/crc32.h"
 
+#if !BUILDFLAG(IS_NACL)
+#include "third_party/zlib/zlib.h"
+#endif  // !BUILDFLAG(IS_NACL)
+
 namespace base {
 
+#if !BUILDFLAG(IS_NACL)
+uint32_t Crc32(uint32_t sum, span<const uint8_t> data) {
+  if (data.empty()) {
+    return sum;
+  }
+
+  // Make sure zlib checks CPU features before further calls to crc32_z.
+  // zlib's crc32_z implementation says it's a convention to call
+  // crc32(0, NULL, 0); before making calls to crc32(), so it uses it as
+  // a place to cache CPU features if needed.
+  // There's no need to cache the results, since there's an internal zlib
+  // caching mechanism, so this function will just return if called multiple
+  // times.
+  (void)crc32_z(0L, Z_NULL, 0);
+
+  return static_cast<uint32_t>(
+      (~crc32_z((~sum) & 0xffffffff, data.data(), data.size())) & 0xffffffff);
+}
+#else
 // Static table of checksums for all possible 8 bit bytes.
-const std::array<uint32_t, 256> kCrcTable = {
+static constexpr std::array<uint32_t, 256> kCrcTable = {
     0x0,         0x77073096L, 0xee0e612cL, 0x990951baL, 0x76dc419L,
     0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0xedb8832L,  0x79dcb8a4L,
     0xe0d5e91eL, 0x97d2d988L, 0x9b64c2bL,  0x7eb17cbdL, 0xe7b82d07L,
@@ -76,5 +99,6 @@ uint32_t Crc32(uint32_t sum, span<const uint8_t> data) {
   }
   return sum;
 }
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace base
