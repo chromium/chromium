@@ -4,27 +4,20 @@
 //
 package org.chromium.base.test.util;
 
+import android.os.Build;
 import android.os.Debug;
 
 /** Encapsulates timeout logic, and disables timeouts when debugger is attached. */
 public class TimeoutTimer {
-    private static final boolean IS_REAL_ANDROID =
-            System.getProperty("java.class.path").endsWith(".apk");
     private static final long MS_TO_NANO = 1000000;
+    // The fingerprint is null under Robolectric because BaseRobolectricAndroidConfigurer marks
+    // TimeoutTimer as "DoNotAcquire" (so that System.nanoTime() will not return a fake time), and
+    // so the class resolves to the Android stubs jar.
+    private static final boolean IS_ROBOLECTRIC =
+            Build.FINGERPRINT == null || "robolectric".equals(Build.FINGERPRINT);
+
     private final long mEndTimeNano;
     private final long mTimeoutMs;
-
-    static {
-        if (!IS_REAL_ANDROID) {
-            try {
-                // BaseRobolectricTestRunner marks this class as "DoNotAcquire" so that
-                // System.nanoTime() will not return fake time.
-                Class.forName("android.os.Debug");
-                assert false : "Cannot use TimeoutTimer without using BaseRobolectricTestRunner";
-            } catch (Throwable e) {
-            }
-        }
-    }
 
     /**
      * @param timeoutMs Relative time for the timeout (unscaled).
@@ -40,7 +33,7 @@ public class TimeoutTimer {
     }
 
     private static boolean shouldPauseTimeouts() {
-        if (IS_REAL_ANDROID) {
+        if (!IS_ROBOLECTRIC) {
             return Debug.isDebuggerConnected();
         }
         // Our test runner sets this when --wait-for-java-debugger is passed.
