@@ -4755,12 +4755,6 @@ targets.legacy_basic_suite(
     name = "rust_common_gtests",
     tests = {
         "base_unittests": targets.legacy_test_config(),
-        # For go/rusty-qr-code-generator
-        "components_unittests": targets.legacy_test_config(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/rust.components_unittests.filter",
-            ],
-        ),
         "mojo_rust_integration_unittests": targets.legacy_test_config(),
         "mojo_rust_unittests": targets.legacy_test_config(),
         "rust_gtest_interop_unittests": targets.legacy_test_config(),

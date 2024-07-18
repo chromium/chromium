@@ -135,7 +135,6 @@ source_set("components_unittests_filters") {
   data = [
     "//testing/buildbot/filters/android.mte.components_unittests.filter",
     "//testing/buildbot/filters/linux-lacros.components_unittests.filter",
-    "//testing/buildbot/filters/rust.components_unittests.filter",
   ]
 }
 
