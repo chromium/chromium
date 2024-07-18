@@ -79,6 +79,30 @@ SearchifyBoundingBoxOrigin ProjectToBaseline(
           .theta = baseline_origin.theta};
 }
 
+gfx::SizeF GetRenderedImageSize(FPDF_PAGEOBJECT image) {
+  FS_QUADPOINTSF quadpoints;
+  if (!FPDFPageObj_GetRotatedBounds(image, &quadpoints)) {
+    return gfx::SizeF();
+  }
+
+  return gfx::SizeF(
+      hypotf(quadpoints.x1 - quadpoints.x2, quadpoints.y1 - quadpoints.y2),
+      hypotf(quadpoints.x2 - quadpoints.x3, quadpoints.y2 - quadpoints.y3));
+}
+
+bool CalculateImageWithoutScalingMatrix(FPDF_PAGEOBJECT image,
+                                        const gfx::SizeF& rendered_size,
+                                        FS_MATRIX& image_matrix) {
+  if (!FPDFPageObj_GetMatrix(image, &image_matrix)) {
+    return false;
+  }
+  image_matrix.a /= rendered_size.width();
+  image_matrix.b /= rendered_size.width();
+  image_matrix.c /= rendered_size.height();
+  image_matrix.d /= rendered_size.height();
+  return true;
+}
+
 // Returns the transformation matrix needed to move a word to where it is
 // positioned on the image.
 FS_MATRIX CalculateWordMoveMatrix(const SearchifyBoundingBoxOrigin& word_origin,
@@ -164,8 +188,8 @@ void AddTextOnImage(FPDF_DOCUMENT document,
                     FPDF_PAGEOBJECT image,
                     screen_ai::mojom::VisualAnnotationPtr annotation,
                     const gfx::Size& image_pixel_size) {
-  FS_QUADPOINTSF quadpoints;
-  if (!FPDFPageObj_GetRotatedBounds(image, &quadpoints)) {
+  const gfx::SizeF image_rendered_size = GetRenderedImageSize(image);
+  if (image_rendered_size.IsEmpty()) {
     DLOG(ERROR) << "Failed to get image rendered dimensions";
     return;
   }
@@ -180,21 +204,14 @@ void AddTextOnImage(FPDF_DOCUMENT document,
   // scaling matrix.
   FS_MATRIX& image_without_scaling_matrix = transform_matrices[2];
 
-  const gfx::SizeF image_rendered_size(
-      hypotf(quadpoints.x1 - quadpoints.x2, quadpoints.y1 - quadpoints.y2),
-      hypotf(quadpoints.x2 - quadpoints.x3, quadpoints.y2 - quadpoints.y3));
   image_scale_matrix = {
       image_rendered_size.width() / image_pixel_size.width(),   0, 0,
       image_rendered_size.height() / image_pixel_size.height(), 0, 0};
-
-  if (!FPDFPageObj_GetMatrix(image, &image_without_scaling_matrix)) {
+  if (!CalculateImageWithoutScalingMatrix(image, image_rendered_size,
+                                          image_without_scaling_matrix)) {
     DLOG(ERROR) << "Failed to get image matrix";
     return;
   }
-  image_without_scaling_matrix.a /= image_rendered_size.width();
-  image_without_scaling_matrix.b /= image_rendered_size.width();
-  image_without_scaling_matrix.c /= image_rendered_size.height();
-  image_without_scaling_matrix.d /= image_rendered_size.height();
 
   for (const auto& line : annotation->lines) {
     SearchifyBoundingBoxOrigin baseline_origin =
