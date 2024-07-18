@@ -154,13 +154,10 @@ class PLATFORM_EXPORT CanvasResource
   virtual void Transfer() {}
 
   // Returns the sync token to indicate when all writes to the current resource
-  // are finished on the GPU thread. Note that in some subclasses the token is
-  // not guaranteed to be verified at the time of calling this method. Passing
-  // true for `needs_verified_token` ensures that the returned token will be
-  // verified.
-  virtual const gpu::SyncToken GetSyncToken(bool needs_verified_token) {
-    NOTREACHED_IN_MIGRATION();
-    return gpu::SyncToken();
+  // are finished on the GPU thread. Note that the token is not guaranteed to be
+  // verified at the time of calling this method.
+  const gpu::SyncToken GetSyncToken() {
+    return GetSyncTokenWithOptionalVerification(false);
   }
 
   // Provides a TransferableResource representation of this resource to share it
@@ -265,6 +262,17 @@ class PLATFORM_EXPORT CanvasResource
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
  private:
+  // Returns the sync token to indicate when all writes to the current resource
+  // are finished on the GPU thread. Note that in some subclasses the token is
+  // not guaranteed to be verified at the time of calling this method. Passing
+  // true for `needs_verified_token` ensures that the returned token will be
+  // verified.
+  virtual const gpu::SyncToken GetSyncTokenWithOptionalVerification(
+      bool needs_verified_token) {
+    NOTREACHED_IN_MIGRATION();
+    return gpu::SyncToken();
+  }
+
   base::WeakPtr<CanvasResourceProvider> provider_;
   SkColorInfo info_;
   cc::PaintFlags::FilterQuality filter_quality_;
@@ -393,7 +401,8 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
-  const gpu::SyncToken GetSyncToken(bool needs_verified_token) override;
+  const gpu::SyncToken GetSyncTokenWithOptionalVerification(
+      bool needs_verified_token) override;
   bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
 
   CanvasResourceSharedImage(const SkImageInfo&,
@@ -478,7 +487,8 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
     return transferable_resource_.is_overlay_candidate;
   }
   bool HasGpuMailbox() const;
-  const gpu::SyncToken GetSyncToken(bool needs_verified_token) override;
+  const gpu::SyncToken GetSyncTokenWithOptionalVerification(
+      bool needs_verified_token) override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
   bool PrepareAcceleratedTransferableResourceWithoutClientSI(
@@ -536,7 +546,8 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
  private:
   bool IsOverlayCandidate() const final { return true; }
   bool HasGpuMailbox() const;
-  const gpu::SyncToken GetSyncToken(bool needs_verified_token) override;
+  const gpu::SyncToken GetSyncTokenWithOptionalVerification(
+      bool needs_verified_token) override;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
 

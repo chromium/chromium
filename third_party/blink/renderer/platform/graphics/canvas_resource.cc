@@ -210,8 +210,9 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
 
   *out_resource = viz::TransferableResource::MakeGpu(
       client_shared_image->mailbox(), client_shared_image->GetTextureTarget(),
-      GetSyncToken(needs_verified_synctoken), Size(), GetSharedImageFormat(),
-      IsOverlayCandidate(), viz::TransferableResource::ResourceSource::kCanvas);
+      GetSyncTokenWithOptionalVerification(needs_verified_synctoken), Size(),
+      GetSharedImageFormat(), IsOverlayCandidate(),
+      viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
   if (NeedsReadLockFences()) {
@@ -609,7 +610,7 @@ void CanvasResourceSharedImage::Transfer() {
   // TODO(khushalsagar): This is for consistency with MailboxTextureHolder
   // transfer path. It's unclear why the verification can not be deferred until
   // the resource needs to be transferred cross-process.
-  GetSyncToken(/*needs_verified_token=*/true);
+  GetSyncTokenWithOptionalVerification(true);
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
@@ -671,8 +672,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      GetClientSharedImage()->mailbox(),
-      GetSyncToken(/*needs_verified_token=*/false), texture_id_for_image,
+      GetClientSharedImage()->mailbox(), GetSyncToken(), texture_id_for_image,
       image_info, GetClientSharedImage()->GetTextureTarget(),
       is_origin_top_left_, context_provider_wrapper_, owning_thread_ref_,
       owning_thread_task_runner_, std::move(release_callback),
@@ -725,7 +725,8 @@ CanvasResourceSharedImage::GetClientSharedImage() const {
   return owning_thread_data_.client_shared_image;
 }
 
-const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken(
+const gpu::SyncToken
+CanvasResourceSharedImage::GetSyncTokenWithOptionalVerification(
     bool needs_verified_token) {
   if (is_cross_thread()) {
     // Sync token should be generated at Transfer time, which must always be
@@ -825,8 +826,7 @@ ExternalCanvasResource::~ExternalCanvasResource() {
   }
 
   if (release_callback_) {
-    std::move(release_callback_)
-        .Run(GetSyncToken(/*needs_verified_token=*/true), resource_is_lost_);
+    std::move(release_callback_).Run(GetSyncToken(), resource_is_lost_);
   }
 }
 
@@ -859,8 +859,7 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       base::RetainedRef(this));
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      transferable_resource_.mailbox(),
-      GetSyncToken(/*needs_verified_token=*/true),
+      transferable_resource_.mailbox(), GetSyncToken(),
       /*shared_image_texture_id=*/0u, CreateSkImageInfo(),
       transferable_resource_.texture_target(), is_origin_top_left_,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
@@ -873,7 +872,8 @@ bool ExternalCanvasResource::HasGpuMailbox() const {
   return !transferable_resource_.is_empty();
 }
 
-const gpu::SyncToken ExternalCanvasResource::GetSyncToken(
+const gpu::SyncToken
+ExternalCanvasResource::GetSyncTokenWithOptionalVerification(
     bool needs_verified_token) {
   GenOrFlushSyncToken();
   return transferable_resource_.sync_token();
@@ -1017,8 +1017,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       base::RetainedRef(this));
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      back_buffer_shared_image_->mailbox(),
-      GetSyncToken(/*needs_verified_token=*/true), shared_texture_id,
+      back_buffer_shared_image_->mailbox(), GetSyncToken(), shared_texture_id,
       image_info, back_buffer_shared_image_->GetTextureTarget(),
       true /*is_origin_top_left*/, context_provider_wrapper_,
       owning_thread_ref_, owning_thread_task_runner_,
@@ -1035,7 +1034,8 @@ bool CanvasResourceSwapChain::HasGpuMailbox() const {
   return front_buffer_shared_image_ != nullptr;
 }
 
-const gpu::SyncToken CanvasResourceSwapChain::GetSyncToken(
+const gpu::SyncToken
+CanvasResourceSwapChain::GetSyncTokenWithOptionalVerification(
     bool needs_verified_token) {
   DCHECK(sync_token_.verified_flush());
   return sync_token_;
