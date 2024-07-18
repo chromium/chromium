@@ -424,6 +424,9 @@ crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphi
 crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
 crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
 
+# Crashes fuchsia on qemu
+crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-linear.html [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -483,7 +486,6 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 # Fuchsia failures #
 ####################
 
-crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-linear.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/samplers/glsl-function-texture2dproj.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/canvas-teximage-after-multiple-drawimages.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/gl-teximage.html [ Failure ]
