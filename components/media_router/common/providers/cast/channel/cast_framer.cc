@@ -134,9 +134,9 @@ std::unique_ptr<CastMessage> MessageFramer::Ingest(size_t num_bytes,
     case BODY:
       if (BytesRequested() == 0) {
         std::unique_ptr<CastMessage> parsed_message(new CastMessage);
-        if (!parsed_message->ParseFromArray(
-                input_buffer_->StartOfBuffer() + sizeof(MessageHeader),
-                body_size_)) {
+        base::span<const uint8_t> data = input_buffer_->everything().subspan(
+            sizeof(MessageHeader), body_size_);
+        if (!parsed_message->ParseFromArray(data.data(), data.size())) {
           VLOG(1) << "Error parsing packet body.";
           *error = ChannelError::INVALID_MESSAGE;
           error_ = true;

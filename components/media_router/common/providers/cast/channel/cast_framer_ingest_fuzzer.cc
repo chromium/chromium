@@ -25,7 +25,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   scoped_refptr<net::GrowableIOBuffer> buffer =
       base::MakeRefCounted<net::GrowableIOBuffer>();
   buffer->SetCapacity(MessageFramer::MessageHeader::max_message_size());
-  memcpy(buffer->StartOfBuffer(), data, size);
+  buffer->everything().copy_prefix_from(base::span(data, size));
 
   std::unique_ptr<MessageFramer> framer =
       std::make_unique<MessageFramer>(buffer.get());
