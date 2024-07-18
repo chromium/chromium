@@ -268,6 +268,13 @@ class BuildResolver:
             self._log_build_statuses(unfinished_builds)
 
     def _warn_about_incomplete_results(self, build_statuses: BuildStatuses):
+        # TODO(crbug.com/352762538): Make the reason for incomplete results
+        # per-suite, not per-build, like:
+        #   Some suites have incomplete results:
+        #     "linux-rel" build 100, "blink_web_tests": Shard timeout
+        #
+        # This log should be moved into `rebaseline-cl` in that case and
+        # consolidated with the missing builds log.
         builds_with_incomplete_results = GitCL.filter_incomplete(
             build_statuses)
         if builds_with_incomplete_results:

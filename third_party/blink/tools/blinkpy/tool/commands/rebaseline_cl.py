@@ -158,19 +158,14 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             for builder in sorted(builders_without_results):
                 _log.warning('  %s', builder)
 
-        fill_missing = False
         builders_without_results.update(builders_with_incomplete_results)
-        if builders_without_results:
-            fill_missing = self._tool.user.confirm(
-                'Would you like to continue?\n'
-                'Note: This will try to fill in missing results '
-                'with available results.\n'
-                'This is generally not suggested unless the results '
-                'are platform agnostic.',
-                default=self._tool.user.DEFAULT_NO)
-            if not fill_missing:
-                _log.info('Aborting. Please retry builders with no results.')
-                return 1
+        if builders_without_results and not self._tool.user.confirm(
+                'Would you like to rebaseline with available results?\n'
+                'This is generally not suggested unless the results are '
+                'platform agnostic or the needed results happen to be not '
+                'missing.'):
+            _log.info('Aborting. Please retry builders with no results.')
+            return 1
 
         if options.test_name_file:
             test_baseline_set = self._make_test_baseline_set_from_file(
@@ -182,8 +177,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             test_baseline_set = self._make_test_baseline_set(
                 jobs_to_results, options.only_changed_tests)
 
-        if fill_missing:
-            self.fill_in_missing_results(test_baseline_set)
+        # TODO(crbug.com/350775866): Fix `fill_in_missing_results()`.
         with self._io_pool or contextlib.nullcontext():
             return self.rebaseline(options, test_baseline_set)
 

@@ -8,6 +8,7 @@ import json
 import logging
 import optparse
 import textwrap
+import unittest
 from unittest import mock
 
 from blinkpy.common.checkout.git_mock import MockGit
@@ -498,11 +499,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'WARNING: Some builders have no results:\n',
             'WARNING:   MOCK Try Linux\n',
             'WARNING:   MOCK Try Mac\n',
-            'INFO: Would you like to continue?\n'
-            'Note: This will try to fill in missing results '
-            'with available results.\n'
+            'INFO: Would you like to rebaseline with available results?\n'
             'This is generally not suggested unless the results are '
-            'platform agnostic.\n',
+            'platform agnostic or the needed results happen to be not '
+            'missing.\n',
             'INFO: Aborting. Please retry builders with no results.\n',
         ])
 
@@ -588,11 +588,10 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'WARNING: Some builders have no results:\n',
             'WARNING:   MOCK Try Linux\n',
             'WARNING:   MOCK Try Linux (CQ duplicate)\n',
-            'INFO: Would you like to continue?\n'
-            'Note: This will try to fill in missing results '
-            'with available results.\n'
+            'INFO: Would you like to rebaseline with available results?\n'
             'This is generally not suggested unless the results are '
-            'platform agnostic.\n',
+            'platform agnostic or the needed results happen to be not '
+            'missing.\n',
             'INFO: Aborting. Please retry builders with no results.\n',
         ])
         self.assertEqual(self.command.git_cl.calls, [])
@@ -736,6 +735,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'one/text-fail.html',
         ])
 
+    @unittest.skip('crbug.com/350775866')
     def test_execute_missing_results_with_no_fill_missing_prompts(self):
         build = Build('MOCK Try Win', 5000, 'Build-1')
         self.builds[build] = BuildStatus.CANCELED
@@ -763,6 +763,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: Aborting. Please retry builders with no results.\n',
         ])
 
+    @unittest.skip('crbug.com/350775866')
     def test_execute_interrupted_results_with_fill_missing(self):
         build = Build('MOCK Try Win', 5000, 'Build-1')
         self.builds[build] = BuildStatus.INFRA_FAILURE
