@@ -150,7 +150,7 @@ enable_backup_ref_ptr_support=false
 is_asan=true
 is_component_build=false
 use_asan_backup_ref_ptr=false
-use_asan_unowned_ptr=true
+use_raw_ptr_asan_unowned_impl=true
 ```
 
 This will crash when the object containing the dangling ptr is destructed,

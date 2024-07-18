@@ -636,7 +636,7 @@ pointers](https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_pt
 
 Notable build flags are:
 - `enable_dangling_raw_ptr_checks=true`
-- `use_asan_unowned_ptr=true`
+- `use_raw_ptr_asan_unowned_impl=true`
 
 Notable runtime flags are:
 - `--enable-features=PartitionAllocDanglingPtr`
