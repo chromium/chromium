@@ -180,6 +180,7 @@ class ClientCertSource : public CertificateManagerPageHandler::CertSource {
       override {
     if (!loader_) {
       std::move(callback).Run({});
+      return;
     }
     if (certs_) {
       PopulateCertInfosFromCertificateList(std::move(callback), *certs_);
@@ -290,6 +291,7 @@ class CrosClientCertSource : public ClientCertSource,
       std::move(import_callback_)
           .Run(certificate_manager_v2::mojom::ImportResult::NewError(
               "error reading file"));
+      return;
     }
 
     // TODO(crbug.com/40928765): actually do the import
@@ -319,6 +321,7 @@ class ExtensionsClientCertSource
       override {
     if (!provider_) {
       std::move(callback).Run({});
+      return;
     }
     if (certs_) {
       PopulateCertInfosFromCertificateList(std::move(callback), *certs_);
