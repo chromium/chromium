@@ -17,11 +17,13 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/data_sharing/internal/jni_headers/DataSharingNetworkLoaderImpl_jni.h"
+#include "components/data_sharing/public/jni_headers/DataSharingNetworkResult_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
+using base::android::ToJavaByteArray;
 
 namespace data_sharing {
 
@@ -73,9 +75,17 @@ ScopedJavaLocalRef<jobject> DataSharingNetworkLoaderAndroid::GetJavaObject() {
 
 void DataSharingNetworkLoaderAndroid::OnResponseAvailable(
     ScopedJavaGlobalRef<jobject> j_callback,
-    std::unique_ptr<std::string> response) {
-  base::android::RunStringCallbackAndroid(j_callback,
-                                          response ? *response : std::string());
+    std::unique_ptr<DataSharingNetworkLoader::LoadResult> response) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_DataSharingNetworkResult_createDataSharingNetworkResult(
+          env,
+          ToJavaByteArray(env,
+                          std::vector<uint8_t>(response->result_bytes.begin(),
+                                               response->result_bytes.end())),
+          static_cast<int>(response->status));
+
+  base::android::RunObjectCallbackAndroid(j_callback, result);
 }
 
 }  // namespace data_sharing

@@ -5,6 +5,8 @@
 #include "components/data_sharing/internal/data_sharing_network_loader_impl.h"
 
 #include "base/time/time.h"
+#include "components/data_sharing/public/data_sharing_network_loader.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -61,13 +63,18 @@ void DataSharingNetworkLoaderImpl::OnDownloadComplete(
     NetworkLoaderCallback callback,
     std::unique_ptr<EndpointFetcher> fetcher,
     std::unique_ptr<EndpointResponse> response) {
+  NetworkLoaderStatus status = NetworkLoaderStatus::kSuccess;
   if (response->http_status_code != net::HTTP_OK || response->error_type) {
-    VLOG(1) << "Data sharing network request failed";
-    std::move(callback).Run(nullptr);
-  } else {
-    std::move(callback).Run(
-        std::make_unique<std::string>(std::move(response->response)));
+    VLOG(1) << "Data sharing network request failed http status: "
+            << response->http_status_code << " "
+            << (response->error_type ? static_cast<int>(*response->error_type)
+                                     : -1);
+    // TODO(ssid): Investigate whether some auth errors are permanent.
+    status = NetworkLoaderStatus::kTransientFailure;
   }
+  std::move(callback).Run(
+      std::make_unique<DataSharingNetworkLoader::LoadResult>(
+          std::move(response->response), status));
 }
 
 }  // namespace data_sharing

@@ -27,5 +27,5 @@ public interface DataSharingNetworkLoader {
             String[] scopes,
             byte[] postData,
             @DataSharingRequestType int requestType,
-            Callback<String> callback);
+            Callback<DataSharingNetworkResult> callback);
 }

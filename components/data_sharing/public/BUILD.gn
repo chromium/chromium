@@ -10,6 +10,7 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "data_sharing_network_loader.cc",
     "data_sharing_network_loader.h",
     "data_sharing_sdk_delegate.h",
     "data_sharing_service.h",
@@ -34,6 +35,7 @@ if (is_android) {
   android_library("public_java") {
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkResult.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingRequestType.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegate.java",
@@ -62,6 +64,7 @@ if (is_android) {
 
   java_cpp_enum("enums_java") {
     sources = [
+      "data_sharing_network_loader.h",
       "data_sharing_service.h",
       "group_data.h",
     ]
@@ -69,6 +72,7 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkResult.java",
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
     ]
