@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -40,7 +41,7 @@ WrappingIterator<T>::WrappingIterator(const T* container,
   DCHECK_LT(start_position, container_->size());
   inner_ = container_->begin();
   std::advance(inner_, start_position);
-  DCHECK(inner_ != container_->end());
+  CHECK(inner_ != container_->end(), base::NotFatalUntil::M130);
 }
 
 template <typename T>
