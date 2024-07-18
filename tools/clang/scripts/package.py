@@ -731,9 +731,10 @@ def main():
   if sys.platform == 'win32':
     shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'libclang.dll'),
                 os.path.join(libclang_dir, 'bin'))
-  for filename in ['__init__.py', 'cindex.py', 'enumerations.py']:
-    shutil.copy(os.path.join(LLVM_DIR, 'clang', 'bindings', 'python', 'clang',
-                             filename),
+  py_bindings_dir = os.path.join(LLVM_DIR, 'clang', 'bindings', 'python',
+                                 'clang')
+  for filename in os.listdir(py_bindings_dir):
+    shutil.copy(os.path.join(py_bindings_dir, filename),
                 os.path.join(libclang_dir, 'bindings', 'python', 'clang'))
   PackageInArchive(libclang_dir, libclang_dir)
   MaybeUpload(args.upload, args.bucket, libclang_dir + '.tar.xz', gcs_platform)
