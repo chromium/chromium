@@ -406,6 +406,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/apps/app_service/app_icon:unit_tests",
     "//chrome/browser/apps/app_service/app_icon:util",
+    "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources",

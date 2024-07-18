@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_UTILS_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
@@ -133,8 +134,17 @@ AppIdsToLaunchForUrl FindAppIdsToLaunchForUrl(AppServiceProxy* proxy,
 void MaybeLaunchPreferredAppForUrl(Profile* profile,
                                    const GURL& url,
                                    LaunchSource launch_source);
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Launches `url` in a suitable installed app, or in the browser if no app is
+// installed. If one app is installed which can handle `url`, it will always be
+// opened. If multiple apps are installed, any app which is preferred by the
+// user will be opened.
+void LaunchUrlInInstalledAppOrBrowser(Profile* profile,
+                                      const GURL& url,
+                                      LaunchSource launch_source);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace apps
 

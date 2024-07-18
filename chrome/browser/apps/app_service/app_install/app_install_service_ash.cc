@@ -142,8 +142,8 @@ void AppInstallServiceAsh::InstallApp(
           "https://play.google.com/store/apps/details";
       GURL url = net::AppendOrReplaceQueryParameter(
           GURL(kPlayStoreAppDetailsPage), "id", package_id.identifier());
-      MaybeLaunchPreferredAppForUrl(&*profile_, url,
-                                    LaunchSource::kFromInstaller);
+      LaunchUrlInInstalledAppOrBrowser(&*profile_, url,
+                                       LaunchSource::kFromInstaller);
       std::move(result_callback).Run(AppInstallResult::kUnknown);
       return;
     }
@@ -176,8 +176,8 @@ void AppInstallServiceAsh::InstallApp(
           "https://play.geforcenow.com/games";
       GURL url = net::AppendOrReplaceQueryParameter(
           GURL(kGeForceNowAppDetailsPage), "game-id", package_id.identifier());
-      MaybeLaunchPreferredAppForUrl(&*profile_, url,
-                                    LaunchSource::kFromInstaller);
+      LaunchUrlInInstalledAppOrBrowser(&*profile_, url,
+                                       LaunchSource::kFromInstaller);
       std::move(result_callback).Run(AppInstallResult::kUnknown);
       return;
     }
@@ -428,8 +428,8 @@ void AppInstallServiceAsh::MaybeLaunchAppInstallUrl(
     base::OnceCallback<void(AppInstallResult)> callback,
     base::expected<GURL, QueryError> install_url) {
   if (install_url.has_value()) {
-    MaybeLaunchPreferredAppForUrl(&*profile_, install_url.value(),
-                                  LaunchSource::kFromInstaller);
+    LaunchUrlInInstalledAppOrBrowser(&*profile_, install_url.value(),
+                                     LaunchSource::kFromInstaller);
     std::move(callback).Run(AppInstallResult::kInstallUrlFallback);
     return;
   }

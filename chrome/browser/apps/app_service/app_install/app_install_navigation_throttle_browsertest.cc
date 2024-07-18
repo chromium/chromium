@@ -233,8 +233,6 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
         info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
         return info;
       }());
-  ASSERT_EQ(apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id),
-            base::ok());
 
   ui_test_utils::BrowserChangeObserver browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);

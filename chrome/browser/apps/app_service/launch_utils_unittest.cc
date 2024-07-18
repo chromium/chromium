@@ -4,20 +4,32 @@
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace apps {
 
 class LaunchUtilsTest : public testing::Test {
  protected:
@@ -347,4 +359,157 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Fake AppPublisher for tracking app launches.
+class FakePublisher : public AppPublisher {
+ public:
+  explicit FakePublisher(AppServiceProxy* proxy) : AppPublisher(proxy) {
+    RegisterPublisher(AppType::kWeb);
+  }
+
+  void PublishAppWithUrlScope(std::string app_id, GURL scope) {
+    AppPtr app = std::make_unique<App>(AppType::kWeb, app_id);
+    app->readiness = Readiness::kReady;
+    app->handles_intents = true;
+    app->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(
+        scope, /*omit_port_for_testing=*/true));
+
+    std::vector<AppPtr> apps;
+    apps.push_back(std::move(app));
+    AppPublisher::Publish(std::move(apps), AppType::kWeb,
+                          /*should_notify_initialized=*/true);
+  }
+
+  const std::string& last_launched_app() { return last_launched_app_; }
+
+  // AppPublisher:
+  void Launch(const std::string& app_id,
+              int32_t event_flags,
+              LaunchSource launch_source,
+              WindowInfoPtr window_info) override {}
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override {}
+
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           IntentPtr intent,
+                           LaunchSource launch_source,
+                           WindowInfoPtr window_info,
+                           LaunchCallback callback) override {
+    last_launched_app_ = app_id;
+  }
+
+ private:
+  std::string last_launched_app_;
+};
+
+class MockNewWindowDelegate
+    : public testing::NiceMock<ash::TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+};
+
+class LaunchUtilsNewWindowTest : public LaunchUtilsTest {
+ public:
+  void SetUp() override {
+    std::unique_ptr<MockNewWindowDelegate> delegate =
+        std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    new_window_delegate_provider_ =
+        std::make_unique<ash::TestNewWindowDelegateProvider>(
+            std::move(delegate));
+  }
+
+ protected:
+  std::unique_ptr<ash::TestNewWindowDelegateProvider>
+      new_window_delegate_provider_;
+  raw_ptr<MockNewWindowDelegate> new_window_delegate_;
+};
+
+TEST_F(LaunchUtilsNewWindowTest,
+       MaybeLaunchPreferredAppForUrl_LaunchesPreferred) {
+  FakePublisher publisher(AppServiceProxyFactory::GetForProfile(&profile_));
+  publisher.PublishAppWithUrlScope("abc", GURL("https://www.example.com/"));
+  ASSERT_EQ(test::EnableLinkCapturingByUser(&profile_, "abc"), base::ok());
+
+  MaybeLaunchPreferredAppForUrl(&profile_, GURL("https://www.example.com/foo/"),
+                                LaunchSource::kFromTest);
+
+  ASSERT_EQ(publisher.last_launched_app(), "abc");
+}
+
+TEST_F(LaunchUtilsNewWindowTest,
+       MaybeLaunchPreferredAppForUrl_LaunchesBrowserIfNoPreferredApp) {
+  FakePublisher publisher(AppServiceProxyFactory::GetForProfile(&profile_));
+  // Do not mark this app as preferred. The browser should be opened instead.
+  publisher.PublishAppWithUrlScope("abc", GURL("https://www.example.com/"));
+
+  EXPECT_CALL(
+      *new_window_delegate_,
+      OpenUrl(GURL("https://www.example.com/foo/"), testing::_, testing::_));
+
+  MaybeLaunchPreferredAppForUrl(&profile_, GURL("https://www.example.com/foo/"),
+                                LaunchSource::kFromTest);
+}
+
+TEST_F(LaunchUtilsNewWindowTest, LaunchUrlInInstalledAppOrBrowser_OneApp) {
+  FakePublisher publisher(AppServiceProxyFactory::GetForProfile(&profile_));
+  publisher.PublishAppWithUrlScope("abc", GURL("https://www.example.com/"));
+
+  LaunchUrlInInstalledAppOrBrowser(
+      &profile_, GURL("https://www.example.com/foo"), LaunchSource::kFromTest);
+
+  ASSERT_EQ(publisher.last_launched_app(), "abc");
+}
+
+TEST_F(LaunchUtilsNewWindowTest,
+       LaunchUrlInInstalledAppOrBrowser_TwoAppsNoPreferred) {
+  FakePublisher publisher(AppServiceProxyFactory::GetForProfile(&profile_));
+
+  publisher.PublishAppWithUrlScope("abc", GURL("https://www.example.com/"));
+  publisher.PublishAppWithUrlScope("def", GURL("https://www.example.com/app/"));
+
+  EXPECT_CALL(
+      *new_window_delegate_,
+      OpenUrl(GURL("https://www.example.com/app/"), testing::_, testing::_));
+
+  LaunchUrlInInstalledAppOrBrowser(
+      &profile_, GURL("https://www.example.com/app/"), LaunchSource::kFromTest);
+}
+
+TEST_F(LaunchUtilsNewWindowTest,
+       LaunchUrlInInstalledAppOrBrowser_MultipleApps_LaunchesPreferred) {
+  FakePublisher publisher(AppServiceProxyFactory::GetForProfile(&profile_));
+
+  publisher.PublishAppWithUrlScope("abc", GURL("https://www.example.com/"));
+  publisher.PublishAppWithUrlScope("def", GURL("https://www.example.com/app/"));
+
+  // Enable the link capturing preference for one of the apps. This app should
+  // be launched by `LaunchUrlInInstalledAppOrBrowser`.
+  ASSERT_EQ(test::EnableLinkCapturingByUser(&profile_, "def"), base::ok());
+
+  LaunchUrlInInstalledAppOrBrowser(
+      &profile_, GURL("https://www.example.com/app/"), LaunchSource::kFromTest);
+
+  ASSERT_EQ(publisher.last_launched_app(), "def");
+}
+
+TEST_F(LaunchUtilsNewWindowTest,
+       LaunchUrlInInstalledAppOrBrowser_NoApp_LaunchesInBrowser) {
+  EXPECT_CALL(*new_window_delegate_,
+              OpenUrl(GURL("https://www.example.com"), testing::_, testing::_));
+
+  LaunchUrlInInstalledAppOrBrowser(&profile_, GURL("https://www.example.com/"),
+                                   LaunchSource::kFromTest);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace apps
