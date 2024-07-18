@@ -1974,13 +1974,6 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
   opener_controller.GoBack();
   back_observer.Wait();
 
-  if (GetParam() ==
-      GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames)) {
-    // TODO(crbug.com/349132649): Run the full test once the issue is resolved.
-    GTEST_SKIP() << "Skipping the remainder of the test, due to a bug in "
-                    "RenderDocument: crbug.com/349132649";
-  }
-
   EXPECT_EQ(true, EvalJs(shell(),
                          "!!window.open('', 'namedWindow').previouslyOpened;"));
   // The window opened previously should be reused here, so the navigation
@@ -2033,13 +2026,6 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesOptOutTest,
   CreateAnchorAndNavigate(shell()->web_contents()->GetPrimaryMainFrame(),
                           next_url2,
                           /*target_name=*/"", /*rel=*/"");
-
-  if (GetParam() ==
-      GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames)) {
-    // TODO(crbug.com/349132649): Run the full test once the issue is resolved.
-    GTEST_SKIP() << "Skipping the remainder of the test, due to a bug in "
-                    "RenderDocument: crbug.com/349132649";
-  }
 
   EXPECT_EQ(true, EvalJs(shell(),
                          "!!window.open('', 'namedWindow').previouslyOpened;"));
