@@ -12,6 +12,12 @@ namespace web {
 class WebStateID;
 }  // namespace web
 
+// Enum to represent an action that a tab group is going to take.
+enum class TabGroupActionType {
+  kUngroupTabGroup,
+  kDeleteTabGroup,
+};
+
 @protocol TabGroupsCommands
 
 // Shows tab group UI for group `tabGroup`.
@@ -34,9 +40,10 @@ class WebStateID;
 - (void)showActiveTab;
 
 // Displays an action sheet at `sourceView` on iPad or at the bottom on iPhone
-// to confirm that selected `group` is going to be closed.
-- (void)showTabGroupDeleteConfirmationForGroup:(const TabGroup*)tabGroup
-                                    sourceView:(UIView*)sourceView;
+// to confirm that selected `group` is going to take an `actionType`.
+- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
+                                    group:(const TabGroup*)tabGroup
+                               sourceView:(UIView*)sourceView;
 
 @end
 

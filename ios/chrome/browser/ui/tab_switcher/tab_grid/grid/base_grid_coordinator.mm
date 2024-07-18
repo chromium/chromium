@@ -4,7 +4,6 @@
 
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -16,6 +15,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_view_controller.h"
@@ -33,8 +33,9 @@
   TabGroupCoordinator* _tabGroupCoordinator;
   // Handles the creation of a new tab group.
   CreateTabGroupCoordinator* _tabGroupCreator;
-  // The action sheet coordinator, if one is currently being shown.
-  ActionSheetCoordinator* _actionSheetCoordinator;
+  // The coordinator to handle the confirmation dialog for the action taken for
+  // a tab group.
+  TabGroupConfirmationCoordinator* _tabGroupConfirmationCoordinator;
 }
 
 #pragma mark - Public
@@ -101,6 +102,10 @@
 }
 
 - (void)stopChildCoordinators {
+  if (_tabGroupConfirmationCoordinator) {
+    [_tabGroupConfirmationCoordinator stop];
+    _tabGroupConfirmationCoordinator = nil;
+  }
   [self hideTabGroupCreationAnimated:NO];
   [self.tabGroupCoordinator stopChildCoordinators];
   [self.gridViewController dismissModals];
@@ -248,31 +253,21 @@
   [self.mediator displayActiveTab];
 }
 
-- (void)showTabGroupDeleteConfirmationForGroup:(const TabGroup*)tabGroup
-                                    sourceView:(UIView*)sourceView {
-  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+- (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
+                                    group:(const TabGroup*)tabGroup
+                               sourceView:(UIView*)sourceView {
+  _tabGroupConfirmationCoordinator = [[TabGroupConfirmationCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                           title:nil
-                         message:nil
-                            rect:sourceView.bounds
-                            view:sourceView];
-
+                      actionType:actionType
+                      sourceView:sourceView];
   base::WeakPtr<const TabGroup> weakGroup = tabGroup->GetWeakPtr();
   __weak BaseGridCoordinator* weakSelf = self;
-  [_actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)
-                action:^{
-                  [weakSelf closeTabsAndDeleteGroup:weakGroup];
-                }
-                 style:UIAlertActionStyleDestructive];
-  [_actionSheetCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                     action:^{
-                                       [weakSelf dismissActionSheetCoordinator];
-                                     }
-                                      style:UIAlertActionStyleCancel];
-  [_actionSheetCoordinator start];
+  _tabGroupConfirmationCoordinator.action = ^{
+    [weakSelf closeTabsAndDeleteGroup:weakGroup];
+  };
+
+  [_tabGroupConfirmationCoordinator start];
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate
@@ -333,14 +328,8 @@
   if (weakGroup) {
     [self.mediator closeTabGroup:weakGroup.get() andDeleteGroup:YES];
   }
-  [self dismissActionSheetCoordinator];
-}
-
-// Stops the action sheet coordinator currently showned and nullifies the
-// instance.
-- (void)dismissActionSheetCoordinator {
-  [_actionSheetCoordinator stop];
-  _actionSheetCoordinator = nil;
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
 }
 
 @end

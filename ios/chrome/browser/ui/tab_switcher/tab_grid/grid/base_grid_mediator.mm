@@ -1053,8 +1053,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
-  [self.tabGroupsHandler showTabGroupDeleteConfirmationForGroup:group
-                                                     sourceView:sourceView];
+  [self.tabGroupsHandler
+      showTabGroupConfirmationForAction:TabGroupActionType::kDeleteTabGroup
+                                  group:group
+                             sourceView:sourceView];
 }
 
 - (void)closeTabGroup:(const TabGroup*)group {
