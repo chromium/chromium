@@ -242,13 +242,6 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     To<HTMLImageElement>(element)->SetImageForTest(content);
   }
 
-  void SetTransparentPlaceholderImageAndPaint(const char* id) {
-    Element* element = GetDocument().getElementById(AtomicString(id));
-    ImageResource* resource = ImageResource::CreateForTest(
-        url_test_helpers::ToKURL(TRANSPARENT_PLACEHOLDER_IMAGE));
-    To<HTMLImageElement>(element)->SetImageForTest(resource->GetContent());
-  }
-
   void SetChildFrameImageAndPaint(const char* id, int width, int height) {
     DCHECK(GetChildDocument());
     Element* element = GetChildDocument()->getElementById(AtomicString(id));
@@ -324,29 +317,6 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_NoImage) {
   )HTML");
   ImageRecord* record = LargestImage();
   EXPECT_FALSE(record);
-}
-
-TEST_P(ImagePaintTimingDetectorTest,
-       LargestImagePaint_TransparentPlaceholderImage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kSimplifyLoadingTransparentPlaceholderImage);
-
-  LargestContentfulPaintDetailsForReporting largest_contentful_paint_details =
-      GetPerformanceTimingForReporting()
-          .LargestContentfulPaintDetailsForMetrics();
-  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 0u);
-  EXPECT_EQ(largest_contentful_paint_details.image_paint_time, 0u);
-  SetBodyInnerHTML(R"HTML(
-      <img id="placeholder"></img>
-    )HTML");
-  SetTransparentPlaceholderImageAndPaint("placeholder");
-  UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  largest_contentful_paint_details =
-      GetPerformanceTimingForReporting()
-          .LargestContentfulPaintDetailsForMetrics();
-  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 1u);
-  EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OneImage) {
@@ -1394,6 +1364,58 @@ TEST_P(ImagePaintTimingDetectorFencedFrameTest, NotReported) {
   SimulateKeyDown();
   auto entries = test_ukm_recorder.GetEntriesByName(UkmPaintTiming::kEntryName);
   EXPECT_EQ(0u, entries.size());
+}
+
+class ImagePaintTimingDetectorTransparentPlaceholderImageTest
+    : public ImagePaintTimingDetectorTest {
+ public:
+  ImagePaintTimingDetectorTransparentPlaceholderImageTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSimplifyLoadingTransparentPlaceholderImage);
+  }
+  ~ImagePaintTimingDetectorTransparentPlaceholderImageTest() override {
+    // Must destruct all objects before toggling back feature flags.
+    std::unique_ptr<base::test::TaskEnvironment> task_environment;
+    if (!base::ThreadPoolInstance::Get()) {
+      // Create a TaskEnvironment for the garbage collection below.
+      task_environment = std::make_unique<base::test::TaskEnvironment>();
+    }
+    scoped_feature_list_.Reset();
+    WebHeap::CollectAllGarbageForTesting();
+  }
+
+ protected:
+  void SetTransparentPlaceholderImageAndPaint(const char* id) {
+    Element* element = GetDocument().getElementById(AtomicString(id));
+    ImageResource* resource = ImageResource::CreateForTest(
+        url_test_helpers::ToKURL(TRANSPARENT_PLACEHOLDER_IMAGE));
+    To<HTMLImageElement>(element)->SetImageForTest(resource->GetContent());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(
+    ImagePaintTimingDetectorTransparentPlaceholderImageTest);
+
+TEST_P(ImagePaintTimingDetectorTransparentPlaceholderImageTest,
+       LargestImagePaint) {
+  LargestContentfulPaintDetailsForReporting largest_contentful_paint_details =
+      GetPerformanceTimingForReporting()
+          .LargestContentfulPaintDetailsForMetrics();
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 0u);
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_time, 0u);
+  SetBodyInnerHTML(R"HTML(
+      <img id="placeholder"></img>
+    )HTML");
+  SetTransparentPlaceholderImageAndPaint("placeholder");
+  UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
+  largest_contentful_paint_details =
+      GetPerformanceTimingForReporting()
+          .LargestContentfulPaintDetailsForMetrics();
+  EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 1u);
+  EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
 }
 
 }  // namespace blink

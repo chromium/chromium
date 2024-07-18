@@ -119,7 +119,6 @@ ImageResource* CreateResourceForTransparentPlaceholderImage(
     const ResourceRequest& request,
     const ResourceLoaderOptions& options) {
   const wtf_size_t index = request.GetKnownTransparentPlaceholderImageIndex();
-  CHECK(blink::features::IsSimplifyLoadingTransparentPlaceholderImageEnabled());
   CHECK_NE(index, kNotFound);
   CHECK(index >= 0 && index < 2);
   scoped_refptr<SharedBuffer> data =
@@ -273,13 +272,14 @@ class ImageResource::ImageResourceFactory : public NonTextResourceFactory {
   STACK_ALLOCATED();
 
  public:
-  explicit ImageResourceFactory()
-      : NonTextResourceFactory(ResourceType::kImage) {}
+  explicit ImageResourceFactory(bool transparent_image_optimization_enabled)
+      : NonTextResourceFactory(ResourceType::kImage),
+        transparent_image_optimization_enabled_(
+            transparent_image_optimization_enabled) {}
 
   Resource* Create(const ResourceRequest& request,
                    const ResourceLoaderOptions& options) const override {
-    if (blink::features::
-            IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
+    if (transparent_image_optimization_enabled_ &&
         (request.GetKnownTransparentPlaceholderImageIndex() != kNotFound)) {
       return CreateResourceForTransparentPlaceholderImage(request, options);
     }
@@ -287,6 +287,9 @@ class ImageResource::ImageResourceFactory : public NonTextResourceFactory {
     return MakeGarbageCollected<ImageResource>(
         request, options, ImageResourceContent::CreateNotStarted());
   }
+
+ private:
+  const bool transparent_image_optimization_enabled_;
 };
 
 ImageResource* ImageResource::Fetch(FetchParameters& params,
@@ -308,8 +311,11 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
         network::mojom::CSPDisposition::DO_NOT_CHECK);
   }
 
-  auto* resource = To<ImageResource>(
-      fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
+  auto* resource = To<ImageResource>(fetcher->RequestResource(
+      params,
+      ImageResourceFactory(
+          fetcher->IsSimplifyLoadingTransparentPlaceholderImageEnabled()),
+      nullptr));
 
   // If the fetch originated from user agent CSS we should mark it as a user
   // agent resource.
@@ -350,7 +356,8 @@ ImageResource* ImageResource::CreateForTest(const KURL& url) {
   request.SetPriority(WebURLRequest::Priority::kLow);
   MarkKnownTransparentPlaceholderResourceRequestIfNeeded(request);
 
-  ImageResourceFactory factory;
+  ImageResourceFactory factory(base::FeatureList::IsEnabled(
+      features::kSimplifyLoadingTransparentPlaceholderImage));
   return To<ImageResource>(
       factory.Create(request, ResourceLoaderOptions(/* world=*/nullptr)));
 }

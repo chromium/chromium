@@ -144,6 +144,10 @@ class PLATFORM_EXPORT ResourceFetcher
     return *properties_;
   }
 
+  // Returns true if optimizations for loading 1x1 transparent placeholder
+  // images is enabled.
+  bool IsSimplifyLoadingTransparentPlaceholderImageEnabled();
+
   // Returns whether this fetcher is detached from the associated context.
   bool IsDetached() const;
 
@@ -685,11 +689,12 @@ class PLATFORM_EXPORT ResourceFetcher
   // This is not in the bit field below because we want to use AutoReset.
   bool is_in_request_resource_ = false;
 
-  // 28 bits left
+  // 27 bits left
   bool auto_load_images_ : 1;
   bool allow_stale_resources_ : 1;
   bool image_fetched_ : 1;
   bool stale_while_revalidate_enabled_ : 1;
+  const bool transparent_image_optimization_enabled_ : 1;
 
   static constexpr uint32_t kKeepaliveInflightBytesQuota = 64 * 1024;
 
