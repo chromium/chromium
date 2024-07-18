@@ -26,6 +26,9 @@ class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
 
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 
+  media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
+      content::BrowserContext* context) override;
+
  private:
   raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 };

@@ -7,6 +7,7 @@
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -44,4 +45,11 @@ void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
                            /*description_placeholder_text=*/std::string(),
                            /*category_tag=*/"chromeos-recorder-app",
                            /*extra_diagnostics=*/std::string());
+}
+
+media_device_salt::MediaDeviceSaltService*
+ChromeRecorderAppUIDelegate::GetMediaDeviceSaltService(
+    content::BrowserContext* context) {
+  return MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+      context);
 }

@@ -9,6 +9,7 @@ core_files = [
   "init.ts",
   "lit/animation_frame_controller.ts",
   "lit/context.ts",
+  "microphone_manager.ts",
   "on_device_model/types.ts",
   "platform_handler.ts",
   "reactive/lit.ts",

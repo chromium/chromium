@@ -16,6 +16,7 @@ import {
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
+import {InternalMicInfo} from '../../core/microphone_manager.js';
 import {
   Model,
   ModelId,
@@ -147,6 +148,13 @@ export class PlatformHandler extends PlatformHandlerBase {
       throw new Error('Load soda failed');
     }
     return session;
+  }
+
+  override async getMicrophoneInfo(deviceId: string): Promise<InternalMicInfo> {
+    const info = (await this.remote.getMicrophoneInfo(deviceId)).info;
+    // TODO(kamchonlathorn): Consider if it should return the default value or
+    // drop the mic from the list instead.
+    return info ?? {isDefault: false, isInternal: false};
   }
 
   override getStringF(id: string, ...args: Array<number|string>): string {

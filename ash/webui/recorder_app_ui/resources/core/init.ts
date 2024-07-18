@@ -12,6 +12,7 @@ import {
 
 import {DataDir} from './data_dir.js';
 import {initContext} from './lit/context.js';
+import {MicrophoneManager} from './microphone_manager.js';
 import {PlatformHandler} from './platform_handler.js';
 import {RecordingDataManager} from './recording_data_manager.js';
 import {installRouter} from './state/route.js';
@@ -149,6 +150,10 @@ export async function init(platformHandler: PlatformHandler): Promise<void> {
 
   installRouter();
   initSettings();
+  // TODO: b/344782258 - Put microphoneManager to initContext.
+  await MicrophoneManager.create(
+    (deviceId: string) => platformHandler.getMicrophoneInfo(deviceId)
+  );
   dataDir = await DataDir.createFromOpfs();
   const recordingDataManager = await RecordingDataManager.create(dataDir);
   initContext({

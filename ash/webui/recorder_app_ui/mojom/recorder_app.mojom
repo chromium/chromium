@@ -48,6 +48,13 @@ interface ModelStateMonitor {
   Update(ModelState state);
 };
 
+// Retrieved information for a microphone.
+struct MicrophoneInfo {
+  // Whether the microphone is the system default microphone.
+  bool is_default;
+  // Whether the microphone is an internal microphone.
+  bool is_internal;
+};
 
 // Primary interface for the chrome://recorder-app WebUI.
 interface PageHandler {
@@ -97,4 +104,8 @@ interface PageHandler {
   // Opens the chrome feedback dialog for AI and show `description_template` in
   // the description field.
   OpenAiFeedbackDialog(string description_template);
+
+  // Returns the info of the microphone with the deviceId `source_id`, which is
+  // the ID returned from `enumerateDevices()` in JavaScript.
+  GetMicrophoneInfo(string source_id) => (MicrophoneInfo? info);
 };

@@ -46,6 +46,10 @@ class RecorderAppUI
       public speech::SodaInstaller::Observer,
       public on_device_model::mojom::PlatformModelProgressObserver {
  public:
+  using WithRealIdCallback =
+      base::OnceCallback<void(const std::optional<std::string>&)>;
+  using DeviceIdMappingCallback =
+      base::RepeatingCallback<void(const std::string&, WithRealIdCallback)>;
   explicit RecorderAppUI(content::WebUI* web_ui,
                          std::unique_ptr<RecorderAppUIDelegate> delegate);
   ~RecorderAppUI() override;
@@ -88,6 +92,10 @@ class RecorderAppUI
 
   void UpdateModelState(const base::Uuid& model_id, ModelState state);
 
+  void GetMicrophoneInfoWithDeviceId(
+      GetMicrophoneInfoCallback callback,
+      const std::optional<std::string>& device_id);
+
   // recorder_app::mojom::PageHandler:
   void LoadModel(
       const base::Uuid& model_id,
@@ -111,7 +119,10 @@ class RecorderAppUI
 
   void OpenAiFeedbackDialog(const std::string& description_template) override;
 
-  // speech::SodaInstaller::Observer:
+  void GetMicrophoneInfo(const std::string& source_id,
+                         GetMicrophoneInfoCallback callback) override;
+
+  // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;
 
   void OnSodaInstallError(speech::LanguageCode language_code,
@@ -145,6 +156,8 @@ class RecorderAppUI
   mojo::Remote<OnDeviceModelService> on_device_model_service_;
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+
+  DeviceIdMappingCallback device_id_mapping_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

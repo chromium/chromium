@@ -7,6 +7,14 @@
 
 #include "components/soda/constants.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+namespace media_device_salt {
+class MediaDeviceSaltService;
+}  // namespace media_device_salt
+
 namespace ash {
 // A delegate which exposes browser functionality from //chrome to the recorder
 // app ui page handler.
@@ -18,6 +26,11 @@ class RecorderAppUIDelegate {
       const std::string& description_template) = 0;
 
   virtual ~RecorderAppUIDelegate() = default;
+
+  // Returns a service that provides persistent salts for generating media
+  // device IDs. Can be null if the embedder does not support persistent salts.
+  virtual media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
+      content::BrowserContext* context) = 0;
 };
 
 }  // namespace ash

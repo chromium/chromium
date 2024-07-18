@@ -14,6 +14,7 @@ import {html, nothing, styleMap} from 'chrome://resources/mwc/lit/index.js';
 
 import {CraDropdown} from '../../components/cra/cra-dropdown.js';
 import {SAMPLE_RATE} from '../../core/audio_constants.js';
+import {InternalMicInfo} from '../../core/microphone_manager.js';
 import {
   Model,
   ModelId,
@@ -313,6 +314,11 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override async newSodaSession(): Promise<SodaSession> {
     return new SodaSessionDev();
+  }
+
+  override async getMicrophoneInfo(_deviceId: string
+  ): Promise<InternalMicInfo> {
+    return {isDefault: false, isInternal: false};
   }
 
   override getStringF(id: string, ...args: Array<number|string>): string {

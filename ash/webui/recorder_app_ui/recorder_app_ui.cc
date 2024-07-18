@@ -12,15 +12,21 @@
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources_map.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "components/media_device_salt/media_device_salt_service.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/media_device_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 #include "ui/webui/webui_allowlist.h"
 
@@ -38,6 +44,44 @@ std::string_view SodaInstallerErrorCodeToString(
       return "kNeedsReboot";
     case speech::SodaInstaller::ErrorCode::kUnspecifiedError:
       return "kUnspecifiedError";
+  }
+}
+
+void GotSalt(
+    const url::Origin& origin,
+    const std::string& source_id,
+    base::OnceCallback<void(const std::optional<std::string>&)> callback,
+    const std::string& salt) {
+  // TODO(kamchonlathorn): Add a test to cover this function.
+  auto callback_on_io_thread = base::BindOnce(
+      [](const std::string& salt, const url::Origin& origin,
+         const std::string& source_id,
+         base::OnceCallback<void(const std::optional<std::string>&)> callback) {
+        content::GetMediaDeviceIDForHMAC(
+            blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, salt,
+            std::move(origin), source_id, content::GetUIThreadTaskRunner({}),
+            std::move(callback));
+      },
+      salt, std::move(origin), source_id, std::move(callback));
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, std::move(callback_on_io_thread));
+}
+
+void TranslateAudioDeviceId(
+    content::BrowserContext* browser_context,
+    media_device_salt::MediaDeviceSaltService* salt_service,
+    const url::Origin& origin,
+    const std::string& source_id,
+    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
+  if (salt_service) {
+    salt_service->GetSalt(
+        blink::StorageKey::CreateFirstParty(origin),
+        base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
+  } else {
+    // If the embedder does not provide a salt service, use the browser
+    // context's unique ID as salt.
+    GotSalt(origin, source_id, std::move(callback),
+            browser_context->UniqueId());
   }
 }
 
@@ -111,6 +155,12 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
     soda_state_ = {recorder_app::mojom::ModelStateType::kUnavailable,
                    std::nullopt};
   }
+
+  // Add salt translator
+  device_id_mapping_callback_ =
+      base::BindRepeating(&TranslateAudioDeviceId, browser_context,
+                          delegate_->GetMediaDeviceSaltService(browser_context),
+                          url::Origin::Create(GURL(kChromeUIRecorderAppURL)));
 }
 
 RecorderAppUI::~RecorderAppUI() {
@@ -402,6 +452,35 @@ void RecorderAppUI::LoadSpeechRecognizer(
 void RecorderAppUI::OpenAiFeedbackDialog(
     const std::string& description_template) {
   delegate_->OpenAiFeedbackDialog(description_template);
+}
+
+void RecorderAppUI::GetMicrophoneInfo(const std::string& source_id,
+                                      GetMicrophoneInfoCallback callback) {
+  device_id_mapping_callback_.Run(
+      source_id,
+      base::BindOnce(&RecorderAppUI::GetMicrophoneInfoWithDeviceId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RecorderAppUI::GetMicrophoneInfoWithDeviceId(
+    GetMicrophoneInfoCallback callback,
+    const std::optional<std::string>& device_id_str) {
+  recorder_app::mojom::MicrophoneInfoPtr info = nullptr;
+  uint64_t default_mic_id =
+      CrasAudioHandler::Get()->GetPrimaryActiveInputNode();
+  if (device_id_str.has_value()) {
+    uint64_t device_id;
+    if (base::StringToUint64(*device_id_str, &device_id)) {
+      const AudioDevice* device =
+          CrasAudioHandler::Get()->GetDeviceFromId(device_id);
+      if (device != nullptr) {
+        info = recorder_app::mojom::MicrophoneInfo::New();
+        info->is_default = device_id == default_mic_id;
+        info->is_internal = device->IsInternalMic();
+      }
+    }
+  }
+  std::move(callback).Run(std::move(info));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(RecorderAppUI)

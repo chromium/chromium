@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {InternalMicInfo} from './microphone_manager.js';
 import {Model, ModelId, ModelState} from './on_device_model/types.js';
 import {ReadonlySignal} from './reactive/signal.js';
 import {SodaSession} from './soda/types.js';
@@ -52,7 +53,6 @@ export abstract class PlatformHandler {
    * Installation state and error will be reported through the `sodaState`.
    */
   abstract installSoda(): void;
-
   /**
    * The SODA installation state.
    */
@@ -62,6 +62,11 @@ export abstract class PlatformHandler {
    * Creates a new soda session for transcription.
    */
   abstract newSodaSession(): Promise<SodaSession>;
+
+  /**
+   * Returns the additional microphone info of a mic with |deviceId|.
+   */
+  abstract getMicrophoneInfo(deviceId: string): Promise<InternalMicInfo>;
 
   /**
    * Returns the formatted localized string by given `id` and `args`.
