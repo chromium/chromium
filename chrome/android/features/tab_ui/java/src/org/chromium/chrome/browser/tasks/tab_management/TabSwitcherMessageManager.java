@@ -372,6 +372,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         if (mIncognitoReauthPromoMessageService != null) {
             mIncognitoReauthPromoMessageService.destroy();
         }
+        if (mArchivedTabsMessageService != null) {
+            mArchivedTabsMessageService.destroy();
+        }
     }
 
     @Override

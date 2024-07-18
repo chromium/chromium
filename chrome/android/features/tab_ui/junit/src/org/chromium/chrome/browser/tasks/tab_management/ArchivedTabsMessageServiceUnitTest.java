@@ -25,6 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -47,13 +49,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.concurrent.TimeUnit;
-
 /** Tests for ArchivedTabsMessageService. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ArchivedTabsMessageServiceUnitTest {
-    private static final int TIME_DELTA_HOURS = (int) TimeUnit.DAYS.toHours(10);
+    private static final int TIME_DELTA_DAYS = 10;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -68,6 +68,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private TabCreator mRegularTabCreator;
     @Mock private BackPressManager mBackPressManager;
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
+    @Captor private ArgumentCaptor<TabArchiveSettings.Observer> mTabArchiveSettingsObserver;
 
     private Activity mActivity;
     private ViewGroup mRootView;
@@ -79,7 +80,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mRootView = new FrameLayout(mActivity);
 
-        doReturn(TIME_DELTA_HOURS).when(mTabArchiveSettings).getArchiveTimeDeltaHours();
+        doReturn(TIME_DELTA_DAYS).when(mTabArchiveSettings).getArchiveTimeDeltaDays();
         doReturn(mTabCountSupplier).when(mArchivedTabModel).getTabCountSupplier();
 
         mArchivedTabsMessageService =
@@ -105,6 +106,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         mArchivedTabsMessageService
                 .getArchivedTabModelOrchestratorObserverForTesting()
                 .onTabModelCreated(mArchivedTabModel);
+        verify(mTabArchiveSettings).addObserver(mTabArchiveSettingsObserver.capture());
     }
 
     @Test
@@ -169,5 +171,21 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         mArchivedTabsMessageService.onRemoveAllAppendedMessage();
         assertNull(mArchivedTabsMessageService.getCustomView().getParent());
+    }
+
+    @Test
+    public void testSettingsChangesUpdatesMessage() {
+        PropertyModel customCardPropertyModel =
+                mArchivedTabsMessageService.getCustomCardModelForTesting();
+
+        doReturn(15).when(mTabArchiveSettings).getArchiveTimeDeltaDays();
+        mTabArchiveSettingsObserver.getValue().onSettingChanged();
+        assertEquals(15, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
+    }
+
+    @Test
+    public void testDestroy() {
+        mArchivedTabsMessageService.destroy();
+        verify(mTabArchiveSettings).removeObserver(mTabArchiveSettingsObserver.getValue());
     }
 }

@@ -36,8 +36,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.concurrent.TimeUnit;
-
 /** A message service to surface information about archived tabs. */
 public class ArchivedTabsMessageService extends MessageService
         implements CustomMessageCardProvider, MessageUpdateObserver {
@@ -61,6 +59,7 @@ public class ArchivedTabsMessageService extends MessageService
                 public void onTabModelCreated(TabModel archivedTabModel) {
                     mArchivedTabModelOrchestrator.removeObserver(this);
                     mTabArchiveSettings = mArchivedTabModelOrchestrator.getTabArchiveSettings();
+                    mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
                     assert mTabArchiveSettings != null;
 
                     mArchivedTabModel = archivedTabModel;
@@ -87,6 +86,15 @@ public class ArchivedTabsMessageService extends MessageService
                     maybeSendMessageToQueue();
                 } else {
                     maybeInvalidatePreviouslySentMessage();
+                }
+            };
+
+    /** When the settings change, the message subtitle may need to be updated. */
+    private final TabArchiveSettings.Observer mTabArchiveSettingsObserver =
+            new TabArchiveSettings.Observer() {
+                @Override
+                public void onSettingChanged() {
+                    updateModelProperties();
                 }
             };
 
@@ -137,6 +145,12 @@ public class ArchivedTabsMessageService extends MessageService
                             .getModel(/* incognito= */ false));
         } else {
             mArchivedTabModelOrchestrator.addObserver(mArchivedTabModelOrchestratorObserver);
+        }
+    }
+
+    public void destroy() {
+        if (mTabArchiveSettings != null) {
+            mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
         }
     }
 
@@ -232,11 +246,8 @@ public class ArchivedTabsMessageService extends MessageService
 
     private void updateModelProperties() {
         mCustomCardModel.set(NUMBER_OF_ARCHIVED_TABS, mArchivedTabModel.getCount());
-        mCustomCardModel.set(ARCHIVE_TIME_DELTA_DAYS, getArchiveTimeDeltaInDays());
-    }
-
-    private int getArchiveTimeDeltaInDays() {
-        return (int) TimeUnit.HOURS.toDays(mTabArchiveSettings.getArchiveTimeDeltaHours());
+        mCustomCardModel.set(
+                ARCHIVE_TIME_DELTA_DAYS, mTabArchiveSettings.getArchiveTimeDeltaDays());
     }
 
     // Testing methods.
