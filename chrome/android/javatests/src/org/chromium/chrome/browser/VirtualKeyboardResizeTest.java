@@ -286,6 +286,7 @@ public class VirtualKeyboardResizeTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({"policy={\"VirtualKeyboardResizesLayoutByDefault\":true}"})
+    @DisabledTest(message = "crbug.com/353947757")
     public void testVirtualKeyboardDefaultResizeModeWithPolicy() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
 
