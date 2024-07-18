@@ -189,19 +189,20 @@ using PriceNotificationItems =
             weakSelf.gaiaID, PushNotificationClientId::kCommerce, true);
       });
     }
-  }];
 
-  [self trackForURL:item.productURL
-                  title:item.title
-      completionHandler:^(bool success) {
-        if (!success) {
+    [self trackForURL:item.productURL
+                    title:item.title
+        completionHandler:^(bool success) {
+          if (!success) {
+            [weakSelf.priceInsightsConsumer
+                presentStartPriceTrackingErrorAlertForItem:item];
+            return;
+          }
+
           [weakSelf.priceInsightsConsumer
-              presentStartPriceTrackingErrorAlertForItem:item];
-          return;
-        }
-
-        [weakSelf.priceInsightsConsumer didStartPriceTracking];
-      }];
+              didStartPriceTrackingWithNotification:granted];
+        }];
+  }];
 }
 
 - (void)priceInsightsStopTrackingItem:(PriceInsightsItem*)item {

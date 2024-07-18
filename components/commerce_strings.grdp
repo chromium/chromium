@@ -471,7 +471,10 @@
     VIEW
   </message>
   <message name="IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED" desc="The snackbar title for Price Insights when the user has notification disabled.">
-    Bookmark saved.
+    You can view price drops for products you track anytime.
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_ENABLED" desc="The snackbar title for Price Insights when the user has notification enabled.">
+    You'll get notified if the price drops on any site.
   </message>
   <message name="IDS_PRICE_RANGE_ACCESSIBILITY_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string for the price range component.">
     Typical price for <ph name="PRODUCT_NAME">$1<ex>iPhone 15 Pro</ex></ph> is <ph name="LOW_PRICE">$2<ex>500</ex></ph> - <ph name="HIGH_PRICE">$3<ex>600</ex></ph> but current price is <ph name="CURRENT_PRICE">$4<ex>600</ex></ph> across the web.

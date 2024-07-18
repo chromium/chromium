@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 
+#import <UserNotifications/UserNotifications.h>
+
 #import <string_view>
 
 #import "base/apple/foundation_util.h"
@@ -37,11 +39,14 @@
 #import "ios/chrome/browser/ui/price_notifications/test_price_notifications_consumer.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -168,6 +173,20 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
   }
 
  protected:
+  // Sets up a mock notification center, so notification requests can be
+  // tested.
+  void SetupMockNotificationCenter() {
+    mock_notification_center_ = OCMClassMock([UNUserNotificationCenter class]);
+    // Swizzle in the mock notification center.
+    UNUserNotificationCenter* (^swizzle_block)() =
+        ^UNUserNotificationCenter*() {
+          return mock_notification_center_;
+        };
+    notification_center_swizzler_ = std::make_unique<ScopedBlockSwizzler>(
+        [UNUserNotificationCenter class], @selector(currentNotificationCenter),
+        swizzle_block);
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<Browser> browser_;
   PriceNotificationsPriceTrackingMediator* mediator_;
@@ -178,6 +197,8 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
   raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<image_fetcher::ImageDataFetcher> image_fetcher_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
+  std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
+  id mock_notification_center_;
   TestPriceNotificationsConsumer* consumer_ =
       [[TestPriceNotificationsConsumer alloc] init];
   TestPriceInsightsConsumer* price_insights_consumer_ =
@@ -241,6 +262,14 @@ TEST_F(
 
 TEST_F(PriceNotificationsPriceTrackingMediatorTest,
        SuccessfullyTrackedProductURLFromPriceInsights) {
+  SetupMockNotificationCenter();
+  id settings = OCMClassMock([UNNotificationSettings class]);
+  OCMStub([mock_notification_center_
+      getNotificationSettingsWithCompletionHandler:
+          ([OCMArg invokeBlockWithArgs:settings, nil])]);
+  OCMStub([settings authorizationStatus])
+      .andReturn(UNAuthorizationStatusAuthorized);
+
   commerce::ProductInfo product_info;
   product_info.title = kBookmarkTitle;
   product_info.product_cluster_id = std::make_optional(kClusterId);
@@ -257,10 +286,20 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
         base::RunLoop().RunUntilIdle();
         return price_insights_consumer_.didPriceTrack;
       }));
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
 
 TEST_F(PriceNotificationsPriceTrackingMediatorTest,
        PresentAlertWhenTrackingIsUnsuccessfulFromPriceInsights) {
+  SetupMockNotificationCenter();
+  id settings = OCMClassMock([UNNotificationSettings class]);
+  OCMStub([mock_notification_center_
+      getNotificationSettingsWithCompletionHandler:
+          ([OCMArg invokeBlockWithArgs:settings, nil])]);
+  OCMStub([settings authorizationStatus])
+      .andReturn(UNAuthorizationStatusAuthorized);
+
   commerce::ProductInfo product_info;
   product_info.title = kBookmarkTitle;
   product_info.product_cluster_id = std::make_optional(kClusterId);
@@ -279,6 +318,8 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
         return price_insights_consumer_
             .didPresentStartPriceTrackingErrorAlertForItem;
       }));
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
 
 TEST_F(PriceNotificationsPriceTrackingMediatorTest,

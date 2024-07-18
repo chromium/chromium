@@ -6,7 +6,7 @@
 
 @implementation TestPriceInsightsConsumer
 
-- (void)didStartPriceTracking {
+- (void)didStartPriceTrackingWithNotification:(BOOL)granted {
   self.didPriceTrack = YES;
 }
 

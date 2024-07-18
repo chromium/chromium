@@ -131,9 +131,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/push_notification:push_notification_api",
+    "//ios/testing:block_swizzler",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }

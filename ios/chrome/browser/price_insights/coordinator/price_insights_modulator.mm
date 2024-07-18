@@ -113,9 +113,9 @@ NSDate* getNSDateFromString(std::string date) {
 
 #pragma mark - PriceInsightsConsumer
 
-- (void)didStartPriceTracking {
+- (void)didStartPriceTrackingWithNotification:(BOOL)granted {
   [self.priceInsightsCell updateTrackButton:YES];
-  [self displaySnackbar];
+  [self displaySnackbar:granted];
 }
 
 - (void)didStopPriceTracking {
@@ -236,15 +236,17 @@ NSDate* getNSDateFromString(std::string date) {
 - (void)configureCell:(PriceInsightsCell*)cell {
   cell.viewController = self.baseViewController;
   cell.mutator = self.mediator;
-  [cell configureWithItem:[self getPriceInsightsItemFromConfig]];
+  [cell configureWithItem:[self priceInsightsItemFromConfig]];
 }
 
+// Dismisses and removes the current alert coordinator.
 - (void)dismissAlertCoordinator {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
 }
 
-- (PriceInsightsItem*)getPriceInsightsItemFromConfig {
+/// Creates a PriceInsightsItem object from the current item configuration.
+- (PriceInsightsItem*)priceInsightsItemFromConfig {
   PriceInsightsItemConfiguration* config =
       static_cast<PriceInsightsItemConfiguration*>(
           self.itemConfiguration.get());
@@ -295,7 +297,9 @@ NSDate* getNSDateFromString(std::string date) {
   return item;
 }
 
-- (void)displaySnackbar {
+// Displays a snackbar message to inform the user about the successful price
+// tracking, with a button to open the price tracking UI.
+- (void)displaySnackbar:(BOOL)granted {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
@@ -303,12 +307,12 @@ NSDate* getNSDateFromString(std::string date) {
       HandlerForProtocol(dispatcher, PriceNotificationsCommands);
   __weak id<ContextualSheetCommands> weakContextualSheetHandler =
       HandlerForProtocol(dispatcher, ContextualSheetCommands);
-  // TODO(b/346601270): Set the snackbar message conditionally, depending on
-  // whether the user has enabled notifications.
   [snackbarHandler
       showSnackbarWithMessage:
           l10n_util::GetNSString(
-              IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED)
+              granted
+                  ? IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_ENABLED
+                  : IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED)
                    buttonText:l10n_util::GetNSString(
                                   IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE)
                 messageAction:^{
