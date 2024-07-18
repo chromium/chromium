@@ -7204,8 +7204,8 @@
   },
   {
     "name": "price-insights",
-    "owners": [ "zhiyuancai@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 125
+    "owners": [ "qib@google.com", "chrome-shopping-eng@google.com", "chrommerce-eng@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "price-insights-high-price-ios",

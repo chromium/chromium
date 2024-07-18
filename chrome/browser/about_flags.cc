@@ -6587,7 +6587,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxGroupingFrameworkDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForNonZPS)},
 
-
     {"omnibox-calc-provider", flag_descriptions::kOmniboxCalcProviderName,
      flag_descriptions::kOmniboxCalcProviderDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox_feature_configs::CalcProvider::kCalcProvider)},
