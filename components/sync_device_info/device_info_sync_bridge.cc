@@ -13,6 +13,8 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -94,11 +96,6 @@ std::optional<DeviceInfo::SharingInfo> SpecificsToSharingInfo(
       std::move(enabled_features));
 }
 
-std::vector<uint8_t> VectorFromString(const std::string& s) {
-  const uint8_t* ptr = reinterpret_cast<const uint8_t*>(s.data());
-  return std::vector<uint8_t>(ptr, ptr + s.size());
-}
-
 std::optional<DeviceInfo::PhoneAsASecurityKeyInfo>
 SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
   if (!specifics.has_paask_fields()) {
@@ -115,7 +112,7 @@ SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
   }
   to.tunnel_server_domain = from.tunnel_server_domain();
   to.id = from.id();
-  to.contact_id = VectorFromString(from.contact_id());
+  to.contact_id = base::ToVector(base::as_byte_span(from.contact_id()));
 
   if (from.secret().size() != to.secret.size()) {
     return std::nullopt;

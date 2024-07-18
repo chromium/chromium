@@ -5,6 +5,7 @@
 #include "components/sync_bookmarks/bookmark_model_observer_impl.h"
 
 #include <algorithm>
+#include <array>
 #include <list>
 #include <map>
 #include <memory>
@@ -948,7 +949,7 @@ TEST_P(BookmarkModelObserverImplTest, ShouldAddChildrenInArbitraryOrder) {
   //  |- folder3
   //  |- folder4
 
-  const bookmarks::BookmarkNode* nodes[5];
+  std::array<const bookmarks::BookmarkNode*, 5> nodes;
   for (size_t i = 0; i < 5; i++) {
     nodes[i] = bookmark_model()->AddFolder(
         /*parent=*/bookmark_bar_node, /*index=*/i,
