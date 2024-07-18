@@ -98,6 +98,7 @@ static_library("test_support") {
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/services/network_config/public/mojom",
     "//components/keyed_service/content",
+    "//components/signin/public/identity_manager:test_support",
   ]
 }
 

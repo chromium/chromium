@@ -5,6 +5,7 @@
 #include "chrome/browser/scalable_iph/scalable_iph_factory_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/scalable_iph/logger.h"
@@ -27,12 +29,17 @@
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace {
+
+enum class Error { kFail };
 
 const user_manager::User* GetUser(content::BrowserContext* browser_context) {
   return ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
@@ -47,6 +54,30 @@ bool IsSupportedEmailDomain(content::BrowserContext* browser_context) {
   return gaia::IsGoogleInternalAccountEmail(email);
 }
 
+base::expected<bool, Error> IsMinor(content::BrowserContext* browser_context,
+                                    Profile* profile) {
+  const user_manager::User* user = GetUser(browser_context);
+  if (!user) {
+    return base::unexpected(Error::kFail);
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return base::unexpected(Error::kFail);
+  }
+
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfoByGaiaId(
+      user->GetAccountId().GetGaiaId());
+  // Using `can_use_manta_service` as a signal to see if an account is minor or
+  // not. This behavior is aligned with `CampaignsMatcher::MatchMinorUser`.
+  // TODO(b/333896450): find a better signal for minor mode.
+  signin::Tribool can_use_manta_service =
+      account_info.capabilities.can_use_manta_service();
+  bool is_minor = can_use_manta_service != signin::Tribool::kTrue;
+  return is_minor;
+}
+
 }  // namespace
 
 ScalableIphFactoryImpl::ScalableIphFactoryImpl() {
@@ -59,6 +90,7 @@ ScalableIphFactoryImpl::ScalableIphFactoryImpl() {
   DependsOn(feature_engagement::TrackerFactory::GetInstance());
   DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
   DependsOn(ash::phonehub::PhoneHubManagerFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 ScalableIphFactoryImpl::~ScalableIphFactoryImpl() = default;
@@ -106,6 +138,13 @@ ScalableIphFactoryImpl::BuildServiceInstanceForBrowserContext(
   CHECK(profile) << "No profile. This method cannot handle this error. "
                     "BuildServiceInstanceForBrowserContext method is not "
                     "allowed to return nullptr";
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager)
+      << "No identity manager. This method cannot handle this error. "
+         "BuildServiceInstanceForBrowserContext method is not allowed to "
+         "return nullptr";
 
   std::unique_ptr<scalable_iph::Logger> logger =
       std::make_unique<scalable_iph::Logger>();
@@ -195,6 +234,21 @@ content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUseInternal(
       !user_manager::UserManager::Get()->IsOwnerUser(
           GetUser(browser_context))) {
     SCALABLE_IPH_LOG(logger) << "User is not an owner.";
+    return nullptr;
+  }
+
+  // Use `base::expected` instead of `std::optional` to avoid implicit bool
+  // conversion: https://abseil.io/tips/141.
+  base::expected<bool, Error> maybe_is_minor =
+      IsMinor(browser_context, profile);
+  if (!maybe_is_minor.has_value()) {
+    SCALABLE_IPH_LOG(logger) << "Failed to get IsMinor value. Treating as "
+                                "not-eligible for fail-safe.";
+    return nullptr;
+  }
+
+  if (maybe_is_minor.value()) {
+    SCALABLE_IPH_LOG(logger) << "User is a minor.";
     return nullptr;
   }
 

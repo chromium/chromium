@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -18,6 +19,9 @@
 class COMPONENT_EXPORT(SCALABLE_IPH_FACTORY) ScalableIphFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  using OnBuildingServiceInstanceForTestingCallback =
+      base::RepeatingCallback<void(Profile* profile)>;
+
   static ScalableIphFactory* GetInstance();
 
   static scalable_iph::ScalableIph* GetForBrowserContext(
@@ -37,9 +41,21 @@ class COMPONENT_EXPORT(SCALABLE_IPH_FACTORY) ScalableIphFactory
   // happen. `GetForBrowserContext` does NOT instantiate a service.
   void InitializeServiceForProfile(Profile* profile);
 
+  // Allows test code to set up test environment before a service is built. This
+  // is called just before a service is built. For now, this is used to set
+  // can_use_manta_service capability. ScalableIph service is built immediately
+  // after user session starts. It's non-trival to do env set up at the correct
+  // timing without this type of helper method.
+  void SetOnBuildingServiceInstanceForTestingCallback(
+      OnBuildingServiceInstanceForTestingCallback callback);
+
  protected:
   ScalableIphFactory();
   ~ScalableIphFactory() override;
+
+ private:
+  OnBuildingServiceInstanceForTestingCallback
+      on_building_service_instance_for_testing_callback_;
 };
 
 #endif  // CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_

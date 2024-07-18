@@ -586,13 +586,31 @@ class ScalableIphBrowserTestPhoneHubOnboardingEligible
 };
 
 class ScalableIphBrowserTestParameterized
-    : public ash::CustomizableTestEnvBrowserTestBase,
+    : public ScalableIphBrowserTest,
       public testing::WithParamInterface<TestEnvironment> {
  public:
+  ScalableIphBrowserTestParameterized() {
+    // Set `false` as `ScalableIphBrowserTestParameterized` is used to test
+    // ScalableIph is not eligible cases.
+    setup_scalable_iph_ = false;
+  }
+
   void SetUp() override {
     SetTestEnvironment(GetParam());
 
     ash::CustomizableTestEnvBrowserTestBase::SetUp();
+  }
+};
+
+class ScalableIphBrowserTestMinor : public ScalableIphBrowserTest {
+ public:
+  ScalableIphBrowserTestMinor() {
+    // `ScalableIphFactoryImpl::GetBrowserContextToUseInternal` uses manta
+    // service eligibility as a signal to see if a user is a minor or not. Force
+    // disable manta service to simulate minor user case.
+    force_disable_manta_service_ = true;
+
+    setup_scalable_iph_ = false;
   }
 };
 
@@ -1935,6 +1953,16 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestParameterized,
                        ScalableIphNotAvailable) {
+  EXPECT_EQ(nullptr,
+            ScalableIphFactory::GetForBrowserContext(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestMinor, ScalableIphNotAvailable) {
+  ASSERT_EQ(ash::CustomizableTestEnvBrowserTestBase::UserSessionType::kRegular,
+            test_environment().user_session_type())
+      << "This test uses kRegular user session type without "
+         "can_use_manta_service=true capability to simulate minor account.";
+
   EXPECT_EQ(nullptr,
             ScalableIphFactory::GetForBrowserContext(browser()->profile()));
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -49,8 +50,21 @@ void ScalableIphFactory::InitializeServiceForProfile(Profile* profile) {
   // TODO(b/286604737): Disables ScalableIph services if multi-user sign-in is
   // used.
 
+  if (!on_building_service_instance_for_testing_callback_.is_null()) {
+    CHECK_IS_TEST();
+    on_building_service_instance_for_testing_callback_.Run(profile);
+  }
+
   // Create a `ScalableIph` service to start a timer for time tick event. Ignore
   // a return value. It can be nullptr if the browser context (i.e. profile) is
   // not eligible for `ScalableIph`.
   GetServiceForBrowserContext(profile, /*create=*/true);
+}
+
+void ScalableIphFactory::SetOnBuildingServiceInstanceForTestingCallback(
+    OnBuildingServiceInstanceForTestingCallback callback) {
+  CHECK_IS_TEST();
+  CHECK(on_building_service_instance_for_testing_callback_.is_null());
+  CHECK(!callback.is_null());
+  on_building_service_instance_for_testing_callback_ = std::move(callback);
 }
