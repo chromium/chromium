@@ -33,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -92,6 +93,10 @@ public class CustomTabBottomBarViewUnitTest extends BlankUiTestActivityTestCase 
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            supported_abis_includes = "arm64-v8a",
+            sdk_is_greater_than = 33,
+            message = "crbug.com/353773627")
     public void testSwipeRightDoesNotTrigger() {
         onView(withChild(withId(R.id.stub))).perform(swipeRight());
         verify(mSwipeHandler, never()).onSwipeStarted(anyInt(), any());
