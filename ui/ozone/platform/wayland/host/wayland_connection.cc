@@ -81,7 +81,8 @@ constexpr uint32_t kMaxKeyboardExtensionVersion = 2;
 constexpr uint32_t kMaxXdgShellVersion = 5;
 constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
-constexpr uint32_t kMaxTextInputManagerVersion = 1;
+constexpr uint32_t kMaxTextInputManagerV1Version = 1;
+constexpr uint32_t kMaxTextInputManagerV3Version = 1;
 constexpr uint32_t kMaxTextInputExtensionVersion = 14;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMaxAlphaCompositingVersion = 1;
@@ -706,7 +707,7 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
   } else if (!text_input_manager_v1_ &&
              strcmp(interface, "zwp_text_input_manager_v1") == 0) {
     text_input_manager_v1_ = wl::Bind<zwp_text_input_manager_v1>(
-        registry, name, std::min(version, kMaxTextInputManagerVersion));
+        registry, name, std::min(version, kMaxTextInputManagerV1Version));
     if (!text_input_manager_v1_) {
       LOG(ERROR) << "Failed to bind to zwp_text_input_manager_v1 global";
       return;
@@ -715,6 +716,14 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
              strcmp(interface, "zcr_text_input_extension_v1") == 0) {
     text_input_extension_v1_ = wl::Bind<zcr_text_input_extension_v1>(
         registry, name, std::min(version, kMaxTextInputExtensionVersion));
+  } else if (!text_input_manager_v3_ &&
+             strcmp(interface, "zwp_text_input_manager_v3") == 0) {
+    text_input_manager_v3_ = wl::Bind<zwp_text_input_manager_v3>(
+        registry, name, std::min(version, kMaxTextInputManagerV3Version));
+    if (!text_input_manager_v3_) {
+      LOG(ERROR) << "Failed to bind to zwp_text_input_manager_v3 global";
+      return;
+    }
   } else if (!xdg_decoration_manager_ &&
              strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
     xdg_decoration_manager_ = wl::Bind<zxdg_decoration_manager_v1>(

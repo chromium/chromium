@@ -17,6 +17,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/mock_wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
@@ -60,6 +61,8 @@ enum class EnableAuraShellProtocol { kEnabled, kDisabled };
 struct ServerConfig {
   TestZcrTextInputExtensionV1::Version text_input_extension_version =
       TestZcrTextInputExtensionV1::Version::kV14;
+  ui::ZWPTextInputWrapperType text_input_wrapper_type =
+      ui::ZWPTextInputWrapperType::kV1;
   TestCompositor::Version compositor_version = TestCompositor::Version::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;
@@ -159,6 +162,9 @@ class TestWaylandServerThread : public TestOutput::Delegate,
   TestZwpTextInputManagerV1* text_input_manager_v1() {
     return &zwp_text_input_manager_v1_;
   }
+  TestZwpTextInputManagerV3* text_input_manager_v3() {
+    return &zwp_text_input_manager_v3_;
+  }
   TestZwpLinuxExplicitSynchronizationV1*
   zwp_linux_explicit_synchronization_v1() {
     return &zwp_linux_explicit_synchronization_v1_;
@@ -246,6 +252,7 @@ class TestWaylandServerThread : public TestOutput::Delegate,
   TestZcrStylus zcr_stylus_;
   TestZcrTextInputExtensionV1 zcr_text_input_extension_v1_;
   TestZwpTextInputManagerV1 zwp_text_input_manager_v1_;
+  TestZwpTextInputManagerV3 zwp_text_input_manager_v3_;
   TestZwpLinuxExplicitSynchronizationV1 zwp_linux_explicit_synchronization_v1_;
   MockZwpLinuxDmabufV1 zwp_linux_dmabuf_v1_;
   MockWpPresentation wp_presentation_;

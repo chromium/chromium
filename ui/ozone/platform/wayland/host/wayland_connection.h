@@ -147,6 +147,9 @@ class WaylandConnection {
   zcr_text_input_extension_v1* text_input_extension_v1() const {
     return text_input_extension_v1_.get();
   }
+  zwp_text_input_manager_v3* text_input_manager_v3() const {
+    return text_input_manager_v3_.get();
+  }
   zwp_linux_explicit_synchronization_v1* linux_explicit_synchronization_v1()
       const {
     return linux_explicit_synchronization_.get();
@@ -478,6 +481,7 @@ class WaylandConnection {
       keyboard_shortcuts_inhibit_manager_v1_;
   wl::Object<zcr_stylus_v2> zcr_stylus_v2_;
   wl::Object<zwp_text_input_manager_v1> text_input_manager_v1_;
+  wl::Object<zwp_text_input_manager_v3> text_input_manager_v3_;
   wl::Object<zcr_text_input_extension_v1> text_input_extension_v1_;
   wl::Object<zwp_linux_explicit_synchronization_v1>
       linux_explicit_synchronization_;

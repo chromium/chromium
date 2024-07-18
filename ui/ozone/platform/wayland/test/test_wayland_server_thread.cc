@@ -137,13 +137,18 @@ bool TestWaylandServerThread::Start() {
 
   if (!zcr_stylus_.Initialize(display_.get()))
     return false;
-
-  if (!zcr_text_input_extension_v1_.Initialize(display_.get())) {
-    return false;
+  if (config_.text_input_wrapper_type == ui::ZWPTextInputWrapperType::kV3) {
+    if (!zwp_text_input_manager_v3_.Initialize(display_.get())) {
+      return false;
+    }
+  } else {
+    if (!zcr_text_input_extension_v1_.Initialize(display_.get())) {
+      return false;
+    }
+    if (!zwp_text_input_manager_v1_.Initialize(display_.get())) {
+      return false;
+    }
   }
-
-  if (!zwp_text_input_manager_v1_.Initialize(display_.get()))
-    return false;
   if (!SetupExplicitSynchronizationProtocol(
           config_.use_explicit_synchronization)) {
     return false;

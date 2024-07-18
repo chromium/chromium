@@ -126,6 +126,9 @@ class ZWPTextInputWrapperClient {
   virtual void OnInsertImage(const GURL& src) = 0;
 };
 
+// Text input protocol type.
+enum class ZWPTextInputWrapperType { kV1, kV3 };
+
 // A wrapper around different versions of wayland text input protocols.
 // Wayland compositors support various different text input protocols which
 // all from Chromium point of view provide the functionality needed by Chromium

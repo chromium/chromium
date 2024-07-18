@@ -606,6 +606,7 @@ source_set("wayland_unittests") {
     "host/wayland_zwp_pointer_gestures_unittest.cc",
     "host/xdg_activation_unittest.cc",
     "host/zwp_text_input_wrapper_v1_unittest.cc",
+    "host/zwp_text_input_wrapper_v3_unittest.cc",
     "mojom/wayland_overlay_config_mojom_traits_unittest.cc",
     "test/wayland_drag_drop_test.cc",
     "test/wayland_drag_drop_test.h",
