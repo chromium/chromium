@@ -138,4 +138,9 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
     protected @StringRes int getMenuItemTextId() {
         return R.string.safety_hub_permissions_page_menu_text;
     }
+
+    @Override
+    protected @StringRes int getPermissionsListTextId() {
+        return R.string.page_info_permissions_title;
+    }
 }

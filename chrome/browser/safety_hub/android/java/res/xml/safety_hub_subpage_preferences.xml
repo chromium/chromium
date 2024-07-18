@@ -13,7 +13,6 @@ found in the LICENSE file.
         app:allowDividerBelow="false" />
 
     <PreferenceCategory
-        android:key="preference_list"
-        android:title="@string/page_info_permissions_title"/>
+        android:key="preference_list" />
 
 </PreferenceScreen>

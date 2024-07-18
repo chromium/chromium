@@ -155,6 +155,11 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
         return R.string.safety_hub_notifications_page_menu_text;
     }
 
+    @Override
+    protected @StringRes int getPermissionsListTextId() {
+        return R.string.prefs_notifications;
+    }
+
     private void showSingleSiteSnackbar(
             int titleResId, String origin, SnackbarManager.SnackbarController snackbarController) {
         showSnackbar(

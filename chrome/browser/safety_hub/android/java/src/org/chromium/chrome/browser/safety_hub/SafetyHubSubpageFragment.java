@@ -40,6 +40,7 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
         headPreference.setSummary(getHeaderId());
 
         mPreferenceList = findPreference(PREF_LIST);
+        mPreferenceList.setTitle(getPermissionsListTextId());
         setHasOptionsMenu(true);
     }
 
@@ -92,6 +93,8 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     protected abstract @StringRes int getButtonTextId();
 
     protected abstract @StringRes int getMenuItemTextId();
+
+    protected abstract @StringRes int getPermissionsListTextId();
 
     protected abstract void updatePreferenceList();
 }
