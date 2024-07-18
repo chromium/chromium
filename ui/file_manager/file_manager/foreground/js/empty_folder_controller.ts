@@ -368,9 +368,7 @@ export class EmptyFolderController {
 
     this.image_.hidden = true;
     this.emptyFolder_.hidden = false;
-    // TODO(b/334511998): Use proper strings.
-    this.showMessage_(
-        'File system has been disabled. Please contact your administrator.');
+    this.showMessage_(str('SKYVAULT_MISCONFIGURED_POLICY_MESSAGE'));
     this.label_.classList.add('no-image');
 
     this.hasFilesystemError_ = true;

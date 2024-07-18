@@ -1121,8 +1121,7 @@ export async function fileDisplayFileSystemDisabled() {
   // Check: the empty folder should be visible.
   await remoteCall.waitForElement(appId, '#empty-folder:not([hidden])');
   await waitForEmptyFolderMessage(
-      appId,
-      'File system has been disabled. Please contact your administrator.');
+      appId, 'The file system has been disabled by your administrator');
 
   // Mount USB volume.
   await sendTestMessage({name: 'mountFakeUsb'});

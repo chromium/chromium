@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {str} from '../../../../common/js/translations.js';
 import {isNullOrUndefined} from '../../../../common/js/util.js';
 import {VolumeType} from '../../../../common/js/volume_manager_types.js';
 
@@ -42,6 +43,7 @@ export class FilesMigratingToCloudBanner extends WarningBanner {
    * usually My Files/Downloads. When Skyvault is enabled, it should be Google
    * Drive or OneDrive.
    */
+  // TODO(b/351773604): Use MigrationDestination instead of DownloadDirectory.
   override onFilteredContext(context: {
     defaultLocation: chrome.fileManagerPrivate.DefaultLocation,
   }) {
@@ -53,19 +55,12 @@ export class FilesMigratingToCloudBanner extends WarningBanner {
     const text =
         this.shadowRoot!.querySelector('span[slot="text"]')! as HTMLSpanElement;
 
-    function getMessage(driveLabel: string): string {
-      // TODO(b/334511998): Replace with i18n strings.
-      return 'Your administrator has restricted the use of local storage. All ' +
-          `of your files are being automatically migrated to ${driveLabel}. ` +
-          'You can modify these files once the transfer has been completed.';
-    }
-
     switch (context.defaultLocation) {
       case chrome.fileManagerPrivate.DefaultLocation.GOOGLE_DRIVE:
-        text.innerText = getMessage('Google Drive');
+        text.innerText = str('SKYVAULT_MIGRATION_BANNER_GOOGLE_DRIVE');
         return;
       case chrome.fileManagerPrivate.DefaultLocation.ONEDRIVE:
-        text.innerText = getMessage('Microsoft OneDrive');
+        text.innerText = str('SKYVAULT_MIGRATION_BANNER_ONEDRIVE');
         return;
       case chrome.fileManagerPrivate.DefaultLocation.MY_FILES:
       default:

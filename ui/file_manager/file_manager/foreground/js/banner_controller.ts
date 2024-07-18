@@ -440,6 +440,8 @@ export class BannerController extends EventTarget {
         context: () => ({type: this.dialogType_}),
       });
 
+      // TODO(b/351773604): Use MigrationDestination instead of
+      // DownloadDirectory.
       this.registerCustomBannerFilter(FilesMigratingToCloudBannerTagName, {
         shouldShow: () => isSkyvaultV2Enabled() && !this.localUserFilesAllowed_,
         context: () => ({defaultLocation: this.defaultLocation_}),
