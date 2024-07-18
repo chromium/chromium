@@ -1960,8 +1960,10 @@ TEST_P(QuicSessionPoolTest, CloseAllSessions) {
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
   socket_data.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectionClosePacket(
-                       packet_num++, quic::QUIC_PEER_GOING_AWAY, "net error"));
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num++)
+          .AddConnectionCloseFrame(quic::QUIC_PEER_GOING_AWAY, "net error")
+          .Build());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   client_maker_.Reset();
@@ -2261,8 +2263,10 @@ TEST_P(QuicSessionPoolTest, CloseSessionDuringCreation) {
                          ConstructInitialSettingsPacket(packet_num++));
   }
   socket_data.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectionClosePacket(
-                       packet_num, quic::QUIC_IP_ADDRESS_CHANGED, "net error"));
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num)
+          .AddConnectionCloseFrame(quic::QUIC_IP_ADDRESS_CHANGED, "net error")
+          .Build());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   RequestBuilder builder(this, &factory);
@@ -2308,8 +2312,10 @@ TEST_P(QuicSessionPoolTest, CloseSessionsOnIPAddressChanged) {
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
   socket_data.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectionClosePacket(
-                       packet_num, quic::QUIC_IP_ADDRESS_CHANGED, "net error"));
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num)
+          .AddConnectionCloseFrame(quic::QUIC_IP_ADDRESS_CHANGED, "net error")
+          .Build());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   client_maker_.Reset();
@@ -3405,9 +3411,11 @@ void QuicSessionPoolTest::TestOnNetworkMadeDefaultNoOpenStreams(
   if (!migrate_idle_sessions) {
     socket_data.AddWrite(
         SYNCHRONOUS,
-        client_maker_.MakeConnectionClosePacket(
-            packet_num, quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-            "net error"));
+        client_maker_.Packet(packet_num)
+            .AddConnectionCloseFrame(
+                quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
+                "net error")
+            .Build());
   }
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
@@ -5756,9 +5764,11 @@ TEST_P(
   quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
-      client_maker_.MakeConnectionClosePacket(
-          packet_num, quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-          "net error"));
+      client_maker_.Packet(packet_num)
+          .AddConnectionCloseFrame(
+              quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
+              "net error")
+          .Build());
 
   quic_data.AddSocketDataToFactory(socket_factory_.get());
 

@@ -97,11 +97,6 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::QuicReceivedPacket> MakeDummyCHLOPacket(
       uint64_t packet_number);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeConnectionClosePacket(
-      uint64_t packet_number,
-      quic::QuicErrorCode quic_error,
-      const std::string& quic_error_details);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckPacket(
       uint64_t packet_number,
       uint64_t largest_received,

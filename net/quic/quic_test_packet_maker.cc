@@ -222,16 +222,6 @@ QuicTestPacketMaker::MakeCombinedRetransmissionPacket(
   return builder.Build();
 }
 
-std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeConnectionClosePacket(
-    uint64_t packet_number,
-    quic::QuicErrorCode quic_error,
-    const std::string& quic_error_details) {
-  return Packet(packet_number)
-      .AddConnectionCloseFrame(quic_error, quic_error_details)
-      .Build();
-}
-
 std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakeAckPacket(
     uint64_t packet_number,
     uint64_t largest_received,

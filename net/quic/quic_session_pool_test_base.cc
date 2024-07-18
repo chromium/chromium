@@ -323,8 +323,10 @@ void QuicSessionPoolTestBase::NotifyIPAddressChanged() {
 
 std::unique_ptr<quic::QuicEncryptedPacket>
 QuicSessionPoolTestBase::ConstructServerConnectionClosePacket(uint64_t num) {
-  return server_maker_.MakeConnectionClosePacket(
-      num, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!");
+  return server_maker_.Packet(num)
+      .AddConnectionCloseFrame(quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED,
+                               "Time to panic!")
+      .Build();
 }
 
 std::unique_ptr<quic::QuicEncryptedPacket>

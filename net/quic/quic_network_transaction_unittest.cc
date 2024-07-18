@@ -382,8 +382,10 @@ class QuicNetworkTransactionTest
 
   std::unique_ptr<quic::QuicEncryptedPacket>
   ConstructServerConnectionClosePacket(uint64_t num) {
-    return server_maker_.MakeConnectionClosePacket(
-        num, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!");
+    return server_maker_.Packet(num)
+        .AddConnectionCloseFrame(quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED,
+                                 "Time to panic!")
+        .Build();
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientAckPacket(
@@ -2900,9 +2902,11 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
                      client_maker_->MakeRetransmissionPacket(1, packet_num++));
 
   quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeConnectionClosePacket(
-                         packet_num++, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                         "No recent network activity after 4s. Timeout:4s"));
+                     client_maker_->Packet(packet_num++)
+                         .AddConnectionCloseFrame(
+                             quic::QUIC_NETWORK_IDLE_TIMEOUT,
+                             "No recent network activity after 4s. Timeout:4s")
+                         .Build());
 
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, OK);
@@ -3066,9 +3070,11 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
                      client_maker_->MakeRetransmissionPacket(1, packet_num++));
 
   quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_->MakeConnectionClosePacket(
-                         packet_num++, quic::QUIC_NETWORK_IDLE_TIMEOUT,
-                         "No recent network activity after 4s. Timeout:4s"));
+                     client_maker_->Packet(packet_num++)
+                         .AddConnectionCloseFrame(
+                             quic::QUIC_NETWORK_IDLE_TIMEOUT,
+                             "No recent network activity after 4s. Timeout:4s")
+                         .Build());
 
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, OK);
@@ -6093,8 +6099,9 @@ TEST_P(QuicNetworkTransactionTest, NoMigrationForMsgTooBig) {
   // Connection close packet will be sent for MSG_TOO_BIG.
   socket_data.AddWrite(
       SYNCHRONOUS,
-      client_maker_->MakeConnectionClosePacket(
-          packet_num + 1, quic::QUIC_PACKET_WRITE_ERROR, error_details));
+      client_maker_->Packet(packet_num + 1)
+          .AddConnectionCloseFrame(quic::QUIC_PACKET_WRITE_ERROR, error_details)
+          .Build());
   socket_data.AddSocketDataToFactory(&socket_factory_);
 
   CreateSession();

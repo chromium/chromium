@@ -746,8 +746,10 @@ TEST_P(QuicChromiumClientSessionTest, ReadAfterConnectionClose) {
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   // This packet will be read after connection is closed.
   quic_data.AddRead(
-      ASYNC, server_maker_.MakeConnectionClosePacket(
-                 1, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!"));
+      ASYNC, server_maker_.Packet(1)
+                 .AddConnectionCloseFrame(
+                     quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!")
+                 .Build());
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   Initialize();
@@ -935,8 +937,10 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionCloseBeforeStreamRequest) {
   quic_data.AddWrite(SYNCHRONOUS,
                      client_maker_.Packet(packet_num++).AddPingFrame().Build());
   quic_data.AddRead(
-      ASYNC, server_maker_.MakeConnectionClosePacket(
-                 1, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!"));
+      ASYNC, server_maker_.Packet(1)
+                 .AddConnectionCloseFrame(
+                     quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!")
+                 .Build());
 
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -975,8 +979,10 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionCloseBeforeHandshakeConfirmed) {
   MockQuicData quic_data(version_);
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(
-      ASYNC, server_maker_.MakeConnectionClosePacket(
-                 1, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!"));
+      ASYNC, server_maker_.Packet(1)
+                 .AddConnectionCloseFrame(
+                     quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!")
+                 .Build());
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   Initialize();
@@ -1016,8 +1022,10 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionCloseWithPendingStreamRequest) {
           .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(
-      ASYNC, server_maker_.MakeConnectionClosePacket(
-                 1, quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!"));
+      ASYNC, server_maker_.Packet(1)
+                 .AddConnectionCloseFrame(
+                     quic::QUIC_CRYPTO_VERSION_NOT_SUPPORTED, "Time to panic!")
+                 .Build());
   quic_data.AddSocketDataToFactory(&socket_factory_);
 
   Initialize();
