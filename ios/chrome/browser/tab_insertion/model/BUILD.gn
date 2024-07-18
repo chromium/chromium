@@ -11,8 +11,8 @@ source_set("model") {
     "//build:blink_buildflags",
     "//components/tab_groups",
     "//ios/chrome/browser/ntp/model",
-    "//ios/chrome/browser/sessions:session_restoration_service",
-    "//ios/chrome/browser/sessions:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions/model:session_restoration_service",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -30,8 +30,8 @@ source_set("unit_tests") {
   sources = [ "tab_insertion_browser_agent_unittest.mm" ]
   deps = [
     ":model",
-    "//ios/chrome/browser/sessions:session_restoration_service",
-    "//ios/chrome/browser/sessions:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions/model:session_restoration_service",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

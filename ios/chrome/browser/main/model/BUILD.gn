@@ -31,7 +31,7 @@ source_set("model") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/send_tab_to_self/model",
-    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -64,8 +64,8 @@ source_set("unit_tests") {
   ]
   deps = [
     ":model",
-    "//ios/chrome/browser/sessions",
-    "//ios/chrome/browser/sessions:fake",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/sessions/model:fake",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

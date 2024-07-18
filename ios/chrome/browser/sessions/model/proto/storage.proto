@@ -1,0 +1,42 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package ios.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "ios/web/public/session/proto/metadata.proto";
+import "ios/chrome/browser/sessions/model/proto/tab_group.proto";
+
+// Represents the information about a WebState's opener in a WebStateList.
+//
+// All fields are required.
+message OpenerStorage {
+  int32 index = 1;
+  int32 navigation_index = 2;
+}
+
+// Represents the information about a WebState stored in a WebStateList.
+//
+// The WebState information is not stored inline, instead the identifier
+// is used to locate the serialised version of the WebState state.
+//
+// The opener field is optional and can be omitted if the WebState has
+// no opener in the current WebStateList.
+message WebStateListItemStorage {
+  int32 identifier = 1;
+  OpenerStorage opener = 2;
+  web.proto.WebStateMetadataStorage metadata = 3;
+}
+
+// Represents a single WebStateList.
+//
+// All fields are required.
+message WebStateListStorage {
+  repeated WebStateListItemStorage items = 1;
+  int32 active_index = 2;
+  int32 pinned_item_count = 3;
+  repeated TabGroupStorage groups = 4;
+}

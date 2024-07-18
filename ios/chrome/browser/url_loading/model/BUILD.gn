@@ -33,7 +33,7 @@ source_set("model") {
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/prerender/model",
-    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

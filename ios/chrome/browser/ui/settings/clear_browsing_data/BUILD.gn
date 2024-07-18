@@ -134,7 +134,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/sessions:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

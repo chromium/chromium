@@ -77,7 +77,7 @@ source_set("model") {
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

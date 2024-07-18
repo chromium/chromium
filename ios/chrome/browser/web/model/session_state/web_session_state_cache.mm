@@ -22,7 +22,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
-#import "ios/chrome/browser/sessions/session_constants.h"
+#import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"

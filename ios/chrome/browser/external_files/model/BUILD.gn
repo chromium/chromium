@@ -17,7 +17,7 @@ source_set("model") {
     "//components/keyed_service/ios",
     "//components/sessions",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",

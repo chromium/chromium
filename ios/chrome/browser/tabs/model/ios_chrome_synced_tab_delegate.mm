@@ -10,15 +10,15 @@
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_window_delegates_getter.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
-#import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
 // TODO(crbug.com/40945317): Remove those imports and the corresponding deps
 // when support for legacy session storage is removed.
-#import "ios/chrome/browser/sessions/session_restoration_service.h"
-#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"

@@ -7,7 +7,7 @@
 
 #import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/sessions/session_restoration_observer.h"
+#include "ios/chrome/browser/sessions/model/session_restoration_observer.h"
 #include "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 

@@ -102,7 +102,7 @@ source_set("unit_tests") {
   deps = [
     ":tabs",
     "//base",
-    "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/sessions/model:test_support",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

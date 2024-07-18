@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/complex_tasks/model/ios_content_record_task_id.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"

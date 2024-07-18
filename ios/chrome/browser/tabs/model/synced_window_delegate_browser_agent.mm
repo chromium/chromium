@@ -6,7 +6,7 @@
 
 #import "base/check_op.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"

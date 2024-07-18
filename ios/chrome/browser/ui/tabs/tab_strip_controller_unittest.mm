@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/ui/tabs/tab_strip_controller.h"
+
 #import <Foundation/Foundation.h>
 
 #import <memory>
 
 #import "base/strings/utf_string_conversions.h"
-#import "ios/chrome/browser/sessions/test_session_service.h"
+#import "ios/chrome/browser/sessions/model/test_session_service.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -17,7 +19,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/ui/tabs/tab_strip_controller.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
 #import "ios/web/public/navigation/navigation_item.h"

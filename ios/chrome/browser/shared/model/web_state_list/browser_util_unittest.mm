@@ -8,8 +8,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/tab_groups/tab_group_id.h"
-#import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"

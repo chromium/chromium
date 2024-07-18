@@ -7,7 +7,7 @@
 #import "components/sync_device_info/device_info.h"
 #import "components/visited_url_ranking/public/url_visit.h"
 #import "components/visited_url_ranking/public/url_visit_util.h"
-#import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"

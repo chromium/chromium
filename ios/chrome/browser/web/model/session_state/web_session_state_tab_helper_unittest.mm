@@ -13,7 +13,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/sessions/session_constants.h"
+#import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
