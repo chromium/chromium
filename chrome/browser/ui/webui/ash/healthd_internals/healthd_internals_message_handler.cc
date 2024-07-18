@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -133,10 +134,30 @@ HealthdInternalsMessageHandler::~HealthdInternalsMessageHandler() = default;
 
 void HealthdInternalsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
+      "getHealthdInternalsFeatureFlag",
+      base::BindRepeating(
+          &HealthdInternalsMessageHandler::HandleGetHealthdInternalsFeatureFlag,
+          weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
       "getHealthdTelemetryInfo",
       base::BindRepeating(
           &HealthdInternalsMessageHandler::HandleGetHealthdTelemetryInfo,
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HealthdInternalsMessageHandler::HandleGetHealthdInternalsFeatureFlag(
+    const base::Value::List& list) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  AllowJavascript();
+  if (list.size() != 1 || !list[0].is_string()) {
+    NOTREACHED_IN_MIGRATION();
+    return;
+  }
+  base::Value callback_id = list[0].Clone();
+  base::Value::Dict result;
+  result.Set("tabsDisplayed", features::AreHealthdInternalsTabsEnabled());
+  ResolveJavascriptCallback(callback_id, result);
 }
 
 void HealthdInternalsMessageHandler::HandleGetHealthdTelemetryInfo(

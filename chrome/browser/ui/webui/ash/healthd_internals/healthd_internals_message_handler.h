@@ -28,6 +28,9 @@ class HealthdInternalsMessageHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
+  // Handle the `getHealthdInternalsFeatureFlag` request.
+  void HandleGetHealthdInternalsFeatureFlag(const base::Value::List& args);
+
   // Handle the `getHealthdTelemetryInfo` request.
   void HandleGetHealthdTelemetryInfo(const base::Value::List& args);
 

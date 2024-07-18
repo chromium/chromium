@@ -63,3 +63,10 @@ export interface HealthdApiTelemetryResult {
   cpu: HealthdApiCpuResult;
   thermals: HealthdApiThermalResult[];
 }
+
+/**
+ * `getHealthdInternalsFeatureFlag` api result.
+ */
+export interface HealthdInternalsFeatureFlagResult {
+  tabsDisplayed: boolean;
+}

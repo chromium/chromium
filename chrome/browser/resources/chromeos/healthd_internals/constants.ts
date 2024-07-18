@@ -31,6 +31,8 @@ export const LINE_CHART_COLOR_SET: string[] = [
  * The enum for displayed pages in chrome://healthd-internals.
  */
 export enum PagePath {
+  // Only used when menu tabs are not displayed. No page should be displayed.
+  NONE = '/',
   TELEMETRY = '/telemetry',
   CPU_FREQUENCY = '/cpu_frequency',
   BATTERY = '/battery',

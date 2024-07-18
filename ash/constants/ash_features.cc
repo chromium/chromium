@@ -1490,6 +1490,12 @@ BASE_FEATURE(kGrowthCampaignsTriggerByBrowser,
              "GrowthCampaignsTriggerByBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables showing the menu tabs in chrome://healthd-internals for displaying
+// information from `cros_healthd`.
+BASE_FEATURE(kHealthdInternalsTabs,
+             "HealthdInternalsTabs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, the Help app will render the App Detail Page and entry point.
 BASE_FEATURE(kHelpAppAppDetailPage,
              "HelpAppAppDetailPage",
@@ -3947,6 +3953,10 @@ bool IsGlanceablesTimeManagementTasksViewAssignedTasksEnabled() {
 bool AreAnyGlanceablesTimeManagementViewsEnabled() {
   return IsGlanceablesTimeManagementClassroomStudentViewEnabled() ||
          IsGlanceablesTimeManagementTasksViewEnabled();
+}
+
+bool AreHealthdInternalsTabsEnabled() {
+  return base::FeatureList::IsEnabled(kHealthdInternalsTabs);
 }
 
 bool IsHibernateEnabled() {
