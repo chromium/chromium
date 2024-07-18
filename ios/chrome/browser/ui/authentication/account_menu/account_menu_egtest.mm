@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -35,6 +36,15 @@
   config.features_enabled.push_back(kIdentityDiscAccountMenu);
 
   return config;
+}
+
+- (void)tearDown {
+  base::TimeDelta marginToAllowIdentityConfirmationSnackbar = base::Days(20);
+  [ChromeEarlGrey
+      setTimeValue:base::Time::FromDeltaSinceWindowsEpoch(
+                       marginToAllowIdentityConfirmationSnackbar)
+       forUserPref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
+  [super tearDown];
 }
 
 - (void)testViewAccountMenu {
@@ -123,6 +133,43 @@
   NSString* snackbarMessage = l10n_util::GetNSStringF(
       IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(snackbarMessage),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Verifies identity confirmation snackbar shows on startup with multiple
+// identities on device with frequency limitations.
+- (void)testFrequencyLimitation_IdentityConfirmationToast {
+  // Add multiple identities and sign in with one of them.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:secondaryIdentity];
+
+  // Background then foreground the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Confirm the snackbar shows.
+  NSString* snackbarMessage = l10n_util::GetNSStringF(
+      IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+      base::SysNSStringToUTF16(fakeIdentity.userGivenName));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(snackbarMessage),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Dismiss the snackabr.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(snackbarMessage),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Background then foreground the app again.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Confirm the snackbar does not show.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_text(snackbarMessage),
                                           grey_sufficientlyVisible(), nil)]

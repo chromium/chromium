@@ -6,6 +6,7 @@
 
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -13,6 +14,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
@@ -23,6 +26,13 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+// The amount of time (2 weeks) to allow showing the snackbar again since last
+// time it was prompted.
+const base::TimeDelta kTimeBetweenIdentityConfirmationSnackbarPrompts =
+    base::Days(14);
+}  // namespace
 
 @implementation IdentityConfirmationAppAgent {
   // This code ensures only one snackbar appears at a time on an iPad in
@@ -108,7 +118,17 @@
   }
 
   // TODO(crbug.com/336720134): Limit the frequency of the snackbar based on the
-  // last date of showing the snackbar and last sign-in date.
+  // last sign-in date.
+
+  PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+  const base::Time lastPrompted =
+      prefService->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
+  if (base::Time::Now() - lastPrompted <
+      kTimeBetweenIdentityConfirmationSnackbarPrompts) {
+    return;
+  }
+  prefService->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
+                       base::Time::Now());
 
   id<SystemIdentity> systemIdentity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

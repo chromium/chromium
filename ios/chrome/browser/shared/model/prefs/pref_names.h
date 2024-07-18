@@ -630,6 +630,11 @@ inline constexpr char kHomeCustomizationMagicStackEnabled[] =
 inline constexpr char kHomeCustomizationDiscoverEnabled[] =
     "ios.home_customization.discover.enabled";
 
+// A time object storing when the last the identity confirmation snackbar was
+// prompted. Used to limit the frequency of this snackbar.
+inline constexpr char kIdentityConfirmationSnackbarLastPromptTime[] =
+    "ios.identity_confirmation_snackbar_last_prompt_time";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
