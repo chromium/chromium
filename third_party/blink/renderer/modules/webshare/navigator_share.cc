@@ -315,8 +315,8 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
       }
 
       total_bytes += file->size();
-      files.push_back(
-          mojom::blink::SharedFile::New(*name, file->GetBlobDataHandle()));
+      files.push_back(mojom::blink::SharedFile::New(
+          *name, file->GetBlobDataHandleWithKnownSize()));
     }
 
     if (files.size() > kMaxSharedFileCount ||

@@ -279,6 +279,15 @@ ScriptPromise<DOMArrayBuffer> Blob::arrayBuffer(ScriptState* script_state) {
   return promise;
 }
 
+scoped_refptr<BlobDataHandle> Blob::GetBlobDataHandleWithKnownSize() const {
+  if (!blob_data_handle_->IsSingleUnknownSizeFile()) {
+    return blob_data_handle_;
+  }
+  return BlobDataHandle::Create(blob_data_handle_->Uuid(),
+                                blob_data_handle_->GetType(), size(),
+                                blob_data_handle_->CloneBlobRemote());
+}
+
 void Blob::AppendTo(BlobData& blob_data) const {
   blob_data.AppendBlob(blob_data_handle_, 0, size());
 }
