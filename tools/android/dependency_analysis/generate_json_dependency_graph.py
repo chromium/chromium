@@ -13,7 +13,7 @@ import pathlib
 import subprocess
 import sys
 
-from typing import Dict, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import class_dependency
 import package_dependency
@@ -38,7 +38,7 @@ def _relsrc(path: Union[str, pathlib.Path], src_path: pathlib.Path):
     return pathlib.Path(path).relative_to(src_path)
 
 
-def class_is_interesting(name: str, prefixes: Tuple[str]):
+def class_is_interesting(name: str, prefixes: Tuple[str, ...]):
     """Checks if a jdeps class is a class we are actually interested in."""
     if not prefixes or name.startswith(prefixes):
         return True
@@ -60,7 +60,7 @@ class JavaClassJdepsParser:
         return self._graph
 
     def parse_raw_jdeps_output(self, build_target: str, jdeps_output: str,
-                               prefixes: Tuple[str]):
+                               prefixes: Tuple[str, ...]):
         """Parses the entirety of the jdeps output."""
         for line in jdeps_output.split('\n'):
             self.parse_line(build_target, line, prefixes)
@@ -68,7 +68,7 @@ class JavaClassJdepsParser:
     def parse_line(self,
                    build_target: str,
                    line: str,
-                   prefixes: Tuple[str] = ('org.chromium.', )):
+                   prefixes: Tuple[str, ...] = ('org.chromium.', )):
         """Parses a line of jdeps output.
 
         The assumed format of the line starts with 'name_1 -> name_2'.
@@ -200,14 +200,25 @@ def _get_jar_path_for_target(build_output_dir: pathlib.Path, build_target: str,
     return build_output_dir / subdirectory / jar_dir / jar_name
 
 
-def main():
-    """Runs jdeps on all JARs a build target depends on.
+# Use this custom Namespace to provide type checking and type hinting.
+class OptionsNamespace(argparse.Namespace):
+    output: str
+    build_output_dir: Optional[Union[str, pathlib.Path]]
+    prefixes: List[str]
+    target: Optional[str]
+    checkout_dir: str
+    jdeps_path: Optional[str]
+    gn_path: str
+    skip_rebuild: bool
+    show_ninja: bool
+    verbose: bool
 
-    Creates a JSON file from the jdeps output."""
 
+def parse_args():
     arg_parser = argparse.ArgumentParser(
         description='Runs jdeps (dependency analysis tool) on all JARs and '
         'writes the resulting dependency graph into a JSON file.')
+    # ▼▼▼▼▼ Please update OptionsNamespace when adding or modifying args. ▼▼▼▼▼
     required_arg_group = arg_parser.add_argument_group('required arguments')
     required_arg_group.add_argument(
         '-o',
@@ -241,9 +252,6 @@ def main():
                             help='Path to the chromium checkout directory. By '
                             'default the checkout containing this script is '
                             'used.')
-    arg_parser.add_argument('-j',
-                            help='-j value to pass to ninja instead of using '
-                            'autoninja to autoset this value.')
     arg_parser.add_argument('--jdeps-path',
                             help='Path to the jdeps executable.')
     arg_parser.add_argument('-g',
@@ -252,17 +260,29 @@ def main():
                             help='Path to the gn executable.')
     arg_parser.add_argument('--skip-rebuild',
                             action='store_true',
+                            default=False,
                             help='Skip rebuilding, useful on bots where '
                             'compile is a separate step right before running '
                             'this script.')
     arg_parser.add_argument('--show-ninja',
                             action='store_true',
+                            default=False,
                             help='Used to show ninja output.')
     arg_parser.add_argument('-v',
                             '--verbose',
                             action='store_true',
+                            default=False,
                             help='Used to display detailed logging.')
-    args = arg_parser.parse_args()
+    # ▲▲▲▲▲ Please update OptionsNamespace when adding or modifying args. ▲▲▲▲▲
+    return arg_parser.parse_args(namespace=OptionsNamespace())
+
+
+def main():
+    """Runs jdeps on all JARs a build target depends on.
+
+    Creates a JSON file from the jdeps output."""
+
+    args = parse_args()
 
     if args.verbose:
         level = logging.DEBUG
@@ -328,8 +348,6 @@ def main():
                 'This may take a while the first time through. Pass '
                 '--show-ninja to see ninja progress.')
         cmd = gn_helpers.CreateBuildCommand(args.build_output_dir)
-        if args.j:
-            cmd += ['-j', args.j]
         subprocess.run(cmd + to_recompile,
                        capture_output=not args.show_ninja,
                        check=True)
