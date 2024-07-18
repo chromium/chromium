@@ -37,7 +37,10 @@ AuthenticatorGPMArbitraryPinSheetView::BuildStepSpecificContent() {
   bool ui_disabled = gpm_arbitrary_pin_sheet_model()->ui_disabled();
   return std::make_pair(
       std::make_unique<AuthenticatorGPMArbitraryPinView>(
-          ui_disabled, gpm_arbitrary_pin_sheet_model()->pin(), this),
+          ui_disabled, gpm_arbitrary_pin_sheet_model()->pin(),
+          gpm_arbitrary_pin_sheet_model()->mode() ==
+              AuthenticatorGpmPinSheetModelBase::Mode::kPinCreate,
+          this),
       ui_disabled ? AutoFocus::kNo : AutoFocus::kYes);
 }
 

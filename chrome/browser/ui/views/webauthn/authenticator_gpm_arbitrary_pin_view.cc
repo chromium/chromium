@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_view.h"
 
 #include "chrome/browser/ui/views/webauthn/reveal_button_util.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -19,6 +21,7 @@ constexpr int kPinTextfieldWithInChars = 25;
 AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
     bool ui_disabled,
     const std::u16string& pin,
+    bool is_pin_creation,
     Delegate* delegate)
     : delegate_(delegate) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -29,7 +32,9 @@ AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
 
   auto pin_textfield = std::make_unique<views::Textfield>();
   pin_textfield->SetController(this);
-  pin_textfield->GetViewAccessibility().SetName(u"Pin field (UNTRANSLATED)");
+  pin_textfield->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      is_pin_creation ? IDS_WEBAUTHN_GPM_CREATE_ALPHANUMERIC_PIN_ACCESSIBILITY
+                      : IDS_WEBAUTHN_GPM_ENTER_ALPHANUMERIC_PIN_ACCESSIBILITY));
   pin_textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   pin_textfield->SetDefaultWidthInChars(kPinTextfieldWithInChars);
   pin_textfield->SetReadOnly(ui_disabled);
