@@ -21,9 +21,16 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SessionRestoreInteractiveTest : public InProcessBrowserTest {
  public:
@@ -76,7 +83,8 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
     return new_browser;
   }
 
-  void QuitMultiWindowBrowserAndRestore(Profile* profile) {
+  void QuitMultiWindowBrowserAndRestore(Profile* profile,
+                                        bool wait_for_tab_loading = true) {
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
     auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
@@ -105,7 +113,9 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
         SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER, {});
 
     for (Browser* browser : *(BrowserList::GetInstance())) {
-      WaitForTabsToLoad(browser);
+      if (wait_for_tab_loading) {
+        WaitForTabsToLoad(browser);
+      }
       if (browser->window()->IsMinimized()) {
         minimized_window_counter--;
       } else {
@@ -222,3 +232,66 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   // Quit and restore a second time.
   QuitMultiWindowBrowserAndRestore(profile);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class SessionRestoreAshInteractiveTest : public SessionRestoreInteractiveTest {
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kAshSessionRestoreDeferOccludedActiveTabLoad};
+};
+
+// Verify that only the visible active tab gets immediately loaded out of
+// session restore.
+// The test and the optimization only works for ash because the occlusion state
+// is calculated synchronously and is available when `ProcessSessionWindows`
+// finishes.
+IN_PROC_BROWSER_TEST_F(SessionRestoreAshInteractiveTest, MultiWindowTabLoad) {
+  // Make WebContents respect occlusion state.
+  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  cmd->RemoveSwitch(switches::kDisableBackgroundingOccludedWindowsForTesting);
+
+  Profile* profile = browser()->profile();
+
+  const gfx::Rect bounds(0, 0, 600, 400);
+
+  // Creates 2 browser windows with one fully occludes the other.
+  Browser* browser1 = browser();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL("data:,window 1")));
+  browser1->window()->SetBounds(bounds);
+
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  chrome::NewWindow(browser1);
+  Browser* browser2 = new_browser_observer.Wait();
+  browser2->window()->SetBounds(bounds);
+
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL("data:,window 2")));
+
+  EXPECT_EQ(
+      content::Visibility::OCCLUDED,
+      browser1->tab_strip_model()->GetActiveWebContents()->GetVisibility());
+  EXPECT_EQ(
+      content::Visibility::VISIBLE,
+      browser2->tab_strip_model()->GetActiveWebContents()->GetVisibility());
+
+  // Quit and restore.
+  QuitMultiWindowBrowserAndRestore(profile, /*wait_for_tab_loading=*/false);
+
+  // Checks that only the active tab in "window 2" starts to load immediately.
+  int load_count = 0;
+  GURL last_loading_tab_url;
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+      content::WebContents* contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      if (contents->IsLoading()) {
+        ++load_count;
+        last_loading_tab_url = contents->GetLastCommittedURL();
+      }
+    }
+  }
+  EXPECT_EQ(1, load_count);
+  EXPECT_EQ(GURL("data:,window 2"), last_loading_tab_url);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

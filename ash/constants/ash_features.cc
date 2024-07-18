@@ -141,6 +141,12 @@ BASE_FEATURE(kArcManagedAdbSideloadingSupport,
              "ArcManagedAdbSideloadingSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to defer loading of active tabs of background (occluded)
+// browser windows during session restore.
+BASE_FEATURE(kAshSessionRestoreDeferOccludedActiveTabLoad,
+             "AshSessionRestoreDeferOccludedActiveTabLoad",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable enhanced assistive emoji suggestions.
 BASE_FEATURE(kAssistEmojiEnhanced,
              "AssistEmojiEnhanced",
