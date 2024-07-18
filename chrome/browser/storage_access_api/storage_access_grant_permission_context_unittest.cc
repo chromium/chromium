@@ -9,6 +9,7 @@
 #include "base/barrier_callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -655,11 +656,14 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
 
 TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
        ImplicitGrant_AutograntedWithinFPS) {
-  base::Time expiration_lower_bound_check = base::Time::Now();
-
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   DCHECK(settings_map);
+
+  // Overriding the clock to test expiry time.
+  base::SimpleTestClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+  settings_map->SetClockForTesting(&test_clock);
 
   // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
   ContentSettingsForOneType non_restorable_grants =
@@ -689,14 +693,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
 
   auto setting = non_restorable_grants[0];
 
-  EXPECT_NE(true, setting.IsExpired());
-  // Check to ensure the expiration time is in expected range.
-  EXPECT_GT(setting.metadata.expiration(),
-            permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime +
-                expiration_lower_bound_check);
-  EXPECT_LT(setting.metadata.expiration(),
-            permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime +
-                base::Time::Now());
+  EXPECT_FALSE(setting.IsExpired());
+  EXPECT_EQ(setting.metadata.expiration(),
+            test_clock.Now() +
+                permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
 }
 
 class StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest

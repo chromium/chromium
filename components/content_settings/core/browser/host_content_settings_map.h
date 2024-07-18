@@ -366,6 +366,9 @@ class HostContentSettingsMap : public content_settings::Observer,
     allow_invalid_secondary_pattern_for_testing_ = allow;
   }
 
+  // Returns the current time of the `clock_`.
+  base::Time Now() const { return clock_->Now(); }
+
  private:
   friend class base::RefCountedThreadSafe<HostContentSettingsMap>;
   friend class content_settings::TestUtils;
