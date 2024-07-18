@@ -4495,9 +4495,9 @@ void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
   prompt->InvokeActionForTesting(DownloadDangerPrompt::ACCEPT);
 }
 
-#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
-// Flaky on Mac debug, failing with a timeout.
-// http://crbug.com/180759
+// TODO(https://crbug.com/40304461): Flaky on Mac debug, failing with a timeout.
+// TODO(https://crbug.com/353748713): Fails in MSan with use-after-dtor checks.
+#if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
 #define MAYBE_DownloadExtensionTest_AcceptDanger \
   DISABLED_DownloadExtensionTest_AcceptDanger
 #else
