@@ -125,9 +125,8 @@ std::vector<std::u16string> ContentSettingsTypeToString(
     std::vector<int32_t>& content_settings_type_list) {
   std::vector<std::u16string> content_settings_string_list;
   for (int32_t content_settings_type : content_settings_type_list) {
-    content_settings_string_list.push_back(
-        PageInfoUI::PermissionTypeToUIStringMidSentence(
-            static_cast<ContentSettingsType>(content_settings_type)));
+    content_settings_string_list.push_back(PageInfoUI::PermissionTypeToUIString(
+        static_cast<ContentSettingsType>(content_settings_type)));
   }
   return content_settings_string_list;
 }

@@ -1684,17 +1684,17 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PERMISSIONS_WARNING_TITLE" translateable="false">
         {NUM_SITES, plural, =1 {Permissions removed from 1 site} other {Permissions removed from # sites}}
       </message>
-      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_TITLE" desc="Page title for the Safety Hub permissions review subpage, allowing users to review the automatically revoked permissions.">
         Review permissions
       </message>
-      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_HEADER" translateable="false">
-        To protect your data, permissions were removed from sites that abuse notifications or that you haven’t visited recently
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_HEADER" desc="Header text shown at the very top of the Safety Hub permissions review subpage. Further educates the user about why the permissions displayed on the page were revoked.">
+        To protect your privacy, permissions were removed from some sites
       </message>
-      <message name="IDS_SAFETY_HUB_SINGLE_PERMISSION_SNACKBAR" translateable="false">
+      <message name="IDS_SAFETY_HUB_SINGLE_PERMISSION_SNACKBAR" desc="Snackbar text displayed when the user clicks the 'Undo' button for a site with revoked permissions. Informs the user about which site the permissions were allowed again for.">
         Permissions allowed again for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
       </message>
-      <message name="IDS_SAFETY_HUB_MULTIPLE_PERMISSIONS_SNACKBAR" translateable="false">
-        Permissions allowed again for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
+      <message name="IDS_SAFETY_HUB_MULTIPLE_PERMISSIONS_SNACKBAR" desc="Snackbar text displayed when the user click the 'Got it' at the bottom of the permissions review subpage or in the permissions review module of the dashboard. Informs the user about the number of sites for which the revoked permissions were reviewed.">
+        Permissions reviewed for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_OK_TITLE" translateable="false">
         Notifications look good
@@ -1729,20 +1729,20 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_ALL_BUTTON" translateable="false">
         Unsubscribe all
       </message>
-      <message name="IDS_SAFETY_HUB_REMOVED_ONE_PERMISSION_SUBLABEL" translateable="false">
-        You haven't visited recently. Chrome removed <ph name="PERMISSION">%1$s<ex>location</ex></ph>
+      <message name="IDS_SAFETY_HUB_REMOVED_ONE_PERMISSION_SUBLABEL" desc="Description text shown below a site name, when a single permission, excluding notification permissions, was automatically revoked for that site.">
+        <ph name="PERMISSION">%1$s<ex>Location</ex></ph> <ph name="SEPARATOR">•</ph> Chrome removed these permissions because you haven’t visited recently
       </message>
-      <message name="IDS_SAFETY_HUB_REMOVED_TWO_PERMISSIONS_SUBLABEL" translateable="false">
-        You haven't visited recently. Chrome removed <ph name="PERMISSION_1">%1$s<ex>location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>notifications</ex></ph>
+      <message name="IDS_SAFETY_HUB_REMOVED_TWO_PERMISSIONS_SUBLABEL" desc="Description text shown below a site name, when two permissions, excluding notification permissions, were automatically revoked for that site.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>Notifications</ex></ph> <ph name="SEPARATOR">•</ph> Chrome removed these permissions because you haven’t visited recently
       </message>
-      <message name="IDS_SAFETY_HUB_REMOVED_THREE_PERMISSIONS_SUBLABEL" translateable="false">
-        You haven't visited recently. Chrome removed <ph name="PERMISSION_1">%1$s<ex>location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>notifications</ex></ph>, <ph name="PERMISSION_3">%3$s<ex>camera</ex></ph>
+      <message name="IDS_SAFETY_HUB_REMOVED_THREE_PERMISSIONS_SUBLABEL" desc="Description text shown below a site name, when three permissions, excluding notification permissions, were automatically revoked for that site.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>Notifications</ex></ph>, <ph name="PERMISSION_3">%3$s<ex>Camera</ex></ph> <ph name="SEPARATOR">•</ph> Chrome removed these permissions because you haven’t visited recently
       </message>
-      <message name="IDS_SAFETY_HUB_REMOVED_FOUR_OR_MORE_PERMISSIONS_SUBLABEL" translateable="false">
-        You haven't visited recently. Chrome removed <ph name="PERMISSION_1">%1$s<ex>location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>notifications</ex></ph>, and <ph name="COUNT">%3$s<ex>2</ex></ph> more
+      <message name="IDS_SAFETY_HUB_REMOVED_FOUR_OR_MORE_PERMISSIONS_SUBLABEL" desc="Description text shown below a site name, when four or more permissions, excluding notification permissions, were automatically revoked for that site.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>Notifications</ex></ph>, and more <ph name="SEPARATOR">•</ph> Chrome removed these permissions because you haven’t visited recently
       </message>
-      <message name="IDS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SUBLABEL" translateable="false">
-        Dangerous site. Chrome removed notifications.
+      <message name="IDS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SUBLABEL" desc="Description text shown below a site name, when notification permissions were automatically revoked for that site.">
+        Notifications <ph name="SEPARATOR">•</ph> Chrome removed these permissions because this site is dangerous
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_SNACKBAR" translateable="false">
         Notifications not allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
@@ -1798,7 +1798,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_GO_TO_NOTIFICATIONS_BUTTON" translateable="false">
         Go to notifications
       </message>
-      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_MENU_TEXT" translateable="false">
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_MENU_TEXT" desc="Text that appears when the user clicks the three dots at the top right of the permissions review subpage. Upon clicking on the text the user will be redirected to 'Site settings'">
         Go to site settings
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_MENU_TEXT" translateable="false">

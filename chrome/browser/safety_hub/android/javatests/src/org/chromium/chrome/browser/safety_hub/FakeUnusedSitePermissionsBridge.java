@@ -52,16 +52,16 @@ class FakeUnusedSitePermissionsBridge implements UnusedSitePermissionsBridge.Nat
             String contentSettingsName = "default";
             switch (contentSettingsTypeList[i]) {
                 case ContentSettingsType.MEDIASTREAM_CAMERA:
-                    contentSettingsName = "camera";
+                    contentSettingsName = "Camera";
                     break;
                 case ContentSettingsType.MEDIASTREAM_MIC:
-                    contentSettingsName = "microphone";
+                    contentSettingsName = "Microphone";
                     break;
                 case ContentSettingsType.GEOLOCATION:
-                    contentSettingsName = "location";
+                    contentSettingsName = "Location";
                     break;
                 case ContentSettingsType.BACKGROUND_SYNC:
-                    contentSettingsName = "background sync";
+                    contentSettingsName = "Background sync";
                     break;
                 default:
                     assert false : "Unreached";
