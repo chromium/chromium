@@ -112,7 +112,7 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
       NotifyPermissionSetInternal(
           request_data.id, request_data.requesting_origin,
           request_data.embedding_origin, std::move(callback),
-          /*persist=*/true, CONTENT_SETTING_BLOCK,
+          /*persist=*/false, CONTENT_SETTING_BLOCK,
           TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
       return;
     }
@@ -128,7 +128,7 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
   NotifyPermissionSetInternal(
       request_data.id, request_data.requesting_origin,
       request_data.embedding_origin, std::move(callback),
-      /*persist=*/true, CONTENT_SETTING_BLOCK,
+      /*persist=*/false, CONTENT_SETTING_BLOCK,
       TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet);
 }
 
@@ -174,6 +174,11 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSet(
   CHECK(!is_one_time);
   CHECK(is_final_decision);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (content_setting == CONTENT_SETTING_BLOCK) {
+    CHECK(!persist);
+  }
+
   NotifyPermissionSetInternal(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
       content_setting,
@@ -194,10 +199,10 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
 
   RecordOutcomeSample(outcome);
 
-  const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
-  UpdateTabContext(id, requesting_origin, permission_allowed);
+  UpdateTabContext(id, requesting_origin,
+                   content_setting == CONTENT_SETTING_ALLOW);
 
-  if (!permission_allowed || !persist) {
+  if (!persist) {
     if (content_setting == CONTENT_SETTING_DEFAULT) {
       content_setting = CONTENT_SETTING_ASK;
     }
@@ -210,6 +215,9 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
       HostContentSettingsMapFactory::GetForProfile(browser_context());
   CHECK(settings_map);
   CHECK(persist);
+  // This permission type doesn't support user prompts, so any denials are
+  // user-agent-generated. Machine-generated denials are not persisted.
+  CHECK_EQ(content_setting, CONTENT_SETTING_ALLOW);
 
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(

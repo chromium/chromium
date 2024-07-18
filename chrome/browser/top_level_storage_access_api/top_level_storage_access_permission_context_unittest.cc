@@ -31,6 +31,9 @@ namespace {
 
 using PermissionStatus = blink::mojom::PermissionStatus;
 
+using testing::IsEmpty;
+using testing::SizeIs;
+
 constexpr char kRequestOutcomeHistogram[] =
     "API.TopLevelStorageAccess.RequestOutcome";
 
@@ -66,6 +69,21 @@ class TopLevelStorageAccessPermissionContextTest
         std::make_unique<permissions::MockPermissionPromptFactory>(
             permissions::PermissionRequestManager::FromWebContents(
                 web_contents()));
+    first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets());
+  }
+
+  ContentSetting DecidePermissionSync(
+      TopLevelStorageAccessPermissionContext* permission_context,
+      bool user_gesture,
+      const GURL& requester_url,
+      const GURL& embedding_url) {
+    base::test::TestFuture<ContentSetting> future;
+    permission_context->DecidePermissionForTesting(
+        permissions::PermissionRequestData(permission_context, CreateFakeID(),
+                                           user_gesture, requester_url,
+                                           embedding_url),
+        future.GetCallback());
+    return future.Get();
   }
 
   void TearDown() override {
@@ -81,8 +99,14 @@ class TopLevelStorageAccessPermissionContextTest
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  first_party_sets::ScopedMockFirstPartySetsHandler&
+  first_party_sets_handler() {
+    return first_party_sets_handler_;
+  }
+
  private:
   base::HistogramTester histogram_tester_;
+  first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
   std::unique_ptr<permissions::MockPermissionPromptFactory>
       mock_permission_prompt_factory_;
   permissions::PermissionRequestID::RequestLocalId::Generator
@@ -103,16 +127,11 @@ TEST_F(TopLevelStorageAccessPermissionContextTest,
 TEST_F(TopLevelStorageAccessPermissionContextTest,
        PermissionDeniedWithoutUserGesture) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
 
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      permissions::PermissionRequestData(&permission_context, fake_id,
-                                         /*user_gesture=*/false,
-                                         GetRequesterURL(), GetTopLevelURL()),
-      future.GetCallback());
+  EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/false,
+                                 GetRequesterURL(), GetTopLevelURL()),
+            CONTENT_SETTING_BLOCK);
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
                 TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
@@ -130,6 +149,41 @@ TEST_F(TopLevelStorageAccessPermissionContextTest,
                 .status);
 }
 
+TEST_F(TopLevelStorageAccessPermissionContextTest,
+       ImplicitGrant_DenialQueryStillAsk) {
+  TopLevelStorageAccessPermissionContext permission_context(profile());
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  CHECK(settings_map);
+
+  // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
+  ASSERT_THAT(
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      IsEmpty());
+
+  EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
+                                 GetRequesterURL(), GetDummyEmbeddingUrl()),
+            CONTENT_SETTING_BLOCK);
+
+  // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings.
+  // None were granted, and implicit denials are not currently persisted, which
+  // preserves the default `ASK` setting.
+  EXPECT_THAT(
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      IsEmpty());
+
+  EXPECT_EQ(PermissionStatus::ASK,
+            permission_context
+                .GetPermissionStatus(/*render_frame_host=*/nullptr,
+                                     GetRequesterURL(), GetDummyEmbeddingUrl())
+                .status);
+}
+
 class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
     : public TopLevelStorageAccessPermissionContextTest {
  public:
@@ -139,7 +193,7 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
     TopLevelStorageAccessPermissionContextTest::SetUp();
 
     const net::SchemefulSite top_level(GetTopLevelURL());
-    first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets(
+    first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
         base::Version("1.2.3"),
         /*entries=*/
         {
@@ -152,33 +206,26 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
   }
 
  private:
-  first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
 };
 
 TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
        ImplicitGrant_AutograntedWithinFPS) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   CHECK(settings_map);
 
   // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants =
+  ASSERT_THAT(
       settings_map->GetSettingsForOneType(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-  EXPECT_EQ(0u, non_restorable_grants.size());
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      IsEmpty());
 
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      permissions::PermissionRequestData(&permission_context, fake_id,
-                                         /*user_gesture=*/true,
-                                         GetRequesterURL(), GetTopLevelURL()),
-      future.GetCallback());
-
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
+  EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
+                                 GetRequesterURL(), GetTopLevelURL()),
+            CONTENT_SETTING_ALLOW);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
                 TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
@@ -186,44 +233,40 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 
   // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings granted by
   // FPS.
-  non_restorable_grants = settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-  EXPECT_EQ(1u, non_restorable_grants.size());
+  EXPECT_THAT(
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      SizeIs(1));
 }
 
 TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
        ImplicitGrant_CrossSiteFrameQueryStillAsk) {
   // First, grant the permission based on FPS membership.
   TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   CHECK(settings_map);
 
   // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants =
+  ASSERT_THAT(
       settings_map->GetSettingsForOneType(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-  ASSERT_EQ(0u, non_restorable_grants.size());
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      IsEmpty());
 
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      permissions::PermissionRequestData(&permission_context, fake_id,
-                                         /*user_gesture=*/true,
-                                         GetRequesterURL(), GetTopLevelURL()),
-      future.GetCallback());
-
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
+  EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
+                                 GetRequesterURL(), GetTopLevelURL()),
+            CONTENT_SETTING_ALLOW);
 
   // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings granted by
   // FPS.
-  non_restorable_grants = settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-  EXPECT_EQ(1u, non_restorable_grants.size());
+  EXPECT_THAT(
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      SizeIs(1));
 
   // Next, set up a cross-site frame.
   content::RenderFrameHostTester* rfh_tester =
@@ -245,27 +288,21 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
 TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
        ImplicitGrant_AutodeniedOutsideFPS) {
   TopLevelStorageAccessPermissionContext permission_context(profile());
-  permissions::PermissionRequestID fake_id = CreateFakeID();
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   CHECK(settings_map);
 
   // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants =
+  ASSERT_THAT(
       settings_map->GetSettingsForOneType(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-  EXPECT_EQ(0u, non_restorable_grants.size());
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      IsEmpty());
 
-  base::test::TestFuture<ContentSetting> future;
-
-  permission_context.DecidePermissionForTesting(
-      permissions::PermissionRequestData(
-          &permission_context, fake_id,
-          /*user_gesture=*/true, GetRequesterURL(), GetDummyEmbeddingUrl()),
-      future.GetCallback());
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
+  EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
+                                 GetRequesterURL(), GetDummyEmbeddingUrl()),
+            CONTENT_SETTING_BLOCK);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 kRequestOutcomeHistogram,
                 TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet),
@@ -274,10 +311,11 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings.
   // None were granted, and implicit denials are not currently persisted, which
   // preserves the default `ASK` setting.
-  non_restorable_grants = settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-  EXPECT_EQ(0u, non_restorable_grants.size());
+  ASSERT_THAT(
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      IsEmpty());
 }
 
 TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
@@ -290,28 +328,24 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   CHECK(settings_map);
 
   // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants =
+  ASSERT_THAT(
       settings_map->GetSettingsForOneType(
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-  ASSERT_EQ(0u, non_restorable_grants.size());
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      IsEmpty());
 
-  base::test::TestFuture<ContentSetting> future;
-  permission_context.DecidePermissionForTesting(
-      permissions::PermissionRequestData(
-          &permission_context, fake_id,
-          /*user_gesture=*/true, GetRequesterURL(), GetDummyEmbeddingUrl()),
-      future.GetCallback());
-
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
+  EXPECT_EQ(DecidePermissionSync(&permission_context, /*user_gesture=*/true,
+                                 GetRequesterURL(), GetDummyEmbeddingUrl()),
+            CONTENT_SETTING_BLOCK);
 
   // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings.
   // None were granted, and implicit denials are not currently persisted, which
   // preserves the default `ASK` setting.
-  non_restorable_grants = settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-  EXPECT_EQ(0u, non_restorable_grants.size());
+  EXPECT_THAT(
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION),
+      IsEmpty());
 
   // The permission denial should not be exposed via query. Note that the block
   // setting is not persisted anyway with the current implementation; this is a
