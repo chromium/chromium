@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_IBAN_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_IBAN_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_IBAN_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_IBAN_MANAGER_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -91,4 +91,4 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_IBAN_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_IBAN_MANAGER_H_

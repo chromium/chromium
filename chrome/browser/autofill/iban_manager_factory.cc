@@ -7,7 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/browser/iban_manager.h"
+#include "components/autofill/core/browser/payments/iban_manager.h"
 
 namespace autofill {
 

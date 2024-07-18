@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_IBAN_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_IBAN_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_MOCK_IBAN_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_MOCK_IBAN_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/iban_manager.h"
+#include "components/autofill/core/browser/payments/iban_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,4 +45,4 @@ class MockIbanManager : public IbanManager {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_IBAN_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_MOCK_IBAN_MANAGER_H_

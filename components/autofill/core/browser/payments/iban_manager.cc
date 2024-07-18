@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/iban_manager.h"
+#include "components/autofill/core/browser/payments/iban_manager.h"
 
 #include "base/containers/contains.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
