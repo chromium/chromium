@@ -24,6 +24,7 @@
 #include <unordered_set>
 
 #include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -189,8 +190,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   disk_cache::Backend* GetCurrentBackend() const;
 
   // Given a header data blob, convert it to a response info object.
-  static bool ParseResponseInfo(const char* data,
-                                int len,
+  static bool ParseResponseInfo(base::span<const uint8_t> data,
                                 HttpResponseInfo* response_info,
                                 bool* response_truncated);
 

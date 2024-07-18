@@ -475,12 +475,10 @@ disk_cache::Backend* HttpCache::GetCurrentBackend() const {
 }
 
 // static
-bool HttpCache::ParseResponseInfo(const char* data,
-                                  int len,
+bool HttpCache::ParseResponseInfo(base::span<const uint8_t> data,
                                   HttpResponseInfo* response_info,
                                   bool* response_truncated) {
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(
-      base::as_bytes(base::span(data, base::checked_cast<size_t>(len))));
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(data);
   return response_info->InitFromPickle(pickle, response_truncated);
 }
 

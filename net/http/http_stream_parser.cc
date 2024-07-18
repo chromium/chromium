@@ -16,11 +16,13 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/base/features.h"
@@ -685,9 +687,9 @@ int HttpStreamParser::DoReadBody() {
     if (available) {
       CHECK_GT(available, 0);
       int64_t bytes_from_buffer = std::min(available, remaining_read_len);
-      memcpy(user_read_buf_->data(),
-             read_buf_->StartOfBuffer() + read_buf_unused_offset_,
-             bytes_from_buffer);
+      base::as_writable_bytes(user_read_buf_->span())
+          .copy_prefix_from(read_buf_->everything().subspan(
+              read_buf_unused_offset_, bytes_from_buffer));
       read_buf_unused_offset_ += bytes_from_buffer;
       // Clear out the remaining data if we've reached the end of the body.
       if (truncate_to_content_length_enabled_ &&
@@ -816,14 +818,14 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
 
     if (save_amount) {
       received_bytes_ -= save_amount;
-      memcpy(read_buf_->StartOfBuffer(), user_read_buf_->data() + result,
-             save_amount);
+      read_buf_->everything().copy_prefix_from(
+          base::as_bytes(user_read_buf_->span().subspan(result, save_amount)));
     }
     read_buf_->set_offset(save_amount);
     if (additional_save_amount) {
-      memmove(read_buf_->data(),
-              read_buf_->StartOfBuffer() + read_buf_unused_offset_,
-              additional_save_amount);
+      base::as_writable_bytes(read_buf_->span())
+          .copy_prefix_from(read_buf_->everything().subspan(
+              read_buf_unused_offset_, additional_save_amount));
       read_buf_->set_offset(save_amount + additional_save_amount);
     }
     read_buf_unused_offset_ = 0;
@@ -957,14 +959,12 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
     // which is where any extra data is copied to read_buf_, so we move the
     // data here.
     if (response_body_length_ == 0) {
-      int extra_bytes = read_buf_->offset() - end_of_header_offset;
-      if (extra_bytes) {
-        CHECK_GT(extra_bytes, 0);
-        memmove(read_buf_->StartOfBuffer(),
-                read_buf_->StartOfBuffer() + end_of_header_offset,
-                extra_bytes);
+      base::span<uint8_t> extra_bytes =
+          read_buf_->span_before_offset().subspan(end_of_header_offset);
+      if (!extra_bytes.empty()) {
+        read_buf_->everything().copy_prefix_from(extra_bytes);
       }
-      read_buf_->SetCapacity(extra_bytes);
+      read_buf_->SetCapacity(extra_bytes.size());
       if (response_->headers->response_code() / 100 == 1) {
         // After processing a 1xx response, the caller will ask for the next
         // header, so reset state to support that. We don't completely ignore a
@@ -1011,8 +1011,9 @@ int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
 
   // Look for the start of the status line, if it hasn't been found yet.
   if (response_header_start_offset_ == std::string::npos) {
-    response_header_start_offset_ = HttpUtil::LocateStartOfStatusLine(
-        read_buf_->StartOfBuffer(), read_buf_->offset());
+    auto buffer = base::as_chars(read_buf_->span_before_offset());
+    response_header_start_offset_ =
+        HttpUtil::LocateStartOfStatusLine(buffer.data(), buffer.size());
   }
 
   if (response_header_start_offset_ != std::string::npos) {
@@ -1026,8 +1027,9 @@ int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
         (base::ClampedNumeric<size_t>(read_buf_->offset()) - new_bytes - 3)
             .RawValue();
     size_t search_start = std::max(response_header_start_offset_, lower_bound);
-    end_offset = HttpUtil::LocateEndOfHeaders(
-        read_buf_->StartOfBuffer(), read_buf_->offset(), search_start);
+    auto buffer = base::as_chars(read_buf_->span_before_offset());
+    end_offset = HttpUtil::LocateEndOfHeaders(buffer.data(), buffer.size(),
+                                              search_start);
   } else if (read_buf_->offset() >= 8) {
     // Enough data to decide that this is an HTTP/0.9 response.
     // 8 bytes = (4 bytes of junk) + "http".length()
@@ -1043,14 +1045,14 @@ int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
   return end_offset;
 }
 
-int HttpStreamParser::ParseResponseHeaders(int end_offset) {
+int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
   scoped_refptr<HttpResponseHeaders> headers;
   DCHECK_EQ(0, read_buf_unused_offset_);
 
   if (response_header_start_offset_ != std::string::npos) {
     received_bytes_ += end_offset;
     headers = HttpResponseHeaders::TryToCreate(
-        std::string_view(read_buf_->StartOfBuffer(), end_offset));
+        base::as_string_view(read_buf_->everything().first(end_offset)));
     if (!headers)
       return ERR_INVALID_HTTP_RESPONSE;
     has_seen_status_line_ = true;
@@ -1076,7 +1078,7 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
       // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/qS63pYso4P0
       if (read_buf_->offset() < 3 || scheme != "http" ||
           !base::EqualsCaseInsensitiveASCII(
-              std::string_view(read_buf_->StartOfBuffer(), 3), "icy")) {
+              base::as_string_view(read_buf_->everything().first(3u)), "icy")) {
         return ERR_INVALID_HTTP_RESPONSE;
       }
     }

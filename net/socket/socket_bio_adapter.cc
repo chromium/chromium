@@ -259,7 +259,8 @@ int SocketBIOAdapter::BIOWrite(const char* in, int len) {
     CHECK_LE(write_buffer_->RemainingCapacity(), write_buffer_used_);
     int write_offset = write_buffer_used_ - write_buffer_->RemainingCapacity();
     int chunk = std::min(len, write_buffer_->capacity() - write_buffer_used_);
-    memcpy(write_buffer_->StartOfBuffer() + write_offset, in, chunk);
+    memcpy(write_buffer_->everything().subspan(write_offset, chunk).data(), in,
+           chunk);
     in += chunk;
     len -= chunk;
     bytes_copied += chunk;

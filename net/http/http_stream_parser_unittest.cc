@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -1175,9 +1176,8 @@ TEST(HttpStreamParser, WebSocket101Response) {
   EXPECT_TRUE(response_info.headers->HasHeaderValue("Connection", "Upgrade"));
   EXPECT_TRUE(response_info.headers->HasHeaderValue("Upgrade", "websocket"));
   EXPECT_EQ(read_buffer->capacity(), read_buffer->offset());
-  EXPECT_EQ(
-      "a fake websocket frame",
-      std::string_view(read_buffer->StartOfBuffer(), read_buffer->capacity()));
+  EXPECT_EQ("a fake websocket frame",
+            base::as_string_view(read_buffer->everything()));
 
   EXPECT_EQ(CountWriteBytes(writes), parser.sent_bytes());
   EXPECT_EQ(CountReadBytes(reads) -
@@ -1203,10 +1203,10 @@ class SimpleGetRunner {
 
   void AddInitialData(const std::string& data) {
     int offset = read_buffer_->offset();
-    int size = data.size();
-    read_buffer_->SetCapacity(offset + size);
-    memcpy(read_buffer_->StartOfBuffer() + offset, data.data(), size);
-    read_buffer_->set_offset(offset + size);
+    read_buffer_->SetCapacity(offset + data.size());
+    auto span = base::as_byte_span(data);
+    read_buffer_->everything().subspan(offset, span.size()).copy_from(span);
+    read_buffer_->set_offset(offset + span.size());
   }
 
   // The data used to back |string_piece| must stay alive until all mock data

@@ -53,7 +53,7 @@ bool HttpConnection::ReadIOBuffer::IncreaseCapacity() {
 }
 
 char* HttpConnection::ReadIOBuffer::StartOfBuffer() const {
-  return base_->StartOfBuffer();
+  return base::as_writable_chars(base_->everything()).data();
 }
 
 int HttpConnection::ReadIOBuffer::GetSize() const {
