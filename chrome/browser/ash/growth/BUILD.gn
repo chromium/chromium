@@ -26,6 +26,8 @@ static_library("growth") {
     "show_nudge_action_performer.h",
     "ui_action_performer.cc",
     "ui_action_performer.h",
+    "update_user_pref_action_performer.cc",
+    "update_user_pref_action_performer.h",
   ]
 
   deps = [

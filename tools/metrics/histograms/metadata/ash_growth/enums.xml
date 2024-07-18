@@ -72,6 +72,9 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="Position not supported for anchoring nudge"/>
   <int value="35" label="Initializing tracker failed"/>
   <int value="36" label="Tracker is not available in session"/>
+  <int value="37" label="User pref service not available"/>
+  <int value="38" label="User pref value type mismatched"/>
+  <int value="39" label="Invalid user pref"/>
 </enum>
 
 </enums>

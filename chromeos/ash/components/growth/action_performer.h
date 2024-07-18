@@ -26,6 +26,7 @@ enum class ActionType {
   kOpenUrl = 3,
   kShowNudge = 4,
   kShowNotification = 5,
+  kUpdateUserPref = 6,
 };
 
 enum class ActionResult {
@@ -40,6 +41,9 @@ enum class ActionResultReason {
   // For kInstallWebApp action
   kWebAppProviderNotAvailable = 2,
   kWebAppInstallFailedOther = 3,
+
+  // For kUpdateUserPref action
+  kUpdateUserPrefFailed = 4,
 };
 
 // Abstract interface for the different actions that Growth framework

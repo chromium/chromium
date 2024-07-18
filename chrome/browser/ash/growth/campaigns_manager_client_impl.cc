@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/growth/open_url_action_performer.h"
 #include "chrome/browser/ash/growth/show_notification_action_performer.h"
 #include "chrome/browser/ash/growth/show_nudge_action_performer.h"
+#include "chrome/browser/ash/growth/update_user_pref_action_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -161,6 +162,9 @@ growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() {
       show_notification_performer.get());
   action_map.emplace(make_pair(growth::ActionType::kShowNotification,
                                std::move(show_notification_performer)));
+  action_map.emplace(
+      make_pair(growth::ActionType::kUpdateUserPref,
+                std::make_unique<UpdateUserPrefActionPerformer>()));
   return action_map;
 }
 

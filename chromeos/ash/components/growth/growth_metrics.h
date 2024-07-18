@@ -57,8 +57,11 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
       kNudgeAnchorPositionNotSupported = 34,
       kTrackerInitializationFail = 35,
       kTrackerNotAvailableInSession = 36,
+      kUserPrefServiceNotAvailable = 37,
+      kUserPrefValueTypeMismatch = 38,
+      kUserPrefNotFound = 39,
 
-      kMaxValue = kTrackerNotAvailableInSession,
+      kMaxValue = kUserPrefNotFound,
     };
 
 // Records errors encountered during the campaigns loading and matching flow.
