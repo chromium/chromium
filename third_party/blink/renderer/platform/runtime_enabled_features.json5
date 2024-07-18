@@ -4538,6 +4538,17 @@
       status: "experimental",
     },
     {
+      // Using subgroup related features in WebGPU.
+      // https://chromestatus.com/feature/5126409856221184
+      name: "WebGPUSubgroupsFeatures",
+      status: "experimental",
+      origin_trial_feature_name: "WebGPUSubgroupsFeatures",
+      base_feature: "none",
+      // Subgroups related features are also enabled if experimental
+      // WebGPU is enabled.
+      implied_by: ["WebGPUExperimentalFeatures"],
+    },
+    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
     },

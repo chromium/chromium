@@ -57,8 +57,9 @@ GPUComputePipeline* GPUComputePipeline::Create(
   wgpu::ComputePipelineDescriptor dawn_desc =
       AsDawnType(device, webgpu_desc, &label, &computeStage);
 
-  // If ChromiumExperimentalSubgroups feature is enabled, chain the full
-  // subgroups options after compute pipeline descriptor.
+  // If ChromiumExperimentalSubgroups feature is enabled, chain the
+  // full subgroups options after compute pipeline descriptor.
+  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
   wgpu::DawnComputePipelineFullSubgroups fullSubgroupsOptions = {};
   if (device->features()->has(
           V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {

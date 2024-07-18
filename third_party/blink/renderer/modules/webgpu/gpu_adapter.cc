@@ -66,6 +66,10 @@ std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(wgpu::FeatureName f) {
       return V8GPUFeatureName::Enum::kFloat32Filterable;
     case wgpu::FeatureName::DualSourceBlending:
       return V8GPUFeatureName::Enum::kDualSourceBlending;
+    case wgpu::FeatureName::Subgroups:
+      return V8GPUFeatureName::Enum::kSubgroups;
+    case wgpu::FeatureName::SubgroupsF16:
+      return V8GPUFeatureName::Enum::kSubgroupsF16;
     default:
       return std::nullopt;
   }
@@ -75,7 +79,8 @@ std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(wgpu::FeatureName f) {
 
 namespace {
 
-GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter) {
+GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter,
+                                         ExecutionContext* execution_context) {
   GPUSupportedFeatures* features = MakeGarbageCollected<GPUSupportedFeatures>();
   DCHECK(features->FeatureNameSet().empty());
 
@@ -89,8 +94,20 @@ GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter) {
   for (wgpu::FeatureName f : feature_names) {
     auto feature_name_enum_optional = ToV8FeatureNameEnum(f);
     if (feature_name_enum_optional) {
-      features->AddFeatureName(
-          V8GPUFeatureName(feature_name_enum_optional.value()));
+      V8GPUFeatureName::Enum feature_name_enum =
+          feature_name_enum_optional.value();
+      // Subgroups features are under OT.
+      // TODO(crbug.com/349125474): remove this check after subgroups features
+      // OT finished.
+      if ((feature_name_enum_optional == V8GPUFeatureName::Enum::kSubgroups) ||
+          (feature_name_enum_optional ==
+           V8GPUFeatureName::Enum::kSubgroupsF16)) {
+        if (!RuntimeEnabledFeatures::WebGPUSubgroupsFeaturesEnabled(
+                execution_context)) {
+          continue;
+        }
+      }
+      features->AddFeatureName(V8GPUFeatureName(feature_name_enum));
     }
   }
   return features;
@@ -150,13 +167,14 @@ GPUAdapter::GPUAdapter(
     vk_driver_version_ = vkProperties.driverVersion;
   }
 
-  features_ = MakeFeatureNameSet(GetHandle());
+  features_ = MakeFeatureNameSet(GetHandle(), gpu_->GetExecutionContext());
 
   wgpu::SupportedLimits limits = {};
-  // Chain to get experimental subgroup limits, if support experimental
-  // subgroups feature.
+  // Chain to get experimental subgroup limits, if support subgroups feature.
   wgpu::DawnExperimentalSubgroupLimits subgroupLimits = {};
-  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
+  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
+  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups) ||
+      features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
     limits.nextInChain = &subgroupLimits;
   }
 

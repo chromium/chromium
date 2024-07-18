@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
@@ -160,11 +161,21 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
   proxy_->device_ = this;
 
   wgpu::SupportedLimits limits = {};
-  // Chain to get experimental subgroup limits, if device has experimental
-  // subgroups feature.
+  // Chain to get subgroup limits, if device has subgroups feature.
   wgpu::DawnExperimentalSubgroupLimits subgroupLimits = {};
-  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
+  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
+  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups) ||
+      features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
     limits.nextInChain = &subgroupLimits;
+  }
+
+  // Increment subgroups features counter for OT.
+  // TODO(crbug.com/349125474): Clean up after OT finished.
+  if (features_->has(V8GPUFeatureName::Enum::kSubgroups) ||
+      features_->has(V8GPUFeatureName::Enum::kSubgroupsF16)) {
+    DCHECK(RuntimeEnabledFeatures::WebGPUSubgroupsFeaturesEnabled(
+        execution_context));
+    UseCounter::Count(execution_context, WebFeature::kWebGPUSubgroupsFeatures);
   }
 
   GetHandle().GetLimits(&limits);
@@ -607,6 +618,7 @@ ScriptPromise<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
   // If ChromiumExperimentalSubgroups feature is enabled, chain the full
   // subgroups options after compute pipeline descriptor.
   wgpu::DawnComputePipelineFullSubgroups fullSubgroupsOptions = {};
+  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
   if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
     fullSubgroupsOptions.requiresFullSubgroups =
         descriptor->getRequiresFullSubgroupsOr(false);

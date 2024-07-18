@@ -22,6 +22,9 @@ enum GPUFeatureName {
     "chromium-experimental-subgroups",
     "chromium-experimental-subgroup-uniform-control-flow",
     "dual-source-blending",
+    // Currently subgroups features are under OT.
+    "subgroups",
+    "subgroups-f16",
 };
 
 [

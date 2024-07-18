@@ -1266,7 +1266,9 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::RG11B10UfloatRenderable:
     case wgpu::FeatureName::BGRA8UnormStorage:
     case wgpu::FeatureName::Float32Filterable:
-    case wgpu::FeatureName::DawnMultiPlanarFormats: {
+    case wgpu::FeatureName::DawnMultiPlanarFormats:
+    case wgpu::FeatureName::Subgroups:
+    case wgpu::FeatureName::SubgroupsF16: {
       // Likely case when no features are blocked.
       if (runtime_unsafe_features_.empty() ||
           safety_level_ == webgpu::SafetyLevel::kUnsafe) {
