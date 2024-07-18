@@ -507,6 +507,10 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   }
 #endif  // defined(ARCH_CPU_X86_64)
 
+  if (base::FeatureList::IsEnabled(kArcVmPvclock)) {
+    request.set_enable_pvclock(true);
+  }
+
   auto orientation = display::PanelOrientation::kNormal;
   if (auto* screen = display::Screen::GetScreen()) {
     const auto display_id = screen->GetPrimaryDisplay().id();

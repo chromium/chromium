@@ -262,6 +262,11 @@ const base::FeatureParam<bool> kVirtualSwapEnabled{
 const base::FeatureParam<int> kVirtualSwapIntervalMs{
     &kGuestSwap, "virtual_swap_interval_ms", 1000};
 
+// Controls whether to enable virtio-pvclock in ARCVM
+BASE_FEATURE(kArcVmPvclock,
+             "ArcEnablePvclock",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether enable ignoring hover event ANR in input dispatcher.
 BASE_FEATURE(kIgnoreHoverEventAnr,
              "IgnoreHoverEventAnr",

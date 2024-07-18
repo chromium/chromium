@@ -61,6 +61,7 @@ extern const base::FeatureParam<bool> kGuestReclaimEnabled;
 extern const base::FeatureParam<bool> kGuestReclaimOnlyAnonymous;
 extern const base::FeatureParam<bool> kVirtualSwapEnabled;
 extern const base::FeatureParam<int> kVirtualSwapIntervalMs;
+BASE_DECLARE_FEATURE(kArcVmPvclock);
 BASE_DECLARE_FEATURE(kIgnoreHoverEventAnr);
 BASE_DECLARE_FEATURE(kInstantResponseWindowOpen);
 BASE_DECLARE_FEATURE(kLockGuestMemory);
