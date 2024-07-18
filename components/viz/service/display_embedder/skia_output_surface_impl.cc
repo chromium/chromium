@@ -135,8 +135,17 @@ class GraphiteVizMemoryDumpProvider
     bool background = args.level_of_detail ==
                       base::trace_event::MemoryDumpLevelOfDetail::kBackground;
 
-    // TODO(https://crbug.com/330806170): Dump background statistics.
-    if (!background) {
+    if (background) {
+      std::string recorder_dump_name = base::StringPrintf(
+          "skia/gpu_resources/viz_compositor_graphite_recorder_0x%" PRIXPTR,
+          reinterpret_cast<uintptr_t>(recorder_.get()));
+      base::trace_event::MemoryAllocatorDump* recorder_dump =
+          pmd->CreateAllocatorDump(recorder_dump_name);
+      recorder_dump->AddScalar(
+          base::trace_event::MemoryAllocatorDump::kNameSize,
+          base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+          recorder_->currentBudgetedBytes());
+    } else {
       skia::SkiaTraceMemoryDumpImpl trace_memory_dump(args.level_of_detail,
                                                       pmd);
       recorder_->dumpMemoryStatistics(&trace_memory_dump);

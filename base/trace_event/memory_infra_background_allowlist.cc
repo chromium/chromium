@@ -249,6 +249,7 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "skia/gpu_resources/context_0x?",
         "skia/gpu_resources/graphite_context_0x?",
         "skia/gpu_resources/gpu_main_graphite_recorder_0x?",
+        "skia/gpu_resources/viz_compositor_graphite_recorder_0x?",
         "skia/sk_glyph_cache",
         "skia/sk_resource_cache",
         "sqlite",
