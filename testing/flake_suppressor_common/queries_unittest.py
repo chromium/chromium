@@ -75,5 +75,32 @@ class GetResultCountsUnittest(unittest.TestCase):
     self.assertEqual(self._subprocess_mock.call_count, 2)
 
 
+class GenerateBigQueryCommandUnittest(unittest.TestCase):
+
+  def testNoParametersSpecified(self) -> None:
+    """Tests that no parameters are added if none are specified."""
+    cmd = queries.GenerateBigQueryCommand('project', {})
+    for element in cmd:
+      self.assertFalse(element.startswith('--parameter'))
+
+  def testParameterAddition(self) -> None:
+    """Tests that specified parameters are added appropriately."""
+    cmd = queries.GenerateBigQueryCommand('project', {
+        '': {
+            'string': 'string_value'
+        },
+        'INT64': {
+            'int': 1
+        }
+    })
+    self.assertIn('--parameter=string::string_value', cmd)
+    self.assertIn('--parameter=int:INT64:1', cmd)
+
+  def testBatchMode(self) -> None:
+    """Tests that batch mode adds the necessary arg."""
+    cmd = queries.GenerateBigQueryCommand('project', {}, batch=True)
+    self.assertIn('--batch', cmd)
+
+
 if __name__ == '__main__':
   unittest.main(verbosity=2)

@@ -16,12 +16,87 @@ from unexpected_passes_common import constants as common_constants
 from unexpected_passes_common import data_types as common_data_types
 from unexpected_passes_common import queries as queries_module
 
+# This query gets us the most recent |num_builds| CI builds from the past month
+# for each builder.
+CI_BUILDS_SUBQUERY = """\
+  builds AS (
+    WITH
+      all_builds AS (
+        SELECT
+          DISTINCT exported.id AS build_inv_id,
+          variant.*,
+          partition_time
+        FROM
+          `chrome-luci-data.{project}.blink_web_tests_ci_test_results` AS tr,
+          UNNEST(variant) AS variant
+        WHERE
+          DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+          AND exported.realm = "{project}:ci"
+          AND key = "builder"
+      ),
+      grouped_builds AS (
+        SELECT
+          build_inv_id,
+          value AS builder,
+          partition_time,
+          RANK() OVER (PARTITION BY value ORDER BY partition_time DESC) AS rank_idx,
+        FROM all_builds
+      )
+    SELECT
+      build_inv_id,
+      builder,
+      partition_time
+    FROM grouped_builds
+    WHERE rank_idx <= {num_builds}
+  )"""
+
+# The same as CI_BUILDS_SUBQUERY, but takes into account submitted builds for
+# tryjobs.
+TRY_BUILDS_SUBQUERY = """\
+  builds AS (
+    WITH
+      all_builds AS (
+        SELECT
+          DISTINCT exported.id AS build_inv_id,
+          variant.*,
+          partition_time
+        FROM
+          `chrome-luci-data.{project}.blink_web_tests_try_test_results` AS tr,
+          UNNEST(variant) AS variant,
+          submitted_builds sb
+        WHERE
+          DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+          AND exported.realm = "{project}:try"
+          AND key = "builder"
+          AND exported.id = sb.id
+      ),
+      grouped_builds AS (
+        SELECT
+          build_inv_id,
+          value AS builder,
+          partition_time,
+          RANK() OVER (PARTITION BY value ORDER BY partition_time DESC) AS rank_idx,
+        FROM all_builds
+      )
+    SELECT
+      build_inv_id,
+      builder,
+      partition_time
+    FROM grouped_builds
+    WHERE rank_idx <= {num_builds}
+  )"""
+
 RESULTS_SUBQUERY = """\
   results AS (
     SELECT
       exported.id,
       test_id,
       status,
+      (
+        SELECT value
+        FROM tr.variant
+        WHERE key = "builder"
+      ) as builder_name,
       duration,
       (
         SELECT value
@@ -44,148 +119,45 @@ RESULTS_SUBQUERY = """\
         FROM tr.tags
         WHERE key = "web_tests_used_expectations_file") as expectation_files
     FROM
-      `chrome-luci-data.{{builder_project}}.blink_web_tests_{builder_type}_test_results` tr,
+      `chrome-luci-data.{project}.blink_web_tests_{ci_or_try}_test_results` tr,
       builds b
     WHERE
       DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
       AND exported.id = build_inv_id
       AND status != "SKIP"
-      {{test_filter_clause}}
   )"""
 
+# Selects the relevant columns from results that had a non-Pass expectation when
+# they were run, ordered by builder name.
 FINAL_SELECTOR_QUERY = """\
-SELECT id, test_id, status, duration, step_name, timeout, typ_tags, expectation_files
+SELECT id, test_id, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
   OR "Crash" IN UNNEST(typ_expectations)
   OR "Timeout" IN UNNEST(typ_expectations)
-  OR "Slow" IN UNNEST(typ_expectations)"""
-
-# This query gets us all results for tests from CI that have had results with a
-# Failure, Timeout, or Crash expectation in the past |@num_builds| builds on
-# |@builder_name|.
-CI_BQ_QUERY_TEMPLATE = """\
-WITH
-  builds AS (
-    SELECT
-      DISTINCT exported.id build_inv_id,
-      partition_time
-    FROM
-      `chrome-luci-data.{{builder_project}}.blink_web_tests_ci_test_results` tr
-    WHERE
-      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
-      AND exported.realm = "{{builder_project}}:ci"
-      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
-    ORDER BY partition_time DESC
-    LIMIT @num_builds
-  ),
-{results_subquery}
-{final_selector_query}
-""".format(results_subquery=RESULTS_SUBQUERY.format(
-    builder_type=common_constants.BuilderTypes.CI),
-           final_selector_query=FINAL_SELECTOR_QUERY)
-
-SUBMITTED_BUILDS_SUBQUERY = """\
-  submitted_builds AS (
-{chromium_builds}
-  ),""".format(chromium_builds=queries_module.SUBMITTED_BUILDS_TEMPLATE.format(
-    project_view='chromium'))
-
-# Same as CI_BQ_QUERY_TEMPLATE, but for tryjobs. Only data from builds that
-# were used for CL submission is considered.
-TRY_BQ_QUERY_TEMPLATE = """\
-WITH
-{submitted_builds_subquery}
-  builds AS (
-    SELECT
-      DISTINCT exported.id build_inv_id,
-      partition_time
-    FROM
-      `chrome-luci-data.{{builder_project}}.blink_web_tests_try_test_results` tr,
-      submitted_builds sb
-    WHERE
-      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
-      AND exported.realm = "{{builder_project}}:try"
-      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
-      AND exported.id = sb.id
-    ORDER BY partition_time DESC
-    LIMIT @num_builds
-  ),
-{results_subquery}
-{final_selector_query}
-""".format(submitted_builds_subquery=SUBMITTED_BUILDS_SUBQUERY,
-           results_subquery=RESULTS_SUBQUERY.format(
-               builder_type=common_constants.BuilderTypes.TRY),
-           final_selector_query=FINAL_SELECTOR_QUERY)
-
-# Very similar to above, but used to get the names of tests that are of
-# interest for use as a filter.
-TEST_FILTER_QUERY_TEMPLATE = """\
-WITH
-  builds AS (
-    SELECT
-      DISTINCT exported.id build_inv_id,
-      partition_time
-    FROM
-      `chrome-luci-data.{builder_project}.blink_web_tests_{builder_type}_test_results` tr
-    WHERE
-      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
-      AND exported.realm = "{builder_project}:{builder_type}"
-      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
-    ORDER BY partition_time DESC
-    LIMIT 50
-  ),
-  results AS (
-    SELECT
-      exported.id,
-      test_id,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "raw_typ_expectation") as typ_expectations
-    FROM
-      `chrome-luci-data.{builder_project}.blink_web_tests_{builder_type}_test_results` tr,
-      builds b
-    WHERE
-      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
-      AND exported.id = build_inv_id
-      AND status != "SKIP"
-  )
-SELECT DISTINCT r.test_id
-FROM results r
-WHERE
-  "Failure" IN UNNEST(typ_expectations)
-  OR "Crash" IN UNNEST(typ_expectations)
-  OR "Timeout" IN UNNEST(typ_expectations)
   OR "Slow" IN UNNEST(typ_expectations)
-"""
+ORDER BY builder_name DESC"""
 
-ALL_BUILDERS_FROM_TABLE_SUBQUERY = """\
-    SELECT
-      (
-        SELECT value
-        FROM tr.variant
-        WHERE key = "builder") as builder_name
-    FROM
-      `chrome-luci-data.{builder_project}.blink_web_tests_{builder_type}_test_results` tr
-    WHERE
-      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)"""
+# Gets the Buildbucket IDs for all the public trybots that:
+#   1. Run Blink web tests
+#   2. Were used for CL submission (i.e. weren't for intermediate patchsets)
+PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY = """\
+  submitted_builds AS (
+{chromium_builds_subquery}
+  )""".format(chromium_builds_subquery=queries_module.
+              PARTITIONED_SUBMITTED_BUILDS_TEMPLATE.format(
+                  project_view='chromium'))
 
-ACTIVE_BUILDER_QUERY_TEMPLATE = """\
-WITH
-  builders AS (
-{all_builders_from_table_subquery}
-{{active_internal_builder_subquery}}
-  )
-SELECT DISTINCT builder_name
-FROM builders
-""".format(all_builders_from_table_subquery=ALL_BUILDERS_FROM_TABLE_SUBQUERY)
-
-ACTIVE_INTERNAL_BUILDER_SUBQUERY = """\
-    UNION ALL
-{all_builders_from_table_subquery}""".format(
-    all_builders_from_table_subquery=ALL_BUILDERS_FROM_TABLE_SUBQUERY)
+# The same as PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY, but for internal trybots.
+# Chrome try attempts aren't in their own partitioned tabled, so look for Chrome
+# attempts in the raw table.
+INTERNAL_TRY_SUBMITTED_BUILDS_SUBQUERY = """\
+  submitted_builds AS (
+{chrome_builds_subquery}
+  )""".format(
+    chrome_builds_subquery=queries_module.RAW_SUBMITTED_BUILDS_TEMPLATE.format(
+        project_view='chrome'))
 
 KNOWN_TEST_ID_PREFIXES = [
     'ninja://:blink_web_tests/',
@@ -200,18 +172,69 @@ DEFAULT_TIMEOUT = datetime.timedelta(seconds=6)
 
 
 class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
-    def _ConvertJsonResultToResultObject(
-            self, json_result: queries_module.QueryResult
-    ) -> data_types.WebTestResult:
-        result = super(WebTestBigQueryQuerier,
-                       self)._ConvertJsonResultToResultObject(json_result)
+
+    def _GetPublicCiQuery(self) -> str:
+        return """\
+WITH
+{builds_subquery},
+{results_subquery}
+{final_selector_query}
+""".format(builds_subquery=CI_BUILDS_SUBQUERY.format(
+            project='chromium', num_builds=self._num_samples),
+           results_subquery=RESULTS_SUBQUERY.format(project='chromium',
+                                                    ci_or_try='ci'),
+           final_selector_query=FINAL_SELECTOR_QUERY)
+
+    def _GetInternalCiQuery(self) -> str:
+        return """\
+WITH
+{builds_subquery},
+{results_subquery}
+{final_selector_query}
+""".format(builds_subquery=CI_BUILDS_SUBQUERY.format(
+            project='chrome', num_builds=self._num_samples),
+           results_subquery=RESULTS_SUBQUERY.format(project='chrome',
+                                                    ci_or_try='ci'),
+           final_selector_query=FINAL_SELECTOR_QUERY)
+
+    def _GetPublicTryQuery(self) -> str:
+        return """\
+WITH
+{submitted_builds_subquery},
+{builds_subquery},
+{results_subquery}
+{final_selector_query}
+""".format(submitted_builds_subquery=PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY,
+           builds_subquery=TRY_BUILDS_SUBQUERY.format(
+               project='chromium', num_builds=self._num_samples),
+           results_subquery=RESULTS_SUBQUERY.format(project='chromium',
+                                                    ci_or_try='try'),
+           final_selector_query=FINAL_SELECTOR_QUERY)
+
+    def _GetInternalTryQuery(self) -> str:
+        return """\
+WITH
+{submitted_builds_subquery},
+{builds_subquery},
+{results_subquery}
+{final_selector_query}
+""".format(submitted_builds_subquery=INTERNAL_TRY_SUBMITTED_BUILDS_SUBQUERY,
+           builds_subquery=TRY_BUILDS_SUBQUERY.format(
+               project='chrome', num_builds=self._num_samples),
+           results_subquery=RESULTS_SUBQUERY.format(project='chrome',
+                                                    ci_or_try='try'),
+           final_selector_query=FINAL_SELECTOR_QUERY)
+
+    def _ConvertBigQueryRowToResultObject(
+            self, row: queries_module.QueryResult) -> data_types.WebTestResult:
+        result = super()._ConvertBigQueryRowToResultObject(row)
         # The actual returned data type is set at runtime, so we need to force
         # pytype to treat this as the correct type during its static analysis,
         # which doesn't set the the data type.
         result = typing.cast(data_types.WebTestResult, result)
-        duration = float(json_result['duration'])
+        duration = float(row.duration)
         duration = datetime.timedelta(seconds=duration)
-        timeout = json_result['timeout']
+        timeout = row.timeout
         timeout = (datetime.timedelta(
             seconds=float(timeout)) if timeout else DEFAULT_TIMEOUT)
         result.SetDuration(duration, timeout)
@@ -237,32 +260,6 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
         # WebGPU web tests are currently unsupported for various reasons.
         return 'wpt_internal/webgpu/' in result['test_id']
 
-    def _GetQueryGeneratorForBuilder(
-            self, builder: common_data_types.BuilderEntry
-    ) -> Optional[queries_module.BaseQueryGenerator]:
-        builder_type = builder.builder_type
-        # Look for all tests.
-        if not self._large_query_mode:
-            return WebTestFixedQueryGenerator(builder, '')
-
-        query = TEST_FILTER_QUERY_TEMPLATE.format(
-            builder_project=builder.project, builder_type=builder.builder_type)
-        query_results = self._RunBigQueryCommandsForJsonOutput(
-            query, {'': {
-                'builder_name': builder.name
-            }})
-        test_ids = ['"%s"' % r['test_id'] for r in query_results]
-
-        if not test_ids:
-            return None
-
-        # Only consider specific test cases that were found to have active
-        # expectations in the above query. Also perform any initial query
-        # splitting.
-        target_num_ids = (queries_module.TARGET_RESULTS_PER_QUERY //
-                          self._num_samples)
-        return WebTestSplitQueryGenerator(builder, test_ids, target_num_ids)
-
     def _StripPrefixFromTestId(self, test_id: str) -> str:
         # Web test IDs provided by ResultDB are the test name known by the test
         # runner prefixed by one of the following:
@@ -272,42 +269,3 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
             if test_id.startswith(prefix):
                 return test_id.replace(prefix, '')
         raise RuntimeError('Unable to strip prefix from test ID %s' % test_id)
-
-    def _GetActiveBuilderQuery(self, builder_type: str,
-                               include_internal_builders: bool) -> str:
-        if include_internal_builders:
-            subquery = ACTIVE_INTERNAL_BUILDER_SUBQUERY.format(
-                builder_project='chrome', builder_type=builder_type)
-        else:
-            subquery = ''
-        return ACTIVE_BUILDER_QUERY_TEMPLATE.format(
-            builder_project='chromium',
-            builder_type=builder_type,
-            active_internal_builder_subquery=subquery)
-
-
-class WebTestFixedQueryGenerator(queries_module.FixedQueryGenerator):
-    def GetQueries(self) -> List[str]:
-        return QueryGeneratorImpl(self.GetClauses(), self._builder)
-
-
-class WebTestSplitQueryGenerator(queries_module.SplitQueryGenerator):
-    def GetQueries(self) -> List[str]:
-        return QueryGeneratorImpl(self.GetClauses(), self._builder)
-
-
-def QueryGeneratorImpl(test_filter_clauses: List[str],
-                       builder: common_data_types.BuilderEntry) -> List[str]:
-    queries = []
-    query_template = None
-    if builder.builder_type == common_constants.BuilderTypes.CI:
-        query_template = CI_BQ_QUERY_TEMPLATE
-    elif builder.builder_type == common_constants.BuilderTypes.TRY:
-        query_template = TRY_BQ_QUERY_TEMPLATE
-    else:
-        raise RuntimeError('Unknown builder type %s' % builder.builder_type)
-    for tfc in test_filter_clauses:
-        queries.append(
-            query_template.format(builder_project=builder.project,
-                                  test_filter_clause=tfc))
-    return queries

@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 """Helper methods for unittests."""
 
-from __future__ import print_function
-
-from typing import Iterable, List, Optional, Set, Tuple, Type
+import typing
+from typing import Generator, Iterable, List, Optional, Set, Tuple, Type
 import unittest.mock as mock
+
+from google.cloud import bigquery
+import pandas
 
 from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
@@ -23,33 +25,29 @@ def CreateStatsWithPassFails(passes: int, fails: int) -> data_types.BuildStats:
   return stats
 
 
-def _CreateSimpleQueries(clauses: Iterable[str]) -> List[str]:
-  queries = []
-  # Not actually a valid query since we don't specify the table, but it works.
-  for c in clauses:
-    queries.append("""\
-SELECT *
-WHERE %s
-""" % c)
-  return queries
-
-
-class SimpleFixedQueryGenerator(queries_module.FixedQueryGenerator):
-  def GetQueries(self) -> List[str]:
-    return _CreateSimpleQueries(self.GetClauses())
-
-
-class SimpleSplitQueryGenerator(queries_module.SplitQueryGenerator):
-  def GetQueries(self) -> List[str]:
-    return _CreateSimpleQueries(self.GetClauses())
+# id_ is used instead of id since id is a python built-in.
+def FakeQueryResult(builder_name: str, id_: str, test_id: str, status: str,
+                    typ_tags: Iterable[str], step_name: str) -> pandas.Series:
+  return pandas.Series(
+      data={
+          'builder_name': builder_name,
+          'id': id_,
+          'test_id': test_id,
+          'status': status,
+          'typ_tags': list(typ_tags),
+          'step_name': step_name,
+      })
 
 
 class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
-  def _GetQueryGeneratorForBuilder(self, builder: data_types.BuilderEntry
-                                   ) -> queries_module.BaseQueryGenerator:
-    if not self._large_query_mode:
-      return SimpleFixedQueryGenerator(builder, 'AND True')
-    return SimpleSplitQueryGenerator(builder, ['test_id'], 200)
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.query_results = []
+
+  def _GetSeriesForQuery(self, _) -> Generator[pandas.Series, None, None]:
+    for r in self.query_results:
+      yield r
 
   def _GetRelevantExpectationFilesForQueryResult(self, _) -> None:
     return None
@@ -57,26 +55,18 @@ class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
   def _StripPrefixFromTestId(self, test_id: str) -> str:
     return test_id.split('.')[-1]
 
-  def _GetActiveBuilderQuery(self, _, __) -> str:
-    return ''
-
 
 def CreateGenericQuerier(
     suite: Optional[str] = None,
     project: Optional[str] = None,
     num_samples: Optional[int] = None,
-    large_query_mode: Optional[bool] = None,
-    num_jobs: Optional[int] = None,
-    use_batching: bool = True,
     cls: Optional[Type[queries_module.BigQueryQuerier]] = None
 ) -> queries_module.BigQueryQuerier:
   suite = suite or 'pixel'
   project = project or 'project'
   num_samples = num_samples or 5
-  large_query_mode = large_query_mode or False
   cls = cls or SimpleBigQueryQuerier
-  return cls(suite, project, num_samples, large_query_mode, num_jobs,
-             use_batching)
+  return cls(suite, project, num_samples)
 
 
 def GetArgsForMockCall(call_args_list: List[tuple],
@@ -95,30 +85,6 @@ def GetArgsForMockCall(call_args_list: List[tuple],
   args = call_args_list[call_number][0]
   kwargs = call_args_list[call_number][1]
   return args, kwargs
-
-
-class FakeProcess():
-  """A fake subprocess Process object."""
-
-  def __init__(self,
-               returncode: Optional[int] = None,
-               stdout: Optional[str] = None,
-               stderr: Optional[str] = None,
-               finish: bool = True):
-    if finish:
-      self.returncode = returncode or 0
-    else:
-      self.returncode = None
-    self.stdout = stdout or ''
-    self.stderr = stderr or ''
-    self.finish = finish
-
-  def communicate(self, _) -> Tuple[str, str]:
-    return self.stdout, self.stderr
-
-  def terminate(self) -> None:
-    if self.finish:
-      raise OSError('Tried to terminate a finished process')
 
 
 class GenericBuilders(builders.Builders):

@@ -12,8 +12,12 @@ import os
 import subprocess
 import threading
 import time
-from typing import Any, Collection, Dict, Iterable, List, Optional, Tuple, Union
+from typing import (Any, Collection, Dict, Generator, Iterable, List, Optional,
+                    Tuple, Union)
 
+from google.cloud import bigquery
+from google.cloud import bigquery_storage
+import pandas
 import six
 
 from typ import expectations_parser
@@ -24,22 +28,11 @@ from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
 
 DEFAULT_NUM_SAMPLES = 100
-MAX_ROWS = (2**31) - 1
-MAX_QUERY_TRIES = 3
-# Used to prevent us from triggering too many queries simultaneously and causing
-# a bunch of rate limit errors. Anything below 1.5 seemed to result in enough
-# rate limit errors to cause problems. Raising above that for safety.
-QUERY_DELAY = 2
-# The target number of results/rows per query when running in large query mode.
-# Higher values = longer individual query times and higher chances of running
-# out of memory in BigQuery. Lower values = more parallelization overhead and
-# more issues with rate limit errors.
-TARGET_RESULTS_PER_QUERY = 20000
 
 # Subquery for getting all try builds that were used for CL submission. 30 days
 # is chosen because the ResultDB tables we pull data from only keep data around
 # for 30 days.
-SUBMITTED_BUILDS_TEMPLATE = """\
+PARTITIONED_SUBMITTED_BUILDS_TEMPLATE = """\
     SELECT
       CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
     FROM
@@ -52,22 +45,27 @@ SUBMITTED_BUILDS_TEMPLATE = """\
       AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                      INTERVAL 30 DAY)"""
 
-QueryResult = Dict[str, Any]
-QueryParameters = Dict[str, Dict[str, Any]]
+RAW_SUBMITTED_BUILDS_TEMPLATE = """\
+    SELECT
+      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
+    FROM
+      `commit-queue.raw.attempts`,
+      UNNEST(builds) as unnested_builds,
+      UNNEST(gerrit_changes) as unnested_changes
+    WHERE
+      luci_project = "{project_view}"
+      AND unnested_builds.host = "cr-buildbucket.appspot.com"
+      AND unnested_changes.submit_status = "SUCCESS"
+      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                     INTERVAL 30 DAY)"""
 
-# pylint: disable=super-with-arguments,useless-object-inheritance
+QueryResult = pandas.Series
 
 
-class BigQueryQuerier(object):
+class BigQueryQuerier:
   """Class to handle all BigQuery queries for a script invocation."""
 
-  def __init__(self,
-               suite: Optional[str],
-               project: str,
-               num_samples: int,
-               large_query_mode: bool,
-               num_jobs: Optional[int],
-               use_batching: bool = True):
+  def __init__(self, suite: Optional[str], project: str, num_samples: int):
     """
     Args:
       suite: A string containing the name of the suite that is being queried
@@ -76,27 +74,12 @@ class BigQueryQuerier(object):
       project: A string containing the billing project to use for BigQuery.
       num_samples: An integer containing the number of builds to pull results
           from.
-      large_query_mode: A boolean indicating whether large query mode should be
-          used. In this mode, an initial, smaller query is made and its results
-          are used to perform additional filtering on a second, larger query in
-          BigQuery. This works around hitting a hard memory limit when running
-          the ORDER BY clause.
-      num_jobs: An integer specifying how many jobs to run in parallel. If None,
-          all jobs will be run in parallel at the same time.
-      use_batching: Whether to use batching when running queries. Batching
-          allows a much greater amount of parallelism due to avoiding usage
-          limits, but also adds a variable amount of overhead since there need
-          to be free resources.
     """
     self._suite = suite
     self._project = project
     self._num_samples = num_samples or DEFAULT_NUM_SAMPLES
-    self._large_query_mode = large_query_mode
-    self._num_jobs = num_jobs
-    self._use_batching = use_batching
 
     assert self._num_samples > 0
-    assert (self._num_jobs is None or self._num_jobs > 0)
 
   def FillExpectationMapForBuilders(
       self, expectation_map: data_types.TestExpectationMap,
@@ -135,175 +118,168 @@ class BigQueryQuerier(object):
       else:
         assert b.builder_type == builder_type
 
-    # Filter out any builders that we can easily determine do not currently
-    # produce data we care about.
-    builders = self._FilterOutInactiveBuilders(builders, builder_type)
+    internal_statuses = set()
+    for b in builders:
+      internal_statuses.add(b.is_internal_builder)
 
-    num_jobs = self._num_jobs or len(builders)
-    expectation_map_lock = threading.Lock()
-    args = [(b, expectation_map, expectation_map_lock) for b in builders]
-
+    matched_builders = set()
     all_unmatched_results = {}
+    for internal in internal_statuses:
+      for builder_name, results, expectation_files in (
+          self.GetBuilderGroupedQueryResults(builder_type, internal)):
+        matching_builder = None
+        for b in builders:
+          if b.name == builder_name and b.is_internal_builder == internal:
+            matching_builder = b
+            break
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as pool:
-      for result in pool.map(self._QueryAddCombined, args):
-        unmatched_results, prefixed_builder_name = result
+        if not matching_builder:
+          logging.warning(
+              'Did not find a matching builder for name %s and '
+              'internal status %s. This is normal if the builder '
+              'is no longer running tests (e.g. it was '
+              'experimental).', builder_name, internal)
+          continue
+
+        if matching_builder in matched_builders:
+          raise RuntimeError(
+              f'Got query result batches matched to builder '
+              f'{matching_builder} twice - this is indicative of a malformed '
+              f'query returning results that are not sorted by builder')
+        matched_builders.add(matching_builder)
+
+        prefixed_builder_name = '%s/%s:%s' % (matching_builder.project,
+                                              matching_builder.builder_type,
+                                              matching_builder.name)
+        unmatched_results = expectation_map.AddResultList(
+            prefixed_builder_name, results, expectation_files)
         if unmatched_results:
           all_unmatched_results[prefixed_builder_name] = unmatched_results
 
     logging.debug('Filling expectation map took %f', time.time() - start_time)
     return all_unmatched_results
 
-  def _FilterOutInactiveBuilders(self,
-                                 builders: Iterable[data_types.BuilderEntry],
-                                 builder_type: str
-                                 ) -> List[data_types.BuilderEntry]:
-    """Filters out any builders that are not producing data.
-
-    This helps save time on querying, as querying for the builder names is cheap
-    while querying for individual results from a builder is expensive. Filtering
-    out inactive builders lets us preemptively remove builders that we know we
-    won't get any data from, and thus don't need to waste time querying.
+  def GetBuilderGroupedQueryResults(
+      self, builder_type: str, is_internal: bool
+  ) -> Generator[Tuple[str, data_types.ResultListType, Optional[List[str]]],
+                 None, None]:
+    """Generates results for all relevant builders grouped by builder name.
 
     Args:
-      builders: An iterable of data_types.BuilderEntry containing the builders
-          to query.
-      builder_type: A string containing the type of builder to query, either
-          "ci" or "try".
+      builder_type: Whether the builders are CI or try builders.
+      is_internal: Whether the builders are internal.
 
-    Returns:
-      A copy of |builders| with any inactive builders removed.
+    Yields:
+      A tuple (builder_name, results). |builder_name| is a string specifying the
+      builder that |results| came from. |results| is a data_types.ResultListType
+      containing all the results for |builder_name|.
     """
-    include_internal_builders = any(b.is_internal_builder for b in builders)
-    query = self._GetActiveBuilderQuery(
-        builder_type, include_internal_builders).encode('utf-8')
-    cmd = GenerateBigQueryCommand(self._project, {}, batch=False)
-    with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
-      p = subprocess.Popen(cmd,
-                           stdout=subprocess.PIPE,
-                           stderr=devnull,
-                           stdin=subprocess.PIPE)
-    stdout, _ = p.communicate(query)
-    if not isinstance(stdout, six.string_types):
-      stdout = stdout.decode('utf-8')
-    results = json.loads(stdout)
+    if builder_type == constants.BuilderTypes.CI:
+      if is_internal:
+        query = self._GetInternalCiQuery()
+      else:
+        query = self._GetPublicCiQuery()
+    elif builder_type == constants.BuilderTypes.TRY:
+      if is_internal:
+        query = self._GetInternalTryQuery()
+      else:
+        query = self._GetPublicTryQuery()
+    else:
+      raise RuntimeError(f'Unknown builder type {builder_type}')
 
-    # We filter from an initial list instead of directly using the returned
-    # builders since there are cases where they aren't equivalent, such as for
-    # GPU tests if a particular builder doesn't run a particular suite. This
-    # could be encapsulated in the query, but this would cause the query to take
-    # longer. Since generating the initial list locally is basically
-    # instantenous and we're optimizing for runtime, filtering is the better
-    # option.
-    active_builders = {r['builder_name'] for r in results}
-    filtered_builders = [b for b in builders if b.name in active_builders]
-    return filtered_builders
+    current_builder = None
+    rows_for_builder = []
+    for row in self._GetSeriesForQuery(query):
+      if current_builder is None:
+        current_builder = row.builder_name
+      if row.builder_name != current_builder:
+        results_for_builder, expectation_files = self._ProcessRowsForBuilder(
+            rows_for_builder)
+        # The processing should have cleared out all the stored rows.
+        assert not rows_for_builder
+        yield current_builder, results_for_builder, expectation_files
+        current_builder = row.builder_name
+      rows_for_builder.append(row)
 
-  def _QueryAddCombined(
-      self, inputs: Tuple[data_types.BuilderEntry,
-                          data_types.TestExpectationMap, threading.Lock]
-  ) -> Tuple[data_types.ResultListType, str]:
-    """Combines the query and add steps for use in a process pool.
+    if current_builder is None:
+      logging.warning(
+          'Did not get any results for builder type %s and internal status %s. '
+          'Depending on where tests are run and how frequently trybots are '
+          'used for submission, this may be benign.', builder_type, is_internal)
+
+    if current_builder is not None and rows_for_builder:
+      results_for_builder, expectation_files = self._ProcessRowsForBuilder(
+          rows_for_builder)
+      assert not rows_for_builder
+      yield current_builder, results_for_builder, expectation_files
+
+  def _GetSeriesForQuery(self,
+                         query: str) -> Generator[pandas.Series, None, None]:
+    """Generates results for |query|.
 
     Args:
-      inputs: An iterable of inputs for QueryBuilder() and
-          data_types.TestExpectationMap.AddResultList(). Should be in the order:
-          builder expectation_map expectation_map_lock
+      query: A string containing the BigQuery query to run.
 
-          |expectation_map| will be modified in place.
-
-    Returns:
-      A tuple (unmatched_results, prefixed_builder_name). |unmatched_results| is
-      the output of data_types.TestExpectationMap.AddResultList().
-      |prefixed_builder_name| is a string representation of |builder| prefixed
-      with the project and builder type.
+    Yields:
+      A pandas.Series object for each row returned by the query. Columns can be
+      accessed directly as attributes.
     """
-    start_time = time.time()
-    builder, expectation_map, expectation_map_lock = inputs
-    logging.debug('Starting query for builder %s', builder.name)
-    results, expectation_files = self.QueryBuilder(builder)
-    logging.debug('Query for builder %s took %f', builder.name,
-                  time.time() - start_time)
+    client = bigquery.Client(project=self._project)
+    job = client.query(query)
+    row_iterator = job.result()
+    # Using a Dataframe iterator instead of directly using |row_iterator| allows
+    # us to use the BigQuery Storage API, which results in ~10x faster query
+    # result retrieval at the cost of a few more dependencies.
+    dataframe_iterator = row_iterator.to_dataframe_iterable(
+        bigquery_storage.BigQueryReadClient())
+    for df in dataframe_iterator:
+      for _, row in df.iterrows():
+        yield row
 
-    start_time = time.time()
-    prefixed_builder_name = '%s/%s:%s' % (builder.project, builder.builder_type,
-                                          builder.name)
-    logging.debug('Starting data processing for builder %s', builder.name)
-    with expectation_map_lock:
-      unmatched_results = expectation_map.AddResultList(prefixed_builder_name,
-                                                        results,
-                                                        expectation_files)
-    logging.debug('Data processing for builder %s took %f', builder.name,
-                  time.time() - start_time)
+  def _GetPublicCiQuery(self) -> str:
+    """Returns the BigQuery query for public CI builder results."""
+    raise NotImplementedError()
 
-    return unmatched_results, prefixed_builder_name
+  def _GetInternalCiQuery(self) -> str:
+    """Returns the BigQuery query for internal CI builder results."""
+    raise NotImplementedError()
 
-  def QueryBuilder(self, builder: data_types.BuilderEntry
-                   ) -> Tuple[data_types.ResultListType, Optional[List[str]]]:
-    """Queries ResultDB for results from |builder|.
+  def _GetPublicTryQuery(self) -> str:
+    """Returns the BigQuery query for public try builder results."""
+    raise NotImplementedError()
+
+  def _GetInternalTryQuery(self) -> str:
+    """Returns the BigQuery query for internal try builder results."""
+    raise NotImplementedError()
+
+  def _ProcessRowsForBuilder(
+      self, rows: List[QueryResult]
+  ) -> Tuple[data_types.ResultListType, Optional[List[str]]]:
+    """Processes rows from a query into data_types.Result representations.
 
     Args:
-      builder: A data_types.BuilderEntry containing the builder to query.
+      rows: A list of rows from a BigQuery query.
 
     Returns:
-      A tuple (results, expectation_files). |results| is the results returned by
-      the query converted into a list of data_types.Result objects.
-      |expectation_files| is a set of strings denoting which expectation files
-      are relevant to |results|, or None if all should be used.
+      A tuple (results, expectation_files). |results| is a list of
+      data_types.Result objects. |expectation_files| is the list of expectation
+      files that are used by the tests in |results|, but can be None to specify
+      that all expectation files should be considered.
     """
-
-    query_generator = self._GetQueryGeneratorForBuilder(builder)
-    if not query_generator:
-      # No affected tests on this builder, so early return.
-      return [], None
-
-    # Query for the test data from the builder, splitting the query if we run
-    # into the BigQuery hard memory limit. Even if we keep failing, this will
-    # eventually stop due to getting a QuerySplitError when we can't split the
-    # query any further.
-    query_results = None
-    while query_results is None:
-      try:
-        query_results = self._RunBigQueryCommandsForJsonOutput(
-            query_generator.GetQueries(), {
-                '': {
-                    'builder_name': builder.name
-                },
-                'INT64': {
-                    'num_builds': self._num_samples
-                }
-            })
-      except MemoryLimitError:
-        logging.warning(
-            'Query to builder %s hit BigQuery hard memory limit, trying again '
-            'with more query splitting.', builder.name)
-        query_generator.SplitQuery()
-
-    results = []
-    if not query_results:
-      # Don't bother logging if we know this is a fake CI builder.
-      if not (builder.builder_type == constants.BuilderTypes.CI
-              and builder in builders_module.GetInstance().GetFakeCiBuilders()):
-        logging.warning(
-            'Did not get results for "%s", but this may be because its '
-            'results do not apply to any expectations for this suite.',
-            builder.name)
-      return results, None
-
     # It's possible that a builder runs multiple versions of a test with
     # different expectation files for each version. So, find a result for each
     # unique step and get the expectation files from all of them.
     results_for_each_step = {}
-    for qr in query_results:
-      step_name = qr['step_name']
+    for r in rows:
+      step_name = r.step_name
       if step_name not in results_for_each_step:
-        results_for_each_step[step_name] = qr
+        results_for_each_step[step_name] = r
 
     expectation_files = set()
-    for qr in results_for_each_step.values():
+    for r in results_for_each_step.values():
       # None is a special value indicating "use all expectation files", so
       # handle that.
-      ef = self._GetRelevantExpectationFilesForQueryResult(qr)
+      ef = self._GetRelevantExpectationFilesForQueryResult(r)
       if ef is None:
         expectation_files = None
         break
@@ -314,39 +290,39 @@ class BigQueryQuerier(object):
     # The query result list is potentially very large, so reduce the list as we
     # iterate over it instead of using a standard for/in so that we don't
     # temporarily end up with a ~2x increase in memory.
-    while query_results:
-      r = query_results.pop()
+    results = []
+    while rows:
+      r = rows.pop()
       if self._ShouldSkipOverResult(r):
         continue
-      results.append(self._ConvertJsonResultToResultObject(r))
-    logging.debug('Got %d results for %s builder %s', len(results),
-                  builder.builder_type, builder.name)
+      results.append(self._ConvertBigQueryRowToResultObject(r))
+
     return results, expectation_files
 
-  def _ConvertJsonResultToResultObject(self, json_result: QueryResult
-                                       ) -> data_types.Result:
-    """Converts a single BigQuery JSON result to a data_types.Result.
+  def _ConvertBigQueryRowToResultObject(self,
+                                        row: QueryResult) -> data_types.Result:
+    """Converts a single BigQuery result row to a data_types.Result.
 
     Args:
-      json_result: A single row/result from BigQuery in JSON format.
+      row: A single row from BigQuery.
 
     Returns:
-      A data_types.Result object containing the information from |json_result|.
+      A data_types.Result object containing the information from |row|.
     """
-    build_id = _StripPrefixFromBuildId(json_result['id'])
-    test_name = self._StripPrefixFromTestId(json_result['test_id'])
-    actual_result = _ConvertActualResultToExpectationFileFormat(
-        json_result['status'])
-    tags = expectations.GetInstance().FilterToKnownTags(json_result['typ_tags'])
-    step = json_result['step_name']
+    build_id = _StripPrefixFromBuildId(row.id)
+    test_name = self._StripPrefixFromTestId(row.test_id)
+    actual_result = _ConvertActualResultToExpectationFileFormat(row.status)
+    tags = expectations.GetInstance().FilterToKnownTags(row.typ_tags)
+    step = row.step_name
     return data_types.Result(test_name, tags, actual_result, step, build_id)
 
-  def _GetRelevantExpectationFilesForQueryResult(self, query_result: QueryResult
-                                                 ) -> Optional[Iterable[str]]:
+  def _GetRelevantExpectationFilesForQueryResult(
+      self, query_result: QueryResult) -> Optional[Iterable[str]]:
     """Gets the relevant expectation file names for a given query result.
 
     Args:
-      query_result: A dict containing single row/result from a BigQuery query.
+      query_result: An object representing a row/result from a query. Columns
+          can be accessed via .column_name.
 
     Returns:
       An iterable of strings containing expectation file names that are
@@ -367,119 +343,6 @@ class BigQueryQuerier(object):
     del result
     return False
 
-  def _GetQueryGeneratorForBuilder(self, builder: data_types.BuilderEntry
-                                   ) -> Optional['BaseQueryGenerator']:
-    """Returns a BaseQueryGenerator instance to only include relevant tests.
-
-    Args:
-      builder: A data_types.BuilderEntry containing the builder to query.
-
-    Returns:
-      None if the query returned no results. Otherwise, some instance of a
-      BaseQueryGenerator.
-    """
-    raise NotImplementedError()
-
-  def _RunBigQueryCommandsForJsonOutput(self, queries: Union[str, List[str]],
-                                        parameters: QueryParameters
-                                        ) -> List[QueryResult]:
-    """Runs the given BigQuery queries and returns their outputs as JSON.
-
-    Args:
-      queries: A string or list of strings containing valid BigQuery queries to
-          run or a single string containing a query.
-      parameters: A dict specifying parameters to substitute in the query in
-          the format {type: {key: value}}. For example, the dict:
-          {'INT64': {'num_builds': 5}}
-          would result in --parameter=num_builds:INT64:5 being passed to
-          BigQuery.
-
-    Returns:
-      The combined results of |queries| in JSON.
-    """
-    if isinstance(queries, str):
-      queries = [queries]
-    assert isinstance(queries, list)
-
-    processes = set()
-    processes_lock = threading.Lock()
-
-    def run_cmd_in_thread(inputs: Tuple[List[str], str]) -> str:
-      cmd, query = inputs
-      query = query.encode('utf-8')
-      with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
-        with processes_lock:
-          # Starting many queries at once causes us to hit rate limits much more
-          # frequently, so stagger query starts to help avoid that.
-          time.sleep(QUERY_DELAY)
-          p = subprocess.Popen(cmd,
-                               stdout=subprocess.PIPE,
-                               stderr=devnull,
-                               stdin=subprocess.PIPE)
-          processes.add(p)
-
-        # We pass in the query via stdin instead of including it on the
-        # commandline because we can run into command length issues in large
-        # query mode.
-        stdout, _ = p.communicate(query)
-        if not isinstance(stdout, six.string_types):
-          stdout = stdout.decode('utf-8')
-        if p.returncode:
-          # When running many queries in parallel, it's possible to hit the
-          # rate limit for the account if we're unlucky, so try again if we do.
-          if 'Exceeded rate limits' in stdout:
-            raise RateLimitError()
-          error_msg = 'Error running command %s. stdout: %s' % (cmd, stdout)
-          if 'memory' in stdout:
-            raise MemoryLimitError(error_msg)
-          raise RuntimeError(error_msg)
-        return stdout
-
-    def run_cmd(cmd: List[str], tries: int) -> List[str]:
-      if tries >= MAX_QUERY_TRIES:
-        raise RuntimeError('Query failed too many times, aborting')
-
-      # We use a thread pool with a thread for each query/process instead of
-      # just creating the processes due to guidance from the Python docs:
-      # https://docs.python.org/3/library/subprocess.html#subprocess.Popen.stderr
-      # We need to write to stdin to pass the query in, but using
-      # stdout/stderr/stdin directly is discouraged due to the potential for
-      # deadlocks. The suggested method (using .communicate()) blocks, so we
-      # need the thread pool to maintain parallelism.
-      pool = multiprocessing.pool.ThreadPool(len(queries))
-
-      def cleanup():
-        pool.terminate()
-        for p in processes:
-          try:
-            p.terminate()
-          except OSError:
-            # We can fail to terminate if the process is already finished, so
-            # ignore such failures.
-            pass
-        processes.clear()
-
-      args = [(cmd, q) for q in queries]
-      try:
-        return pool.map(run_cmd_in_thread, args)
-      except RateLimitError:
-        logging.warning('Query hit rate limit, retrying')
-        cleanup()
-        return run_cmd(cmd, tries + 1)
-      finally:
-        cleanup()
-      raise RuntimeError('Hit branch that should  be unreachable')
-
-    bq_cmd = GenerateBigQueryCommand(self._project,
-                                     parameters,
-                                     batch=self._use_batching)
-    stdouts = run_cmd(bq_cmd, 0)
-    combined_json = []
-    for result in [json.loads(s) for s in stdouts]:
-      for row in result:
-        combined_json.append(row)
-    return combined_json
-
   def _StripPrefixFromTestId(self, test_id: str) -> str:
     """Strips the prefix from a test ID, leaving only the test case name.
 
@@ -491,183 +354,6 @@ class BigQueryQuerier(object):
       A string containing the test cases name extracted from |test_id|.
     """
     raise NotImplementedError()
-
-  def _GetActiveBuilderQuery(self, builder_type: str,
-                             include_internal_builders: bool) -> str:
-    """Gets the SQL query for determining which builders actually produce data.
-
-    Args:
-      builder_type: A string containing the type of builders to query, either
-          "ci" or "try".
-      include_internal_builders: A boolean indicating whether internal builders
-          should be included in the data that the query will access.
-
-    Returns:
-      A string containing a SQL query that will get all the names of all
-      relevant builders that are active/producing data.
-    """
-    raise NotImplementedError()
-
-
-class BaseQueryGenerator(object):
-  """Abstract base class for query generators."""
-
-  def __init__(self, builder: data_types.BuilderEntry):
-    self._builder = builder
-
-  def SplitQuery(self) -> None:
-    """Splits the query into more clauses/queries."""
-    raise NotImplementedError('SplitQuery must be overridden in a child class')
-
-  def GetClauses(self) -> List[str]:
-    """Gets string representations of the test filters.
-
-    Returns:
-      A list of strings, each string being a valid SQL clause that applies a
-      portion of the test filter to a query.
-    """
-    raise NotImplementedError('GetClauses must be overridden in a child class')
-
-  def GetQueries(self) -> List[str]:
-    """Gets string representations of the queries to run.
-
-    Returns:
-      A list of strings, each string being a valid SQL query that queries a
-      portion of the tests of interest.
-    """
-    raise NotImplementedError('GetQueries must be overridden in a child class')
-
-
-# pylint: disable=abstract-method
-class FixedQueryGenerator(BaseQueryGenerator):
-  """Concrete test filter that cannot be split."""
-
-  def __init__(self, builder: data_types.BuilderEntry, test_filter: str):
-    """
-    Args:
-      test_filter: A string containing the test filter SQL clause to use.
-    """
-    super(FixedQueryGenerator, self).__init__(builder)
-    self._test_filter = test_filter
-
-  def SplitQuery(self) -> None:
-    raise QuerySplitError('Tried to split a query without any test IDs to use, '
-                          'use --large-query-mode')
-
-  def GetClauses(self) -> List[str]:
-    return [self._test_filter]
-# pylint: enable=abstract-method
-
-
-# pylint: disable=abstract-method
-class SplitQueryGenerator(BaseQueryGenerator):
-  """Concrete test filter that can be split to a desired size."""
-
-  def __init__(self, builder: data_types.BuilderEntry, test_ids: List[str],
-               target_num_samples: int):
-    """
-    Args:
-      test_ids: A list of strings containing the test IDs to use in the test
-          test filter.
-      target_num_samples: The target/max number of samples to get from each
-          query that uses clauses from this test filter.
-    """
-    super(SplitQueryGenerator, self).__init__(builder)
-    self._test_id_lists = []
-    self._target_num_samples = target_num_samples
-    self._clauses = []
-    self._PerformInitialSplit(test_ids)
-
-  def _PerformInitialSplit(self, test_ids: List[str]) -> None:
-    """Evenly splits |test_ids| into lists that are  ~|_target_num_samples| long
-
-    Only to be called from the constructor.
-
-    Args:
-      test_ids: A list of test IDs to split and assign to the _test_id_lists
-          member.
-    """
-    assert isinstance(test_ids[0], six.string_types)
-
-    num_lists = int(math.ceil(float(len(test_ids)) / self._target_num_samples))
-    list_size = int(math.ceil(float(len(test_ids)) / num_lists))
-
-    split_lists = []
-    start = 0
-    for _ in range(num_lists):
-      end = min(len(test_ids), start + list_size)
-      split_lists.append(test_ids[start:end])
-      start = end
-    self._test_id_lists = split_lists
-    self._GenerateClauses()
-
-  def _GenerateClauses(self) -> None:
-    test_filter_clauses = []
-    for id_list in self._test_id_lists:
-      clause = 'AND test_id IN UNNEST([%s])' % ', '.join(id_list)
-      test_filter_clauses.append(clause)
-    self._clauses = test_filter_clauses
-
-  def SplitQuery(self) -> None:
-    def _SplitListInHalf(l: list) -> Tuple[list, list]:
-      assert len(l) > 1
-      front = l[:len(l) // 2]
-      back = l[len(l) // 2:]
-      return front, back
-
-    tmp_test_id_lists = []
-    for til in self._test_id_lists:
-      if len(til) <= 1:
-        raise QuerySplitError(
-            'Cannot split query any further, try lowering --num-samples')
-      front, back = _SplitListInHalf(til)
-      tmp_test_id_lists.append(front)
-      tmp_test_id_lists.append(back)
-    self._test_id_lists = tmp_test_id_lists
-    self._GenerateClauses()
-
-  def GetClauses(self) -> List[str]:
-    return self._clauses
-# pylint: enable=abstract-method
-
-
-def GenerateBigQueryCommand(project: str,
-                            parameters: QueryParameters,
-                            batch: bool = True) -> List[str]:
-  """Generate a BigQuery commandline.
-
-  Does not contain the actual query, as that is passed in via stdin.
-
-  Args:
-    project: A string containing the billing project to use for BigQuery.
-    parameters: A dict specifying parameters to substitute in the query in
-        the format {type: {key: value}}. For example, the dict:
-        {'INT64': {'num_builds': 5}}
-        would result in --parameter=num_builds:INT64:5 being passed to BigQuery.
-    batch: Whether to run the query in batch mode or not. Batching adds some
-        random amount of overhead since it means the query has to wait for idle
-        resources, but also allows for much better parallelism.
-
-  Returns:
-    A list containing the BigQuery commandline, suitable to be passed to a
-    method from the subprocess module.
-  """
-  cmd = [
-      'bq',
-      'query',
-      '--max_rows=%d' % MAX_ROWS,
-      '--format=json',
-      '--project_id=%s' % project,
-      '--use_legacy_sql=false',
-  ]
-
-  if batch:
-    cmd.append('--batch')
-
-  for parameter_type, parameter_pairs in parameters.items():
-    for k, v in parameter_pairs.items():
-      cmd.append('--parameter=%s:%s:%s' % (k, parameter_type, v))
-  return cmd
 
 
 def _StripPrefixFromBuildId(build_id: str) -> str:
@@ -685,15 +371,3 @@ def _ConvertActualResultToExpectationFileFormat(actual_result: str) -> str:
   # The result reported to ResultDB is in the format PASS/FAIL, while the
   # expected results in an expectation file are in the format Pass/Failure.
   return expectations_parser.RESULT_TAGS[actual_result]
-
-
-class RateLimitError(Exception):
-  """Exception raised when BigQuery hits a rate limit error."""
-
-
-class MemoryLimitError(Exception):
-  """Exception raised when BigQuery hits its hard memory limit."""
-
-
-class QuerySplitError(Exception):
-  """Exception raised when a query cannot be split any further."""

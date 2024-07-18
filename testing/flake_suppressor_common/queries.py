@@ -7,7 +7,7 @@ import collections
 import json
 import os
 import subprocess
-from typing import List
+from typing import Any, Dict, List
 
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import results as results_module
@@ -53,6 +53,8 @@ SHERIFF_ROTATIONS_CI_BUILDS_TEMPLATE = """\
     AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                     INTERVAL @sample_period DAY)
 """
+
+QueryParameters = Dict[str, Dict[str, Any]]
 
 
 class BigQueryQuerier():
@@ -234,7 +236,7 @@ class BigQueryQuerier():
     Returns:
       The loaded JSON results from running |query|.
     """
-    cmd = upc_queries.GenerateBigQueryCommand(
+    cmd = GenerateBigQueryCommand(
         self._billing_project,
         {'INT64': {
             'sample_period': self._sample_period
@@ -269,3 +271,44 @@ class BigQueryQuerier():
           test_name)
       count = int(r['result_count'])
       result_counts[typ_tags][test_name] += count
+
+
+# TODO(crbug.com/343248818): Switch off this and use the bigquery module
+# directly.
+def GenerateBigQueryCommand(project: str,
+                            parameters: QueryParameters,
+                            batch: bool = True) -> List[str]:
+  """Generate a BigQuery commandline.
+
+  Does not contain the actual query, as that is passed in via stdin.
+
+  Args:
+    project: A string containing the billing project to use for BigQuery.
+    parameters: A dict specifying parameters to substitute in the query in
+        the format {type: {key: value}}. For example, the dict:
+        {'INT64': {'num_builds': 5}}
+        would result in --parameter=num_builds:INT64:5 being passed to BigQuery.
+    batch: Whether to run the query in batch mode or not. Batching adds some
+        random amount of overhead since it means the query has to wait for idle
+        resources, but also allows for much better parallelism.
+
+  Returns:
+    A list containing the BigQuery commandline, suitable to be passed to a
+    method from the subprocess module.
+  """
+  cmd = [
+      'bq',
+      'query',
+      '--max_rows=%d' % MAX_ROWS,
+      '--format=json',
+      '--project_id=%s' % project,
+      '--use_legacy_sql=false',
+  ]
+
+  if batch:
+    cmd.append('--batch')
+
+  for parameter_type, parameter_pairs in parameters.items():
+    for k, v in parameter_pairs.items():
+      cmd.append('--parameter=%s:%s:%s' % (k, parameter_type, v))
+  return cmd
