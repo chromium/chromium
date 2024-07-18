@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.data_sharing;
+package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
-import static org.chromium.chrome.browser.data_sharing.SharedImageTilesProperties.BACKGROUND_COLOR;
-import static org.chromium.chrome.browser.data_sharing.SharedImageTilesProperties.IS_LOADING;
-import static org.chromium.chrome.browser.data_sharing.SharedImageTilesProperties.REMAINING_TILES;
+import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.IS_LOADING;
+import static org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesProperties.REMAINING_TILES;
 
 import android.content.res.Resources;
 import android.graphics.PorterDuff;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.data_sharing;
+package org.chromium.chrome.browser.data_sharing.ui.invitation_dialog;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
