@@ -70,6 +70,8 @@ class PLATFORM_EXPORT LayoutUnit {
  public:
   static constexpr unsigned kFractionalBits = 6;
   static constexpr int kFixedPointDenominator = 1 << kFractionalBits;
+  static constexpr int kRawValueMax = std::numeric_limits<int>::max();
+  static constexpr int kRawValueMin = std::numeric_limits<int>::min();
   static constexpr int kIntMax = INT_MAX / kFixedPointDenominator;
   static constexpr int kIntMin = INT_MIN / kFixedPointDenominator;
 
@@ -173,8 +175,7 @@ class PLATFORM_EXPORT LayoutUnit {
   constexpr int RawValue() const { return value_; }
   inline void SetRawValue(int value) { value_ = value; }
   void SetRawValue(int64_t value) {
-    REPORT_OVERFLOW(value > std::numeric_limits<int>::min() &&
-                    value < std::numeric_limits<int>::max());
+    REPORT_OVERFLOW(value > kRawValueMin && value < kRawValueMax);
     value_ = static_cast<int>(value);
   }
 
@@ -227,33 +228,25 @@ class PLATFORM_EXPORT LayoutUnit {
   }
 
   bool MightBeSaturated() const {
-    return RawValue() == std::numeric_limits<int>::max() ||
-           RawValue() == std::numeric_limits<int>::min();
+    return RawValue() == kRawValueMax || RawValue() == kRawValueMin;
   }
 
   static constexpr float Epsilon() { return 1.0f / kFixedPointDenominator; }
 
   LayoutUnit AddEpsilon() const {
-    return FromRawValue(value_ < std::numeric_limits<int>::max() ? value_ + 1
-                                                                 : value_);
+    return FromRawValue(value_ < kRawValueMax ? value_ + 1 : value_);
   }
 
-  static constexpr LayoutUnit Max() {
-    return FromRawValue(std::numeric_limits<int>::max());
-  }
-  static constexpr LayoutUnit Min() {
-    return FromRawValue(std::numeric_limits<int>::min());
-  }
+  static constexpr LayoutUnit Max() { return FromRawValue(kRawValueMax); }
+  static constexpr LayoutUnit Min() { return FromRawValue(kRawValueMin); }
 
   // Versions of max/min that are slightly smaller/larger than max/min() to
   // allow for rounding without overflowing.
   static constexpr LayoutUnit NearlyMax() {
-    return FromRawValue(std::numeric_limits<int>::max() -
-                        kFixedPointDenominator / 2);
+    return FromRawValue(kRawValueMax - kFixedPointDenominator / 2);
   }
   static constexpr LayoutUnit NearlyMin() {
-    return FromRawValue(std::numeric_limits<int>::min() +
-                        kFixedPointDenominator / 2);
+    return FromRawValue(kRawValueMin + kFixedPointDenominator / 2);
   }
 
   static LayoutUnit Clamp(double value) { return FromFloatFloor(value); }
@@ -271,16 +264,14 @@ class PLATFORM_EXPORT LayoutUnit {
 
  private:
   static bool IsInBounds(int value) {
-    return ::abs(value) <=
-           std::numeric_limits<int>::max() / kFixedPointDenominator;
+    return ::abs(value) <= kRawValueMax / kFixedPointDenominator;
   }
   static bool IsInBounds(unsigned value) {
-    return value <= static_cast<unsigned>(std::numeric_limits<int>::max()) /
-                        kFixedPointDenominator;
+    return value <=
+           static_cast<unsigned>(kRawValueMax) / kFixedPointDenominator;
   }
   static bool IsInBounds(double value) {
-    return ::fabs(value) <=
-           std::numeric_limits<int>::max() / kFixedPointDenominator;
+    return ::fabs(value) <= kRawValueMax / kFixedPointDenominator;
   }
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
@@ -364,9 +355,9 @@ class PLATFORM_EXPORT LayoutUnit {
 
   ALWAYS_INLINE constexpr void SaturatedSetNonAsm(int value) {
     if (value > kIntMax) {
-      value_ = std::numeric_limits<int>::max();
+      value_ = kRawValueMax;
     } else if (value < kIntMin) {
-      value_ = std::numeric_limits<int>::min();
+      value_ = kRawValueMin;
     } else {
       value_ = static_cast<unsigned>(value) << kFractionalBits;
     }
@@ -374,7 +365,7 @@ class PLATFORM_EXPORT LayoutUnit {
 
   ALWAYS_INLINE constexpr void SaturatedSetNonAsm(unsigned value) {
     if (value >= static_cast<unsigned>(kIntMax)) {
-      value_ = std::numeric_limits<int>::max();
+      value_ = kRawValueMax;
     } else {
       value_ = value << kFractionalBits;
     }
@@ -530,7 +521,7 @@ inline LayoutUnit BoundedMultiply(const LayoutUnit& a, const LayoutUnit& b) {
   int32_t low = static_cast<int32_t>(result);
   uint32_t saturated =
       (static_cast<uint32_t>(a.RawValue() ^ b.RawValue()) >> 31) +
-      std::numeric_limits<int>::max();
+      LayoutUnit::kRawValueMax;
   // If the higher 32 bits does not match the lower 32 with sign extension the
   // operation overflowed.
   if (high != low >> 31)
@@ -787,22 +778,21 @@ inline int GetMaxSaturatedSetResultForTesting() {
   // For ARM Asm version the set function maxes out to the biggest
   // possible integer part with the fractional part zero'd out.
   // e.g. 0x7fffffc0.
-  return std::numeric_limits<int>::max() &
-         ~(LayoutUnit::kFixedPointDenominator - 1);
+  return LayoutUnit::kRawValueMax & ~(LayoutUnit::kFixedPointDenominator - 1);
 }
 
 inline int GetMinSaturatedSetResultForTesting() {
-  return std::numeric_limits<int>::min();
+  return LayoutUnit::kRawValueMin;
 }
 #else
 ALWAYS_INLINE int GetMaxSaturatedSetResultForTesting() {
   // For C version the set function maxes out to max int, this differs from
   // the ARM asm version.
-  return std::numeric_limits<int>::max();
+  return LayoutUnit::kRawValueMax;
 }
 
 ALWAYS_INLINE int GetMinSaturatedSetResultForTesting() {
-  return std::numeric_limits<int>::min();
+  return LayoutUnit::kRawValueMin;
 }
 #endif  // CPU(ARM) && COMPILER(GCC)
 
