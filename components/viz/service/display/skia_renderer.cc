@@ -2137,7 +2137,8 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
           return render_pass->id == nested_render_pass_id;
         });
 
-    DCHECK(it != current_frame()->render_passes_in_draw_order->end());
+    CHECK(it != current_frame()->render_passes_in_draw_order->end(),
+          base::NotFatalUntil::M130);
     const auto& nested_render_pass = *it;
     if (!nested_render_pass->filters.IsEmpty() ||
         !nested_render_pass->backdrop_filters.IsEmpty()) {
