@@ -548,7 +548,17 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest, Suspend_FlushesSessionTimes) {
         nullptr, nullptr);
     WebAppMetrics::Get(profile())->OnSuspend();
   }
-  // Switch back to the web app after 4 hours of suspend time.
+  // Switch back to the web app after 2 hours of suspend time and 2 hours of
+  // resume time.
+  {
+    base::subtle::ScopedTimeClockOverrides override1(
+        []() {
+          return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
+                 base::Hours(5);
+        },
+        nullptr, nullptr);
+    WebAppMetrics::Get(profile())->OnResume();
+  }
   {
     base::subtle::ScopedTimeClockOverrides override(
         []() {
@@ -567,9 +577,61 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest, Suspend_FlushesSessionTimes) {
   // 2 hours = 7200 seconds. Nearest 1/50 day bucket is 6912.
   EXPECT_THAT(entry->metrics,
               Contains(Pair(UkmEntry::kForegroundDurationNameHash, 6912)));
-  // Suspend should clear timers so no background time is recorded.
-  EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
-      entry, UkmEntry::kBackgroundDurationName));
+  // The background time calculation should have resumed in OnResume(), 2 hours.
+  EXPECT_THAT(entry->metrics,
+              Contains(Pair(UkmEntry::kBackgroundDurationNameHash, 6912)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
+                       SessionEnd_FlushesSessionTimes) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  webapps::AppId app_id = InstallWebApp();
+  Browser* app_browser;
+
+  // Open the app.
+  {
+    base::subtle::ScopedTimeClockOverrides override(
+        []() {
+          return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
+                 base::Hours(1);
+        },
+        nullptr, nullptr);
+    app_browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+    DCHECK(app_browser);
+    WebAppMetrics::Get(profile())->OnBrowserSetLastActive(app_browser);
+  }
+  // End the session after 2 hours of foreground time.
+  {
+    base::subtle::ScopedTimeClockOverrides override(
+        []() {
+          return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
+                 base::Hours(3);
+        },
+        nullptr, nullptr);
+    WebAppMetrics::Get(profile())->OnSessionEnded(base::TimeDelta(),
+                                                  base::TimeTicks());
+  }
+  // Use the app to record the background time after 2 hours.
+  {
+    base::subtle::ScopedTimeClockOverrides override1(
+        []() {
+          return base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
+                 base::Hours(5);
+        },
+        nullptr, nullptr);
+    WebAppMetrics::Get(profile())->OnBrowserSetLastActive(app_browser);
+  }
+  ForceEmitMetricsNow();
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1U);
+  auto* entry = entries[0].get();
+  // 2 hours = 7200 seconds. Nearest 1/50 day bucket is 6912.
+  EXPECT_THAT(entry->metrics,
+              Contains(Pair(UkmEntry::kForegroundDurationNameHash, 6912)));
+  // The background time calculation should start in OnSessionEnd(), 2 hours.
+  EXPECT_THAT(entry->metrics,
+              Contains(Pair(UkmEntry::kBackgroundDurationNameHash, 6912)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,

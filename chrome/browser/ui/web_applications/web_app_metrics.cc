@@ -26,11 +26,13 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_factory.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -107,6 +109,10 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
   browser_tab_strip_tracker_.Init();
   base::PowerMonitor::AddPowerSuspendObserver(this);
   BrowserList::AddObserver(this);
+  // This isn't around on ChromeOS or tests.
+  if (metrics::DesktopSessionDurationTracker::IsInitialized()) {
+    metrics::DesktopSessionDurationTracker::Get()->AddObserver(this);
+  }
 
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsIconHealthChecks) &&
       !g_disable_automatic_icon_health_checks_for_testing) {
@@ -126,6 +132,9 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
 WebAppMetrics::~WebAppMetrics() {
   BrowserList::RemoveObserver(this);
   base::PowerMonitor::RemovePowerSuspendObserver(this);
+  if (metrics::DesktopSessionDurationTracker::IsInitialized()) {
+    metrics::DesktopSessionDurationTracker::Get()->RemoveObserver(this);
+  }
 }
 
 void WebAppMetrics::OnEngagementEvent(
@@ -227,8 +236,9 @@ void WebAppMetrics::OnTabStripModelChanged(
     auto iter = base::ranges::find(*BrowserList::GetInstance(), tab_strip_model,
                                    &Browser::tab_strip_model);
     if (iter != BrowserList::GetInstance()->end() &&
-        (*iter)->type() == Browser::TYPE_APP)
+        AppBrowserController::IsWebApp(*iter)) {
       initial_mode = TabSwitching::kForegroundClosing;
+    }
   }
   UpdateUkmData(selection.old_contents, initial_mode);
 
@@ -275,7 +285,6 @@ void WebAppMetrics::OnSuspend() {
         WebAppTabHelper::GetAppId(foreground_web_contents_);
     if (app_id && app_last_interacted_time_.contains(*app_id)) {
       UpdateUkmData(foreground_web_contents_, TabSwitching::kFrom);
-      app_last_interacted_time_.erase(*app_id);
     }
   }
   // Update all other tabs as background time.
@@ -291,7 +300,34 @@ void WebAppMetrics::OnSuspend() {
       }
     }
   }
-  app_last_interacted_time_.clear();
+  // Clear all times for all apps, which are reset in either OnResume(), or
+  // GetOrSetLastInteractedTimeForApp(), depending on ordering of OnResume().
+  for (std::pair<webapps::AppId, std::optional<base::Time>>& app_time :
+       app_last_interacted_time_) {
+    app_time.second = std::nullopt;
+  }
+}
+
+void WebAppMetrics::OnResume() {
+  for (std::pair<webapps::AppId, std::optional<base::Time>>& app_time :
+       app_last_interacted_time_) {
+    app_time.second = base::Time::Now();
+  }
+}
+
+void WebAppMetrics::OnSessionStarted(base::TimeTicks session_start) {}
+void WebAppMetrics::OnSessionEnded(base::TimeDelta session_length,
+                                   base::TimeTicks session_end) {
+  // Ensure that we do not over-count foreground usage if the session is
+  // considered 'ended' by the browser. This allows the cumulative sum of
+  // foreground time to be comparable with Session.TotalDuration.
+  if (foreground_web_contents_) {
+    const webapps::AppId* app_id =
+        WebAppTabHelper::GetAppId(foreground_web_contents_);
+    if (app_id && app_last_interacted_time_.contains(*app_id)) {
+      UpdateUkmData(foreground_web_contents_, TabSwitching::kFrom);
+    }
+  }
 }
 
 void WebAppMetrics::NotifyOnAssociatedAppChanged(
@@ -405,7 +441,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
         preinstalled_app || mode == TabSwitching::kForegroundClosing) {
       base::Time now = base::Time::Now();
       if (app_last_interacted_time_.contains(*app_id)) {
-        base::TimeDelta delta = now - app_last_interacted_time_[*app_id];
+        base::TimeDelta delta = now - GetOrSetLastInteractedTimeForApp(*app_id);
         if (delta < max_valid_session_delta_) {
           switch (mode) {
             case TabSwitching::kFrom:
@@ -446,4 +482,13 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
   FlushOldRecordsAndUpdate(features, profile_);
 }
 
+base::Time WebAppMetrics::GetOrSetLastInteractedTimeForApp(
+    const webapps::AppId& app_id) {
+  std::optional<base::Time>& maybe_time = app_last_interacted_time_[app_id];
+  base::Time now = base::Time::Now();
+  if (!maybe_time.has_value()) {
+    maybe_time = now;
+  }
+  return maybe_time.value();
+}
 }  // namespace web_app

@@ -30885,7 +30885,9 @@ be describing additional metrics about the same event.
       Records the total duration (seconds, bucketed) that the app was open in
       the background in the last calendar day. Summed during the day and emitted
       if the date changes. Recorded only for installed web apps that are
-      currently open in a web app window, and all preinstalled web apps.
+      currently open in a web app window, and all preinstalled web apps. In m128
+      a bug is fixed where on resuming from sleep background time did not resume
+      counting.
     </summary>
     <aggregation>
       <history>
@@ -30936,7 +30938,10 @@ be describing additional metrics about the same event.
       Records the total duration (seconds, bucketed) that the app was open in
       the foreground in the last calendar day. Summed during the day and emitted
       if the date changes. Recorded only for installed web apps that are
-      currently open in a web app window, and all preinstalled web apps.
+      currently open in a web app window, and all preinstalled web apps. As of
+      m128, this time is cut short if Chrome determines that it is not active
+      anymore (see the DesktopSessionDurationTracker). This is to keep the
+      cumulative sum of this value comparable with Session.TotalDuration.
     </summary>
     <aggregation>
       <history>

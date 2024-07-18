@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/time/time.h"
+#include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -49,7 +51,8 @@ class WebAppMetrics : public KeyedService,
                       public site_engagement::SiteEngagementObserver,
                       public BrowserListObserver,
                       public TabStripModelObserver,
-                      public base::PowerSuspendObserver {
+                      public base::PowerSuspendObserver,
+                      public metrics::DesktopSessionDurationTracker::Observer {
  public:
   static WebAppMetrics* Get(Profile* profile);
 
@@ -79,6 +82,12 @@ class WebAppMetrics : public KeyedService,
 
   // base::PowerSuspendObserver:
   void OnSuspend() override;
+  void OnResume() override;
+
+  // metrics::DesktopSessionDurationTracker::Observer:
+  void OnSessionStarted(base::TimeTicks session_start) override;
+  void OnSessionEnded(base::TimeDelta session_length,
+                      base::TimeTicks session_end) override;
 
   // Called when a web contents changes associated webapps::AppId (may be
   // empty).
@@ -114,12 +123,21 @@ class WebAppMetrics : public KeyedService,
   };
   void UpdateUkmData(content::WebContents* web_contents, TabSwitching mode);
 
+  // If the time doesn't exist or is std::nullopt, then sets it to (and returns)
+  // base::Time::Now().
+  base::Time GetOrSetLastInteractedTimeForApp(const webapps::AppId& app_id);
+
   // Calculate number of user installed apps once on start to avoid cpu costs
   // in OnEngagementEvent: sacrifice histograms accuracy for speed.
   static constexpr int kNumUserInstalledAppsNotCounted = -1;
   int num_user_installed_apps_ = kNumUserInstalledAppsNotCounted;
 
-  base::flat_map<webapps::AppId, base::Time> app_last_interacted_time_{};
+  // In OnSuspend(), these are all changed to std::nullopt, to be reset in
+  // OnResume() to the current time. This ensures that background time
+  // continues to be counted.
+  base::flat_map<webapps::AppId, std::optional<base::Time>>
+      app_last_interacted_time_;
+
   // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
   raw_ptr<content::WebContents, DanglingUntriaged> foreground_web_contents_ =
       nullptr;
