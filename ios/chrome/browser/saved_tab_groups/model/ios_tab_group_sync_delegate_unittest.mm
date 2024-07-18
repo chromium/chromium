@@ -52,7 +52,7 @@ namespace {
 
 std::unique_ptr<KeyedService> CreateMockSyncService(
     web::BrowserState* context) {
-  return std::make_unique<MockTabGroupSyncService>();
+  return std::make_unique<::testing::NiceMock<MockTabGroupSyncService>>();
 }
 
 // Updates the association of the local tab id.
@@ -117,8 +117,8 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
         browser_list_, mock_service_, std::move(local_observer));
   }
 
-  // Returns a vector containing the 3 local tabs.
-  std::vector<SavedTabGroupTab> CreateLocalTabs(base::Uuid saved_tab_group_id) {
+  // Returns a vector containing the 3 distant tabs.
+  std::vector<SavedTabGroupTab> CreateSavedTabs(base::Uuid saved_tab_group_id) {
     std::vector<SavedTabGroupTab> tabs;
     tabs.push_back(FirstTab(saved_tab_group_id));
     tabs.push_back(SecondTab(saved_tab_group_id));
@@ -244,7 +244,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupSameBrowserStateForeground) {
   target_web_state_list->ActivateWebStateAt(0);
 
   SavedTabGroup saved_group(kGroupTitle, kGroupColor,
-                            CreateLocalTabs(saved_tab_group_id),
+                            CreateSavedTabs(saved_tab_group_id),
                             std::make_optional(0), saved_tab_group_id);
   delegate_->CreateLocalTabGroup(saved_group);
 
@@ -284,7 +284,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupOtherBrowserStateForeground) {
   target_web_state_list->ActivateWebStateAt(0);
 
   SavedTabGroup saved_group(kGroupTitle, kGroupColor,
-                            CreateLocalTabs(saved_tab_group_id),
+                            CreateSavedTabs(saved_tab_group_id),
                             std::make_optional(0), saved_tab_group_id);
   delegate_->CreateLocalTabGroup(saved_group);
 
@@ -325,7 +325,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupBackgroundScene) {
   target_web_state_list->ActivateWebStateAt(0);
 
   SavedTabGroup saved_group(kGroupTitle, kGroupColor,
-                            CreateLocalTabs(saved_tab_group_id),
+                            CreateSavedTabs(saved_tab_group_id),
                             std::make_optional(0), saved_tab_group_id);
   delegate_->CreateLocalTabGroup(saved_group);
 
