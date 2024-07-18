@@ -135,6 +135,7 @@ static_library("app_mode") {
     "//services/preferences/public/cpp",
     "//ui/display",
     "//ui/gfx/codec",
+    "//ui/ozone",
     "//ui/wm",
   ]
 

@@ -139,6 +139,7 @@ class TestInputController : public ui::InputController {
       override {
     return nullptr;
   }
+  void DisableKeyboardImposterCheck() override {}
 
  private:
   // member variable used to keep track of mouse acceleration suspension

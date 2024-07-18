@@ -63,6 +63,8 @@ component("evdev") {
     "heatmap_palm_detector.h",
     "imposter_checker_evdev.cc",
     "imposter_checker_evdev.h",
+    "imposter_checker_evdev_state.cc",
+    "imposter_checker_evdev_state.h",
     "input_controller_evdev.cc",
     "input_controller_evdev.h",
     "input_device_factory_evdev.cc",
