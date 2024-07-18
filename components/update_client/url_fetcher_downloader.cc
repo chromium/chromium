@@ -70,7 +70,7 @@ void UrlFetcherDownloader::StartURLFetch(const GURL& url) {
   network_fetcher_ = network_fetcher_factory_->Create();
   cancel_callback_ = network_fetcher_->DownloadToFile(
       url, file_path_,
-      base::BindOnce(&UrlFetcherDownloader::OnResponseStarted, this),
+      base::BindRepeating(&UrlFetcherDownloader::OnResponseStarted, this),
       base::BindRepeating(&UrlFetcherDownloader::OnDownloadProgress, this),
       base::BindOnce(&UrlFetcherDownloader::OnNetworkFetcherComplete, this));
 

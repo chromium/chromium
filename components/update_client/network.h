@@ -37,7 +37,7 @@ class NetworkFetcher {
 
   // `content_length` is -1 if the value is not known.
   using ResponseStartedCallback =
-      base::OnceCallback<void(int response_code, int64_t content_length)>;
+      base::RepeatingCallback<void(int response_code, int64_t content_length)>;
 
   // `current` is the number of bytes received thus far.
   using ProgressCallback = base::RepeatingCallback<void(int64_t current)>;

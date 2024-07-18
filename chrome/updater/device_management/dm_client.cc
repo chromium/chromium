@@ -247,7 +247,7 @@ void DMFetch::PostRequest(const std::string& request_type,
   };
   network_fetcher_->PostRequest(
       BuildURL(request_type), request_data, kDMContentType, additional_headers,
-      base::BindOnce(&DMFetch::OnRequestStarted, base::Unretained(this)),
+      base::BindRepeating(&DMFetch::OnRequestStarted, base::Unretained(this)),
       base::BindRepeating(&DMFetch::OnRequestProgress, base::Unretained(this)),
       base::BindOnce(&DMFetch::OnRequestComplete, base::Unretained(this)));
 }

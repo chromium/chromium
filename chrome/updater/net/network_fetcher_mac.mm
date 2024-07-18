@@ -23,6 +23,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/net/fallback_net_fetcher.h"
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
@@ -404,7 +405,8 @@ NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<NetworkFetcher>();
+  return std::make_unique<FallbackNetFetcher>(
+      std::make_unique<NetworkFetcher>(), nullptr);
 }
 
 }  // namespace updater

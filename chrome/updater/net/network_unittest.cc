@@ -165,8 +165,8 @@ TEST_F(UpdaterNetworkTest, NetworkFetcherPostRequest) {
       .WillOnce(RunClosure(run_loop_.QuitClosure()));
   fetcher_->PostRequest(
       test_server_.GetURL("/echo"), kPostData, {}, {},
-      base::BindOnce(&UpdaterNetworkTest::StartedCallback,
-                     base::Unretained(this)),
+      base::BindRepeating(&UpdaterNetworkTest::StartedCallback,
+                          base::Unretained(this)),
       base::BindRepeating(&UpdaterNetworkTest::ProgressCallback,
                           base::Unretained(this)),
       base::BindOnce(&UpdaterNetworkTest::PostRequestCompleteCallback,
@@ -187,8 +187,8 @@ TEST_F(UpdaterNetworkTest, NetworkFetcherDownloadToFile) {
         .WillOnce(RunClosure(run_loop_.QuitClosure()));
     fetcher_->DownloadToFile(
         test_server_.GetURL("/echo"), test_file_path,
-        base::BindOnce(&UpdaterNetworkTest::StartedCallback,
-                       base::Unretained(this)),
+        base::BindRepeating(&UpdaterNetworkTest::StartedCallback,
+                            base::Unretained(this)),
         base::BindRepeating(&UpdaterNetworkTest::ProgressCallback,
                             base::Unretained(this)),
         base::BindOnce(&UpdaterNetworkTest::DownloadCallback,
@@ -212,7 +212,7 @@ TEST_F(UpdaterDownloadTest, NetworkFetcher) {
     ASSERT_NE(fetcher, nullptr);
     fetcher->DownloadToFile(
         gurl_, dest_,
-        base::BindOnce([](int response_code, int64_t /*content_length*/) {
+        base::BindRepeating([](int response_code, int64_t /*content_length*/) {
           EXPECT_EQ(response_code, 200);
         }),
         base::BindRepeating([](int64_t /*current*/) {}),
