@@ -3,6 +3,7 @@
 <grit-part>
   <include name="IDR_SECURITY_INTERSTITIAL_COMMON_CSS" file="../security_interstitials/core/common/resources/interstitial_common.css" type="BINDATA" />
   <include name="IDR_SECURITY_INTERSTITIAL_CORE_CSS" file="../security_interstitials/core/common/resources/interstitial_core.css" type="BINDATA" />
+  <include name="IDR_SECURITY_INTERSTITIAL_SAFEBROWSING_SHARED_CSS" file="../security_interstitials/core/browser/resources/interstitial_safebrowsing_shared.css" type="BINDATA" />
   <include name="IDR_SECURITY_INTERSTITIAL_HTML" file="../security_interstitials/core/browser/resources/interstitial_large.html" flattenhtml="true" type="BINDATA"/>
   <include name="IDR_SECURITY_INTERSTITIAL_WITHOUT_PROMO_HTML" file="../security_interstitials/core/browser/resources/interstitial_large_without_promo.html" flattenhtml="true" type="BINDATA"/>
   <include name="IDR_SECURITY_INTERSTITIAL_QUIET_HTML" file="../security_interstitials/core/browser/resources/interstitial_webview_quiet.html" flattenhtml="true" type="BINDATA" />

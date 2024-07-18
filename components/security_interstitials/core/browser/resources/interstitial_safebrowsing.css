@@ -10,10 +10,7 @@ body.safe-browsing {
   --google-red-100: rgb(250, 210, 207);
   --google-red-90: rgb(249, 222, 220);
   --google-red-50: rgb(252, 232, 230);
-  --google-red-40: rgb(179, 38, 30);
   --google-red-10: rgb(65, 14, 11);
-  --google-primary-40: rgb(11, 87, 208);
-  --google-primary-90: rgb(211, 227, 253);
   background-color: var(--google-red-40);
   color: white;
 }

@@ -37,6 +37,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
+#include "components/grit/components_resources.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -258,6 +259,9 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                         GURL(chrome::kDownloadBlockedLearnMoreURL),
                         g_browser_process->GetApplicationLocale())
                         .spec());
+
+  source->AddResourcePath("safebrowsing_shared.css",
+                          IDR_SECURITY_INTERSTITIAL_SAFEBROWSING_SHARED_CSS);
 
   return source;
 }
