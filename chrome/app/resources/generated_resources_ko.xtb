@@ -156,7 +156,6 @@
 <translation id="1100504063505580045">현재 아이콘</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{비밀번호 1개}other{비밀번호 {COUNT}개}}</translation>
 <translation id="1102759278139578486">기본 노드 사이트설정 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
-<translation id="1102790815296970136">여기에서 '<ph name="PERSONALIZED_MEMORY_TITLE" />' 및 다른 추억을 확인하세요</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="1107482171728500359">마이크 공유</translation>
 <translation id="110850812463801904">수동으로 OneDrive에 연결</translation>
@@ -223,7 +222,6 @@
 <translation id="1155816283571436363">휴대전화에 연결하는 중</translation>
 <translation id="1157952955648710254">Google 검색 측면 패널 닫기</translation>
 <translation id="1158080958325422608">Make Uppercase(대문자로 표시)</translation>
-<translation id="1158238185437008462">추억 보기</translation>
 <translation id="1159879754517035595">확장 프로그램 설정 관리</translation>
 <translation id="1160800016654917722">창을 왼쪽 아래로 이동함</translation>
 <translation id="1161575384898972166"><ph name="TOKEN_NAME" />에 로그인하여 클라이언트 인증서를 내보내세요.</translation>
@@ -1569,7 +1567,6 @@
 <translation id="2114145607116268663">설치할 수 없습니다. 재부팅이 필요합니다. 컴퓨터를 재시작한 후 다시 시도해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="2114326799768592691">프레임 새로고침(&amp;F)</translation>
 <translation id="2114413269775311385">Android 앱에서 계정을 사용합니다. <ph name="LINK_BEGIN" />앱 설정<ph name="LINK_END" />에서 Android 앱에 대한 권한을 제어할 수 있습니다.</translation>
-<translation id="2114820389966440614">여기에서 '최근 하이라이트' 및 다른 추억을 확인하세요</translation>
 <translation id="2114896190328250491">사진 제공: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">삽입된 SIM 카드 없음</translation>
 <translation id="2116619964159595185">사이트에서는 주로 저전력 비콘, 건강 또는 피트니스 추적기, 스마트 조명 전구를 설정 또는 동기화하는 기능을 지원하기 위해 블루투스 기기에 연결합니다.</translation>
@@ -2374,7 +2371,6 @@
 <translation id="2684004000387153598">계속하려면 확인을 클릭한 다음 사용자 추가를 클릭하여 이메일 주소로 새로운 프로필을 만드세요.</translation>
 <translation id="2685193395980129388">허용됨 – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Google 서비스 약관</translation>
-<translation id="2687621393791886981">나중에 알림</translation>
 <translation id="2688196195245426394">기기를 서버에 등록하는 중에 오류 발생: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">비밀번호를 기억하지 않아도 됩니다. <ph name="ACCOUNT" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="2690024944919328218">언어 옵션 표시</translation>
@@ -3264,6 +3260,7 @@
 <translation id="3356580349448036450">완료</translation>
 <translation id="3359256513598016054">인증서 정책 제약조건</translation>
 <translation id="3360297538363969800">인쇄에 실패했습니다. 프린터를 확인한 후 다시 시도해 주세요.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}}</translation>
 <translation id="3361954577771524115">앱에서 가져온 설명</translation>
 <translation id="3363202073972776113">이 새 프로필은 조직에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -3434,7 +3431,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" />에서 다음 파일을 볼 수 있습니다.</translation>
 <translation id="3484595034894304035">배경화면, 화면 보호기, 어두운 테마 등 맞춤설정</translation>
 <translation id="3484869148456018791">새로운 인증서 받기</translation>
-<translation id="3486950712960783074">여행</translation>
 <translation id="3487007233252413104">익명의 함수</translation>
 <translation id="3487649228420469005">스캔 완료</translation>
 <translation id="3490695139702884919">다운로드 중... <ph name="PERCENT" />%</translation>
@@ -4335,7 +4331,6 @@
 <translation id="4116704186509653070">다시 열기</translation>
 <translation id="4117714603282104018">터치패드 햅틱 반응</translation>
 <translation id="4118579674665737931">기기를 재부팅한 후 다시 시도해 주세요.</translation>
-<translation id="412022815379960229">로그인할 때마다 Google 포토에서 소중한 추억들을 만나보세요.</translation>
 <translation id="4120388883569225797">보안 키를 재설정할 수 없습니다.</translation>
 <translation id="4120817667028078560">경로가 너무 김</translation>
 <translation id="4124823734405044952">보안 키가 재설정되었습니다.</translation>
@@ -4771,7 +4766,6 @@
 <translation id="4461483878391246134">번역을 제공하지 않을 언어 추가</translation>
 <translation id="4462159676511157176">사용자 지정 네임서버</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />에 <ph name="TIME" /> 시간 제한이 설정됨</translation>
-<translation id="4466839823729730432">여기에 추억이 표시됩니다</translation>
 <translation id="4469324811108161144">메모에는 <ph name="CHARACTER_LIMIT" />자(영문 기준)까지만 저장할 수 있습니다.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 수정할 수 있습니다.</translation>
 <translation id="4470957202018033307">외부 저장소 환경설정</translation>
@@ -5476,7 +5470,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
 <translation id="5003993274120026347">다음 문장</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
-<translation id="5006118752738286774">2년 전</translation>
 <translation id="5006218871145547804">Crostini Android 앱 ADB</translation>
 <translation id="5007392906805964215">검토</translation>
 <translation id="50080882645628821">프로필 삭제</translation>
@@ -6056,7 +6049,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5435779377906857208"><ph name="HOST" />의 위치 액세스 항상 허용</translation>
 <translation id="5436492226391861498">프록시 터널을 기다리는 중...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> 검색:</translation>
-<translation id="5436575196282187764">Google 포토 추억</translation>
 <translation id="5440425659852470030">측면 패널 닫기</translation>
 <translation id="544083962418256601">바로가기 만들기...</translation>
 <translation id="5441133529460183413">Chrome 브라우저에서 설치된 웹 앱</translation>
@@ -6334,7 +6326,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> 계정이 더 이상 기본 계정으로 허용되지 않습니다. 이 계정은 <ph name="DOMAIN" />에 의해 관리되므로 북마크, 방문 기록, 비밀번호 및 기타 설정이 기기에서 삭제됩니다.</translation>
 <translation id="5633149627228920745">시스템 요구사항 자세히 알아보기</translation>
 <translation id="563371367637259496">모바일</translation>
-<translation id="5634446357546764049">최근 여행에서 남긴 추억 등 보기</translation>
 <translation id="5635312199252507107">특정 사이트에서 허용</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" />에서 <ph name="DEVICE" /> 기기를 삭제하시겠습니까?</translation>
 <translation id="5636140764387862062">PIN 관련 작업 더보기</translation>
@@ -6477,7 +6468,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">테더링 준비 여부 확인</translation>
 <translation id="5753570386948603678">기록에서 삭제</translation>
-<translation id="5755022574660047665">Google 포토 추억</translation>
 <translation id="5756163054456765343">고객센터(&amp;H)</translation>
 <translation id="5757187557809630523">다음 트랙입니다</translation>
 <translation id="5758631781033351321">여기에서 읽기 목록을 확인할 수 있습니다</translation>
@@ -7222,7 +7212,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" />에서 제공한 로그인</translation>
 <translation id="6308937455967653460">다른 이름으로 링크 저장(&amp;K)...</translation>
 <translation id="6309443618838462258">관리자가 이 입력 방법을 허용하지 않습니다.</translation>
-<translation id="630948338437014525">추억</translation>
 <translation id="6309510305002439352">마이크 사용 중지됨</translation>
 <translation id="6310141306111263820">eSIM 프로필을 설치할 수 없습니다. 도움이 필요하면 이동통신사에 문의하세요.</translation>
 <translation id="6311220991371174222">프로필을 여는 동안 문제가 발생했기 때문에 Chrome을 시작할 수 없습니다. Chrome을 다시 시작해 보세요.</translation>
@@ -8576,7 +8565,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7356908624372060336">네트워크 로그</translation>
 <translation id="7357271391997763660">비밀번호 진단을 실행하시겠습니까?</translation>
 <translation id="735745346212279324">VPN 연결 끊김</translation>
-<translation id="7358324924540718595">오늘 추억 숨김</translation>
 <translation id="7358338787722390626">측면 패널의 검색 닫기</translation>
 <translation id="735994578317267253">모든 ChromeOS 기기에서 앱, 설정 등을 사용하세요</translation>
 <translation id="7360257054721917104">저장된 데스크 및 템플릿을 보는 중입니다. 이동하려면 Tab을 누르세요.</translation>
@@ -8685,7 +8673,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7424153922653300265">에너지 절약 모드 사용 설정됨</translation>
 <translation id="7424818322350938336">네트워크 추가됨</translation>
 <translation id="7425037327577270384">작성 지원 기능</translation>
-<translation id="7427315069950454694">오늘 생성된 추억</translation>
 <translation id="7427348830195639090">백그라운드 페이지: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" />에서 전화 걸기</translation>
 <translation id="7429415133937917139">화면 상단의 ChromeVox 패널에서 새로고침할 수 있는 점자 디스플레이의 출력을 시뮬레이션합니다.</translation>
@@ -8708,7 +8695,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="744366959743242014">데이터를 로드하는 중입니다. 몇 초 정도 소요될 수 있습니다.</translation>
 <translation id="7443806024147773267">Google 계정에 로그인되어 있으면 어디서나 비밀번호에 액세스할 수 있습니다.</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{오늘 쿠키가 다시 차단됩니다.}=1{내일 쿠키가 다시 차단됩니다.}other{#일 후 쿠키가 다시 차단됩니다.}}</translation>
-<translation id="7444970023873202833">Google 포토에서 더 많은 추억을 살펴보세요.</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> 사용 중지</translation>
 <translation id="7448430327655618736">앱 자동 설치</translation>
 <translation id="7448664748118305024">창을 전부 닫으면 사이트에서 기기에 저장한 데이터 삭제</translation>
@@ -9116,10 +9102,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7745554356330788383">이 페이지를 새로고침하여 이 사이트에 업데이트된 '<ph name="EXTENSION_NAME" />' 설정 적용</translation>
 <translation id="7745677556280361868">Passpoint 구독 페이지에서 이 네트워크를 삭제하시겠어요?</translation>
 <translation id="7746045113967198252">텍스트 등 화면에 표시되는 항목을 더 크게 또는 작게 표시합니다. 추후에 설정 &gt; 기기 &gt; 디스플레이에서도 설정할 수 있습니다.</translation>
-<translation id="7746739418892731373">Google 포토 라이브러리의 사진 및 동영상 하이라이트입니다. <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />에서 하이라이트에 표시되는 항목을 제어할 수 있습니다.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        카드 메뉴에서 카드 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 볼 수 있습니다.</translation>
 <translation id="7750228210027921155">PIP 모드</translation>
 <translation id="7751260505918304024">모두 표시</translation>
 <translation id="7752832973194460442">Android 앱 정보</translation>
@@ -10062,7 +10044,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 허용함</translation>
 <translation id="8413795581997394485">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 사이트를 방문하면 Chrome에서 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠도 전송됩니다.</translation>
 <translation id="8413956290606243087">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
-<translation id="8414249071344507766">이틀 동안 추억 숨김</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%(케이스)</translation>
 <translation id="8417065541337558100">카메라 미리보기</translation>
@@ -10491,8 +10472,6 @@ https://support.google.com/chromebook/?p=sm</translation>
           <ph name="LINE_BREAK" />
           (자동 완성 데이터는 공유되지 않음)</translation>
 <translation id="8729133765463465108">카메라를 사용하여 QR 코드 스캔</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Gemini와 채팅하며 Google AI를 활용해 글쓰기, 계획, 학습 등을 시작해 보세요.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />설정 후 화면 하단의 앱 표시줄에서 Gemini 앱을 선택하여 Gemini 사용을 시작하세요<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8731029916209785242">권한(<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">보안 코드</translation>
@@ -10774,7 +10753,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8934732568177537184">계속</translation>
 <translation id="8938800817013097409">USB-C 기기(우측 후면 포트)</translation>
 <translation id="8940081510938872932">현재 컴퓨터의 처리량이 너무 많습니다. 나중에 다시 시도해 주세요.</translation>
-<translation id="8940381019874223173">Google 포토의 사진</translation>
 <translation id="8940888110818450052">로그인 옵션</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' 권한 취소</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> 꺼짐</translation>
@@ -11269,7 +11247,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="995755448277384931">IBAN 추가</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">안전한 연결 설정 중...</translation>
-<translation id="996803490569799917">좋아하는 인물과 남긴 추억 보기</translation>
 <translation id="997143476478634194">사이트를 방문할 때 사이트에서 자동으로 이 설정을 따릅니다. 사이트에서는 보통 속보 또는 채팅 메시지에 관한 알림을 전송합니다.</translation>
 <translation id="99731366405731005">Wi-Fi 동기화를 사용하려면 <ph name="LINK1_BEGIN" />Chrome 동기화<ph name="LINK1_END" />를 사용 설정하세요. <ph name="LINK2_BEGIN" />자세히 알아보기<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">검사(&amp;N)</translation>

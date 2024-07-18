@@ -156,7 +156,6 @@
 <translation id="1100504063505580045">ไอคอนปัจจุบัน</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{รหัสผ่าน 1 รายการ}other{รหัสผ่าน {COUNT} รายการ}}</translation>
 <translation id="1102759278139578486">ดาวน์โหลดไฟล์คำอธิบายประกอบของโหนดหลักไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>
-<translation id="1102790815296970136">ดู "<ph name="PERSONALIZED_MEMORY_TITLE" />" และภาพความทรงจำอื่นๆ ที่นี่</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="1107482171728500359">แชร์ไมโครโฟน</translation>
 <translation id="110850812463801904">เชื่อมต่อกับ OneDrive ด้วยตนเอง</translation>
@@ -223,7 +222,6 @@
 <translation id="1155816283571436363">กำลังเชื่อมต่อกับโทรศัพท์ของคุณ</translation>
 <translation id="1157952955648710254">ปิดแผงด้านข้างของ Google Search</translation>
 <translation id="1158080958325422608">Make Uppercase</translation>
-<translation id="1158238185437008462">ดูความทรงจำ</translation>
 <translation id="1159879754517035595">จัดการการตั้งค่าส่วนขยาย</translation>
 <translation id="1160800016654917722">หน้าต่างเลื่อนลงและไปทางซ้าย</translation>
 <translation id="1161575384898972166">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อส่งออกใบรับรองไคลเอ็นต์</translation>
@@ -1558,7 +1556,6 @@
 <translation id="2114145607116268663">ติดตั้งไม่ได้ ต้องรีบูต โปรดรีสตาร์ทคอมพิวเตอร์แล้วลองอีกครั้ง รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="2114326799768592691">โหลดเ&amp;ฟรมซ้ำ</translation>
 <translation id="2114413269775311385">ใช้บัญชีนี้กับแอป Android คุณควบคุมสิทธิ์สำหรับแอป Android ใน<ph name="LINK_BEGIN" />การตั้งค่าแอป<ph name="LINK_END" />ได้</translation>
-<translation id="2114820389966440614">ดู "ไฮไลต์ล่าสุด" และภาพความทรงจำอื่นๆ ที่นี่</translation>
 <translation id="2114896190328250491">รูปภาพจาก <ph name="NAME" /></translation>
 <translation id="2114995631896158695">ไม่ได้ใส่ซิมการ์ด</translation>
 <translation id="2116619964159595185">โดยปกติเว็บไซต์จะเชื่อมต่ออุปกรณ์บลูทูธเพื่อดำเนินการตามฟีเจอร์อย่างการตั้งค่าหรือซิงค์บีคอนที่ใช้พลังงานต่ำ ตัวติดตามสุขภาพและการออกกำลังกาย หรือหลอดไฟอัจฉริยะ</translation>
@@ -2359,7 +2356,6 @@
 <translation id="2684004000387153598">หากต้องการดำเนินการต่อ ให้คลิก "ตกลง" จากนั้นคลิก "เพิ่มบุคคล" เพื่อสร้างโปรไฟล์ใหม่สำหรับที่อยู่อีเมล</translation>
 <translation id="2685193395980129388">อนุญาต – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">ข้อกำหนดในการให้บริการ Google</translation>
-<translation id="2687621393791886981">ถามฉันทีหลัง</translation>
 <translation id="2688196195245426394">เกิดข้อผิดพลาดขณะลงทะเบียนอุปกรณ์กับเซิร์ฟเวอร์: <ph name="CLIENT_ERROR" /></translation>
 <translation id="2688734475209947648">คุณไม่ต้องจำรหัสผ่านนี้ เพราะระบบจะบันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="2690024944919328218">แสดงตัวเลือกภาษา</translation>
@@ -3247,6 +3243,7 @@
 <translation id="3356580349448036450">เสร็จสมบูรณ์</translation>
 <translation id="3359256513598016054">ข้อจำกัดนโยบายใบรับรอง</translation>
 <translation id="3360297538363969800">การพิมพ์ล้มเหลว โปรดตรวจสอบเครื่องพิมพ์และลองอีกครั้ง</translation>
+<translation id="3360306038446926262">หน้าต่าง</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> กำลังแชร์ <ph name="ATTACHMENTS" />กับคุณ}other{<ph name="DEVICE_NAME" /> กำลังแชร์ <ph name="ATTACHMENTS" />กับคุณ}}</translation>
 <translation id="3361954577771524115">จากแอป</translation>
 <translation id="3363202073972776113">โปรไฟล์ใหม่นี้จะจัดการโดยองค์กรของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -3417,7 +3414,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> ดูไฟล์ต่อไปนี้ได้</translation>
 <translation id="3484595034894304035">ปรับเปลี่ยนวอลเปเปอร์ ภาพพักหน้าจอ ธีมมืด และอื่นๆ ในแบบของคุณ</translation>
 <translation id="3484869148456018791">รับใบรับรองใหม่</translation>
-<translation id="3486950712960783074">การเดินทางของคุณ</translation>
 <translation id="3487007233252413104">ฟังก์ชันที่ไม่ระบุชื่อ</translation>
 <translation id="3487649228420469005">สแกนเสร็จแล้ว</translation>
 <translation id="3490695139702884919">กำลังดาวน์โหลด... <ph name="PERCENT" />%</translation>
@@ -4320,7 +4316,6 @@
 <translation id="4116704186509653070">เปิดอีกครั้ง</translation>
 <translation id="4117714603282104018">การตอบสนองแบบรู้สึกได้ของทัชแพด</translation>
 <translation id="4118579674665737931">โปรดเริ่มต้นอุปกรณ์ใหม่และลองอีกครั้ง</translation>
-<translation id="412022815379960229">เริ่มสำรวจความทรงจำจาก Google Photos ได้ทุกเมื่อที่ลงชื่อเข้าใช้</translation>
 <translation id="4120388883569225797">รีเซ็ตคีย์ความปลอดภัยนี้ไม่ได้</translation>
 <translation id="4120817667028078560">เส้นทางยาวเกินไป</translation>
 <translation id="4124823734405044952">รีเซ็ตคีย์ความปลอดภัยแล้ว</translation>
@@ -4756,7 +4751,6 @@
 <translation id="4461483878391246134">เพิ่มภาษาที่ไม่ต้องเสนอการแปล</translation>
 <translation id="4462159676511157176">เซิร์ฟเวอร์ชื่อที่กำหนดเอง</translation>
 <translation id="4465236939126352372">จำกัดเวลาการใช้ <ph name="APP_NAME" /> ไว้ที่ <ph name="TIME" /></translation>
-<translation id="4466839823729730432">ดูความทรงจำของคุณที่นี่</translation>
 <translation id="4469324811108161144">หมายเหตุบักทึกอักขระได้สูงสุด <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> แก้ไขไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
 <translation id="4470957202018033307">ค่ากำหนดพื้นที่เก็บข้อมูลภายนอก</translation>
@@ -5161,6 +5155,7 @@
 <translation id="4777813841994368231">เปิด • นักพัฒนาเลิกเผยแพร่ส่วนขยายนี้แล้ว</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">กำหนดค่าเนมเซิร์ฟเวอร์ของเครือข่าย</translation>
+<translation id="4778630024246633221">ตัวจัดการใบรับรอง </translation>
 <translation id="4778653490315793244">ยังไม่มีรายการให้แสดง</translation>
 <translation id="4779083564647765204">ซูม</translation>
 <translation id="4779136857077979611">ข้าวปั้น</translation>
@@ -5460,7 +5455,6 @@
 <translation id="5001526427543320409">คุกกี้ของบุคคลที่สาม</translation>
 <translation id="5003993274120026347">ประโยคถัดไป</translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
-<translation id="5006118752738286774">2 ปีที่ผ่านมา</translation>
 <translation id="5006218871145547804">ADB ของแอป Android ใน Crostini</translation>
 <translation id="5007392906805964215">ดู</translation>
 <translation id="50080882645628821">นำโปรไฟล์ออก</translation>
@@ -6039,7 +6033,6 @@
 <translation id="5435779377906857208">อนุญาตให้ <ph name="HOST" /> เข้าถึงตำแหน่งของคุณเสมอ</translation>
 <translation id="5436492226391861498">กำลังรอช่องทางการเชื่อมต่อพร็อกซี...</translation>
 <translation id="5436510242972373446">ค้นหา <ph name="SITE_NAME" />:</translation>
-<translation id="5436575196282187764">ความทรงจำใน Google Photos</translation>
 <translation id="5440425659852470030">ปิดแผงด้านข้าง</translation>
 <translation id="544083962418256601">สร้างทางลัด...</translation>
 <translation id="5441133529460183413">ติดตั้งเว็บแอปจากเบราว์เซอร์ Chrome แล้ว</translation>
@@ -6315,7 +6308,6 @@
 <translation id="5632566673632479864">บัญชี <ph name="EMAIL" /> ของคุณไม่ได้รับอนุญาตในฐานะบัญชีหลักอีกต่อไป เนื่องจากบัญชีนี้จัดการโดย <ph name="DOMAIN" /> ระบบจะล้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ของคุณจากอุปกรณ์นี้</translation>
 <translation id="5633149627228920745">ดูข้อมูลเพิ่มเติมเกี่ยวกับข้อกำหนดของระบบ</translation>
 <translation id="563371367637259496">มือถือ</translation>
-<translation id="5634446357546764049">ดูความทรงจำเกี่ยวกับการเดินทางครั้งล่าสุดและอื่นๆ</translation>
 <translation id="5635312199252507107">อนุญาตในบางเว็บไซต์</translation>
 <translation id="5636012309446422">นำ <ph name="DEVICE" /> ออกจาก <ph name="PRIMARY_EMAIL" /> ใช่ไหม</translation>
 <translation id="5636140764387862062">การดำเนินการเพิ่มเติมสำหรับ PIN</translation>
@@ -6458,7 +6450,6 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ตรวจสอบความพร้อมดำเนินการของการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
 <translation id="5753570386948603678">ลบจากประวัติ</translation>
-<translation id="5755022574660047665">ความทรงจำจาก Google Photos</translation>
 <translation id="5756163054456765343">ศู&amp;นย์ช่วยเหลือ</translation>
 <translation id="5757187557809630523">แทร็กถัดไป</translation>
 <translation id="5758631781033351321">คุณจะเห็นเรื่องรออ่านที่นี่</translation>
@@ -7202,7 +7193,6 @@
 <translation id="6308493641021088955">การลงชื่อเข้าใช้ให้บริการโดย <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">บันทึก&amp;ลิงก์เป็น...</translation>
 <translation id="6309443618838462258">ผู้ดูแลระบบไม่อนุญาตให้ป้อนข้อมูลด้วยวิธีนี้</translation>
-<translation id="630948338437014525">ความทรงจำ</translation>
 <translation id="6309510305002439352">ปิดไมโครโฟนอยู่</translation>
 <translation id="6310141306111263820">ติดตั้งโปรไฟล์ eSIM ไม่สำเร็จ โปรดติดต่อผู้ให้บริการเพื่อขอความช่วยเหลือ</translation>
 <translation id="6311220991371174222">ไม่สามารถเริ่ม Chrome ได้เนื่องจากเกิดข้อผิดพลาดขณะเปิดโปรไฟล์ ลองเริ่มต้น Chrome ใหม่</translation>
@@ -8556,7 +8546,6 @@
 <translation id="7356908624372060336">บันทึกเครือข่าย</translation>
 <translation id="7357271391997763660">เรียกใช้การตรวจสอบรหัสผ่านใช่ไหม</translation>
 <translation id="735745346212279324">ยกเลิกการเชื่อมต่อ VPN แล้ว</translation>
-<translation id="7358324924540718595">ซ่อนความทรงจำของวันนี้แล้ว</translation>
 <translation id="7358338787722390626">ปิดการค้นหาในแผงด้านข้าง</translation>
 <translation id="735994578317267253">รับแอป การตั้งค่า และอื่นๆ ในทุกอุปกรณ์ Chrome OS</translation>
 <translation id="7360257054721917104">กําลังดูเดสก์และเทมเพลตที่บันทึกไว้ กด Tab เพื่อไปยังส่วนต่างๆ</translation>
@@ -8665,7 +8654,6 @@
 <translation id="7424153922653300265">เปิดโหมดประหยัดพลังงานแล้ว</translation>
 <translation id="7424818322350938336">เพิ่มเครือข่ายแล้ว</translation>
 <translation id="7425037327577270384">ช่วยฉันเขียน</translation>
-<translation id="7427315069950454694">ความทรงจำของคุณสำหรับวันนี้</translation>
 <translation id="7427348830195639090">หน้าเว็บพื้นหลัง: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">โทรจาก <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">จำลองผลลัพธ์ของจอแสดงผลอักษรเบรลล์แบบรีเฟรชได้ในแผง ChromeVox ที่ด้านบนของหน้าจอ</translation>
@@ -8688,7 +8676,6 @@
 <translation id="744366959743242014">กำลังโหลดข้อมูล การดำเนินการนี้จะใช้เวลาไม่กี่วินาที</translation>
 <translation id="7443806024147773267">เข้าถึงรหัสผ่านได้เมื่อใดก็ตามที่ลงชื่อเข้าใช้บัญชี Google อยู่</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{คุกกี้จะถูกบล็อกอีกครั้งในวันนี้}=1{คุกกี้จะถูกบล็อกอีกครั้งในวันพรุ่งนี้}other{คุกกี้จะถูกบล็อกอีกครั้งในอีก # วัน}}</translation>
-<translation id="7444970023873202833">ดูความทรงจำเพิ่มเติมใน Google Photos</translation>
 <translation id="7444983668544353857">ปิดการใช้งาน<ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">ติดตั้งแอปโดยอัตโนมัติ</translation>
 <translation id="7448664748118305024">ลบเว็บไซต์ข้อมูลที่บันทึกไว้ในอุปกรณ์เมื่อคุณปิดหน้าต่างทั้งหมด</translation>
@@ -9096,10 +9083,6 @@
 <translation id="7745554356330788383">โหลดหน้านี้ซ้ำเพื่อใช้การตั้งค่าที่อัปเดตสำหรับ "<ph name="EXTENSION_NAME" />" ในเว็บไซต์นี้</translation>
 <translation id="7745677556280361868">นำเครือข่ายนี้ออกจากหน้าการสมัครใช้บริการ Passpoint ใช่ไหม</translation>
 <translation id="7746045113967198252">ทำให้รายการในหน้าจอรวมถึงข้อความมีขนาดใหญ่ขึ้นหรือเล็กลง คุณยังค้นหาตัวเลือกนี้ได้ภายหลังในการตั้งค่า &gt; อุปกรณ์ &gt; จอแสดงผล</translation>
-<translation id="7746739418892731373">สิ่งที่เห็นนี้คือไฮไลต์รูปภาพและวิดีโอจากคลังของ Google Photos คุณควบคุมสิ่งที่แสดงในไฮไลต์ได้ที่ <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        คุณสามารถจัดการการตั้งค่าการ์ดนี้จากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="7750228210027921155">การแสดงภาพซ้อนภาพ</translation>
 <translation id="7751260505918304024">แสดงทั้งหมด</translation>
 <translation id="7752832973194460442">ข้อมูลแอป Android</translation>
@@ -10041,7 +10024,6 @@
 <translation id="8412136526970428322">อนุญาตให้เข้าถึง<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
 <translation id="8413795581997394485">ปกป้องจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย เมื่อคุณเข้าชมเว็บไซต์ Chrome จะนำเฉพาะบางส่วนของ URL มาปรับให้ยากต่อการอ่าน (Obfuscate) แล้วส่งไปยัง Google ผ่านเซิร์ฟเวอร์ส่วนตัวที่ซ่อนที่อยู่ IP ของคุณ หากเว็บไซต์ทำสิ่งที่น่าสงสัย ระบบจะส่ง URL แบบเต็มและเนื้อหาของหน้าเว็บบางส่วนด้วย</translation>
 <translation id="8413956290606243087">คุณต้องการเปิดใช้งาน ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอในตัวสำหรับ Chrome OS ไหม</translation>
-<translation id="8414249071344507766">ซ่อนความทรงจำเป็นเวลา 2 วัน</translation>
 <translation id="8414396119627470038">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /> ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>
 <translation id="8417065541337558100">ตัวอย่างจากกล้องของคุณ</translation>
@@ -10470,8 +10452,6 @@
           <ph name="LINE_BREAK" />
           (ระบบจะไม่แชร์ข้อมูลที่คุณป้อนอัตโนมัติ)</translation>
 <translation id="8729133765463465108">ใช้กล้องเพื่อสแกนคิวอาร์โค้ด</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />แชทกับ Gemini เพื่อเริ่มเขียน วางแผน เรียนรู้ และอีกมากมายด้วย AI ของ Google<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />หลังจากตั้งค่าแล้ว ก็เริ่มใช้ Gemini ได้เลยโดยเลือกแอป Gemini บนแถบที่ด้านล่างของหน้าจอ<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8731029916209785242">สิทธิ์ (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">รหัสความปลอดภัย</translation>
@@ -10753,7 +10733,6 @@
 <translation id="8934732568177537184">ต่อไป</translation>
 <translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="8940081510938872932">คอมพิวเตอร์ของคุณทำงานหลายอย่างเกินไปในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
-<translation id="8940381019874223173">จาก Google Photos</translation>
 <translation id="8940888110818450052">ตัวเลือกการลงชื่อเข้าใช้</translation>
 <translation id="8941173171815156065">เพิกถอนสิทธิ์ "<ph name="PERMISSION" />"</translation>
 <translation id="8941688920560496412">"<ph name="DEVICE_NAME" />" ปิดอยู่</translation>
@@ -11248,7 +11227,6 @@
 <translation id="995755448277384931">เพิ่ม IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">กำลังทำการเชื่อมต่ออย่างปลอดภัย...</translation>
-<translation id="996803490569799917">ดูความทรงจำเกี่ยวกับคนที่คุณชื่นชอบและอื่นๆ</translation>
 <translation id="997143476478634194">เว็บไซต์จะดำเนินการตามการตั้งค่านี้โดยอัตโนมัติเมื่อคุณเข้าชม เว็บไซต์มักจะส่งการแจ้งเตือนเพื่อแจ้งให้คุณทราบเกี่ยวกับข่าวด่วนหรือข้อความแชท</translation>
 <translation id="99731366405731005">เปิด<ph name="LINK1_BEGIN" />การซิงค์ของ Chrome<ph name="LINK1_END" /> เพื่อใช้การซิงค์ Wi-Fi <ph name="LINK2_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">&amp;ตรวจสอบ</translation>

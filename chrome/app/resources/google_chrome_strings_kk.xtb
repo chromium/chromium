@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">Chrome-ға кіріңіз. Аккаунтқа тек бір рет кіргіңіз келсе, <ph name="GUEST_LINK_BEGIN" />құрылғыны қонақ ретінде пайдалануға<ph name="GUEST_LINK_END" /> болады</translation>
 <translation id="1152920704813762236">ChromeOS туралы</translation>
 <translation id="1154147086299354128">&amp;Chrome браузерінде ашу</translation>
+<translation id="1184145431117212167">Орнатылмады, себебі сіздегі Windows нұсқасына қолдау көрсетілмейді.</translation>
 <translation id="1194807384646768652">Chrome жүктеп алуды блоктады, себебі бұл файл түрі әдетте жүктеп алынбайды және ол қауіпті болуы мүмкін.</translation>
 <translation id="1203500561924088507">Орнатқаныңыз үшін рақмет. <ph name="BUNDLE_NAME" /> пайдаланбас бұрын браузерді жауып, қайта ашуыңыз керек.</translation>
 <translation id="1229096353876452996">Google қызметі Chrome-ды әдепкі браузер ретінде орнатуға кеңес береді</translation>
@@ -238,6 +239,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Chrome браузерін бір күннің ішінде қайта іске қосыңыз}other{Chrome браузерін # күннің ішінде қайта іске қосыңыз}}</translation>
 <translation id="4205939740494406371">Chrome сіздің құпия сөздеріңізді тексере алмай жатыр. 24 сағаттан кейін қайталап көріңіз немесе <ph name="BEGIN_LINK" />құпия сөздерді Google аккаунтынан тексеріңіз<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Бас тартылуда…</translation>
+<translation id="4224210481850767180">Орнату тоқтатылды.</translation>
 <translation id="4242034826641750751">Chrome бұл сайт үшін камера мен микрофонды пайдалануға рұқсат сұрайды.</translation>
 <translation id="424864128008805179">Chrome жүйесінен шығасыз ба?</translation>
 <translation id="4251615635259297716">Chromium дерегіңізді осы аккаунтпен байланыстырасыз ба?</translation>

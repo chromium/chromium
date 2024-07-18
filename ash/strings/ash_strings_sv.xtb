@@ -521,6 +521,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2970920913501714344">Installera appar, tillägg och teman</translation>
 <translation id="2977598380246111477">Nästa nummer</translation>
 <translation id="2985148236010982088">Visa alla appar</translation>
+<translation id="2992272421330787632">Dölj alla medieförslag</translation>
 <translation id="2992327365391326550">Enhetens mikrofon är avstängd.</translation>
 <translation id="3000461861112256445">Monoljud</translation>
 <translation id="3001391739687111021">Redigera skärmstorlek</translation>
@@ -591,6 +592,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3255483164551725916">Vad kan du göra?</translation>
 <translation id="3256109297135787951">Ta bort markeringen från ett objekt på hyllan</translation>
 <translation id="3260969790895726815">Tal behandlas lokalt och diktering fungerar offline, men vissa röstkommandon fungerar inte.</translation>
+<translation id="3264031581203585083">Dölj alla Google Drive-förslag</translation>
 <translation id="3265032511221679826">Vill du aktivera exakt platsåtkomst?</translation>
 <translation id="3269597722229482060">Högerklicka</translation>
 <translation id="3274634049061007184">Visa telefonens appar</translation>
@@ -742,6 +744,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3738664582935948253">Nu kan du visa klick och kortkommandon i skärminspelningar</translation>
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
 <translation id="3743775386021959186">Fokus är på, <ph name="REMAINING_TIME" /> kvar</translation>
+<translation id="3750403286520637847">Dölj väderförslag</translation>
 <translation id="3756485814916578707">Skärmen castas</translation>
 <translation id="3765841382945324995">Kortkommandot <ph name="SIX_PACK_KEY_NAME" /> har uppdaterats från <ph name="OLD_SHORTCUT" /> till <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Redigerades i dag</translation>
@@ -781,6 +784,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3906954721959377182">Surfplatta</translation>
 <translation id="3923494859158167397">Inga mobilnätverk har konfigurerats</translation>
 <translation id="3925540965556789199">Läser in händelser den <ph name="DATE" />.</translation>
+<translation id="3927049937406914450">Vädret är inte tillgängligt eftersom platsåtkomst har inaktiverats. Du kan ändra detta i inställningarna.</translation>
 <translation id="3932043219784172185">Det finns ingen ansluten enhet</translation>
 <translation id="3934456833412894880">Smart laddning har aktiverats. Batteriet laddas upp till 80 % så att det ska räcka längre. Det laddas helt när du behöver det.</translation>
 <translation id="3943857333388298514">Klistra in</translation>
@@ -897,6 +901,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4312840429157639164">Kameran har fästs i det övre högra hörnet. Konflikt med systemyta.</translation>
 <translation id="4316910396681052118">ALLA APPAR</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Dölj alla förslag i webbläsaren Chrome</translation>
 <translation id="4322742403972824594">Kortkommandot Ctrl + Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" /> tangenten + vänsterpil för att använda Home-tangenten.</translation>
 <translation id="4324840740119394760">Detta ger kameraåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med kamerabehörighet</translation>
 <translation id="4327147325944669226">Spela in spel</translation>
@@ -930,6 +935,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="4451374464530248585">Kortkommandot Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + nedåtpil för att använda Page Down-tangenten.</translation>
 <translation id="4453876312474547652">Urklipp visas när du trycker länge på Ctrl + V. Du kan inaktivera kortkommandot genom att inaktivera flaggan #clipboard-history-longpress i chrome://flags (eller os://flags om du använder Lacros).</translation>
+<translation id="445765352722456792">Anpassa förslag</translation>
 <translation id="445864333228800152">Hej!</translation>
 <translation id="4458688154122353284">Stoppa skärminspelningen</translation>
 <translation id="445923051607553918">Anslut till wifi-nätverk</translation>
@@ -1332,6 +1338,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5802516411616338943">Öppna Snabbinställningar</translation>
 <translation id="5804651031882187592">Inaktivera inställningen Lås SIM</translation>
 <translation id="5805809050170488595">Klicka för att aktivera <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Din Chromebook startades om oväntat. Öppna dina föregående fönster och appar.</translation>
 <translation id="5823239091726045201">Google Tasks på webben</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6469104339369989396">Aktivera och inaktivera surfzon</translation>
 <translation id="6477681113376365978">Det går inte att ladda ned filen</translation>
 <translation id="6482559668224714696">Helskärmsförstoring</translation>
+<translation id="6485086611007560630">Vädret (inte tillgängligt)</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
 <translation id="649452524636452238">Pinkod till smartkort</translation>
 <translation id="6495322433318104734">Visar skärmsläckare, tryck på valfri tangent för att avsluta</translation>
@@ -1781,6 +1789,7 @@ Nyligen installerad</translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">sida ned</translation>
+<translation id="7518182783647693467">Växla temperaturenhet (F eller C)</translation>
 <translation id="7519206258459640379">Kamerainramning är på.</translation>
 <translation id="7519649142417630956">När enheten har stängts av loggas administratören ut och kan inte styra enheten.
 
@@ -1921,6 +1930,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7951630946012935453">Gör tangentbordets belysning svagare</translation>
 <translation id="7953994493035617347">Vill du bekräfta den nya upplösningen?</translation>
 <translation id="795958884516058160">Helskärmsförstoring är aktiverat. Tryck på <ph name="ACCELERATOR" /> igen för att inaktivera det.</translation>
+<translation id="7962583092928373823">Dölj alla Google Kalender-förslag</translation>
 <translation id="7963689218131240420">Stör ej är inaktiverat.</translation>
 <translation id="7963992254934562106">Från <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Välj mapp …</translation>
@@ -1993,6 +2003,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebook måste vara på och ansluten till en strömkälla under den tiden. Se till att kabeln på laddaren eller adaptern är ordentligt ansluten till Chromebook och eluttaget. Stäng inte av Chromebook.</translation>
 <translation id="8220076512072059941">Lägg till <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Dölj det här förslaget</translation>
 <translation id="8230305195727960608">Läge för inverterade färger</translation>
 <translation id="8236042855478648955">Dags för en paus</translation>
 <translation id="8237964652943995219">Nästa skrivbord: <ph name="DESK_NAME" />. Skrivbord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
@@ -2121,7 +2132,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: aktiverar …</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Tiden är ute. Bra jobbat! 🎉</translation>
 <translation id="8753368202781196133">Det här språket stöds för närvarande inte.</translation>
 <translation id="8755498163081687682">Verifiera din identitet: <ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="875593634123171288">Visa VPN-inställningar</translation>
@@ -2179,6 +2189,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> kryssruta ej markerad.</translation>
 <translation id="8949925099261528566">Ansluten, inget internet</translation>
 <translation id="8951539504029375108">Endast godkända Thunderbolt-enheter är kompatibla med din Chromebook</translation>
+<translation id="8956420987536947088">Öppna dina föregående fönster och appar</translation>
 <translation id="8959380109429710384">Du tryckte på kortkommandot för helskärmsförstoring. Använd Ctrl + Alt + pilarna för att flytta den zoomade vyn.</translation>
 <translation id="8964525410783593407">1 tim</translation>
 <translation id="8973885907461690937">Flytta fokus till menyikonen</translation>

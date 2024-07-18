@@ -521,6 +521,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2970920913501714344">Sett upp forrit, viðbætur og þemu</translation>
 <translation id="2977598380246111477">Næsta tala</translation>
 <translation id="2985148236010982088">Sjá öll forrit</translation>
+<translation id="2992272421330787632">Fela allar tillögur um efni</translation>
 <translation id="2992327365391326550">Slökkt er á hljóðnemahnappi tækisins.</translation>
 <translation id="3000461861112256445">Einóma hljóð</translation>
 <translation id="3001391739687111021">Breyta skjástærð</translation>
@@ -591,6 +592,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3255483164551725916">Hvað geturðu gert?</translation>
 <translation id="3256109297135787951">Fjarlægja auðkenningu atriðis á hillu</translation>
 <translation id="3260969790895726815">Unnið er úr tali í tækinu og raddinnsláttur virkar án nettengingar en sumar raddskipanir virka ekki.</translation>
+<translation id="3264031581203585083">Fela allar Google Drive-tillögur</translation>
 <translation id="3265032511221679826">Kveikja á aðgangi að nákvæmri staðsetningu?</translation>
 <translation id="3269597722229482060">Hægrismella</translation>
 <translation id="3274634049061007184">Skoða forrit símans</translation>
@@ -742,6 +744,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3738664582935948253">Nú geturðu sýnt smelli og flýtilykla á skjáupptökum</translation>
 <translation id="3742055079367172538">Skjámynd tekin</translation>
 <translation id="3743775386021959186">Einbeitingarlota í gangi, <ph name="REMAINING_TIME" /> eftir</translation>
+<translation id="3750403286520637847">Fela veðurtillögur</translation>
 <translation id="3756485814916578707">Skjár sendur út</translation>
 <translation id="3765841382945324995">Flýtileiðin <ph name="SIX_PACK_KEY_NAME" /> var uppfærð í <ph name="NEW_SHORTCUT" /> úr <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Breytt í dag</translation>
@@ -781,6 +784,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3906954721959377182">Spjaldtölva</translation>
 <translation id="3923494859158167397">Ekkert farsímakerfi er uppsett</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, hleður viðburðum.</translation>
+<translation id="3927049937406914450">Veður er ekki tiltækt því að slökkt er á staðsetningaraðgangi. Þú getur breytt þessu í stillingum.</translation>
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
 <translation id="3934456833412894880">Kveikt er á aðlagaðri hleðslu. Rafhlaðan helst í 80% til að lengja rafhlöðuendingu og fullhleðst þegar þú þarft á að halda.</translation>
 <translation id="3943857333388298514">Líma</translation>
@@ -897,6 +901,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4312840429157639164">Myndavél fest við efra horn hægra megin. Skörun við vettvang kerfis.</translation>
 <translation id="4316910396681052118">ÖLL FORRIT</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Fela allar tillögur úr Chrome-vafra</translation>
 <translation id="4322742403972824594">Flýtilyklinum „Ctrl + Alt + ör upp“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör til vinstri til að nota Home-lykilinn.</translation>
 <translation id="4324840740119394760">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél</translation>
 <translation id="4327147325944669226">Taka upp leik</translation>
@@ -930,6 +935,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4450893287417543264">Ekki sýna þetta aftur</translation>
 <translation id="4451374464530248585">Flýtilyklinum „Alt + ör niður“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" /> + ör niður til að nota Page Down-lykilinn.</translation>
 <translation id="4453876312474547652">Klippiborð birtist þegar þú heldur inni Ctrl + V. Þú getur slökkt á þessari flýtileið með því að slökkva á flagginu #clipboard-history-longpress í chrome://flags (os://flags ef þú notar Lacros).</translation>
+<translation id="445765352722456792">Sérsníða tillögur</translation>
 <translation id="445864333228800152">Gott kvöld,</translation>
 <translation id="4458688154122353284">Stöðva skjáupptöku</translation>
 <translation id="445923051607553918">Tengjast Wi-Fi neti</translation>
@@ -1332,6 +1338,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5802516411616338943">Opna flýtistillingar</translation>
 <translation id="5804651031882187592">Slökkva á stillingunni „læsa SIM-korti“</translation>
 <translation id="5805809050170488595">Smelltu til að kveikja á <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Chromebook-tölvan þín endurræsti sig óvænt. Opnaðu glugga og forrit sem voru opin.</translation>
 <translation id="5823239091726045201">Google-verkefni á vefnum</translation>
 <translation id="5825969630400862129">Stillingar tengdra tækja</translation>
 <translation id="5837036133683224804">Stöðva <ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6469104339369989396">Kveikja/slökkva á heitum reit</translation>
 <translation id="6477681113376365978">Ekki tókst að sækja skrá</translation>
 <translation id="6482559668224714696">Stækkunargler á öllum skjánum</translation>
+<translation id="6485086611007560630">Veður (ekki tiltækt)</translation>
 <translation id="6490471652906364588">USB-C-tæki (hægra tengi)</translation>
 <translation id="649452524636452238">PIN-númer snjallkorts</translation>
 <translation id="6495322433318104734">Birtir skjávara, ýttu á hvaða lykil sem er til að loka</translation>
@@ -1781,6 +1789,7 @@ Ný uppsetning</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Skipta á milli hitaeininga (F eða C)</translation>
 <translation id="7519206258459640379">Kveikt er á myndavélarramma.</translation>
 <translation id="7519649142417630956">Þegar búið er að slökkva skráist stjórnandinn út og getur ekki stjórnað tækinu.
 
@@ -1921,6 +1930,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7951630946012935453">Myrkva lyklaborð</translation>
 <translation id="7953994493035617347">Staðfesta nýja upplausn?</translation>
 <translation id="795958884516058160">Kveikt á stækkun á öllum skjánum. Ýttu aftur á <ph name="ACCELERATOR" /> til að slökkva.</translation>
+<translation id="7962583092928373823">Fela allar tillögur frá Google-dagatali</translation>
 <translation id="7963689218131240420">Slökkt er á „Ónáðið ekki“.</translation>
 <translation id="7963992254934562106">Frá <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Veldu möppu...</translation>
@@ -1993,6 +2003,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8214996719228530800">Canary-rás</translation>
 <translation id="8219451629189078428">Kveikt þarf að vera á Chromebook og tækið þarf að vera í sambandi á meðan. Gakktu úr skugga um að hleðslutækið eða millistykkið sé örugglega í sambandi, bæði við Chromebook og innstunguna. Ekki slökkva á Chromebook.</translation>
 <translation id="8220076512072059941">Bæta <ph name="FOCUS_DURATION_DELTA" /> við</translation>
+<translation id="8228175756124063692">Fela þessa tillögu</translation>
 <translation id="8230305195727960608">umsnúningur lita</translation>
 <translation id="8236042855478648955">Tími til að taka sér hlé</translation>
 <translation id="8237964652943995219">Næsta skrifborð: <ph name="DESK_NAME" />. Skrifborð <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
@@ -2121,7 +2132,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Virkjar...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Tíminn er liðinn. Vel gert! 🎉</translation>
 <translation id="8753368202781196133">Þetta tungumál er ekki stutt eins og er.</translation>
 <translation id="8755498163081687682">Staðfestu hver þú ert: <ph name="ORIGIN_NAME" /> vill staðfesta að þetta sért þú</translation>
 <translation id="875593634123171288">Sýna VPN-stillingar</translation>
@@ -2179,6 +2189,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="894774083269346314">Ekki er merkt við gátreitinn „<ph name="PROFILE_NAME" /> <ph name="EMAIL" />“</translation>
 <translation id="8949925099261528566">Tengt, enginn netaðgangur</translation>
 <translation id="8951539504029375108">Aðeins samþykkt Thunderbolt-tæki eru samhæf Chromebook</translation>
+<translation id="8956420987536947088">Opnaðu glugga og forrit sem voru opin</translation>
 <translation id="8959380109429710384">Þú ýttir á flýtilykil fyrir stækkun á öllum skjánum. Notaðu ctrl + alt + örvatakka til að hreyfa stækkuðu myndina til.</translation>
 <translation id="8964525410783593407">1 klst.</translation>
 <translation id="8973885907461690937">Setja valmyndartákn í fókus</translation>

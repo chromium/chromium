@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">অ্যাপ, এক্সটেনশন এবং থিম ইনস্টল করুন</translation>
 <translation id="2977598380246111477">পরবর্তী নম্বর</translation>
 <translation id="2985148236010982088">সব অ্যাপ দেখুন</translation>
+<translation id="2992272421330787632">সব মিডিয়া সাজেশন লুকান</translation>
 <translation id="2992327365391326550">ডিভাইসের মাইক্রোফোন বোতাম বন্ধ আছে।</translation>
 <translation id="3000461861112256445">মোনো অডিও</translation>
 <translation id="3001391739687111021">স্ক্রিনের সাইজ এডিট করুন</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">আপনি কি করতে পারেন?</translation>
 <translation id="3256109297135787951">আপনার শেল্ফে আইটেম থেকে হাইলাইট সরিয়ে দিন</translation>
 <translation id="3260969790895726815">স্পিচ স্থানীয়ভাবে প্রসেস করা হয় এবং ডিক্টেশন অফলাইনে কাজ করে, কিন্তু কিছু ভয়েস কমান্ড কাজ করবে না।</translation>
+<translation id="3264031581203585083">Google Drive-এর সব সাজেশন লুকান</translation>
 <translation id="3265032511221679826">সুনির্দিষ্ট লোকেশন সংক্রান্ত অ্যাক্সেসের অনুমতি চালু করবেন?</translation>
 <translation id="3269597722229482060">ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="3274634049061007184">আপনার ফোনের অ্যাপ দেখুন</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">আপনি এখন স্ক্রিন রেকর্ডিংয়ে ক্লিক এবং কীবোর্ড শর্টকাট দেখাতে পারেন</translation>
 <translation id="3742055079367172538">স্ক্রিনশট নেওয়া হয়েছে</translation>
 <translation id="3743775386021959186">ফোকাস মোড চালু আছে, <ph name="REMAINING_TIME" /> বাকি রয়েছে</translation>
+<translation id="3750403286520637847">আবহাওয়া সম্পর্কিত সাজেশন লুকান</translation>
 <translation id="3756485814916578707">স্ক্রিন কাস্ট করা হচ্ছে</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> শর্টকার্ট <ph name="OLD_SHORTCUT" /> থেকে <ph name="NEW_SHORTCUT" />-এ আপডেট করা হয়েছে</translation>
 <translation id="3765841986579723851">আজ এডিট করা হয়েছে</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">ট্যাবলেট</translation>
 <translation id="3923494859158167397">কোনও মোবাইল নেটওয়ার্ক সেট-আপ করা নেই</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ইভেন্ট লোড করা হচ্ছে।</translation>
+<translation id="3927049937406914450">লোকেশন অ্যাক্সেস বন্ধ থাকায় আবহাওয়ার তথ্য উপলভ্য নেই। সেটিংস থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="3932043219784172185">কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="3934456833412894880">'অ্যাডাপ্টিভ চার্জিং' ফিচারটি চালু আছে। ব্যাটারির আয়ু বাড়ানোর জন্য আপনার ব্যাটারি ৮০% এ থাকবে এবং যখন আপনার প্রয়োজন হবে তখন সম্পূর্ণ চার্জ হবে।</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">ক্যামেরাটি উপরে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="4316910396681052118">সব অ্যাপ</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Chrome ব্রাউজারের সব সাজেশন লুকান</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Home কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Left Arrow কী প্রেস করুন।</translation>
 <translation id="4324840740119394760">ক্যামেরা সম্পর্কিত অনুমতির মাধ্যমে এটি <ph name="APP_NAME" /> ও সব অ্যাপ এবং ওয়েবসাইটের জন্য ক্যামেরা অ্যাক্সেস করার অনুমতি দেয়</translation>
 <translation id="4327147325944669226">গেম রেকর্ড করুন</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="4451374464530248585">Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Down কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Down Arrow কী প্রেস করুন।</translation>
 <translation id="4453876312474547652">Ctrl + V প্রেস করে ধরে থাকলে আপনি ক্লিপবোর্ড দেখতে পাবেন। এই শর্টকাট বন্ধ করতে পারবেন chrome://flags (Lacros ব্যবহার করলে os://flags)-এ থাকা #clipboard-history-longpress ফ্ল্যাগ বন্ধ করে দিলে।</translation>
+<translation id="445765352722456792">সাজেশন কাস্টমাইজ করুন</translation>
 <translation id="445864333228800152">শুভ সন্ধ্যা,</translation>
 <translation id="4458688154122353284">স্ক্রিন রেকর্ডিং বন্ধ করুন</translation>
 <translation id="445923051607553918">ওয়াই-ফাই  নেটওয়ার্কে যোগ দিন</translation>
@@ -1332,6 +1338,7 @@
 <translation id="5802516411616338943">'দ্রুত সেটিংস' মেনু খুলুন</translation>
 <translation id="5804651031882187592">"সিম কার্ড লক করা" সেটিং বন্ধ করা</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> চালু করতে ক্লিক করুন</translation>
+<translation id="5819918159912280082">আপনার Chromebook অপ্রত্যাশিতভাবে আবার চালু হয়েছে। আপনার আগের উইন্ডো ও অ্যাপ খুলুন।</translation>
 <translation id="5823239091726045201">ওয়েবে Google Tasks</translation>
 <translation id="5825969630400862129">কানেক্ট করা ডিভাইসের সেটিংস</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /> বন্ধ করুন</translation>
@@ -1512,6 +1519,7 @@
 <translation id="6469104339369989396">হটস্পট টগল করুন</translation>
 <translation id="6477681113376365978">ফাইল ডাউনলোড করা যাচ্ছে না</translation>
 <translation id="6482559668224714696">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
+<translation id="6485086611007560630">আবহাওয়া সম্পর্কিত সাজেশন (উপলভ্য নেই)</translation>
 <translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
 <translation id="649452524636452238">স্মার্ট কার্ড পিন</translation>
 <translation id="6495322433318104734">স্ক্রিন সেভার দেখানো হচ্ছে, বেরিয়ে যেতে যেকোনও 'কী' প্রেস করুন</translation>
@@ -1782,6 +1790,7 @@
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">তাপমাত্রার একক (F বনাম C) টগল করুন</translation>
 <translation id="7519206258459640379">ক্যামেরা ফ্রেমিং চালু আছে।</translation>
 <translation id="7519649142417630956">একবার বন্ধ হয়ে গেলে, অ্যাডমিনিস্ট্রেটর লগ-আউট হয়ে যাবে এবং আপনার ডিভাইস নিয়ন্ত্রণ করতে পারবে না।
 
@@ -1922,6 +1931,7 @@
 <translation id="7951630946012935453">ডিম কীবোর্ড</translation>
 <translation id="7953994493035617347">নতুন রেজোলিউশন কনফার্ম করবেন?</translation>
 <translation id="795958884516058160">ফুল-স্ক্রিন ম্যাগনিফায়ার চালু করা আছে। এটি টগল করে বন্ধ করতে আবার <ph name="ACCELERATOR" /> প্রেস করুন।</translation>
+<translation id="7962583092928373823">Google Calendar-এর সব সাজেশন লুকান</translation>
 <translation id="7963689218131240420">'বিরক্ত করবে না' বন্ধ আছে।</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> থেকে</translation>
 <translation id="7968693143708939792">ফোল্ডার বেছে নিন...</translation>
@@ -1994,6 +2004,7 @@
 <translation id="8214996719228530800">ক্যানারি চ্যানেল</translation>
 <translation id="8219451629189078428">এই সময়ে আপনার Chromebook চালু অবস্থায় থাকতে হবে ও সেটি চার্জে বসিয়ে রাখতে হবে। আপনার Chromebook ও প্লাগ পয়েন্ট, উভয়ের সাথে চার্জার বা অ্যাডাপ্টার কেবল ঠিকমতো প্লাগ-ইন করা আছে কিনা তা দেখে নিন। আপনার Chromebook বন্ধ করবেন না।</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> যোগ করুন</translation>
+<translation id="8228175756124063692">এই সাজেশন লুকান</translation>
 <translation id="8230305195727960608">কালার ইনভার্সন মোড</translation>
 <translation id="8236042855478648955">বিরতির সময় হয়েছে</translation>
 <translation id="8237964652943995219">পরবর্তী ডেস্ক: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />টির মধ্যে <ph name="DESK_INDEX" /> নম্বর ডেস্ক।</translation>
@@ -2122,7 +2133,6 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: চালু করা হচ্ছে...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">সময় শেষ। দারুণ! 🎉</translation>
 <translation id="8753368202781196133">এই মুহূর্তে এই ভাষাটি কাজ করবে না।</translation>
 <translation id="8755498163081687682">আপনার পরিচয় যাচাই করুন: <ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="875593634123171288">VPN সেটিংস দেখান</translation>
@@ -2180,6 +2190,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> চেক বক্সে টিকচিহ্ন দেওয়া নেই।</translation>
 <translation id="8949925099261528566">কানেক্ট করা আছে, ইন্টারনেট নেই</translation>
 <translation id="8951539504029375108">শুধুমাত্র অনুমোদিত Thunderbolt ডিভাইসে আপনার Chromebook ব্যবহার করা যাবে</translation>
+<translation id="8956420987536947088">আপনার আগের উইন্ডো ও অ্যাপ খুলুন</translation>
 <translation id="8959380109429710384">আপনি ফুল-স্ক্রিন ম্যাগনিফায়ারের জন্য কীবোর্ড শর্টকাট প্রেস করেছেন। ctrl + alt + arrows কী ব্যবহার করে 'বড় করা' ভিউ এদিক ওদিক সরান।</translation>
 <translation id="8964525410783593407">১ঘঃ</translation>
 <translation id="8973885907461690937">মেনু আইকনে ফোকাস রাখুন</translation>

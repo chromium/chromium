@@ -694,6 +694,7 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cl
 <translation id="1539343118617844331">Schule</translation>
 <translation id="1542491165152947087">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen auf ihrem Gerät aktivieren oder deaktivieren.</translation>
 <translation id="1542958897137600427">Bereitstellung von Clientzertifikaten aktivieren</translation>
+<translation id="1548431234399786388">Legt die Einstellungen für die Berichterstellung zu Browserereignissen fest.</translation>
 <translation id="1550295162561011575">Mit dieser Richtlinie können Administratoren eine Automatisierung für das Starten von Apps auf <ph name="PRODUCT_NAME" />-Geräten konfigurieren. Diese Apps können bei der Nutzeranmeldung oder gemeinsam von Nutzern über den Launcher gestartet werden.</translation>
 <translation id="1551782388466447648">Touch-Bildschirmtastatur auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="1552418937045050762">Wenn diese Einstellung aktiviert ist, können Nutzer der Verwendung von Nearby Share zustimmen und Dateien mit Personen austauschen, die sich in der Nähe befinden.
@@ -826,6 +827,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1634989431648355062">Das Plug-in "<ph name="FLASH_PLUGIN_NAME" />" für diese Websites zulassen</translation>
 <translation id="1635450837608153975">Erweiterte JavaScript-Optimierungen auf allen Websites blockieren</translation>
 <translation id="1635748761015837179">Schreiben auf externen Speichergeräten zulassen</translation>
+<translation id="163653062822010558">Aktiviert: CSS‑Zoom entspricht der Standardspezifikation.</translation>
 <translation id="1639468541408865385">Globales HTTP-Authentication-Cache aktivieren</translation>
 <translation id="1639673466479276550">Bildschirmschoner auf dem Anmeldebildschirm aktivieren.</translation>
 <translation id="1640824698339859203">Floating-SSO aktivieren und die Webdienstauthentifizierungen des Nutzers auf ein neues Gerät verschieben</translation>
@@ -1228,6 +1230,7 @@ Ist die Richtlinie deaktiviert, schließt <ph name="PRODUCT_NAME" /> den Tab nac
 <translation id="1930127294345368978">Maximal zulässige Anzahl Blätter für einen einzelnen Druckauftrag</translation>
 <translation id="1933378685401357864">Hintergrundbild</translation>
 <translation id="1935409768874953955">Die anonymisierte URL-Datenerfassung ist immer aktiv</translation>
+<translation id="1942015922182679826">Löschen nicht entschlüsselbarer Passwörter aktivieren</translation>
 <translation id="1942626390957213764">Desktop-Freigabe-Hub deaktivieren</translation>
 <translation id="194407941132272412">Website-Isolierung für alle Websites deaktivieren (Nutzer kann dies ändern)</translation>
 <translation id="1945994447126139909">Diese Unternehmensrichtlinie kann nur übergangsweise verwendet werden und wird in Version 88 von <ph name="PRODUCT_NAME" /> entfernt.
@@ -1629,13 +1632,6 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 
       Wenn du "<ph name="VARIATIONS_DISABLED_OPTION_NAME" />" festlegst (Wert: 2), werden auf dem Anmeldebildschirm keine Variationen auf den Browser angewendet. Dieser Modus kann die <ph name="PRODUCT_OS_NAME" />-Entwickler möglicherweise daran hindern, wichtige Sicherheitskorrekturen zeitnah durchzuführen. Er wird daher nicht empfohlen.</translation>
 <translation id="2215746393279570703">Floating-SSO-Einstellungen</translation>
-<translation id="2218830243081931587">Mit dieser Richtlinie wird das Verhalten von Tastenkombinationen bei <ph name="PRODUCT_OS_NAME" /> gesteuert.
-
-Wenn diese Richtlinie nicht konfiguriert oder auf „<ph name="NORMAL_SYSTEM_PRIORITY" />“ gesetzt ist, werden alle <ph name="PRODUCT_OS_NAME" />-Tastenkombinationen auf Systemebene immer wie erwartet aktiviert.
-
-Wenn diese Richtlinie auf „<ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />“ gesetzt ist, wird durch eine vordefinierte Liste von Tastenkombinationen mit der Launcher-Taste nie eine Tastenkombination aktiviert.
-
-Wenn diese Richtlinie auf „<ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />“ gesetzt ist, wird durch eine vordefinierte Liste von Tastenkombinationen mit der Launcher-Taste nie eine Tastenkombination aktiviert, während eine App im Vollbildmodus ist.</translation>
 <translation id="2221779615493499989">Mit dieser Richtlinie wird festgelegt, ob der Netzwerkstatus des Nutzers auf angemeldeten Geräten ausgegeben wird.
 
       Wenn sie auf „false“ gesetzt ist, werden keine Informationen ausgegeben.
@@ -2357,7 +2353,6 @@ Ist die Richtlinie deaktiviert, können Nutzer keine Kerberos-Konten hinzufügen
 <translation id="2774906947252258544">Über die Sperrliste wird festgelegt, welche Installationstypen für Erweiterungen unzulässig sind.
 
 Wenn du „command_line“ festlegst, wird das Laden von Erweiterungen über die Befehlszeile blockiert.</translation>
-<translation id="2779027965175176474">Einführungsbildschirm für <ph name="FEATURE_NAME" /> bei der Anmeldung nicht anzeigen</translation>
 <translation id="2780840673734667062">Anmeldung mit zusätzlichen Google-Konten deaktivieren</translation>
 <translation id="2784880732336446591">Browserdaten beim Beenden löschen</translation>
 <translation id="2786117913267907931">Ursprüngen nicht erlauben, Direct Sockets zu verwenden</translation>
@@ -2613,7 +2608,6 @@ Wenn der Wert auf „<ph name="DEFAULT_ENUM_VALUE" />“ festgelegt ist, wird da
 Ist der Wert auf „<ph name="ENABLED_ENUM_VALUE" />“ gesetzt, werden Entitäten erkannt, unterstrichen und entweder durch einmaliges Tippen oder langes Drücken ausgelöst.
 Wenn der Wert auf „<ph name="DISABLED_ENUM_VALUE" />“ gesetzt ist, werden Entitäten nicht erkannt und es können keine Aktionen dafür ausgeführt werden.
 Ist der Wert auf „<ph name="LONGPRESSONLY_ENUM_VALUE" />“ gesetzt, werden Entitäten erkannt und es können nur durch langes Drücken Aktionen dafür ausgeführt werden.</translation>
-<translation id="3010395821339265736">Einführungsbildschirm für <ph name="FEATURE_NAME" /> bei der Anmeldung anzeigen</translation>
 <translation id="3010907817113180883">Häufigkeit der Erhebung des Geräteaktivität-Heartbeats in Millisekunden.</translation>
 <translation id="3016585641676676461">Automatischen Vollbildmodus auf diesen Websites blockieren</translation>
 <translation id="3017578958356048910">Mit dem PDF-Viewer können PDFs mit Anmerkungen versehen werden</translation>
@@ -3214,7 +3208,6 @@ Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI f
 <translation id="3484305545282013129">Ursprüngen erlauben, auf Browserberechtigungen zuzugreifen, die für den Installationsursprung des Webkiosks verfügbar sind.</translation>
 <translation id="3485200437120267231">Anmeldungsabfangen deaktivieren</translation>
 <translation id="3487651201232258606">Natives Messaging</translation>
-<translation id="3488551354274495283">Anzeige des Einführungsbildschirms für <ph name="FEATURE_NAME" /> bei der Anmeldung aktivieren</translation>
 <translation id="3492351353716550742">Setzt die standardmäßige Verweisrichtlinie nicht auf „no-referrer-when-downgrade“</translation>
 <translation id="3492834335089638487">Mit dieser Richtlinie kann die Nutzung von Android-Apps konfiguriert werden, die aus anderen Quellen als Google Play für ein Gerät heruntergeladen wurden.
 
@@ -3823,6 +3816,9 @@ Hinweis: Wenn in den Einstellungen keine gegenseitig unterstützten Authentifizi
 <translation id="3979738908158213640">URLs, die während der SAML-Authentifizierung Zugriff zur Durchführung der Geräteattestierung erhalten</translation>
 <translation id="3982322576186033243">Nicht sichere Hashes in TLS-Handshakes nicht zulassen</translation>
 <translation id="3982465141749620677">Zur erneuten Authentifizierung in einem Tab auffordern</translation>
+<translation id="3982849521386211220">Damit lässt sich die Liste der Reporting API‑Endpunkte konfigurieren[1], an die Unternehmensberichte gesendet werden kann.
+
+[1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
 <translation id="398294729592983401">Nutzern erlauben, die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung „Fingerprinting-Schutz“ auf ihrem Gerät zu aktivieren oder deaktivieren.</translation>
 <translation id="3983162212222338509">Die DNS-Auflösung des Systems kann je nach Systemkonfiguration und Funktions-Flags innerhalb, außerhalb oder teils innerhalb, teils außerhalb des Netzwerkprozesses ausgeführt werden.</translation>
 <translation id="3986700049001404598">Nutzern erlauben, Prozesse mit dem Task-Manager von Chrome zu beenden</translation>
@@ -4186,6 +4182,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, können der Chrome Root Store oder
 
 Diese Richtlinie wurde in Version 113 von <ph name="PRODUCT_NAME" /> für <ph name="MS_WIN_NAME" /> und <ph name="MAC_OS_NAME" />, in Version 120 von <ph name="PRODUCT_OS_NAME" />, in Version 120 von <ph name="PRODUCT_NAME" /> für <ph name="LINUX_OS_NAME" /> und in Version 121 von <ph name="PRODUCT_NAME" /> für <ph name="ANDROID_NAME" /> entfernt, als die Unterstützung für die von der Plattform bereitgestellte Zertifikatsprüfung und die von der Plattform bereitgestellten Root-Zertifikate entfernt wurde.</translation>
 <translation id="424318624725112807">„Caret hervorheben“ auf dem Anmeldebildschirm aktivieren</translation>
+<translation id="4243419387411966417">Löschen nicht entschlüsselbarer Passwörter deaktivieren</translation>
 <translation id="4245159233848584683">Wenn die Richtlinie aktiviert oder nicht konfiguriert und für ein lokales Gerätekonto die automatische Anmeldung ohne Verzögerung konfiguriert ist, zeigt <ph name="PRODUCT_OS_NAME" /> bei einem Gerät im Offlinemodus eine Aufforderung zur Netzwerkkonfiguration an.
 
 Ist die Richtlinie deaktiviert, wird stattdessen eine Fehlermeldung angezeigt.</translation>
@@ -4316,6 +4313,7 @@ Hinweis: Diese Richtlinie ersetzt die Richtlinie „<ph name="ARC_GLS_POLICY_NAM
 
       Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Allerdings werden ab M85 Muster mit den Platzhaltern „*“ und „[*.]“ auf dem Host für diese Richtlinie nicht mehr unterstützt.</translation>
 <translation id="4369307906396795087">Skripts für Worker (Web Worker, Service Worker usw.) verwenden die laxe MIME-Typprüfung. Das heißt, auch Worker-Skripts mit älteren MIME-Typen wie <ph name="MIMETYPE_TEXT_ASCII" /> funktionieren.</translation>
+<translation id="4370908590951861085">Berichterstellung zu Endpunkten</translation>
 <translation id="4370937370030117032">Senden von Nutzer- und Dateinamen an native Drucker deaktivieren</translation>
 <translation id="4372704773119750918">Nutzer in Unternehmen dürfen keine Mehrfachprofile verwenden (weder als primärer, noch als sekundärer Nutzer)</translation>
 <translation id="4373332965635821723">Kurzbefehle für Bedienungshilfen aktivieren</translation>
@@ -5158,6 +5156,15 @@ Ist diese Richtlinie nicht konfiguriert, ist „Formuliere für mich“ auf nich
 <translation id="5085647276663819155">Druckvorschau deaktivieren</translation>
 <translation id="5087932158260897375">Wenn diese Richtlinie auf „false“ gesetzt ist, sind Berichte zur Diagnose der Domainzuverlässigkeit deaktiviert und es werden keine Daten an Google gesendet.
 Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, gilt für Diagnoseberichte zur Domainzuverlässigkeit bei <ph name="PRODUCT_NAME" /> das Verhalten von „MetricsReportingEnabled“ und bei <ph name="PRODUCT_OS_NAME" /> das von „DeviceMetricsReportingEnabled“.</translation>
+<translation id="5088284418186527880">Diese Richtlinie ermöglicht die Konformität mit der neu eingeführten Spezifikation des CSS‑Zooms.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, entspricht die CSS‑Property „zoom“ der Spezifikation:
+
+  https://drafts.csswg.org/css-viewport/#zoom-property
+
+Ist die Richtlinie deaktiviert, wird die CSS‑Property „zoom“ auf das alte Verhalten zurückgesetzt.
+
+Diese Richtlinie ist eine vorübergehende Lösung, damit genug Zeit ist, Webinhalte auf das neue Verhalten umzustellen. Es gibt auch einen Ursprungstest („DisableStandardizedBrowserZoom“), der dem Verhalten entspricht, wenn diese Richtlinie deaktiviert ist. In Version 134 wird diese Richtlinie entfernt und „Aktiviert“ wird zum permanenten Verhalten.</translation>
 <translation id="5090791951240382356">Zusammenführen von Wörterbuchrichtlinien aus unterschiedlichen Quellen erlauben</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" /> die Authentifizierung für HTTP erlauben</translation>
 <translation id="5093603777978346818">Bildschirmschoner auf dem Sperrbildschirm nicht aktivieren.</translation>
@@ -5770,6 +5777,7 @@ Dies wurde in M112 entfernt.</translation>
 <translation id="5534079385061985566">Funktion zur vollständigen Wiederherstellung aktivieren.</translation>
 <translation id="5534235660122271432">Schreiben auf externen Speichergeräten nicht zulassen</translation>
 <translation id="5535256585099022933">Zeitintervall für den Neustart festlegen</translation>
+<translation id="5537400155400537818">Deaktiviert: CSS‑Zoom behält das alte Verhalten bei.</translation>
 <translation id="553806128266843748">Boolescher Parameter, der angibt, ob die Drosselung aktiviert ist.</translation>
 <translation id="5540885720415375851">Erkennung lokaler Geräte zulassen</translation>
 <translation id="5542235730745104308">Wenn die Richtlinie auf „True“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> alternative Fehlerseiten (z. B. „Seite nicht gefunden“). Ist sie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /> niemals alternative Fehlerseiten.
@@ -7564,6 +7572,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Diese Richtlinie existiert nicht mehr. Bitte verwende stattdessen <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6847379587945465889">Übertragung von SAML-SSO-Cookies in die Nutzersitzung während der Anmeldung aktivieren</translation>
 <translation id="684856667300805181">Diese Richtlinie wurde in Version 68 von <ph name="PRODUCT_NAME" /> entfernt und durch "<ph name="ARC_GLS_POLICY_NAME" />" ersetzt.</translation>
+<translation id="684882090733715433">Berichterstellung zu Browserereignissen</translation>
 <translation id="6850300477973481112">Desk Connector-Einstellungen</translation>
 <translation id="6851199885688265233">Bedienungshilfe "Mauszeiger hervorheben" aktivieren</translation>
 <translation id="6851315055469993882">Globales HTTP-Auth-Cache aktivieren</translation>
@@ -8370,13 +8379,6 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="7468182772656807573">Die Konfiguration der Richtlinie legt fest, wie oft Kontrollnetzwerkpakete gesendet werden (in Millisekunden). Intervalle reichen von 30 Sekunden bis zu 24 Stunden. Werte außerhalb dieses Bereiches werden automatisch auf den jeweiligen Grenzwert gesetzt.
 
       Wenn die Richtlinie nicht konfiguriert ist, betragen die Intervalle standardmäßig 3 Minuten.</translation>
-<translation id="7469182444144588294">Mit dieser Richtlinie wird festgelegt, ob dem Nutzer bei der ersten Anmeldung der Einführungsbildschirm für <ph name="FEATURE_NAME" /> angezeigt wird.
-
-      Wenn die Richtlinie deaktiviert ist, wird der Einführungsbildschirm für <ph name="FEATURE_NAME" /> nicht angezeigt.
-
-      Wenn sie aktiviert ist, wird der Einführungsbildschirm für <ph name="FEATURE_NAME" /> angezeigt.
-
-      Ist die Richtlinie nicht konfiguriert, wird der Einführungsbildschirm für <ph name="FEATURE_NAME" /> bei vom Unternehmen verwalteten Nutzern übersprungen und nicht verwalteten Nutzern angezeigt.</translation>
 <translation id="7469554574977894907">Suchvorschläge aktivieren</translation>
 <translation id="7472547030234093862">Domains angeben, die mit DNS‑over‑HTTPS aufgelöst werden sollen</translation>
 <translation id="747275827471712187">Auf diesen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
@@ -8892,6 +8894,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, umfasst der generierte K
       Wenn für den Wert null angegeben wird, wird der Bildschirm bei Inaktivität des Nutzers nicht durch <ph name="PRODUCT_OS_NAME" /> gesperrt. Wenn kein Wert angegeben ist, wird ein Standardwert verwendet.
 
       Die empfohlene Vorgehensweise ist, die Bildschirmsperre im Ruhemodus zu aktivieren und <ph name="PRODUCT_OS_NAME" /> anzuweisen, nach der Inaktivitätsverzögerung in den Ruhemodus zu wechseln. Diese Richtlinie sollte nur verwendet werden, wenn die Bildschirmsperre erheblich früher als der Ruhemodus eintreten oder der Ruhemodus bei Inaktivität gar nicht erfolgen soll.</translation>
+<translation id="7894964526545174973">Standardisiertes Browser-Zoomverhalten aktivieren</translation>
 <translation id="7895553628261067384">Remote-Zugriff</translation>
 <translation id="7898807590879163195">Geräteaktivität-Heartbeat deaktivieren</translation>
 <translation id="789975630884141379">Vorschläge zur Entdeckung neuer Inhalte aktivieren</translation>

@@ -17,6 +17,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1149651794389918149">Inicia sesión en Chrome. Si quieres iniciar sesión en una cuenta solo una vez, puedes <ph name="GUEST_LINK_BEGIN" />usar el dispositivo como invitado<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Información de ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
+<translation id="1184145431117212167">No se ha podido realizar la instalación porque no es compatible con tu versión de Windows.</translation>
 <translation id="1194807384646768652">Chrome ha bloqueado esta descarga porque el tipo de archivo no se descarga habitualmente y podría ser peligroso</translation>
 <translation id="1203500561924088507">Gracias por realizar la instalación. Debes reiniciar tu navegador para poder usar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google recomienda configurar Chrome como navegador predeterminado</translation>
@@ -239,6 +240,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4191857738314598978">{0,plural, =1{Reinicia Chrome en el próximo día}other{Reinicia Chrome en los próximos # días}}</translation>
 <translation id="4205939740494406371">Chrome no puede comprobar tus contraseñas. Vuelve a intentarlo en 24 horas o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Cancelando...</translation>
+<translation id="4224210481850767180">Se ha cancelado la instalación.</translation>
 <translation id="4242034826641750751">Chrome necesita los permisos del micrófono y de la cámara para este sitio</translation>
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
 <translation id="4251615635259297716">¿Quieres vincular tus datos de Chrome a esta cuenta?</translation>

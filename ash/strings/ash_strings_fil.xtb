@@ -521,6 +521,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2970920913501714344">Mag-install ng mga app, extension, at tema</translation>
 <translation id="2977598380246111477">Susunod na numero</translation>
 <translation id="2985148236010982088">Tingnan ang lahat ng app</translation>
+<translation id="2992272421330787632">I-hide ang lahat ng suhestyon sa media</translation>
 <translation id="2992327365391326550">Naka-off ang button ng mikropono ng device.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001391739687111021">I-edit ang laki ng screen</translation>
@@ -591,6 +592,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3255483164551725916">Ano'ng maaari mong gawin?</translation>
 <translation id="3256109297135787951">Nag-aalis ng highlight sa isang item sa iyong shelf</translation>
 <translation id="3260969790895726815">Lokal na pinoproseso ang speech at gumagana offline ang dictation, pero hindi gagana ang ilang command gamit ang boses.</translation>
+<translation id="3264031581203585083">I-hide ang lahat ng suhestyon sa Google Drive</translation>
 <translation id="3265032511221679826">I-on ang access sa eksaktong lokasyon?</translation>
 <translation id="3269597722229482060">Mag-right Click</translation>
 <translation id="3274634049061007184">Tingnan ang mga app ng iyong telepono</translation>
@@ -742,6 +744,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3738664582935948253">Puwede ka na nayong magpakita ng mga pag-click at keyboard shortcut sa mga recording ng screen</translation>
 <translation id="3742055079367172538">Nakakuha na ng screenshot</translation>
 <translation id="3743775386021959186">Naka-on ang Pag-focus, may <ph name="REMAINING_TIME" /> pa</translation>
+<translation id="3750403286520637847">I-hide ang suhestyon sa lagay ng panahon</translation>
 <translation id="3756485814916578707">Kina-cast ang screen</translation>
 <translation id="3765841382945324995">Na-update ang shortcut para sa <ph name="SIX_PACK_KEY_NAME" /> sa <ph name="NEW_SHORTCUT" /> mula sa dating <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Na-edit ngayon</translation>
@@ -781,6 +784,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Walang naka-set up na mobile network</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Nilo-load ang mga event.</translation>
+<translation id="3927049937406914450">Hindi available ang lagay ng panahon dahil naka-off ang access sa lokasyon. Puwede mo itong baguhin sa mga setting.</translation>
 <translation id="3932043219784172185">Walang nakakonektang device</translation>
 <translation id="3934456833412894880">Naka-on ang adaptive na pag-charge. Mananatili ang iyong baterya sa 80% para mapahaba ang buhay ng baterya, at ganap na na-charge kapag kailangan mo ito.</translation>
 <translation id="3943857333388298514">I-paste</translation>
@@ -897,6 +901,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4312840429157639164">Nag-snap ang camera sa kanang sulok sa itaas. Pagsasalungat sa surface ng system.</translation>
 <translation id="4316910396681052118">LAHAT NG APP</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">I-hide ang lahat ng suhestyon sa Chrome browser</translation>
 <translation id="4322742403972824594">Nagbago ang keyboard shortcut na Ctrl + Alt + Pataas na Arrow. Para magamit ang Home key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Kaliwang Arrow.</translation>
 <translation id="4324840740119394760">Pinapayagan nito ang access sa camera para sa <ph name="APP_NAME" /> at lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="4327147325944669226">I-record ang laro</translation>
@@ -930,6 +935,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4450893287417543264">Huwag ipakitang muli</translation>
 <translation id="4451374464530248585">Nagbago ang keyboard shortcut na Alt + Pababang Arrow. Para magamit ang Page Down key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pababang Arrow.</translation>
 <translation id="4453876312474547652">Makikita mo ang clipboard kapag pinindot mo nang matagal ang Ctrl + V. Puwede mong i-off ang shortcut na ito sa pamamagitan ng pag-disable sa flag ng #clipboard-history-longpress sa chrome://flags (os://flags kung gumagamit ng Lacros).</translation>
+<translation id="445765352722456792">Mag-customize ng mga suhestyon</translation>
 <translation id="445864333228800152">Magandang gabi,</translation>
 <translation id="4458688154122353284">Ihinto ang pag-record ng screen</translation>
 <translation id="445923051607553918">Sumali sa network ng Wi-Fi</translation>
@@ -1332,6 +1338,7 @@ Walang nakakonektang device.</translation>
 <translation id="5802516411616338943">Buksan ang Mga Mabilisang Setting</translation>
 <translation id="5804651031882187592">I-off ang setting na "I-lock ang SIM"</translation>
 <translation id="5805809050170488595">I-click para ma-activate ang <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Biglaang nag-restart ang iyong Chromebook. Buksan ang iyong mga nakaraang window at app.</translation>
 <translation id="5823239091726045201">Google Tasks sa web</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ Walang nakakonektang device.</translation>
 <translation id="6469104339369989396">I-toggle ang hotspot</translation>
 <translation id="6477681113376365978">Hindi makapag-download ng file</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
+<translation id="6485086611007560630">Lagay ng panahon (hindi available)</translation>
 <translation id="6490471652906364588">USB-C device (port sa kanan)</translation>
 <translation id="649452524636452238">PIN ng smart card</translation>
 <translation id="6495322433318104734">Ipinapakita ang screen saver, pumindot ng anumang key para lumabas</translation>
@@ -1780,6 +1788,7 @@ Kaka-install lang</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">I-toggle ang mga unit ng temperatura (F vs. C)</translation>
 <translation id="7519206258459640379">Naka-on ang camera framing.</translation>
 <translation id="7519649142417630956">Kapag na-shut down, mala-log out ang administrator at hindi niya makokontrol ang iyong device.
 
@@ -1920,6 +1929,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7951630946012935453">I-dim ang keyboard</translation>
 <translation id="7953994493035617347">Kumpirmahin ang bagong resolution?</translation>
 <translation id="795958884516058160">Na-enable ang full-screen magnifier. Pindutin ulit ang <ph name="ACCELERATOR" /> para i-off ito.</translation>
+<translation id="7962583092928373823">I-hide ang lahat ng suhestyon sa Google Calendar</translation>
 <translation id="7963689218131240420">Naka-off ang Huwag Istorbohin.</translation>
 <translation id="7963992254934562106">Mula sa <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pumili ng folder...</translation>
@@ -1992,6 +2002,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Kailangang manatiling naka-on at nakasaksak ang iyong Chromebook sa panahong ito. Tiyaking nakasaksak nang maayos ang charger o mga adapter cable, sa iyong Chromebook at sa saksakan. Huwag i-off ang iyong Chromebook.</translation>
 <translation id="8220076512072059941">Magdagdag ng <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">I-hide ang suhestyong ito</translation>
 <translation id="8230305195727960608">Color Inversion Mode</translation>
 <translation id="8236042855478648955">Oras na para magpahinga</translation>
 <translation id="8237964652943995219">Susunod na desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> ng <ph name="DESK_COUNT" />.</translation>
@@ -2119,7 +2130,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8735678380411481005">Kulay ng backlight ng keyboard</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Ina-activate...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Tapos na ang oras. Magaling! 🎉</translation>
 <translation id="8753368202781196133">Hindi pa sinusuportahan ang wikang ito sa ngayon.</translation>
 <translation id="8755498163081687682">I-verify ang pagkakakilanlan mo: Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
 <translation id="875593634123171288">Ipakita ang mga setting ng VPN</translation>
@@ -2177,6 +2187,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="894774083269346314">Hindi nilagyan ng check ang Check box para sa <ph name="EMAIL" /> ni <ph name="PROFILE_NAME" />.</translation>
 <translation id="8949925099261528566">Nakakonekta, walang internet</translation>
 <translation id="8951539504029375108">Ang mga aprubadong Thunderbolt device lang ang compatible sa iyong Chromebook</translation>
+<translation id="8956420987536947088">Buksan ang iyong mga nakaraang window at app</translation>
 <translation id="8959380109429710384">Pinindot mo ang keyboard shortcut para sa full-screen magnifier. Gamitin ang ctrl + alt + mga arrow para gumalaw-galaw sa naka-zoom in na view.</translation>
 <translation id="8964525410783593407">1h</translation>
 <translation id="8973885907461690937">Mag-focus sa icon ng menu</translation>

@@ -690,6 +690,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1539343118617844331">学校</translation>
 <translation id="1542491165152947087">允许用户在其设备上开启或关闭 <ph name="PRIVACY_SANDBOX_NAME" /> 广告主题设置。</translation>
 <translation id="1542958897137600427">启用客户端证书配置</translation>
+<translation id="1548431234399786388">控制浏览器事件报告的设置。</translation>
 <translation id="1550295162561011575">设置此政策后，管理员就可以配置在 <ph name="PRODUCT_NAME" /> 设备上启动应用的自动化设置。这些应用可在用户登录时启动，也可由用户从启动器中一并启动。</translation>
 <translation id="1551782388466447648">在登录界面上启用触控虚拟键盘</translation>
 <translation id="1552418937045050762">如果您启用了此设置，用户将能够选择启用“附近分享”功能，以便和附近的人互相发送文件。
@@ -1626,13 +1627,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果将此政策设置为 <ph name="VARIATIONS_DISABLED_OPTION_NAME" />（值为 2），则任何变体都不会在登录屏幕应用于浏览器。请注意，我们不建议您使用此模式，因为它可能会妨碍 <ph name="PRODUCT_OS_NAME" />开发者及时提供重要的安全性修复程序。</translation>
 <translation id="2215746393279570703">流动单点登录设置</translation>
-<translation id="2218830243081931587">此政策用于控制 <ph name="PRODUCT_OS_NAME" /> 上的快捷键行为。
-
-如果此政策未设置或设为 <ph name="NORMAL_SYSTEM_PRIORITY" />，所有 <ph name="PRODUCT_OS_NAME" /> 系统快捷键将始终按预期启用。
-
-如果此政策设为 <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />，包含启动器键的一系列预定快捷键一律不执行任何操作。
-
-如果此政策设为 <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />，当应用处于全屏模式时，包含启动器键的一系列预定快捷键一律不执行任何操作。</translation>
 <translation id="2221779615493499989">报告已注册的设备上的用户网络状态。
 
       如果此政策设为 false，系统将不会报告这些信息。
@@ -2353,7 +2347,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2774906947252258544">屏蔽名单用于控制不允许的扩展程序安装类型。
 
 设置“command_line”将禁止从命令行加载扩展程序。</translation>
-<translation id="2779027965175176474">在用户登录期间不显示<ph name="FEATURE_NAME" />介绍界面</translation>
 <translation id="2780840673734667062">禁止使用其他 Google 账号登录</translation>
 <translation id="2784880732336446591">退出时清除浏览数据</translation>
 <translation id="2786117913267907931">不允许源使用 Direct Sockets</translation>
@@ -2609,7 +2602,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果该值设为 <ph name="ENABLED_ENUM_VALUE" />，系统会检测到实体，并且只需点按一下或长按，即可为实体添加下划线或触发实体。
 如果该值设为 <ph name="DISABLED_ENUM_VALUE" />，则不会检测到实体，并且无法执行操作。
 如果该值设为 <ph name="LONGPRESSONLY_ENUM_VALUE" />，系统会检测到实体，并且只能通过长按对实体执行操作。</translation>
-<translation id="3010395821339265736">在用户登录期间显示<ph name="FEATURE_NAME" />介绍界面</translation>
 <translation id="3010907817113180883">设备活动检测信号收集时间间隔（以毫秒为单位）。</translation>
 <translation id="3016585641676676461">禁止在这些网站上自动全屏显示</translation>
 <translation id="3017578958356048910">PDF 查看器能在 PDF 文件中添加注释</translation>
@@ -3206,7 +3198,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3484305545282013129">允许源获取系统已授权 Web 自助服务终端安装源使用的浏览器权限。</translation>
 <translation id="3485200437120267231">停用登录拦截功能</translation>
 <translation id="3487651201232258606">原生消息传递</translation>
-<translation id="3488551354274495283">允许在用户登录期间显示<ph name="FEATURE_NAME" />介绍界面</translation>
 <translation id="3492351353716550742">不使用默认引荐来源网址政策值 no-referrer-when-downgrade</translation>
 <translation id="3492834335089638487">此政策用于控制设备对来源不受信任（不是来自 Google Play 商店）的 Android 应用的使用。
 
@@ -3811,6 +3802,9 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3979738908158213640">有权在 SAML 身份验证过程中执行设备认证的网址</translation>
 <translation id="3982322576186033243">禁止在 TLS 握手时使用不安全哈希</translation>
 <translation id="3982465141749620677">在标签页中提示重新验证身份</translation>
+<translation id="3982849521386211220">允许您配置可以发送企业报告的 Reporting API 端点[1] 列表。
+
+[1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
 <translation id="398294729592983401">允许用户在设备上开启或关闭 <ph name="PRIVACY_SANDBOX_NAME" /> 数字“指纹”收集保护设置。</translation>
 <translation id="3983162212222338509">系统 DNS 解析可能在网络进程中运行，也可能在网络进程外运行，或部分在网络进程中、部分在网络进程外运行，具体取决于系统配置和功能标志。</translation>
 <translation id="3986700049001404598">允许用户通过 Chrome 任务管理器终止进程</translation>
@@ -4304,6 +4298,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。不过，从 M85 开始，此政策已不再支持主机名中含有“*”或“[*.]”通配符的格式。</translation>
 <translation id="4369307906396795087">适用于工作器（Web Worker、Service Worker 等）的脚本使用宽松的 MIME 类型检查。采用旧版 MIME 类型（例如 <ph name="MIMETYPE_TEXT_ASCII" />）的工作器脚本将会正常运行。</translation>
+<translation id="4370908590951861085">报告端点</translation>
 <translation id="4370937370030117032">禁止向原生打印机发送用户名和文件名</translation>
 <translation id="4372704773119750918">不允许企业用户成为多用户配置的用户（一级或二级）</translation>
 <translation id="4373332965635821723">启用无障碍快捷方式</translation>
@@ -7558,6 +7553,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       此政策已被弃用，请改用 <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="6847379587945465889">允许在登录过程中将 SAML SSO Cookie 传输到用户会话中</translation>
 <translation id="684856667300805181">此政策已在 <ph name="PRODUCT_NAME" /> 68 中移除，并已由 <ph name="ARC_GLS_POLICY_NAME" /> 取代。</translation>
+<translation id="684882090733715433">浏览器事件报告</translation>
 <translation id="6850300477973481112">桌面连接器设置</translation>
 <translation id="6851199885688265233">启用“光标突出显示”无障碍功能</translation>
 <translation id="6851315055469993882">启用全局范围的 HTTP 身份验证缓存</translation>
@@ -8363,13 +8359,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7468182772656807573">通过设置此政策，您可决定监控网络数据包的发送频率（以毫秒为单位）。时间间隔应介于 30 秒到 24 小时之间。任何不在此范围内的值都会被强制改为距其较近的那个限值（上限值或下限值）。
 
       如果此政策未设置，系统会应用默认时间间隔（3 分钟）。</translation>
-<translation id="7469182444144588294">此政策用于控制是否在用户首次登录期间显示<ph name="FEATURE_NAME" />介绍界面。
-
-      如果此政策已停用，系统将不会显示<ph name="FEATURE_NAME" />介绍界面。
-
-      如果此政策已启用，系统将会显示<ph name="FEATURE_NAME" />介绍界面。
-
-      如果未设置此政策，系统将为受企业管理的用户跳过<ph name="FEATURE_NAME" />介绍界面，而为非受管用户显示该介绍界面。</translation>
 <translation id="7469554574977894907">启用搜索建议</translation>
 <translation id="7472547030234093862">指定要使用 DNS-over-HTTPS 进行解析的网域</translation>
 <translation id="747275827471712187">将这些网站上的 Cookie 恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为</translation>

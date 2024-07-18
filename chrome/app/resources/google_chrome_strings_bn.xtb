@@ -15,6 +15,7 @@
 <translation id="1149651794389918149">Chrome-এ সাইন-ইন করুন। আপনি যদি একটি অ্যাকাউন্টে শুধুমাত্র একবার সাইন-ইন করতে চান তবে আপনি <ph name="GUEST_LINK_BEGIN" />ডিভাইসটি গেস্ট হিসেবে ব্যবহার করতে পারেন<ph name="GUEST_LINK_END" />।</translation>
 <translation id="1152920704813762236">ChromeOS সম্পর্কে</translation>
 <translation id="1154147086299354128">&amp;Chrome এ খুলুন</translation>
+<translation id="1184145431117212167">আপনার Windows-এর ভার্সনে কাজ করছে না তাই ইনস্টল করা যায়নি।</translation>
 <translation id="1194807384646768652">এই ধরনের ফাইল সাধারণত ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="1203500561924088507">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই ব্রাউজার রিস্টার্ট করতে হবে।</translation>
 <translation id="1229096353876452996">Google, ডিফল্ট ব্রাউজার হিসেবে Chrome সেট করার জন্য সাজেস্ট করে</translation>
@@ -237,6 +238,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Chrome এক দিনের মধ্যে আবার লঞ্চ করুন}one{Chrome # দিনের মধ্যে আবার লঞ্চ করুন}other{Chrome # দিনের মধ্যে আবার লঞ্চ করুন}}</translation>
 <translation id="4205939740494406371">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না। ২৪ ঘণ্টা পরে আবার চেষ্টা করুন বা <ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্টে পাসওয়ার্ড চেক করুন<ph name="END_LINK" />।</translation>
 <translation id="4222932583846282852">বাতিল করা হচ্ছে…</translation>
+<translation id="4224210481850767180">ইনস্টল করার প্রক্রিয়া বাতিল হয়ে গেছে।</translation>
 <translation id="4242034826641750751">এই সাইটের জন্য Chrome-এর ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="424864128008805179">Chrome থেকে সাইন-আউট করবেন?</translation>
 <translation id="4251615635259297716">এই অ্যাকাউন্টে আপনার Chrome ডেটা লিঙ্ক করবেন?</translation>

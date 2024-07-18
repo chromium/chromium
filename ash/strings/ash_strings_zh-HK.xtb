@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">安裝應用程式、擴充程式和主題</translation>
 <translation id="2977598380246111477">下一個號碼</translation>
 <translation id="2985148236010982088">查看所有應用程式</translation>
+<translation id="2992272421330787632">隱藏所有媒體建議</translation>
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
 <translation id="3000461861112256445">單聲道音效</translation>
 <translation id="3001391739687111021">修改畫面大細</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
 <translation id="3256109297135787951">取消捷徑列上項目的突顯狀態</translation>
 <translation id="3260969790895726815">語音會在本機處理，而語音聽寫可離線運作，但部分語音指令無法使用。</translation>
+<translation id="3264031581203585083">隱藏所有「Google 雲端硬碟」建議</translation>
 <translation id="3265032511221679826">要開啟精確位置的存取權嗎？</translation>
 <translation id="3269597722229482060">按滑鼠右鍵</translation>
 <translation id="3274634049061007184">查看手機的應用程式</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">螢幕畫面擷取內容現可顯示您點擊的項目和使用的鍵盤快速鍵</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
 <translation id="3743775386021959186">開咗「專注模式」，淨返 <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">隱藏天氣建議</translation>
 <translation id="3756485814916578707">正在投放畫面</translation>
 <translation id="3765841382945324995">「<ph name="SIX_PACK_KEY_NAME" />」快速鍵已由「<ph name="OLD_SHORTCUT" />」更新為「<ph name="NEW_SHORTCUT" />」</translation>
 <translation id="3765841986579723851">今天編輯過</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">平板電腦</translation>
 <translation id="3923494859158167397">未設定流動網絡</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在載入活動。</translation>
+<translation id="3927049937406914450">由於已停用位置存取權，因此無法提供天氣資料。你可前往設定更改存取權。</translation>
 <translation id="3932043219784172185">未連接任何裝置</translation>
 <translation id="3934456833412894880">自動調節充電速度功能已開啟。裝置電量會維持在 80% 以延長電池壽命，並在您需要時將電池完全充滿。</translation>
 <translation id="3943857333388298514">貼上</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">攝錄機已經對齊右上角，同系統平台有衝突。</translation>
 <translation id="4316910396681052118">所有應用程式</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">隱藏所有 Chrome 瀏覽器建議</translation>
 <translation id="4322742403972824594">「Ctrl + Alt + 向上箭咀」的鍵盤快速鍵已變更。如要使用 Home 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向左箭咀。</translation>
 <translation id="4324840740119394760">此操作會允許 <ph name="APP_NAME" /> 以及具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="4327147325944669226">錄製遊戲</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">不要再顯示</translation>
 <translation id="4451374464530248585">「Alt + 向下箭咀」的鍵盤快速鍵已變更。如要使用 Page Down 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向下箭咀。</translation>
 <translation id="4453876312474547652">按住 Ctrl + V 鍵查看剪貼簿。您可在 chrome://flags 中 (如使用 Lacros，則在 os://flags 中) 停用 #clipboard-history-longpress 標記來關閉此快速鍵。</translation>
+<translation id="445765352722456792">自訂建議</translation>
 <translation id="445864333228800152">晚安，</translation>
 <translation id="4458688154122353284">停止螢幕錄影</translation>
 <translation id="445923051607553918">加入 Wi-Fi 網絡</translation>
@@ -1331,6 +1337,7 @@
 <translation id="5802516411616338943">開啟「快速設定」</translation>
 <translation id="5804651031882187592">關閉「鎖定 SIM 卡」設定</translation>
 <translation id="5805809050170488595">按一下即可啟用 <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Chromebook 意外重新開機。你可開啟之前使用的視窗和應用程式。</translation>
 <translation id="5823239091726045201">Google Tasks 網頁版</translation>
 <translation id="5825969630400862129">已連接裝置設定</translation>
 <translation id="5837036133683224804">停止喺<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
@@ -1511,6 +1518,7 @@
 <translation id="6469104339369989396">切換熱點</translation>
 <translation id="6477681113376365978">無法下載檔案</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
+<translation id="6485086611007560630">天氣資料 (無法提供)</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="649452524636452238">智能卡 PIN</translation>
 <translation id="6495322433318104734">顯示緊螢幕保護程式，㩒任何制就可以離開</translation>
@@ -1779,6 +1787,7 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page Down 鍵</translation>
+<translation id="7518182783647693467">切換溫度單位 (F 和 C)</translation>
 <translation id="7519206258459640379">相機取景功能已開啟。</translation>
 <translation id="7519649142417630956">關機後，管理員將登出帳戶，無法再控制您的裝置。
 
@@ -1919,6 +1928,7 @@
 <translation id="7951630946012935453">校暗鍵盤</translation>
 <translation id="7953994493035617347">要確認新解像度嗎？</translation>
 <translation id="795958884516058160">已啟用「全螢幕放大鏡」。再按 <ph name="ACCELERATOR" />即可停用。</translation>
+<translation id="7962583092928373823">隱藏所有「Google 日曆」建議</translation>
 <translation id="7963689218131240420">「請勿騷擾」模式已關閉。</translation>
 <translation id="7963992254934562106">來自 <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">選取資料夾…</translation>
@@ -1991,6 +2001,7 @@
 <translation id="8214996719228530800">Canary 版本</translation>
 <translation id="8219451629189078428">Chromebook 在這段期間需要保持開啟並接上電源。請確保充電器或適配器連接線完全插入 Chromebook 和電源插座。請勿關閉 Chromebook。</translation>
 <translation id="8220076512072059941">加 <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">隱藏此建議</translation>
 <translation id="8230305195727960608">色彩反轉模式</translation>
 <translation id="8236042855478648955">休息時間到了</translation>
 <translation id="8237964652943995219">下一個桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
@@ -2119,7 +2130,6 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />：正在啟用…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">時間到！做得好！🎉</translation>
 <translation id="8753368202781196133">目前不支援此語言。</translation>
 <translation id="8755498163081687682">驗證你嘅身份：<ph name="ORIGIN_NAME" /> 要求確認你嘅身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
@@ -2177,6 +2187,7 @@
 <translation id="894774083269346314">未剔 <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />) 嘅選框。</translation>
 <translation id="8949925099261528566">已連線，但沒有互聯網</translation>
 <translation id="8951539504029375108">只有已核准的 Thunderbolt 裝置可與 Chromebook 兼容</translation>
+<translation id="8956420987536947088">開啟之前使用的視窗和應用程式</translation>
 <translation id="8959380109429710384">你按了全螢幕放大鏡的鍵盤快速鍵。使用 Ctrl + Alt + 箭咀鍵即可在放大的檢視畫面中四處移動。</translation>
 <translation id="8964525410783593407">1 小時</translation>
 <translation id="8973885907461690937">將焦點移至選單圖示</translation>

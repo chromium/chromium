@@ -156,7 +156,6 @@
 <translation id="1100504063505580045">目前圖示</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{1 組密碼}other{{COUNT} 組密碼}}</translation>
 <translation id="1102759278139578486">無法下載主節點註解檔案，請稍後再試。</translation>
-<translation id="1102790815296970136">在此查看「<ph name="PERSONALIZED_MEMORY_TITLE" />」和其他回憶集錦</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">共用麥克風</translation>
 <translation id="110850812463801904">手動連線至 OneDrive</translation>
@@ -223,7 +222,6 @@
 <translation id="1155816283571436363">正在連線到你的手機</translation>
 <translation id="1157952955648710254">關閉 Google 搜尋側邊面板</translation>
 <translation id="1158080958325422608">使用大寫字母</translation>
-<translation id="1158238185437008462">查看回憶集錦</translation>
 <translation id="1159879754517035595">管理擴充功能設定</translation>
 <translation id="1160800016654917722">視窗已向左下方移動</translation>
 <translation id="1161575384898972166">登入 <ph name="TOKEN_NAME" /> 即可匯出用戶端憑證。</translation>
@@ -1558,7 +1556,6 @@
 <translation id="2114145607116268663">無法安裝，必須重新啟動。請重新啟動電腦，然後再試一次。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="2114326799768592691">重新載入頁框(&amp;F)</translation>
 <translation id="2114413269775311385">透過這個帳戶使用 Android 應用程式。你也可以前往「<ph name="LINK_BEGIN" />應用程式設定<ph name="LINK_END" />」控管 Android 應用程式的權限。</translation>
-<translation id="2114820389966440614">在此查看「近照精選」和其他回憶集錦</translation>
 <translation id="2114896190328250491">相片提供：<ph name="NAME" /></translation>
 <translation id="2114995631896158695">未插入 SIM 卡</translation>
 <translation id="2116619964159595185">網站通常會連線至藍牙裝置，是因為要提供以下功能：設定或同步處理低功耗信標、健康與健身狀況追蹤器或智慧燈泡</translation>
@@ -2359,7 +2356,6 @@
 <translation id="2684004000387153598">如要繼續操作，請依序點選 [確定] 和 [新增使用者]，為你的電子郵件地址建立新的設定檔。</translation>
 <translation id="2685193395980129388">已允許 - <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Google 服務條款</translation>
-<translation id="2687621393791886981">稍後再詢問我</translation>
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="2688734475209947648">你不必記住這組密碼，系統會將密碼儲存至 <ph name="ACCOUNT" /> 的 Google 密碼管理工具中。</translation>
 <translation id="2690024944919328218">顯示語言選項</translation>
@@ -3246,6 +3242,7 @@
 <translation id="3356580349448036450">完成</translation>
 <translation id="3359256513598016054">憑證原則限制</translation>
 <translation id="3360297538363969800">列印失敗。請檢查你的印表機，然後再試一次。</translation>
+<translation id="3360306038446926262">視窗</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}other{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}}</translation>
 <translation id="3361954577771524115">來源應用程式</translation>
 <translation id="3363202073972776113">這個新的設定檔將由貴機構管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -3416,7 +3413,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可以檢視下列檔案</translation>
 <translation id="3484595034894304035">自訂桌布、螢幕保護程式、深色主題等項目</translation>
 <translation id="3484869148456018791">取得新憑證</translation>
-<translation id="3486950712960783074">你的行程詳情</translation>
 <translation id="3487007233252413104">匿名函式</translation>
 <translation id="3487649228420469005">掃描完成</translation>
 <translation id="3490695139702884919">下載中... <ph name="PERCENT" />%</translation>
@@ -4318,7 +4314,6 @@
 <translation id="4116704186509653070">重新開啟</translation>
 <translation id="4117714603282104018">觸控板觸覺回饋</translation>
 <translation id="4118579674665737931">請重新啟動裝置，然後再試一次。</translation>
-<translation id="412022815379960229">只要在登入狀態下，就能開始透過 Google 相簿探索你的回憶集錦。</translation>
 <translation id="4120388883569225797">無法重設這個安全金鑰</translation>
 <translation id="4120817667028078560">路徑名稱過長</translation>
 <translation id="4124823734405044952">你的安全金鑰已重設</translation>
@@ -4754,7 +4749,6 @@
 <translation id="4461483878391246134">新增一律不翻譯的語言</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465236939126352372">已為「<ph name="APP_NAME" />」設定 <ph name="TIME" />的時間限制</translation>
-<translation id="4466839823729730432">在此查看回憶集錦</translation>
 <translation id="4469324811108161144">附註最多可以儲存 <ph name="CHARACTER_LIMIT" /> 個半形字元。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="4470957202018033307">外部儲存空間偏好設定</translation>
@@ -5125,6 +5119,7 @@
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
 <translation id="4745500401920035244">你的管理員變更了系統設定，部分舊的設定檔因此遭到停用。你無法再存取這個設定檔，但仍可將其移除</translation>
 <translation id="474609389162964566">說出「Ok Google」即可存取 Google 助理</translation>
+<translation id="4746757725581505837">你即將刪除儲存在這部裝置上的 <ph name="BRAND" /> 資料</translation>
 <translation id="4748783296226936791">網站通常會連線至 HID 裝置，是因為有功能需要使用非標準鍵盤、遊戲控制器和其他裝置。</translation>
 <translation id="4750185073185658673">查看你的手機，檢視其他必須一併啟用的權限。確認手機的藍牙和 Wi-Fi 已開啟。</translation>
 <translation id="4750394297954878236">建議</translation>
@@ -5457,7 +5452,6 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5005498671520578047">複製密碼</translation>
-<translation id="5006118752738286774">2 年前</translation>
 <translation id="5006218871145547804">Crostini Android 應用程式 ADB</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="50080882645628821">移除設定檔</translation>
@@ -6036,7 +6030,6 @@
 <translation id="5435779377906857208">一律允許 <ph name="HOST" /> 存取你的位置資訊</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
-<translation id="5436575196282187764">Google 相簿回憶集錦</translation>
 <translation id="5440425659852470030">關閉側邊面板</translation>
 <translation id="544083962418256601">建立捷徑...</translation>
 <translation id="5441133529460183413">從 Chrome 瀏覽器安裝的網頁應用程式</translation>
@@ -6312,7 +6305,6 @@
 <translation id="5632566673632479864">你已不能再將 <ph name="EMAIL" /> 設為主要帳戶。這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將您的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。</translation>
 <translation id="5633149627228920745">進一步瞭解系統需求</translation>
 <translation id="563371367637259496">行動網路</translation>
-<translation id="5634446357546764049">瀏覽近期旅行等活動的回憶集錦</translation>
 <translation id="5635312199252507107">允許在特定網站上執行</translation>
 <translation id="5636012309446422">要將「<ph name="DEVICE" />」從 <ph name="PRIMARY_EMAIL" /> 中移除嗎？</translation>
 <translation id="5636140764387862062">其他 PIN 碼操作選項</translation>
@@ -6455,7 +6447,6 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">檢查網路共用完備性</translation>
 <translation id="5753570386948603678">從記錄中刪除</translation>
-<translation id="5755022574660047665">Google 相簿中的回憶集錦</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
 <translation id="5757187557809630523">播放下一首曲目</translation>
 <translation id="5758631781033351321">這裡會顯示你的閱讀清單</translation>
@@ -7198,7 +7189,6 @@
 <translation id="6308493641021088955">登入資訊提供者：<ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">另存連結為(&amp;K)...</translation>
 <translation id="6309443618838462258">系統管理員不允許這個輸入法</translation>
-<translation id="630948338437014525">回憶集錦</translation>
 <translation id="6309510305002439352">麥克風已關閉</translation>
 <translation id="6310141306111263820">無法安裝 eSIM 卡設定檔。如需協助，請與你的電信業者聯絡。</translation>
 <translation id="6311220991371174222">開啟你的設定檔時發生錯誤，因此無法啟動 Chrome，請嘗試重新啟動。</translation>
@@ -8552,7 +8542,6 @@
 <translation id="7356908624372060336">網路記錄</translation>
 <translation id="7357271391997763660">要執行密碼檢查嗎？</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
-<translation id="7358324924540718595">今天隱藏回憶集錦</translation>
 <translation id="7358338787722390626">關閉側邊面板中的搜尋工具列</translation>
 <translation id="735994578317267253">在任一 Chrome OS 裝置上取得應用程式和設定等</translation>
 <translation id="7360257054721917104">正在查看已儲存的桌面和範本，按下 Tab 鍵即可瀏覽。</translation>
@@ -8661,7 +8650,6 @@
 <translation id="7424153922653300265">節能模式已開啟</translation>
 <translation id="7424818322350938336">已新增網路</translation>
 <translation id="7425037327577270384">幫我寫</translation>
-<translation id="7427315069950454694">今天的回憶集錦</translation>
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">用「<ph name="DEVICE_NAME" />」撥打電話</translation>
 <translation id="7429415133937917139">在 ChromeVox 面板的畫面頂端
@@ -8685,7 +8673,6 @@
 <translation id="744366959743242014">正在載入資料，最多可能需要幾秒鐘才能完成。</translation>
 <translation id="7443806024147773267">系統會在你每次登入 Google 帳戶時存取你的密碼</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{今天將再次封鎖 Cookie}=1{明天將再次封鎖 Cookie}other{# 天後將再次封鎖 Cookie}}</translation>
-<translation id="7444970023873202833">在 Google 相簿中發掘更多美好回憶</translation>
 <translation id="7444983668544353857">停用 <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">自動安裝應用程式</translation>
 <translation id="7448664748118305024">在所有視窗關閉後刪除網站儲存到裝置的資料</translation>
@@ -8723,6 +8710,7 @@
 <translation id="7471520329163184433">減速</translation>
 <translation id="747312361841682912">刪除顯示的資料</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
+<translation id="7474043404939621342">自訂工具列</translation>
 <translation id="747459581954555080">全部還原</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{需要立即退還}other{請在 {NUM_DAYS} 天內退還「<ph name="DEVICE_TYPE" />」}}</translation>
 <translation id="7475671414023905704">Netscape 遺失密碼網址</translation>
@@ -9092,10 +9080,6 @@
 <translation id="7745554356330788383">重新載入這個頁面，即可在這個網站上將更新後的設定套用到「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="7745677556280361868">要從 Passpoint 訂閱頁面中移除這個網路嗎？</translation>
 <translation id="7746045113967198252">放大或縮小包括文字在內的畫面項目。你也可以稍後依序前往「設定」&gt;「裝置」&gt;「顯示」調整這項設定。</translation>
-<translation id="7746739418892731373">系統會顯示 Google 相簿相片庫中的精選相片和影片。如要控管精選內容中顯示的項目，請前往 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />。
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        你可以透過資訊卡選單管理這張資訊卡的設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="7750228210027921155">子母畫面</translation>
 <translation id="7751260505918304024">全部顯示</translation>
 <translation id="7752832973194460442">Android 應用程式資訊</translation>
@@ -10037,7 +10021,6 @@
 <translation id="8412136526970428322">已允許：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
 <translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="8413956290606243087">是否要啟動 Chrome OS 內建的螢幕閱讀器 ChromeVox？</translation>
-<translation id="8414249071344507766">回憶集錦已隱藏兩天</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>
 <translation id="8417065541337558100">攝影機畫面預覽</translation>
@@ -10466,8 +10449,6 @@
           <ph name="LINE_BREAK" />
           (系統不會共用自動填入資料)</translation>
 <translation id="8729133765463465108">使用相機掃描 QR 圖碼</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />只要與 Gemini 對話，Google AI 就能協助你撰寫內容、擬定計畫及學習新知等等。<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />設定完成後，請在畫面底部的檔案櫃選取 Gemini 應用程式，即可開始使用 Gemini。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731029916209785242">權限 (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">安全碼</translation>
@@ -10749,7 +10730,6 @@
 <translation id="8934732568177537184">繼續</translation>
 <translation id="8938800817013097409">USB-C 裝置 (背面右側連接埠)</translation>
 <translation id="8940081510938872932">目前電腦過於繁忙，請稍後再試。</translation>
-<translation id="8940381019874223173">來自你的 Google 相簿</translation>
 <translation id="8940888110818450052">登入選項</translation>
 <translation id="8941173171815156065">撤銷「<ph name="PERMISSION" />」權限</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />已關閉</translation>
@@ -11244,7 +11224,6 @@
 <translation id="995755448277384931">新增 IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">正在建立安全連線...</translation>
-<translation id="996803490569799917">瀏覽與親友的回憶集錦</translation>
 <translation id="997143476478634194">這項設定可以調整造訪網站時的通知行為。網站通知經常用來告知重大消息，或是發送即時通訊訊息。</translation>
 <translation id="99731366405731005">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />以使用 Wi-Fi 同步。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">檢查(&amp;N)</translation>

@@ -131,7 +131,6 @@
 <translation id="4675485352217495362">刪除 Chromium 中的瀏覽資料</translation>
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
 <translation id="4736424910885271643">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chromium 資料</translation>
-<translation id="4773487571745795781">你已關閉 Chromium 登入功能。</translation>
 <translation id="4790638144988730920">請繼續使用 Google 帳戶中的 Chromium 資料。</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="4962295957157529683">請先完成正在其他已開啟的 Chromium 視窗中執行的動作。</translation>
@@ -250,7 +249,6 @@
 <translation id="7971753607796745700">將閱讀清單項目加入 Chromium</translation>
 <translation id="7980860476903281594">Chromium 會與你允許的網站分享位置資訊。</translation>
 <translation id="7994322153108931467">如要取得 Chromium 的實用提示，請在 iOS 設定中開啟通知功能。</translation>
-<translation id="7995166854192397899">系統會根據你在其他裝置的瀏覽活動提供建議。如要取得建議，請在所有裝置上登入 Chromium。</translation>
 <translation id="800195749539500647">充分運用 Chromium 的各項功能</translation>
 <translation id="8013573822802650211">在你所有的裝置上登入帳戶後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="8071041515667087705">前往 Chromium 設定。</translation>

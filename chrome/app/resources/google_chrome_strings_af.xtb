@@ -17,6 +17,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1149651794389918149">Meld by Chrome aan. As jy ’n rekening net een keer wil aanmeld, kan jy <ph name="GUEST_LINK_BEGIN" />die toestel as gas gebruik<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Meer oor ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Maak in Chrome oop</translation>
+<translation id="1184145431117212167">Installering het misluk omdat jou weergawe van Windows nie gesteun word nie.</translation>
 <translation id="1194807384646768652">Chrome het hierdie aflaai geblokkeer omdat die lêertipe nie algemeen afgelaai word nie en dit gevaarlik kan wees</translation>
 <translation id="1203500561924088507">Dankie dat jy geïnstalleer het. Jy moet jou blaaier herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="1229096353876452996">Google beveel aan dat jy Chrome as verstek instel</translation>
@@ -239,6 +240,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4191857738314598978">{0,plural, =1{Herbegin Chrome binne 'n dag}other{Herbegin Chrome binne # dae}}</translation>
 <translation id="4205939740494406371">Chrome kan nie jou wagwoorde nagaan nie. Probeer ná 24 uur weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Kanselleer tans …</translation>
+<translation id="4224210481850767180">Die installering is gekanselleer.</translation>
 <translation id="4242034826641750751">Chrome het kamera- en mikrofoontoestemming vir hierdie werf nodig</translation>
 <translation id="424864128008805179">Meld af uit Chrome?</translation>
 <translation id="4251615635259297716">Koppel jou Chrome-data aan hierdie rekening?</translation>

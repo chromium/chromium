@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">Εγκαταστήσει εφαρμογές, επεκτάσεις και θέματα</translation>
 <translation id="2977598380246111477">Επόμενος αριθμός</translation>
 <translation id="2985148236010982088">Εμφάνιση όλων των εφαρμογών</translation>
+<translation id="2992272421330787632">Απόκρυψη όλων των προτάσεων μέσων</translation>
 <translation id="2992327365391326550">Το κουμπί μικροφώνου της συσκευής είναι απενεργοποιημένο.</translation>
 <translation id="3000461861112256445">Μονοφωνικός ήχος</translation>
 <translation id="3001391739687111021">Επεξεργασία μεγέθους οθόνης</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">Τι μπορείς να κάνεις;</translation>
 <translation id="3256109297135787951">Κατάργηση της επισήμανσης από κάποιο στοιχείο στο ράφι σας</translation>
 <translation id="3260969790895726815">Η επεξεργασία της ομιλίας γίνεται τοπικά και η υπαγόρευση λειτουργεί εκτός σύνδεσης, αλλά ορισμένες φωνητικές εντολές δεν θα λειτουργούν.</translation>
+<translation id="3264031581203585083">Απόκρυψη όλων των προτάσεων του Google Drive</translation>
 <translation id="3265032511221679826">Ενεργοποίηση πρόσβασης στην ακριβή τοποθεσία;</translation>
 <translation id="3269597722229482060">Δεξί κλικ</translation>
 <translation id="3274634049061007184">Προβολή των εφαρμογών του τηλεφώνου σας</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">Μπορείτε πλέον να εμφανίζετε κλικ και συντομεύσεις πληκτρολογίου στις εγγραφές οθόνης</translation>
 <translation id="3742055079367172538">Το στιγμιότυπο οθόνης έχει ληφθεί</translation>
 <translation id="3743775386021959186">Η λειτουργίας συγκέντρωσης είναι ενεργή, <ph name="REMAINING_TIME" /> ακόμη</translation>
+<translation id="3750403286520637847">Απόκρυψη πρότασης καιρού</translation>
 <translation id="3756485814916578707">Μετάδοση οθόνης</translation>
 <translation id="3765841382945324995">Η συντόμευση <ph name="SIX_PACK_KEY_NAME" /> ενημερώθηκε σε <ph name="NEW_SHORTCUT" /> από <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Έγινε επεξεργασία σήμερα</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Δεν έχουν ρυθμιστεί δίκτυα κινητής τηλεφωνίας</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, φόρτωση συμβάντων.</translation>
+<translation id="3927049937406914450">Ο Καιρός δεν είναι διαθέσιμος επειδή η πρόσβαση στην τοποθεσία είναι απενεργοποιημένη. Μπορείτε να το αλλάξετε αυτό στις Ρυθμίσεις.</translation>
 <translation id="3932043219784172185">Δεν υπάρχει συνδεδεμένη συσκευή</translation>
 <translation id="3934456833412894880">Η προσαρμοστική φόρτιση είναι ενεργή. Η μπαταρία θα παραμένει στο 80% για την επέκταση της διάρκειας ζωής της και θα φορτίζει πλήρως όταν χρειάζεστε τη συσκευή.</translation>
 <translation id="3943857333388298514">Επικόλληση</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">Η προεπισκόπηση κάμερας τοποθετήθηκε στην επάνω δεξιά γωνία. Διένεξη με επιφάνεια συστήματος.</translation>
 <translation id="4316910396681052118">ΟΛΕΣ ΟΙ ΕΦΑΡΜΟΓΕΣ</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Απόκρυψη όλων των προτάσεων του προγράμματος περιήγησης Chrome</translation>
 <translation id="4322742403972824594">Η συντόμευση πληκτρολογίου Ctrl + Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Home, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Αριστερό βέλος.</translation>
 <translation id="4324840740119394760">Αυτό επιτρέπει την πρόσβαση στην κάμερα για την εφαρμογή <ph name="APP_NAME" /> και όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας.</translation>
 <translation id="4327147325944669226">Εγγραφή παιχνιδιού</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">Να μην εμφανιστεί ξανά</translation>
 <translation id="4451374464530248585">Η συντόμευση πληκτρολογίου Alt + Κάτω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Down, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Κάτω βέλος.</translation>
 <translation id="4453876312474547652">Θα δείτε το πρόχειρο όταν πατήσετε παρατεταμένα τα πλήκτρα Ctrl + V. Μπορείτε να απενεργοποιήσετε αυτήν τη συντόμευση απενεργοποιώντας την επισήμανση #clipboard-history-longpress στο chrome://flags (os://flags αν χρησιμοποιείτε το Lacros).</translation>
+<translation id="445765352722456792">Προσαρμογή προτάσεων</translation>
 <translation id="445864333228800152">Καλησπέρα,</translation>
 <translation id="4458688154122353284">Διακοπή εγγραφής οθόνης</translation>
 <translation id="445923051607553918">Σύνδεση με δίκτυο Wi-Fi</translation>
@@ -1332,6 +1338,7 @@
 <translation id="5802516411616338943">Άνοιγμα Γρήγορων ρυθμίσεων</translation>
 <translation id="5804651031882187592">Απενεργοποίηση ρύθμισης Κλείδωμα SIM</translation>
 <translation id="5805809050170488595">Κλικ για ενεργοποίηση <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Έγινε μη αναμενόμενη επανεκκίνηση του Chromebook. Ανοίξτε τα προηγούμενα παράθυρα και τις εφαρμογές σας.</translation>
 <translation id="5823239091726045201">Google Tasks στον ιστό</translation>
 <translation id="5825969630400862129">Ρυθμίσεις συνδεδεμένων συσκευών</translation>
 <translation id="5837036133683224804">Διακοπή <ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@
 <translation id="6469104339369989396">Εναλλαγή σημείου πρόσβασης Wi-Fi</translation>
 <translation id="6477681113376365978">Δεν είναι δυνατή η λήψη του αρχείου</translation>
 <translation id="6482559668224714696">Μεγεθυντικός φακός πλήρους οθόνης</translation>
+<translation id="6485086611007560630">Καιρός (μη διαθέσιμο)</translation>
 <translation id="6490471652906364588">Συσκευή USB-C (δεξιά θύρα)</translation>
 <translation id="649452524636452238">PIN έξυπνης κάρτας</translation>
 <translation id="6495322433318104734">Προβάλλεται η προφύλαξη οθόνης, πατήστε οποιοδήποτε πλήκτρο για έξοδο</translation>
@@ -1781,6 +1789,7 @@
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Εναλλαγή μονάδων μέτρησης θερμοκρασίας (°F έναντι °C)</translation>
 <translation id="7519206258459640379">Το καδράρισμα της κάμερας είναι ενεργό.</translation>
 <translation id="7519649142417630956">Μετά τον τερματισμό της σύνδεσης, ο διαχειριστής θα αποσυνδεθεί και δεν θα μπορεί να ελέγξει τη συσκευή σας.
 
@@ -1921,6 +1930,7 @@
 <translation id="7951630946012935453">Μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="7953994493035617347">Επιβεβαίωση νέας ανάλυσης;</translation>
 <translation id="795958884516058160">Η μεγέθυνση πλήρους οθόνης είναι ενεργοποιημένη. Πατήστε ξανά <ph name="ACCELERATOR" /> για να την απενεργοποιήσετε.</translation>
+<translation id="7962583092928373823">Απόκρυψη όλων των προτάσεων του Ημερολογίου Google</translation>
 <translation id="7963689218131240420">Η λειτουργία Μην ενοχλείτε είναι ανενεργή.</translation>
 <translation id="7963992254934562106">Από <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Επιλογή φακέλου…</translation>
@@ -1993,6 +2003,7 @@
 <translation id="8214996719228530800">Κανάλι Canary</translation>
 <translation id="8219451629189078428">Το Chromebook πρέπει να παραμείνει ενεργοποιημένο και συνδεδεμένο σε παροχή ρεύματος. Βεβαιωθείτε ότι τα καλώδια του φορτιστή ή του μετασχηματιστή είναι συνδεδεμένα σωστά, τόσο στο Chromebook όσο και στην πρίζα. Μην απενεργοποιήσετε το Chromebook.</translation>
 <translation id="8220076512072059941">Προσθήκη <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Απόκρυψη αυτής της πρότασης</translation>
 <translation id="8230305195727960608">Λειτουργία αντιστροφής χρωμάτων</translation>
 <translation id="8236042855478648955">Ώρα για διάλειμμα</translation>
 <translation id="8237964652943995219">Επόμενο γραφείο: <ph name="DESK_NAME" />. Γραφείο <ph name="DESK_INDEX" /> από <ph name="DESK_COUNT" />.</translation>
@@ -2121,7 +2132,6 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Ενεργοποίηση…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Ο χρόνος έχει τελειώσει. Μπράβο! 🎉</translation>
 <translation id="8753368202781196133">Αυτή η γλώσσα δεν υποστηρίζεται προς το παρόν.</translation>
 <translation id="8755498163081687682">Επαλήθευση της ταυτότητάς σας: Το <ph name="ORIGIN_NAME" /> θέλει να επαληθεύσει την ταυτότητά σας.</translation>
 <translation id="875593634123171288">Εμφάνιση ρυθμίσεων VPN</translation>
@@ -2179,6 +2189,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Δεν επιλέχθηκε το πλαίσιο ελέγχου.</translation>
 <translation id="8949925099261528566">Συνδέθηκε, χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="8951539504029375108">Μόνο εγκεκριμένες συσκευές Thunderbolt είναι συμβατές με το Chromebook σας.</translation>
+<translation id="8956420987536947088">Ανοίξτε τα προηγούμενα παράθυρα και τις εφαρμογές σας</translation>
 <translation id="8959380109429710384">Πατήσατε τη συντόμευση πληκτρολογίου για τη μεγέθυνση πλήρους οθόνης. Χρησιμοποιήστε ctrl + alt + τα βέλη για να μετακινηθείτε στη μεγεθυμένη προβολή.</translation>
 <translation id="8964525410783593407">1 ώρα</translation>
 <translation id="8973885907461690937">Εστίαση στο εικονίδιο μενού</translation>

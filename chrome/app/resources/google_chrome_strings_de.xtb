@@ -15,6 +15,7 @@
 <translation id="1149651794389918149">Melde dich in Chrome an. Wenn du dich nur einmal in einem Konto anmelden möchtest, kannst du <ph name="GUEST_LINK_BEGIN" />das Gerät als Gast verwenden<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Über ChromeOS</translation>
 <translation id="1154147086299354128">In Chr&amp;ome öffnen</translation>
+<translation id="1184145431117212167">Die Installation ist fehlgeschlagen, weil deine Windows-Version nicht unterstützt wird.</translation>
 <translation id="1194807384646768652">Chrome hat diesen Download blockiert, weil der Dateityp normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="1229096353876452996">Google empfiehlt, Chrome als Standardbrowser festzulegen</translation>
@@ -235,6 +236,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Chrome innerhalb eines Tages neu starten}other{Chrome innerhalb von # Tagen neu starten}}</translation>
 <translation id="4205939740494406371">Chrome kann deine Passwörter nicht prüfen. Versuche es in 24 Stunden noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Wird abgebrochen…</translation>
+<translation id="4224210481850767180">Die Installation wurde abgebrochen.</translation>
 <translation id="4242034826641750751">Chrome benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4251615635259297716">Deine Chrome-Daten mit diesem Konto verknüpfen?</translation>

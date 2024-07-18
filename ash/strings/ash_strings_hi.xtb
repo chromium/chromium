@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">ऐप्लिकेशन, एक्सटेंशन, और थीम इंस्टॉल करें</translation>
 <translation id="2977598380246111477">अगला नंबर</translation>
 <translation id="2985148236010982088">सभी ऐप्लिकेशन देखें</translation>
+<translation id="2992272421330787632">मीडिया से जुड़े सभी सुझाव छिपाएं</translation>
 <translation id="2992327365391326550">डिवाइस के माइक्रोफ़ोन का बटन बंद है.</translation>
 <translation id="3000461861112256445">मोनो ऑडियो</translation>
 <translation id="3001391739687111021">स्क्रीन के साइज़ में बदलाव करें</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">तुम क्या-क्या कर सकती हो?</translation>
 <translation id="3256109297135787951">अपने शेल्फ़ पर मौजूद किसी आइटम से हाइलाइट हटाएं</translation>
 <translation id="3260969790895726815">बोली को स्थानीय तौर पर प्रोसेस किया जाता है और बोलकर लिखवाने की सुविधा ऑफ़लाइन काम करती है. हालांकि, बोले गए कुछ निर्देश काम नहीं करेंगे.</translation>
+<translation id="3264031581203585083">Google Drive के सभी सुझाव छिपाएं</translation>
 <translation id="3265032511221679826">क्या आपको जगह की सटीक जानकारी शेयर करने की सुविधा चालू करनी है?</translation>
 <translation id="3269597722229482060">दायां क्लिक करें</translation>
 <translation id="3274634049061007184">अपने फ़ोन में मौजूद ऐप्लिकेशन देखें</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">अब स्क्रीन रिकॉर्डिंग के दौरान, कीबोर्ड शॉर्टकट और क्लिक दिखाए जा सकते हैं</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट लिया गया</translation>
 <translation id="3743775386021959186">फ़ोकस मोड चालू है और <ph name="REMAINING_TIME" /> का समय बाकी है</translation>
+<translation id="3750403286520637847">मौसम से जुडे़ सुझाव को छिपाएं</translation>
 <translation id="3756485814916578707">स्क्रीन कास्ट की जा रही है</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> शॉर्टकट को <ph name="OLD_SHORTCUT" /> से बदलकर <ph name="NEW_SHORTCUT" /> कर दिया गया है</translation>
 <translation id="3765841986579723851">इसमें, आज बदलाव किया गया था</translation>
@@ -782,6 +785,7 @@
 <translation id="3906954721959377182">टैबलेट</translation>
 <translation id="3923494859158167397">कोई भी मोबाइल नेटवर्क सेट अप नहीं किया गया है</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, इवेंट लोड हो रहे हैं.</translation>
+<translation id="3927049937406914450">मौसम की जानकारी उपलब्ध नहीं है, क्योंकि जगह की जानकारी ऐक्सेस करने की सुविधा बंद है. सेटिंग में जाकर इसे बदला जा सकता है.</translation>
 <translation id="3932043219784172185">कोई भी डिवाइस कनेक्ट नहीं है</translation>
 <translation id="3934456833412894880">अडैप्टिव चार्जिंग की सुविधा चालू है. इसकी मदद से, बैटरी लाइफ़ बढ़ाने के लिए बैटरी 80% चार्ज रहती है और ज़रूरत पड़ने पर पूरी चार्ज हो जाती है.</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
@@ -898,6 +902,7 @@
 <translation id="4312840429157639164">कैमरा इनपुट की झलक, अब ऊपर दाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
 <translation id="4316910396681052118">सभी ऐप्लिकेशन</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Chrome ब्राउज़र के सभी सुझाव छिपाएं</translation>
 <translation id="4322742403972824594">Ctrl + Alt + अप ऐरो कीबोर्ड शॉर्टकट बदल गया है. Home बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + लेफ़्ट ऐरो दबाएं.</translation>
 <translation id="4324840740119394760">यह <ph name="APP_NAME" /> और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा ऐक्सेस करने देता है जिनके पास इसकी अनुमति है</translation>
 <translation id="4327147325944669226">गेम रिकॉर्ड करें</translation>
@@ -931,6 +936,7 @@
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
 <translation id="4451374464530248585">Alt + डाउन ऐरो कीबोर्ड शॉर्टकट बदल गया है. Page Down बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + डाउन ऐरो को दबाएं.</translation>
 <translation id="4453876312474547652">Ctrl + V को दबाकर रखने पर, आपको क्लिपबोर्ड दिखेगा. इस शॉर्टकट को बंद करने के लिए, chrome://flags में #clipboard-history-longpress फ़्लैग बंद करें. अगर Lacros का इस्तेमाल किया जा रहा है, तो os://flags में जाकर बंद करें.</translation>
+<translation id="445765352722456792">सुझावों को पसंद के मुताबिक बनाएं</translation>
 <translation id="445864333228800152">गुड ईवनिंग,</translation>
 <translation id="4458688154122353284">स्क्रीन को रिकॉर्ड करना बंद करें</translation>
 <translation id="445923051607553918">वाई-फ़ाई  नेटवर्क से जुड़ें</translation>
@@ -1333,6 +1339,7 @@
 <translation id="5802516411616338943">क्विक सेटिंग खोलें</translation>
 <translation id="5804651031882187592">"सिम लॉक करें" सेटिंग बंद करें</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> को चालू करने के लिए क्लिक करें</translation>
+<translation id="5819918159912280082">आपका Chromebook अनचाहे तरीके से रीस्टार्ट हो गया था. अपनी पिछली विंडो और ऐप्लिकेशन खोलें.</translation>
 <translation id="5823239091726045201">वेब पर Google Tasks</translation>
 <translation id="5825969630400862129">जुड़े हुए डिवाइस की सेटिंग</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>
@@ -1513,6 +1520,7 @@
 <translation id="6469104339369989396">हॉटस्पॉट टॉगल</translation>
 <translation id="6477681113376365978">फ़ाइल डाउनलोड नहीं की जा सकी</translation>
 <translation id="6482559668224714696">फ़ुल-स्क्रीन पर सामग्री को बड़ा दिखाने वाला</translation>
+<translation id="6485086611007560630">मौसम से जुड़े सुझाव (उपलब्ध नहीं हैं)</translation>
 <translation id="6490471652906364588">USB-C डिवाइस (दायां पोर्ट)</translation>
 <translation id="649452524636452238">स्मार्ट कार्ड पिन</translation>
 <translation id="6495322433318104734">स्क्रीन सेवर दिखाया जा रहा है, बाहर निकलने के लिए कोई भी बटन दबाएं</translation>
@@ -1782,6 +1790,7 @@
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">तापमान की इकाइयां (F बनाम C) टॉगल करें</translation>
 <translation id="7519206258459640379">ऑटो फ़्रेमिंग की सुविधा चालू है.</translation>
 <translation id="7519649142417630956">डिवाइस के शट डाउन होने के बाद, एडमिन को लॉग आउट कर दिया जाएगा और वह आपके डिवाइस को कंट्रोल नहीं कर पाएगा.
 
@@ -1922,6 +1931,7 @@
 <translation id="7951630946012935453">कीबोर्ड की बैकलाइट कम करें</translation>
 <translation id="7953994493035617347">क्या आपको नया रिज़ॉल्यूशन इस्तेमाल करना है?</translation>
 <translation id="795958884516058160">पूरी स्क्रीन को बड़ा करके दिखाने की सुविधा चालू है. इसे बंद करने के लिए, <ph name="ACCELERATOR" /> को फिर से दबाएं.</translation>
+<translation id="7962583092928373823">Google Calendar के सभी सुझाव छिपाएं</translation>
 <translation id="7963689218131240420">'परेशान न करें' सुविधा बंद है.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> से</translation>
 <translation id="7968693143708939792">फ़ोल्डर को चुनें...</translation>
@@ -1994,6 +2004,7 @@
 <translation id="8214996719228530800">कैनरी चैनल</translation>
 <translation id="8219451629189078428">इस दौरान यह ज़रूरी है कि आपका Chromebook चालू रहे और चार्ज हो रहा हो. पक्का करें कि चार्जर या अडैप्टर केबल आपके Chromebook और पावर सॉकेट में अच्छी तरह से प्लग इन हैं. अपने Chromebook को बंद न करें.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> जोड़ें</translation>
+<translation id="8228175756124063692">इस सुझाव को छिपाएं</translation>
 <translation id="8230305195727960608">रंग बदलने की सुविधा वाला मोड</translation>
 <translation id="8236042855478648955">ब्रेक लेने का समय हो गया</translation>
 <translation id="8237964652943995219">अगला डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
@@ -2122,7 +2133,6 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: चालू करने की प्रक्रिया जारी है...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">समय पूरा हुआ. बहुत बढ़िया! 🎉</translation>
 <translation id="8753368202781196133">फ़िलहाल, इस भाषा का इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="8755498163081687682">अपनी पहचान की पुष्टि करें: <ph name="ORIGIN_NAME" /> आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="875593634123171288">VPN सेटिंग दिखाएं</translation>
@@ -2180,6 +2190,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> चेक बॉक्स पर सही का निशान नहीं लगाया गया.</translation>
 <translation id="8949925099261528566">कनेक्ट हो गया, लेकिन इंटरनेट नहीं है</translation>
 <translation id="8951539504029375108">आपके Chromebook के साथ सिर्फ़ वे Thunderbolt डिवाइस काम कर सकते हैं जिन्हें अनुमति मिली है</translation>
+<translation id="8956420987536947088">अपनी पिछली विंडो और ऐप्लिकेशन खोलें</translation>
 <translation id="8959380109429710384">आपने पूरी स्क्रीन को बड़ा करके दिखाने की सुविधा के लिए कीबोर्ड शॉर्टकट दबाया है. ज़ूम इन किए गए व्यू में एक से दूसरी जगह पर जाने के लिए, ctrl + alt + ऐरो का इस्तेमाल करें.</translation>
 <translation id="8964525410783593407">1 घंटा</translation>
 <translation id="8973885907461690937">मेन्यू आइकॉन पर फ़ोकस करें</translation>

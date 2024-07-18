@@ -525,7 +525,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3670030362669914947">Nommer</translation>
 <translation id="3680970647557344817">Versteek Wysig boekmerk</translation>
 <translation id="368329460027487650">Afgemeld. Maak opsies oop om aan te meld.</translation>
-<translation id="3688815115226493214">Oortjievoorstelle</translation>
 <translation id="3700134753671613714">Meld aan om jou boekmerke op al jou toestelle te kry.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} wagwoord word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, {EMAIL}, om dit op jou ander toestelle te gebruik.}other{{COUNT} wagwoorde word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening, {EMAIL}, om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="3709582977625132201">Merk as ongelees</translation>
@@ -1306,7 +1305,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="75362970626182391">Nuwe oortjiegroep</translation>
 <translation id="7537586195939242955">Jammer, jou Pass kan nie tans na Passbook geïnstalleer word nie.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> nagegaan</translation>
-<translation id="7552154146060018538">Laaste oortjie wat op <ph name="SOURCE_DEVICE" /> gebruik is</translation>
 <translation id="7553234618121028547">Maak <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> oop en gaan na Wagwoordopsies om dit af te skakel.</translation>
 <translation id="7554645225856321710">Maak alles toe</translation>
 <translation id="7554791636758816595">Nuwe oortjie</translation>
@@ -1597,6 +1595,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8876882697946675716">Hou jou toestelle gesinkroniseer</translation>
 <translation id="8879604564928138696">Dubbeltik om te probeer</translation>
 <translation id="8881801611828450202">Deursoek <ph name="SEARCH_ENGINE" /> vir hierdie prent</translation>
+<translation id="8887595428614802520">Maak alle oortjies en groepe toe</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
 <translation id="890565330728586731">Terug</translation>
 <translation id="8909135823018751308">Deel …</translation>
@@ -1634,7 +1633,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9065203028668620118">Wysig</translation>
 <translation id="9079935439869366234">Merk alles as ongelees</translation>
 <translation id="9081058212938299310">Dateer wagwoord op vir <ph name="USERNAME" />?</translation>
-<translation id="9082821980444279398">Wanneer dit aan is, kan jy data in jou Google-rekening gebruik en stoor. Wanneer dit af is, word data net op hierdie toestel gestoor en dit word uitgevee as jy afmeld.</translation>
 <translation id="9083838294503912307">Skakel sinkronisering aan om oor toestelle heen te sinkroniseer en personaliseer.</translation>
 <translation id="9087339162317338348">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie.</translation>
 <translation id="9093271241977565440">Tik op die soekikoon boaan die skerm</translation>
@@ -1669,7 +1667,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="952704832371081537">Kanselleer</translation>
 <translation id="955587716023217544">Wysig rekeninglys</translation>
 <translation id="959066944189734975">Jy volg tans <ph name="CHANNEL_NAME" /></translation>
-<translation id="96615566463761848">Wys oortjievoorstelle van ander toestelle af</translation>
 <translation id="973493300226275298">Spoor die prys van ’n produk in aanlyn winkels na. Jy sal opletberigte ontvang wanneer die prys verlaag word.</translation>
 <translation id="981498610235328462">Jou organisasie laat jou toe om net met sekere rekeninge aan te meld. Rekeninge wat nie toegelaat word nie, word versteek.</translation>
 <translation id="983800820186631385">{count,plural, =1{{position} van {count} betaalmetode}other{{position} van {count} betaalmetodes}}</translation>

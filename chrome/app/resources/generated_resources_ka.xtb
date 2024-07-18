@@ -156,7 +156,6 @@
 <translation id="1100504063505580045">მიმდინარე ხატულა</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{1 პაროლი}other{{COUNT} პაროლი}}</translation>
 <translation id="1102759278139578486">მთავარი კვანძის ანოტაციების ფაილების ჩამოტვირთვა ვერ მოხერხდა. ცადეთ მოგვიანებით.</translation>
-<translation id="1102790815296970136">ნახეთ „<ph name="PERSONALIZED_MEMORY_TITLE" />“ და სხვა მოგონებები აქ</translation>
 <translation id="1103523840287552314">ყოველთვის თარგმნე ამ ენიდან: <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">მიკროფონის გაზიარება</translation>
 <translation id="110850812463801904">OneDrive-თან ხელით დაკავშირება</translation>
@@ -223,7 +222,6 @@
 <translation id="1155816283571436363">მიმდინარეობს თქვენს ტელეფონთან დაკავშირება</translation>
 <translation id="1157952955648710254">Google Search-ის გვერდითი პანელის დახურვა</translation>
 <translation id="1158080958325422608">მთავრულად გარდაქმნა</translation>
-<translation id="1158238185437008462">მოგონებების ნახვა</translation>
 <translation id="1159879754517035595">გაფართოების პარამეტრების მართვა</translation>
 <translation id="1160800016654917722">ფანჯარამ გადაინაცვლა ქვემოთ და მარცხნივ</translation>
 <translation id="1161575384898972166">შედით <ph name="TOKEN_NAME" />-ში, კლიენტის სერტიფიკატის ექსპორტისთვის.</translation>
@@ -1558,7 +1556,6 @@
 <translation id="2114145607116268663">ინსტალაცია ვერ მოხერხდა, რადგან საჭიროა გადატვირთვა. გადატვირთეთ კომპიუტერი და ცადეთ ხელახლა. შეცდომის კოდია <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">&amp;ფრეიმის ხელახლა ჩატვირთვა</translation>
 <translation id="2114413269775311385">ამ ანგარიშის გამოყენება Android აპებში. Android აპებისთვის ნებართვების მართვა შეგიძლიათ <ph name="LINK_BEGIN" />აპების პარამეტრებიდან<ph name="LINK_END" />.</translation>
-<translation id="2114820389966440614">გაეცანით „ბოლოდროინდელ ციმებსა“ და სხვა მოგონებებს აქ</translation>
 <translation id="2114896190328250491">ფოტოს ავტორი: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">SIM ბარათი ჩასმული არ არის</translation>
 <translation id="2116619964159595185">როგორც წესი, საიტები Bluetooth მოწყობილობებს უკავშირდება ისეთი ფუნქციების უზრუნველსაყოფად, როგორიცაა, მაგალითად, დაბალი ენერგომოხმარების შუქურის, ჯანმრთელობისა თუ ფიტნესის აღმნუსხველების ან გონიერი განათების ნათურების დაყენება/სინქრონიზაცია</translation>
@@ -2359,7 +2356,6 @@
 <translation id="2684004000387153598">გასაგრძელებლად დაწკაპუნებით აირჩიეთ „კარგი“, ხოლო შემდეგ — „მომხმარებლის დამატება“, რათა შექმნათ ახალი პროფილი თქვენი ელფოსტის მისამართისთვის.</translation>
 <translation id="2685193395980129388">დაშვებულია — <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Google-ის მომსახურების პირობები</translation>
-<translation id="2687621393791886981">მოგვიანებით მკითხეთ</translation>
 <translation id="2688196195245426394">შეცდომა სერვერზე მოწყობილობის დარეგისტრირებისას: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">ამ პაროლის დამახსოვრება არ დაგჭირდებათ. ის შეინახება Google პაროლების მმართველში <ph name="ACCOUNT" />-ისთვის.</translation>
 <translation id="2690024944919328218">ენის ვარიანტების ჩვენება</translation>
@@ -3249,6 +3245,7 @@
 <translation id="3356580349448036450">დასრულებულია</translation>
 <translation id="3359256513598016054">სერტიფიკატის პოლიტიკის შეზღუდვები</translation>
 <translation id="3360297538363969800">ბეჭდვა ვერ მოხერხდა. შეამოწმეთ პრინტერი და ხელახლა სცადეთ.</translation>
+<translation id="3360306038446926262">ფანჯრები</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-ის მიერ თქვენთან ზიარდება <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" />-ის მიერ თქვენთან ზიარდება <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3361954577771524115">აპიდან</translation>
 <translation id="3363202073972776113">ამ ახალი პროფილის მმართველი იქნება თქვენი ორგანიზაცია. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -3419,7 +3416,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" />-ს შეუძლია მითითებული ფაილების ნახვა</translation>
 <translation id="3484595034894304035">იზრუნეთ ფონის, ეკრანმზოგის, მუქი თემისა და სხვა ელემენტების პერსონალიზებაზე</translation>
 <translation id="3484869148456018791">ახალი სერტიფიკატის მიღება</translation>
-<translation id="3486950712960783074">თქვენი მგზავრობა</translation>
 <translation id="3487007233252413104">ანონიმური ფუნქცია</translation>
 <translation id="3487649228420469005">სკანირება დასრულებულია</translation>
 <translation id="3490695139702884919">მიმდინარეობს ჩამოტვირთვა… <ph name="PERCENT" />%</translation>
@@ -4322,7 +4318,6 @@
 <translation id="4116704186509653070">ისევ გახსნა</translation>
 <translation id="4117714603282104018">სენსორული პანელის შეხებადი რეაქცია</translation>
 <translation id="4118579674665737931">გთხოვთ, გადატვირთოთ მოწყობილობა და ხელახლა ცადოთ.</translation>
-<translation id="412022815379960229">გაიხსენეთ თქვენი მოგონებები Google Photos-იდან, როცა სისტემაში შესული იქნებით.</translation>
 <translation id="4120388883569225797">უსაფრთხოების ამ გასაღების გადაყენება ვერ მოხერხდა</translation>
 <translation id="4120817667028078560">მდებარეობა ძალიან გრძელია</translation>
 <translation id="4124823734405044952">თქვენი უსაფრთხოების გასაღები გადაყენებულია</translation>
@@ -4758,7 +4753,6 @@
 <translation id="4461483878391246134">დაამატეთ ენები, რომელთა თარგმნაც არასოდეს შემოგთავაზოთ</translation>
 <translation id="4462159676511157176">ინდივიდუალური სახელთა სერვერები</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-ისთვის დაყენებული დროის ლიმიტია <ph name="TIME" /></translation>
-<translation id="4466839823729730432">იხილეთ თქვენი მოგონებები აქ</translation>
 <translation id="4469324811108161144">შესაძლებელია მაქსიმუმ <ph name="CHARACTER_LIMIT" /> სიმბოლოს ჩანიშვნა.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FOLDERNAME" />“-ში ფაილების რედაქტირება</translation>
 <translation id="4470957202018033307">გარე მეხსიერების პარამეტრები</translation>
@@ -5462,7 +5456,6 @@
 <translation id="5001526427543320409">მესამე მხარის ქუქი-ჩანაწერები</translation>
 <translation id="5003993274120026347">შემდეგი წინადადება</translation>
 <translation id="5005498671520578047">პაროლის კოპირება</translation>
-<translation id="5006118752738286774">2 წლის წინ</translation>
 <translation id="5006218871145547804">Crostini-ს Android აპის ADB</translation>
 <translation id="5007392906805964215">გადახედვა</translation>
 <translation id="50080882645628821">პროფილის ამოშლა</translation>
@@ -6042,7 +6035,6 @@
 <translation id="5435779377906857208"><ph name="HOST" />-ისთვის თქვენს მდებარეობაზე წვდომის ყოველთვის დაშვება</translation>
 <translation id="5436492226391861498">პროქსი გვირაბის მოლოდინი…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" />-ის ძებნა:</translation>
-<translation id="5436575196282187764">Google Photos მოგონებები</translation>
 <translation id="5440425659852470030">გვერდითი პანელის დახურვა</translation>
 <translation id="544083962418256601">მალსახმობების შექმნა…</translation>
 <translation id="5441133529460183413">Chrome ბრაუზერიდან დაინსტალირებული ვებ-აპი</translation>
@@ -6320,7 +6312,6 @@
 <translation id="5632566673632479864">თქვენი ანგარიში (<ph name="EMAIL" />) აღარ დაიშვება ძირითადი ანგარიშის სახით. ვინაიდან ამ ანგარიშს მართავს <ph name="DOMAIN" />, თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები წაიშლება ამ მოწყობილობიდან.</translation>
 <translation id="5633149627228920745">შეიტყვეთ მეტი სისტემური მოთხოვნების შესახებ</translation>
 <translation id="563371367637259496">მობილური</translation>
-<translation id="5634446357546764049">გაიხსენეთ თქვენი ბოლოდროინდელი მოგზაურობები და არა მხოლოდ</translation>
 <translation id="5635312199252507107">კონკრეტულ საიტებზე დაშვება</translation>
 <translation id="5636012309446422">გსურთ, <ph name="PRIMARY_EMAIL" />-დან ამოშალოთ <ph name="DEVICE" />?</translation>
 <translation id="5636140764387862062">დამატებითი მოქმედებები PIN-კოდთან დაკავშირებით</translation>
@@ -6463,7 +6454,6 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ტეტერინგის მზადყოფნის შემოწმება</translation>
 <translation id="5753570386948603678">ისტორიიდან წაშლა</translation>
-<translation id="5755022574660047665">მოგონებები Google Photos-იდან</translation>
 <translation id="5756163054456765343">დახმარ&amp;ების ცენტრი</translation>
 <translation id="5757187557809630523">შემდეგი ჩანაწერი</translation>
 <translation id="5758631781033351321">აქ თქვენს საკითხავ სიას იპოვით</translation>
@@ -7208,7 +7198,6 @@
 <translation id="6308493641021088955">შესვლას უზრუნველყოფს <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">ბმულ&amp;ის შენახვა, როგორც…</translation>
 <translation id="6309443618838462258">შეყვანის ეს მეთოდი არ არის დაშვებული თქვენი ადმინისტრატორის მიერ</translation>
-<translation id="630948338437014525">მოგონებები</translation>
 <translation id="6309510305002439352">მიკროფონი გამორთულია</translation>
 <translation id="6310141306111263820">eSIM პროფილის ინსტალაცია ვერ მოხერხდა. დახმარებისთვის მიმართეთ თქვენს ოპერატორს.</translation>
 <translation id="6311220991371174222">Chrome-ის გაშვება ვერ მოხერხდა, რადგან თქვენი პროფილის გახსნისას შეფერხება წარმოიქმნა. ცადეთ Chrome-ის ხელახლა გაშვება.</translation>
@@ -8561,7 +8550,6 @@
 <translation id="7356908624372060336">ქსელის ჟურნალები</translation>
 <translation id="7357271391997763660">გსურთ, პაროლების შემოწმების გაშვება?</translation>
 <translation id="735745346212279324">VPN გამორთულია</translation>
-<translation id="7358324924540718595">დღეისთვის მოგონებები დამალულია</translation>
 <translation id="7358338787722390626">ძიების დახურვა გვერდით პანელში</translation>
 <translation id="735994578317267253">ისარგებლეთ თქვენი აპებით, პარამეტრებით და სხვა კონტენტით ნებისმიერ ChromeOS მოწყობილობაზე</translation>
 <translation id="7360257054721917104">ნაჩვენებია შენახული სამუშაო მაგიდები და შაბლონები. ნავიგაციისთვის დააჭირეთ კლავიშს Tab.</translation>
@@ -8670,7 +8658,6 @@
 <translation id="7424153922653300265">ენერგიის დამზოგი ჩაირთო</translation>
 <translation id="7424818322350938336">ქსელი დამატებულია</translation>
 <translation id="7425037327577270384">დამეხმარეთ დაწერაში</translation>
-<translation id="7427315069950454694">თქვენი მოგონებები დღეისთვის</translation>
 <translation id="7427348830195639090">ფონის გვერდი: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">ზარი <ph name="DEVICE_NAME" />-ისგან</translation>
 <translation id="7429415133937917139">მოახდენს ბრაილის განახლებადი ეკრანის გამოტანის სიმულირებას ChromeVox პანელში, რომელიც ეკრანის ზედა ნაწილშია მოცემული</translation>
@@ -8693,7 +8680,6 @@
 <translation id="744366959743242014">მიმდინარეობს მონაცემების ჩატვირთვა — ამას რამდენიმე წამი დასჭირდება.</translation>
 <translation id="7443806024147773267">იქონიეთ წვდომა თქვენს პაროლებზე, როცა შესული ხართ თქვენს Google ანგარიშში</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{ქუქი-ჩანაწერები კვლავ დაიბლოკება დღეს}=1{ქუქი-ჩანაწერები კვლავ დაიბლოკება ხვალ}other{ქუქი-ჩანაწერები კვლავ დაიბლოკება # დღეში}}</translation>
-<translation id="7444970023873202833">გადახედეთ თქვენს სხვა მოგონებებს Google Photos-ში</translation>
 <translation id="7444983668544353857">გამორთეთ <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">აპების ავტომატურად ინსტალაცია</translation>
 <translation id="7448664748118305024">საიტების მიერ თქვენს მოწყობილობაზე შენახული მონაცემების წაშლა ყველა ფანჯრის დახურვისას</translation>
@@ -9101,10 +9087,6 @@
 <translation id="7745554356330788383">გადატვირთეთ ეს გვერდი, ამ საიტზე „<ph name="EXTENSION_NAME" />“-ისთვის განახლებული პარამეტრები რომ ამოქმედდეს</translation>
 <translation id="7745677556280361868">გსურთ, წაშალოთ ეს ქსელი Passpoint-ის გამოწერის გვერდზე?</translation>
 <translation id="7746045113967198252">გაზარდეთ ან შეამცირეთ თქვენს ეკრანზე არსებული ერთეულების (მათ შორის, ტექსტის) ზომა. ამ პარამეტრის მოგვიანებით პოვნა შეგიძლიათ აქ: პარამეტრები &gt; მოწყობილობები &gt; ეკრანები.</translation>
-<translation id="7746739418892731373">თქვენ ხედავთ ამ გამორჩეულ ფოტოებსა და ვიდეოებს თქვენი Google Photos ბიბლიოთეკიდან. გამოსარჩევი კონტენტის მართვა შესაძლებელია ვებმისამართიდან <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        სურვილისამებრ, შეგიძლიათ მართოთ ამ ბარათის პარამეტრები ბარათის მენიუდან, ან გაეცნოთ მეტ ვარიანტს „Chrome-ის მორგების“ სექციიდან.</translation>
 <translation id="7750228210027921155">გამოსახულება გამოსახულებაში</translation>
 <translation id="7751260505918304024">ყველას ჩვენება</translation>
 <translation id="7752832973194460442">Android აპების ინფორმაცია</translation>
@@ -10045,7 +10027,6 @@
 <translation id="8412136526970428322">დაშვებულია <ph name="PERMISSION" /> და <ph name="COUNT" /> სხვა</translation>
 <translation id="8413795581997394485">დაგიცავთ ცნობილი სახიფათო საიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან. თქვენ მიერ საიტის მონახულებისას Chrome გაუგზავნის Google-ს URL-ის შენიღბულ ნაწილს კონფიდენციალური სერვერის მეშვეობით, რომელიც მალავს თქვენს IP მისამართს. თუ საიტი რაიმე საეჭვოს მოიმოქმედებს, გაიგზავნება სრული URL-ები და გვერდების კონტენტის ფრაგმენტებიც.</translation>
 <translation id="8413956290606243087">გსურთ, გაააქტიუროთ ChromeVox, ChromeOS-ში ჩაშენებული ეკრანის წამკითხველი?</translation>
-<translation id="8414249071344507766">მოგონებები დამალულია ორი დღით</translation>
 <translation id="8414396119627470038">შედით <ph name="SITE_ETLD_PLUS_ONE" />-ში <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (სათავსო)</translation>
 <translation id="8417065541337558100">თქვენი კამერის წინასწარი ვერსია</translation>
@@ -10474,8 +10455,6 @@
           <ph name="LINE_BREAK" />
           (ავტომატური შევსების მონაცემები არ გაზიარდება)</translation>
 <translation id="8729133765463465108">QR კოდის სკანირება კამერით</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />ესაუბრეთ Gemini-ს, რომ დაიწყოთ წერა, დაგეგმვა, სწავლა და ა.შ. Google-ის ხელოვნურ ინტელექტთან ერთად.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />დაყენების დასრულების შემდეგ Gemini-ს გამოყენებას შეძლებთ Gemini აპის არჩევით თქვენი თაროდან, რომელიც ეკრანის ქვედა ნაწილშია მოცემული.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8731029916209785242">ნებართვები (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">უსაფრთხოების კოდი</translation>
@@ -10757,7 +10736,6 @@
 <translation id="8934732568177537184">გაგრძელება</translation>
 <translation id="8938800817013097409">USB-C მოწყობილობა (უკან მდებარე მარჯვენა პორტი)</translation>
 <translation id="8940081510938872932">თქვენს კომპიუტერი ძალიან ბევრ რამეს აკეთებს ახლა. სცადეთ მოგვიანებით.</translation>
-<translation id="8940381019874223173">თქვენი Google Photos-იდან</translation>
 <translation id="8940888110818450052">სისტემაში შესვლის ვარიანტები</translation>
 <translation id="8941173171815156065">ნებართვის „<ph name="PERMISSION" />“ გაუქმება</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> გამორთულია</translation>
@@ -11252,7 +11230,6 @@
 <translation id="995755448277384931">IBAN-ის დამატება</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">დაცული კავშირის დამყარება…</translation>
-<translation id="996803490569799917">გაიხსენეთ თქვენი საყვარელი ადამიანები და არა მხოლოდ</translation>
 <translation id="997143476478634194">საიტები, რომლებსაც მოინახულებთ, ავტომატურად გაითვალისწინებს ამ პარამეტრს. შეტყობინებების მეშვეობით საიტები, როგორც წესი, გამცნობენ მთავარი სიახლეებისა თუ ჩეთებში მოწერილის შესახებ.</translation>
 <translation id="99731366405731005">Wi-Fi სინქრონიზაციის გამოსაყენებლად ჩართეთ <ph name="LINK1_BEGIN" />Chrome სინქრონიზაცია<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />შეიტყვეთ მეტი<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">შ&amp;ემოწმება</translation>

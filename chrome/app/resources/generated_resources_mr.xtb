@@ -156,7 +156,6 @@
 <translation id="1100504063505580045">सध्याचा आयकन</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{१ पासवर्ड}other{{COUNT} पासवर्ड}}</translation>
 <translation id="1102759278139578486">मुख्य नोड भाष्य फाइल डाउनलोड करू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
-<translation id="1102790815296970136">"<ph name="PERSONALIZED_MEMORY_TITLE" />" आणि इतर मेमरी येथे पहा</translation>
 <translation id="1103523840287552314">नेहमी भाषांतर करा <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">मायक्रोफोन शेअर करा</translation>
 <translation id="110850812463801904">OneDrive शी मॅन्युअली कनेक्ट करा</translation>
@@ -223,7 +222,6 @@
 <translation id="1155816283571436363">तुमच्या फोनशी कनेक्ट करत आहे</translation>
 <translation id="1157952955648710254">Google Search साइड पॅनल बंद करा</translation>
 <translation id="1158080958325422608">अप्परकेस करा</translation>
-<translation id="1158238185437008462">मेमरी पहा</translation>
 <translation id="1159879754517035595">एक्स्टेंशन सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="1160800016654917722">विंडो खालच्या बाजूला आणि डावीकडे हलवली</translation>
 <translation id="1161575384898972166">कृपया क्लायंट प्रमाणपत्र एक्सपोर्ट करण्यासाठी <ph name="TOKEN_NAME" /> मध्ये साइन इन करा.</translation>
@@ -1567,7 +1565,6 @@
 <translation id="2114145607116268663">इंस्टॉल करता आले नाही, रीबूट करणे आवश्यक आहे. कृपया तुमचा कॉंप्युटर रीस्टार्ट करा आणि पुन्हा प्रयत्न करा. <ph name="ERROR" /> हा एरर कोड आहे.</translation>
 <translation id="2114326799768592691">रीलोड आणि फ्रेम करा</translation>
 <translation id="2114413269775311385">Android अ‍ॅप्ससोबत हे खाते वापरा. तुम्ही <ph name="LINK_BEGIN" />अ‍ॅप्स सेटिंग्ज<ph name="LINK_END" /> मध्ये Android अ‍ॅप्ससाठी परवानग्या नियंत्रित करू शकता.</translation>
-<translation id="2114820389966440614">"अलीकडील हायलाइट" आणि इतर मेमरी येथे पहा</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> चे फोटो</translation>
 <translation id="2114995631896158695">सिम कार्ड घातलेले नाही.</translation>
 <translation id="2116619964159595185">कमी ऊर्जेचे बीकन, आरोग्य किंवा फिटनेस ट्रॅकर अथवा स्मार्ट लाइट बल्ब सेट करणे किंवा सिंक करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे ब्लूटूथ डिव्‍हाइसशी कनेक्ट करतात</translation>
@@ -2371,7 +2368,6 @@
 <translation id="2684004000387153598">पुढे सुरू ठेवण्यासाठी ठीक आहे वर क्लिक करा, नंतर तुम्हाला ईमेल ॲड्रेससाठी नवीन प्रोफाइल तयार करण्याकरता व्यक्तीला जोडावर क्लिक करा.</translation>
 <translation id="2685193395980129388">अनुमती आहे – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Google सेवा अटी</translation>
-<translation id="2687621393791886981">मला नंतर विचारा</translation>
 <translation id="2688196195245426394">सर्व्हरवर डिव्हाइसची नोंदणी करताना एरर: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="ACCOUNT" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल.</translation>
 <translation id="2690024944919328218">भाषा पर्याय दर्शवा</translation>
@@ -3261,6 +3257,7 @@
 <translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3359256513598016054">सर्टिफिकेट धोरण प्रतिबंध</translation>
 <translation id="3360297538363969800">प्रिंट अयशस्वी. कृपया तुमचा प्रिंटर तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="3360306038446926262">विंडो</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> तुमच्यासोबत <ph name="ATTACHMENTS" /> शेअर करत आहे.}other{<ph name="DEVICE_NAME" /> तुमच्यासोबत <ph name="ATTACHMENTS" /> शेअर करत आहे.}}</translation>
 <translation id="3361954577771524115">अ‍ॅपमधून</translation>
 <translation id="3363202073972776113">ही नवीन प्रोफाइल तुमच्या संस्थेद्वारे व्यवस्थापित केली जाईल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -3431,7 +3428,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> ला पुढील फाइल पाहता येतात</translation>
 <translation id="3484595034894304035">वॉलपेपर, स्क्रीन सेव्हर, गडद थीम आणि आणखी बरेच काही पर्सनलाइझ करा</translation>
 <translation id="3484869148456018791">नवीन सर्टिफिकेट मिळवा</translation>
-<translation id="3486950712960783074">तुमचा प्रवास</translation>
 <translation id="3487007233252413104">अनामित कार्य</translation>
 <translation id="3487649228420469005">स्कॅन पूर्ण झाले आहे</translation>
 <translation id="3490695139702884919">डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
@@ -4332,7 +4328,6 @@
 <translation id="4116704186509653070">पुन्हा उघडा</translation>
 <translation id="4117714603282104018">स्पर्शाद्वारे फीडबॅक टचपॅड</translation>
 <translation id="4118579674665737931">कृपया डिव्हाइस रीबूट करा आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="412022815379960229">तुम्ही जेव्हाजेव्हा साइन इन कराल तेव्हा, Google Photos मधील तुमच्या मेमरी एक्सप्लोर करण्यास सुरुवात करा.</translation>
 <translation id="4120388883569225797">ही सिक्युरिटी की रीसेट करू शकत नाही</translation>
 <translation id="4120817667028078560">पथ खूपच लांब आहे</translation>
 <translation id="4124823734405044952">तुमची सिक्युरिटी की रीसेट केली गेली आहे</translation>
@@ -4768,7 +4763,6 @@
 <translation id="4461483878391246134">भाषांतर करणे कधीही ऑफर न करण्यासाठी भाषा जोडा</translation>
 <translation id="4462159676511157176">कस्टम नाव सर्व्हर</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> साठी सेट केलेली <ph name="TIME" /> ची वेळ मर्यादा</translation>
-<translation id="4466839823729730432">तुमच्या मेमरी येथे पहा</translation>
 <translation id="4469324811108161144"><ph name="CHARACTER_LIMIT" /> वर्णांपर्यंतच्या टिपा सेव्ह केल्या जाऊ शकतात.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> मधील फाइल संपादित करू शकते</translation>
 <translation id="4470957202018033307">बाह्य स्टोरेज प्राधान्ये</translation>
@@ -5173,6 +5167,7 @@
 <translation id="4777813841994368231">सुरू केले • हे एक्स्टेंशन त्याच्या डेव्हलपरने अप्रकाशित केले होते</translation>
 <translation id="4777825441726637019">Play स्टोअर</translation>
 <translation id="4777943778632837590">नेटवर्क नाव सर्व्हर कॉन्फिगर करा</translation>
+<translation id="4778630024246633221">प्रमाणपत्र व्यवस्थापक</translation>
 <translation id="4778653490315793244">अद्याप दाखवण्यासाठी काहीही नाही</translation>
 <translation id="4779083564647765204">झूम</translation>
 <translation id="4779136857077979611">ओनिगिरी</translation>
@@ -5472,7 +5467,6 @@
 <translation id="5001526427543320409">तृतीय पक्ष कुकी</translation>
 <translation id="5003993274120026347">पुढील वाक्य</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
-<translation id="5006118752738286774">दोन वर्षांपूर्वी</translation>
 <translation id="5006218871145547804">Crostini Android अ‍ॅप ADB</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
 <translation id="50080882645628821">प्रोफाइल काढून टाका</translation>
@@ -6052,7 +6046,6 @@
 <translation id="5435779377906857208"><ph name="HOST" /> ला तुमचे स्थान अ‍ॅक्सेस करण्याची नेहमी अनुमती द्या</translation>
 <translation id="5436492226391861498">प्रॉक्झी टनलसाठी प्रतीक्षा करत आहे...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> शोधा:</translation>
-<translation id="5436575196282187764">Google Photos मेमरी</translation>
 <translation id="5440425659852470030">साइड पॅनल बंद करा</translation>
 <translation id="544083962418256601">शॉर्टकट तयार करा...</translation>
 <translation id="5441133529460183413">Chrome ब्राउझरवरून वेब अ‍ॅप इंस्टॉल केले</translation>
@@ -6330,7 +6323,6 @@
 <translation id="5632566673632479864">तुमच्या <ph name="EMAIL" /> खात्याला यापुढे प्राथमिक खाते म्हणून अनुमती नाही. हे खाते <ph name="DOMAIN" /> ने व्यवस्थापित केले असल्याने, तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज या डिव्हाइस वरून साफ केले जाईल.</translation>
 <translation id="5633149627228920745">सिस्टीमशी संबंधित आवश्यकतांबद्दल अधिक जाणून घ्या</translation>
 <translation id="563371367637259496">मोबाइल</translation>
-<translation id="5634446357546764049">तुमच्या अलीकडील प्रवासांच्या आणि आणखी बऱ्याच गोष्टींच्या आठवणी पहा</translation>
 <translation id="5635312199252507107">विशिष्ट साइटवर अनुमती द्या</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> मधून <ph name="DEVICE" /> काढून टाकायचे आहे का?</translation>
 <translation id="5636140764387862062">पिनसाठी आणखी कृती</translation>
@@ -6473,7 +6465,6 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">टेदरिंगची सज्जता तपासा</translation>
 <translation id="5753570386948603678">इतिहासामधून हटवा</translation>
-<translation id="5755022574660047665">Google Photos मधील मेमरी</translation>
 <translation id="5756163054456765343">म&amp;दत केंद्र</translation>
 <translation id="5757187557809630523">पुढील ट्रॅक</translation>
 <translation id="5758631781033351321">तुमची वाचन सूची तुम्हाला येथे सापडेल</translation>
@@ -7219,7 +7210,6 @@
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> ने पुरवलेले साइन इन</translation>
 <translation id="6308937455967653460">या फॉरमॅटमध्ये लिंक सेव्ह करा...</translation>
 <translation id="6309443618838462258">तुमचा अ‍ॅडमिनिस्ट्रेटर या इनपुट पद्धतीला अनुमती देत नाही</translation>
-<translation id="630948338437014525">मेमरी</translation>
 <translation id="6309510305002439352">मायक्रोफोन बंद केला आहे</translation>
 <translation id="6310141306111263820">eSIM प्रोफाइल इंस्टॉल करता आली नाही. कृपया मदतीसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="6311220991371174222">तुमचे प्रोफाइल उघडताना काहीतरी चूक झाल्याने Chrome सुरू करू शकत नाही. Chrome रीस्टार्ट करून पहा.</translation>
@@ -8573,7 +8563,6 @@
 <translation id="7356908624372060336">नेटवर्क लॉग</translation>
 <translation id="7357271391997763660">पासवर्ड तपासणी रन करायची आहे का?</translation>
 <translation id="735745346212279324">VPN डिस्कनेक्ट केले</translation>
-<translation id="7358324924540718595">आजच्या आठवणी लपवल्या</translation>
 <translation id="7358338787722390626">साइड पॅनलमध्ये शोध बंद करा</translation>
 <translation id="735994578317267253">कोणत्याही ChromeOS डिव्हाइसवर तुमची ॲप्स, सेटिंग्ज आणि आणखी बरेच काही मिळवा</translation>
 <translation id="7360257054721917104">सेव्ह केलेली डेस्क आणि टेंप्लेट पाहत आहे. नेव्हिगेट करण्यासाठी टॅब प्रेस करा.</translation>
@@ -8682,7 +8671,6 @@
 <translation id="7424153922653300265">एनर्जी सेव्हर सुरू केला</translation>
 <translation id="7424818322350938336">नेटवर्क जोडले</translation>
 <translation id="7425037327577270384">मला लिहिण्यात मदत करा</translation>
-<translation id="7427315069950454694">तुमची आजची मेमरी</translation>
 <translation id="7427348830195639090">बॅकग्राउंड पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> चा कॉल</translation>
 <translation id="7429415133937917139">स्क्रीनच्या वरच्या बाजूला ChromeVox पॅनलमध्ये
@@ -8706,7 +8694,6 @@
 <translation id="744366959743242014">डेटा लोड करत आहे, याला काही सेकंद लागू शकतात.</translation>
 <translation id="7443806024147773267">तुम्ही तुमच्या Google खात्यामध्ये कधीही साइन इन करता तेव्हा तुमचे पासवर्ड ॲक्सेस करा</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookies will be blocked again today}=1{उद्या पुन्हा कुकी ब्लॉक केल्या जातील}other{# दिवसांनी कुकी पुन्हा ब्लॉक केल्या जातील}}</translation>
-<translation id="7444970023873202833">Google Photos मध्ये तुमच्या आणखी आठवणी एक्सप्लोर करा</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> अक्षम करा</translation>
 <translation id="7448430327655618736">अ‍ॅप्स आपोआप इंस्टॉल करा</translation>
 <translation id="7448664748118305024">तुम्ही सर्व विंडो बंद करता, तेव्हा साइटनी तुमच्या डिव्हाइसवर सेव्ह केलेला डेटा हटवा</translation>
@@ -9114,10 +9101,6 @@
 <translation id="7745554356330788383">तुमची अपडेट केलेली सेटिंग्ज या साइटवर <ph name="EXTENSION_NAME" /> साठी लागू करण्याकरिता हे पेज रीलोड करा</translation>
 <translation id="7745677556280361868">पासपॉइंट सदस्यत्व पेजवरील हे नेटवर्क काढून टाकायचे आहे का?</translation>
 <translation id="7746045113967198252">मजकुराच्या समावेशासह तुमच्या स्क्रीनवरील आयटम आणखी मोठे किंवा आणखी लहान करा. तुम्ही हे नंतर सेटिंग्ज &gt; डिव्हाइस &gt; डिस्प्ले मध्येदेखील पाहू शकता.</translation>
-<translation id="7746739418892731373">तुम्हाला तुमच्या Google Photos लायब्ररीमधून महत्त्वाचे फोटो आणि व्हिडिओ दिसत आहेत. तुमच्या हायलाइटमध्ये काय दिसावे हे तुम्ही <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> मधून नियंत्रित करू शकता.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        तुम्ही या कार्डसाठी कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पाहू शकता.</translation>
 <translation id="7750228210027921155">चित्रात-चित्र</translation>
 <translation id="7751260505918304024">सर्व दर्शवा</translation>
 <translation id="7752832973194460442">Android अ‍ॅप माहिती</translation>
@@ -10057,7 +10040,6 @@
 <translation id="8412136526970428322">अनुमती असलेले <ph name="PERMISSION" /> आणि आणखी <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">धोकादायक म्हणून ओळखल्या जाणार्‍या साइट, डाउनलोड आणि एक्स्टेंशन यापासून संरक्षण करते. तुम्ही साइटला भेट देता, तेव्हा Chrome तुमचा आयपी अ‍ॅड्रेस लपवणार्‍या गोपनीयता सर्व्हरद्वारे Google ला URL चा क्लिष्ट भाग पाठवते. साइटने काहीतरी संशयास्पद केल्यास, पूर्ण URLs आणि पेज आशयाचे भागदेखील पाठवले जातात.</translation>
 <translation id="8413956290606243087">तुम्हाला ChromeOS साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का?</translation>
-<translation id="8414249071344507766">मेमरी दोन दिवसांसाठी लपवल्या गेल्या</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरून <ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (केस)</translation>
 <translation id="8417065541337558100">तुमच्या कॅमेराचे पूर्वावलोकन</translation>
@@ -10486,8 +10468,6 @@
           <ph name="LINE_BREAK" />
           (तुमचा ऑटोफिल डेटा शेअर केला जाणार नाही)</translation>
 <translation id="8729133765463465108">QR कोड स्कॅन करण्यासाठी कॅमेरा वापरा</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Google AI च्या मदतीने लिहिणे, नियोजन करणे, शिकणे आणि आणखी बऱ्याच गोष्टी करण्यासाठी Gemini सोबत चॅट करा.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />सेटअप केल्यानंतर, तुमच्या स्क्रीनच्या तळाशी, तुमच्या शेल्फवरील Gemini ॲप निवडून Gemini वापरण्यास सुरुवात करा.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8731029916209785242">परवानग्या (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">सुरक्षितता कोड</translation>
@@ -10770,7 +10750,6 @@
 <translation id="8934732568177537184">सुरू ठेवा</translation>
 <translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>
 <translation id="8940081510938872932">तुमचे कॉंप्युटर यावेळी असंख्य गोष्‍टी करत आहे. नंतर पुन्हा प्रयत्न करा.</translation>
-<translation id="8940381019874223173">तुमच्या Google Photos मधील</translation>
 <translation id="8940888110818450052">साइन-इन पर्याय</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' परवानगी मागे घ्या</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> बंद आहे</translation>
@@ -11265,7 +11244,6 @@
 <translation id="995755448277384931">IBAN जोडा</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">सुरक्षित कनेक्शन इंस्टॉल करत आहे...</translation>
-<translation id="996803490569799917">तुमच्या आवडत्या लोकांच्या आणि आणखी बऱ्याच गोष्टींच्या आठवणी पहा</translation>
 <translation id="997143476478634194">तुम्ही साइटना भेट देता, तेव्‍हा त्‍या आपोआप हे सेटिंग फॉलो करतात. तुम्हाला ठळक बातम्या किंवा चॅट मेसेजबद्दल कळवण्यासाठी साइट सहसा सूचना पाठवते.</translation>
 <translation id="99731366405731005">वाय-फाय सिंक वापरणासाठी <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> सुरू करा <ph name="LINK2_BEGIN" />अधिक जाणून घ्या<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">तपासा</translation>

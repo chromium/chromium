@@ -17,6 +17,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1149651794389918149">Mewngofnodi i Chrome. Os ydych chi am fewngofnodi cyfrif unwaith yn unig, gallwch <ph name="GUEST_LINK_BEGIN" />ddefnyddio'r ddyfais fel gwestai<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Ynghylch ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Agor yn Chrome</translation>
+<translation id="1184145431117212167">Methodd y gosodiad oherwydd ni chefnogir eich fersiwn chi o Windows.</translation>
 <translation id="1194807384646768652">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd nid yw'r math o ffeil yn cael ei lawrlwytho'n aml a gall fod yn beryglus</translation>
 <translation id="1203500561924088507">Diolch am osod. Rhaid i chi ailgychwyn eich porwr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Mae Google yn argymell gosod Chrome fel y dewis diofyn</translation>
@@ -239,6 +240,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="4191857738314598978">{0,plural, =1{Ail-lansiwch Chrome o fewn diwrnod}zero{Ail-lansiwch Chrome o fewn # diwrnod}two{Ail-lansiwch Chrome o fewn # ddiwrnod}few{Ail-lansiwch Chrome o fewn # diwrnod}many{Ail-lansiwch Chrome o fewn # diwrnod}other{Ail-lansiwch Chrome o fewn # diwrnod}}</translation>
 <translation id="4205939740494406371">Ni all Chrome wirio'ch cyfrineiriau. Rhowch gynnig arall arni ar ôl 24 awr neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Wrthi'n canslo...</translation>
+<translation id="4224210481850767180">Mae'r gosodiad wedi'i ganslo.</translation>
 <translation id="4242034826641750751">Mae angen caniatâd camera a meicroffon ar Chrome ar gyfer y wefan hon</translation>
 <translation id="424864128008805179">Allgofnodi o Chrome?</translation>
 <translation id="4251615635259297716">Cysylltu eich data Chrome â'r cyfrif hwn?</translation>

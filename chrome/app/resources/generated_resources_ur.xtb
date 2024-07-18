@@ -81,6 +81,7 @@
 <translation id="1054048317165655285">اپنے فون پر سیٹ اپ مکمل کریں</translation>
 <translation id="1054153489933238809">اصل &amp;تصویر نئے ٹیب میں کھولیں</translation>
 <translation id="1054187194995068149">آداب. یہ ایک پیش منظر ہے</translation>
+<translation id="1054502481659725522">ایپس، ویب سائٹس اور سسٹم سروسز آپ کا مقام استعمال کر سکتی ہیں</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> 1 ہفتہ کے اندر اپ ڈیٹ کریں}other{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} ہفتوں کے اندر اپ ڈیٹ کریں}}</translation>
 <translation id="1056898198331236512">وارننگ</translation>
 <translation id="1056980582064308040">ترتیبات کو تبدیل کرنے سے ہاٹ اسپاٹ ری اسٹارٹ ہو جائے گا۔ ہاٹ اسپاٹ استعمال کرنے والے آلات غیر منسلک ہو جائیں گے۔</translation>
@@ -155,7 +156,6 @@
 <translation id="1100504063505580045">موجودہ آئیکن</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{‫1 پاس ورڈ}other{{COUNT} پاس ورڈز}}</translation>
 <translation id="1102759278139578486">اصل نوڈ تشریح والی فائلوں کو ڈاؤن لوڈ نہیں کیا جا سکتا۔ بعد میں دوبارہ کوشش کریں۔</translation>
-<translation id="1102790815296970136">"<ph name="PERSONALIZED_MEMORY_TITLE" />" اور دیگر یادیں یہاں دیکھیں</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
 <translation id="1107482171728500359">مائیکروفون کا اشتراک کریں</translation>
 <translation id="110850812463801904">‏دستی طور پر OneDrive سے منسلک کریں</translation>
@@ -222,7 +222,6 @@
 <translation id="1155816283571436363">آپ کے فون سے رابطہ ہو رہا ہے</translation>
 <translation id="1157952955648710254">‏Google تلاش کے سائیڈ پینل کو بند کریں</translation>
 <translation id="1158080958325422608">بڑے حروف میں تبدیل کریں</translation>
-<translation id="1158238185437008462">یادیں دیکھیں</translation>
 <translation id="1159879754517035595">ایکسٹینش کی ترتیبات کا نظم کریں</translation>
 <translation id="1160800016654917722">ونڈو نیچے اور بائیں طرف منتقل ہو گئی</translation>
 <translation id="1161575384898972166">براہ کرم کلائنٹ سرٹیفکیٹ برآمد کرنے کیلئے <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
@@ -1558,7 +1557,6 @@
 <translation id="2114145607116268663">انسٹال کرنے سے قاصر، ریبوٹ درکار ہے۔ براہ کرم اپنا کمپیوٹر ری اسٹارٹ کریں اور دوبارہ کوشش کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="2114326799768592691">&amp;فریم دوبارہ لوڈ کریں</translation>
 <translation id="2114413269775311385">‏Android ایپس کے ساتھ اس اکاؤنٹ کا استعمال کریں۔ آپ <ph name="LINK_BEGIN" />ایپس کی ترتیبات<ph name="LINK_END" /> میں Android ایپس کے لیے اجازتیں کنٹرول کر سکتے ہیں۔</translation>
-<translation id="2114820389966440614">"حالیہ ہائی لائٹس" اور دیگر یادیں یہاں دیکھیں</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> کی تصویر</translation>
 <translation id="2114995631896158695">‏کوئی SIM کارڈ داخل نہیں کیا گیا</translation>
 <translation id="2116619964159595185">سائٹس عام طور پر کم توانائی والے بیکن کو سیٹ اپ کرنے یا مطابقت پذیر کرنے، صحت یا تندرستی کے ٹریکر یا اسمارٹ لائٹ بلب جیسی خصوصیات کے لئے بلوٹوتھ آلات سے منسلک ہوتی ہیں</translation>
@@ -2360,7 +2358,6 @@
 <translation id="2684004000387153598">جاری رکھنے کے لیے،'ٹھیک ہے' پر کلک کریں، پھر اپنے ای میل پتہ کے لیے ایک نیا پروفائل تخلیق کرنے کی خاطر 'فرد شامل کریں' پر کلک کریں۔</translation>
 <translation id="2685193395980129388">اجازت ہے – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">‏Google کی سروس کی شرائط</translation>
-<translation id="2687621393791886981">مجھ سے بعد میں پوچھیں</translation>
 <translation id="2688196195245426394">سرور کے ساتھ آلہ رجسٹر کرتے وقت خرابی پیش آ گئی: <ph name="CLIENT_ERROR" />۔</translation>
 <translation id="2688734475209947648">‏آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے Google پاس ورڈ مینیجر میں <ph name="ACCOUNT" /> کے لیے محفوظ کیا جائے گا۔</translation>
 <translation id="2690024944919328218">زبان کے اختیارات دکھائیں</translation>
@@ -3248,6 +3245,7 @@
 <translation id="3356580349448036450">مکمل</translation>
 <translation id="3359256513598016054">سرٹیفکیٹ کی پالیسی کی پابندیاں</translation>
 <translation id="3360297538363969800">پرنٹنگ ناکام ہو گئی۔ براہ کرم اپنا کمپیوٹر چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="3360306038446926262">ونڈوز</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> آپ کے ساتھ <ph name="ATTACHMENTS" /> کا اشتراک کر رہا ہے۔}other{<ph name="DEVICE_NAME" /> آپ کے ساتھ <ph name="ATTACHMENTS" /> کا اشتراک کر رہا ہے۔}}</translation>
 <translation id="3361954577771524115">ایپ سے</translation>
 <translation id="3363202073972776113">آپ کی تنظیم اس نئی پروفائل کا نظم کرے گی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -3418,7 +3416,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> درج ذیل فائلز کو دیکھ سکتا ہے</translation>
 <translation id="3484595034894304035">وال پیپر، اسکرین سیور، گہری تھیم، اور مزید کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="3484869148456018791">نیا سرٹیفکیٹ حاصل کریں</translation>
-<translation id="3486950712960783074">آپ کا دورہ</translation>
 <translation id="3487007233252413104">گمنام فنکشن</translation>
 <translation id="3487649228420469005">اسکین ہو گیا</translation>
 <translation id="3490695139702884919">ڈاؤن لوڈ ہو رہا ہے… %<ph name="PERCENT" /></translation>
@@ -4321,7 +4318,6 @@
 <translation id="4116704186509653070">دوبارہ کھولیں</translation>
 <translation id="4117714603282104018">تاثرات بذریعہ تھپتھپاہٹ کا ٹچ پیڈ</translation>
 <translation id="4118579674665737931">براہ کرم آلہ کو ریبوٹ کر کے دوبارہ کوشش کریں۔</translation>
-<translation id="412022815379960229">‏جب بھی آپ سائن ان ہوتے ہیں، Google تصاویر سے اپنی یادوں کو دریافت کرنا شروع کریں۔</translation>
 <translation id="4120388883569225797">اس سیکیورٹی کلید کو دوبارہ ترتیب نہیں دیا جا سکتا</translation>
 <translation id="4120817667028078560">پاتھ کافی لمبا ہے</translation>
 <translation id="4124823734405044952">آپ کی سیکیورٹی کلید کو دوبارہ ترتیب دے دیا گیا ہے</translation>
@@ -4757,7 +4753,6 @@
 <translation id="4461483878391246134">کبھی بھی ترجمہ کی پیشکش نہ کرنے کے لیے زبانیں شامل کریں</translation>
 <translation id="4462159676511157176">حسب  ضرورت نام سرورز</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> کیلئے <ph name="TIME" /> وقت کی حد سیٹ ہے</translation>
-<translation id="4466839823729730432">اپنی یادیں یہاں دیکھیں</translation>
 <translation id="4469324811108161144">نوٹس میں <ph name="CHARACTER_LIMIT" /> حروف تک محفوظ ہو سکتے ہیں۔</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں فائلز میں ترمیم کر سکتا ہے</translation>
 <translation id="4470957202018033307">خارجی اسٹوریج کی ترجیحات</translation>
@@ -5461,7 +5456,6 @@
 <translation id="5001526427543320409">فریق ثالث کوکیز</translation>
 <translation id="5003993274120026347">اگلا جملہ</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
-<translation id="5006118752738286774">2 سال پہلے</translation>
 <translation id="5006218871145547804">‏Crostini Android ایپ ADB</translation>
 <translation id="5007392906805964215">جائزہ لیں</translation>
 <translation id="50080882645628821">پروفائل ہٹائیں</translation>
@@ -6039,7 +6033,6 @@
 <translation id="5435779377906857208"><ph name="HOST" /> کو ہمیشہ اپنے مقام تک رسائی کی اجازت دیں</translation>
 <translation id="5436492226391861498">پراکسی ٹنل کا انتظار ہے…</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> کو تلاش کریں:</translation>
-<translation id="5436575196282187764">‏Google تصاویر میموریز</translation>
 <translation id="5440425659852470030">سائیڈ پینل بند کریں</translation>
 <translation id="544083962418256601">شارٹ کٹس بنائیں…</translation>
 <translation id="5441133529460183413">‏Chrome براؤزر سے ویب ایپ انسٹال کی گئی</translation>
@@ -6317,7 +6310,6 @@
 <translation id="5632566673632479864">آپ کا اکاؤنٹ <ph name="EMAIL" /> اب بنیادی اکاؤنٹ کے طور پر اجازت یافتہ نہیں ہے۔ چونکہ یہ اکاؤنٹ <ph name="DOMAIN" /> کے زیر انتظام ہے، لہذا آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلہ سے صاف کر دیا جائے گا۔</translation>
 <translation id="5633149627228920745">سسٹم کی ضروریات کے بارے میں مزید جانیں</translation>
 <translation id="563371367637259496">موبائل</translation>
-<translation id="5634446357546764049">اپنے حالیہ دوروں کی یادیں اور مزید دیکھیں</translation>
 <translation id="5635312199252507107">مخصوص سائٹس پر اجازت دیں</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> سے <ph name="DEVICE" /> ہٹائیں؟</translation>
 <translation id="5636140764387862062">‏PIN کے لیے مزید کارروائیاں</translation>
@@ -6460,7 +6452,6 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">ٹیدرنگ کی تیاری چیک کریں</translation>
 <translation id="5753570386948603678">سرگزشت سے حذف کریں</translation>
-<translation id="5755022574660047665">‏Google تصاویر سے میموریز</translation>
 <translation id="5756163054456765343">امدادی &amp;مرکز</translation>
 <translation id="5757187557809630523">اگلا ٹریک</translation>
 <translation id="5758631781033351321">آپ اپنی پڑھنے کی فہرست یہاں پائیں گے</translation>
@@ -7205,7 +7196,6 @@
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> کی طرف سے فراہم کردہ سائن ان</translation>
 <translation id="6308937455967653460">&amp;لنک محفوظ کریں بطور…</translation>
 <translation id="6309443618838462258">آپ کا منتظم اس ان پٹ کے طریقے کی اجازت نہیں دیتا ہے</translation>
-<translation id="630948338437014525">میموریز</translation>
 <translation id="6309510305002439352">مائیکروفون آف ہے</translation>
 <translation id="6310141306111263820">‏eSIM پروفائل انسٹال نہیں کی جا سکی۔ مدد کیلئے، اپنے کیرئیر سے رابطہ کریں۔</translation>
 <translation id="6311220991371174222">‏Chrome کو شروع نہیں کیا جا سکتا ہے کیوںکہ آپ کے پروفائل کو کھولتے وقت کچھ غلط ہوگیا۔ Chrome کو دوبارہ شروع کرنے کی کوشش کریں۔</translation>
@@ -8212,6 +8202,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{اس سائٹ کے لیے نیا پاس ورڈ}other{اس سائٹ کے لیے نئے پاس ورڈز}}</translation>
 <translation id="7070484045139057854">یہ سائٹ کے ڈیٹا کو پڑھ اور اسے تبدیل کر سکتا ہے</translation>
 <translation id="7072010813301522126">شارٹ کٹ نام</translation>
+<translation id="7072078320324181561">مقام کی اجازت والی ایپس اور ویب سائٹس، نیز سسٹم سروسز، آپ کا مقام استعمال کر سکتی ہیں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7075513071073410194">‏RSA مرموز کاری کے ساتھ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">‏HTTPS/SSL سرٹیفکیٹس اور ترتیبات کا نظم کریں</translation>
 <translation id="7075896597860500885">اس سائٹ سے کاپی کرنے کی تجویز نہیں کی جاتی ہے</translation>
@@ -8557,7 +8548,6 @@
 <translation id="7356908624372060336">نیٹ ورک لاگز</translation>
 <translation id="7357271391997763660">پاس ورڈ چیک چلائیں؟</translation>
 <translation id="735745346212279324">‏VPN منقطع ہو گیا</translation>
-<translation id="7358324924540718595">آج کیلئے مخفی میموریز</translation>
 <translation id="7358338787722390626">سائیڈ پینل میں تلاش ٹول بار کو بند کریں</translation>
 <translation id="735994578317267253">‏کسی بھی ChromeOS آلہ پر اپنی ایپس، ترتیبات وغیرہ حاصل کریں</translation>
 <translation id="7360257054721917104">محفوظ کردہ ڈیسکس اور تمثیلات دیکھی جا رہی ہیں۔ نیویگیٹ کرنے کے لیے ٹیب دبائیں۔</translation>
@@ -8666,7 +8656,6 @@
 <translation id="7424153922653300265">انرجی سیور آن ہو گیا</translation>
 <translation id="7424818322350938336">نیٹ ورک شامل کیا گیا</translation>
 <translation id="7425037327577270384">لکھنے میں میری مدد کریں</translation>
-<translation id="7427315069950454694">آج کے لیے آپ کی میموریز</translation>
 <translation id="7427348830195639090">پس منظر کا صفحہ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> سے کال کریں</translation>
 <translation id="7429415133937917139">‏ریفریش کے قابل بریل ڈسپلے کے آؤٹ پٹ کو
@@ -8690,7 +8679,6 @@
 <translation id="744366959743242014">ڈیٹا لوڈ ہو رہا ہے، اس میں کچھ سیکنڈز لگ سکتے ہیں۔</translation>
 <translation id="7443806024147773267">‏آپ جب بھی اپنے Google اکاؤنٹ میں سائن ان ہوں، اپنے پاس ورڈز تک رسائی حاصل کریں</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{کوکیز کو آج دوبارہ بلاک کر دیا جائے گا}=1{کوکیز کو کل دوبارہ بلاک کر دیا جائے گا}other{# دنوں میں کوکیز کو دوبارہ مسدود کر دیا جائے گا}}</translation>
-<translation id="7444970023873202833">‏Google تصاویر میں اپنی مزید میموریز دریافت کریں</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> غیر فعال کریں</translation>
 <translation id="7448430327655618736">ایپس خودکار طور پر انسٹال کریں</translation>
 <translation id="7448664748118305024">تمام ونڈوز کو بند کرتے وقت اپنے آلے میں محفوظ کردہ ڈیٹا سائٹس کو حذف کریں</translation>
@@ -9098,10 +9086,6 @@
 <translation id="7745554356330788383">اس سائٹ پر "<ph name="EXTENSION_NAME" />" کے لیے اپنی اپ ڈیٹ کردہ ترتیبات کو لاگو کرنے کے لیے اس صفحہ کو دوبارہ لوڈ کریں</translation>
 <translation id="7745677556280361868">اس نیٹ ورک کو پاس پوائنٹ سبسکرپشن کے صفحہ پر ہٹائیں؟</translation>
 <translation id="7746045113967198252">ٹیکسٹ سمیت، اپنی اسکرین پر موجود آئٹمز کو زیادہ بڑا یا زیادہ چھوٹا بنائیں۔ آپ بعد میں اسے ترتیبات &gt; آلہ &gt; ڈسپلیز میں بھی دیکھ سکتے ہیں۔</translation>
-<translation id="7746739418892731373">‏آپ اپنی Google تصاویر کی لائبریری سے تصویر اور ویڈیو کی ہائی لائٹس کو دیکھ رہے ہیں۔ آپ <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> پر اپنی ہائی لائٹس میں دکھائی جانے والی چیزوں کو کنٹرول کر سکتے ہیں۔
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        آپ کارڈ مینیو سے اس کارڈ کیلئے ترتیبات کا نظم کر سکتے یا Chrome کو حسب ضرورت بنائیں میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
 <translation id="7750228210027921155">تصویر میں تصویر</translation>
 <translation id="7751260505918304024">سبھی دکھائیں</translation>
 <translation id="7752832973194460442">‏Android ایپ کی معلومات</translation>
@@ -9321,6 +9305,7 @@
 <translation id="7903984238293908205">کٹاکانا</translation>
 <translation id="7904526211178107182">‏اپنے نیٹ ورک پر دیگر آلات کو Linux پورٹس دستیاب کرائیں۔</translation>
 <translation id="7906440585529721295">مقامی ڈیٹا کو حذف کر دیا جائے گا</translation>
+<translation id="7907502219904644296">رسائی کو تبدیل کریں</translation>
 <translation id="7907837847548254634">فوکس کردہ آبجیکٹ پر ایک فوری ہائی لائٹ دکھائیں</translation>
 <translation id="7908378463497120834">معذرت، آپ کے بیرونی اسٹوریج آلہ پر کم از کم ایک پارٹیشن کو ماؤنٹ نہیں کیا جا سکا۔</translation>
 <translation id="7908835530772972485">سبھی ونڈوز بند کرنے پر ڈیٹا حذف کریں</translation>
@@ -9682,6 +9667,7 @@
 <translation id="815114315010033526">‏اس کے بجائے QR کوڈ استعمال کریں</translation>
 <translation id="8151638057146502721">کنفیگر کریں</translation>
 <translation id="8151748163667572916">فوری ہاٹ اسپاٹ آف کریں</translation>
+<translation id="815347678407292813">‏آپ کا مقام اب بھی آپ کے IP پتہ کے ذریعے ایپس اور ویب سائٹس کو دکھائی دے سکتا ہے</translation>
 <translation id="8154790740888707867">کوئی فائل نہیں ہے</translation>
 <translation id="815491593104042026">‏افوہ، توثیق ناکام ہو گئی کیونکہ اسے ایک غیر محفوظ ‎URL (<ph name="BLOCKED_URL" />)‎ استعمال کرنے کیلئے کنفیگر کیا گیا تھا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="8155214519979960765">اس آلہ پر پاس کی کے ساتھ دوبارہ سائن ان کرنے کے لیے، آپ کو اس بات کی تصدیق کرنی ہوگی کہ یہ آپ ہی ہیں۔ اگر آپ کے پاس کوئی دوسرا سائن ان اختیار ہے، جیسے کہ پاس ورڈ، تو آپ اس کی بجائے اسے سائن ان کرنے کے لیے استعمال کر سکتے ہیں۔</translation>
@@ -10040,7 +10026,6 @@
 <translation id="8412136526970428322"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کی اجازت دی گئی</translation>
 <translation id="8413795581997394485">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ جب آپ کسی سائٹ کو ملاحظہ کرتے ہیں تو Chrome رازداری کے سرور کے ذریعے URL کا ایک مبہم حصہ Google کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ کسی سائٹ پر کچھ مشکوک لگنے پر مکمل URLs اور صفحہ کے مواد کے بِٹس بھی بھیجے جاتے ہیں۔</translation>
 <translation id="8413956290606243087">‏کیا آپ ChromeOS کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟</translation>
-<translation id="8414249071344507766">دو دنوں کے لیے مخفی میموریز</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (کیس)</translation>
 <translation id="8417065541337558100">آپ کے کیمرہ کا پیش منظر</translation>
@@ -10469,8 +10454,6 @@
           <ph name="LINE_BREAK" />
           (آپ کے آٹو فل ڈیٹا کا اشتراک نہیں کیا جائے گا)</translation>
 <translation id="8729133765463465108">‏QR کوڈ کو اسکین کرنے کیلئے کیمرا استعمال کریں</translation>
-<translation id="8730446113129943001">‏<ph name="BEGIN_PARAGRAPH1" />‫Google AI کے ساتھ لکھنے، منصوبہ بندی کرنے، سیکھنے اور بہت کچھ شروع کرنے کے لیے Gemini کے ساتھ چیٹ کریں۔<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />سیٹ اپ کے بعد، اپنی سکرین کے نیچے اپنے شیلف پر Gemini ایپ کو منتخب کر کے Gemini کا استعمال شروع کریں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8731029916209785242">اجازتیں (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">سیکیورٹی کوڈ</translation>
@@ -10752,7 +10735,6 @@
 <translation id="8934732568177537184">جاری رکھیں</translation>
 <translation id="8938800817013097409">‏USB-C آلہ (پیچھے موجود دایاں پورٹ)</translation>
 <translation id="8940081510938872932">آپ کا کمپیوٹر اس وقت کافی ساری چیزیں کر رہا ہے۔  بعد میں دوبارہ کوشش کریں۔</translation>
-<translation id="8940381019874223173">‏آپ کی Google تصاویر سے</translation>
 <translation id="8940888110818450052">سائن ان کے اختیارات</translation>
 <translation id="8941173171815156065">اجازت '<ph name="PERMISSION" />' کو کالعدم کریں</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> آف ہے</translation>
@@ -11247,7 +11229,6 @@
 <translation id="995755448277384931">‏IBAN شامل کریں</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">محفوظ کنکشن تشکیل دیا جا رہا ہے…</translation>
-<translation id="996803490569799917">اپنے پسندیدہ لوگوں کی میموریز اور مزید دیکھیں</translation>
 <translation id="997143476478634194">آپ کی سائٹس کو ملاحظہ کرنے پر وہ خود کار طور پر اس ترتیب کی پیروی کرتی ہیں۔ سائٹس عام طور پر اہم خبروں یا چیٹ پیغامات کے بارے میں آپ کو مطلع کرنے کے لیے اطلاعات بھیجتی ہیں۔</translation>
 <translation id="99731366405731005">‏Wi-Fi سِنک استعمال کرنے کے لئے <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> کو آن کریں۔ <ph name="LINK2_BEGIN" />مزید جانیں<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">م&amp;عائنہ کریں</translation>

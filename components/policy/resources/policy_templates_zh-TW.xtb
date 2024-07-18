@@ -811,6 +811,7 @@
 <translation id="1634989431648355062">允許在這些網站上執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
 <translation id="1635450837608153975">在所有網站上停用進階 JavaScript 最佳化功能</translation>
 <translation id="1635748761015837179">允許寫入外部儲存空間</translation>
+<translation id="163653062822010558">已啟用：CSS zoom 屬性會按照標準規格執行功能。</translation>
 <translation id="1639468541408865385">啟用全域範圍的 HTTP 驗證快取</translation>
 <translation id="1639673466479276550">啟用登入畫面螢幕保護程式。</translation>
 <translation id="1640824698339859203">啟用浮動單一登入 (SSO)，並將使用者的 Web 服務驗證移到新裝置</translation>
@@ -1206,6 +1207,7 @@
 <translation id="1930127294345368978">單一列印工作可使用的紙張數量上限</translation>
 <translation id="1933378685401357864">桌布圖片</translation>
 <translation id="1935409768874953955">一律啟用輸入網址繫結匿名資料收集功能</translation>
+<translation id="1942015922182679826">刪除無法解密的密碼</translation>
 <translation id="1942626390957213764">停用桌面分享中心</translation>
 <translation id="194407941132272412">停用所有網站的網站隔離功能，但允許使用者啟用</translation>
 <translation id="1945994447126139909">這項企業政策只是暫時性措施，將在 <ph name="PRODUCT_NAME" /> 第 88 版中移除。
@@ -1599,13 +1601,6 @@
 
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法在登入畫面上將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_OS_NAME" />開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
 <translation id="2215746393279570703">浮動單一登入 (SSO) 設定</translation>
-<translation id="2218830243081931587">這項政策會控管快速鍵在 <ph name="PRODUCT_OS_NAME" /> 上的行為。
-
-如果不設定這項政策或設為 <ph name="NORMAL_SYSTEM_PRIORITY" />，所有 <ph name="PRODUCT_OS_NAME" /> 系統快速鍵都一律會正常啟動。
-
-如果將這項政策設為 <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />，預先設定的啟動鍵快速鍵清單將一律不會啟動快速鍵。
-
-如果將這項政策設為 <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />，在全螢幕顯示應用程式時，預先設定的啟動鍵快速鍵清單將一律不會啟動快速鍵。</translation>
 <translation id="2221779615493499989">回報已註冊裝置上的使用者網路狀態。
 
       如果將這項政策設為 False，系統不會回報這項資訊。
@@ -2321,7 +2316,6 @@
 <translation id="2774906947252258544">封鎖清單可控管系統禁止哪些擴充功能安裝類型。
 
 設定「command_line」會禁止透過指令列載入擴充功能。</translation>
-<translation id="2779027965175176474">不要在登入時顯示 <ph name="FEATURE_NAME" /> 簡介畫面</translation>
 <translation id="2780840673734667062">停止使用其他 Google 帳戶登入</translation>
 <translation id="2784880732336446591">在結束時清除瀏覽資料</translation>
 <translation id="2786117913267907931">禁止來源使用 Direct Sockets</translation>
@@ -2568,7 +2562,6 @@
 
 每個實體類型的值包括：<ph name="DEFAULT_ENUM_VALUE" />、<ph name="ENABLED_ENUM_VALUE" />、<ph name="DISABLED_ENUM_VALUE" /> 或 <ph name="LONGPRESSONLY_ENUM_VALUE" />。如果將值設為 <ph name="DEFAULT_ENUM_VALUE" />，會套用 <ph name="DEFAULT_ENUM_VALUE" /> 實體的行為。如果將值設為 <ph name="ENABLED_ENUM_VALUE" />，會偵測實體、加上底線，使用者只要輕觸或長按即可觸發動作。
 如果將值設為 <ph name="DISABLED_ENUM_VALUE" />，則無法偵測實體，也無法採取任何動作。如果將值設為 <ph name="LONGPRESSONLY_ENUM_VALUE" />，則會偵測實體，使用者只能透過長按執行動作。</translation>
-<translation id="3010395821339265736">在登入時顯示 <ph name="FEATURE_NAME" /> 簡介畫面</translation>
 <translation id="3010907817113180883">裝置活動訊號收集頻率 (以毫秒為單位)。</translation>
 <translation id="3016585641676676461">禁止這些網站自動進入全螢幕模式</translation>
 <translation id="3017578958356048910">PDF 檢視器可以為 PDF 加註</translation>
@@ -3150,7 +3143,6 @@
 <translation id="3484305545282013129">允許來源存取提供給網頁 Kiosk 安裝來源的瀏覽器權限。</translation>
 <translation id="3485200437120267231">停用登入攔截功能</translation>
 <translation id="3487651201232258606">原生訊息傳遞</translation>
-<translation id="3488551354274495283">允許在登入時顯示 <ph name="FEATURE_NAME" /> 簡介畫面</translation>
 <translation id="3492351353716550742">不使用預設的 no-referrer-when-downgrade 參照網址政策</translation>
 <translation id="3492834335089638487">這項政策可控管裝置是否能使用來源不受信任 (並非來自 Google Play 商店) 的 Android 應用程式。
 
@@ -4098,6 +4090,7 @@
 
 這項政策已在 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 適用的 <ph name="PRODUCT_NAME" /> 113 版、<ph name="PRODUCT_OS_NAME" /> 120 版、<ph name="LINUX_OS_NAME" /> 適用的 <ph name="PRODUCT_NAME" /> 120 版，以及 <ph name="ANDROID_NAME" /> 適用的 <ph name="PRODUCT_NAME" /> 121 版中移除，並停止支援平台提供的憑證驗證器和根憑證。</translation>
 <translation id="424318624725112807">在登入畫面上啟用插入點醒目顯示功能</translation>
+<translation id="4243419387411966417">不要刪除無法解密的密碼</translation>
 <translation id="4245159233848584683">如果將這項政策設為啟用或不設定，當裝置處於離線狀態且裝置本機帳戶設為零延遲自動登入時，<ph name="PRODUCT_OS_NAME" /> 會顯示網路設定提示。
 
 如果將這項政策設為停用，系統會改為顯示錯誤訊息。</translation>
@@ -5061,6 +5054,15 @@
 <translation id="5085647276663819155">停用列印預覽</translation>
 <translation id="5087932158260897375">如果將這項政策設為 False，系統就會停用網域可靠性診斷資料回報功能，而且不會傳送任何資料給 Google。
 如果將這項政策設為 True 或未設定，系統就會按照 <ph name="PRODUCT_NAME" /> 的 MetricsReportingEnabled 行為或 <ph name="PRODUCT_OS_NAME" /> 的 DeviceMetricsReportingEnabled 行為執行網域可靠性診斷資料回報功能。</translation>
+<translation id="5088284418186527880">這項政策可讓縮放功能符合新採用的 CSS zoom 規格。
+
+如果啟用或未設定這項政策，CSS「zoom」屬性將遵循以下頁面描述的規格：
+
+  https://drafts.csswg.org/css-viewport/#zoom-property
+
+如果停用這項政策，CSS「zoom」屬性將回復至標準化前的舊版行為。
+
+這項政策是暫時性的應急方法，可爭取一些時間來將網路內容遷移至新行為。這項政策停用時，也會有對應該行為的來源試用程序 (「DisableStandardizedBrowserZoom」)。我們將在主要版本 134 中移除這項政策，永久採用「已啟用」的行為。</translation>
 <translation id="5090791951240382356">允許合併不同來源的字典政策</translation>
 <translation id="5091315650312105069">允許透過 HTTP 使用<ph name="BASIC_AUTH" />驗證</translation>
 <translation id="5093603777978346818">不啟用螢幕鎖定畫面螢幕保護程式。</translation>
@@ -5664,6 +5666,7 @@
 <translation id="5534079385061985566">啟用完整還原功能。</translation>
 <translation id="5534235660122271432">不允許寫入外部儲存空間</translation>
 <translation id="5535256585099022933">設定重新啟動的時間間隔</translation>
+<translation id="5537400155400537818">已停用：CSS zoom 屬性會保留標準化前的舊版行為。</translation>
 <translation id="553806128266843748">布林值標記，表示是否已啟用節流功能。</translation>
 <translation id="5540885720415375851">允許本機裝置搜尋</translation>
 <translation id="5542235730745104308">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 會使用內建的替代錯誤頁面 (例如「找不到網頁」)。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 一律不會使用替代錯誤頁面。
@@ -8231,13 +8234,6 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 <translation id="7468182772656807573">你可以透過這項政策，決定監控網路封包的傳送頻率 (以毫秒為單位)。間隔範圍須介於 30 秒到 24 小時之間。系統會將超出範圍的值調整到範圍內。
 
       如果未設定，系統會套用 3 分鐘的預設間隔。</translation>
-<translation id="7469182444144588294">這項政策可控管是否要在使用者第一次登入時顯示 <ph name="FEATURE_NAME" /> 簡介畫面。
-
-      如果設為停用，系統就不會顯示 <ph name="FEATURE_NAME" /> 簡介畫面。
-
-      如果設為啟用，系統就會顯示 <ph name="FEATURE_NAME" /> 簡介畫面。
-
-      如未設定，系統會向非受管使用者顯示 <ph name="FEATURE_NAME" /> 簡介畫面，而不會向受企業管理使用者顯示。</translation>
 <translation id="7469554574977894907">啟用搜尋建議</translation>
 <translation id="7472547030234093862">指定要使用 DNS-over-HTTPS 解析的網域</translation>
 <translation id="747275827471712187">將這些網站上的 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為</translation>
@@ -8746,6 +8742,7 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
       如果設定值為零，<ph name="PRODUCT_OS_NAME" />不會在使用者處於閒置狀態時鎖定螢幕。如果不設定這項政策，系統會使用預設時間長度。
 
       建議做法：如要針對閒置狀態鎖定螢幕，可以啟用在暫停狀態下鎖定螢幕的功能，然後讓 <ph name="PRODUCT_OS_NAME" />在閒置延遲時間過後進入暫停狀態。這項政策僅限用於兩種情況：螢幕鎖定觸發時間比暫停觸發時間早很多，或是你完全不想針對閒置狀態啟用暫停功能。</translation>
+<translation id="7894964526545174973">啟用標準化的瀏覽器縮放行為</translation>
 <translation id="7895553628261067384">遠端存取</translation>
 <translation id="7898807590879163195">停用裝置活動訊號</translation>
 <translation id="789975630884141379">啟用推薦內容</translation>

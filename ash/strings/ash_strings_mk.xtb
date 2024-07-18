@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">Инсталира апликации, екстензии и теми</translation>
 <translation id="2977598380246111477">Следен број</translation>
 <translation id="2985148236010982088">Приказ на сите апликации</translation>
+<translation id="2992272421330787632">Скриј ги сите предлози за аудиовизуелни содржини</translation>
 <translation id="2992327365391326550">Копчето за микрофон на уредот е исклучено.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Изменете ја големината на екранот</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">Што можеш да направиш?</translation>
 <translation id="3256109297135787951">Отстранете го нагласувањето од ставка на полицата</translation>
 <translation id="3260969790895726815">Говорот се обработува локално, а диктирањето работи офлајн, но некои гласовни наредби нема да работат.</translation>
+<translation id="3264031581203585083">Скриј ги сите предлози во Google Drive</translation>
 <translation id="3265032511221679826">Дали да се вклучи пристап до прецизна локација?</translation>
 <translation id="3269597722229482060">Десен клик</translation>
 <translation id="3274634049061007184">Прегледајте ги апликациите на телефонот</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">Сега може да ги прикажувате кликнувањата и кратенките од тастатура во снимките од екранот</translation>
 <translation id="3742055079367172538">Направена е слика од екранот</translation>
 <translation id="3743775386021959186">„Режимот за концентрација“ е вклучен, преостанато време: <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Скриј го предлогот за време</translation>
 <translation id="3756485814916578707">Се емитува екранот</translation>
 <translation id="3765841382945324995">Кратенката <ph name="SIX_PACK_KEY_NAME" /> е ажурирана во <ph name="NEW_SHORTCUT" /> од <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Изменето денес</translation>
@@ -782,6 +785,7 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3923494859158167397">Не се поставени мобилни мрежи</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, вчитување настани.</translation>
+<translation id="3927049937406914450">„Време“ не е достапна бидејќи е исклучен пристапот до локацијата. Ова може да го промените во „Поставки“.</translation>
 <translation id="3932043219784172185">Нема поврзан уред</translation>
 <translation id="3934456833412894880">„Адаптивното полнење“ е вклучено. Батеријата ќе се задржи на 80 % за да се продолжи траењето на батеријата и да е целосно полна кога ќе ви треба.</translation>
 <translation id="3943857333388298514">Залепи</translation>
@@ -898,6 +902,7 @@
 <translation id="4312840429157639164">Камерата е поставена во горниот десен агол. Конфликт со површината на системот.</translation>
 <translation id="4316910396681052118">СИТЕ АПЛИКАЦИИ</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Скриј ги сите предлози во прелистувачот Chrome</translation>
 <translation id="4322742403972824594">Кратенката од тастатура Ctrl + Alt + Стрелка нагоре се промени. За да го користите копчето Home, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка налево.</translation>
 <translation id="4324840740119394760">Ова дозволува пристап до камерата за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозвола за камерата</translation>
 <translation id="4327147325944669226">Снимање игра</translation>
@@ -931,6 +936,7 @@
 <translation id="4450893287417543264">Не прикажувај повторно</translation>
 <translation id="4451374464530248585">Кратенката од тастатура Alt + Стрелка надолу се промени. За да го користите копчето Page Down, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка надолу.</translation>
 <translation id="4453876312474547652">Ќе ја видите привремената меморија кога ќе притиснете и задржите „Ctrl + V“. Кратенкава може да ја исклучите така што ќе ја оневозможите ознаката #clipboard-history-longpress во chrome://flags (os://flags ако се користи Lacros).</translation>
+<translation id="445765352722456792">Приспособете ги предлозите</translation>
 <translation id="445864333228800152">Добровечер,</translation>
 <translation id="4458688154122353284">Запрете со снимање на екранот</translation>
 <translation id="445923051607553918">Придружи се на мрежа за Wi-Fi</translation>
@@ -1333,6 +1339,7 @@
 <translation id="5802516411616338943">Отворете „Брзи поставки“</translation>
 <translation id="5804651031882187592">Исклучете ја поставката „Заклучи SIM“</translation>
 <translation id="5805809050170488595">Кликнете за активирање на <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Вашиот Chromebook се рестартираше неочекувано. Отворете ги претходните прозорци и апликации.</translation>
 <translation id="5823239091726045201">Задачи во Google Tasks на интернет</translation>
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
@@ -1513,6 +1520,7 @@
 <translation id="6469104339369989396">Вклучување/Исклучување на точката на пристап</translation>
 <translation id="6477681113376365978">Датотеката не може да се преземе</translation>
 <translation id="6482559668224714696">Лупа за цел екран</translation>
+<translation id="6485086611007560630">„Време“ (не е достапна)</translation>
 <translation id="6490471652906364588">USB-Ц уред (десна порта)</translation>
 <translation id="649452524636452238">PIN-код на паметна картичка</translation>
 <translation id="6495322433318104734">Се прикажува штедач на екран, притиснете некое од копчињата за да излезете</translation>
@@ -1782,6 +1790,7 @@
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">страница надолу</translation>
+<translation id="7518182783647693467">Вклучи/Исклучи единици за температура (F наспроти C)</translation>
 <translation id="7519206258459640379">Врамувањето на камера е вклучено.</translation>
 <translation id="7519649142417630956">Штом ќе се исклучи, администраторот ќе се одјави и нема да може да го контролира вашиот уред.
 
@@ -1922,6 +1931,7 @@
 <translation id="7951630946012935453">Затемнување тастатура</translation>
 <translation id="7953994493035617347">Да се потврди новата резолуција?</translation>
 <translation id="795958884516058160">„Лупата за цел екран“ е овозможена. Притиснете <ph name="ACCELERATOR" /> повторно за да ја вклучите/исклучите.</translation>
+<translation id="7962583092928373823">Скриј ги сите предлози во „Календар на Google“</translation>
 <translation id="7963689218131240420">„Не вознемирувај“ е исклучено.</translation>
 <translation id="7963992254934562106">Од <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изберете папка…</translation>
@@ -1994,6 +2004,7 @@
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Вашиот Chromebook треба да остане вклучен и поврзан на струја во текот на ова време. Проверете дали каблите на полначот или адаптерот се целосно приклучени во вашиот Chromebook и во штекерот. Не исклучувајте го вашиот Chromebook.</translation>
 <translation id="8220076512072059941">Додај <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Скриј го предлогов</translation>
 <translation id="8230305195727960608">Режим за инверзија на боите</translation>
 <translation id="8236042855478648955">Време за пауза</translation>
 <translation id="8237964652943995219">Следна работна површина: <ph name="DESK_NAME" />. Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
@@ -2122,7 +2133,6 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: се активира…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Времето истече. Одлично сторено! 🎉</translation>
 <translation id="8753368202781196133">Јазиков не е поддржан во моментов.</translation>
 <translation id="8755498163081687682">Потврдете го вашиот идентитет: <ph name="ORIGIN_NAME" /> сака да потврдите дека сте вие</translation>
 <translation id="875593634123171288">Прикажи ги поставките за VPN</translation>
@@ -2180,6 +2190,7 @@
 <translation id="894774083269346314">Полето за избор на <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> не е штиклирано.</translation>
 <translation id="8949925099261528566">Поврзан, нема интернет</translation>
 <translation id="8951539504029375108">Само одобрените уреди Thunderbolt се компатибилни со вашиот Chromebook</translation>
+<translation id="8956420987536947088">Отворете ги претходните прозорци и апликации</translation>
 <translation id="8959380109429710384">Ја притиснавте кратенката од тастатура за „Лупата за цел екран“. Користете Ctrl + Alt + копчињата со стрелки за да се движите низ зумираниот приказ.</translation>
 <translation id="8964525410783593407">1 ч.</translation>
 <translation id="8973885907461690937">Го поставува фокусот на иконата за мени</translation>

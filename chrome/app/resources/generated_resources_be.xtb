@@ -81,6 +81,7 @@
 <translation id="1054048317165655285">Завяршыце наладжванне на тэлефоне</translation>
 <translation id="1054153489933238809">Адкрыць зыходны &amp;відарыс у новай укладцы</translation>
 <translation id="1054187194995068149">Вітаю! Гэта праверка голасу.</translation>
+<translation id="1054502481659725522">Даныя пра ваша месцазнаходжанне могуць выкарыстоўвацца праграмамі, вэб-сайтамі і сістэмнымі службамі</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу 1 тыдня}one{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_WEEKS} тыдня}few{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_WEEKS} тыдняў}many{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_WEEKS} тыдняў}other{Абнавіць прыладу "<ph name="DEVICE_TYPE" />" на працягу {NUM_WEEKS} тыдня}}</translation>
 <translation id="1056898198331236512">Папярэджанне</translation>
 <translation id="1056980582064308040">Пасля змянення налад адбудзецца перазапуск хот-спота. Прылады, якія выкарыстоўваюць хот-спот, будуць адключаны.</translation>
@@ -155,7 +156,6 @@
 <translation id="1100504063505580045">Бягучы значок</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{1 пароль}one{{COUNT} пароль}few{{COUNT} паролі}many{{COUNT} пароляў}other{{COUNT} пароля}}</translation>
 <translation id="1102759278139578486">Не ўдаецца спампаваць файлы з анатацыямі галоўнага вузла. Паўтарыце спробу пазней.</translation>
-<translation id="1102790815296970136">"<ph name="PERSONALIZED_MEMORY_TITLE" />" і іншыя ўспаміны можна праглядаць тут</translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">Абагуліць мікрафон</translation>
 <translation id="110850812463801904">Падключыцца да OneDrive уручную</translation>
@@ -222,7 +222,6 @@
 <translation id="1155816283571436363">Ідзе падключэнне да тэлефона</translation>
 <translation id="1157952955648710254">Закрыць бакавую панэль Google Пошуку</translation>
 <translation id="1158080958325422608">Зрабіць усе літары вялікімі</translation>
-<translation id="1158238185437008462">Паказаць успаміны</translation>
 <translation id="1159879754517035595">Кіраваць наладамі пашырэння</translation>
 <translation id="1160800016654917722">Акно перамешчана ўніз і ўлева</translation>
 <translation id="1161575384898972166">Увайдзіце ў <ph name="TOKEN_NAME" />, каб экспартаваць кліенцкі сертыфікат.</translation>
@@ -1558,7 +1557,6 @@
 <translation id="2114145607116268663">Не ўдалося выканаць усталяванне. Патрабуецца перазагрузка. Перазапусціце камп’ютар і паўтарыце спробу. Код памылкі: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Перазагрузіць &amp;фрэйм</translation>
 <translation id="2114413269775311385">Выкарыстоўваць гэты ўліковы запіс у праграмах для Android. Вы можаце кіраваць дазволамі, дадзенымі праграмам для Android, у <ph name="LINK_BEGIN" />Наладах праграм<ph name="LINK_END" />.</translation>
-<translation id="2114820389966440614">"Найлепшыя з нядаўніх фота" і іншыя ўспаміны можна праглядаць тут</translation>
 <translation id="2114896190328250491">Фота ад аўтара <ph name="NAME" /></translation>
 <translation id="2114995631896158695">SIM-карта не ўстаўлена</translation>
 <translation id="2116619964159595185">Сайты звычайна падключаюцца да прылад з Bluetooth для работы такіх функцый, як наладжванне або сінхранізацыя маячкоў з нізкім энергаспажываннем, фітнес-трэкераў або разумных лямпачак</translation>
@@ -2359,7 +2357,6 @@
 <translation id="2684004000387153598">Каб працягнуць, націсніце "OK", затым "Дадаць карыстальніка" – так вы створыце новы профіль для свайго адраса электроннай пошты.</translation>
 <translation id="2685193395980129388">Дазволена: <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Умовы выкарыстання Google</translation>
-<translation id="2687621393791886981">Спытаць пазней</translation>
 <translation id="2688196195245426394">Пры рэгістрацыі прылады на серверы адбылася памылка: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">Вам не трэба запамінаць гэты пароль. Ён будзе захаваны ў Менеджары пароляў Google для ўліковага запісу <ph name="ACCOUNT" />.</translation>
 <translation id="2690024944919328218">Паказаць параметры маўлення</translation>
@@ -3249,6 +3246,7 @@
 <translation id="3356580349448036450">Гатова</translation>
 <translation id="3359256513598016054">Абмежаванні палітыкі сертыфікатаў</translation>
 <translation id="3360297538363969800">Памылка друку. Праверце прынтар і паўтарыце спробу.</translation>
+<translation id="3360306038446926262">Вокны</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}one{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}few{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}many{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}other{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}}</translation>
 <translation id="3361954577771524115">З праграмы</translation>
 <translation id="3363202073972776113">Новым профілем будзе кіраваць ваша арганізацыя. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -3419,7 +3417,6 @@
 <translation id="3482719661246593752">Сайт <ph name="ORIGIN" /> можа праглядаць наступныя файлы</translation>
 <translation id="3484595034894304035">Персаналізуйце шпалеры, застаўку, цёмную тэму і не толькі</translation>
 <translation id="3484869148456018791">Стварыць новы сертыфікат</translation>
-<translation id="3486950712960783074">Ваша паездка</translation>
 <translation id="3487007233252413104">ананімная функцыя</translation>
 <translation id="3487649228420469005">Сканіраванне скончана</translation>
 <translation id="3490695139702884919">Ідзе спампоўванне… <ph name="PERCENT" />%</translation>
@@ -4320,7 +4317,6 @@
 <translation id="4116704186509653070">Адкрыць зноў</translation>
 <translation id="4117714603282104018">Тактыльны водгук на сэнсарнай панэлі</translation>
 <translation id="4118579674665737931">Перазагрузіце прыладу і паўтарыце спробу.</translation>
-<translation id="412022815379960229">Праглядайце ўспаміны з Google Фота, увайшоўшы ва ўліковы запіс</translation>
 <translation id="4120388883569225797">Не ўдалося скінуць гэты ключ бяспекі</translation>
 <translation id="4120817667028078560">Шлях занадта доўгі</translation>
 <translation id="4124823734405044952">Ключ бяспекі скінуты</translation>
@@ -4756,7 +4752,6 @@
 <translation id="4461483878391246134">Дадаць мовы, для якіх не трэба прапаноўваць пераклад</translation>
 <translation id="4462159676511157176">Карыстальніцкія серверы даменных імён</translation>
 <translation id="4465236939126352372">Абмежаванне часу (<ph name="TIME" />) зададзена для праграмы "<ph name="APP_NAME" />"</translation>
-<translation id="4466839823729730432">Праглядайце ўспаміны тут</translation>
 <translation id="4469324811108161144">Максімальная колькасць сімвалаў, якія можа змяшчаць нататка, – <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">Сайт <ph name="ORIGIN" /> можа змяняць файлы ў папцы <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Параметры знешняга сховішча</translation>
@@ -5460,7 +5455,6 @@
 <translation id="5001526427543320409">Староннія файлы cookie</translation>
 <translation id="5003993274120026347">Наступны сказ</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
-<translation id="5006118752738286774">2 гады таму</translation>
 <translation id="5006218871145547804">ADB у праграмах для Android у Crostini</translation>
 <translation id="5007392906805964215">Праглядзець</translation>
 <translation id="50080882645628821">Выдаліць профіль</translation>
@@ -6039,7 +6033,6 @@
 <translation id="5435779377906857208">Заўсёды даваць сайту <ph name="HOST" /> доступ да даных пра ваша месцазнаходжанне</translation>
 <translation id="5436492226391861498">Чакаецца проксі-тунэль...</translation>
 <translation id="5436510242972373446">Пошук на сайце <ph name="SITE_NAME" />:</translation>
-<translation id="5436575196282187764">Успаміны з Google Фота</translation>
 <translation id="5440425659852470030">Закрыць бакавую панэль</translation>
 <translation id="544083962418256601">Стварыць ярлыкі...</translation>
 <translation id="5441133529460183413">Вэб-праграма ўсталявана з браўзера Chrome</translation>
@@ -6317,7 +6310,6 @@
 <translation id="5632566673632479864">Уліковы запіс <ph name="EMAIL" /> больш не дазволена выкарыстоўваць як асноўны. Гэты ўліковы запіс знаходзіцца пад кіраваннем дамена <ph name="DOMAIN" />, таму з прылады будуць выдалены вашы закладкі, гісторыя, паролі і іншыя налады.</translation>
 <translation id="5633149627228920745">Даведацца больш пра сістэмныя патрабаванні</translation>
 <translation id="563371367637259496">Мабільная сетка</translation>
-<translation id="5634446357546764049">Паказваць успаміны пра нядаўнія паездкі і не толькі</translation>
 <translation id="5635312199252507107">Дазволіць на канкрэтных сайтах</translation>
 <translation id="5636012309446422">Выдаліць прыладу "<ph name="DEVICE" />" з уліковага запісу <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636140764387862062">Іншыя дзеянні для PIN-кода</translation>
@@ -6460,7 +6452,6 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Праверыць гатоўнасць рэжыму мадэма</translation>
 <translation id="5753570386948603678">Выдаліць з гісторыі</translation>
-<translation id="5755022574660047665">успаміны з Google Фота</translation>
 <translation id="5756163054456765343">&amp;Даведачны цэнтр</translation>
 <translation id="5757187557809630523">наступны трэк</translation>
 <translation id="5758631781033351321">Ваш спіс чытання знаходзіцца тут</translation>
@@ -7205,7 +7196,6 @@
 <translation id="6308493641021088955">Уваход забяспечвае сэрвіс <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Захаваць &amp;спасылку як...</translation>
 <translation id="6309443618838462258">Ваш адміністратар не дазваляе выкарыстоўваць гэты метад уводу</translation>
-<translation id="630948338437014525">успаміны</translation>
 <translation id="6309510305002439352">Мікрафон выключаны</translation>
 <translation id="6310141306111263820">Не ўдалося ўсталяваць профіль eSIM-карты. Звярніцеся па дапамогу да аператара.</translation>
 <translation id="6311220991371174222">Chrome запусціць не ўдалося: нешта пайшло не так падчас адкрыцця вашага профілю. Паспрабуйце перазапусціць Chrome.</translation>
@@ -8218,6 +8208,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Новы пароль для гэта сайта}one{Новыя паролі для гэта сайта}few{Новыя паролі для гэта сайта}many{Новыя паролі для гэта сайта}other{Новыя паролі для гэта сайта}}</translation>
 <translation id="7070484045139057854">Гэта пашырэнне можа чытаць і змяняць даныя на сайце</translation>
 <translation id="7072010813301522126">Назва ярлыка</translation>
+<translation id="7072078320324181561">Геаданыя могуць выкарыстоўвацца праграмамі і вэб-сайтамі, якія маюць на гэта дазвол, а таксама сістэмнымі службамі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="7075513071073410194">PKCS #1 MD5 з шыфраваннем RSA</translation>
 <translation id="7075625805486468288">Кіраванне наладамі і сертыфікатамі HTTPS/SSL</translation>
 <translation id="7075896597860500885">Не рэкамендуецца капіраваць змесціва з гэтага сайта</translation>
@@ -8563,7 +8554,6 @@
 <translation id="7356908624372060336">Сеткавыя журналы</translation>
 <translation id="7357271391997763660">Запусціць праверку пароляў?</translation>
 <translation id="735745346212279324">Сетка VPN адключана</translation>
-<translation id="7358324924540718595">Успаміны схаваны на сёння</translation>
 <translation id="7358338787722390626">Закрыць інструмент пошуку на бакавой панэлі</translation>
 <translation id="735994578317267253">Карыстайцеся сваімі праграмамі, наладамі і не толькі на любой прыладзе з Chrome OS</translation>
 <translation id="7360257054721917104">Прагляд захаваных працоўных сталоў і шаблонаў. Для навігацыі выкарыстоўвайце клавішу Tab.</translation>
@@ -8672,7 +8662,6 @@
 <translation id="7424153922653300265">Эканомія энергіі ўключана</translation>
 <translation id="7424818322350938336">Сетка дададзена</translation>
 <translation id="7425037327577270384">Дапамога з напісаннем</translation>
-<translation id="7427315069950454694">успаміны на сёння</translation>
 <translation id="7427348830195639090">Фонавая старонка: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Выклік з прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Імітуе вывад дынамічнага дысплэя Брайля
@@ -8696,7 +8685,6 @@
 <translation id="744366959743242014">Загружаюцца даныя. Гэта можа заняць некалькі секунд.</translation>
 <translation id="7443806024147773267">Доступ да пароляў на ўсіх прыладах, з якіх вы ўвайшлі ў свой Уліковы запіс Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Сягоння файлы cookie зноў будуць заблакіраваны}=1{Заўтра файлы cookie зноў будуць заблакіраваны}one{Праз # дзень файлы cookie зноў будуць заблакіраваны}few{Праз # дзень файлы cookie зноў будуць заблакіраваны}many{Праз # дні файлы cookie зноў будуць заблакіраваны}other{Праз # дня файлы cookie зноў будуць заблакіраваны}}</translation>
-<translation id="7444970023873202833">Паглядзіце іншыя ўспаміны ў Google Фота</translation>
 <translation id="7444983668544353857">Выключыць <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Усталёўваць праграмы аўтаматычна</translation>
 <translation id="7448664748118305024">Выдаляць даныя сайтаў, захаваныя на прыладзе, пры закрыцці ўсіх вокнаў</translation>
@@ -9104,10 +9092,6 @@
 <translation id="7745554356330788383">Каб прымяніць абноўленыя налады для пашырэння "<ph name="EXTENSION_NAME" />" на гэтым сайце, абнавіце старонку</translation>
 <translation id="7745677556280361868">Выдаліць гэту сетку на старонцы падпіскі Passpoint?</translation>
 <translation id="7746045113967198252">Зрабіце элементы на экране, у тым ліку тэкст, большымі або меншымі. Вы таксама можаце знайсці гэта пазней у меню "Налады &gt; Прылада &gt; Дысплэі".</translation>
-<translation id="7746739418892731373">Вы бачыце адметныя фота- і відэамоманты з вашай бібліятэкі Google Фота. Вы можаце выбраць, што будзе паказвацца ў адметных момантах, на старонцы <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        У вас ёсць магчымасць кіраваць наладамі гэтай карткі з меню карткі і праглядаць дадатковыя параметры ў раздзеле "Наладзіць Chrome".</translation>
 <translation id="7750228210027921155">Відарыс у відарысе</translation>
 <translation id="7751260505918304024">Паказаць усе</translation>
 <translation id="7752832973194460442">Інфармацыя пра праграму для Android</translation>
@@ -9327,6 +9311,7 @@
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7904526211178107182">Зрабіце парты Linux даступнымі для іншых прылад у вашай сетцы.</translation>
 <translation id="7906440585529721295">Лакальныя даныя будуць выдалены</translation>
+<translation id="7907502219904644296">Змяніць доступ</translation>
 <translation id="7907837847548254634">На кароткі час вылучаць аб'ект пры перамяшчэнні фокуса на яго</translation>
 <translation id="7908378463497120834">На жаль, як мінімум адзін раздзел на знешнім сховішчы падключыць не ўдалося.</translation>
 <translation id="7908835530772972485">Выдаляць даныя пры закрыцці ўсіх вокнаў</translation>
@@ -9688,6 +9673,7 @@
 <translation id="815114315010033526">Выкарыстаць QR-код</translation>
 <translation id="8151638057146502721">Наладзіць</translation>
 <translation id="8151748163667572916">Выключыць імгненны хот-спот</translation>
+<translation id="815347678407292813">Даныя пра ваша месцазнаходжанне па-ранейшаму могуць быць даступнымі праграмам і вэб-сайтам праз ваш IP-адрас</translation>
 <translation id="8154790740888707867">Файла няма</translation>
 <translation id="815491593104042026">Памылка!  Адбыўся збой аўтэнтыфікацыі з-за выкарыстання небяспечнага URL-адраса (<ph name="BLOCKED_URL" />). Звяжыцеся са сваім адміністратарам.</translation>
 <translation id="8155214519979960765">Каб зноў выканаць уваход на гэтай прыладзе з дапамогай ключа доступу, вам трэба пацвердзіць сваю асобу. Або вы можаце выкарыстаць іншы спосаб уваходу, напрыклад пароль.</translation>
@@ -10046,7 +10032,6 @@
 <translation id="8412136526970428322">Дазволена: <ph name="PERMISSION" /> і яшчэ <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Абараняе ад заведама небяспечных сайтаў, спамповак і пашырэнняў. Калі вы наведваеце сайт, Chrome адпраўляе замаскіраваную частку URL-адраса ў Google праз прыватны сервер, які хавае ваш IP-адрас. Калі сайт робіць нешта падазронае, таксама адпраўляюцца поўныя URL-адрасы і фрагменты змесціва на старонцы.</translation>
 <translation id="8413956290606243087">Актываваць ChromeVox – убудаваную праграму чытання з экрана для Chrome OS?</translation>
-<translation id="8414249071344507766">Успаміны схаваны на два дні</translation>
 <translation id="8414396119627470038">Увайдзіце на сайт <ph name="SITE_ETLD_PLUS_ONE" />, выкарыстаўшы ідэнтыфікацыйную інфармацыю ад пастаўшчыка <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (чахол)</translation>
 <translation id="8417065541337558100">Перадпрагляд з вашай камеры</translation>
@@ -10475,8 +10460,6 @@
           <ph name="LINE_BREAK" />
           (вашы даныя аўтазапаўнення не будуць абагулены)</translation>
 <translation id="8729133765463465108">Адсканіраваць QR-код з дапамогай камеры</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Складайце тэксты і планы, адкрывайце для сябе новыя веды і магчымасці з дапамогай Gemini на аснове штучнага інтэлекту ад Google.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Пасля ўсталявання выберыце праграму Gemini на панэлі доступу ўнізе экрана.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8731029916209785242">Дазволы (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Код бяспекі</translation>
@@ -10761,7 +10744,6 @@
 <translation id="8934732568177537184">Далей</translation>
 <translation id="8938800817013097409">Прылада USB-C (задні порт справа)</translation>
 <translation id="8940081510938872932">На вашым камп'ютары выконваецца занадта шмат працэсаў.  Паўтарыце спробу пазней.</translation>
-<translation id="8940381019874223173">З Google Фота</translation>
 <translation id="8940888110818450052">Спосабы ўваходу</translation>
 <translation id="8941173171815156065">Адклікаць дазвол "<ph name="PERMISSION" />"</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />: выключана</translation>
@@ -11253,7 +11235,6 @@
 <translation id="995755448277384931">Дадаванне нумара IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Устанаўленне бяспечнага падключэння...</translation>
-<translation id="996803490569799917">Паказваць успаміны пра дарагіх мне людзей і не толькі</translation>
 <translation id="997143476478634194">Пры наведванні сайтаў яны будуць аўтаматычна ўлічваць гэту наладу. Звычайна сайты адпраўляюць апавяшчэнні, каб паведаміць вам пра экстранныя навіны або новыя паведамленні ў чаце.</translation>
 <translation id="99731366405731005">Каб выкарыстоўваць функцыю сінхранізацыі параметраў Wi-Fi, уключыце <ph name="LINK1_BEGIN" />Сінхранізацыю Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Даведацца больш<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Пра&amp;верыць</translation>

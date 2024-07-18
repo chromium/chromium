@@ -12,6 +12,7 @@
 <translation id="113122355610423240">Chromium 是你的預設瀏覽器</translation>
 <translation id="1131805035311359397">如要檢查你的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1153368717515616349">按一下「Chromium」選單</translation>
+<translation id="1184145431117212167">Windows 版本不受支援，因此無法安裝</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1188705220418984327">如要分享視窗內容，請前往「系統偏好設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
@@ -202,6 +203,7 @@
 <translation id="421369550622382712">探索 Chromium 專用的優質應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="4216212958613226427">這是 Chromium UI 的顯示語言</translation>
 <translation id="4222932583846282852">取消中…</translation>
+<translation id="4224210481850767180">已取消安裝。</translation>
 <translation id="4230135487732243613">要將你的 Chromium 資料連結至這個帳戶嗎？</translation>
 <translation id="4251772536351901305">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chromium 的警告。</translation>
 <translation id="4269093074552541569">登出 Chromium</translation>

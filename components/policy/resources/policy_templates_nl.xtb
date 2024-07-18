@@ -1633,13 +1633,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten op de browser worden toegepast op het inlogscherm. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_OS_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
 <translation id="2215746393279570703">Instellingen voor zwevende SSO</translation>
-<translation id="2218830243081931587">Dit beleid bepaalt het gedrag van snelkoppelingen in <ph name="PRODUCT_OS_NAME" />.
-
-Als je dit beleid niet instelt of instelt op <ph name="NORMAL_SYSTEM_PRIORITY" />, worden alle <ph name="PRODUCT_OS_NAME" />-systeemsnelkoppelingen altijd geactiveerd zoals verwacht.
-
-Als je dit beleid instelt op <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, activeert een vooraf bepaalde lijst met snelkoppelingen via de Launcher-toets nooit een snelkoppeling.
-
-Als je dit beleid instelt op <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, activeert een vooraf bepaalde lijst met snelkoppelingen via de Launcher nooit een snelkoppeling terwijl een app op volledig scherm wordt weergegeven.</translation>
 <translation id="2221779615493499989">De netwerkstatus van gebruikers op ingeschreven apparaten rapporteren.
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
@@ -2360,7 +2353,6 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="2774906947252258544">De blokkeerlijst bepaalt welke typen extensies niet zijn toegestaan.
 
 Als je 'command_line' instelt, kan de extensie niet worden geladen via de opdrachtregel.</translation>
-<translation id="2779027965175176474">Het introductiescherm van <ph name="FEATURE_NAME" /> niet tonen tijdens het inloggen</translation>
 <translation id="2780840673734667062">Inloggen met extra Google-accounts uitzetten</translation>
 <translation id="2784880732336446591">Browsegegevens wissen bij afsluiten</translation>
 <translation id="2786117913267907931">Niet toestaan dat oorsprongen Direct Sockets gebruiken</translation>
@@ -2616,7 +2608,6 @@ Als je de waarde instelt op <ph name="DEFAULT_ENUM_VALUE" />, wordt het gedrag v
 Als je de waarde instelt op <ph name="ENABLED_ENUM_VALUE" />, worden entiteiten waargenomen, onderstreept en geactiveerd door één tik of lang indrukken.
 Als je de waarde instelt op <ph name="DISABLED_ENUM_VALUE" />, worden entiteiten niet waargenomen en kunnen er geen acties worden uitgevoerd.
 Als je de waarde instelt op <ph name="LONGPRESSONLY_ENUM_VALUE" />, worden entiteiten waargenomen en kunnen ze alleen actie ondernemen bij lang indrukken.</translation>
-<translation id="3010395821339265736">Het introductiescherm van <ph name="FEATURE_NAME" /> tonen tijdens het inloggen</translation>
 <translation id="3010907817113180883">Snelheid voor verzameling van hartslag voor apparaatactiviteit in milliseconden.</translation>
 <translation id="3016585641676676461">Automatisch volledig scherm blokkeren op deze sites</translation>
 <translation id="3017578958356048910">De pdf-viewer mag pdf's annoteren</translation>
@@ -3214,7 +3205,6 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
 <translation id="3484305545282013129">Toestaan dat oorsprongen toegang hebben tot browserrechten die beschikbaar zijn voor de installatieoorsprong van webkiosks.</translation>
 <translation id="3485200437120267231">Onderschepping bij inloggen uitzetten</translation>
 <translation id="3487651201232258606">Systeemeigen berichten</translation>
-<translation id="3488551354274495283">Weergave van introductiescherm voor <ph name="FEATURE_NAME" /> aanzetten tijdens inloggen</translation>
 <translation id="3492351353716550742">'no-referrer-when-downgrade' niet gebruiken als standaardbeleid voor verwijzende URL's</translation>
 <translation id="3492834335089638487">Dit beleid beheert het gebruik van Android-apps van niet-vertrouwde bronnen (anders dan de Google Play Store) voor een apparaat.
 
@@ -8378,13 +8368,6 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="7468182772656807573">Als je dit beleid instelt, geef je aan hoe vaak (in milliseconden) controlenetwerkpakketten moeten worden gestuurd. De intervallen variëren van 30 seconden tot 24 uur. Waarden buiten dit bereik worden aangepast aan dit bereik.
 
       Als er geen interval is ingesteld, wordt het standaardinterval van 3 minuten toegepast.</translation>
-<translation id="7469182444144588294">Met dit beleid bepaal je of het introductiescherm van <ph name="FEATURE_NAME" /> aan de gebruiker wordt getoond als deze de eerste keer inlogt.
-
-      Als je dit beleid niet toepast, wordt het introductiescherm van <ph name="FEATURE_NAME" /> niet getoond.
-
-      Als je dit beleid toepast, wordt het introductiescherm van <ph name="FEATURE_NAME" /> getoond.
-
-      Als je het beleid niet instelt, wordt het introductiescherm van <ph name="FEATURE_NAME" /> overgeslagen voor beheerde zakelijke gebruikers en getoond aan onbeheerde gebruikers.</translation>
 <translation id="7469554574977894907">Zoeksuggesties aanzetten</translation>
 <translation id="7472547030234093862">Vermeld domeinen die moeten worden omgezet via DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" /> voor cookies op deze sites terugzetten</translation>

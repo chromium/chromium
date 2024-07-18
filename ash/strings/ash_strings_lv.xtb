@@ -521,6 +521,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2970920913501714344">Instalēt lietotnes, paplašinājumus un motīvus</translation>
 <translation id="2977598380246111477">Nākamais cipars</translation>
 <translation id="2985148236010982088">Skatīt visas lietotnes</translation>
+<translation id="2992272421330787632">Paslēpt visus multivides ieteikumus</translation>
 <translation id="2992327365391326550">Ierīces mikrofona poga ir izslēgta</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001391739687111021">Rediģēt ekrāna lielumu</translation>
@@ -591,6 +592,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3255483164551725916">Iespējamās darbības</translation>
 <translation id="3256109297135787951">Noņemt plauktā izceltā vienuma izcelšanu</translation>
 <translation id="3260969790895726815">Runa tiek apstrādāta lokāli, un diktēšana darbojas bezsaistē, taču dažas balss komandas nedarbosies.</translation>
+<translation id="3264031581203585083">Paslēpt visus Google diska ieteikumus</translation>
 <translation id="3265032511221679826">Vai ieslēgt piekļuvi precīzai atrašanās vietai?</translation>
 <translation id="3269597722229482060">Noklikšķināt ar peles labo pogu</translation>
 <translation id="3274634049061007184">Skatīt tālruņa lietotnes</translation>
@@ -742,6 +744,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3738664582935948253">Tagad ekrāna ierakstos varat rādīt klikšķus un īsinājumtaustiņus.</translation>
 <translation id="3742055079367172538">Ekrānuzņēmums ir uzņemts</translation>
 <translation id="3743775386021959186">Fokusa režīms ir ieslēgts, atlikušais laiks: <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Paslēpt laikapstākļu ieteikumu</translation>
 <translation id="3756485814916578707">Notiek ekrāna apraide</translation>
 <translation id="3765841382945324995">Īsinājumtaustiņi “<ph name="SIX_PACK_KEY_NAME" />” turpmāk būs <ph name="NEW_SHORTCUT" />, nevis <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="3765841986579723851">Rediģēts šodien</translation>
@@ -781,6 +784,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3906954721959377182">Planšetdators</translation>
 <translation id="3923494859158167397">Nav iestatīts neviens mobilais tīkls</translation>
 <translation id="3925540965556789199"><ph name="DATE" />: notiek pasākumu ielāde.</translation>
+<translation id="3927049937406914450">Laikapstākļu informācija nav pieejama, jo ir izslēgta piekļuve atrašanās vietai. Varat to mainīt iestatījumos.</translation>
 <translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
 <translation id="3934456833412894880">Adaptīvā uzlāde ir ieslēgta. Akumulators tiks uzlādēts līdz 80%, lai paildzinātu tā darbību, taču varat to pilnībā uzlādēt, kad tas ir nepieciešams.</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
@@ -897,6 +901,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4312840429157639164">Kamera pārnesta uz labo augšējo stūri. Konflikts ar sistēmas virsmu.</translation>
 <translation id="4316910396681052118">VISAS LIETOTNES</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Paslēpt visus pārlūka Chrome ieteikumus</translation>
 <translation id="4322742403972824594">Šie īsinājumtaustiņi ir mainījušies: Ctrl + Alt + augšupvērstais bulttaustiņš. Lai izmantotu sākumvietas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + kreisā bultiņa.</translation>
 <translation id="4324840740119394760">Atļauj piekļuvi kamerai lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
 <translation id="4327147325944669226">Ierakstīt spēli</translation>
@@ -930,6 +935,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4450893287417543264">Vairs nerādīt</translation>
 <translation id="4451374464530248585">Šie īsinājumtaustiņi ir mainījušies: Alt + lejupvērstais bulttaustiņš. Lai izmantotu lejupšķiršanas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + lejupvērstais bulttaustiņš.</translation>
 <translation id="4453876312474547652">Nospiežot un turot īsinājumtaustiņus Ctrl + V, tiks parādīta starpliktuve. Varat izslēgt šos īsinājumtaustiņus, atspējojot karodziņu #clipboard-history-longpress lapā chrome://flags (os://flags, ja izmantojat Lacros).</translation>
+<translation id="445765352722456792">Pielāgot ieteikumus</translation>
 <translation id="445864333228800152">Labvakar!</translation>
 <translation id="4458688154122353284">Apturēt ekrāna ierakstīšanu</translation>
 <translation id="445923051607553918">Pievienoties Wi-Fi tīklam</translation>
@@ -1332,6 +1338,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5802516411616338943">Atvērt ātros iestatījumus</translation>
 <translation id="5804651031882187592">Iestatījuma “Bloķēt SIM karti” izslēgšana</translation>
 <translation id="5805809050170488595">Noklikšķiniet, lai aktivizētu tīklu <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Jūsu Chromebook dators tika negaidīti restartēts. Atveriet iepriekšējos logus un lietotnes.</translation>
 <translation id="5823239091726045201">Google uzdevumi tīmeklī</translation>
 <translation id="5825969630400862129">Saistīto ierīču iestatījumi</translation>
 <translation id="5837036133683224804">Pārtraukt “<ph name="ROUTE_TITLE" />” apraidi ierīcē “<ph name="RECEIVER_NAME" />”</translation>
@@ -1512,6 +1519,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6469104339369989396">Pārslēgt tīklāju</translation>
 <translation id="6477681113376365978">Nevar lejupielādēt failu</translation>
 <translation id="6482559668224714696">Pilnekrāna lupa</translation>
+<translation id="6485086611007560630">Laikapstākļi (informācija nav pieejama)</translation>
 <translation id="6490471652906364588">USB-C ierīce (pieslēgvieta pa labi)</translation>
 <translation id="649452524636452238">Viedkartes PIN</translation>
 <translation id="6495322433318104734">Tiek attēlots ekrānsaudzētājs. Lai izietu, nospiediet jebkuru taustiņu.</translation>
@@ -1781,6 +1789,7 @@ Jauna instalācija</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">lejupšķiršanas taustiņš</translation>
+<translation id="7518182783647693467">Pārslēgt temperatūras mērvienības (F un C)</translation>
 <translation id="7519206258459640379">Kameras kadrēšana ir ieslēgta.</translation>
 <translation id="7519649142417630956">Pēc ierīces izslēgšanas administrators būs atteicies un nevarēs kontrolēt jūsu ierīci.
 
@@ -1921,6 +1930,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7951630946012935453">Aptumšot tastatūru</translation>
 <translation id="7953994493035617347">Vai apstiprināt jauno izšķirtspēju?</translation>
 <translation id="795958884516058160">Pilnekrāna lupa ir iespējota. Lai to atspējotu, vēlreiz nospiediet <ph name="ACCELERATOR" />.</translation>
+<translation id="7962583092928373823">Paslēpt visus Google kalendāra ieteikumus</translation>
 <translation id="7963689218131240420">Režīms “Netraucēt” ir izslēgts.</translation>
 <translation id="7963992254934562106">No <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Atlasīt mapi…</translation>
@@ -1993,6 +2003,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8214996719228530800">Canary versija</translation>
 <translation id="8219451629189078428">Šajā laika periodā jūsu Chromebook datoram ir jābūt ieslēgtam un pievienotam strāvas avotam. Uzlādes ierīcei vai adaptera vadiem ir jābūt pilnībā pievienotiem gan Chromebook datoram, gan kontaktligzdai. Neizslēdziet Chromebook datoru.</translation>
 <translation id="8220076512072059941">Pievienot šādu laiku: <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Paslēpt šo ieteikumu</translation>
 <translation id="8230305195727960608">Krāsu inversijas režīms</translation>
 <translation id="8236042855478648955">Laiks pārtraukumam</translation>
 <translation id="8237964652943995219">Nākamā darbvieta: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. darbvieta no <ph name="DESK_COUNT" />.</translation>
@@ -2121,7 +2132,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: notiek aktivizācija…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />.
         <ph name="SCREEN_SHARE_STATUS" />.</translation>
-<translation id="8749787185286745219">Laiks ir beidzies! Lieliski! 🎉</translation>
 <translation id="8753368202781196133">Šī valoda pašlaik netiek atbalstīta.</translation>
 <translation id="8755498163081687682">Identitātes apstiprināšana: <ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="875593634123171288">Rādīt VPN iestatījumus</translation>
@@ -2179,6 +2189,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> izvēles rūtiņa nav atzīmēta</translation>
 <translation id="8949925099261528566">Savienojums izveidots, nav piekļuves internetam</translation>
 <translation id="8951539504029375108">Ar jūsu Chromebook datoru ir saderīgas tikai apstiprinātas Thunderbolt ierīces</translation>
+<translation id="8956420987536947088">Atveriet iepriekšējos logus un lietotnes.</translation>
 <translation id="8959380109429710384">Jūs nospiedāt pilnekrāna lupas īsinājumtaustiņu. Lai pārvietotos tuvinātajā skatā, izmantojiet taustiņu kombināciju Ctrl + Alt un bulttaustiņus.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Novietot fokusu uz izvēlnes ikonas</translation>

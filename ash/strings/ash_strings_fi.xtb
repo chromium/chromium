@@ -521,6 +521,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2970920913501714344">asentaa sovelluksia, laajennuksia ja teemoja</translation>
 <translation id="2977598380246111477">Seuraava numero</translation>
 <translation id="2985148236010982088">Katso kaikki sovellukset</translation>
+<translation id="2992272421330787632">Piilota kaikki mediaehdotukset</translation>
 <translation id="2992327365391326550">Laitteen mikrofonipainike ei ole päällä.</translation>
 <translation id="3000461861112256445">Monoääni</translation>
 <translation id="3001391739687111021">Muokkaa näytön kokoa</translation>
@@ -591,6 +592,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3255483164551725916">Mitä osaat tehdä?</translation>
 <translation id="3256109297135787951">Poista korostus hyllyssä olevasta kohteesta</translation>
 <translation id="3260969790895726815">Puhe käsitellään paikallisesti ja sanelu toimii ilman verkkoyhteyttä, mutta jotkin äänikomennot eivät toimi.</translation>
+<translation id="3264031581203585083">Piilota kaikki Google Drive ‐ehdotukset</translation>
 <translation id="3265032511221679826">Sallitaanko tarkan sijainnin käyttö?</translation>
 <translation id="3269597722229482060">Klikkaa kakkospainiketta</translation>
 <translation id="3274634049061007184">Katsele puhelimesi sovelluksia</translation>
@@ -742,6 +744,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3738664582935948253">Voit nyt nähdä klikkaukset ja pikanäppäimet näyttötallenteissa</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
 <translation id="3743775386021959186">Keskittymistila on päällä, <ph name="REMAINING_TIME" /> jäljellä</translation>
+<translation id="3750403286520637847">Piilota sääehdotus</translation>
 <translation id="3756485814916578707">Striimataan näyttöä</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" />-pikakomento on päivitetty <ph name="NEW_SHORTCUT" /> ‑pikakomennoksi (vanha: <ph name="OLD_SHORTCUT" />)</translation>
 <translation id="3765841986579723851">Muokattu tänään</translation>
@@ -781,6 +784,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3906954721959377182">Tabletti</translation>
 <translation id="3923494859158167397">Mobiiliverkkoja ei luotu</translation>
 <translation id="3925540965556789199">Ladataan tapahtumia (<ph name="DATE" />).</translation>
+<translation id="3927049937406914450">Säätiedot eivät ole saatavilla, koska sijainti on poistettu käytöstä. Voit muuttaa tätä asetuksissa.</translation>
 <translation id="3932043219784172185">Ei yhdistettyjä laitteita</translation>
 <translation id="3934456833412894880">Mukautuva lataus on päällä. Akun varaus pysyy 80 %:ssa akunkeston pidentämiseksi. Akku ladataan täyteen tarvittaessa.</translation>
 <translation id="3943857333388298514">Liitä</translation>
@@ -897,6 +901,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4312840429157639164">Kamera kohdistettu oikeaan yläkulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="4316910396681052118">KAIKKI SOVELLUKSET</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Piilota kaikki Chrome-selainehdotukset</translation>
 <translation id="4322742403972824594">Pikanäppäinyhdistelmä Ctrl + Alt + ylänuoli on muuttunut. Jos haluat käyttää Home-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + vasen nuoli.</translation>
 <translation id="4324840740119394760"><ph name="APP_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on kameralupa, saavat käyttää kameraa</translation>
 <translation id="4327147325944669226">Kuvaa peliä</translation>
@@ -930,6 +935,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4450893287417543264">Älä näytä uudelleen</translation>
 <translation id="4451374464530248585">Pikanäppäinyhdistelmä Alt + alanuoli on muuttunut. Jos haluat käyttää Page Down ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + alanuoli.</translation>
 <translation id="4453876312474547652">Näet leikepöydän, kun painat pitkään Ctrl + V. Voit laittaa tämän pikanäppäimen pois päältä poistamalla #clipboard-history-longpress-merkinnän käytöstä osoitteessa chrome://flags (jos käytössä on Lacros: os://flags).</translation>
+<translation id="445765352722456792">Muokkaa ehdotuksia</translation>
 <translation id="445864333228800152">Hyvää iltaa</translation>
 <translation id="4458688154122353284">Lopeta näytön tallennus</translation>
 <translation id="445923051607553918">Yhdistä Wi-Fi-verkkoon</translation>
@@ -1332,6 +1338,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5802516411616338943">Avaa Pika-asetukset</translation>
 <translation id="5804651031882187592">Laita "Lukitse SIM-kortti" ‐asetus pois päältä</translation>
 <translation id="5805809050170488595">Aktivoi <ph name="NETWORK_NAME" /> klikkaamalla</translation>
+<translation id="5819918159912280082">Chromebook käynnistyi uudelleen odottamattomasti. Avaa edelliset ikkunat ja sovellukset.</translation>
 <translation id="5823239091726045201">Google Tasks verkossa</translation>
 <translation id="5825969630400862129">Yhdistettyjen laitteiden asetukset</translation>
 <translation id="5837036133683224804">Lopeta <ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6469104339369989396">Laita hotspot päälle tai pois päältä</translation>
 <translation id="6477681113376365978">Tiedostoa ei voi ladata</translation>
 <translation id="6482559668224714696">Koko näytön suurennus</translation>
+<translation id="6485086611007560630">Sää (ei saatavilla)</translation>
 <translation id="6490471652906364588">C-tyypin USB-laite (oikean sivun portti)</translation>
 <translation id="649452524636452238">Älykortin PIN-koodi</translation>
 <translation id="6495322433318104734">Näytetään näytönsäästäjä, poistu painamalla mitä tahansa näppäintä</translation>
@@ -1781,6 +1789,7 @@ Uusi asennus</translation>
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">sivu alas</translation>
+<translation id="7518182783647693467">Lämpötilayksiköt (F tai C) päälle/pois</translation>
 <translation id="7519206258459640379">Kameran kehystys on päällä.</translation>
 <translation id="7519649142417630956">Kun laite on sammutettu, järjestelmänvalvoja kirjataan ulos eikä hän voi ohjata laitetta.
 
@@ -1921,6 +1930,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7951630946012935453">Himmennä näppäimistö</translation>
 <translation id="7953994493035617347">Vahvistetaanko uusi resoluutio?</translation>
 <translation id="795958884516058160">Koko näytön suurennus on käytössä. Laita se pois päältä painamalla uudelleen <ph name="ACCELERATOR" />.</translation>
+<translation id="7962583092928373823">Piilota kaikki Google Kalenterin ehdotukset</translation>
 <translation id="7963689218131240420">Älä häiritse ‑tila on pois päältä.</translation>
 <translation id="7963992254934562106">Lähde: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Valitse kansio…</translation>
@@ -1993,6 +2003,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8214996719228530800">Canary-versio</translation>
 <translation id="8219451629189078428">Chromebookin täytyy pysyä päällä ja yhdistettynä virtalähteeseen tänä aikana. Varmista, että laturin tai virtalähteen johdot on liitetty kunnolla sekä Chromebookiin että pistorasiaan. Älä sammuta Chromebookia.</translation>
 <translation id="8220076512072059941">Lisää <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Piilota tämä ehdotus</translation>
 <translation id="8230305195727960608">Käänteiset värit ‑tila</translation>
 <translation id="8236042855478648955">Tauon paikka</translation>
 <translation id="8237964652943995219">Seuraava työpöytä: <ph name="DESK_NAME" />. Työpöytä <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
@@ -2120,7 +2131,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8735678380411481005">Näppäimistön taustavalon väri</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktivoidaan…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Aika loppui. Hienoa! 🎉</translation>
 <translation id="8753368202781196133">Tätä kieltä ei tueta tällä hetkellä.</translation>
 <translation id="8755498163081687682">Vahvista henkilöllisyytesi: <ph name="ORIGIN_NAME" /> haluaa vahvistaa henkilöllisyytesi</translation>
 <translation id="875593634123171288">Näytä VPN-asetukset</translation>
@@ -2178,6 +2188,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), valintaruutua ei valittu.</translation>
 <translation id="8949925099261528566">Yhdistetty, ei internetyhteyttä</translation>
 <translation id="8951539504029375108">Vain hyväksytyt Thunderbolt-laitteet ovat yhteensopivia Chromebookin kanssa</translation>
+<translation id="8956420987536947088">Avaa edelliset ikkunat ja sovellukset</translation>
 <translation id="8959380109429710384">Painoit koko näytön suurennuksen pikanäppäintä. Siirry lähennetyssä näkymässä painamalla ctrl + alt + nuolia.</translation>
 <translation id="8964525410783593407">1 t</translation>
 <translation id="8973885907461690937">Kohdista valikkokuvakkeeseen</translation>

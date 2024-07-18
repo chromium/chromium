@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">Қолданбаларды, кеңейтімдерді және тақырыптарды орнатыңыз</translation>
 <translation id="2977598380246111477">Келесі сан</translation>
 <translation id="2985148236010982088">Барлық қолданбаны қарау</translation>
+<translation id="2992272421330787632">Барлық медиафайл ұсынысын жасыру</translation>
 <translation id="2992327365391326550">Құрылғы микрофоны өшірулі.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Экран өлшемін өзгерту</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">Сен не істей аласың?</translation>
 <translation id="3256109297135787951">Сөредегі элементтің ерекшеленуін өшіру</translation>
 <translation id="3260969790895726815">Сөйлеу жергілікті түрде өңделеді және мәтінді дауыспен енгізу офлайн жұмыс істейді, бірақ кейбір дауыстық пәрмендер жұмыс істемейді.</translation>
+<translation id="3264031581203585083">Барлық Google Drive ұсынысын жасыру</translation>
 <translation id="3265032511221679826">Нақты геодеректі пайдалану мүмкіндігін қосу керек пе?</translation>
 <translation id="3269597722229482060">Тінтуірдің оң жақ түймесін басу</translation>
 <translation id="3274634049061007184">Телефондағы қолданбаларды көру</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">Енді экран жазбаларында басулар мен пернелер тіркесімдерін көрсете аласыз</translation>
 <translation id="3742055079367172538">Скриншот түсірілді</translation>
 <translation id="3743775386021959186">Зейін қою режимі қосылды. <ph name="REMAINING_TIME" /> қалды.</translation>
+<translation id="3750403286520637847">Ауа райы ұсынысын жасыру</translation>
 <translation id="3756485814916578707">Экран трансляциялануда</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> жылдам пәрмені <ph name="NEW_SHORTCUT" /> пәрменінен <ph name="OLD_SHORTCUT" /> пәрменіне жаңартылды</translation>
 <translation id="3765841986579723851">Бүгін өзгертілді.</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3923494859158167397">Ешқандай мобильдік желі реттелмеген.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, іс-шаралар жүктелуде.</translation>
+<translation id="3927049937406914450">Ауа райы қолжетімсіз, себебі локацияны пайдалану рұқсаты өшірілген. Мұны параметрлерде өзгертуге болады.</translation>
 <translation id="3932043219784172185">Жалғанған құрылғы жоқ.</translation>
 <translation id="3934456833412894880">Бейімдеп зарядтау функциясы қосулы. Батарея өз жұмысын ұзарту үшін заряд деңгейін 80% күйінде ұстап тұрады, ал керек кезде толық зарядталады.</translation>
 <translation id="3943857333388298514">Қою</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">Камера жоғарғы оң жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
 <translation id="4316910396681052118">БАРЛЫҚ ҚОЛДАНБАЛАР</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Chrome браузерінің барлық ұсынысын жасыру</translation>
 <translation id="4322742403972824594">Ctrl + Alt + жоғарыға бағыттауыш перне тіркесімінің функциясы өзгерді. Home пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + сол жаққа бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4324840740119394760">Бұл — камера рұқсаты бар барлық қолданба мен веб-сайт және <ph name="APP_NAME" /> қолданбасы үшін камераны пайдалануға мүмкіндік береді.</translation>
 <translation id="4327147325944669226">Ойынды жазу</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
 <translation id="4451374464530248585">Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. Page Down пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + төменге бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4453876312474547652">Ctrl + V тіркесімін басып тұрған кезде буферді көресіз. chrome://flags (Lacros жобасы пайдаланылса, os://flags) ішінде #clipboard-history-longpress жалаушасын өшіру арқылы осы таңбашаны өшіруге болады.</translation>
+<translation id="445765352722456792">Ұсыныстарды бейімдеу</translation>
 <translation id="445864333228800152">Қайырлы кеш!</translation>
 <translation id="4458688154122353284">Экран жазуды тоқтату</translation>
 <translation id="445923051607553918">Wi-Fi желісіне қосылу</translation>
@@ -1164,6 +1170,7 @@
 <translation id="5253783950165989294">"<ph name="DEVICE_NAME" />" деп аталатын, батарея заряды <ph name="BATTERY_PERCENTAGE" />% құрылғыға қосылды.</translation>
 <translation id="5258528442992323769">Сақталған жұмыс үстелі жоқ.</translation>
 <translation id="5260676007519551770">4-ші жұмыс үстелі</translation>
+<translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Стилус құралдарын көрсету/жасыру</translation>
 <translation id="5278086053818066789">ChromeVox-ты (экранды дыбыстау функциясын) қосу/өшіру</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> қолданбасы назар аударуыңызды сұрайды.</translation>
@@ -1331,6 +1338,7 @@
 <translation id="5802516411616338943">Жылдам параметрлерді ашу</translation>
 <translation id="5804651031882187592">"SIM картасын құлыптау" параметрін өшіру</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> іске қосу үшін басыңыз</translation>
+<translation id="5819918159912280082">Chromebook күтпеген жерден өшіп қосылды. Алдыңғы терезелер мен қолданбаларды ашыңыз.</translation>
 <translation id="5823239091726045201">Ғаламтордағы Google Tasks</translation>
 <translation id="5825969630400862129">Байланысқан құрылғылар параметрлері</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> қабылдағышында <ph name="ROUTE_TITLE" /> трансляциясын тоқтату</translation>
@@ -1511,6 +1519,7 @@
 <translation id="6469104339369989396">Хотспотты қосу/өшіру</translation>
 <translation id="6477681113376365978">Файлды жүктеп алу мүмкін емес</translation>
 <translation id="6482559668224714696">Толық экран ұлғайтқышы</translation>
+<translation id="6485086611007560630">Ауа райы (қолжетімсіз)</translation>
 <translation id="6490471652906364588">USB-C құрылғысы (оң жақ ұяшық)</translation>
 <translation id="649452524636452238">Смарт картаның PIN коды</translation>
 <translation id="6495322433318104734">Скринсейвер көрсетіліп жатыр, шығу үшін кез келген пернені басыңыз.</translation>
@@ -1780,6 +1789,7 @@
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Температура бірлігін ауыстыру (F немесе C)</translation>
 <translation id="7519206258459640379">Камерамен кадрлау қосулы.</translation>
 <translation id="7519649142417630956">Өшірілсе, әкімші шығып, құрылғыңызды басқара алмайды.
 
@@ -1920,6 +1930,7 @@
 <translation id="7951630946012935453">Күңгірт пернетақта</translation>
 <translation id="7953994493035617347">Жаңа ажыратымдылықты растау қажет пе?</translation>
 <translation id="795958884516058160">Толық экран ұлғайтқышы қосылды. Оны өшіру үшін <ph name="ACCELERATOR" /> тіркесімін қайтадан басыңыз.</translation>
+<translation id="7962583092928373823">Барлық Google Calendar ұсынысын жасыру</translation>
 <translation id="7963689218131240420">Мазаламау режимі өшірулі.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> компаниясынан</translation>
 <translation id="7968693143708939792">Қалта таңдау…</translation>
@@ -1992,6 +2003,7 @@
 <translation id="8214996719228530800">Canary арнасы</translation>
 <translation id="8219451629189078428">Chromebook құрылғысы осы уақыт бойы қосулы болып, қуат көзіне жалғанулы тұруы керек. Зарядтағыш не адаптер кабельдері Chromebook құрылғысына да, розеткаға да толығымен жалғанғанын тексеріңіз. Chromebook құрылғысын өшірмеңіз.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> қосу</translation>
+<translation id="8228175756124063692">Осы ұсынысты жасыру</translation>
 <translation id="8230305195727960608">Түс инверсиясы режимі</translation>
 <translation id="8236042855478648955">Үзіліс жасайтын кез келді</translation>
 <translation id="8237964652943995219">Келесі жұмыс үстелі: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> жұмыс үстелі.</translation>
@@ -2120,7 +2132,6 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: іске қосылып жатыр...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Уақыт бітті. Жарайсыз! 🎉</translation>
 <translation id="8753368202781196133">Қазіргі уақытта бұл тілге қолдау көрсетілмейді.</translation>
 <translation id="8755498163081687682">Жеке басыңызды растаңыз: <ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>
@@ -2178,6 +2189,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> құсбелгі ұяшығы таңдалмаған.</translation>
 <translation id="8949925099261528566">Қосылған, интернет жоқ</translation>
 <translation id="8951539504029375108">Мақұлданған Thunderbolt құрылғылары ғана Chromebook-пен үйлесімді.</translation>
+<translation id="8956420987536947088">Алдыңғы терезелер мен қолданбаларды ашыңыз.</translation>
 <translation id="8959380109429710384">Толық экран ұлғайтқышын қосатын перне тіркесімін бастыңыз. Ұлғайтылған көріністе жылжыту үшін ctrl + alt + көрсеткілерді пайдаланыңыз.</translation>
 <translation id="8964525410783593407">1 сағ</translation>
 <translation id="8973885907461690937">Фокусты мәзір белгішесіне қою</translation>

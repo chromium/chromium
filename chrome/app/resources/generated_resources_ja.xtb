@@ -156,7 +156,6 @@
 <translation id="1100504063505580045">現在のアイコン</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{1 個のパスワード}other{{COUNT} 個のパスワード}}</translation>
 <translation id="1102759278139578486">メインノードのアノテーション ファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
-<translation id="1102790815296970136">「<ph name="PERSONALIZED_MEMORY_TITLE" />」や他の思い出をここで見ることができます</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="1107482171728500359">マイクの共有</translation>
 <translation id="110850812463801904">OneDrive に手動で接続</translation>
@@ -223,7 +222,6 @@
 <translation id="1155816283571436363">スマートフォンに接続しています</translation>
 <translation id="1157952955648710254">Google 検索のサイドパネルを閉じる</translation>
 <translation id="1158080958325422608">大文字にする</translation>
-<translation id="1158238185437008462">思い出の写真を表示</translation>
 <translation id="1159879754517035595">拡張機能の設定を管理する</translation>
 <translation id="1160800016654917722">ウィンドウを左下に移動しました</translation>
 <translation id="1161575384898972166">クライアント証明書をエクスポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
@@ -1555,7 +1553,6 @@
 <translation id="2114145607116268663">インストールできません。再起動が必要です。パソコンを再起動して、もう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="2114326799768592691">フレームを再読み込み(&amp;F)</translation>
 <translation id="2114413269775311385">このアカウントを Android アプリで使用します。[<ph name="LINK_BEGIN" />アプリの設定<ph name="LINK_END" />] で Android アプリの権限を管理できます。</translation>
-<translation id="2114820389966440614">「最近のハイライト」や他の思い出をここで見ることができます</translation>
 <translation id="2114896190328250491">撮影者: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">SIM カードが挿入されていません</translation>
 <translation id="2116619964159595185">Bluetooth Low Energy ビーコン、ヘルス トラッカー、フィットネス トラッカー、スマート電球の設定や同期などの機能に対応するために、多くのサイトは Bluetooth デバイスに接続します</translation>
@@ -2353,7 +2350,6 @@
 <translation id="2684004000387153598">利用を続けるには、[OK]、[ユーザーを追加] の順にクリックして、お使いのメールアドレス用の新しいプロフィールを作成してください。</translation>
 <translation id="2685193395980129388">許可しました – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Google 利用規約</translation>
-<translation id="2687621393791886981">後で確認</translation>
 <translation id="2688196195245426394">デバイスをサーバーに登録するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
 <translation id="2688734475209947648">このパスワードを覚えておく必要はありません。パスワードは、<ph name="ACCOUNT" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="2690024944919328218">言語オプションを表示</translation>
@@ -3241,6 +3237,7 @@
 <translation id="3356580349448036450">完了</translation>
 <translation id="3359256513598016054">証明書ポリシーの制約</translation>
 <translation id="3360297538363969800">印刷できませんでした。プリンタを確認してもう一度お試しください。</translation>
+<translation id="3360306038446926262">ウィンドウ</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}other{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}}</translation>
 <translation id="3361954577771524115">アプリから</translation>
 <translation id="3363202073972776113">この新しいプロフィールは組織によって管理されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -3411,7 +3408,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> は次のファイルを表示できます</translation>
 <translation id="3484595034894304035">壁紙、スクリーン セーバー、ダークモードなどをパーソナライズ</translation>
 <translation id="3484869148456018791">新しい証明書を取得</translation>
-<translation id="3486950712960783074">旅行</translation>
 <translation id="3487007233252413104">無名関数</translation>
 <translation id="3487649228420469005">スキャンが完了しました</translation>
 <translation id="3490695139702884919">ダウンロードしています... <ph name="PERCENT" />%</translation>
@@ -4313,7 +4309,6 @@
 <translation id="4116704186509653070">もう一度開く</translation>
 <translation id="4117714603282104018">タッチパッドの触覚フィードバック</translation>
 <translation id="4118579674665737931">デバイスを再起動してもう一度お試しください。</translation>
-<translation id="412022815379960229">ログインすれば、いつでも Google フォトの「思い出」の写真を見ることができます。</translation>
 <translation id="4120388883569225797">このセキュリティ キーはリセットできません</translation>
 <translation id="4120817667028078560">パスが長すぎます</translation>
 <translation id="4124823734405044952">セキュリティ キーがリセットされました</translation>
@@ -4747,7 +4742,6 @@
 <translation id="4461483878391246134">翻訳しない言語を追加</translation>
 <translation id="4462159676511157176">カスタム ネーム サーバー</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> の使用時間制限が <ph name="TIME" /> に設定されました</translation>
-<translation id="4466839823729730432">思い出を振り返りましょう</translation>
 <translation id="4469324811108161144">メモは <ph name="CHARACTER_LIMIT" /> 文字以下で入力してください。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」のファイルを編集できます</translation>
 <translation id="4470957202018033307">外部ストレージの設定</translation>
@@ -5451,7 +5445,6 @@
 <translation id="5001526427543320409">サードパーティ Cookie</translation>
 <translation id="5003993274120026347">次の文</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
-<translation id="5006118752738286774">2 年前</translation>
 <translation id="5006218871145547804">Crostini Android アプリ ADB</translation>
 <translation id="5007392906805964215">内容を確認</translation>
 <translation id="50080882645628821">プロファイルを削除</translation>
@@ -6028,7 +6021,6 @@
 <translation id="5435779377906857208"><ph name="HOST" /> による位置情報へのアクセスを常に許可する</translation>
 <translation id="5436492226391861498">プロキシ トンネルの待機中...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> を検索:</translation>
-<translation id="5436575196282187764">Google フォトの「思い出」</translation>
 <translation id="5440425659852470030">サイドパネルを閉じる</translation>
 <translation id="544083962418256601">ショートカットを作成...</translation>
 <translation id="5441133529460183413">Chrome ブラウザからインストールしたウェブアプリ</translation>
@@ -6306,7 +6298,6 @@
 <translation id="5632566673632479864">お使いのアカウント <ph name="EMAIL" /> は、メイン アカウントとして使用できなくなりました。このアカウントは <ph name="DOMAIN" /> で管理されているため、ブックマーク、履歴、パスワードなどの設定はこのデバイスから削除されます。</translation>
 <translation id="5633149627228920745">システム要件の詳細</translation>
 <translation id="563371367637259496">モバイル</translation>
-<translation id="5634446357546764049">最近の旅行の思い出などを見る</translation>
 <translation id="5635312199252507107">特定のサイトで許可する</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> から <ph name="DEVICE" /> を削除しますか？</translation>
 <translation id="5636140764387862062">PIN に関するその他の操作</translation>
@@ -6449,7 +6440,6 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">テザリングの準備ができているかどうかを確認する</translation>
 <translation id="5753570386948603678">履歴から削除</translation>
-<translation id="5755022574660047665">Google フォトの「思い出」</translation>
 <translation id="5756163054456765343">ヘルプセンター(&amp;E)</translation>
 <translation id="5757187557809630523">次のトラック</translation>
 <translation id="5758631781033351321">リーディング リストはここに表示されます</translation>
@@ -7194,7 +7184,6 @@
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> によるログイン</translation>
 <translation id="6308937455967653460">名前を付けてリンク先を保存(&amp;K)...</translation>
 <translation id="6309443618838462258">この入力方法は管理者によって許可されていません</translation>
-<translation id="630948338437014525">思い出</translation>
 <translation id="6309510305002439352">マイクがオフになっています</translation>
 <translation id="6310141306111263820">eSIM プロファイルをインストールできませんでした。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="6311220991371174222">プロファイルを開こうとして問題が発生したため、Chrome を起動できません。Chrome を再起動してみてください。</translation>
@@ -8545,7 +8534,6 @@
 <translation id="7356908624372060336">ネットワーク ログ</translation>
 <translation id="7357271391997763660">パスワード チェックを実行しますか？</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>
-<translation id="7358324924540718595">今日の思い出を非表示にしました</translation>
 <translation id="7358338787722390626">サイドパネルの検索を閉じる</translation>
 <translation id="735994578317267253">どの Chrome OS デバイスからでも自分のアプリや設定などにアクセスできます</translation>
 <translation id="7360257054721917104">保存したデスクとテンプレートを表示しています。Tab キーを押して移動できます。</translation>
@@ -8654,7 +8642,6 @@
 <translation id="7424153922653300265">省エネツールがオンになっています</translation>
 <translation id="7424818322350938336">ネットワークを追加しました</translation>
 <translation id="7425037327577270384">文書作成サポート</translation>
-<translation id="7427315069950454694">今日の思い出</translation>
 <translation id="7427348830195639090">バックグラウンド ページ: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> から発信</translation>
 <translation id="7429415133937917139">点字ディスプレイの出力を
@@ -8678,7 +8665,6 @@
 <translation id="744366959743242014">データを読み込んでいます。これには数秒かかる場合があります。</translation>
 <translation id="7443806024147773267">Google アカウントにログインすれば、いつでもパスワードにアクセスできます。</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{今日、Cookie を再びブロックします}=1{明日、Cookie を再びブロックします}other{Cookie を再びブロックするまであと # 日です}}</translation>
-<translation id="7444970023873202833">Google フォトで思い出の写真に簡単アクセス</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> を無効にする</translation>
 <translation id="7448430327655618736">アプリの自動インストール</translation>
 <translation id="7448664748118305024">すべてのウィンドウを閉じるときに、サイトによりデバイスに保存されたデータを削除する</translation>
@@ -9085,10 +9071,6 @@
 <translation id="7745554356330788383">更新した設定をこのサイトの「<ph name="EXTENSION_NAME" />」に適用するには、このページを再読み込みしてください</translation>
 <translation id="7745677556280361868">Passpoint の登録ページでこのネットワークを削除しますか？</translation>
 <translation id="7746045113967198252">画面上の項目（テキストなど）のサイズを変更します。この操作は [設定] &gt; [デバイス] &gt; [ディスプレイ] でも行うことができます。</translation>
-<translation id="7746739418892731373">Google フォト ライブラリの写真と動画のハイライトが表示されます。ハイライトに何を表示するかは、<ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> で制御できます。
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        カードメニューからこのカードの設定を管理することができ、[Chrome をカスタマイズ] でその他のオプションを確認できます。</translation>
 <translation id="7750228210027921155">ピクチャー イン ピクチャー</translation>
 <translation id="7751260505918304024">すべて表示</translation>
 <translation id="7752832973194460442">Android アプリの情報</translation>
@@ -10030,7 +10012,6 @@
 <translation id="8412136526970428322"><ph name="PERMISSION" />、他 <ph name="COUNT" /> 件を許可しました</translation>
 <translation id="8413795581997394485">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ　コンテンツの一部も送信されます。</translation>
 <translation id="8413956290606243087">ChromeVox を有効にしますか？ChromeVox は Chrome OS 用の組み込みのスクリーン リーダーです。</translation>
-<translation id="8414249071344507766">思い出を 2 日間非表示にします</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> に <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の情報を使用してログイン</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（ケース）</translation>
 <translation id="8417065541337558100">カメラのプレビュー</translation>
@@ -10459,8 +10440,6 @@
           <ph name="LINE_BREAK" />
           （自動入力データは共有されません）</translation>
 <translation id="8729133765463465108">カメラを使用して QR コードをスキャンする</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Gemini と話しながら、文章作成、計画、学習など、Google AI を活用したさまざまな作業を行うことができます。<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />セットアップが完了したら、画面下部のシェルフで Gemini アプリを選択してご利用を開始できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731029916209785242">権限（<ph name="FORMATTED_ORIGIN" />）</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>
@@ -10742,7 +10721,6 @@
 <translation id="8934732568177537184">続行</translation>
 <translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>
 <translation id="8940081510938872932">お使いのパソコンは現在、多くの処理を実施しています。しばらくしてからもう一度お試しください。</translation>
-<translation id="8940381019874223173">Google フォトから</translation>
 <translation id="8940888110818450052">ログイン オプション</translation>
 <translation id="8941173171815156065">権限「<ph name="PERMISSION" />」を取り消します</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> はオフになっています</translation>
@@ -11237,7 +11215,6 @@
 <translation id="995755448277384931">IBAN の追加</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">安全な接続を確立しています...</translation>
-<translation id="996803490569799917">大好きな人たちとの思い出などを見る</translation>
 <translation id="997143476478634194">サイトにアクセスしたときにこの設定の動作を自動的に行います。多くのサイトは、最新情報やチャット メッセージなどを知らせる目的で通知を送信します。</translation>
 <translation id="99731366405731005">Wi-Fi 同期を使用するには <ph name="LINK1_BEGIN" />Chrome 同期<ph name="LINK1_END" />をオンにしてください。<ph name="LINK2_BEGIN" />詳細<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">検証(&amp;I)</translation>

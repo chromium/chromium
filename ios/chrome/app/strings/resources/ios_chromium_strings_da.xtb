@@ -131,7 +131,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chromium-d
 <translation id="4675485352217495362">Slet browserdata i Chromium</translation>
 <translation id="4681781466797808448">Aktivér Chromium-scanner</translation>
 <translation id="4736424910885271643">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chromium-data ryddet fra denne enhed</translation>
-<translation id="4773487571745795781">Du har deaktiveret login via Chromium.</translation>
 <translation id="4790638144988730920">Fortsæt med at bruge Chromium-dataene på din Google-konto.</translation>
 <translation id="4828317641996116749">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
 <translation id="4962295957157529683">Fortsæt, hvor du slap, i dit andet åbne Chromium-vindue.</translation>
@@ -250,7 +249,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7971753607796745700">Føj et element til læselisten i Chromium</translation>
 <translation id="7980860476903281594">Chromium deler din lokation med godkendte websites.</translation>
 <translation id="7994322153108931467">Aktivér notifikationer i iOS-indstillingerne for at få nyttige tips til Chromium.</translation>
-<translation id="7995166854192397899">Forslagene er baseret på browseraktiviteten på dine andre enheder. Log ind i Chromium på alle dine enheder for at få forslag.</translation>
 <translation id="800195749539500647">Få mest muligt ud af Chromium</translation>
 <translation id="8013573822802650211">Log ind på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
 <translation id="8071041515667087705">Gå til Chromium-indstillinger.</translation>

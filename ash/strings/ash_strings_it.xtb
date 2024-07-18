@@ -521,6 +521,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2970920913501714344">Installare app, estensioni e temi.</translation>
 <translation id="2977598380246111477">Numero successivo</translation>
 <translation id="2985148236010982088">Mostra tutte le app</translation>
+<translation id="2992272421330787632">Nascondi tutti i suggerimenti multimediali</translation>
 <translation id="2992327365391326550">Il pulsante del microfono del dispositivo è disattivato.</translation>
 <translation id="3000461861112256445">Audio in formato mono</translation>
 <translation id="3001391739687111021">Modifica dimensioni schermo</translation>
@@ -591,6 +592,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3255483164551725916">Cosa sai fare?</translation>
 <translation id="3256109297135787951">Consente di rimuovere l'evidenziazione da un elemento sulla barra delle app</translation>
 <translation id="3260969790895726815">Il riconoscimento vocale viene elaborato localmente e la dettatura funziona offline, ma alcuni comandi vocali non funzionano.</translation>
+<translation id="3264031581203585083">Nascondi tutti i suggerimenti di Google Drive</translation>
 <translation id="3265032511221679826">Vuoi attivare l'accesso alla posizione esatta?</translation>
 <translation id="3269597722229482060">Clic con il pulsante destro</translation>
 <translation id="3274634049061007184">Visualizza le app dello smartphone</translation>
@@ -738,6 +740,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3738664582935948253">Ora puoi mostrare i clic e le scorciatoie da tastiera nelle registrazioni dello schermo</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3743775386021959186">La modalità Niente distrazioni è attiva, mancano <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Nascondi suggerimento meteo</translation>
 <translation id="3756485814916578707">Trasmissione dello schermo</translation>
 <translation id="3765841382945324995">La scorciatoia <ph name="SIX_PACK_KEY_NAME" /> è stata cambiata in <ph name="NEW_SHORTCUT" /> da <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Modificato oggi</translation>
@@ -778,6 +781,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Nessuna rete mobile configurata</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, caricamento eventi in corso…</translation>
+<translation id="3927049937406914450">Il meteo non è disponibile perché l'accesso alla posizione è disattivato. Puoi modificare questa opzione nelle impostazioni.</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
 <translation id="3934456833412894880">Ricarica adattiva attiva. La batteria rimarrà all'80% per farla durare di più e verrà ricaricata completamente quando ti servirà.</translation>
 <translation id="3943857333388298514">Incolla</translation>
@@ -894,6 +898,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4312840429157639164">Fotocamera allineata all'angolo in alto a destra. Conflitto con la piattaforma di sistema.</translation>
 <translation id="4316910396681052118">TUTTE LE APP</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Nascondi tutti i suggerimenti del browser Chrome</translation>
 <translation id="4322742403972824594">La scorciatoia da tastiera Ctrl + Alt + Freccia su è cambiata. Per usare il tasto Home, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia sinistra.</translation>
 <translation id="4324840740119394760">Consente l'accesso alla fotocamera per <ph name="APP_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="4327147325944669226">Registra partita</translation>
@@ -927,6 +932,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="4451374464530248585">La scorciatoia da tastiera Alt + Freccia giù è cambiata. Per usare il tasto Pagina giù, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia giù.</translation>
 <translation id="4453876312474547652">Vedrai gli Appunti quando tieni premuto Ctrl + V. Puoi disattivare questa scorciatoia disattivando il flag #clipboard-history-longpress in chrome://flags (os://flags se usi Lacros).</translation>
+<translation id="445765352722456792">Personalizza i suggerimenti</translation>
 <translation id="445864333228800152">Buonasera,</translation>
 <translation id="4458688154122353284">Interrompi registrazione dello schermo</translation>
 <translation id="445923051607553918">Connetti a rete Wi-Fi</translation>
@@ -1329,6 +1335,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5802516411616338943">Apri le Impostazioni rapide</translation>
 <translation id="5804651031882187592">Disattiva l'impostazione "Blocca SIM"</translation>
 <translation id="5805809050170488595">Fai clic per attivare <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Chromebook si è riavviato in modo imprevisto. Apri le finestre e le app precedenti.</translation>
 <translation id="5823239091726045201">Google Tasks sul web</translation>
 <translation id="5825969630400862129">Impostazioni dispositivi connessi</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
@@ -1509,6 +1516,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6469104339369989396">Attiva/disattiva l'hotspot.</translation>
 <translation id="6477681113376365978">Impossibile scaricare il file</translation>
 <translation id="6482559668224714696">Lente d'ingrandimento a schermo intero</translation>
+<translation id="6485086611007560630">Informazioni meteo (non disponibili)</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta a destra)</translation>
 <translation id="649452524636452238">PIN della smart card</translation>
 <translation id="6495322433318104734">Visualizzazione del salvaschermo; premi un tasto qualsiasi per uscire</translation>
@@ -1778,6 +1786,7 @@ Nuova installazione</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">pagina giù</translation>
+<translation id="7518182783647693467">Attiva/disattiva le unità di temperatura (F o C)</translation>
 <translation id="7519206258459640379">Zoom automatico attivato.</translation>
 <translation id="7519649142417630956">Dopo l'arresto del dispositivo, l'amministratore uscirà dall'account e non potrà controllare il dispositivo.
 
@@ -1918,6 +1927,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7951630946012935453">Attenua la luminosità della tastiera</translation>
 <translation id="7953994493035617347">Confermare la nuova risoluzione?</translation>
 <translation id="795958884516058160">Ingrandimento a schermo intero attivato. Premi nuovamente <ph name="ACCELERATOR" /> per disattivarlo.</translation>
+<translation id="7962583092928373823">Nascondi tutti i suggerimenti di Google Calendar</translation>
 <translation id="7963689218131240420">Modalità Non disturbare non attiva.</translation>
 <translation id="7963992254934562106">Da <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleziona cartella…</translation>
@@ -1990,6 +2000,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8214996719228530800">Canale Canary</translation>
 <translation id="8219451629189078428">Durante questo periodo di tempo, il Chromebook deve rimanere acceso e collegato all'alimentazione. Assicurati che il caricabatterie o i cavi dell'adattatore siano ben collegati al Chromebook e alla presa di corrente. Non spegnere il Chromebook.</translation>
 <translation id="8220076512072059941">Aggiungi <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Nascondi questo suggerimento</translation>
 <translation id="8230305195727960608">Modalità inversione dei colori</translation>
 <translation id="8236042855478648955">È ora di fare una pausa</translation>
 <translation id="8237964652943995219">Scrivania successiva: <ph name="DESK_NAME" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
@@ -2117,7 +2128,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8735678380411481005">Colore della retroilluminazione della tastiera</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: attivazione in corso…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Tempo scaduto. Ottimo lavoro! 🎉</translation>
 <translation id="8753368202781196133">Al momento questa lingua non è supportata.</translation>
 <translation id="8755498163081687682">Verifica la tua identità come richiesto da <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>
@@ -2175,6 +2185,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="894774083269346314">Casella di controllo <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> non selezionata.</translation>
 <translation id="8949925099261528566">Connesso, senza Internet</translation>
 <translation id="8951539504029375108">Soltanto i dispositivi Thunderbolt approvati sono compatibili con il tuo Chromebook</translation>
+<translation id="8956420987536947088">Apri le finestre e le app precedenti</translation>
 <translation id="8959380109429710384">Hai premuto la scorciatoia da tastiera per l'ingrandimento a schermo intero. Premi Ctrl + Alt + Tasti freccia per spostarti nella visualizzazione ingrandita.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Icona per impostare lo stato attivo sul menu</translation>

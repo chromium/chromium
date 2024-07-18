@@ -1667,13 +1667,6 @@ Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="P
 
       Việc đặt <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (giá trị 2) sẽ không cho phép áp dụng tất cả biến thể cho trình duyệt trên màn hình đăng nhập. Xin lưu ý rằng chế độ này có thể khiến nhà phát triển <ph name="PRODUCT_OS_NAME" /> không thể cung cấp kịp thời các bản sửa lỗi bảo mật quan trọng nên không được khuyên dùng.</translation>
 <translation id="2215746393279570703">Chế độ cài đặt dịch vụ SSO di động</translation>
-<translation id="2218830243081931587">Chính sách này kiểm soát hành vi của phím tắt trên <ph name="PRODUCT_OS_NAME" />.
-
-Nếu bạn đặt chính sách này thành <ph name="NORMAL_SYSTEM_PRIORITY" /> hoặc không đặt thì tất cả phím tắt hệ thống của <ph name="PRODUCT_OS_NAME" /> sẽ luôn kích hoạt như dự kiến.
-
-Nếu bạn đặt chính sách này thành <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" /> thì danh sách phím tắt định sẵn bằng phím Trình chạy sẽ tuyệt đối không kích hoạt phím tắt nào.
-
-Nếu bạn đặt chính sách này thành <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" /> thì danh sách phím tắt định sẵn bằng phím Trình chạy sẽ tuyệt đối không kích hoạt phím tắt nào khi ứng dụng đang ở chế độ toàn màn hình.</translation>
 <translation id="2221779615493499989">Báo cáo cho người dùng về trạng thái mạng trên các thiết bị đã đăng ký.
 
       Nếu bạn tắt chính sách này thì hệ thống sẽ không báo cáo thông tin.
@@ -2392,7 +2385,6 @@ Nếu bạn tắt chính sách này, người dùng sẽ không thể thêm tài
 <translation id="2774906947252258544">Danh sách chặn kiểm soát việc những loại cài đặt tiện ích nào không được phép.
 
 Thao tác đặt "command_line" sẽ chặn hoạt động tải tiện ích từ dòng lệnh.</translation>
-<translation id="2779027965175176474">Không hiển thị màn hình giới thiệu <ph name="FEATURE_NAME" /> trong quy trình đăng nhập</translation>
 <translation id="2780840673734667062">Tắt lựa chọn đăng nhập bằng các tài khoản Google bổ sung</translation>
 <translation id="2784880732336446591">Xóa dữ liệu duyệt web khi thoát</translation>
 <translation id="2786117913267907931">Không cho phép các nguồn gốc sử dụng Direct Sockets</translation>
@@ -2648,7 +2640,6 @@ Nếu bạn đặt giá trị thành <ph name="DEFAULT_ENUM_VALUE" /> thì hành
 Nếu bạn đặt giá trị thành <ph name="ENABLED_ENUM_VALUE" /> thì hệ thống có thể phát hiện, gạch chân và kích hoạt thực thể dựa trên một thao tác nhấn hoặc nhấn và giữ.
 Nếu bạn đặt giá trị thành <ph name="DISABLED_ENUM_VALUE" /> thì hệ thống sẽ không phát hiện thực thể và thực thể sẽ không có khả năng tương tác.
 Nếu bạn đặt giá trị thành <ph name="LONGPRESSONLY_ENUM_VALUE" /> thì hệ thống sẽ phát hiện các thực thể và thực thể chỉ có khả năng tương tác với thao tác nhấn và giữ.</translation>
-<translation id="3010395821339265736">Hiển thị màn hình giới thiệu <ph name="FEATURE_NAME" /> trong quy trình đăng nhập</translation>
 <translation id="3010907817113180883">Chu kỳ thu thập gói heartbeat về hoạt động trên thiết bị tính bằng mili giây.</translation>
 <translation id="3016585641676676461">Không cho phép tự động chuyển sang chế độ toàn màn hình trên các trang web này</translation>
 <translation id="3017578958356048910">Trình xem PDF có thể chú thích trong tệp PDF</translation>
@@ -3251,7 +3242,6 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi 
 <translation id="3484305545282013129">Cho phép nguồn gốc truy cập vào các quyền của trình duyệt được cung cấp cho nguồn gốc cài đặt kiosk trên web.</translation>
 <translation id="3485200437120267231">Tắt tùy chọn chặn đăng nhập</translation>
 <translation id="3487651201232258606">Máy chủ nhắn tin gốc</translation>
-<translation id="3488551354274495283">Cho phép hiển thị màn hình giới thiệu <ph name="FEATURE_NAME" /> trong quy trình đăng nhập</translation>
 <translation id="3492351353716550742">Không sử dụng chính sách liên kết giới thiệu mặc định no-referrer-when-downgrade.</translation>
 <translation id="3492834335089638487">Chính sách này kiểm soát việc thiết bị dùng ứng dụng Android từ các nguồn không tin cậy (không phải là Cửa hàng Google Play).
 
@@ -8585,13 +8575,6 @@ thì hệ thống sẽ bật tính năng đọc to.</translation>
 <translation id="7468182772656807573">Việc đặt chính sách này sẽ xác định tần suất gửi thông tin theo dõi gói mạng, tính bằng mili giây. Khoảng thời gian là từ 30 giây đến 24 giờ. Các giá trị không nằm trong khoảng này sẽ được xếp vào khoảng này.
 
       Nếu bạn không đặt chính sách này, khoảng thời gian mặc định là 3 phút sẽ được áp dụng.</translation>
-<translation id="7469182444144588294">Chính sách này kiểm soát việc người dùng có thấy màn hình giới thiệu <ph name="FEATURE_NAME" /> trong lần đăng nhập đầu tiên hay không.
-
-      Nếu bạn đặt chính sách này thành tắt, màn hình giới thiệu <ph name="FEATURE_NAME" /> sẽ không hiển thị.
-
-      Nếu bạn đặt chính sách này thành bật, màn hình giới thiệu <ph name="FEATURE_NAME" /> sẽ hiển thị.
-
-      Nếu bạn không đặt chính sách này, màn hình giới thiệu <ph name="FEATURE_NAME" /> sẽ bị bỏ qua đối với người dùng do doanh nghiệp quản lý và sẽ hiển thị đối với người dùng không được quản lý.</translation>
 <translation id="7469554574977894907">Bật đề xuất tìm kiếm</translation>
 <translation id="7472547030234093862">Chỉ định những miền sẽ được phân giải bằng giao thức DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Quay lại về hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ đối với cookie trên các trang web này</translation>

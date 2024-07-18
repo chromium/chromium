@@ -526,7 +526,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3670030362669914947">Número</translation>
 <translation id="3680970647557344817">Ocultar opção "Editar favorito"</translation>
 <translation id="368329460027487650">Conta desconectada. Abre as opções para fazer login.</translation>
-<translation id="3688815115226493214">Sugestões de guias</translation>
 <translation id="3700134753671613714">Faça login para ter acesso aos seus favoritos em todos os seus dispositivos.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {EMAIL}.}one{{COUNT} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {EMAIL}.}other{{COUNT} senhas foram salvas apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Marcar como não lido</translation>
@@ -1307,7 +1306,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="75362970626182391">Novo grupo de guias</translation>
 <translation id="7537586195939242955">Impossível instalar senha no livro de senhas no momento.</translation>
 <translation id="754655535278952384">Verificada <ph name="TIME" /></translation>
-<translation id="7552154146060018538">Última guia usada no dispositivo <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Para desativar, abra <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" /> e acesse "Opções de senha".</translation>
 <translation id="7554645225856321710">Fechar todas</translation>
 <translation id="7554791636758816595">Nova guia</translation>
@@ -1636,7 +1634,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9079935439869366234">Marcar todas as entradas como não lidas</translation>
 <translation id="9081058212938299310">Atualizar senha para <ph name="USERNAME" />?</translation>
-<translation id="9082821980444279398">Quando ativado, use e salve dados na sua Conta do Google. Quando desativado, os dados são salvos apenas neste dispositivo e são excluídos quando você sai da conta.</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar vários dispositivos, ative a sincronização.</translation>
 <translation id="9087339162317338348">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não têm suporte a esse protocolo.</translation>
 <translation id="9093271241977565440">Na parte de cima da tela, toque no ícone de pesquisa</translation>
@@ -1671,7 +1668,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="955587716023217544">Editar lista de contas</translation>
 <translation id="959066944189734975">Você está seguindo este canal: <ph name="CHANNEL_NAME" /></translation>
-<translation id="96615566463761848">Mostrar sugestões de guias de outros dispositivos</translation>
 <translation id="973493300226275298">Rastreie o preço de um produto em lojas on-line. Você vai receber alertas quando houver uma redução no preço.</translation>
 <translation id="981498610235328462">Sua organização permite que você faça login apenas com determinadas contas. As contas que não têm permissão para fazer login ficam ocultas.</translation>
 <translation id="983800820186631385">{count,plural, =1{{position} de {count} forma de pagamento}one{{position} de {count} forma de pagamento}other{{position} de {count} formas de pagamento}}</translation>

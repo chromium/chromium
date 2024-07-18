@@ -156,7 +156,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1100504063505580045">Ícone atual</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{1 palavra-passe}other{{COUNT} palavras-passe}}</translation>
 <translation id="1102759278139578486">Não é possível transferir os ficheiros de anotações do nó principal. Tente mais tarde.</translation>
-<translation id="1102790815296970136">Veja "<ph name="PERSONALIZED_MEMORY_TITLE" />" e outras memórias aqui</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">Partilhar microfone</translation>
 <translation id="110850812463801904">Ligar manualmente ao OneDrive</translation>
@@ -223,7 +222,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1155816283571436363">A ligar ao seu telemóvel…</translation>
 <translation id="1157952955648710254">Fechar o painel lateral da Pesquisa Google</translation>
 <translation id="1158080958325422608">Colocar em maiúsculas</translation>
-<translation id="1158238185437008462">Ver memórias</translation>
 <translation id="1159879754517035595">Gerir definições das extensões</translation>
 <translation id="1160800016654917722">Janela movida para baixo e para a esquerda</translation>
 <translation id="1161575384898972166">Inicie sessão no <ph name="TOKEN_NAME" /> para exportar o certificado de cliente.</translation>
@@ -1558,7 +1556,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2114145607116268663">Não é possível instalar. É necessário reiniciar. Reinicie o computador e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Atualizar &amp;frame</translation>
 <translation id="2114413269775311385">Utilize esta conta com as apps Android. Pode controlar as autorizações das apps Android nas <ph name="LINK_BEGIN" />Definições de apps<ph name="LINK_END" />.</translation>
-<translation id="2114820389966440614">Veja "Destaques recentes" e outras memórias aqui</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nenhum cartão SIM inserido</translation>
 <translation id="2116619964159595185">Normalmente, os sites estabelecem ligação a dispositivos Bluetooth para funcionalidades como configurar ou sincronizar um beacon Bluetooth Low Energy, uma lâmpada inteligente ou um monitorizador de saúde ou fitness</translation>
@@ -2359,7 +2356,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2684004000387153598">Para continuar, clique em OK e, de seguida, clique em Adicionar pessoa para criar um novo perfil para o seu endereço de email.</translation>
 <translation id="2685193395980129388">Permitido – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Termos de Utilização do Google</translation>
-<translation id="2687621393791886981">Perguntar depois</translation>
 <translation id="2688196195245426394">Erro ao registar o dispositivo no servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">Não vai ter de memorizar esta palavra-passe. Vai ser guardada no Gestor de Palavras-passe da Google de <ph name="ACCOUNT" />.</translation>
 <translation id="2690024944919328218">Mostrar opções de idioma</translation>
@@ -3250,6 +3246,7 @@ Quer pará-lo?</translation>
 <translation id="3356580349448036450">Concluído</translation>
 <translation id="3359256513598016054">Restrições de políticas de certificados</translation>
 <translation id="3360297538363969800">Falha ao imprimir. Verifique a impressora e tente novamente.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> está a partilhar <ph name="ATTACHMENTS" /> consigo.}other{<ph name="DEVICE_NAME" /> está a partilhar <ph name="ATTACHMENTS" /> consigo.}}</translation>
 <translation id="3361954577771524115">A partir da app</translation>
 <translation id="3363202073972776113">Este novo perfil vai ser gerido pela sua organização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -3420,7 +3417,6 @@ Quer pará-lo?</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> pode ver os seguintes ficheiros</translation>
 <translation id="3484595034894304035">Personalize a imagem de fundo, a proteção de ecrã, o tema escuro e muito mais</translation>
 <translation id="3484869148456018791">Obter novo certificado</translation>
-<translation id="3486950712960783074">A sua viagem</translation>
 <translation id="3487007233252413104">função anónima</translation>
 <translation id="3487649228420469005">A análise está concluída</translation>
 <translation id="3490695139702884919">A transferir… <ph name="PERCENT" />%</translation>
@@ -4323,7 +4319,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4116704186509653070">Abrir novamente</translation>
 <translation id="4117714603282104018">Resposta tátil do touchpad</translation>
 <translation id="4118579674665737931">Reinicie o dispositivo e tente novamente.</translation>
-<translation id="412022815379960229">Comece a explorar as suas memórias do Google Fotos, sempre que tiver sessão iniciada.</translation>
 <translation id="4120388883569225797">Não é possível repor esta chave de segurança.</translation>
 <translation id="4120817667028078560">Caminho demasiado longo</translation>
 <translation id="4124823734405044952">A chave de segurança foi reposta.</translation>
@@ -4759,7 +4754,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4461483878391246134">Adicionar idiomas à opção Nunca disponibilizar tradução</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
 <translation id="4465236939126352372">Limite de tempo de <ph name="TIME" /> definido para a app <ph name="APP_NAME" />.</translation>
-<translation id="4466839823729730432">Veja as suas memórias aqui</translation>
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar ficheiros em <ph name="FOLDERNAME" /></translation>
 <translation id="4470957202018033307">Preferências de armazenamento externo</translation>
@@ -5463,7 +5457,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
-<translation id="5006118752738286774">Há 2 anos</translation>
 <translation id="5006218871145547804">ADB de apps Android do Crostini</translation>
 <translation id="5007392906805964215">Rever</translation>
 <translation id="50080882645628821">Remover perfil</translation>
@@ -6043,7 +6036,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5435779377906857208">Permitir sempre que <ph name="HOST" /> aceda à sua localização</translation>
 <translation id="5436492226391861498">A aguardar pelo túnel do proxy...</translation>
 <translation id="5436510242972373446">Pesquisar <ph name="SITE_NAME" />:</translation>
-<translation id="5436575196282187764">Memórias do Google Fotos</translation>
 <translation id="5440425659852470030">Feche o painel lateral</translation>
 <translation id="544083962418256601">Criar atalhos...</translation>
 <translation id="5441133529460183413">App Web instalada a partir do navegador Chrome</translation>
@@ -6322,7 +6314,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5632566673632479864">A sua conta <ph name="EMAIL" /> já não é permitida como a conta principal. Como esta conta é gerida por <ph name="DOMAIN" />, os marcadores, o histórico, as palavras-passe e outras definições serão apagados deste dispositivo.</translation>
 <translation id="5633149627228920745">Saber mais sobre os requisitos do sistema</translation>
 <translation id="563371367637259496">Móvel</translation>
-<translation id="5634446357546764049">Veja memórias das suas viagens recentes e muito mais</translation>
 <translation id="5635312199252507107">Permitir em sites específicos</translation>
 <translation id="5636012309446422">Remover o dispositivo <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636140764387862062">Mais ações para o PIN</translation>
@@ -6465,7 +6456,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Rever prontidão da ligação (à Internet) via telemóvel</translation>
 <translation id="5753570386948603678">Eliminar do histórico</translation>
-<translation id="5755022574660047665">memórias do Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de Ajuda</translation>
 <translation id="5757187557809630523">faixa seguinte</translation>
 <translation id="5758631781033351321">A sua lista de leitura será apresentada aqui</translation>
@@ -7210,7 +7200,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6308493641021088955">Início de sessão fornecido por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Guardar lin&amp;k como...</translation>
 <translation id="6309443618838462258">O seu administrador não permite este método de introdução.</translation>
-<translation id="630948338437014525">memórias</translation>
 <translation id="6309510305002439352">O microfone está desligado</translation>
 <translation id="6310141306111263820">Não é possível instalar o perfil do eSIM. Para obter ajuda, contacte o seu operador.</translation>
 <translation id="6311220991371174222">Não é possível iniciar o Chrome porque ocorreu um erro ao abrir o seu perfil. Experimente reiniciar o Chrome.</translation>
@@ -8564,7 +8553,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7356908624372060336">Registos de rede</translation>
 <translation id="7357271391997763660">Executar a verificação da palavra-passe?</translation>
 <translation id="735745346212279324">VPN desligado</translation>
-<translation id="7358324924540718595">Memórias ocultas para hoje</translation>
 <translation id="7358338787722390626">Feche a pesquisa no painel lateral</translation>
 <translation id="735994578317267253">Obtenha as suas apps, definições e muito mais em qualquer dispositivo Chrome OS</translation>
 <translation id="7360257054721917104">A ver os modelos e os espaços de trabalho guardados. Prima Tab para navegar.</translation>
@@ -8673,7 +8661,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7424153922653300265">Poupança de energia ativada</translation>
 <translation id="7424818322350938336">Rede adicionada</translation>
 <translation id="7425037327577270384">Ajuda-me a escrever</translation>
-<translation id="7427315069950454694">as suas memórias para hoje</translation>
 <translation id="7427348830195639090">Página de fundo: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Chamada de <ph name="DEVICE_NAME" /></translation>
 <translation id="7429415133937917139">Simula a saída de um ecrã em braille atualizável
@@ -8697,7 +8684,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="744366959743242014">A carregar dados, esta ação pode demorar alguns segundos.</translation>
 <translation id="7443806024147773267">Aceda às suas palavras-passe sempre que tiver sessão iniciada na sua Conta Google.</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Os cookies vão ser bloqueados novamente hoje}=1{Os cookies vão ser bloqueados novamente amanhã}other{# dias até os cookies serem bloqueados novamente}}</translation>
-<translation id="7444970023873202833">Explore mais das suas memórias no Google Fotos</translation>
 <translation id="7444983668544353857">Desactivar <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instalar aplicações automaticamente</translation>
 <translation id="7448664748118305024">Eliminar dados que os sites guardaram no seu dispositivo quando fecha todas as janelas</translation>
@@ -9105,10 +9091,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7745554356330788383">Atualize esta página para aplicar as definições atualizadas da extensão "<ph name="EXTENSION_NAME" />" neste site</translation>
 <translation id="7745677556280361868">Remover esta rede na página da subscrição do Passpoint?</translation>
 <translation id="7746045113967198252">Aumente ou diminua o tamanho dos itens no ecrã, incluindo texto. Também pode encontrar estas opções mais tarde em Definições &gt; Dispositivo &gt; Ecrãs.</translation>
-<translation id="7746739418892731373">Está a ver destaques de fotos e vídeos da sua biblioteca do Google Fotos. Pode controlar o que é apresentado nos seus destaques em <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Pode gerir definições para este cartão no menu do cartão ou ver mais opções em Personalizar o Chrome.</translation>
 <translation id="7750228210027921155">Ecrã no ecrã</translation>
 <translation id="7751260505918304024">Mostrar tudo</translation>
 <translation id="7752832973194460442">Informações da app Android</translation>
@@ -10050,7 +10032,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8412136526970428322">Permitiu <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Protege contra sites, transferências e extensões identificados como perigosos. Quando visita um site, o Chrome envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site fizer algo suspeito, são também enviados URLs completos e fragmentos de conteúdo da página.</translation>
 <translation id="8413956290606243087">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS?</translation>
-<translation id="8414249071344507766">Memórias ocultas durante dois dias</translation>
 <translation id="8414396119627470038">Inicie sessão em <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (caixa)</translation>
 <translation id="8417065541337558100">Pré-visualização da câmara</translation>
@@ -10479,8 +10460,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
           <ph name="LINE_BREAK" />
           (os dados de preenchimento automático não são partilhados)</translation>
 <translation id="8729133765463465108">Usar a câmara para ler o código QR</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Converse com o Gemini para começar a escrever, planear, aprender e muito mais com a IA da Google.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />Após a configuração, comece a usar o Gemini selecionando a app Gemini na prateleira, na parte inferior do ecrã.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8731029916209785242">Autorizações (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Código de segurança</translation>
@@ -10762,7 +10741,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8934732568177537184">Continuar</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira direita)</translation>
 <translation id="8940081510938872932">O seu computador está a executar demasiadas operações neste momento. Tente mais tarde.</translation>
-<translation id="8940381019874223173">A partir do Google Fotos</translation>
 <translation id="8940888110818450052">Opções de início de sessão</translation>
 <translation id="8941173171815156065">Revogar a autorização "<ph name="PERMISSION" />"</translation>
 <translation id="8941688920560496412">A rede da <ph name="DEVICE_NAME" /> está desativada</translation>
@@ -11257,7 +11235,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="995755448277384931">Adicione o IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">A estabelecer ligação segura...</translation>
-<translation id="996803490569799917">Veja memórias das suas pessoas favoritas e muito mais</translation>
 <translation id="997143476478634194">Os sites seguem automaticamente esta definição quando os visita. Geralmente, os sites enviam notificações para informar acerca de notícias de última hora ou mensagens de chat.</translation>
 <translation id="99731366405731005">Ative a <ph name="LINK1_BEGIN" />Sincronização do Chrome<ph name="LINK1_END" /> para utilizar o Sync Wi-Fi. <ph name="LINK2_BEGIN" />Saiba mais<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">I&amp;nspecionar</translation>

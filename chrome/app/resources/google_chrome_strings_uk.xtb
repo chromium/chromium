@@ -15,6 +15,7 @@
 <translation id="1149651794389918149">Увійдіть у Chrome. Якщо ви хочете ввійти в цей обліковий запис лише один раз, <ph name="GUEST_LINK_BEGIN" />використовуйте пристрій у режимі гостя<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Про ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Відкрити в Chrome</translation>
+<translation id="1184145431117212167">Не вдалося встановити, оскільки ваша версія ОС Windows не підтримується.</translation>
 <translation id="1194807384646768652">Веб-переглядач Chrome заблокував завантаження, оскільки файли цього типу зазвичай не завантажують і вони можуть бути небезпечними</translation>
 <translation id="1203500561924088507">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити веб-переглядач.</translation>
 <translation id="1229096353876452996">Google радить зробити Chrome вебпереглядачем за умовчанням</translation>
@@ -235,6 +236,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Перезапустіть Chrome упродовж дня}one{Перезапустіть Chrome упродовж # дня}few{Перезапустіть Chrome упродовж # днів}many{Перезапустіть Chrome упродовж # днів}other{Перезапустіть Chrome упродовж # дня}}</translation>
 <translation id="4205939740494406371">Chrome не може перевірити паролі. Повторіть спробу через 24 години або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Скасування…</translation>
+<translation id="4224210481850767180">Встановлення скасовано.</translation>
 <translation id="4242034826641750751">Веб-переглядачу Chrome потрібен доступ до камери та мікрофона для цього сайту</translation>
 <translation id="424864128008805179">Вийти з Chrome?</translation>
 <translation id="4251615635259297716">Пов’язати ваші дані Chrome із цим обліковим записом?</translation>

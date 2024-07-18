@@ -845,6 +845,7 @@ La soglia minima è di 1 minuto.
 <translation id="1634989431648355062">Consenti il plug-in <ph name="FLASH_PLUGIN_NAME" /> su questi siti</translation>
 <translation id="1635450837608153975">Disattiva le ottimizzazioni di JavaScript avanzate su tutti i siti</translation>
 <translation id="1635748761015837179">Consenti la scrittura su dispositivi di archiviazione esterni</translation>
+<translation id="163653062822010558">Attivato: lo zoom CSS è conforme alle specifiche standard.</translation>
 <translation id="1639468541408865385">Attiva cache di autenticazione HTTP con ambito globale</translation>
 <translation id="1639673466479276550">Attiva il salvaschermo nella schermata di accesso.</translation>
 <translation id="1640824698339859203">Attiva il servizio SSO mobile e trasferisci le autenticazioni del web service dell'utente sul nuovo dispositivo</translation>
@@ -1271,6 +1272,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda do
 <translation id="1930127294345368978">Numero massimo consentito di fogli da utilizzare per un singolo processo di stampa</translation>
 <translation id="1933378685401357864">Immagine di sfondo</translation>
 <translation id="1935409768874953955">La raccolta di dati anonimizzati con chiave URL è sempre attiva</translation>
+<translation id="1942015922182679826">Attiva l'eliminazione delle password non decifrabili</translation>
 <translation id="1942626390957213764">Disattiva hub di condivisione desktop</translation>
 <translation id="194407941132272412">Disattiva l'isolamento dei siti per tutti i siti web, ma consenti agli utenti di attivarlo</translation>
 <translation id="1945994447126139909">Questo criterio aziendale è finalizzato al periodo di transizione e verrà rimosso nella versione 88 di <ph name="PRODUCT_NAME" />.
@@ -1674,13 +1676,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 
       Se viene impostato <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2), non è possibile applicare al browser tutte le varianti nella schermata di accesso. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_OS_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
 <translation id="2215746393279570703">Impostazioni del servizio SSO mobile</translation>
-<translation id="2218830243081931587">Questo criterio consente di stabilire il comportamento delle scorciatoie su <ph name="PRODUCT_OS_NAME" />.
-
-Se questo criterio non viene configurato o se viene impostato su <ph name="NORMAL_SYSTEM_PRIORITY" />, tutte le scorciatoie di sistema <ph name="PRODUCT_OS_NAME" /> si attiveranno sempre come previsto.
-
-Se viene impostato su <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, un elenco predeterminato di scorciatoie da tastiera del tasto Avvio app non attiverà mai una scorciatoia.
-
-Se viene impostato su <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, un elenco predeterminato di scorciatoie da tastiera del tasto Avvio app non attiverà mai una scorciatoia quando un'app è in modalità a schermo intero.</translation>
 <translation id="2221779615493499989">Consente agli utenti di segnalare lo stato di rete su dispositivi registrati.
 
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
@@ -2402,7 +2397,6 @@ Se questo criterio viene disattivato, gli utenti non possono aggiungere account 
 <translation id="2774906947252258544">La lista bloccata consente di stabilire i tipi di installazione delle estensioni vietati.
 
 L'impostazione del valore "command_line" impedirà il caricamento delle estensioni dalla riga di comando.</translation>
-<translation id="2779027965175176474">Non visualizzare la schermata introduttiva di <ph name="FEATURE_NAME" /> durante l'accesso</translation>
 <translation id="2780840673734667062">Disattiva l'accesso con Account Google aggiuntivi</translation>
 <translation id="2784880732336446591">Cancella dati di navigazione all'uscita</translation>
 <translation id="2786117913267907931">Non consentire alle origini di usare Direct Sockets.</translation>
@@ -2665,7 +2659,6 @@ Se il valore è impostato su <ph name="DEFAULT_ENUM_VALUE" />, viene applicato i
 Se il valore è impostato su <ph name="ENABLED_ENUM_VALUE" />, le entità vengono rilevate, sottolineate e attivate con un tocco o una pressione prolungata.
 Se il valore viene impostato su <ph name="DISABLED_ENUM_VALUE" />, le entità non vengono rilevate e non sono utilizzabili.
 Se il valore è impostato su <ph name="LONGPRESSONLY_ENUM_VALUE" />, le entità vengono rilevate e sono utilizzabili solo mediante la pressione prolungata.</translation>
-<translation id="3010395821339265736">Mostra la schermata introduttiva di <ph name="FEATURE_NAME" /> durante l'accesso</translation>
 <translation id="3010907817113180883">Frequenza del rilevamento dell'heartbeat dell'attività del dispositivo in millisecondi.</translation>
 <translation id="3016585641676676461">Blocca lo schermo intero automatico su questi siti</translation>
 <translation id="3017578958356048910">Il visualizzatore PDF può aggiungere annotazioni nei PDF</translation>
@@ -3267,7 +3260,6 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di IA ge
 <translation id="3484305545282013129">Consenti alle origini di accedere alle autorizzazioni del browser disponibili per l'origine di installazione del kiosk web.</translation>
 <translation id="3485200437120267231">Disattiva l'intercettazione dell'accesso</translation>
 <translation id="3487651201232258606">Messaggi nativi</translation>
-<translation id="3488551354274495283">Attiva la visualizzazione della schermata introduttiva di <ph name="FEATURE_NAME" /> durante l'accesso</translation>
 <translation id="3492351353716550742">Non viene usato un criterio relativo al referrer predefinito no-referrer-when-downgrade</translation>
 <translation id="3492834335089638487">Questo criterio consente di controllare l'utilizzo delle app Android di fonti non attendibili (diverse dal Google Play Store) per un dispositivo.
 
@@ -4254,6 +4246,7 @@ nella versione 121 di <ph name="PRODUCT_NAME" /> per
 <ph name="ANDROID_NAME" /> in concomitanza con la rimozione del supporto dell'utilizzo
 dello strumento di verifica dei certificati e dei certificati radice forniti dalla piattaforma.</translation>
 <translation id="424318624725112807">Attiva l'evidenziazione del cursore del testo nella schermata di accesso</translation>
+<translation id="4243419387411966417">Disattiva l'eliminazione delle password non decifrabili</translation>
 <translation id="4245159233848584683">Se il criterio viene impostato su Attivato o non viene configurato e se un account locale del dispositivo è configurato per l'accesso automatico senza ritardo, quando un dispositivo è offline <ph name="PRODUCT_OS_NAME" /> mostra una richiesta di configurazione della rete.
 
 Se il criterio viene impostato su Disattivato, viene visualizzato invece un messaggio di errore.</translation>
@@ -5253,6 +5246,15 @@ Se non viene configurato, la funzionalità "Aiutami a scrivere" verrà attivata 
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
 <translation id="5087932158260897375">Se questo criterio viene impostato su false, la segnalazione di dati diagnostici relativi all'attendibilità dei domini viene disattivata e non vengono inviati dati a Google.
 Se questo criterio viene impostato su true o se non viene configurato, la segnalazione di dati diagnostici relativi all'attendibilità dei domini ha lo stesso comportamento di MetricsReportingEnabled per <ph name="PRODUCT_NAME" /> o DeviceMetricsReportingEnabled per <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="5088284418186527880">Questo criterio consente di garantire la conformità alla specifica adottata di recente per lo zoom CSS.
+
+Se questo criterio viene impostato su Attivato o se non viene configurato, la proprietà CSS "zoom" rispetterà la specifica:
+
+  https://drafts.csswg.org/css-viewport/#zoom-property
+
+Se viene impostato su Disattivato, la proprietà CSS "zoom" utilizzerà il comportamento precedente pre-standardizzato.
+
+Questo criterio è una sospensione temporanea per consentire la migrazione dei contenuti web al nuovo comportamento. Esiste anche una prova dell'origine ("DisableStandardizedBrowserZoom") che corrisponde al comportamento quando questo criterio è impostato su Disattivato. Questo criterio verrà rimosso e il comportamento "Attivato" verrà reso permanente nella versione 134.</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
 <translation id="5093603777978346818">Non attivare il salvaschermo nella schermata di blocco.</translation>
@@ -5868,6 +5870,7 @@ Questo criterio è stato rimosso nella versione M112.</translation>
 <translation id="5534079385061985566">Attiva la funzionalità di ripristino completo.</translation>
 <translation id="5534235660122271432">Non consentire la scrittura su dispositivi di archiviazione esterni</translation>
 <translation id="5535256585099022933">Imposta l'intervallo di tempo per il riavvio</translation>
+<translation id="5537400155400537818">Disattivato: lo zoom CSS mantiene il comportamento pre-standard precedente.</translation>
 <translation id="553806128266843748">Un flag booleano che indica se la limitazione è attiva o meno.</translation>
 <translation id="5540885720415375851">Consenti rilevamento dei dispositivi locali</translation>
 <translation id="5542235730745104308">Se il criterio viene impostato su true, <ph name="PRODUCT_NAME" /> consente l'utilizzo di pagine di errore alternative integrate nel browser (come "pagina non trovata"). Se il criterio viene impostato su false, <ph name="PRODUCT_NAME" /> non consente mai l'utilizzo di pagine di errore alternative.
@@ -8527,13 +8530,6 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="7468182772656807573">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei pacchetti di rete di monitoraggio. Gli intervalli sono compresi tra 30 secondi e 24 ore. I valori che non rientrano in questo intervallo verranno fatti rientrare nei limiti.
 
       Se il criterio non viene configurato, viene applicato l'intervallo predefinito di 3 minuti.</translation>
-<translation id="7469182444144588294">Questo criterio consente di stabilire se mostrare o meno all'utente la schermata introduttiva di <ph name="FEATURE_NAME" /> durante il primo accesso.
-
-      Se impostato su Disattivato, la schermata introduttiva di <ph name="FEATURE_NAME" /> non verrà mostrata.
-
-      Se impostato su Attivato, la schermata introduttiva di <ph name="FEATURE_NAME" /> verrà mostrata.
-
-      Se non viene configurato, la schermata introduttiva di <ph name="FEATURE_NAME" /> verrà ignorata per gli utenti gestiti a livello aziendale e mostrata per gli utenti non gestiti.</translation>
 <translation id="7469554574977894907">Attiva suggerimenti di ricerca</translation>
 <translation id="7472547030234093862">Specifica i domini da risolvere tramite DNS over HTTPS</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
@@ -9051,6 +9047,7 @@ Se il criterio viene impostato su Disattivato o se non viene configurato, il Ker
       Se il criterio viene impostato su zero, <ph name="PRODUCT_OS_NAME" /> non blocca lo schermo quando l'utente diventa inattivo. Se non viene configurato, viene usato un periodo di tempo predefinito.
 
       Consiglio: blocca lo schermo in caso di inattività attivando il blocco schermo in caso di sospensione e fai in modo che <ph name="PRODUCT_OS_NAME" /> entri in sospensione dopo il ritardo di inattività. Usa questo criterio soltanto quando il blocco dello schermo dovrebbe avvenire molto tempo prima della sospensione o quando non vuoi che venga attivata la sospensione in caso di inattività.</translation>
+<translation id="7894964526545174973">Attiva comportamento standardizzato dello zoom del browser</translation>
 <translation id="7895553628261067384">Accesso remoto</translation>
 <translation id="7898807590879163195">Disattiva l'heartbeat dell'attività del dispositivo</translation>
 <translation id="789975630884141379">Attiva i contenuti suggeriti</translation>

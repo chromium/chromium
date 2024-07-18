@@ -1707,13 +1707,6 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 
       Jika <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (nilai 2) disetel, semua variasi tidak akan diterapkan ke browser di layar login. Perlu diketahui, mode ini tidak direkomendasikan karena berpotensi menyebabkan developer <ph name="PRODUCT_OS_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
 <translation id="2215746393279570703">Setelan SSO Mengambang</translation>
-<translation id="2218830243081931587">Kebijakan ini mengontrol perilaku pintasan di <ph name="PRODUCT_OS_NAME" />.
-
-Jika kebijakan ini tidak disetel atau disetel ke <ph name="NORMAL_SYSTEM_PRIORITY" />, semua pintasan sistem <ph name="PRODUCT_OS_NAME" /> akan selalu diaktifkan seperti yang diharapkan.
-
-Jika kebijakan ini disetel ke <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, daftar pintasan tombol Peluncur yang telah ditentukan tidak akan mengaktifkan pintasan.
-
-Jika kebijakan ini disetel ke <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, daftar pintasan tombol Peluncur yang telah ditentukan tidak akan pernah mengaktifkan pintasan saat aplikasi dalam mode layar penuh.</translation>
 <translation id="2221779615493499989">Melaporkan status jaringan pengguna di perangkat terdaftar.
 
       Jika kebijakan disetel ke salah (false), informasi tersebut tidak akan dilaporkan.
@@ -2474,7 +2467,6 @@ Jika kebijakan ini dinonaktifkan, pengguna tidak dapat menambahkan akun Kerberos
 
 Menyetel "command_line" akan memblokir ekstensi agar tidak dimuat dari
 command line.</translation>
-<translation id="2779027965175176474">Jangan tampilkan layar pengantar <ph name="FEATURE_NAME" /> selama login</translation>
 <translation id="2780840673734667062">Nonaktifkan login dengan Akun Google tambahan</translation>
 <translation id="2784880732336446591">Menghapus Data Penjelajahan saat Keluar</translation>
 <translation id="2786117913267907931">Jangan izinkan origin menggunakan Direct Sockets</translation>
@@ -2737,7 +2729,6 @@ Jika nilai disetel ke <ph name="DEFAULT_ENUM_VALUE" />, perilaku entity <ph name
 Jika nilai disetel ke <ph name="ENABLED_ENUM_VALUE" />, entity akan terdeteksi, digarisbawahi, dan dipicu dengan sekali ketuk atau tekan lama.
 Jika nilai disetel ke <ph name="DISABLED_ENUM_VALUE" />, entity tidak akan terdeteksi dan tidak dapat ditindaklanjuti.
 Jika nilai disetel ke <ph name="LONGPRESSONLY_ENUM_VALUE" />, entity akan terdeteksi dan hanya dapat ditindaklanjuti dengan menekan lama.</translation>
-<translation id="3010395821339265736">Tampilkan layar pengantar <ph name="FEATURE_NAME" /> selama login</translation>
 <translation id="3010907817113180883">Interval pengumpulan heartbeat aktivitas perangkat dalam milidetik.</translation>
 <translation id="3016585641676676461">Memblokir mode layar penuh otomatis di situs ini</translation>
 <translation id="3017578958356048910">Penampil PDF dapat menganotasi PDF</translation>
@@ -3341,7 +3332,6 @@ Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, l
 <translation id="3484305545282013129">Izinkan origin untuk mengakses izin browser yang tersedia ke origin penginstalan kios web.</translation>
 <translation id="3485200437120267231">Nonaktifkan intersepsi login</translation>
 <translation id="3487651201232258606">Pesan native</translation>
-<translation id="3488551354274495283">Mengaktifkan tampilan layar pengantar <ph name="FEATURE_NAME" /> selama login</translation>
 <translation id="3492351353716550742">Jangan gunakan kebijakan perujuk default untuk no-referrer-when-downgrade</translation>
 <translation id="3492834335089638487">Kebijakan ini mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya (selain Google Play Store) untuk perangkat.
 
@@ -8781,13 +8771,6 @@ baca lisan akan diaktifkan.</translation>
 <translation id="7468182772656807573">Menyetel kebijakan akan menentukan frekuensi pengiriman paket jaringan pemantauan, dalam milidetik. Rentang intervalnya dari 30 detik hingga 24 jam. Nilai di luar rentang ini akan dibulatkan ke rentang ini.
 
       Jika tidak disetel, interval default 3 menit akan berlaku.</translation>
-<translation id="7469182444144588294">Kebijakan ini mengontrol apakah layar pengantar <ph name="FEATURE_NAME" /> akan ditampilkan kepada pengguna selama login pertama.
-
-      Jika disetel ke nonaktif, layar pengantar <ph name="FEATURE_NAME" /> tidak akan ditampilkan.
-
-      Jika disetel ke aktif, layar pengantar <ph name="FEATURE_NAME" /> akan ditampilkan.
-
-      Jika tidak disetel, layar pengantar <ph name="FEATURE_NAME" /> akan dilewati untuk pengguna yang dikelola perusahaan dan ditampilkan untuk pengguna yang tidak dikelola.</translation>
 <translation id="7469554574977894907">Aktifkan saran penelusuran</translation>
 <translation id="7472547030234093862">Menentukan domain yang akan di-resolve menggunakan DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Mengembalikan cookie di situs ini ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>

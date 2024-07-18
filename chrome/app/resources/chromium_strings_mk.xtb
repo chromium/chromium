@@ -14,6 +14,7 @@
 <translation id="113122355610423240">Chromium е вашиот стандарден прелистувач</translation>
 <translation id="1131805035311359397">За да проверите дали вашите лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Кликнете на менито на Chromium</translation>
+<translation id="1184145431117212167">Инсталирањето не успеа бидејќи вашата верзија на Windows не е поддржана.</translation>
 <translation id="1185134272377778587">За Chromium</translation>
 <translation id="1188705220418984327">За да го споделите прозорецот, дозволете снимање на екранот за Chromium во System Preferences.</translation>
 <translation id="1203500561924088507">Фала за инсталирањето. Мора да го рестартирате прелистувачот пред да користите <ph name="BUNDLE_NAME" />.</translation>
@@ -204,6 +205,7 @@
 <translation id="421369550622382712">Откријте одлични апликации, игри, наставки и теми за Chromium.</translation>
 <translation id="4216212958613226427">Овој јазик се користи за приказ на корисничкиот интерфејс на Chromium</translation>
 <translation id="4222932583846282852">Се откажува...</translation>
+<translation id="4224210481850767180">Инсталирањето е откажано.</translation>
 <translation id="4230135487732243613">Да се поврзат вашите податоци на Chromium со оваа сметка?</translation>
 <translation id="4251772536351901305">Ве предупредува за опасни сајтови, дури и оние што Google не ги знаел претходно, така што анализира повеќе податоци од сајтови од стандардната заштита. Може да изберете да се прескокнуваат предупредувањата на Chromium.</translation>
 <translation id="4269093074552541569">Одјавете се од Chromium</translation>

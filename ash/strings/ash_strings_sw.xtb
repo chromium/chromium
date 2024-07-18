@@ -521,6 +521,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2970920913501714344">Kusakinisha programu, viendelezi na mandhari</translation>
 <translation id="2977598380246111477">Nambari inayofuata</translation>
 <translation id="2985148236010982088">Angalia programu zote</translation>
+<translation id="2992272421330787632">Ficha mapendekezo yote ya maudhui</translation>
 <translation id="2992327365391326550">Kitufe cha maikrofoni ya kifaa kimezimwa.</translation>
 <translation id="3000461861112256445">Kipengele cha sauti moja</translation>
 <translation id="3001391739687111021">Badilisha ukubwa wa skrini</translation>
@@ -591,6 +592,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="3255483164551725916">Unaweza kufanya nini?</translation>
 <translation id="3256109297135787951">Acha kuangazia kipengee kwenye rafu yako</translation>
 <translation id="3260969790895726815">Matamshi huchakatwa ndani ya kifaa na kipengele cha kuandika kwa kutamka hufanya kazi nje ya mtandao, lakini baadhi ya amri za sauti hazitafanya kazi.</translation>
+<translation id="3264031581203585083">Ficha mapendekezo yote ya Hifadhi ya Google</translation>
 <translation id="3265032511221679826">Je, ungependa kuwasha kipengele cha uwezo wa kufikia eneo mahsusi?</translation>
 <translation id="3269597722229482060">Bofya Kulia</translation>
 <translation id="3274634049061007184">Angalia programu za simu yako</translation>
@@ -742,6 +744,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3738664582935948253">Sasa unaweza kuonyesha mibofyo na mikato ya kibodi katika rekodi za skrini</translation>
 <translation id="3742055079367172538">Picha ya skrini imepigwa</translation>
 <translation id="3743775386021959186">Hali ya Kuangazia imewashwa, umebakisha <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Ficha pendekezo la hali ya hewa</translation>
 <translation id="3756485814916578707">Inatuma maudhui yaliyo kwenye skrini</translation>
 <translation id="3765841382945324995">Njia ya mkato ya <ph name="SIX_PACK_KEY_NAME" /> imesasishwa kuwa <ph name="NEW_SHORTCUT" /> kutoka <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Imebadilishwa leo</translation>
@@ -781,6 +784,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3906954721959377182">Kompyuta kibao</translation>
 <translation id="3923494859158167397">Hujaweka mitandao yoyote ya simu</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Inapakia matukio.</translation>
+<translation id="3927049937406914450">Hali ya hewa haipatikani kwa sababu ufikiaji wa data ya mahali umezimwa. Unaweza kubadilisha hali hii katika mipangilio.</translation>
 <translation id="3932043219784172185">Hakuna kifaa kilichounganishwa</translation>
 <translation id="3934456833412894880">Hali ya kuchaji inayojirekebisha imewashwa. Betri yako itasalia na asilimia 80 ili kuongeza muda wa matumizi ya betri na itachaji kikamilifu utakapohitaji.</translation>
 <translation id="3943857333388298514">Bandika</translation>
@@ -897,6 +901,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4312840429157639164">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kulia. Linakinzana na mfumo wa kiolesura uliopo.</translation>
 <translation id="4316910396681052118">PROGRAMU ZOTE</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Ficha mapendekezo yote ya kivinjari cha Chrome</translation>
 <translation id="4322742403972824594">Mikato ya kibodi ya Ctrl + Alt + Kishale cha Juu imebadilika. Ili utumie kitufe cha Home, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Kushoto.</translation>
 <translation id="4324840740119394760">Hatua hii huruhusu ufikiaji wa kamera katika <ph name="APP_NAME" /> na programu pamoja na tovuti zote zilizo na ruhusa ya kufikia kamera</translation>
 <translation id="4327147325944669226">Rekodi mchezo</translation>
@@ -930,6 +935,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4450893287417543264">Usionyeshe tena</translation>
 <translation id="4451374464530248585">Mikato ya kibodi ya Alt + Kishale cha Chini imebadilika. Ili utumie kitufe cha Page Down, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Chini.</translation>
 <translation id="4453876312474547652">Utaona ubao wa kunakili unapobonyeza na kushikilia Ctrl + V. Unaweza kuzima mipangilio ya njia hii ya mkato kwa kuzima #clipboard-history-longpress flag in chrome://flags (os://flags iwapo unatumia Lacros).</translation>
+<translation id="445765352722456792">Weka mapendeleo ya mapendekezo</translation>
 <translation id="445864333228800152">Habari za jioni,</translation>
 <translation id="4458688154122353284">Acha kunasa skrini</translation>
 <translation id="445923051607553918">Jiunge kwenye mtandao wa Wi-Fi</translation>
@@ -1332,6 +1338,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5802516411616338943">Fungua Mipangilio ya Haraka</translation>
 <translation id="5804651031882187592">Zima mipangilio ya "Kufunga SIM"</translation>
 <translation id="5805809050170488595">Bofya ili uwashe <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Chromebook yako ilizima kisha kuwaka bila kutarajiwa. Fungua madirisha na programu zako za awali.</translation>
 <translation id="5823239091726045201">Google Majukumu kwenye wavuti</translation>
 <translation id="5825969630400862129">Mipangilio ya vifaa vilivyounganishwa</translation>
 <translation id="5837036133683224804">Komesha <ph name="ROUTE_TITLE" /> kwenye <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6469104339369989396">Washa au uzime mtandao pepe.</translation>
 <translation id="6477681113376365978">Imeshindwa kupakua faili</translation>
 <translation id="6482559668224714696">Kikuzaji cha skrini nzima</translation>
+<translation id="6485086611007560630">Mapendekezo ya hali ya hewa (hayapatikani)</translation>
 <translation id="6490471652906364588">Kifaa cha USB-C (mlango wa kulia)</translation>
 <translation id="649452524636452238">PIN ya kadi mahiri</translation>
 <translation id="6495322433318104734">Inaonyesha taswira ya skrini, bonyeza kitufe chochote ili kuondoka</translation>
@@ -1781,6 +1789,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7514365320538308">Pakua</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Geuza vizio vya halijoto (Farenhaiti dhidi ya Selisiasi)</translation>
 <translation id="7519206258459640379">Kipengele cha kukuza picha kiotomatiki kimewashwa.</translation>
 <translation id="7519649142417630956">Mara baada ya kuzimwa, msimamizi ataondolewa na hataweza kudhibiti kifaa chako.
 
@@ -1922,6 +1931,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7951630946012935453">Fifisha kibodi</translation>
 <translation id="7953994493035617347">Ungependa kuthibitisha ubora mwingine?</translation>
 <translation id="795958884516058160">Kikuzaji cha skrini Nzima kimewashwa. Bonyeza <ph name="ACCELERATOR" /> tena ili ukizime.</translation>
+<translation id="7962583092928373823">Ficha mapendekezo yote ya Kalenda ya Google</translation>
 <translation id="7963689218131240420">Kipengele cha Usinisumbue kimezimwa.</translation>
 <translation id="7963992254934562106">Kutoka <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Chagua folda...</translation>
@@ -1994,6 +2004,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8214996719228530800">Kituo cha Toleo la Jaribio (Canary)</translation>
 <translation id="8219451629189078428">Chromebook yako inahitaji kubaki ikiwa imewashwa na kuunganishwa kwenye chaja wakati huu. Hakikisha kuwa kebo za adapta au chaja zimechomekwa kabisa kwenye Chromebook yako na soketi ya umeme. Usizime Chromebook yako.</translation>
 <translation id="8220076512072059941">Ongeza <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Ficha pendekezo hili</translation>
 <translation id="8230305195727960608">Hali ya Ugeuzaji Rangi</translation>
 <translation id="8236042855478648955">Ni wakati wa kupumzika</translation>
 <translation id="8237964652943995219">Eneokazi linalofuata: <ph name="DESK_NAME" />. Eneokazi la <ph name="DESK_INDEX" /> kati ya <ph name="DESK_COUNT" />.</translation>
@@ -2122,7 +2133,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Unawashwa...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
 <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Muda umekwisha. Kazi nzuri! 🎉</translation>
 <translation id="8753368202781196133">Lugha hii haitumiki kwa sasa.</translation>
 <translation id="8755498163081687682">Thibitisha utambulisho wako: <ph name="ORIGIN_NAME" /> ingependa kuthibitisha kwamba ni wewe</translation>
 <translation id="875593634123171288">Onyesha mipangilio ya VPN</translation>
@@ -2180,6 +2190,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="894774083269346314">Kisanduku cha kuteua cha <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> hakijateuliwa.</translation>
 <translation id="8949925099261528566">Kimeunganishwa, hakuna intaneti</translation>
 <translation id="8951539504029375108">Vifaa vya Thunderbolt vilivyoidhinishwa pekee ndivyo vinavyooana na Chromebook yako</translation>
+<translation id="8956420987536947088">Fungua madirisha na programu zako za awali.</translation>
 <translation id="8959380109429710384">Umebonyeza mikato ya kibodi ya kikuzaji cha skrini nzima. Tumia ctrl + alt pamoja na vishale ili kusogeza mwonekano uliovuta karibu katika sehemu mbalimbali.</translation>
 <translation id="8964525410783593407">Saa 1</translation>
 <translation id="8973885907461690937">Angazia aikoni ya menyu</translation>

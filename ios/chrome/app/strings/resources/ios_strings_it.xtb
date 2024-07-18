@@ -526,7 +526,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3680970647557344817">Nascondi Modifica preferito</translation>
 <translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
-<translation id="3688815115226493214">Suggerimenti di schede</translation>
 <translation id="3700134753671613714">Accedi per visualizzare i tuoi Preferiti su tutti i tuoi dispositivi.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} password è salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google {EMAIL}.}other{{COUNT} password sono salvate solo su questo dispositivo. Per usarle su altri dispositivi, salvale nel tuo Account Google {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Segna come da leggere</translation>
@@ -1307,7 +1306,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="75362970626182391">Nuovo gruppo di schede</translation>
 <translation id="7537586195939242955">Spiacenti, il tuo pass non può essere installato in Passbook in questo momento.</translation>
 <translation id="754655535278952384">Ultimo controllo: <ph name="TIME" /></translation>
-<translation id="7552154146060018538">Ultima scheda utilizzata su <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Per disattivare, apri le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /> e vai a Opzioni password.</translation>
 <translation id="7554645225856321710">Chiudi tutte</translation>
 <translation id="7554791636758816595">Nuova scheda</translation>
@@ -1636,7 +1634,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9079935439869366234">Segna tutti come da leggere</translation>
 <translation id="9081058212938299310">Aggiornare la password per <ph name="USERNAME" />?</translation>
-<translation id="9082821980444279398">Quando l'opzione è attiva, utilizza e salva i dati nel tuo Account Google. Se è disattivata, i dati vengono salvati solo su questo dispositivo e vengono eliminati se ti disconnetti.</translation>
 <translation id="9083838294503912307">Attiva la sincronizzazione per sincronizzare e personalizzare tutti i dispositivi.</translation>
 <translation id="9087339162317338348">Se possibile, utilizza HTTPS e ricevi un avviso prima di caricare i siti che non lo supportano.</translation>
 <translation id="9093271241977565440">Tocca l'icona Cerca nella parte superiore dello schermo</translation>
@@ -1671,7 +1668,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="952704832371081537">Annulla</translation>
 <translation id="955587716023217544">Modifica l'elenco degli account</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
-<translation id="96615566463761848">Mostra Suggerimenti di schede da Altri dispositivi</translation>
 <translation id="973493300226275298">Monitora il prezzo di un prodotto nei negozi online. Riceverai avvisi quando il prezzo cala.</translation>
 <translation id="981498610235328462">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti.</translation>
 <translation id="983800820186631385">{count,plural, =1{{position} metodo di pagamento di {count}}other{{position} metodo di pagamento di {count}}}</translation>

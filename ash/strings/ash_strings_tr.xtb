@@ -521,6 +521,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2970920913501714344">Uygulama, uzantı ve tema yükleme</translation>
 <translation id="2977598380246111477">Sonraki sayı</translation>
 <translation id="2985148236010982088">Tüm uygulamaları göster</translation>
+<translation id="2992272421330787632">Tüm medya önerilerini gizle</translation>
 <translation id="2992327365391326550">Cihazın mikrofon düğmesi kapalı.</translation>
 <translation id="3000461861112256445">Mono ses</translation>
 <translation id="3001391739687111021">Ekran boyutunu düzenleyin</translation>
@@ -591,6 +592,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3255483164551725916">Neler yapabilirsin?</translation>
 <translation id="3256109297135787951">Rafınızdaki bir öğenin vurgusunu kaldırır</translation>
 <translation id="3260969790895726815">Konuşma yerel olarak işlenir ve dikte özelliği çevrimdışı çalışır ancak bazı sesli komutlar kullanılamaz.</translation>
+<translation id="3264031581203585083">Tüm Google Drive önerilerini gizle</translation>
 <translation id="3265032511221679826">Tam konum erişimi açılsın mı?</translation>
 <translation id="3269597722229482060">Sağ Tıkla</translation>
 <translation id="3274634049061007184">Telefonunuzdaki uygulamaları görün</translation>
@@ -742,6 +744,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3738664582935948253">Artık ekran kayıtlarında tıklamaları ve klavye kısayollarını gösterebilirsiniz</translation>
 <translation id="3742055079367172538">Ekran görüntüsü alındı</translation>
 <translation id="3743775386021959186">Odaklanma açık, <ph name="REMAINING_TIME" /> kaldı</translation>
+<translation id="3750403286520637847">Hava durumu önerisini gizle</translation>
 <translation id="3756485814916578707">Ekran yayınlanıyor</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> kısayolu, <ph name="OLD_SHORTCUT" /> yerine <ph name="NEW_SHORTCUT" /> olarak güncellendi</translation>
 <translation id="3765841986579723851">Bugün düzenlendi</translation>
@@ -781,6 +784,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Kurulu mobil ağ yok</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Etkinlikler yükleniyor.</translation>
+<translation id="3927049937406914450">Konum erişimi kapalı olduğu için hava durumu kullanılamıyor. Bunu ayarlardan değiştirebilirsiniz.</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
 <translation id="3934456833412894880">Uyarlanabilir şarj açık. Piliniz, pil ömrünü uzatmak için %80'de kalacak ve ihtiyacınız olduğunda tamamen şarj olacak.</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
@@ -897,6 +901,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4312840429157639164">Kamera sağ üst köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
 <translation id="4316910396681052118">TÜM UYGULAMALAR</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Tüm Chrome tarayıcı önerilerini gizle</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Yukarı Ok klavye kısayolu değişti. Home tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Sol Ok tuşlarına basın.</translation>
 <translation id="4324840740119394760">Bu işlem, <ph name="APP_NAME" /> ile birlikte kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
 <translation id="4327147325944669226">Oyunu kaydedin</translation>
@@ -930,6 +935,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
 <translation id="4451374464530248585">Alt + Aşağı Ok klavye kısayolu değişti. Page Down tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Aşağı Ok tuşlarına basın.</translation>
 <translation id="4453876312474547652">Ctrl + V tuşlarını basılı tuttuğunuzda panoyu görürsünüz. chrome://flags'de (Lacros kullanıyorsanız os://flags) #clipboard-history-longpress flag'ini devre dışı bırakarak bu kısayolu kapatabilirsiniz.</translation>
+<translation id="445765352722456792">Önerileri özelleştir</translation>
 <translation id="445864333228800152">İyi akşamlar,</translation>
 <translation id="4458688154122353284">Ekran kaydını durdur</translation>
 <translation id="445923051607553918">Kablosuz ağa bağlan</translation>
@@ -1332,6 +1338,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5802516411616338943">Hızlı Ayarlar'ı açma</translation>
 <translation id="5804651031882187592">"SIM kilidi" ayarını devre dışı bırakın</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ağını etkinleştirmek için tıklayın</translation>
+<translation id="5819918159912280082">Chromebook'unuz beklenmedik bir şekilde yeniden başlatıldı. Önceki pencerelerinizi ve uygulamalarınızı açın.</translation>
 <translation id="5823239091726045201">Web'deki Google görevleri</translation>
 <translation id="5825969630400862129">Bağlı cihaz ayarları</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>
@@ -1512,6 +1519,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6469104339369989396">Hotspot'u aç/kapat</translation>
 <translation id="6477681113376365978">Dosya indirilemiyor</translation>
 <translation id="6482559668224714696">Tam ekran büyüteci</translation>
+<translation id="6485086611007560630">Hava durumu bilgisi yok</translation>
 <translation id="6490471652906364588">USB-C cihaz (sağ bağlantı noktası)</translation>
 <translation id="649452524636452238">Akıllı kart PIN'i</translation>
 <translation id="6495322433318104734">Ekran koruyucu gösteriliyor, çıkmak için herhangi bir tuşa basın</translation>
@@ -1781,6 +1789,7 @@ Yeni yüklenmiş</translation>
 <translation id="7514365320538308">İndir</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">sayfa aşağı</translation>
+<translation id="7518182783647693467">Sıcaklık birimleri arasında geçiş yap (F veya C)</translation>
 <translation id="7519206258459640379">Kamera çerçevelemesi açık.</translation>
 <translation id="7519649142417630956">Cihaz kapatıldığında yönetici çıkış yapacak ve cihazınızı kontrol edemeyecektir.
 
@@ -1921,6 +1930,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7951630946012935453">Klavyenin ışığını kısın</translation>
 <translation id="7953994493035617347">Yeni çözünürlük onaylansın mı?</translation>
 <translation id="795958884516058160">Tam ekran büyüteci etkin Kapatmak için tekrar <ph name="ACCELERATOR" /> tuşlarına basın.</translation>
+<translation id="7962583092928373823">Tüm Google Takvim önerilerini gizle</translation>
 <translation id="7963689218131240420">Rahatsız Etmeyin modu kapalı.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> telefondan</translation>
 <translation id="7968693143708939792">Klasör seç...</translation>
@@ -1993,6 +2003,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8214996719228530800">Canary Kanalı</translation>
 <translation id="8219451629189078428">Bu süre zarfında Chromebook'unuzun açık ve güç kaynağına bağlı kalması gerekir. Şarj cihazının veya adaptör kablolarının hem Chromebook'unuza hem de prize tam olarak takılı olduğundan emin olun. Chromebook'unuzu kapatmayın.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ekle</translation>
+<translation id="8228175756124063692">Bu öneriyi gizle</translation>
 <translation id="8230305195727960608">Rengi Ters Çevirme Modu</translation>
 <translation id="8236042855478648955">Mola verme zamanı</translation>
 <translation id="8237964652943995219">Sonraki masa: <ph name="DESK_NAME" />. Masa <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
@@ -2121,7 +2132,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Etkinleştiriliyor...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Süre doldu. Mükemmel! 🎉</translation>
 <translation id="8753368202781196133">Bu dil şu anda desteklenmiyor.</translation>
 <translation id="8755498163081687682">Kimliğinizi doğrulayın: <ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
 <translation id="875593634123171288">VPN ayarlarını göster</translation>
@@ -2179,6 +2189,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Onay kutusu işaretli değil.</translation>
 <translation id="8949925099261528566">Bağlı, internet yok</translation>
 <translation id="8951539504029375108">Yalnızca onaylı Thunderbolt cihazlar Chromebook'unuzla uyumludur</translation>
+<translation id="8956420987536947088">Önceki pencerelerinizi ve uygulamalarınızı açın</translation>
 <translation id="8959380109429710384">Tam ekran büyüteci için klavye kısayollarına bastınız. Yakınlaştırılmış görünümde gezinmek için ctrl + alt + ok tuşlarını kullanın.</translation>
 <translation id="8964525410783593407">1 sa.</translation>
 <translation id="8973885907461690937">Menü simgesine odaklan</translation>

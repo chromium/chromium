@@ -828,6 +828,7 @@ Las APIs del sistema operativo definen qué es una "entrada del usuario" (por ej
 <translation id="1634989431648355062">Permitir el complemento <ph name="FLASH_PLUGIN_NAME" /> en estos sitios web</translation>
 <translation id="1635450837608153975">Inhabilitar optimizaciones avanzadas de JavaScript en todos los sitios</translation>
 <translation id="1635748761015837179">Permitir la escritura en dispositivos de almacenamiento externo</translation>
+<translation id="163653062822010558">Habilitado: el zoom de CSS cumple la especificación estándar.</translation>
 <translation id="1639468541408865385">Habilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1639673466479276550">Habilitar el salvapantallas en la pantalla de inicio de sesión.</translation>
 <translation id="1640824698339859203">Habilitar el SSO flotante y mover las autenticaciones de los servicios web del usuario a un dispositivo nuevo</translation>
@@ -1232,6 +1233,7 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
 <translation id="1930127294345368978">Número máximo de hojas que se puede usar en un mismo trabajo de impresión</translation>
 <translation id="1933378685401357864">Imagen de fondo de pantalla</translation>
 <translation id="1935409768874953955">La recogida de datos anónima con clave de URL siempre está activa</translation>
+<translation id="1942015922182679826">Habilitar la eliminación de contraseñas que no se pueden descifrar</translation>
 <translation id="1942626390957213764">Inhabilitar el centro para compartir escritorio</translation>
 <translation id="194407941132272412">Inhabilitar el aislamiento en todos los sitios web, pero permitir que el usuario lo habilite</translation>
 <translation id="1945994447126139909">Esta política de empresa sirve para una adaptación a corto plazo y se eliminará en la versión 88 de <ph name="PRODUCT_NAME" />.
@@ -1635,13 +1637,6 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 
       Si se establece la opción <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no se permitirá aplicar ninguna variación al navegador en la pantalla de inicio de sesión. Ten en cuenta que este modo puede evitar que los desarrolladores de <ph name="PRODUCT_OS_NAME" /> proporcionen correcciones críticas de seguridad a su debido tiempo y, por lo tanto, no se recomienda su uso.</translation>
 <translation id="2215746393279570703">Configuración del SSO flotante</translation>
-<translation id="2218830243081931587">Esta política controla el comportamiento de las combinaciones de teclas en <ph name="PRODUCT_OS_NAME" />.
-
-Si no se define esta política o se le asigna el valor <ph name="NORMAL_SYSTEM_PRIORITY" />, todas las combinaciones de teclas del sistema <ph name="PRODUCT_OS_NAME" /> se activarán siempre correctamente.
-
-Si se le asigna el valor <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" /> a esta política, una lista predeterminada de combinaciones de teclas con la tecla del menú de aplicaciones nunca activará un acceso directo.
-
-Si se le asigna el valor <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" /> a esta política, una lista predeterminada de combinaciones de teclas con la tecla del menú de aplicaciones nunca activará un acceso directo mientras una aplicación esté en pantalla completa.</translation>
 <translation id="2221779615493499989">Envía información sobre el estado de la red de los usuarios en los dispositivos registrados.
 
       Si se asigna el valor false a esta política, no se enviará la información.
@@ -2364,7 +2359,6 @@ Si se inhabilita esta política, los usuarios no podrán añadir cuentas de Kerb
 
 Si se asigna el valor "command_line" a una extensión, se impedirá que se cargue
 dicha extensión desde la línea de comandos.</translation>
-<translation id="2779027965175176474">No mostrar la pantalla de introducción de <ph name="FEATURE_NAME" /> durante el inicio de sesión</translation>
 <translation id="2780840673734667062">Inhabilitar el inicio de sesión con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borrar datos de navegación al salir</translation>
 <translation id="2786117913267907931">No permitir que los orígenes usen Direct Sockets</translation>
@@ -2621,7 +2615,6 @@ Si se le asigna el valor <ph name="DEFAULT_ENUM_VALUE" />, se aplicará el compo
 Si se le asigna el valor <ph name="ENABLED_ENUM_VALUE" />, las entidades se detectarán, se subrayarán y se activarán con un toque o manteniéndolas pulsadas.
 Si se le asigna el valor <ph name="DISABLED_ENUM_VALUE" />, las entidades no se detectarán y no se podrá interactuar con ellas.
 Si se le asigna el valor <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectarán las entidades y solo se podrán interactuar con ellas al mantenerlas pulsadas.</translation>
-<translation id="3010395821339265736">Mostrar la pantalla de introducción de <ph name="FEATURE_NAME" /> durante el inicio de sesión</translation>
 <translation id="3010907817113180883">Frecuencia de recogida de la señal de latido de actividad de los dispositivos en milisegundos.</translation>
 <translation id="3016585641676676461">Bloquear la activación automática de la pantalla completa en estos sitios</translation>
 <translation id="3017578958356048910">El visor de PDF puede anotar PDFs</translation>
@@ -3225,7 +3218,6 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 <translation id="3484305545282013129">Permitir que los orígenes accedan a los permisos del navegador disponibles para el origen de instalación del kiosco web.</translation>
 <translation id="3485200437120267231">Inhabilitar interceptación de inicio de sesión</translation>
 <translation id="3487651201232258606">Mensajería nativa</translation>
-<translation id="3488551354274495283">Habilitar que se muestre la pantalla de introducción de <ph name="FEATURE_NAME" /> durante el inicio de sesión</translation>
 <translation id="3492351353716550742">No usar una política de referente predeterminada de no-referrer-when-downgrade.</translation>
 <translation id="3492834335089638487">Esta política controla el uso de aplicaciones Android de fuentes que no son de confianza (distintas a Google Play Store) en un dispositivo.
 
@@ -4204,6 +4196,7 @@ Si no se define esta política, se podrán usar Chrome Root Store o las raíces 
 
 Esta política se retiró en la versión 113 de <ph name="PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />, la versión 120 de <ph name="PRODUCT_OS_NAME" />, la versión 120 de <ph name="PRODUCT_NAME" /> para <ph name="LINUX_OS_NAME" /> y la versión 121 de <ph name="PRODUCT_NAME" /> para <ph name="ANDROID_NAME" /> cuando se dejó de admitir el uso del verificador de certificados y las raíces proporcionados por la plataforma.</translation>
 <translation id="424318624725112807">Habilitar el resaltado del cursor de texto en la pantalla de inicio de sesión</translation>
+<translation id="4243419387411966417">Inhabilitar la eliminación de contraseñas que no se pueden descifrar</translation>
 <translation id="4245159233848584683">Si se habilita esta política o no se define, en caso de que una cuenta local de un dispositivo sin conexión se haya configurado para el inicio de sesión automático sin retardo, <ph name="PRODUCT_OS_NAME" /> mostrará una solicitud de configuración de red.
 
 Si se inhabilita, se mostrará un mensaje de error en lugar de la solicitud de configuración de red.</translation>
@@ -5192,6 +5185,15 @@ Si no se define esta política, Ayúdame a escribir se habilitará en los dispos
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5087932158260897375">Si se asigna el valor false a esta política, se inhabilitarán los informes de datos de diagnóstico sobre la fiabilidad de dominios y no se enviarán datos a Google.
 Si se asigna el valor true a esta política o no se define, los informes de datos de diagnóstico sobre la fiabilidad de dominios seguirán el comportamiento de MetricsReportingEnabled en el caso de <ph name="PRODUCT_NAME" /> o el comportamiento DeviceMetricsReportingEnabled en el caso de <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="5088284418186527880">Esta política permite cumplir la especificación de zoom de CSS recientemente adoptada.
+
+Si se habilita esta política o no se define, la propiedad "zoom" de CSS se ajustará a la especificación:
+
+  https://drafts.csswg.org/css-viewport/#zoom-property
+
+Si se inhabilita, la propiedad "zoom" de CSS volverá a su comportamiento antiguo anterior a la estandarización.
+
+Esta política es una tregua temporal para dar tiempo a la adaptación del contenido web al nuevo comportamiento. También hay una prueba de origen ("DisableStandardizedBrowserZoom") que corresponde al comportamiento cuando esta política está inhabilitada. Esta política se eliminará y el comportamiento "Habilitado" se hará permanente en el hito 134.</translation>
 <translation id="5090791951240382356">Permite combinar políticas de diccionario de fuentes distintas</translation>
 <translation id="5091315650312105069">Permitir la autenticación <ph name="BASIC_AUTH" /> para conexiones HTTP</translation>
 <translation id="5093603777978346818">No habilitar el salvapantallas en la pantalla de bloqueo.</translation>
@@ -5807,6 +5809,7 @@ Se eliminó en la versión M112.</translation>
 <translation id="5534079385061985566">Habilitar la función de restauración completa</translation>
 <translation id="5534235660122271432">No permitir la escritura en dispositivos de almacenamiento externo</translation>
 <translation id="5535256585099022933">Definir el intervalo de tiempo para el reinicio</translation>
+<translation id="5537400155400537818">Inhabilitado: el zoom de CSS conserva su comportamiento anterior al estándar.</translation>
 <translation id="553806128266843748">Un indicador booleano que especifica si las limitaciones de ancho de banda están habilitadas.</translation>
 <translation id="5540885720415375851">Permitir descubrimiento de dispositivos locales</translation>
 <translation id="5542235730745104308">Si se asigna el valor true a esta política, <ph name="PRODUCT_NAME" /> usará páginas de error alternativas que vienen incorporadas (como "No se encuentra la página"). Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> nunca usará páginas de error alternativas.
@@ -8439,13 +8442,6 @@ Si la política no se establece, será lo mismo que asignarle el valor <ph name=
 <translation id="7468182772656807573">Si se define esta política, determinará la frecuencia con la que se envían paquetes de red de monitorización (en milisegundos). Los intervalos se sitúan entre 30 segundos y 24 horas. Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 3 minutos.</translation>
-<translation id="7469182444144588294">Esta política controla si se muestra al usuario la pantalla de introducción de <ph name="FEATURE_NAME" /> durante el primer inicio de sesión.
-
-      Si se inhabilita, no se mostrará la pantalla de introducción de <ph name="FEATURE_NAME" />.
-
-      Si se habilita, se mostrará la pantalla de introducción de <ph name="FEATURE_NAME" />.
-
-      Si no se define la política, la pantalla de introducción de <ph name="FEATURE_NAME" /> se saltará para los usuarios gestionados por empresas y se mostrará a los usuarios no gestionados.</translation>
 <translation id="7469554574977894907">Habilitar sugerencias de búsqueda</translation>
 <translation id="7472547030234093862">Especificar los dominios que se resolverán mediante DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en estos sitios web</translation>
@@ -8968,6 +8964,7 @@ Si se inhabilita o no se define, el SPN de Kerberos no incluirá ningún puerto.
       Cuando se le asigna el valor cero, <ph name="PRODUCT_OS_NAME" /> no bloquea la pantalla cuando el usuario pasa a estar inactivo. Si no se establece, se utiliza un valor de tiempo predeterminado.
 
       Recomendación: Bloquea la pantalla en modo de inactividad activando el bloqueo de pantalla en el modo de suspensión y configurando <ph name="PRODUCT_OS_NAME" /> para que realice la suspensión después del periodo de inactividad indicado. Utiliza esta política únicamente si el bloqueo de la pantalla debería producirse mucho antes que la suspensión, o cuando no quieras que se produzca la suspensión en modo de inactividad.</translation>
+<translation id="7894964526545174973">Habilitar el comportamiento estandarizado de zoom del navegador</translation>
 <translation id="7895553628261067384">Acceso remoto</translation>
 <translation id="7898807590879163195">Inhabilitar señal de latido de actividad de los dispositivos</translation>
 <translation id="789975630884141379">Habilitar sugerencias de contenido</translation>

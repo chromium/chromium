@@ -521,6 +521,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
 <translation id="2977598380246111477">Número següent</translation>
 <translation id="2985148236010982088">Mostra totes les aplicacions</translation>
+<translation id="2992272421330787632">Amaga tots els suggeriments de contingut multimèdia</translation>
 <translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
 <translation id="3001391739687111021">Edita la mida de la pantalla</translation>
@@ -591,6 +592,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="3255483164551725916">Què pots fer?</translation>
 <translation id="3256109297135787951">Deixa de destacar un element del prestatge</translation>
 <translation id="3260969790895726815">La parla es processa localment i el dictat funciona sense connexió, però algunes ordres de veu no funcionaran.</translation>
+<translation id="3264031581203585083">Amaga tots els suggeriments de Google Drive</translation>
 <translation id="3265032511221679826">Vols activar l'accés a la ubicació precisa?</translation>
 <translation id="3269597722229482060">Clic amb el botó dret</translation>
 <translation id="3274634049061007184">Consulta les aplicacions del telèfon</translation>
@@ -742,6 +744,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3738664582935948253">Ara pots mostrar els clics i les tecles de drecera a les gravacions de pantalla</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
 <translation id="3743775386021959186">El mode Sense distraccions està activat, amb <ph name="REMAINING_TIME" /> de temps restant</translation>
+<translation id="3750403286520637847">Amaga el suggeriment del temps</translation>
 <translation id="3756485814916578707">S'està emetent la pantalla</translation>
 <translation id="3765841382945324995">La drecera <ph name="SIX_PACK_KEY_NAME" /> s'ha actualitzat de <ph name="OLD_SHORTCUT" /> a<ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Editat avui</translation>
@@ -781,6 +784,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3906954721959377182">Tauleta</translation>
 <translation id="3923494859158167397">No hi ha cap xarxa mòbil configurada</translation>
 <translation id="3925540965556789199"><ph name="DATE" />. S'estan carregant els esdeveniments.</translation>
+<translation id="3927049937406914450">El temps no està disponible perquè l'accés a la ubicació està desactivat. Pots canviar-ho a la configuració.</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3934456833412894880">La funció Càrrega intel·ligent està activada. La bateria es mantindrà al 80% per allargar-ne la durada i poder carregar-la completament quan ho necessitis.</translation>
 <translation id="3943857333388298514">Enganxa</translation>
@@ -897,6 +901,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4312840429157639164">La càmera s'ha ajustat a l'extrem superior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="4316910396681052118">TOTES LES APLICACIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Amaga tots els suggeriments del navegador Chrome</translation>
 <translation id="4322742403972824594">La tecla de drecera Ctrl+Alt+fletxa amunt ha canviat. Per fer servir la tecla d'inici, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa esquerra.</translation>
 <translation id="4324840740119394760">Permet l'accés a la càmera a <ph name="APP_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="4327147325944669226">Grava la partida</translation>
@@ -930,6 +935,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
 <translation id="4451374464530248585">La tecla de drecera Alt+fletxa avall ha canviat. Per fer servir la tecla d'avançar pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa avall.</translation>
 <translation id="4453876312474547652">Veuràs el porta-retalls quan mantinguis premudes les tecles Ctrl+V. Pots desactivar aquesta drecera desactivant la marca #clipboard-history-longpress a chrome://flags (os://flags si utilitzes Lacros).</translation>
+<translation id="445765352722456792">Personalitza els suggeriments</translation>
 <translation id="445864333228800152">Bon vespre,</translation>
 <translation id="4458688154122353284">Atura la gravació de pantalla</translation>
 <translation id="445923051607553918">Connexió de xarxa Wi-Fi</translation>
@@ -1332,6 +1338,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5802516411616338943">Obre la configuració ràpida</translation>
 <translation id="5804651031882187592">Desactiva l'opció de configuració Bloqueja la SIM</translation>
 <translation id="5805809050170488595">Fes clic per activar <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">El Chromebook s'ha reiniciat de manera inesperada. Obre les finestres i les aplicacions anteriors.</translation>
 <translation id="5823239091726045201">Google Tasks al web</translation>
 <translation id="5825969630400862129">Configuració dels dispositius connectats</translation>
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
@@ -1512,6 +1519,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6469104339369989396">Commuta el punt d'accés Wi‐Fi</translation>
 <translation id="6477681113376365978">No es pot baixar el fitxer</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
+<translation id="6485086611007560630">Temps (no disponible)</translation>
 <translation id="6490471652906364588">Dispositiu USB-C (port dret)</translation>
 <translation id="649452524636452238">PIN de la targeta intel·ligent</translation>
 <translation id="6495322433318104734">S'està mostrant l'estalvi de pantalla; prem qualsevol tecla per sortir</translation>
@@ -1781,6 +1789,7 @@ Instal·lació nova</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Av Pàg</translation>
+<translation id="7518182783647693467">Commuta les unitats de temperatura (F vs. C)</translation>
 <translation id="7519206258459640379">L'enquadrament de la càmera està activat.</translation>
 <translation id="7519649142417630956">Un cop apagat, es tancarà la sessió de l'administrador i no podrà controlar el teu dispositiu.
 
@@ -1921,6 +1930,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7951630946012935453">Atenua el teclat</translation>
 <translation id="7953994493035617347">Vols confirmar la nova resolució?</translation>
 <translation id="795958884516058160">La lupa de pantalla completa està activada. Torna a prémer <ph name="ACCELERATOR" /> per desactivar-la.</translation>
+<translation id="7962583092928373823">Amaga tots els suggeriments de Google Calendar</translation>
 <translation id="7963689218131240420">El mode No molestis està desactivat.</translation>
 <translation id="7963992254934562106">De: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selecciona una carpeta...</translation>
@@ -1993,6 +2003,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">El Chromebook ha d'estar encès i endollat durant aquest període de temps. Assegura't que els cables del carregador o de l'adaptador estiguin completament connectats, tant al Chromebook com a l'endoll. No apaguis el Chromebook.</translation>
 <translation id="8220076512072059941">Afegeix <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Amaga aquest suggeriment</translation>
 <translation id="8230305195727960608">Mode d'inversió de colors</translation>
 <translation id="8236042855478648955">Ara toca fer una pausa</translation>
 <translation id="8237964652943995219">Escriptori següent: <ph name="DESK_NAME" />. Escriptori <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
@@ -2121,7 +2132,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: s'està activant...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">S'ha esgotat el temps. Ben fet! 🎉</translation>
 <translation id="8753368202781196133">Aquest idioma no s'admet en aquest moment.</translation>
 <translation id="8755498163081687682">Verifica la teva identitat: <ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
 <translation id="875593634123171288">Mostra la configuració de la VPN</translation>
@@ -2179,6 +2189,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="894774083269346314">No s'ha marcat la casella de selecció de <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="8949925099261528566">Connectat, sense Internet</translation>
 <translation id="8951539504029375108">Només els dispositius Thunderbolt aprovats són compatibles amb el teu Chromebook</translation>
+<translation id="8956420987536947088">Obre les finestres i les aplicacions anteriors</translation>
 <translation id="8959380109429710384">Has premut la tecla de drecera de la lupa de pantalla completa. Fes servir Ctrl+Alt+fletxes per moure't per la visualització ampliada.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Situa el focus a la icona del menú</translation>

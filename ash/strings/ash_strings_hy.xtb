@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">Տեղադրել հավելվածներ, ընդլայնումներ և թեմաներ</translation>
 <translation id="2977598380246111477">Հաջորդ համարը</translation>
 <translation id="2985148236010982088">Տեսնել բոլոր հավելվածները</translation>
+<translation id="2992272421330787632">Թաքցնել մուլտիմեդիա ֆայլերի բոլոր առաջարկները</translation>
 <translation id="2992327365391326550">Սարքի խոսափողի կոճակն անջատված է։</translation>
 <translation id="3000461861112256445">Մոնո</translation>
 <translation id="3001391739687111021">Փոփոխել էկրանի չափսը</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">Ի՞նչ կարող ես անել:</translation>
 <translation id="3256109297135787951">Չեղարկել տարրի նշումը դարակում</translation>
 <translation id="3260969790895726815">Քանի որ խոսքը սարքում է մշակվում, թելադրումը կարելի է օգտագործել անցանց ռեժիմում, սակայն որոշ ձայնային հրամաններ չեն աշխատի։</translation>
+<translation id="3264031581203585083">Թաքցնել Google Drive-ի բոլոր առաջարկները</translation>
 <translation id="3265032511221679826">Միացնե՞լ ճշգրիտ տեղորոշումը</translation>
 <translation id="3269597722229482060">Աջ սեղմում</translation>
 <translation id="3274634049061007184">Դիտել հեռախոսի հավելվածները</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">Այժմ սեղմումները և ստեղնային դյուրանցումները կարելի է ցուցադրել էկրանի տեսագրումներում</translation>
 <translation id="3742055079367172538">Սքրինշոթը ստեղծված է</translation>
 <translation id="3743775386021959186">Առանց շեղումների ռեժիմը միացված է, մնացել է <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Թաքցնել եղանակային առաջարկը</translation>
 <translation id="3756485814916578707">Էկրանի հեռարձակում</translation>
 <translation id="3765841382945324995">«<ph name="SIX_PACK_KEY_NAME" />» գործողության դյուրանցումը դարձել է <ph name="NEW_SHORTCUT" /> (նախկին դյուրանցումը՝ <ph name="OLD_SHORTCUT" />)</translation>
 <translation id="3765841986579723851">Այսօր փոփոխել եք</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">Պլանշետ</translation>
 <translation id="3923494859158167397">Բջջային ցանց կարգավորված չէ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, միջոցառումների բեռնում։</translation>
+<translation id="3927049937406914450">Եղանակը հասանելի չէ, քանի որ տեղորոշման թույլտվությունն անջատված է։ Դուք կարող եք սա փոխել կարգավորումներում։</translation>
 <translation id="3932043219784172185">Միացած սարքեր չկան</translation>
 <translation id="3934456833412894880">Հարմարվող լիցքավորումը միացված է։ Մարտկոցի աշխատաժամանակը երկարացնելու համար այն կլիցքավորվի մինչև 80%։ Մարտկոցն ամբողջությամբ կլիցքավորվի միայն այն դեպքում, երբ իսկապես դրա անհրաժեշտությունը լինի։</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">Տեսախցիկի պատկերն ամրացված է վերևի աջ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
 <translation id="4316910396681052118">ԲՈԼՈՐ ՀԱՎԵԼՎԱԾՆԵՐԸ</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Թաքցնել Chrome դիտարկիչի բոլոր առաջարկները</translation>
 <translation id="4322742403972824594">«Ctrl + Alt + վեր սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Home ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + ձախ սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="4324840740119394760">Սա հասանելի է դարձնում տեսախցիկը <ph name="APP_NAME" /> հավելվածին, ինչպես նաև բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="4327147325944669226">Տեսագրել խաղը</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">Այլևս ցույց չտալ</translation>
 <translation id="4451374464530248585">«Alt + վար սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Page Down ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + վար սլաք» ստեղնային դյուրանցումը վերևի շարքում։</translation>
 <translation id="4453876312474547652">Երբ սեղմեք և պահեք Ctrl + V ստեղների համակցությունը, կհայտնվի սեղմատախտակը։ Ստեղների այս համակցությունն անջատելու համար հեռացրեք #clipboard-history-longpress դրոշը chrome://flags էջում (կամ os://flags էջում, եթե օգտագործում եք Lacros)։</translation>
+<translation id="445765352722456792">Անհատականացնել առաջարկները</translation>
 <translation id="445864333228800152">Բարի երեկո,</translation>
 <translation id="4458688154122353284">Դադարեցնել էկրանի տեսագրումը</translation>
 <translation id="445923051607553918">Միացում Wi-Fi ցանցին</translation>
@@ -1332,6 +1338,7 @@
 <translation id="5802516411616338943">Բացել արագ կարգավորումները</translation>
 <translation id="5804651031882187592">Անջատեք SIM քարտի կողպման կարգավորումը</translation>
 <translation id="5805809050170488595">Սեղմել՝ <ph name="NETWORK_NAME" /> ցանցն ակտիվացնելու համար</translation>
+<translation id="5819918159912280082">Ձեր Chromebook-ը անսպասելիորեն վերագործարկվեց։ Բացեք նախորդ պատուհանները և հավելվածները։</translation>
 <translation id="5823239091726045201">Google Tasks-ի առաջադրանքները դիտարկիչում</translation>
 <translation id="5825969630400862129">Կապված սարքերի կարգավորումներ</translation>
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
@@ -1512,6 +1519,7 @@
 <translation id="6469104339369989396">Միացնել/անջատել թեժ կետը</translation>
 <translation id="6477681113376365978">Չհաջողվեց ներբեռնել ֆայլը</translation>
 <translation id="6482559668224714696">Լիաէկրան խոշորացույց</translation>
+<translation id="6485086611007560630">Եղանակ (հասանելի չէ)</translation>
 <translation id="6490471652906364588">USB-C սարք (աջ միացք)</translation>
 <translation id="649452524636452238">Խելացի քարտի PIN կոդը</translation>
 <translation id="6495322433318104734">Ցուցադրվում է էկրանապահը. դուրս գալու համար սեղմեք ցանկացած ստեղն</translation>
@@ -1781,6 +1789,7 @@
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Փոխանջատել ջերմաստիճանի չափման միավորները (F և C)</translation>
 <translation id="7519206258459640379">Տեսախցիկի կադրավորումը միացված է։</translation>
 <translation id="7519649142417630956">Անջատելուց հետո ադմինիստրատորը դուրս կգրվի և չի կարողանա կառավարել ձեր սարքը։
 
@@ -1921,6 +1930,7 @@
 <translation id="7951630946012935453">Նվազեցնել ստեղնաշարի հետնալույսի պայծառությունը</translation>
 <translation id="7953994493035617347">Հաստատե՞լ նոր լուծաչափը</translation>
 <translation id="795958884516058160">Լիաէկրան խոշորացույցը միացված է։ Նորից սեղմեք <ph name="ACCELERATOR" />՝ այն անջատելու համար։</translation>
+<translation id="7962583092928373823">Թաքցնել Google Օրացույցի բոլոր առաջարկները</translation>
 <translation id="7963689218131240420">«Չանհանգստացնել» ռեժիմն անջատված է։</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-ից</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
@@ -1993,6 +2003,7 @@
 <translation id="8214996719228530800">Canary կապուղի</translation>
 <translation id="8219451629189078428">Այս ընթացքում Chromebook-ը պետք է միացված լինի և սնուցվի հոսանքից։ Համոզվեք, որ լիցքավորիչի և ադապտերի մալուխները պատշաճ միացված են Chromebook-ին և վարդակին։ Մի՛ անջատեք Chromebook-ը։</translation>
 <translation id="8220076512072059941">Ավելացնել <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Թաքցնե՞լ առաջարկը</translation>
 <translation id="8230305195727960608">Գունաշրջման ռեժիմ</translation>
 <translation id="8236042855478648955">Ընդմիջման ժամն է</translation>
 <translation id="8237964652943995219">Հաջորդ աշխատասեղանը՝ <ph name="DESK_NAME" />։ Աշխատասեղան <ph name="DESK_INDEX" />՝ <ph name="DESK_COUNT" />-ից։</translation>
@@ -2121,7 +2132,6 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />․ ակտիվացում...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Ժամանակը սպառվել է։ Կեցցե՛ք։ 🎉</translation>
 <translation id="8753368202781196133">Այս լեզուն ներկայումս չի աջակցվում։</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="875593634123171288">Ցուցադրել VPN-ի կարգավորումները</translation>
@@ -2179,6 +2189,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), նշավանդակը նշված չէ։</translation>
 <translation id="8949925099261528566">Միացած է, սակայն ինտերնետ կապ չկա</translation>
 <translation id="8951539504029375108">Միայն հաստատված Thunderbolt սարքերն են համատեղելի ձեր Chromebook-ի հետ</translation>
+<translation id="8956420987536947088">Բացեք նախորդ պատուհանները և հավելվածները</translation>
 <translation id="8959380109429710384">Դուք սեղմեցիք լիաէկրան խոշորացույցի ստեղնային դյուրանցումը։ Օգտագործեք Ctrl + Alt + սլաքներ դյուրանցումը՝ մեծացրած մասշտաբի դեպքում էկրանով շարժվելու համար։</translation>
 <translation id="8964525410783593407">1 ժ</translation>
 <translation id="8973885907461690937">Անցնել ընտրացանկի պատկերակին</translation>

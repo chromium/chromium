@@ -11,7 +11,6 @@
 <translation id="1229222343402087523">Rechercher ${searchPhrase} dans Chrome</translation>
 <translation id="124228879633599436">Votre Chrome est obsolète. Mettez-le à jour pour vous protéger.</translation>
 <translation id="1282031177488366470">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
-<translation id="1320619893013575407">Vous avez désactivé la connexion à Chrome.</translation>
 <translation id="1333745675627230582">Jouer au jeu Chrome Dino</translation>
 <translation id="1352919863522755794">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
 <translation id="139623527619433858">Utiliser Chrome pour iPad par défaut</translation>
@@ -276,7 +275,6 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
   3. Sélectionnez "Chrome".</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous parcourez ou appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
-<translation id="8577978202917232774">Les suggestions sont basées sur votre activité de navigation sur vos autres appareils. Pour les obtenir, connectez-vous à Chrome sur tous vos appareils.</translation>
 <translation id="8603022514504485810">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Profiter pleinement de Chrome</translation>
 <translation id="8736550665979974340">Restez protégé avec Google Chrome</translation>

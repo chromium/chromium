@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">Մուտք գործեք Chrome։ Եթե ուզում եք միայն մեկ անգամ մուտք գործել հաշիվ, կարող եք <ph name="GUEST_LINK_BEGIN" />օգտագործել սարքը որպես հյուր<ph name="GUEST_LINK_END" />։</translation>
 <translation id="1152920704813762236">ChromeOS-ի մասին</translation>
 <translation id="1154147086299354128">&amp;Բացել Chrome-ում</translation>
+<translation id="1184145431117212167">Տեղադրումը ձախողվեց, քանի որ Windows-ի ձեր տարբերակը չի աջակցվում։</translation>
 <translation id="1194807384646768652">Chrome-ն արգելափակել է այս ներբեռնումը, քանի որ ֆայլի այս տեսակը հազվադեպ է ներբեռնվում, և այն կարող է վտանգավոր լինել</translation>
 <translation id="1203500561924088507">Շնորհակալություն տեղադրելու համար։ Նախքան <ph name="BUNDLE_NAME" />-ն օգտագործելը դուք պետք է վերագործարկեք ձեր դիտարկիչը։</translation>
 <translation id="1229096353876452996">Google-ը խորհուրդ է տալիս Chrome-ը սահմանել որպես կանխադրված դիտարկիչ</translation>
@@ -236,6 +237,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Վերագործարկեք Chrome-ը մեկ օրվա ընթացքում}one{Վերագործարկեք Chrome-ը # օրվա ընթացքում}other{Վերագործարկեք Chrome-ը # օրվա ընթացքում}}</translation>
 <translation id="4205939740494406371">Chrome-ը չի կարող ստուգել ձեր գաղտնաբառերը։ 24 ժամ հետո նորից փորձեք կամ <ph name="BEGIN_LINK" />ստուգեք ձեր Google հաշվի գաղտնաբառերը<ph name="END_LINK" />։</translation>
 <translation id="4222932583846282852">Չեղարկվում է…</translation>
+<translation id="4224210481850767180">Տեղադրումը չեղարկվել է։</translation>
 <translation id="4242034826641750751">Այս կայքի համար Chrome-ին անհրաժեշտ է խոսափողն ու տեսախցիկն օգտագործելու թույլտվություն</translation>
 <translation id="424864128008805179">Դուրս գա՞լ Chrome-ից:</translation>
 <translation id="4251615635259297716">Կապե՞լ ձեր Chrome-ի տվյալներն այս հաշվի հետ:</translation>

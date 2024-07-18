@@ -282,7 +282,7 @@
 <translation id="5723967018671998714">Kolačići trećih strana blokirani su u anonimnom načinu</translation>
 <translation id="5740126560802162366">Web-lokacije mogu spremati podatke na vaš uređaj</translation>
 <translation id="5771720122942595109">Blokirano je dopuštenje <ph name="PERMISSION_1" /></translation>
-<translation id="5804241973901381774">Dozvoljeno</translation>
+<translation id="5804241973901381774">Dopuštenja</translation>
 <translation id="5844448279347999754">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje da vide tekst i slike spremljene u vaš međuspremnik. Kad je ta postavka isključena, web-lokacije ne mogu vidjeti tekst ili slike spremljene u međuspremnik.</translation>
 <translation id="5853982612236235577">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za slanje obavijesti. Kad je ta postavka isključena, web-lokacije ne mogu slati obavijesti.</translation>
 <translation id="5860033963881614850">Isključeno</translation>

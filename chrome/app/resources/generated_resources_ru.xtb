@@ -156,7 +156,6 @@
 <translation id="1100504063505580045">Текущий значок</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{1 пароль}one{{COUNT} пароль}few{{COUNT} пароля}many{{COUNT} паролей}other{{COUNT} пароля}}</translation>
 <translation id="1102759278139578486">Не удалось скачать файлы аннотаций основного узла. Повторите попытку позже.</translation>
-<translation id="1102790815296970136">Показывать здесь "<ph name="PERSONALIZED_MEMORY_TITLE" />" и другие воспоминания</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1107482171728500359">Доступ к микрофону</translation>
 <translation id="110850812463801904">Подключиться к OneDrive вручную</translation>
@@ -223,7 +222,6 @@
 <translation id="1155816283571436363">Подключение к телефону…</translation>
 <translation id="1157952955648710254">Закрыть боковую панель Google Поиска</translation>
 <translation id="1158080958325422608">Заменить на прописные</translation>
-<translation id="1158238185437008462">Открыть воспоминания</translation>
 <translation id="1159879754517035595">Управлять настройками расширения</translation>
 <translation id="1160800016654917722">Окно перемещено вниз и влево</translation>
 <translation id="1161575384898972166">Чтобы экспортировать сертификат клиента, войдите в <ph name="TOKEN_NAME" />.</translation>
@@ -1560,7 +1558,6 @@
 <translation id="2114145607116268663">Не удалось выполнить установку. Перезагрузите компьютер и повторите попытку. Код ошибки: <ph name="ERROR" />.</translation>
 <translation id="2114326799768592691">Перезагрузить &amp;фрейм</translation>
 <translation id="2114413269775311385">Использовать этот аккаунт в приложениях для Android. Разрешениями для них можно управлять в <ph name="LINK_BEGIN" />настройках приложений<ph name="LINK_END" />.</translation>
-<translation id="2114820389966440614">Показывать здесь "Лучшие из недавних фото" и другие воспоминания</translation>
 <translation id="2114896190328250491">Фото: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Нет SIM-карты.</translation>
 <translation id="2116619964159595185">Обычно сайты подключаются к устройствам Bluetooth, чтобы использовать некоторые функции, например настраивать или синхронизировать маячок, фитнес-трекер или умную лампочку.</translation>
@@ -2361,7 +2358,6 @@
 <translation id="2684004000387153598">Чтобы продолжить, нажмите "OK". Затем создайте другой профиль для своего адреса электронной почты, выбрав "Добавить пользователя".</translation>
 <translation id="2685193395980129388">Разрешено (<ph name="PERMISSION_DETAILS" />)</translation>
 <translation id="2687407218262674387">Условия использования Google</translation>
-<translation id="2687621393791886981">Напомнить позже</translation>
 <translation id="2688196195245426394">Ошибка при регистрации устройства на сервере: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">Вам не нужно запоминать этот пароль. Он будет сохранен в Google Менеджере паролей для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="2690024944919328218">Показать языковые настройки</translation>
@@ -3251,6 +3247,7 @@
 <translation id="3356580349448036450">Готово</translation>
 <translation id="3359256513598016054">Ограничения политики сертификатов</translation>
 <translation id="3360297538363969800">Не удалось распечатать документ. Проверьте, всё ли в порядке с принтером, и повторите попытку.</translation>
+<translation id="3360306038446926262">Окна</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}one{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}few{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}many{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}other{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3361954577771524115">Из приложения</translation>
 <translation id="3363202073972776113">Новым профилем будет управлять ваша организация. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -3421,7 +3418,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> может просматривать следующие файлы:</translation>
 <translation id="3484595034894304035">Выбрать обои, заставку, тёмную тему и многое другое</translation>
 <translation id="3484869148456018791">Получить новый сертификат</translation>
-<translation id="3486950712960783074">Ваше путешествие</translation>
 <translation id="3487007233252413104">анонимные функции</translation>
 <translation id="3487649228420469005">Сканирование завершено</translation>
 <translation id="3490695139702884919">Скачивание… <ph name="PERCENT" /> %</translation>
@@ -4324,7 +4320,6 @@
 <translation id="4116704186509653070">Открыть</translation>
 <translation id="4117714603282104018">Виброотклик сенсорной панели</translation>
 <translation id="4118579674665737931">Перезагрузите устройство и повторите попытку.</translation>
-<translation id="412022815379960229">Просматривайте воспоминания из Google Фото при входе в аккаунт.</translation>
 <translation id="4120388883569225797">Не удалось сбросить настройки электронного ключа.</translation>
 <translation id="4120817667028078560">Слишком длинный путь</translation>
 <translation id="4124823734405044952">Настройки электронного ключа сброшены.</translation>
@@ -4760,7 +4755,6 @@
 <translation id="4461483878391246134">Добавить языки, для которых никогда не предлагать перевод</translation>
 <translation id="4462159676511157176">Другие серверы имен</translation>
 <translation id="4465236939126352372">Для приложения "<ph name="APP_NAME" />" установлен лимит <ph name="TIME" />.</translation>
-<translation id="4466839823729730432">Ваши воспоминания</translation>
 <translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> может изменять файлы в папке "<ph name="FOLDERNAME" />".</translation>
 <translation id="4470957202018033307">Настройки внешних накопителей</translation>
@@ -5464,7 +5458,6 @@
 <translation id="5001526427543320409">Сторонние файлы cookie</translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
-<translation id="5006118752738286774">2 года назад</translation>
 <translation id="5006218871145547804">Инструмент adb для Android-приложений в Crostini</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
 <translation id="50080882645628821">Удалить профиль</translation>
@@ -6044,7 +6037,6 @@
 <translation id="5435779377906857208">Сообщать сайту <ph name="HOST" />, где я нахожусь</translation>
 <translation id="5436492226391861498">Ожидание создания туннеля прокси...</translation>
 <translation id="5436510242972373446">Искать на <ph name="SITE_NAME" />:</translation>
-<translation id="5436575196282187764">Воспоминания Google Фото</translation>
 <translation id="5440425659852470030">Закрыть боковую панель</translation>
 <translation id="544083962418256601">Создать ярлык…</translation>
 <translation id="5441133529460183413">Веб-приложение установлено через браузер Chrome</translation>
@@ -6322,7 +6314,6 @@
 <translation id="5632566673632479864">Ваш аккаунт (<ph name="EMAIL" />) больше нельзя использовать в качестве основного. Поскольку этот аккаунт находится под управлением администраторов домена <ph name="DOMAIN" />, все закладки, пароли и настройки, а также история будут удалены с устройства.</translation>
 <translation id="5633149627228920745">Подробнее о системных требованиях</translation>
 <translation id="563371367637259496">Мобильная сеть</translation>
-<translation id="5634446357546764049">Просматривайте воспоминания о недавних путешествиях и не только</translation>
 <translation id="5635312199252507107">Разрешить на определенных сайтах</translation>
 <translation id="5636012309446422">Удалить устройство "<ph name="DEVICE" />" из аккаунта <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636140764387862062">Другие действия с PIN-кодом</translation>
@@ -6465,7 +6456,6 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Проверить готовность режима модема</translation>
 <translation id="5753570386948603678">Удалить из истории</translation>
-<translation id="5755022574660047665">воспоминания из Google Фото</translation>
 <translation id="5756163054456765343">Справочный &amp;центр</translation>
 <translation id="5757187557809630523">следующий трек</translation>
 <translation id="5758631781033351321">Здесь вы найдете свой список для чтения</translation>
@@ -7210,7 +7200,6 @@
 <translation id="6308493641021088955">Вход через расширение "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6308937455967653460">Сохранить ссыл&amp;ку как...</translation>
 <translation id="6309443618838462258">Администратор запретил использовать этот способ ввода</translation>
-<translation id="630948338437014525">воспоминания</translation>
 <translation id="6309510305002439352">Микрофон отключен</translation>
 <translation id="6310141306111263820">Не удалось установить профиль eSIM. Обратитесь за помощью к своему оператору.</translation>
 <translation id="6311220991371174222">Не удалось открыть профиль. Перезапустите Chrome.</translation>
@@ -8570,7 +8559,6 @@
 <translation id="7356908624372060336">Сетевые журналы</translation>
 <translation id="7357271391997763660">Запустить проверку паролей?</translation>
 <translation id="735745346212279324">VPN-соединение прервано</translation>
-<translation id="7358324924540718595">Воспоминания скрыты на сегодня.</translation>
 <translation id="7358338787722390626">Закрыть боковое окно поиска</translation>
 <translation id="735994578317267253">Доступ к приложениям, настройкам и другим параметрам на любом устройстве с ChromeOS</translation>
 <translation id="7360257054721917104">Просмотр сохраненных рабочих столов и шаблонов. Для навигации по ним нажимайте Tab.</translation>
@@ -8679,7 +8667,6 @@
 <translation id="7424153922653300265">Режим энергосбережения включен</translation>
 <translation id="7424818322350938336">Сеть добавлена</translation>
 <translation id="7425037327577270384">Генератор текстов</translation>
-<translation id="7427315069950454694">воспоминания на сегодня</translation>
 <translation id="7427348830195639090">Фоновая страница: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Позвонить с устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7429415133937917139">Имитация вывода дисплея Брайля на панели ChromeVox в верхней части экрана</translation>
@@ -8702,7 +8689,6 @@
 <translation id="744366959743242014">Идет загрузка данных. Это может занять несколько секунд.</translation>
 <translation id="7443806024147773267">Войдите в аккаунт Google с любого устройства, чтобы получить доступ ко всем вашим паролям.</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Сегодня файлы cookie снова будут заблокированы}=1{Завтра файлы cookie снова будут заблокированы}one{Файлы cookie будут снова заблокированы через # день}few{Файлы cookie будут снова заблокированы через # дня}many{Файлы cookie будут снова заблокированы через # дней}other{Файлы cookie будут снова заблокированы через # дня}}</translation>
-<translation id="7444970023873202833">Посмотрите другие воспоминания в Google Фото</translation>
 <translation id="7444983668544353857">Отключить <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Устанавливайте приложения автоматически</translation>
 <translation id="7448664748118305024">Удалять данные сайтов, сохраненные на устройстве, при закрытии всех окон</translation>
@@ -9110,10 +9096,6 @@
 <translation id="7745554356330788383">Чтобы обновленные настройки расширения "<ph name="EXTENSION_NAME" />" вступили в силу для этого сайта, перезагрузите страницу</translation>
 <translation id="7745677556280361868">Удалить эту сеть на странице подписки Passpoint?</translation>
 <translation id="7746045113967198252">Увеличьте или уменьшите размер текста и элементов на экране. Это также можно сделать, выбрав "Настройки &gt; Устройство &gt; Дисплеи".</translation>
-<translation id="7746739418892731373">Это фото и видео с лучшими моментами из вашей библиотеки Google Фото. Управлять ими можно на странице <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Вы можете задать нужные настройки в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="7750228210027921155">Картинка в картинке</translation>
 <translation id="7751260505918304024">Показать все</translation>
 <translation id="7752832973194460442">Информация о приложениях Android</translation>
@@ -10055,7 +10037,6 @@
 <translation id="8412136526970428322">Предоставлены разрешения: <ph name="PERMISSION" /> и ещё <ph name="COUNT" /></translation>
 <translation id="8413795581997394485">Защита от сайтов, расширений и скачанных файлов, признанных опасными. Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через конфиденциальный сервер. Ваш IP-адрес при этом скрывается. Если на сайте зафиксирована подозрительная активность, могут быть переданы полный URL и части контента.</translation>
 <translation id="8413956290606243087">Включить встроенную в Chrome OS программу чтения с экрана ChromeVox?</translation>
-<translation id="8414249071344507766">Воспоминания скрыты на два дня.</translation>
 <translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
 <translation id="8417065541337558100">Предварительный просмотр изображения с вашей камеры</translation>
@@ -10484,8 +10465,6 @@
           <ph name="LINE_BREAK" />
           (доступ к данным автозаполнения предоставлен не будет)</translation>
 <translation id="8729133765463465108">Использовать камеру для сканирования QR-кода</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Пишите тексты, составляйте планы, учитесь и выполняйте другие задачи с помощью ИИ от Google, общаясь с Gemini.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />После установки выберите приложение Gemini на панели запуска внизу экрана.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Разрешения (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Защитный код</translation>
@@ -10770,7 +10749,6 @@
 <translation id="8934732568177537184">Продолжить</translation>
 <translation id="8938800817013097409">Устройство USB-C (порт справа на задней панели)</translation>
 <translation id="8940081510938872932">В данный момент выполняется слишком много процессов. Повторите попытку позже.</translation>
-<translation id="8940381019874223173">Из Google Фото</translation>
 <translation id="8940888110818450052">Варианты входа</translation>
 <translation id="8941173171815156065">Отозвать разрешение "<ph name="PERMISSION" />"</translation>
 <translation id="8941688920560496412">Устройство "<ph name="DEVICE_NAME" />" отключено</translation>
@@ -11265,7 +11243,6 @@
 <translation id="995755448277384931">Добавление кода IBAN</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Создание безопасного подключения...</translation>
-<translation id="996803490569799917">Показывать воспоминания с выбранными вами людьми и не только</translation>
 <translation id="997143476478634194">Когда вы посещаете сайты, эти настройки используются автоматически. Обычно сайты показывают уведомления, чтобы оповестить вас о сообщениях в чате или срочных новостях.</translation>
 <translation id="99731366405731005">Чтобы использовать функцию "Синхронизация Wi-Fi", включите <ph name="LINK1_BEGIN" />синхронизацию Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Подробнее…<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">П&amp;росмотреть код</translation>

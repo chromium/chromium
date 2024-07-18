@@ -730,6 +730,7 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 <translation id="1539343118617844331">Institución educativa</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos</translation>
 <translation id="1542958897137600427">Habilitar el aprovisionamiento de certificados de cliente</translation>
+<translation id="1548431234399786388">Configuración de los controles de los informes de eventos del navegador.</translation>
 <translation id="1550295162561011575">Si estableces esta política, los administradores podrán configurar la automatización de la ejecución de apps en dispositivos <ph name="PRODUCT_NAME" />. Estas apps se pueden ejecutar con el acceso del usuario, o los usuarios pueden ejecutarlas juntas desde el selector.</translation>
 <translation id="1551782388466447648">Habilitar el teclado virtual táctil en la pantalla de acceso</translation>
 <translation id="1552418937045050762">Si habilitas esta configuración, los usuarios podrán activar la función Compartir con Nearby, lo que les permitirá enviar archivos a personas cercanas y recibirlos.
@@ -862,6 +863,7 @@ La "Entrada del usuario" se define con las APIs del sistema operativo y comprend
 <translation id="1634989431648355062">Permitir el complemento <ph name="FLASH_PLUGIN_NAME" /> en estos sitios</translation>
 <translation id="1635450837608153975">Inhabilitar las optimizaciones avanzadas de JavaScript en todos los sitios</translation>
 <translation id="1635748761015837179">Permitir la escritura en los dispositivos de almacenamiento externo</translation>
+<translation id="163653062822010558">Habilitada: El zoom de CSS se ajusta a la especificación estándar.</translation>
 <translation id="1639468541408865385">Habilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1639673466479276550">Habilitar el protector de pantalla en la pantalla de acceso</translation>
 <translation id="1640824698339859203">Habilitar el SSO flotante y transferir las autenticaciones del servicio web del usuario al nuevo dispositivo</translation>
@@ -1298,6 +1300,7 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
 <translation id="1930127294345368978">Cantidad máxima de hojas permitidas para un solo trabajo de impresión</translation>
 <translation id="1933378685401357864">Imagen de fondo de pantalla</translation>
 <translation id="1935409768874953955">Mantener la recopilación de datos anónimos con URL siempre activada</translation>
+<translation id="1942015922182679826">Habilitar la opción para borrar las contraseñas que no se pueden desencriptar</translation>
 <translation id="1942626390957213764">Inhabilitar el centro para compartir el escritorio</translation>
 <translation id="194407941132272412">Inhabilitar el aislamiento de sitios para todos los sitios web, pero permitir que el usuario lo habilite</translation>
 <translation id="1945994447126139909">Esta política empresarial es una adaptación por corto plazo y se quitará en la versión 88 de <ph name="PRODUCT_NAME" />.
@@ -1703,13 +1706,6 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 
       Si estableces <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no podrá aplicarse ninguna variación en el navegador en la pantalla de acceso. Ten en cuenta que no se recomienda este modo porque podría impedir que los desarrolladores de <ph name="PRODUCT_OS_NAME" /> proporcionen correcciones críticas de seguridad de manera oportuna.</translation>
 <translation id="2215746393279570703">Configuración de SSO flotante</translation>
-<translation id="2218830243081931587">Esta política controla el comportamiento de las combinaciones de teclas en <ph name="PRODUCT_OS_NAME" />.
-
-Si no estableces esta política o la estableces como <ph name="NORMAL_SYSTEM_PRIORITY" />, todas las combinaciones de teclas del sistema <ph name="PRODUCT_OS_NAME" /> siempre se activarán según lo esperado.
-
-Si la estableces como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, una lista predeterminada de combinaciones de teclas del Selector nunca activará una combinación de teclas.
-
-Si estableces esta política como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, una lista predeterminada de combinaciones de teclas del Selector nunca activará una combinación de teclas mientras una app esté en pantalla completa.</translation>
 <translation id="2221779615493499989">Informa a los usuarios sobre el estado de red en dispositivos inscritos.
 
       Si estableces la política como falsa, no se informarán los eventos.
@@ -2466,7 +2462,6 @@ Si se inhabilita esta política, los usuarios no podrán agregar cuentas de Kerb
 
 Si estableces “command_line”, se bloqueará la carga de la extensión desde
 la línea de comandos.</translation>
-<translation id="2779027965175176474">No mostrar la pantalla de presentación de <ph name="FEATURE_NAME" /> durante el acceso</translation>
 <translation id="2780840673734667062">Inhabilitar el acceso con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borra los datos de navegación al salir</translation>
 <translation id="2786117913267907931">No permitir que los orígenes usen Direct Sockets</translation>
@@ -2728,7 +2723,6 @@ Si el valor se establece en <ph name="DEFAULT_ENUM_VALUE" />, se aplica el compo
 Si el valor se establece en <ph name="ENABLED_ENUM_VALUE" />, las entidades se detectan, se subrayan y se activan si presionas una vez o mantienes presionado.
 Si el valor se establece como <ph name="DISABLED_ENUM_VALUE" />, las entidades no se detectan y no se pueden realizar acciones.
 Si el valor se establece como <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectan las entidades y solo se puede realizar una acción si se mantiene presionado.</translation>
-<translation id="3010395821339265736">Mostrar la pantalla de presentación de <ph name="FEATURE_NAME" /> durante el acceso</translation>
 <translation id="3010907817113180883">Tasa de recopilación de la señal de monitoreo de funcionamiento de la actividad del dispositivo en milisegundos.</translation>
 <translation id="3016585641676676461">Bloquear la pantalla completa automática en estos sitios</translation>
 <translation id="3017578958356048910">El visor de PDF puede agregar anotaciones en archivos PDF</translation>
@@ -3331,7 +3325,6 @@ Para obtener más información sobre el manejo de datos de las funciones de IA g
 <translation id="3484305545282013129">Permitir que los orígenes accedan a los permisos del navegador disponibles para el origen de instalación del kiosco web.</translation>
 <translation id="3485200437120267231">Inhabilita la intercepción de acceso</translation>
 <translation id="3487651201232258606">Mensajería nativa</translation>
-<translation id="3488551354274495283">Habilitar que se muestre la pantalla de presentación de <ph name="FEATURE_NAME" /> durante el acceso</translation>
 <translation id="3492351353716550742">No usar una política de referente predeterminado con el valor no-referrer-when-downgrade</translation>
 <translation id="3492834335089638487">Esta política controla la forma en que un dispositivo usa las apps para Android de fuentes no confiables (que no provienen de Google Play Store).
 
@@ -3963,6 +3956,10 @@ Nota: Si el parámetro de configuración no genera métodos de autenticación mu
 <translation id="3979738908158213640">URL a las que se les concede acceso para realizar la certificación de los dispositivos durante la autenticación de SAML</translation>
 <translation id="3982322576186033243">No permitir los hashes no seguros en los protocolos de enlace TLS</translation>
 <translation id="3982465141749620677">Solicitar una nueva autenticación en una pestaña</translation>
+<translation id="3982849521386211220">Te permite configurar la lista de extremos de la API de Reporting[1] a los que
+se pueden enviar informes de la empresa.
+
+[1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
 <translation id="398294729592983401">Permitir que los usuarios activen o desactiven el parámetro de configuración Fingerprinting Protection de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
 <translation id="3983162212222338509">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red, o bien parcialmente dentro y parcialmente fuera, según la configuración del sistema y las marcas de función</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen los procesos con el Administrador de tareas de Chrome</translation>
@@ -4373,6 +4370,7 @@ y la versión 121 de <ph name="PRODUCT_NAME" />
 para <ph name="ANDROID_NAME" /> cuando se quitó la compatibilidad para usar las
 raíces y el verificador de certificados proporcionados por la plataforma.</translation>
 <translation id="424318624725112807">Habilitar la función para resaltar el signo de intercalación en la pantalla de acceso</translation>
+<translation id="4243419387411966417">Inhabilitar la opción para borrar contraseñas que no se pueden desencriptar</translation>
 <translation id="4245159233848584683">Si habilitas la política o no la estableces, en caso de que una cuenta local de un dispositivo sin conexión se haya configurado para el acceso automático sin tiempos de espera, <ph name="PRODUCT_OS_NAME" /> mostrará una solicitud de configuración de red.
 
 Si inhabilitas la política, se mostrará un mensaje de error en lugar de la solicitud de configuración de red.</translation>
@@ -4503,6 +4501,7 @@ Nota: Esta política da de baja la política <ph name="ARC_GLS_POLICY_NAME" />. 
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, a partir de la versión M85, ya no serán compatibles para esta política los patrones que incluyan comodines "*" y "[*.]" en el host.</translation>
 <translation id="4369307906396795087">Las secuencias de comandos para workers (web workers, service workers, etc.) usan la verificación laxa de tipos de MIME. Las secuencias de comandos para workers con tipos de MIME heredados, como <ph name="MIMETYPE_TEXT_ASCII" />, funcionarán.</translation>
+<translation id="4370908590951861085">Extremos de informes</translation>
 <translation id="4370937370030117032">Inhabilitar el envío de nombres de usuarios y nombres de archivos a impresoras nativas</translation>
 <translation id="4372704773119750918">No permitir que el usuario de empresa forme parte de la función de varios perfiles (usuario principal o secundario)</translation>
 <translation id="4373332965635821723">Habilitar las combinaciones de accesibilidad</translation>
@@ -5383,6 +5382,15 @@ Si no la estableces, se activará la función "Ayúdame a escribir" en los dispo
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5087932158260897375">Si se establece esta política como falsa, se inhabilitarán los informes sobre datos de diagnóstico de confiabilidad de dominios y no se enviarán datos a Google.
 Si no se establece esta política o se establece como verdadera, los informes sobre datos de diagnóstico de confiabilidad de dominios seguirán el comportamiento de MetricsReportingEnabled en <ph name="PRODUCT_NAME" /> o el de DeviceMetricsReportingEnabled en <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="5088284418186527880">Esta política habilita la conformidad con la especificación recientemente adoptada del zoom de CSS.
+
+Si habilitas esta política o no la estableces, la propiedad "zoom" de CSS se ajustará a la especificación:
+
+  https://drafts.csswg.org/css-viewport/#zoom-property
+
+Si la inhabilitas, la propiedad "zoom" de CSS volverá a su comportamiento heredado anterior a la estandarización.
+
+Esta política es una prórroga temporal para permitir que el contenido web migre al nuevo comportamiento. También hay una prueba de origen ("DisableStandardizedBrowserZoom") que corresponde al comportamiento cuando inhabilitas esta política. Esta política se quitará y el comportamiento "Habilitado" se establecerá como permanente en la versión 134.</translation>
 <translation id="5090791951240382356">Permitir la combinación de políticas de diccionarios con diferentes fuentes</translation>
 <translation id="5091315650312105069">Permitir la autenticación <ph name="BASIC_AUTH" /> para HTTP</translation>
 <translation id="5093603777978346818">No habilitar el protector de pantalla en la pantalla de bloqueo</translation>
@@ -6012,6 +6020,7 @@ Esto se quitó en M112.</translation>
 <translation id="5534079385061985566">Habilitar la función de restauración completa</translation>
 <translation id="5534235660122271432">Inhabilitar la escritura en los dispositivos de almacenamiento externo</translation>
 <translation id="5535256585099022933">Establecer el lapso para el reinicio</translation>
+<translation id="5537400155400537818">Inhabilitada: El zoom de CSS conserva su comportamiento heredado anterior al estándar.</translation>
 <translation id="553806128266843748">Una función experimental booleana que indica si está habilitada la limitación de la red.</translation>
 <translation id="5540885720415375851">Permite el descubrimiento de dispositivos locales</translation>
 <translation id="5542235730745104308">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> utilizará páginas de error alternativas integradas en el navegador (como "no se encontró la página"). Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no utilizará nunca páginas de error alternativas.
@@ -7928,6 +7937,7 @@ política mientras se esté ejecutando el navegador.</translation>
       Esta política dejó de estar disponible; usa la política <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="6847379587945465889">Habilitar la transferencia de cookies del SSO de SAML a la sesión del usuario durante el acceso</translation>
 <translation id="684856667300805181">En la versión 68 de <ph name="PRODUCT_NAME" />, se quitó esta política y se reemplazó por <ph name="ARC_GLS_POLICY_NAME" />.</translation>
+<translation id="684882090733715433">Informes de eventos del navegador</translation>
 <translation id="6850300477973481112">Configuración del conector del escritorio</translation>
 <translation id="6851199885688265233">Habilita la función de accesibilidad de resaltar la posición del cursor</translation>
 <translation id="6851315055469993882">Permite la caché de autorización para HTTP con alcance global</translation>
@@ -8750,13 +8760,6 @@ la lectura en voz alta estará habilitada.</translation>
 <translation id="7468182772656807573">Si estableces la política, se determinará la frecuencia con la que se envían paquetes de red de control (expresado en milisegundos). Los intervalos varían de 30 segundos a 24 horas. Los valores fuera de este rango se restringirán conforme a estos valores.
 
       Si no estableces la política, se aplicará el intervalo predeterminado de 3 minutos.</translation>
-<translation id="7469182444144588294">Esta política controla si se muestra la pantalla de presentación de <ph name="FEATURE_NAME" /> al usuario durante el primer acceso.
-
-      Si la inhabilitas, no se mostrará la pantalla de presentación de <ph name="FEATURE_NAME" />.
-
-      Si la habilitas, se mostrará la pantalla de presentación de <ph name="FEATURE_NAME" />.
-
-      Si no la estableces, se omitirá la pantalla de presentación de <ph name="FEATURE_NAME" /> para los usuarios administrados por empresas y se mostrará a los usuarios no administrados.</translation>
 <translation id="7469554574977894907">Habilitar sugerencias de búsqueda</translation>
 <translation id="7472547030234093862">Especificar los dominios que se resolverán con DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Revierte el comportamiento de las cookies en estos sitios conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
@@ -9278,6 +9281,7 @@ Si la inhabilitas o no la estableces, el SPN de Kerberos que se genere no inclui
       Si se establece el valor cero, <ph name="PRODUCT_OS_NAME" /> no bloqueará la pantalla cuando el usuario esté inactivo. Si no se establece, se utilizará un período predeterminado.
 
       Recomendación: Para bloquear la pantalla cuando está inactiva, activa el bloqueo de pantalla en el modo de suspensión y que se suspenda <ph name="PRODUCT_OS_NAME" /> después del tiempo de espera de inactividad. Esta política solo debe usarse si el bloqueo de pantalla ocurre mucho antes que la suspensión o si no se desea la suspensión por inactividad.</translation>
+<translation id="7894964526545174973">Habilitar el comportamiento estandarizado del zoom del navegador</translation>
 <translation id="7895553628261067384">Acceso remoto</translation>
 <translation id="7898807590879163195">Inhabilitar la señal de monitoreo de funcionamiento de la actividad del dispositivo</translation>
 <translation id="789975630884141379">Habilitar el contenido sugerido</translation>

@@ -12,6 +12,7 @@
 <translation id="113122355610423240">Chromium – ваш веб-переглядач за умовчанням</translation>
 <translation id="1131805035311359397">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Натисніть меню Chromium</translation>
+<translation id="1184145431117212167">Не вдалося встановити, оскільки ваша версія ОС Windows не підтримується.</translation>
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1188705220418984327">Щоб показувати своє вікно, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
 <translation id="1203500561924088507">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити веб-переглядач.</translation>
@@ -202,6 +203,7 @@
 <translation id="421369550622382712">Знаходьте чудові додатки, ігри, розширення й теми для Chromium.</translation>
 <translation id="4216212958613226427">Цією мовою відображається інтерфейс Chromium</translation>
 <translation id="4222932583846282852">Скасування…</translation>
+<translation id="4224210481850767180">Встановлення скасовано.</translation>
 <translation id="4230135487732243613">Пов’язати ваші дані Chromium із цим обліковим записом?</translation>
 <translation id="4251772536351901305">Попереджає вас про небезпечні сайти, навіть раніше невідомі Google, аналізуючи більше даних від сайтів, ніж системи стандартного захисту. Ви можете пропустити попередження Chromium.</translation>
 <translation id="4269093074552541569">Вийти з Chromium</translation>

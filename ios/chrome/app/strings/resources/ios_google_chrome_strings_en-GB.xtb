@@ -11,7 +11,6 @@
 <translation id="1229222343402087523">Search ${searchPhrase} in Chrome</translation>
 <translation id="124228879633599436">Your Chrome is out of date. Update it to stay safe.</translation>
 <translation id="1282031177488366470">Help improve Chrome's features and performance</translation>
-<translation id="1320619893013575407">You turned off Chrome sign-in.</translation>
 <translation id="1333745675627230582">Play Chrome Dino Game</translation>
 <translation id="1352919863522755794">Google Password Manager couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="139623527619433858">Use Chrome for iPad by default</translation>
@@ -276,7 +275,6 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
   3. Select Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8558480467877843976">You can now use Chrome any time that you browse or tap links in messages, documents and other apps.</translation>
-<translation id="8577978202917232774">Suggestions are based on your browsing activity on your other devices. To get suggestions, sign in to Chrome on all your devices.</translation>
 <translation id="8603022514504485810">Google Password Manager couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>
 <translation id="8727043961453758442">Get the most out of Chrome</translation>
 <translation id="8736550665979974340">Stay safe with Google Chrome</translation>

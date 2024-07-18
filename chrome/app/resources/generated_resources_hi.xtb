@@ -81,6 +81,7 @@
 <translation id="1054048317165655285">अपने फ़ोन पर सेट अप पूरा करें</translation>
 <translation id="1054153489933238809">मूल &amp;चित्र को नए टैब में खोलें</translation>
 <translation id="1054187194995068149">नमस्ते. यह एक झलक है</translation>
+<translation id="1054502481659725522">ऐप्लिकेशन, वेबसाइटें, और सिस्टम की सेवाएं आपकी जगह की जानकारी का इस्तेमाल कर सकती हैं</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> को 1 हफ़्ते में अपडेट करें}one{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्ते में अपडेट करें}other{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्तों में अपडेट करें}}</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1056980582064308040">सेटिंग बदलने से हॉटस्पॉट रीस्टार्ट हो जाएगा. साथ ही, हॉटस्पॉट का इस्तेमाल करने वाले डिवाइस अपने-आप डिसकनेक्ट हो जाएंगे.</translation>
@@ -155,7 +156,6 @@
 <translation id="1100504063505580045">मौजूदा आइकॉन</translation>
 <translation id="1101254380285078812">{COUNT,plural, =1{1 पासवर्ड}one{{COUNT} पासवर्ड}other{{COUNT} पासवर्ड}}</translation>
 <translation id="1102759278139578486">मुख्य नोड की व्याख्या करने के लिए फ़ाइलें डाउनलोड नहीं की जा सकीं. कुछ देर बाद कोशिश करें.</translation>
-<translation id="1102790815296970136">"<ph name="PERSONALIZED_MEMORY_TITLE" />" और दूसरी यादें यहां देखें</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="1107482171728500359">माइक्रोफ़ोन शेयर करें</translation>
 <translation id="110850812463801904">OneDrive से मैन्युअल तरीके से कनेक्ट करें</translation>
@@ -222,7 +222,6 @@
 <translation id="1155816283571436363">आपके फ़ोन से कनेक्ट हो रहा है</translation>
 <translation id="1157952955648710254">Google Search का साइड पैनल बंद करें</translation>
 <translation id="1158080958325422608">बड़े अक्षरों में बदलें</translation>
-<translation id="1158238185437008462">यादें देखें</translation>
 <translation id="1159879754517035595">एक्सटेंशन की सेटिंग मैनेज करें</translation>
 <translation id="1160800016654917722">विंडो को नीचे की ओर बाईं तरफ़ ले जाया गया</translation>
 <translation id="1161575384898972166">क्लाइंट प्रमाणपत्र निर्यात करने के लिए, कृपया <ph name="TOKEN_NAME" /> में साइन इन करें.</translation>
@@ -1568,7 +1567,6 @@
 <translation id="2114145607116268663">इंस्टॉल नहीं किया जा सका. कंप्यूटर को फिर से चालू करना ज़रूरी है. कृपया अपने कंप्यूटर को रीस्टार्ट करें और फिर से कोशिश करें. गड़बड़ी का कोड <ph name="ERROR" /> है.</translation>
 <translation id="2114326799768592691">फ़्रेम को फिर से लोड करें</translation>
 <translation id="2114413269775311385">Android ऐप्लिकेशन के साथ इस खाते का इस्तेमाल करें. <ph name="LINK_BEGIN" />ऐप्लिकेशन की सेटिंग<ph name="LINK_END" /> में जाकर, Android ऐप्लिकेशन के लिए अनुमतियों को कंट्रोल किया जा सकता है.</translation>
-<translation id="2114820389966440614">"हाल की बेहतरीन फ़ोटो" और दूसरी यादें यहां देखें</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> की फ़ोटो</translation>
 <translation id="2114995631896158695">कोई सिम कार्ड नहीं डाला गया</translation>
 <translation id="2116619964159595185">आम तौर पर साइटें, कम ऊर्जा वाले बीकन, हेल्थ या फ़िटनेस ट्रैकर या स्मार्ट लाइट बल्ब को सेट अप या सिंक करने जैसी सुविधाओं के लिए ब्लूटूथ डिवाइसों से कनेक्ट करती हैं</translation>
@@ -2372,7 +2370,6 @@
 <translation id="2684004000387153598">जारी रखने के लिए, ठीक पर क्लिक करें, फिर व्‍यक्ति जोड़ें पर क्लिक करें, ताकि आप अपने ईमेल पते के लिए नई प्रोफ़ाइल बना सकें.</translation>
 <translation id="2685193395980129388">इसकी अनुमति दी गई – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687407218262674387">Google सेवा की शर्तें</translation>
-<translation id="2687621393791886981">बाद में पूछें</translation>
 <translation id="2688196195245426394">डिवाइस को सर्वर के साथ पंजीकृत करते समय गड़बड़ी: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2688734475209947648">आपको यह पासवर्ड याद नहीं रखना पड़ेगा. यह <ph name="ACCOUNT" /> के Google Password Manager में सेव हो जाएगा.</translation>
 <translation id="2690024944919328218">भाषा के विकल्प दिखाएं</translation>
@@ -3262,6 +3259,7 @@
 <translation id="3356580349448036450">पूरा हुआ</translation>
 <translation id="3359256513598016054">प्रमाणपत्र नीति बाध्यताएं</translation>
 <translation id="3360297538363969800">प्रिंट करना पूरा नहीं हो सका. कृपया अपना प्रिंटर जाँचें और फिर से कोशिश करें.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}one{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}other{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}}</translation>
 <translation id="3361954577771524115">ऐप्लिकेशन से</translation>
 <translation id="3363202073972776113">इस नई प्रोफ़ाइल को आपका संगठन मैनेज करेगा. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -3432,7 +3430,6 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों काे देख सकती है</translation>
 <translation id="3484595034894304035">वॉलपेपर, स्क्रीन सेवर, गहरे रंग वाली थीम वगैरह को अपने हिसाब से बनाएं</translation>
 <translation id="3484869148456018791">नया प्रमाणपत्र पाएं</translation>
-<translation id="3486950712960783074">आपकी यात्रा</translation>
 <translation id="3487007233252413104">अनाम फ़ंक्शन</translation>
 <translation id="3487649228420469005">स्कैन हो गया</translation>
 <translation id="3490695139702884919">डाउनलोड हो रही है... <ph name="PERCENT" />%</translation>
@@ -4216,7 +4213,7 @@
 
 इसमें इंस्टॉल किए गए सॉफ़्टवेयर, फ़ाइलों, आपके ब्राउज़र, और डिवाइस के ऑपरेटिंग सिस्टम की जानकारी शामिल हो सकती है.</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
-<translation id="4035758313003622889">&amp;कार्य मैनेजर</translation>
+<translation id="4035758313003622889">&amp;टास्क मैनेजर</translation>
 <translation id="4035877632587724847">अनुमति न दें</translation>
 <translation id="4036778507053569103">सर्वर से डाउनलोड की गई नीति गलत है.</translation>
 <translation id="4037084878352560732">घोड़ा</translation>
@@ -4334,7 +4331,6 @@
 <translation id="4116704186509653070">फिर से खोलें</translation>
 <translation id="4117714603282104018">टचपैड हैप्टिक फ़ीडबैक</translation>
 <translation id="4118579674665737931">कृपया डिवाइस को फिर से चालू करें और दोबारा कोशिश करें.</translation>
-<translation id="412022815379960229">आप जब भी साइन इन हों, Google Photos में सेव की गई अपनी यादों को एक्सप्लोर करें.</translation>
 <translation id="4120388883569225797">यह सुरक्षा कुंजी रीसेट नहीं हो पा रही है</translation>
 <translation id="4120817667028078560">पाथ बहुत बड़ा है</translation>
 <translation id="4124823734405044952">आपकी सुरक्षा कुंजी रीसेट कर दी गई है</translation>
@@ -4770,7 +4766,6 @@
 <translation id="4461483878391246134">वे भाषाएं जोड़ें जिनके लिए आपको अनुवाद की सुविधा नहीं चाहिए</translation>
 <translation id="4462159676511157176">कस्टम नाम सर्वर</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> के लिए <ph name="TIME" /> की समयसीमा तय की गई</translation>
-<translation id="4466839823729730432">अपनी यादें यहां देखें</translation>
 <translation id="4469324811108161144">पासवर्ड के नोट में <ph name="CHARACTER_LIMIT" /> वर्ण तक सेव किए जा सकते हैं.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> में जाकर फ़ाइलों में बदलाव कर सकती है</translation>
 <translation id="4470957202018033307">बाहरी मेमोरी प्राथमिकताएं</translation>
@@ -5141,6 +5136,7 @@
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्यूट करें}one{साइटें अनम्यूट करें}other{साइटें अनम्यूट करें}}</translation>
 <translation id="4745500401920035244">आपके एडमिन ने पूरे सिस्टम में ऐसा बदलाव किया है जो कुछ पुरानी प्रोफ़ाइलों को बंद कर देता है. अब इस प्रोफ़ाइल को ऐक्सेस नहीं किया जा सकता. हालांकि, आपके पास इसे हटाने का विकल्प अब भी है</translation>
 <translation id="474609389162964566">अपनी Assistant को "Ok Google" बोलकर ऐक्सेस करें</translation>
+<translation id="4746757725581505837">इस डिवाइस पर सेव किया गया <ph name="BRAND" /> का डेटा मिटा दिया जाएगा</translation>
 <translation id="4748783296226936791">आम तौर पर, साइटें उन सुविधाओं के लिए एचआईडी डिवाइसों से कनेक्ट करती हैं जो असामान्य कीबोर्ड, गेम कंट्रोलर, और दूसरे डिवाइस इस्तेमाल करती हैं</translation>
 <translation id="4750185073185658673">कुछ और अनुमतियां देखने के लिए अपने फ़ोन के अनुमतियों वाले सेक्शन पर जाएं. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.</translation>
 <translation id="4750394297954878236">सुझाव</translation>
@@ -5473,7 +5469,6 @@
 <translation id="5001526427543320409">तीसरे पक्ष की कुकी</translation>
 <translation id="5003993274120026347">अगले वाक्य पर जाएं</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करें</translation>
-<translation id="5006118752738286774">दो साल पहले</translation>
 <translation id="5006218871145547804">Crostini में Android ऐप्लिकेशन ADB की सेटिंग</translation>
 <translation id="5007392906805964215">समीक्षा करें</translation>
 <translation id="50080882645628821">प्रोफ़ाइल हटाएं</translation>
@@ -6052,7 +6047,6 @@
 <translation id="5435779377906857208"><ph name="HOST" /> को, हमेशा अपनी जगह की जानकारी को ऐक्सेस करने की अनुमति दें</translation>
 <translation id="5436492226391861498">प्रॉक्सी टनल का इंतज़ार किया जा रहा है...</translation>
 <translation id="5436510242972373446">खोजें <ph name="SITE_NAME" />:</translation>
-<translation id="5436575196282187764">Google Photos में सेव की गई आपकी यादें</translation>
 <translation id="5440425659852470030">साइड पैनल बंद करें</translation>
 <translation id="544083962418256601">शॉर्टकट बनाएं...</translation>
 <translation id="5441133529460183413">Chrome ब्राउज़र से वेब ऐप्लिकेशन को इंस्टॉल किया गया</translation>
@@ -6330,7 +6324,6 @@
 <translation id="5632566673632479864">आपका खाता <ph name="EMAIL" /> अब प्राथमिक खाते के रूप में काम नहीं कर सकता. इस खाते का प्रबंधन <ph name="DOMAIN" /> करता है. इसलिए, आपके बुकमार्क, इतिहास, पासवर्ड, और दूसरी सेटिंग को इस डिवाइस से हटा दिया जाएगा.</translation>
 <translation id="5633149627228920745">सिस्टम से जुड़ी ज़रूरतों के बारे में ज़्यादा जानें</translation>
 <translation id="563371367637259496">मोबाइल</translation>
-<translation id="5634446357546764049">हाल ही में की गई अपनी यात्राओं से जुड़ी यादें वगैरह देखें</translation>
 <translation id="5635312199252507107">चुनिंदा साइटों पर अनुमति दें</translation>
 <translation id="5636012309446422">क्या <ph name="PRIMARY_EMAIL" /> से <ph name="DEVICE" /> को हटाना है?</translation>
 <translation id="5636140764387862062">पिन से जुड़ी अन्य कार्रवाइयां</translation>
@@ -6473,7 +6466,6 @@
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">देखें कि टेदरिंग की जा सकती है या नहीं</translation>
 <translation id="5753570386948603678">इतिहास से मिटाएं</translation>
-<translation id="5755022574660047665">Google Photos में सेव की गई आपकी यादें</translation>
 <translation id="5756163054456765343">&amp;सहायता केंद्र</translation>
 <translation id="5757187557809630523">अगला ट्रैक</translation>
 <translation id="5758631781033351321">आपको अपनी, पढ़ने की चीज़ों की सूची यहां मिलेगी</translation>
@@ -7218,7 +7210,6 @@
 <translation id="6308493641021088955">साइन-इन की सुविधा <ph name="EXTENSION_NAME" /> ने दी है</translation>
 <translation id="6308937455967653460">लिंक को इस रूप में सेव करें...</translation>
 <translation id="6309443618838462258">आपका एडमिन, इनपुट के इस तरीके को इस्तेमाल करने की अनुमति नहीं देता है</translation>
-<translation id="630948338437014525">यादें</translation>
 <translation id="6309510305002439352">माइक्रोफ़ोन बंद किया गया</translation>
 <translation id="6310141306111263820">ई-सिम प्रोफ़ाइल इंस्टॉल नहीं की जा सकी. मदद पाने के लिए, कृपया मोबाइल नेटवर्क सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="6311220991371174222">Chrome शुरू नहीं हो पा रहा है क्योंकि आपकी प्रोफ़ाइल खोलते समय कुछ गलत हो गया. Chrome को फिर से शुरू करने की कोशिश करें.</translation>
@@ -8228,6 +8219,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{इस साइट के लिए नया पासवर्ड}one{इस साइट के लिए नया पासवर्ड}other{इस साइट के लिए नए पासवर्ड}}</translation>
 <translation id="7070484045139057854">यह साइट डेटा पढ़ सकता है और बदल सकता है</translation>
 <translation id="7072010813301522126">शॉर्टकट का नाम</translation>
+<translation id="7072078320324181561">सिस्टम की सेवाओं के साथ-साथ जिन ऐप्लिकेशन और वेबसाइटों के पास जगह की जानकारी इस्तेमाल करने की अनुमति है वे आपकी जगह की जानकारी को ऐक्सेस कर सकती हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="7075513071073410194">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL प्रमाणपत्र और सेटिंग प्रबंधित करें</translation>
 <translation id="7075896597860500885">इस साइट से कॉन्टेंट कॉपी करने का सुझाव नहीं दिया जाता</translation>
@@ -8573,7 +8565,6 @@
 <translation id="7356908624372060336">नेटवर्क लॉग</translation>
 <translation id="7357271391997763660">पासवर्ड की जांच करें?</translation>
 <translation id="735745346212279324">VPN डिसकनेक्ट है</translation>
-<translation id="7358324924540718595">आज के लिए यादों को छिपा दिया गया है</translation>
 <translation id="7358338787722390626">साइड पैनल में सर्च टूलबार बंद करें</translation>
 <translation id="735994578317267253">अपने ऐप्लिकेशन, सेटिंग, और अन्य चीज़ों को Chrome OS वाले किसी भी डिवाइस पर पाएं</translation>
 <translation id="7360257054721917104">सेव किए गए डेस्क और टेंप्लेट देखे जा रहे हैं. नेविगेट करने के लिए Tab दबाएं.</translation>
@@ -8682,7 +8673,6 @@
 <translation id="7424153922653300265">एनर्जी सेवर चालू किया गया</translation>
 <translation id="7424818322350938336">नेटवर्क जोड़ा गया</translation>
 <translation id="7425037327577270384">लिखने में मेरी मदद करें</translation>
-<translation id="7427315069950454694">आज की यादें</translation>
 <translation id="7427348830195639090">पेजभूमि पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> से कॉल करें</translation>
 <translation id="7429415133937917139">स्क्रीन पर सबसे ऊपर मौजूद ChromeVox पैनल में रीफ़्रेश किए जा सकने वाले ब्रेल डिसप्ले के आउटपुट की नकल पेश करता है</translation>
@@ -8705,7 +8695,6 @@
 <translation id="744366959743242014">डेटा को लोड किया जा रहा है, इसमें कुछ सेकंड लग सकते हैं.</translation>
 <translation id="7443806024147773267">अपने Google खाते में साइन इन करके जब चाहें अपने पासवर्ड को ऐक्सेस करें</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{कुकी आज फिर से ब्लॉक कर दी जाएंगी}=1{कुकी कल फिर से ब्लॉक कर दी जाएंगी}one{# दिन बाद कुकी फिर से ब्लॉक कर दी जाएंगी}other{# दिन बाद कुकी फिर से ब्लॉक कर दी जाएंगी}}</translation>
-<translation id="7444970023873202833">Google Photos में अपनी यादों को एक्सप्लोर करें</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> बंद करें</translation>
 <translation id="7448430327655618736">ऐप्लिकेशन को अपने आप इंस्टॉल करें</translation>
 <translation id="7448664748118305024">सभी विंडो बंद करने पर, साइटों ने जो डेटा आपके डिवाइस पर सेव किया है उसे मिटाएं</translation>
@@ -8743,6 +8732,7 @@
 <translation id="7471520329163184433">और धीमी</translation>
 <translation id="747312361841682912">दिखाया गया डेटा मिटाएं</translation>
 <translation id="7473891865547856676">नहीं, रहने दें</translation>
+<translation id="7474043404939621342">अपने टूलबार को पसंद के मुताबिक बनाएं</translation>
 <translation id="747459581954555080">सभी को पुनर्स्थापित करें</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{डिवाइस को तुरंत लौटाना ज़रूरी है}one{<ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटाएं}other{<ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिनों के अंदर लौटाएं}}</translation>
 <translation id="7475671414023905704">Netscape खोए पासवर्ड का URL</translation>
@@ -9112,10 +9102,6 @@
 <translation id="7745554356330788383">इस साइट पर "<ph name="EXTENSION_NAME" />" के लिए अपनी अपडेट की गई सेटिंग लागू करने के लिए, इस पेज को फिर से लोड करें</translation>
 <translation id="7745677556280361868">क्या आपको पासपॉइंट की सदस्यता वाले पेज से यह नेटवर्क हटाना है?</translation>
 <translation id="7746045113967198252">टेक्स्ट के साथ-साथ आपकी स्क्रीन पर मौजूद आइटम को बड़ा या छोटा करता है. इसे बाद में, सेटिंग &gt; डिवाइस &gt; डिसप्ले पर भी देखा जा सकता है.</translation>
-<translation id="7746739418892731373">आपको Google Photos की लाइब्रेरी में मौजूद फ़ोटो और वीडियो के हाइलाइट दिखाए जा रहे हैं. <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> पर जाकर यह कंट्रोल किया जा सकता है कि हाइलाइट में क्या दिखे और क्या नहीं.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        इस कार्ड की सेटिंग को कार्ड मेन्यू में जाकर मैनेज किया जा सकता है. इसके अलावा, 'Chrome को पसंद के मुताबिक बनाएं' सेक्शन में मौजूद ज़्यादा विकल्प देखे जा सकते हैं.</translation>
 <translation id="7750228210027921155">पिक्चर में पिक्चर</translation>
 <translation id="7751260505918304024">सभी दिखाएं</translation>
 <translation id="7752832973194460442">Android ऐप्लिकेशन की जानकारी</translation>
@@ -9334,6 +9320,7 @@
 <translation id="7903984238293908205">काताकाना</translation>
 <translation id="7904526211178107182">Linux को अपने नेटवर्क के दूसरे डिवाइस के लिए उपलब्ध कराएं.</translation>
 <translation id="7906440585529721295">स्थानीय डेटा मिटा दिया जाएगा</translation>
+<translation id="7907502219904644296">ऐक्सेस बदलें</translation>
 <translation id="7907837847548254634">फ़ोकस किए गए ऑब्जेक्ट को तुरंत हाइलाइट करके दिखाएं</translation>
 <translation id="7908378463497120834">क्षमा करें, आपके बाह्य मेमोरी डिवाइस पर कम-से-कम एक विभाजन माउंट नहीं हो सका.</translation>
 <translation id="7908835530772972485">सभी विंडो बंद करने पर डेटा मिटाएं</translation>
@@ -9696,6 +9683,7 @@
 <translation id="815114315010033526">क्यूआर कोड का इस्तेमाल करें</translation>
 <translation id="8151638057146502721">कॉन्फ़िगर करें</translation>
 <translation id="8151748163667572916">इंस्टैंट हॉटस्पॉट की सुविधा बंद करें</translation>
+<translation id="815347678407292813">ऐप्लिकेशन और वेबसाइटों को आपके आईपी पते से, आपकी जगह की जानकारी अब भी दिख सकती है</translation>
 <translation id="8154790740888707867">कोई फ़ाइल नहीं</translation>
 <translation id="815491593104042026">ओह!  प्रमाणीकरण नहीं हो पाया क्‍योंकि उसे असुरक्षित URL (<ph name="BLOCKED_URL" />) का उपयोग करने के लिए कॉन्‍फ़िगर किया गया था.  कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="8155214519979960765">इस डिवाइस पर पासकी का दोबारा इस्तेमाल करके साइन इन करने के लिए, आपको अपनी पहचान की पुष्टि करनी होगी. अगर आपके पास साइन-इन करने का कोई दूसरा विकल्प है (जैसे, पासवर्ड), तो साइन इन करने के लिए इसका इस्तेमाल किया जा सकता है.</translation>
@@ -10054,7 +10042,6 @@
 <translation id="8412136526970428322"><ph name="PERMISSION" /> के साथ-साथ <ph name="COUNT" /> और सेटिंग की अनुमति दी गई</translation>
 <translation id="8413795581997394485">यह मोड, खतरनाक या नुकसान पहुंचाने वाली साइटों, डाउनलोड, और एक्सटेंशन से सुरक्षित रखता है. जब उपयोगकर्ता किसी साइट पर जाता है, तो Chrome निजी सर्वर के ज़रिए Google को उस साइट के यूआरएल का अस्पष्ट हिस्सा भेजता है. यह सर्वर, आपके आईपी पते को छिपा देता है. अगर साइट पर कुछ संदिग्ध गतिविधि मिलती है, तो साइट का पूरा यूआरएल और पेज का कुछ कॉन्टेंट भी भेजा जाता है.</translation>
 <translation id="8413956290606243087">क्या आपको ChromeOS में पहले से मौजूद ChromeVox स्क्रीनरीडर को चालू करना है?</translation>
-<translation id="8414249071344507766">दो दिनों के लिए यादों को छिपा दिया गया है</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से, <ph name="SITE_ETLD_PLUS_ONE" /> में साइन इन करें</translation>
 <translation id="8416730306157376817">केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="8417065541337558100">आपके कैमरे से मिलने वाली झलक</translation>
@@ -10483,8 +10470,6 @@
           <ph name="LINE_BREAK" />
           (आपका ऑटोमैटिक भरने वाला डेटा शेयर नहीं किया जाएगा)</translation>
 <translation id="8729133765463465108">क्यूआर कोड स्कैन करने के लिए कैमरा इस्तेमाल करें</translation>
-<translation id="8730446113129943001"><ph name="BEGIN_PARAGRAPH1" />Google के एआई की मदद से लिखने, प्लान बनाने, सीखने वगैरह के लिए, Gemini के साथ चैट करें.<ph name="END_PARAGRAPH1" />
-        <ph name="BEGIN_PARAGRAPH2" />सेटअप करने के बाद, स्क्रीन पर सबसे नीचे मौजूद शेल्फ़ में Gemini ऐप्लिकेशन को चुनकर, Gemini का इस्तेमाल करें.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8731029916209785242">अनुमतियां (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">सुरक्षा कोड</translation>
@@ -10767,7 +10752,6 @@
 <translation id="8934732568177537184">जारी रखें</translation>
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>
 <translation id="8940081510938872932">आपका कंप्‍यूटर इस समय बहुत सी चीज़ें कर रहा है.  बाद में फिर से प्रयास करें.</translation>
-<translation id="8940381019874223173">आपके Google Photos से</translation>
 <translation id="8940888110818450052">साइन इन करने के विकल्प</translation>
 <translation id="8941173171815156065">अनुमति '<ph name="PERMISSION" />' को निरस्‍त करें</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> बंद है</translation>
@@ -11262,7 +11246,6 @@
 <translation id="995755448277384931">IBAN जोड़ें</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">सुरक्षित कनेक्शन स्थापित कर रहा है...</translation>
-<translation id="996803490569799917">अपने पसंदीदा लोगों से जुड़ी यादें वगैरह देखें</translation>
 <translation id="997143476478634194">साइटों पर जाने के दौरान, वे अपने-आप इस सेटिंग का पालन करती हैं. आम तौर पर, साइटें आपको सूचनाएं भेजती हैं, ताकि आपको ताज़ा खबरों या चैट मैसेज के बारे में पता चल सके.</translation>
 <translation id="99731366405731005">'वाई-फ़ाई सिंक' इस्तेमाल करने के लिए, <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> चालू करें. <ph name="LINK2_BEGIN" />ज़्यादा जानें<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">नि&amp;रीक्षण करें</translation>

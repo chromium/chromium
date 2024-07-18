@@ -1704,13 +1704,6 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador na tela de login. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_OS_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
 <translation id="2215746393279570703">Configurações de SSO flutuante</translation>
-<translation id="2218830243081931587">Esta política controla o comportamento do atalho no <ph name="PRODUCT_OS_NAME" />.
-
-Se a política for deixada sem definição ou for definida como <ph name="NORMAL_SYSTEM_PRIORITY" />, todos os atalhos do sistema <ph name="PRODUCT_OS_NAME" /> serão ativados como esperado.
-
-Se a política for definida como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, uma lista predeterminada de atalhos da tecla de acesso rápido nunca vai ativar um atalho.
-
-Se a política for definida como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, uma lista predeterminada de atalhos da tecla de acesso rápido nunca vai ativar um atalho enquanto um app estiver em tela cheia.</translation>
 <translation id="2221779615493499989">Informar o status de rede dos usuários em dispositivos registrados.
 
       Se a política for definida como falsa, as informações não serão enviadas.
@@ -2469,7 +2462,6 @@ Se esta política for desativada, os usuários não poderão adicionar contas do
 
 Definir "command_line" impede que uma extensão seja carregada na
 linha de comando.</translation>
-<translation id="2779027965175176474">Não mostrar a tela inicial do <ph name="FEATURE_NAME" /> durante o login</translation>
 <translation id="2780840673734667062">Desativar o login com mais Contas do Google</translation>
 <translation id="2784880732336446591">Remover dados de navegação ao sair</translation>
 <translation id="2786117913267907931">Não permitir que as origens usem a API Direct Sockets</translation>
@@ -2730,7 +2722,6 @@ Se o valor for definido como <ph name="DEFAULT_ENUM_VALUE" />, o comportamento d
 Se o valor for definido como <ph name="ENABLED_ENUM_VALUE" />, as entidades serão detectadas, sublinhadas e acionadas ao tocar ou ao tocar e manter pressionado.
 Se o valor for definido como <ph name="DISABLED_ENUM_VALUE" />, as entidades não serão detectadas e não poderão ser acionadas.
 Se o valor for definido como <ph name="LONGPRESSONLY_ENUM_VALUE" />, as entidades serão detectadas e só poderão ser acionadas quando o usuário tocar e mantiver pressionado.</translation>
-<translation id="3010395821339265736">Mostrar a tela inicial do <ph name="FEATURE_NAME" /> durante o login</translation>
 <translation id="3010907817113180883">Taxa de coleta do sinal de funcionamento de atividade do dispositivo em milissegundos.</translation>
 <translation id="3016585641676676461">Bloquear a tela cheia automática nesses sites</translation>
 <translation id="3017578958356048910">O visualizador de PDF pode fazer anotações em PDFs</translation>
@@ -3329,7 +3320,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="3484305545282013129">Permitir que as origens acessem as permissões do navegador disponíveis para a origem de instalação do quiosque da Web.</translation>
 <translation id="3485200437120267231">Desativar interceptação de login</translation>
 <translation id="3487651201232258606">Mensagens nativas</translation>
-<translation id="3488551354274495283">Ativar a exibição da tela inicial do <ph name="FEATURE_NAME" /> durante o login</translation>
 <translation id="3492351353716550742">Não usar uma política de referenciador padrão de no-referrer-when-downgrade</translation>
 <translation id="3492834335089638487">Essa política controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis (diferentes da Google Play Store).
 
@@ -8754,13 +8744,6 @@ a leitura em voz alta será ativada.</translation>
 <translation id="7468182772656807573">Se a política for definida, a frequência do envio de pacotes de monitoramento de rede será determinada, em milissegundos. Os intervalos variam de 30 segundos a 24 horas. Valores fora desse intervalo serão ajustados dentro dessa faixa.
 
       Se a política não for definida, o intervalo padrão será de 3 minutos.</translation>
-<translation id="7469182444144588294">Esta política controla se a tela inicial do <ph name="FEATURE_NAME" /> será mostrada ao usuário durante o primeiro login.
-
-      Se ela for desativada, a tela inicial do <ph name="FEATURE_NAME" /> não será mostrada.
-
-      Se ela for ativada, a tela inicial do <ph name="FEATURE_NAME" /> será mostrada.
-
-      Se não for definida, a tela inicial do <ph name="FEATURE_NAME" /> será ignorada para usuários gerenciados por empresas e mostrada para usuários não gerenciados.</translation>
 <translation id="7469554574977894907">Ativar sugestões de pesquisa</translation>
 <translation id="7472547030234093862">Especificar domínios a serem resolvidos usando DNS sobre HTTPS</translation>
 <translation id="747275827471712187">Reverter para comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado para os cookies nesses sites</translation>

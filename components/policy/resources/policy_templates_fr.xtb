@@ -693,6 +693,7 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cl
 <translation id="1539343118617844331">Scolaire</translation>
 <translation id="1542491165152947087">Autorisez les utilisateurs à activer ou désactiver le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="1542958897137600427">Activer le provisionnement des certificats client</translation>
+<translation id="1548431234399786388">Contrôle les paramètres de création de rapports sur les événements du navigateur.</translation>
 <translation id="1550295162561011575">Cette règle permet aux administrateurs de configurer l'automatisation pour le lancement des applis sur les appareils <ph name="PRODUCT_NAME" />. Ces applis peuvent être lancées dès que l'utilisateur se connecte. L'utilisateur peut aussi les lancer depuis le lanceur d'applis.</translation>
 <translation id="1551782388466447648">Active le clavier virtuel tactile sur l'écran de connexion</translation>
 <translation id="1552418937045050762">Si ce paramètre est activé, les utilisateurs sont autorisés à activer le Partage à proximité, qui leur permet d'envoyer des fichiers aux personnes à proximité et inversement, de recevoir des fichiers de ces personnes.
@@ -1635,13 +1636,6 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 
       Si vous définissez <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> sur "2", aucune variante ne peut être appliquée au navigateur sur l'écran de connexion. Veuillez noter que ce mode n'est pas recommandé, car il est susceptible d'empêcher les développeurs <ph name="PRODUCT_OS_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu.</translation>
 <translation id="2215746393279570703">Paramètres du SSO flottant</translation>
-<translation id="2218830243081931587">Cette règle contrôle le comportement des raccourcis sur <ph name="PRODUCT_OS_NAME" />.
-
-Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="NORMAL_SYSTEM_PRIORITY" />, les raccourcis système sur <ph name="PRODUCT_OS_NAME" /> s'activeront toujours comme prévu.
-
-Si cette règle est définie sur <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'activera jamais de raccourci.
-
-Si cette règle est définie sur <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'activera jamais de raccourci lorsqu'une appli est en plein écran.</translation>
 <translation id="2221779615493499989">Signale l'état du réseau des utilisateurs sur les appareils enregistrés.
 
       Si la règle est définie sur "False", ces infos ne seront pas transmises.
@@ -2363,7 +2357,6 @@ Si cette règle est désactivée, les utilisateurs ne peuvent pas ajouter de com
 <translation id="2774906947252258544">La liste de blocage contrôle les types d'installations d'extensions qui ne sont pas autorisés.
 
 Définir "command_line" empêche le chargement de l'extension à partir de la ligne de commande.</translation>
-<translation id="2779027965175176474">Ne pas afficher l'écran d'introduction <ph name="FEATURE_NAME" /> lors de la connexion</translation>
 <translation id="2780840673734667062">Ne pas permettre la connexion avec d'autres comptes Google</translation>
 <translation id="2784880732336446591">Effacer les données de navigation en fin de session</translation>
 <translation id="2786117913267907931">Ne pas autoriser les origines à utiliser Direct Sockets</translation>
@@ -2619,7 +2612,6 @@ Si la valeur est définie sur <ph name="DEFAULT_ENUM_VALUE" />, le comportement 
 Si la valeur est définie sur <ph name="ENABLED_ENUM_VALUE" />, les entités sont détectées, soulignées et déclenchées par un appui simple ou prolongé.
 Si la valeur est définie sur <ph name="DISABLED_ENUM_VALUE" />, les entités ne sont ni détectées ni exploitables.
 Si la valeur est définie sur <ph name="LONGPRESSONLY_ENUM_VALUE" />, les entités sont détectées et exploitables uniquement par un appui prolongé.</translation>
-<translation id="3010395821339265736">Afficher l'écran d'introduction <ph name="FEATURE_NAME" /> lors de la connexion</translation>
 <translation id="3010907817113180883">Fréquence de collecte de la pulsation d'activité de l'appareil en millisecondes.</translation>
 <translation id="3016585641676676461">Bloquer le plein écran automatique sur ces sites</translation>
 <translation id="3017578958356048910">La visionneuse de PDF peut annoter les PDF</translation>
@@ -3219,7 +3211,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="3484305545282013129">Autorise les origines à accéder aux autorisations du navigateur disponibles pour l'origine d'installation du kiosque Web.</translation>
 <translation id="3485200437120267231">Désactiver l'interception de connexion</translation>
 <translation id="3487651201232258606">Messagerie native</translation>
-<translation id="3488551354274495283">Activer l'affichage de l'écran d'introduction <ph name="FEATURE_NAME" /> lors de la connexion</translation>
 <translation id="3492351353716550742">Ne pas utiliser de règle par défaut en matière d'URL de provenance (no-referrer-when-downgrade)</translation>
 <translation id="3492834335089638487">Cette règle permet de contrôler l'utilisation des applications Android provenant de sources non approuvées (autres que le Google Play Store) pour un appareil.
 
@@ -3825,6 +3816,9 @@ Remarque : Si ce paramètre a pour conséquence qu'aucune méthode d'authentifi
 <translation id="3979738908158213640">URL autorisées à procéder à l'attestation de l'identité de l'appareil lors de l'authentification SAML</translation>
 <translation id="3982322576186033243">Ne pas autoriser les hachages non sécurisés lors de handshakes TLS</translation>
 <translation id="3982465141749620677">Inviter à s'authentifier de nouveau dans un onglet</translation>
+<translation id="3982849521386211220">Vous permet de configurer la liste des points de terminaison de l'API Reporting[1] où les rapports d'entreprise peuvent être envoyés.
+
+[1] https://www.w3.org/TR/reporting-1/#endpoint</translation>
 <translation id="398294729592983401">Autoriser les utilisateurs à activer ou désactiver le paramètre "Protection contre le fingerprinting" de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="3983162212222338509">La résolution DNS du système peut être exécutée dans le processus réseau, en dehors de celui-ci, ou partiellement à l'intérieur et à l'extérieur du processus réseau, en fonction de la configuration du système et des flags de fonctionnalité.</translation>
 <translation id="3986700049001404598">Autoriser les utilisateurs à mettre fin aux processus dans le gestionnaire de tâches Chrome</translation>
@@ -4319,6 +4313,7 @@ Remarque : cette règle rend obsolète la règle <ph name="ARC_GLS_POLICY_NAME"
 
       Pour en savoir plus sur les formats d'URL valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sachez toutefois qu'à partir de la version M85, les formats contenant les caractères génériques "*" et "[*.]" dans l'hôte ne sont plus acceptés pour cette règle.</translation>
 <translation id="4369307906396795087">Les scripts pour les nœuds de calcul (nœuds de calcul Web, service workers, etc.) utilisent la vérification laxiste du type MIME. Les scripts de nœuds de calcul avec d'anciens types MIME, tels que <ph name="MIMETYPE_TEXT_ASCII" />, fonctionneront.</translation>
+<translation id="4370908590951861085">Points de terminaison des rapports</translation>
 <translation id="4370937370030117032">Désactivez l'envoi du nom d'utilisateur et du nom de fichier aux imprimantes en natif</translation>
 <translation id="4372704773119750918">Ne pas autoriser l'utilisateur d'entreprise à participer aux sessions à plusieurs profils, que ce soit en tant qu'utilisateur principal ou secondaire</translation>
 <translation id="4373332965635821723">Activer les raccourcis d'accessibilité</translation>
@@ -7601,6 +7596,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
       Cette règle étant obsolète, veuillez utiliser à la place la règle <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6847379587945465889">Activer le transfert des cookies d'authentification unique SAML dans la session utilisateur lors de la connexion</translation>
 <translation id="684856667300805181">Cette règle a été supprimée dans <ph name="PRODUCT_NAME" /> 68 et remplacée par <ph name="ARC_GLS_POLICY_NAME" />.</translation>
+<translation id="684882090733715433">Rapports sur les événements du navigateur</translation>
 <translation id="6850300477973481112">Paramètres du connecteur de bureau</translation>
 <translation id="6851199885688265233">Activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur</translation>
 <translation id="6851315055469993882">Permet d'activer un cache d'authentification HTTP à portée globale</translation>
@@ -8408,13 +8404,6 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 <translation id="7468182772656807573">Permet de spécifier la fréquence d'envoi (en millisecondes) des paquets réseau de contrôle. Cette fréquence peut être comprise entre 30 secondes et 24 heures. Toute valeur en dehors de cette plage sera remplacée par la valeur minimale ou maximale la plus proche autorisée.
 
       Si cette règle n'est pas configurée, la valeur par défaut (trois minutes) est appliquée.</translation>
-<translation id="7469182444144588294">Cette règle détermine si l'utilisateur voit l'écran d'introduction <ph name="FEATURE_NAME" /> la première fois qu'il se connecte.
-
-      Si elle est désactivée, l'écran d'introduction <ph name="FEATURE_NAME" /> ne s'affiche pas.
-
-      Si elle est activée, l'écran d'introduction <ph name="FEATURE_NAME" /> s'affiche.
-
-      Si elle n'est pas configurée, l'écran d'introduction <ph name="FEATURE_NAME" /> sera ignoré pour les utilisateurs gérés par une entreprise et s'affichera pour les utilisateurs non gérés.</translation>
 <translation id="7469554574977894907">Activer les suggestions de recherche</translation>
 <translation id="7472547030234093862">Définir les domaines pour lesquels utiliser DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies sur ces sites</translation>

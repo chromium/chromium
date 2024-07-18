@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">Alkalmazások, bővítmények és témák telepítése</translation>
 <translation id="2977598380246111477">Következő szám</translation>
 <translation id="2985148236010982088">Összes alkalmazás megjelenítése</translation>
+<translation id="2992272421330787632">Az összes médiajavaslat elrejtése</translation>
 <translation id="2992327365391326550">Az eszköz mikrofongombját kikapcsolták.</translation>
 <translation id="3000461861112256445">Monó hang</translation>
 <translation id="3001391739687111021">Képernyőméret módosítása</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">Mit lehet csinálni?</translation>
 <translation id="3256109297135787951">A kiemelés eltávolítása a polcon található elemről</translation>
 <translation id="3260969790895726815">A beszéd feldolgozása helyben történik, a diktálás pedig offline is működik, egyes hangalapú utasítások azonban nem lesznek használhatók.</translation>
+<translation id="3264031581203585083">Az összes Google Drive-javaslat elrejtése</translation>
 <translation id="3265032511221679826">Bekapcsolja a pontos helyhez való hozzáférést?</translation>
 <translation id="3269597722229482060">Kattintás jobb egérgombbal</translation>
 <translation id="3274634049061007184">A telefon alkalmazásainak megtekintése</translation>
@@ -742,6 +744,7 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3738664582935948253">Mostantól megjelenítheti a kattintásokat és a billentyűparancsokat a képernyőfelvételeken</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
 <translation id="3743775386021959186">Összpontosítási üzemmód bekapcsolva, <ph name="REMAINING_TIME" /> van hátra</translation>
+<translation id="3750403286520637847">Időjárási javaslat elrejtése</translation>
 <translation id="3756485814916578707">Képernyőtartalom átküldése</translation>
 <translation id="3765841382945324995">A(z) <ph name="SIX_PACK_KEY_NAME" /> billentyűparancsa a(z) <ph name="NEW_SHORTCUT" /> billentyűparancsra módosult a következőről: <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="3765841986579723851">Ma szerkesztette</translation>
@@ -782,6 +785,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3906954721959377182">Táblagép</translation>
 <translation id="3923494859158167397">Nincs beállítva mobilhálózat</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, események betöltése…</translation>
+<translation id="3927049937406914450">Nem állnak rendelkezésre az időjárási adatok, mert a helyhozzáférés ki van kapcsolva. Ezt a beállításokban módosíthatja.</translation>
 <translation id="3932043219784172185">Nincs csatlakoztatott eszköz</translation>
 <translation id="3934456833412894880">Az adaptív töltés be van kapcsolva. Az akkumulátor töltöttségi szintje 80%-on marad az akkumulátor-élettartam növelése érdekében, és teljesen feltöltődik, ha szükséges.</translation>
 <translation id="3943857333388298514">Beillesztés</translation>
@@ -898,6 +902,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4312840429157639164">Kamera a jobb felső sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
 <translation id="4316910396681052118">MINDEN ALKALMAZÁS</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">A Chrome böngésző összes javaslatának elrejtése</translation>
 <translation id="4322742403972824594">A Ctrl + Alt + Felfelé nyíl billentyűparancs módosult. A Home billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Balra nyíl.</translation>
 <translation id="4324840740119394760">Ezzel engedélyezi a kamerához való hozzáférést a(z) <ph name="APP_NAME" />, valamint a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="4327147325944669226">Játék felvétele</translation>
@@ -931,6 +936,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4450893287417543264">Ne jelenjen meg többé</translation>
 <translation id="4451374464530248585">Az Alt + Lefelé nyíl billentyűparancs módosult. A Lefelé nyíl billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Lefelé nyíl.</translation>
 <translation id="4453876312474547652">A Ctrl + V billentyűparancs nyomva tartásakor megjelenik a vágólap. A billentyűparancs kikapcsolásához tiltsa le a #clipboard-history-longpress jelzőt a chrome://flags oldalon (Lacros használata esetén: os://flags).</translation>
+<translation id="445765352722456792">Javaslatok személyre szabása</translation>
 <translation id="445864333228800152">Jó estét!</translation>
 <translation id="4458688154122353284">Képernyőfelvétel leállítása</translation>
 <translation id="445923051607553918">Belépés Wi-Fi hálózatra</translation>
@@ -1333,6 +1339,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5802516411616338943">Gyorsbeállítások megnyitása</translation>
 <translation id="5804651031882187592">Kapcsolja ki a „SIM zárolása” beállítást</translation>
 <translation id="5805809050170488595">Kattintson a(z) <ph name="NETWORK_NAME" /> aktiválásához</translation>
+<translation id="5819918159912280082">A Chromebook váratlanul újraindult. Megnyithatja az előző ablakokat és alkalmazásokat.</translation>
 <translation id="5823239091726045201">Google Tasks-feladatok az interneten</translation>
 <translation id="5825969630400862129">Csatlakoztatott eszközök beállításai</translation>
 <translation id="5837036133683224804">A(z) <ph name="ROUTE_TITLE" /> leállítása itt: <ph name="RECEIVER_NAME" /></translation>
@@ -1513,6 +1520,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6469104339369989396">Hotspot be- vagy kikapcsolása</translation>
 <translation id="6477681113376365978">Nem sikerült a fájl letöltése</translation>
 <translation id="6482559668224714696">Teljes képernyős nagyító</translation>
+<translation id="6485086611007560630">Időjárás (nem áll rendelkezésre)</translation>
 <translation id="6490471652906364588">C típusú USB-vel kompatibilis eszköz (jobb oldali port)</translation>
 <translation id="649452524636452238">Az intelligens kártya PIN-kódja</translation>
 <translation id="6495322433318104734">Képernyővédő megjelenítése, a kilépéshez nyomja meg bármelyik gombot</translation>
@@ -1782,6 +1790,7 @@ Frissen telepítve</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Hőmérséklet mértékegységének átváltása (°F/°C)</translation>
 <translation id="7519206258459640379">A keretezés be van kapcsolva.</translation>
 <translation id="7519649142417630956">A kikapcsolást követően az eszköz kijelentkezteti a rendszergazdát, aki a továbbiakban nem fogja tudni vezérelni az eszközét.
 
@@ -1922,6 +1931,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7951630946012935453">A billentyűzet fényerejének csökkentése</translation>
 <translation id="7953994493035617347">Megerősíti az új felbontást?</translation>
 <translation id="795958884516058160">Teljes képernyős nagyító bekapcsolva. A kikapcsoláshoz nyomja meg újra a(z) <ph name="ACCELERATOR" /> billentyűparancsot.</translation>
+<translation id="7962583092928373823">Az összes Google Naptár-javaslat elrejtése</translation>
 <translation id="7963689218131240420">A Ne zavarjanak mód ki van kapcsolva.</translation>
 <translation id="7963992254934562106">Innen: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Mappa választása…</translation>
@@ -1994,6 +2004,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8214996719228530800">Canary csatorna</translation>
 <translation id="8219451629189078428">Ez idő alatt Chromebookjának bekapcsolva kell maradnia, és csatlakoztatva kell lennie áramforráshoz. Gondoskodjon arról, hogy a töltő-, illetve adapterkábelek teljes mértékben csatlakoztatva legyenek mind a Chromebookhoz, mind a konnektorhoz. Ne kapcsolja ki a Chromebookot.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> hozzáadása</translation>
+<translation id="8228175756124063692">Javaslat elrejtése</translation>
 <translation id="8230305195727960608">Színinvertálás mód</translation>
 <translation id="8236042855478648955">Ideje pihenni</translation>
 <translation id="8237964652943995219">Következő asztal: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />/<ph name="DESK_INDEX" />. asztal.</translation>
@@ -2122,7 +2133,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktiválás…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8749787185286745219">Az idő lejárt! Kiváló! 🎉</translation>
 <translation id="8753368202781196133">Ez a nyelv jelenleg nem támogatott.</translation>
 <translation id="8755498163081687682">Igazolja személyazonosságát, a következő szeretne meggyőződni a személyazonosságáról: <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">VPN-beállítások megjelenítése</translation>
@@ -2180,6 +2190,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, jelölőnégyzet nincs bejelölve</translation>
 <translation id="8949925099261528566">Csatlakozva, nincs internet-hozzáférés</translation>
 <translation id="8951539504029375108">Csak a jóváhagyott Thunderbolt-eszközök kompatibilisek a Chromebookkal</translation>
+<translation id="8956420987536947088">Megnyithatja az előző ablakokat és alkalmazásokat</translation>
 <translation id="8959380109429710384">Lenyomta a teljes képernyős nagyító billentyűparancsát. Nagyított nézetben a Ctrl + Alt + nyílbillentyűk billentyűparanccsal mozoghat.</translation>
 <translation id="8964525410783593407">1 óra</translation>
 <translation id="8973885907461690937">Váltás a menü ikonra</translation>
