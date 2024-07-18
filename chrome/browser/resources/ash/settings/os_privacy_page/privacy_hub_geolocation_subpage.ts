@@ -130,11 +130,18 @@ export class SettingsPrivacyHubGeolocationSubpage extends
         type: String,
         notify: true,
       },
-      scheduledFeatureText_: {
+      nightLightText_: {
         type: String,
-        computed: 'computeScheduledFeatureText_(' +
+        computed: 'computeNightLightText_(' +
             'prefs.ash.user.geolocation_access_level.value,' +
             `prefs.ash.night_light.schedule_type.value,` +
+            'currentSunRiseTime_, currentSunSetTime_)',
+      },
+      darkThemeText_: {
+        type: String,
+        computed: 'computeDarkThemeText_(' +
+            'prefs.ash.user.geolocation_access_level.value,' +
+            `prefs.ash.dark_mode.schedule_type.value,` +
             'currentSunRiseTime_, currentSunSetTime_)',
       },
       localWeatherText_: {
@@ -327,7 +334,7 @@ export class SettingsPrivacyHubGeolocationSubpage extends
         ScheduleType.SUNSET_TO_SUNRISE;
   }
 
-  private computeScheduledFeatureText_(): string {
+  private computeNightLightText_(): string {
     if (!this.prefs) {
       return '';
     }
@@ -426,6 +433,22 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   private isDarkThemeConfiguredToUseGeolocation_(): boolean {
     return this.getPref<ScheduleType>('ash.dark_mode.schedule_type').value ===
         ScheduleType.SUNSET_TO_SUNRISE;
+  }
+
+  private computeDarkThemeText_(): string {
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (!this.isDarkThemeConfiguredToUseGeolocation_()) {
+      return this.i18n('privacyHubSystemServicesGeolocationNotConfigured');
+    }
+
+    return this.geolocationAllowedForSystem_() ?
+        this.i18n('privacyHubSystemServicesAllowedText') :
+        this.i18n(
+            'privacyHubSystemServicesSunsetScheduleBlockedText',
+            this.currentSunRiseTime_, this.currentSunSetTime_);
   }
 
   private onTimeZoneChanged_(): void {

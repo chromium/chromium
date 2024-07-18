@@ -9,9 +9,9 @@ import {appPermissionHandlerMojom, ControlledRadioButtonElement, CrDialogElement
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertLT, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
@@ -71,7 +71,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     };
     privacyHubGeolocationSubpage.prefs = prefs;
     document.body.appendChild(privacyHubGeolocationSubpage);
-    flush();
+    await flushTasks();
   }
 
 
@@ -105,12 +105,13 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
             '#geolocationStatusDescription')!.innerText;
   }
 
-  function setGeolocationAccessLevelPref(accessLevel: GeolocationAccessLevel) {
+  async function setGeolocationAccessLevelPref(
+      accessLevel: GeolocationAccessLevel) {
     privacyHubGeolocationSubpage.prefs.ash.user.geolocation_access_level.value =
         accessLevel;
     privacyHubGeolocationSubpage.notifyPath(
         'prefs.ash.user.geolocation_access_level', accessLevel);
-    flushTasks();
+    await flushTasks();
   }
 
   function getGeolocationAccessLevel(): GeolocationAccessLevel {
@@ -166,7 +167,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     // Check subtext:
     // Check when the system service is not configured to use geolocation (e.g.
     // time zone is selected from the static list).
-    if (isConfiguredToUseGeolocation) {
+    if (!isConfiguredToUseGeolocation) {
       assertEquals(
           expectedDescriptions['notConfiguredText'],
           getSystemServicePermissionText(systemService));
@@ -189,24 +190,29 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     }
   }
 
-  function setAutomaticTimeZoneEnabled(enabled: boolean) {
+  async function setAutomaticTimeZoneEnabled(enabled: boolean) {
     privacyHubGeolocationSubpage.set(
-        'generated.resolve_timezone_by_geolocation_on_off.value', enabled);
+        'prefs.generated.resolve_timezone_by_geolocation_on_off.value',
+        enabled);
+    await flushTasks();
   }
 
-  function setNightLightScheduleType(scheduleType: ScheduleType) {
+  async function setNightLightScheduleType(scheduleType: ScheduleType) {
     privacyHubGeolocationSubpage.set(
-        'ash.night_light.schedule_type.value', scheduleType);
+        'prefs.ash.night_light.schedule_type.value', scheduleType);
+    await flushTasks();
   }
 
-  function setLocalWeatherEnabled(enabled: boolean) {
+  async function setLocalWeatherEnabled(enabled: boolean) {
     privacyHubGeolocationSubpage.set(
-        'settings.ambient_mode.enabled.value', enabled);
+        'prefs.settings.ambient_mode.enabled.value', enabled);
+    await flushTasks();
   }
 
-  function setDarkThemeScheduleType(scheduleType: ScheduleType) {
+  async function setDarkThemeScheduleType(scheduleType: ScheduleType) {
     privacyHubGeolocationSubpage.set(
-        'ash.dark_mode.schedule_type.value', scheduleType);
+        'prefs.ash.dark_mode.schedule_type.value', scheduleType);
+    await flushTasks();
   }
 
 
@@ -222,18 +228,18 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         getSystemServicesFromSubpage(privacyHubGeolocationSubpage);
     assertEquals(4, systemServices.length);
 
-    const i18n = privacyHubGeolocationSubpage.i18n;
     for (const timeZoneAutomaticSetting of [true, false]) {
-      setAutomaticTimeZoneEnabled(timeZoneAutomaticSetting);
-      await waitAfterNextRender(privacyHubGeolocationSubpage);
+      await setAutomaticTimeZoneEnabled(timeZoneAutomaticSetting);
 
       checkService(
           systemServices[0]!,
-          i18n('privacyHubSystemServicesAutomaticTimeZoneName'),
+          privacyHubGeolocationSubpage.i18n(
+              'privacyHubSystemServicesAutomaticTimeZoneName'),
           timeZoneAutomaticSetting, {
-            notConfiguredText:
-                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
-            allowedText: i18n('privacyHubSystemServicesAllowedText'),
+            notConfiguredText: privacyHubGeolocationSubpage.i18n(
+                'privacyHubSystemServicesGeolocationNotConfigured'),
+            allowedText: privacyHubGeolocationSubpage.i18n(
+                'privacyHubSystemServicesAllowedText'),
             blockedText: 'Blocked. Time zone is currently set to ' +
                 'Test Time Zone' +
                 ' and can only be updated manually.',
@@ -245,16 +251,17 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
             .filter(value => typeof value === 'number') as ScheduleType[];
     // Test Night Light
     for (const scheduleType of allScheduleTypes) {
-      setNightLightScheduleType(scheduleType as ScheduleType);
-      await waitAfterNextRender(privacyHubGeolocationSubpage);
+      await setNightLightScheduleType(scheduleType as ScheduleType);
 
       checkService(
           systemServices[1]!,
-          i18n('privacyHubSystemServicesSunsetScheduleName'),
+          privacyHubGeolocationSubpage.i18n(
+              'privacyHubSystemServicesSunsetScheduleName'),
           scheduleType === ScheduleType.SUNSET_TO_SUNRISE, {
-            notConfiguredText:
-                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
-            allowedText: i18n('privacyHubSystemServicesAllowedText'),
+            notConfiguredText: privacyHubGeolocationSubpage.i18n(
+                'privacyHubSystemServicesGeolocationNotConfigured'),
+            allowedText: privacyHubGeolocationSubpage.i18n(
+                'privacyHubSystemServicesAllowedText'),
             blockedText:
                 'Blocked. Schedule is currently set to 7:00AM - 8:00PM' +
                 ' and can only be updated manually.',
@@ -263,15 +270,17 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
     // Test Dark Theme
     for (const scheduleType of allScheduleTypes) {
-      setDarkThemeScheduleType(scheduleType as ScheduleType);
-      await waitAfterNextRender(privacyHubGeolocationSubpage);
+      await setDarkThemeScheduleType(scheduleType as ScheduleType);
 
       checkService(
-          systemServices[2]!, i18n('privacyHubSystemServicesDarkThemeName'),
+          systemServices[2]!,
+          privacyHubGeolocationSubpage.i18n(
+              'privacyHubSystemServicesDarkThemeName'),
           scheduleType === ScheduleType.SUNSET_TO_SUNRISE, {
-            notConfiguredText:
-                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
-            allowedText: i18n('privacyHubSystemServicesAllowedText'),
+            notConfiguredText: privacyHubGeolocationSubpage.i18n(
+                'privacyHubSystemServicesGeolocationNotConfigured'),
+            allowedText: privacyHubGeolocationSubpage.i18n(
+                'privacyHubSystemServicesAllowedText'),
             blockedText:
                 'Blocked. Schedule is currently set to 7:00AM - 8:00PM' +
                 ' and can only be updated manually.',
@@ -280,15 +289,17 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
     // Test Local Weather
     for (const localWeatherEnabled of [true, false]) {
-      setLocalWeatherEnabled(localWeatherEnabled);
-      await waitAfterNextRender(privacyHubGeolocationSubpage);
+      await setLocalWeatherEnabled(localWeatherEnabled);
 
       checkService(
-          systemServices[3]!, i18n('privacyHubSystemServicesLocalWeatherName'),
+          systemServices[3]!,
+          privacyHubGeolocationSubpage.i18n(
+              'privacyHubSystemServicesLocalWeatherName'),
           localWeatherEnabled, {
-            notConfiguredText:
-                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
-            allowedText: i18n('privacyHubSystemServicesAllowedText'),
+            notConfiguredText: privacyHubGeolocationSubpage.i18n(
+                'privacyHubSystemServicesGeolocationNotConfigured'),
+            allowedText: privacyHubGeolocationSubpage.i18n(
+                'privacyHubSystemServicesAllowedText'),
             blockedText: 'Blocked',
           });
     }
@@ -358,8 +369,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
             '#changeAccessButton');
     assertTrue(!!changeGeolocationButton, 'Change button is missing');
     changeGeolocationButton.click();
-    flushTasks();
-    await waitAfterNextRender(privacyHubGeolocationSubpage);
+    await flushTasks();
 
     // Check that geolocation selector dialog appears.
     const geolocationSelectorDialog = getGeolocationSelectorDialog();
@@ -380,14 +390,12 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
                 (elem: ControlledRadioButtonElement) =>
                     elem.id === accessLevelToRadioButtonIdMap[accessLevel])!;
     radioButton.click();
-    flushTasks();
-    await waitAfterNextRender(geolocationSelectorDialog);
+    await flushTasks();
     const confirmButton: CrButtonElement =
         geolocationSelectorDialog.querySelector<CrButtonElement>(
             '#confirmButton')!;
     confirmButton.click();
-    flushTasks();
-    await waitAfterNextRender(geolocationSelectorDialog);
+    await flushTasks();
 
     // Check that the dialog disappears.
     assertNull(
@@ -659,15 +667,15 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   test('System services section', async () => {
     await initPage();
 
-    setGeolocationAccessLevelPref(
+    await setGeolocationAccessLevelPref(
         GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
-    checkServiceSection();
+    await checkServiceSection();
 
-    setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
-    checkServiceSection();
+    await setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
+    await checkServiceSection();
 
-    setGeolocationAccessLevelPref(GeolocationAccessLevel.ALLOWED);
-    checkServiceSection();
+    await setGeolocationAccessLevelPref(GeolocationAccessLevel.ALLOWED);
+    await checkServiceSection();
   });
 
   test('Timezone update in system services section', async () => {
