@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -17,6 +18,7 @@
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
 #include "ash/system/video_conference/bubble/set_camera_background_view.h"
 #include "ash/system/video_conference/bubble/set_value_effects_view.h"
+#include "ash/system/video_conference/bubble/title_view.h"
 #include "ash/system/video_conference/bubble/toggle_effects_view.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
@@ -122,6 +124,9 @@ BubbleView::BubbleView(const InitParams& init_params,
 BubbleView::~BubbleView() = default;
 
 void BubbleView::AddedToWidget() {
+  if (features::IsVcTrayTitleHeaderEnabled()) {
+    AddChildView(std::make_unique<TitleView>());
+  }
   // `ReturnToAppPanel` resides in the top-level layout and isn't part of the
   // scrollable area (that can't be added until the `BubbleView` officially has
   // a parent widget).

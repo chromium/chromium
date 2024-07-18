@@ -2595,6 +2595,8 @@ component("ash") {
     "system/video_conference/bubble/set_camera_background_view.h",
     "system/video_conference/bubble/set_value_effects_view.cc",
     "system/video_conference/bubble/set_value_effects_view.h",
+    "system/video_conference/bubble/title_view.cc",
+    "system/video_conference/bubble/title_view.h",
     "system/video_conference/bubble/toggle_effects_view.cc",
     "system/video_conference/bubble/toggle_effects_view.h",
     "system/video_conference/bubble/vc_tile_ui_controller.cc",
