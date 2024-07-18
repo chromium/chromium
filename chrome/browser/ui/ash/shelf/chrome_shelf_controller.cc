@@ -1200,9 +1200,7 @@ void ChromeShelfController::OnAppImageUpdated(
   bool is_standard_icon = true;
   if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id) &&
       !AppServicePromiseAppIconLoader::CanLoadImage(latest_active_profile_,
-                                                    app_id) &&
-      !AppServiceShortcutIconLoader::CanLoadImage(latest_active_profile_,
-                                                  app_id)) {
+                                                    app_id)) {
     is_standard_icon = false;
   }
 

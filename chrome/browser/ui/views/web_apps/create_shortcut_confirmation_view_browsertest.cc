@@ -22,18 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/features.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif
-
 struct Params {
-  bool shortstand_enabled;
   bool tab_strip_enabled;
 };
 
@@ -71,16 +60,6 @@ class CreateShortcutConfirmationViewBrowserTest
   void SetUp() override {
     base::flat_map<base::test::FeatureRef, bool> features;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    features.insert(
-        {chromeos::features::kCrosShortstand, IsShortstandEnabled()});
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_cros_shortstand_enabled = IsShortstandEnabled();
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     features.insert(
         {blink::features::kDesktopPWAsTabStrip, GetParam().tab_strip_enabled});
     features.insert(
@@ -88,14 +67,6 @@ class CreateShortcutConfirmationViewBrowserTest
 
     feature_list.InitWithFeatureStates(features);
     DialogBrowserTest::SetUp();
-  }
-
-  bool IsShortstandEnabled() {
-#if BUILDFLAG(IS_CHROMEOS)
-    return GetParam().shortstand_enabled;
-#else
-    return false;
-#endif
   }
 
  private:
@@ -131,13 +102,8 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
                                    base::BindLambdaForTesting(callback));
   EXPECT_TRUE(is_accepted);
 
-  if (IsShortstandEnabled()) {
-    EXPECT_EQ(install_info->user_display_mode,
-              web_app::mojom::UserDisplayMode::kBrowser);
-  } else {
-    EXPECT_EQ(install_info->user_display_mode,
-              web_app::mojom::UserDisplayMode::kStandalone);
-  }
+  EXPECT_EQ(install_info->user_display_mode,
+            web_app::mojom::UserDisplayMode::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
@@ -167,13 +133,6 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
 
   ASSERT_TRUE(dialog);
   EXPECT_TRUE(dialog->GetVisible());
-
-  if (IsShortstandEnabled()) {
-    EXPECT_FALSE(dialog->GetOpenAsWindowCheckboxForTesting());
-    EXPECT_FALSE(dialog->GetOpenAsTabRadioForTesting());
-    EXPECT_FALSE(dialog->GetOpenAsWindowRadioForTesting());
-    EXPECT_FALSE(dialog->GetOpenAsTabbedWindowRadioForTesting());
-  }
 
   dialog->Accept();
 
@@ -234,7 +193,4 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CreateShortcutConfirmationViewBrowserTest,
-                         ::testing::Values(Params{false, false},
-                                           Params{false, true},
-                                           Params{true, false},
-                                           Params{true, true}));
+                         ::testing::Values(Params{false}, Params{true}));

@@ -43,8 +43,6 @@ class AppServiceShortcutIconLoader
   void OnShortcutRegistryCacheWillBeDestroyed(
       apps::ShortcutRegistryCache* cache) override;
 
-  static bool CanLoadImage(Profile* profile, const std::string& id);
-
  protected:
   // Callback invoked when the icon is loaded.
   virtual void OnLoadIcon(const apps::ShortcutId& shortcut_id,

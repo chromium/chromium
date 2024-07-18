@@ -57,14 +57,6 @@ bool ShowRadioButtons() {
          base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings);
 }
 
-bool AllowOpenInWindowOptions() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return !chromeos::features::IsCrosShortstandEnabled();
-#else
-  return true;
-#endif
-}
-
 }  // namespace
 
 // static
@@ -147,51 +139,49 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
 
   const auto display_mode = web_app_info_->user_display_mode;
 
-  if (AllowOpenInWindowOptions()) {
-    // Build the content child views.
-    if (ShowRadioButtons()) {
-      constexpr int kRadioGroupId = 0;
-      builder.AddChildren(
-          views::Builder<views::View>(),  // Skip the first column.
-          views::Builder<views::RadioButton>()
-              .CopyAddressTo(&open_as_tab_radio_)
-              .SetText(l10n_util::GetStringUTF16(
-                  IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TAB))
-              .SetGroup(kRadioGroupId)
-              .SetChecked(display_mode ==
-                          web_app::mojom::UserDisplayMode::kBrowser),
-          views::Builder<views::View>(),  // Column skip.
-          views::Builder<views::RadioButton>()
-              .CopyAddressTo(&open_as_window_radio_)
-              .SetText(l10n_util::GetStringUTF16(
-                  IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
-              .SetGroup(kRadioGroupId)
-              .SetChecked(
-                  display_mode != web_app::mojom::UserDisplayMode::kBrowser &&
-                  display_mode != web_app::mojom::UserDisplayMode::kTabbed),
-          views::Builder<views::View>(),  // Column skip.
-          views::Builder<views::RadioButton>()
-              .CopyAddressTo(&open_as_tabbed_window_radio_)
-              .SetText(l10n_util::GetStringUTF16(
-                  IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW))
-              .SetGroup(kRadioGroupId)
-              .SetChecked(display_mode ==
-                          web_app::mojom::UserDisplayMode::kTabbed));
-    } else {
-      builder.AddChildren(
-          views::Builder<views::View>(),  // Column skip.
-          views::Builder<views::Checkbox>()
-              .CopyAddressTo(&open_as_window_checkbox_)
-              .SetText(l10n_util::GetStringUTF16(
-                  IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
-              .SetChecked(display_mode !=
-                          web_app::mojom::UserDisplayMode::kBrowser));
-    }
+  // Build the content child views.
+  if (ShowRadioButtons()) {
+    constexpr int kRadioGroupId = 0;
+    builder.AddChildren(
+        views::Builder<views::View>(),  // Skip the first column.
+        views::Builder<views::RadioButton>()
+            .CopyAddressTo(&open_as_tab_radio_)
+            .SetText(
+                l10n_util::GetStringUTF16(IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TAB))
+            .SetGroup(kRadioGroupId)
+            .SetChecked(display_mode ==
+                        web_app::mojom::UserDisplayMode::kBrowser),
+        views::Builder<views::View>(),  // Column skip.
+        views::Builder<views::RadioButton>()
+            .CopyAddressTo(&open_as_window_radio_)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
+            .SetGroup(kRadioGroupId)
+            .SetChecked(
+                display_mode != web_app::mojom::UserDisplayMode::kBrowser &&
+                display_mode != web_app::mojom::UserDisplayMode::kTabbed),
+        views::Builder<views::View>(),  // Column skip.
+        views::Builder<views::RadioButton>()
+            .CopyAddressTo(&open_as_tabbed_window_radio_)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_TABBED_WINDOW))
+            .SetGroup(kRadioGroupId)
+            .SetChecked(display_mode ==
+                        web_app::mojom::UserDisplayMode::kTabbed));
+  } else {
+    builder.AddChildren(
+        views::Builder<views::View>(),  // Column skip.
+        views::Builder<views::Checkbox>()
+            .CopyAddressTo(&open_as_window_checkbox_)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_BOOKMARK_APP_BUBBLE_OPEN_AS_WINDOW))
+            .SetChecked(display_mode !=
+                        web_app::mojom::UserDisplayMode::kBrowser));
   }
 
   std::move(builder).BuildChildren();
 
-  if (g_auto_check_open_in_window_for_testing && AllowOpenInWindowOptions()) {
+  if (g_auto_check_open_in_window_for_testing) {
     if (ShowRadioButtons()) {
       open_as_window_radio_->SetChecked(true);
     } else {
@@ -230,26 +220,21 @@ std::u16string CreateShortcutConfirmationView::GetTrimmedTitle() const {
 void CreateShortcutConfirmationView::OnAccept() {
   CHECK(web_app_info_);
   web_app_info_->title = GetTrimmedTitle();
-  if (AllowOpenInWindowOptions()) {
-    if (ShowRadioButtons()) {
-      if (open_as_tabbed_window_radio_->GetChecked()) {
-        web_app_info_->user_display_mode =
-            web_app::mojom::UserDisplayMode::kTabbed;
-      } else {
-        web_app_info_->user_display_mode =
-            open_as_window_radio_->GetChecked()
-                ? web_app::mojom::UserDisplayMode::kStandalone
-                : web_app::mojom::UserDisplayMode::kBrowser;
-      }
+  if (ShowRadioButtons()) {
+    if (open_as_tabbed_window_radio_->GetChecked()) {
+      web_app_info_->user_display_mode =
+          web_app::mojom::UserDisplayMode::kTabbed;
     } else {
       web_app_info_->user_display_mode =
-          open_as_window_checkbox_->GetChecked()
+          open_as_window_radio_->GetChecked()
               ? web_app::mojom::UserDisplayMode::kStandalone
               : web_app::mojom::UserDisplayMode::kBrowser;
     }
   } else {
     web_app_info_->user_display_mode =
-        web_app::mojom::UserDisplayMode::kBrowser;
+        open_as_window_checkbox_->GetChecked()
+            ? web_app::mojom::UserDisplayMode::kStandalone
+            : web_app::mojom::UserDisplayMode::kBrowser;
   }
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   // Some tests repeatedly create this class, and it's not guaranteed this class

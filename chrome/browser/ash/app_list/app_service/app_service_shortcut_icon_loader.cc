@@ -32,21 +32,8 @@ AppServiceShortcutIconLoader::AppServiceShortcutIconLoader(
 AppServiceShortcutIconLoader::~AppServiceShortcutIconLoader() = default;
 
 bool AppServiceShortcutIconLoader::CanLoadImageForApp(const std::string& id) {
-  return AppServiceShortcutIconLoader::CanLoadImage(profile(), id);
-}
-
-// static
-bool AppServiceShortcutIconLoader::CanLoadImage(Profile* profile,
-                                                const std::string& id) {
-  if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-    return false;
-  }
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return false;
-  }
-  return apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->ShortcutRegistryCache()
-      ->HasShortcut(apps::ShortcutId(id));
+  // TODO(b/353891727): Remove AppServiceShortcutIconLoader and related classes
+  return false;
 }
 
 void AppServiceShortcutIconLoader::FetchImage(const std::string& id) {

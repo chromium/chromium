@@ -352,7 +352,7 @@ bool IsCrosMallSwaEnabled() {
 
 bool IsCrosShortstandEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsCrosShortstandEnabled();
+  return false;
 #else
   return base::FeatureList::IsEnabled(kCrosShortstand);
 #endif
@@ -363,8 +363,7 @@ bool IsCrosWebAppShortcutUiUpdateEnabled() {
     return true;
   }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->IsCrosWebAppShortcutUiUpdateEnabled();
+  return false;
 #else
   return base::FeatureList::IsEnabled(kCrosWebAppShortcutUiUpdate);
 #endif

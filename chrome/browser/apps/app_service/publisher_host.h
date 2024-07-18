@@ -14,9 +14,6 @@
 
 namespace web_app {
 class WebApps;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class BrowserShortcuts;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace web_app
 
 namespace apps {
@@ -29,7 +26,6 @@ class CrostiniApps;
 class ExtensionAppsChromeOs;
 class PluginVmApps;
 class StandaloneBrowserApps;
-class BrowserShortcutsCrosapiPublisher;
 #else
 class ExtensionApps;
 #endif
@@ -46,8 +42,6 @@ class PublisherHost {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::StandaloneBrowserApps* StandaloneBrowserApps();
-
-  apps::BrowserShortcutsCrosapiPublisher* BrowserShortcutsCrosapiPublisher();
 
   void SetArcIsRegistered();
 
@@ -74,9 +68,6 @@ class PublisherHost {
   std::unique_ptr<PluginVmApps> plugin_vm_apps_;
   std::unique_ptr<apps::StandaloneBrowserApps> standalone_browser_apps_;
   std::unique_ptr<web_app::WebApps> web_apps_;
-  std::unique_ptr<web_app::BrowserShortcuts> browser_shortcuts_;
-  std::unique_ptr<apps::BrowserShortcutsCrosapiPublisher>
-      browser_shortcuts_crosapi_publisher_;
 #else
   std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<ExtensionApps> chrome_apps_;

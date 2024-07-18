@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/publishers/browser_shortcuts_crosapi_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
@@ -448,14 +447,8 @@ void CrosapiAsh::BindBrowserServiceHost(
 
 void CrosapiAsh::BindBrowserShortcutPublisher(
     mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  apps::BrowserShortcutsCrosapiPublisher* browser_shortcuts =
-      app_service_proxy->BrowserShortcutsCrosapiPublisher();
-  if (browser_shortcuts) {
-    browser_shortcuts->RegisterCrosapiHost(std::move(receiver));
-  }
+  // TODO(b/352513798): Remove after M131.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void CrosapiAsh::BindBrowserVersionService(

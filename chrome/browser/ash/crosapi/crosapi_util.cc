@@ -931,11 +931,11 @@ void InjectBrowserInitParams(
   params->is_desk_profiles_enabled =
       chromeos::features::IsDeskProfilesEnabled();
 
-  params->is_cros_web_app_shortcut_ui_update_enabled =
-      chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled();
+  // TODO(b/352513798): Remove in M131.
+  params->is_cros_web_app_shortcut_ui_update_enabled = false;
 
-  params->is_cros_shortstand_enabled =
-      chromeos::features::IsCrosShortstandEnabled();
+  // TODO(b/352513798): Remove in M131.
+  params->is_cros_shortstand_enabled = false;
 
   params->should_disable_chrome_compose_on_chromeos =
       chromeos::features::ShouldDisableChromeComposeOnChromeOS();

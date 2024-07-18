@@ -80,7 +80,6 @@
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_icon_loader.h"
-#include "chrome/browser/ash/app_list/app_service/app_service_shortcut_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -154,7 +153,6 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
@@ -166,8 +164,6 @@
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sync/base/model_type.h"
@@ -6516,220 +6512,6 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemCreationUpdatesMetrics) {
   histogram_tester.ExpectBucketCount(
       apps::kPromiseAppLifecycleEventHistogram,
       apps::PromiseAppLifecycleEvent::kCreatedInShelf, 1);
-}
-
-class ChromeShelfControllerShortcutTest : public ChromeShelfControllerTest {
- public:
-  ChromeShelfControllerShortcutTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kCrosWebAppShortcutUiUpdate);
-  }
-  ~ChromeShelfControllerShortcutTest() override = default;
-
-  apps::ShortcutRegistryCache* cache() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->ShortcutRegistryCache();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ChromeShelfControllerShortcutTest, UpdateTitle) {
-  apps::ShortcutPtr shortcut =
-      std::make_unique<apps::Shortcut>(app_constants::kChromeAppId, "local_id");
-  apps::ShortcutId shortcut_id = shortcut->shortcut_id;
-  shortcut->name = "Name";
-  cache()->UpdateShortcut(std::move(shortcut));
-
-  // Create a shelf item for the shortcut.
-  InitShelfController();
-  PinAppWithIDToShelf(shortcut_id.value());
-
-  // Verify the details of the shelf item.
-  EXPECT_TRUE(model_->IsAppPinned(shortcut_id.value()));
-  ash::ShelfID id(shortcut_id.value());
-  const ash::ShelfItem* item = shelf_controller_->GetItem(id);
-  EXPECT_EQ(item->title, std::u16string(u"Name"));
-  EXPECT_EQ(item->accessible_name,
-            u"Name, " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-
-  // Update shortcut title.
-  apps::ShortcutPtr update =
-      std::make_unique<apps::Shortcut>(app_constants::kChromeAppId, "local_id");
-  update->name = "NewName";
-  cache()->UpdateShortcut(std::move(update));
-
-  // Verify that the shelf item has updated details.
-  const ash::ShelfItem* item_after_update = shelf_controller_->GetItem(id);
-  EXPECT_EQ(item_after_update->title, std::u16string(u"NewName"));
-  EXPECT_EQ(item->accessible_name,
-            u"NewName, " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-}
-
-TEST_F(ChromeShelfControllerShortcutTest, ShortcutRemoved) {
-  apps::ShortcutPtr shortcut =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
-  apps::ShortcutId shortcut_id = shortcut->shortcut_id;
-  shortcut->name = "Name";
-  cache()->UpdateShortcut(std::move(shortcut));
-
-  // Create a shelf item for the shortcut.
-  InitShelfController();
-  PinAppWithIDToShelf(shortcut_id.value());
-
-  // Verify the details of the shelf item.
-  ASSERT_TRUE(model_->IsAppPinned(shortcut_id.value()));
-  ash::ShelfID id(shortcut_id.value());
-  ASSERT_TRUE(shelf_controller_->GetItem(id));
-
-  cache()->RemoveShortcut(shortcut_id);
-  EXPECT_FALSE(model_->IsAppPinned(shortcut_id.value()));
-  EXPECT_FALSE(shelf_controller_->GetItem(id));
-}
-
-TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
-  InitShelfController();
-
-  apps::ShortcutPtr shortcut =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
-  shortcut->name = "Name";
-  apps::ShortcutId shortcut_id = shortcut->shortcut_id;
-  shortcut->icon_key = apps::IconKey();
-  shortcut->icon_key->update_version = false;
-
-  apps::StubIconLoader shortcut_stub_icon_loader;
-  apps::StubIconLoader app_stub_icon_loader;
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->OverrideShortcutInnerIconLoaderForTesting(&shortcut_stub_icon_loader);
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader);
-  shortcut_stub_icon_loader.update_version_by_app_id_[shortcut_id.value()] = 1;
-  app_stub_icon_loader.update_version_by_app_id_["app_id"] = 1;
-  EXPECT_EQ(0, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_EQ(0, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-
-  gfx::ImageSkia stub_icon(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
-  gfx::ImageSkia expected_image =
-      gfx::ImageSkiaOperations::CreateIconWithBadge(stub_icon, stub_icon);
-
-  cache()->UpdateShortcut(std::move(shortcut));
-  PinAppWithIDToShelf(shortcut_id.value());
-
-  // Verify icon loaded when shelf item added.
-  ash::ShelfID id(shortcut_id.value());
-  const ash::ShelfItem* item = shelf_controller_->GetItem(id);
-  ASSERT_TRUE(item);
-
-  EXPECT_EQ(1, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_EQ(1, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_FALSE(item->image.isNull());
-  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
-                                        gfx::Image(item->image)));
-
-  // Set the image to a different icon so that we can verify the updates.
-  shelf_controller_->SetItemImage(id, stub_icon);
-
-  // Verify icon update loads icon again.
-  apps::ShortcutPtr delta =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
-  delta->icon_key = apps::IconKey(apps::IconKey::kInvalidResourceId,
-                                  apps::IconEffects::kCrOsStandardIcon);
-  delta->icon_key->update_version = true;
-  cache()->UpdateShortcut(std::move(delta));
-
-  EXPECT_EQ(2, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_EQ(2, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_FALSE(item->image.isNull());
-  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
-                                        gfx::Image(item->image)));
-
-  apps::ShortcutPtr delta_no_icon_update =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
-  delta_no_icon_update->name = "NewName";
-  cache()->UpdateShortcut(std::move(delta_no_icon_update));
-
-  // Verify the icon is not updated.
-  EXPECT_EQ(2, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_EQ(2, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_FALSE(item->image.isNull());
-  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
-                                        gfx::Image(item->image)));
-
-  // Set the image to a different icon so that we can verify the updates.
-  shelf_controller_->SetItemImage(id, stub_icon);
-
-  // Verify unpin then pin shortcut loads icon again.
-  UnpinAppWithIDFromShelf(shortcut_id.value());
-  PinAppWithIDToShelf(shortcut_id.value());
-  EXPECT_EQ(3, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_EQ(3, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-
-  item = shelf_controller_->GetItem(id);
-  ASSERT_TRUE(item);
-  EXPECT_FALSE(item->image.isNull());
-  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
-                                        gfx::Image(item->image)));
-
-  // Set the image to a different icon so that we can verify the updates.
-  shelf_controller_->SetItemImage(id, stub_icon);
-
-  // Verify UpdateItemImage uses the cache in memory and does not load icon
-  // again.
-  shelf_controller_->UpdateItemImage(shortcut_id.value());
-  EXPECT_EQ(3, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_EQ(3, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_FALSE(item->image.isNull());
-  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
-                                        gfx::Image(item->image)));
-
-  // Set the image to a different icon so that we can verify the updates.
-  shelf_controller_->SetItemImage(id, stub_icon);
-
-  // Verify remove then recreate the shortcut again still shows icon.
-  cache()->RemoveShortcut(shortcut_id);
-  apps::ShortcutPtr same_shortcut =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
-  same_shortcut->icon_key = apps::IconKey();
-  same_shortcut->icon_key->update_version = false;
-  cache()->UpdateShortcut(std::move(same_shortcut));
-  // In this case icon loaded on shortcut creation.
-  EXPECT_EQ(4, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-  EXPECT_EQ(4, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
-
-  PinAppWithIDToShelf(shortcut_id.value());
-  EXPECT_FALSE(item->image.isNull());
-  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(expected_image),
-                                        gfx::Image(item->image)));
-}
-
-TEST_F(ChromeShelfControllerShortcutTest, PinStatusSynced) {
-  apps::ShortcutPtr shortcut =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
-  apps::ShortcutId shortcut_id = shortcut->shortcut_id;
-  shortcut->name = "Name";
-  cache()->UpdateShortcut(std::move(shortcut));
-
-  // Create a shelf item for the shortcut.
-  InitShelfController();
-  PinAppWithIDToShelf(shortcut_id.value());
-  EXPECT_TRUE(app_list_syncable_service_->GetPinPosition(shortcut_id.value())
-                  .IsValid());
-
-  // Verify restart the session kept the sync location.
-  syncer::SyncDataList copy_sync_list =
-      app_list_syncable_service_->GetAllSyncDataForTesting();
-
-  ResetShelfController();
-  SendPinChanges(syncer::SyncChangeList(), true);
-  StopAppSyncService();
-
-  EXPECT_EQ(0U, app_list_syncable_service_->sync_items().size());
-
-  StartAppSyncService(copy_sync_list);
-  RecreateShelfController()->Init();
-
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(shortcut_id.value()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

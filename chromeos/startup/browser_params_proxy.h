@@ -158,10 +158,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsDeskProfilesEnabled() const;
 
-  bool IsCrosWebAppShortcutUiUpdateEnabled() const;
-
-  bool IsCrosShortstandEnabled() const;
-
   bool ShouldDisableChromeComposeOnChromeOS() const;
 
   bool IsCaptivePortalPopupWindowEnabled() const;

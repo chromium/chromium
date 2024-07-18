@@ -343,14 +343,6 @@ bool BrowserParamsProxy::IsDeskProfilesEnabled() const {
   return BrowserInitParams::Get()->is_desk_profiles_enabled;
 }
 
-bool BrowserParamsProxy::IsCrosWebAppShortcutUiUpdateEnabled() const {
-  return BrowserInitParams::Get()->is_cros_web_app_shortcut_ui_update_enabled;
-}
-
-bool BrowserParamsProxy::IsCrosShortstandEnabled() const {
-  return BrowserInitParams::Get()->is_cros_shortstand_enabled;
-}
-
 bool BrowserParamsProxy::ShouldDisableChromeComposeOnChromeOS() const {
   return BrowserInitParams::Get()->should_disable_chrome_compose_on_chromeos;
 }

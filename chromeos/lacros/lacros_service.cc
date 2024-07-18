@@ -294,10 +294,6 @@ LacrosService::LacrosService()
                   Crosapi::MethodMinVersions::kBindAppServiceProxyMinVersion>();
   ConstructRemote<crosapi::mojom::AudioService, &Crosapi::BindAudioService,
                   Crosapi::MethodMinVersions::kBindAudioServiceMinVersion>();
-  ConstructRemote<
-      crosapi::mojom::AppShortcutPublisher,
-      &Crosapi::BindBrowserShortcutPublisher,
-      Crosapi::MethodMinVersions::kBindBrowserShortcutPublisherMinVersion>();
   ConstructRemote<crosapi::mojom::CecPrivate, &Crosapi::BindCecPrivate,
                   Crosapi::MethodMinVersions::kBindCecPrivateMinVersion>();
   ConstructRemote<
