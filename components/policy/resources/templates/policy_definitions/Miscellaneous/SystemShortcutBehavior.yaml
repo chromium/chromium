@@ -7,6 +7,10 @@ desc: |-
   If this policy is set to <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS">ShouldIgnoreCommonVdiShortcuts</ph>, a predetermined list of Launcher key shortcuts will never activate a shortcut.
 
   If this policy is set to <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY">ShouldIgnoreCommonVdiShortcutsFullscreenOnly</ph>, a predetermined list of Launcher key shortcuts will never activate a shortcut while an app is fullscreen.
+
+  If this policy is set to <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCUTS">AllowPassthroughOfSearchBasedShortcuts</ph>, shortcuts with the Search key flow through to apps and are not consumed by the OS.
+
+  If this policy is set to <ph name="ALLOW_PASSTHROUGH_OF_SEARCH_BASED_SHORTCUTS_FULLSCREEN_ONLY">AllowPassthroughOfSearchBasedShortcutsFullscreenOnly</ph>, shortcuts with the Search key flow through to apps and are not consumed by the OS, but only when the focused app is fullscreen.
 default: 0
 example_value: 0
 features:
@@ -22,6 +26,13 @@ items:
 - caption: A predetermined list of shortcuts with the launcher key will never perform an action while fullscreen only.
   name: ShouldIgnoreCommonVdiShortcutsFullscreenOnly
   value: 2
+- caption: Shortcuts with the search key are sent to the app first before being handled by the OS.
+  name: AllowPassthroughOfSearchBasedShortcuts
+  value: 3
+- caption: Shortcuts with the search key are sent to the app first before being handled by the OS only when the focused app is fullscreen.
+  name: AllowPassthroughOfSearchBasedShortcutsFullscreenOnly
+  value: 4
+
 owners:
 - gavinwill@google.com
 - dpad@google.com
@@ -31,6 +42,8 @@ schema:
   - 0
   - 1
   - 2
+  - 3
+  - 4
   type: integer
 supported_on:
 - chrome_os:128-

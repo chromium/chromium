@@ -17,7 +17,9 @@ enum class SystemShortcutBehaviorType {
   kMinValue = kNormalShortcutBehavior,
   kIgnoreCommonVdiShortcuts = 1,
   kIgnoreCommonVdiShortcutsFullscreenOnly = 2,
-  kMaxValue = kIgnoreCommonVdiShortcutsFullscreenOnly,
+  kAllowSearchBasedPassthrough = 3,
+  kAllowSearchBasedPassthroughFullscreenOnly = 4,
+  kMaxValue = kAllowSearchBasedPassthroughFullscreenOnly,
 };
 
 // Registers profile prefs for system shortcuts behavior. This is set by a

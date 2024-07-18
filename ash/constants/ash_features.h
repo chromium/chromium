@@ -943,6 +943,8 @@ enum class SystemShortcutBehaviorParam {
   kNormalShortcutBehavior,
   kIgnoreCommonVdiShortcutList,
   kIgnoreCommonVdiShortcutListFullscreenOnly,
+  kAllowSearchBasedPassthrough,
+  kAllowSearchBasedPassthroughFullscreenOnly,
 };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<SystemShortcutBehaviorParam>

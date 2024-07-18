@@ -50,6 +50,14 @@ bool UnhandledKeyboardEventHandler::HandleKeyboardEvent(
     ignore_next_char_event_ = false;
   }
 
+  if (event.GetType() == blink::WebInputEvent::Type::kKeyUp) {
+    const ui::Accelerator accelerator =
+        ui::GetAcceleratorFromNativeWebKeyboardEvent(event);
+    if (focus_manager->ProcessAccelerator(accelerator)) {
+      return true;
+    }
+  }
+
   if (event.os_event) {
     return HandleNativeKeyboardEvent(event, focus_manager);
   }

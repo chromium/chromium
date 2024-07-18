@@ -32,6 +32,12 @@ SystemShortcutBehaviorType GetSystemShortcutBehaviorFromFlags() {
         kIgnoreCommonVdiShortcutListFullscreenOnly:
       return SystemShortcutBehaviorType::
           kIgnoreCommonVdiShortcutsFullscreenOnly;
+    case features::SystemShortcutBehaviorParam::kAllowSearchBasedPassthrough:
+      return SystemShortcutBehaviorType::kAllowSearchBasedPassthrough;
+    case features::SystemShortcutBehaviorParam::
+        kAllowSearchBasedPassthroughFullscreenOnly:
+      return SystemShortcutBehaviorType::
+          kAllowSearchBasedPassthroughFullscreenOnly;
   }
 }
 

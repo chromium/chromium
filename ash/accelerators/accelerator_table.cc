@@ -180,7 +180,7 @@ const size_t kPreferredActionsLength = std::size(kPreferredActions);
 const AcceleratorAction kReservedActions[] = {
     AcceleratorAction::kPowerPressed, AcceleratorAction::kPowerReleased,
     AcceleratorAction::kLockPressed,  AcceleratorAction::kLockReleased,
-    AcceleratorAction::kSuspend,
+    AcceleratorAction::kSuspend,      AcceleratorAction::kLockScreen,
 };
 
 const size_t kReservedActionsLength = std::size(kReservedActions);

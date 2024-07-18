@@ -59,7 +59,6 @@ constexpr uint32_t kShiftMask = 1 << 0;
 constexpr uint32_t kControlMask = 1 << 2;
 constexpr uint32_t kAltMask = 1 << 3;
 constexpr uint32_t kNumLockMask = 1 << 4;
-constexpr uint32_t kCommandMask = 1 << 6;
 
 class KeyboardTest : public test::ExoTestBase {
  public:
@@ -1608,7 +1607,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
   // Register accelerator to be triggered.
   ui::TestAcceleratorTarget accelerator_target;
   {
-    ui::Accelerator accelerator(ui::VKEY_LWIN, 0,
+    ui::Accelerator accelerator(ui::VKEY_CONTROL, 0,
                                 ui::Accelerator::KeyState::RELEASED);
     ash::AcceleratorControllerImpl* controller =
         ash::Shell::Get()->accelerator_controller();
@@ -1638,16 +1637,16 @@ TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   keyboard.SetNeedKeyboardKeyAcks(true);
 
-  // Press SEARCH key.
+  // Press CONTROL key.
   EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kCommandMask | kNumLockMask, 0, 0, 0}));
+                                 kControlMask | kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(*delegate_ptr,
-              OnKeyboardKey(testing::_, ui::DomCode::META_LEFT, true))
+              OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, true))
       .WillOnce(testing::Return(1));
 
   seat.set_physical_code_for_currently_processing_event_for_testing(
-      ui::DomCode::META_LEFT);
-  generator.PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
+      ui::DomCode::CONTROL_LEFT);
+  generator.PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN);
   // SEARCH key can be used as a modifier, so it is handled in release event.
   // Thus accelerator handler should not be triggered.
   EXPECT_EQ(0, accelerator_target.accelerator_count());
@@ -1663,9 +1662,9 @@ TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(*delegate_ptr,
-              OnKeyboardKey(testing::_, ui::DomCode::META_LEFT, false))
+              OnKeyboardKey(testing::_, ui::DomCode::CONTROL_LEFT, false))
       .WillOnce(testing::Return(2));
-  generator.ReleaseKey(ui::VKEY_LWIN, 0);
+  generator.ReleaseKey(ui::VKEY_CONTROL, 0);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
   // Now the accelerator should be handled.
   EXPECT_EQ(1, accelerator_target.accelerator_count());

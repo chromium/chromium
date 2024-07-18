@@ -2943,7 +2943,11 @@ const base::FeatureParam<
     {SystemShortcutBehaviorParam::kIgnoreCommonVdiShortcutList,
      "ignore_common_vdi_shortcuts"},
     {SystemShortcutBehaviorParam::kIgnoreCommonVdiShortcutListFullscreenOnly,
-     "ignore_common_vdi_shortcut_fullscreen_only"}};
+     "ignore_common_vdi_shortcut_fullscreen_only"},
+    {SystemShortcutBehaviorParam::kAllowSearchBasedPassthrough,
+     "allow_search_based_passthrough"},
+    {SystemShortcutBehaviorParam::kAllowSearchBasedPassthroughFullscreenOnly,
+     "allow_search_based_passthrough_fullscreen_only"}};
 const base::FeatureParam<SystemShortcutBehaviorParam>
     kSystemShortcutBehaviorParam{
         &kSystemShortcutBehavior, "behavior_type",

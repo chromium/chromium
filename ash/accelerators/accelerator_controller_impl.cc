@@ -376,6 +376,8 @@ bool IsShortcutBlockedByPolicy(ui::Accelerator accelerator) {
   auto system_shortcut_behavior = GetSystemShortcutBehavior();
   switch (system_shortcut_behavior) {
     case SystemShortcutBehaviorType::kNormalShortcutBehavior:
+    case SystemShortcutBehaviorType::kAllowSearchBasedPassthrough:
+    case SystemShortcutBehaviorType::kAllowSearchBasedPassthroughFullscreenOnly:
       return false;
     // Common VDI shortcuts should always be blocked for this case.
     case SystemShortcutBehaviorType::kIgnoreCommonVdiShortcuts:

@@ -3057,6 +3057,12 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kSystemShortcutBehaviorIgnoreCommonVdiShortcutsFullscreenOnly[] = {
         {"behavior_type", "ignore_common_vdi_shortcut_fullscreen_only"}};
+const FeatureEntry::FeatureParam
+    kSystemShortcutBehaviorAllowSearchBasedPassthrough[] = {
+        {"behavior_type", "allow_search_based_passthrough"}};
+const FeatureEntry::FeatureParam
+    kSystemShortcutBehaviorAllowSearchBasedPassthroughFullscreenOnly[] = {
+        {"behavior_type", "allow_search_based_passthrough_fullscreen_only"}};
 
 const FeatureEntry::FeatureVariation kSystemShortcutBehaviorVariations[] = {
     {"Ignore Common VDI Shortcuts",
@@ -3065,7 +3071,16 @@ const FeatureEntry::FeatureVariation kSystemShortcutBehaviorVariations[] = {
     {"Ignore Common VDI Shortcuts while Fullscreen",
      kSystemShortcutBehaviorIgnoreCommonVdiShortcutsFullscreenOnly,
      std::size(kSystemShortcutBehaviorIgnoreCommonVdiShortcutsFullscreenOnly),
-     nullptr}};
+     nullptr},
+    {"Allow Search Based Passthrough",
+     kSystemShortcutBehaviorAllowSearchBasedPassthrough,
+     std::size(kSystemShortcutBehaviorAllowSearchBasedPassthrough), nullptr},
+    {"Allow Search Based Passthrough while Fullscreen",
+     kSystemShortcutBehaviorAllowSearchBasedPassthroughFullscreenOnly,
+     std::size(
+         kSystemShortcutBehaviorAllowSearchBasedPassthroughFullscreenOnly),
+     nullptr},
+};
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
