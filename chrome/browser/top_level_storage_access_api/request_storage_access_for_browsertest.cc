@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/top_level_storage_access_api/top_level_storage_access_permission_context.h"
@@ -842,6 +843,37 @@ IN_PROC_BROWSER_TEST_F(
                                             /*cors_enabled=*/true),
             "cross-site=b.test");
   // Subresource request from iframe does not have cookie access.
+  EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
+                                            /*cors_enabled=*/true),
+            "");
+}
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       RequestExplicitlyDeniedResourceInFirstPartySet) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  // Set cross-site cookies on all hosts.
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+
+  // Block cookies at origin in browser settings
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetContentSettingDefaultScope(GetURL(kHostB), GetURL(kHostB),
+                                      ContentSettingsType::COOKIES,
+                                      CONTENT_SETTING_BLOCK);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  // Attempt to request storage access for kHostB from kHostA.
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kRequestOutcomeHistogram,
+                  TopLevelStorageAccessRequestOutcome::kDeniedByCookieSettings),
+              Gt(0));
+
+  // Verify that no cookies were sent.
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "");

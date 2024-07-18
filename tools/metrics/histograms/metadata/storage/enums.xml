@@ -520,6 +520,7 @@ chromium-metrics-reviews@google.com.
       label="Denied by missing prerequisite (user gesture, feature enabled)"/>
   <int value="6" label="(Obsolete) Dismissed by user"/>
   <int value="7" label="(Obsolete) Reused previous decision (made by user)"/>
+  <int value="8" label="Access was denied through cookie settings"/>
 </enum>
 
 </enums>

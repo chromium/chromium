@@ -116,6 +116,20 @@ void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
           TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
       return;
     }
+    // Determine if user specifically denied cookie access in this context.
+    HostContentSettingsMap* settings_map =
+        HostContentSettingsMapFactory::GetForProfile(browser_context());
+    ContentSetting cookie_setting = settings_map->GetContentSetting(
+        request_data.requesting_origin, request_data.embedding_origin,
+        ContentSettingsType::COOKIES);
+    if (cookie_setting == CONTENT_SETTING_BLOCK) {
+      NotifyPermissionSetInternal(
+          request_data.id, request_data.requesting_origin,
+          request_data.embedding_origin, std::move(callback),
+          /*persist=*/false, CONTENT_SETTING_BLOCK,
+          TopLevelStorageAccessRequestOutcome::kDeniedByCookieSettings);
+      return;
+    }
     // Since the sites are in the same First-Party Set, risk of abuse due to
     // allowing access is considered to be low.
     NotifyPermissionSetInternal(
