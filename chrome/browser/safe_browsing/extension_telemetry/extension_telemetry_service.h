@@ -139,8 +139,12 @@ class ExtensionTelemetryService : public KeyedService {
       extensions::ExtensionId,
       std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>>;
 
-  // Called when prefs that affect extension telemetry service are changed.
-  void OnPrefChanged();
+  // Called when the pref that affects ESB telemetry reporting is changed.
+  void OnESBPrefChanged();
+
+  // Called when the policy that affects enterprise telemetry reporting is
+  // changed.
+  void OnEnterprisePolicyChanged();
 
   // Helper method to add and process an extension signal. Shared by both ESB
   // and enterprise reporting.
@@ -382,6 +386,9 @@ class ExtensionTelemetryService : public KeyedService {
 
   // Used for periodic collection of enterprise telemetry reports.
   base::RepeatingTimer enterprise_timer_;
+
+  // Indicates whether |Shutdown| has been called.
+  bool is_shutdown_ = false;
 
   friend class ExtensionTelemetryServiceTest;
   friend class ExtensionTelemetryServiceBrowserTest;

@@ -129,6 +129,11 @@ BASE_FEATURE(kExtensionTelemetryForEnteprise,
              "SafeBrowsingExtensionTelemetryForEnteprise",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+const base::FeatureParam<int>
+    kExtensionTelemetryEnterpriseReportingIntervalSeconds{
+        &kExtensionTelemetryForEnteprise, "EnterpriseReportingIntervalSeconds",
+        /*default_value=*/300};
+
 BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
              "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
              base::FEATURE_ENABLED_BY_DEFAULT);

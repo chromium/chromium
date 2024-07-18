@@ -10,14 +10,22 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
+#include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -156,10 +164,18 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
     return telemetry_service_->GetExtensionInfoForReport(extension);
   }
 
+  PrefService* prefs() { return profile_.GetPrefs(); }
+
+  void TearDown() override {
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        &profile_)
+        ->SetBrowserCloudPolicyClientForTesting(nullptr);
+  }
+
   // Test directory that serves as the root directory for all test extension
   // files.
   base::ScopedTempDir extensions_root_dir_;
-  base::test::ScopedFeatureList scoped_feature_list;
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -167,17 +183,37 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  std::unique_ptr<policy::MockCloudPolicyClient> cloud_policy_client_;
   base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(20);
 };
 
 ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
     : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kExtensionTelemetryDisableOffstoreExtensions,
+                            kExtensionTelemetryFileDataForCommandLineExtensions,
+                            kExtensionTelemetryForEnteprise},
+      /*disabled_features=*/{});
+
   // Create extension prefs and registry instances.
   extension_prefs_ = extensions::ExtensionPrefs::Get(&profile_);
   extension_registry_ = extensions::ExtensionRegistry::Get(&profile_);
 
-  profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  // TODO(crbug.com/339658287): set the policy setting for enterprise to false.
+  // Set up and enable ESB telemetry reporting by default.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  // Set up and disable enteprise telemetry reporting by default.
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm-token"));
+  cloud_policy_client_ = std::make_unique<policy::MockCloudPolicyClient>();
+  cloud_policy_client_->SetDMToken("dm-token");
+  enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
+      ->SetTestingFactory(&profile_,
+                          base::BindRepeating(&BuildRealtimeReportingClient));
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+      &profile_)
+      ->SetBrowserCloudPolicyClientForTesting(cloud_policy_client_.get());
+  enterprise_connectors::test::SetOnSecurityEventReporting(/*prefs=*/prefs(),
+                                                           /*enabled=*/false);
 
   // Create fake extension service instance.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -281,25 +317,53 @@ void ExtensionTelemetryServiceTest::PrimeTelemetryServiceWithSignal() {
   telemetry_service_->AddSignal(std::move(signal));
 }
 
-// TODO(crbug.com/339658287): Update test for enable/disable enterprise cases
-// once implemented.
 TEST_F(ExtensionTelemetryServiceTest, CheckEnableConditionsForESB) {
   // Test fixture enables ESB and creates telemetry service.
-  // Verify that service is enabled.
+  // Verify that service is enabled for ESB users.
   EXPECT_TRUE(IsTelemetryServiceEnabledForESB());
 
-  // Disable ESB, service should become disabled.
-  profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  // Disable ESB. Verify that ESB reporting is disabled.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   EXPECT_FALSE(IsTelemetryServiceEnabledForESB());
 
-  // Destruct and restart service and verify that it starts disabled.
+  // Destruct and restart service and verify that it starts disabled for ESB
+  // users.
   telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
       &profile_, test_url_loader_factory_.GetSafeWeakWrapper());
   EXPECT_FALSE(IsTelemetryServiceEnabledForESB());
 
-  // Re-enable ESB, service should become enabled.
-  profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  // Re-enable ESB. Verify that ESB reporting is enabled.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   EXPECT_TRUE(IsTelemetryServiceEnabledForESB());
+}
+
+TEST_F(ExtensionTelemetryServiceTest, CheckEnableConditionsForEnterprise) {
+  // Test fixture disables enterprise policy for telemetry reports and creates
+  // telemetry service. Verify that enterprise reporting is disabled.
+  EXPECT_FALSE(IsTelemetryServiceEnabledForEnterprise());
+
+  // Enable enterprise policy. Verify that enterprise reporting is enabled.
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/
+      {enterprise_connectors::kExtensionTelemetryEvent},
+      /*enabled_opt_in_events=*/{});
+  EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+
+  // Destruct and restart service and verify that it starts enabled.
+  telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
+      &profile_, test_url_loader_factory_.GetSafeWeakWrapper());
+  EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+
+  // Disable enterprise policy. Verify that enterprise reporting is disabled.
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/false,
+      /*enabled_event_names=*/
+      {},
+      /*enabled_opt_in_events=*/{});
+  EXPECT_FALSE(IsTelemetryServiceEnabledForEnterprise());
 }
 
 TEST_F(ExtensionTelemetryServiceTest, ProcessesSignal) {
@@ -318,7 +382,12 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignal) {
 }
 
 TEST_F(ExtensionTelemetryServiceTest, ProcessesSignalForEnterprise) {
-  telemetry_service_->SetEnabledForEnterprise(true);
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/
+      {enterprise_connectors::kExtensionTelemetryEvent},
+      /*enabled_opt_in_events=*/{});
   PrimeTelemetryServiceWithSignal();
   // Verify that the registered extension information is saved in the
   // telemetry service's enterprise extension store.
@@ -358,8 +427,8 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesReportAtProperIntervals) {
     // Check that extension store still has extension info stored before
     // reporting interval elapses.
     base::TimeDelta interval = telemetry_service_->current_reporting_interval();
-    profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
-                                 base::Time::NowFromSystemTime());
+    prefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                     base::Time::NowFromSystemTime());
     task_environment_.FastForwardBy(interval - base::Seconds(1));
     {
       const ExtensionInfo* info =
@@ -422,8 +491,9 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithNoSignals) {
 TEST_F(ExtensionTelemetryServiceTest,
        GeneratesTelemetryReportWithSignalForESBOnly) {
   // Enable ESB, disable enterprise.
-  profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  telemetry_service_->SetEnabledForEnterprise(false);
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  enterprise_connectors::test::SetOnSecurityEventReporting(/*prefs=*/prefs(),
+                                                           /*enabled=*/false);
   PrimeTelemetryServiceWithSignal();
 
   // Since enterprise is disabled and no signals is added for enterprise, verify
@@ -464,8 +534,13 @@ TEST_F(ExtensionTelemetryServiceTest,
 TEST_F(ExtensionTelemetryServiceTest,
        GeneratesTelemetryReportWithSignalForEnterpriseOnly) {
   // Disable ESB, enable enterprise.
-  profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
-  telemetry_service_->SetEnabledForEnterprise(true);
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/
+      {enterprise_connectors::kExtensionTelemetryEvent},
+      /*enabled_opt_in_events=*/{});
   PrimeTelemetryServiceWithSignal();
 
   // Since ESB is disabled, verify that extension store is empty and no ESB
@@ -502,8 +577,13 @@ TEST_F(ExtensionTelemetryServiceTest,
 TEST_F(ExtensionTelemetryServiceTest,
        GeneratesTelemetryReportWithSignalForESBAndEnterprise) {
   // Enable ESB and enterprise.
-  profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  telemetry_service_->SetEnabledForEnterprise(true);
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/
+      {enterprise_connectors::kExtensionTelemetryEvent},
+      /*enabled_opt_in_events=*/{});
   PrimeTelemetryServiceWithSignal();
 
   std::unique_ptr<TelemetryReport> esb_telemetry_report = GetTelemetryReport();
@@ -532,7 +612,7 @@ TEST_F(ExtensionTelemetryServiceTest,
   EXPECT_FALSE(telemetry_report_pb->developer_mode_enabled());
 
   // Set developer mode pref to true and generate another telemetry report.
-  profile_.GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  prefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
   task_environment_.FastForwardBy(
       telemetry_service_->current_reporting_interval());
 
@@ -722,8 +802,8 @@ TEST_F(ExtensionTelemetryServiceTest, PersistsReportOnFailedUpload) {
   // Setting up the persister, signals, upload/write intervals, and the
   // uploader itself.
   base::TimeDelta interval = telemetry_service_->current_reporting_interval();
-  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
-                               base::Time::NowFromSystemTime());
+  prefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                   base::Time::NowFromSystemTime());
   test_url_loader_factory_.AddResponse(
       ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy",
       net::HTTP_BAD_REQUEST);
@@ -742,8 +822,8 @@ TEST_F(ExtensionTelemetryServiceTest, NoReportPersistedIfUploadSucceeds) {
   // is used to create a report which is then uploaded. If the upload succeeds,
   // there is no need to persist anything.
   base::TimeDelta interval = telemetry_service_->current_reporting_interval();
-  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
-                               base::Time::NowFromSystemTime());
+  prefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                   base::Time::NowFromSystemTime());
   test_url_loader_factory_.AddResponse(
       ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy", net::HTTP_OK);
   // Fast forward a reporting interval, there should be no files persisted after
@@ -764,8 +844,8 @@ TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnInterval) {
   telemetry_service_->num_checks_per_upload_interval_ = 4;
   telemetry_service_->SetEnabledForESB(true);
   base::TimeDelta interval = telemetry_service_->current_reporting_interval();
-  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
-                               base::Time::NowFromSystemTime());
+  prefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                   base::Time::NowFromSystemTime());
   test_url_loader_factory_.AddResponse(
       ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy", net::HTTP_OK);
   // Fast forward a (reporting interval - 1) seconds which is three write
@@ -795,8 +875,8 @@ TEST_F(ExtensionTelemetryServiceTest, MalformedPersistedFile) {
   telemetry_service_->num_checks_per_upload_interval_ = 4;
   telemetry_service_->SetEnabledForESB(true);
   base::TimeDelta interval = telemetry_service_->current_reporting_interval();
-  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
-                               base::Time::NowFromSystemTime());
+  prefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                   base::Time::NowFromSystemTime());
   test_url_loader_factory_.AddResponse(
       ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy", net::HTTP_OK);
   // Fast forward a (reporting interval - 1) seconds which is three write
@@ -829,8 +909,8 @@ TEST_F(ExtensionTelemetryServiceTest, StartupUploadCheck) {
   // uploader itself.
   telemetry_service_->SetEnabledForESB(true);
   task_environment_.RunUntilIdle();
-  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
-                               base::Time::NowFromSystemTime());
+  prefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                   base::Time::NowFromSystemTime());
   test_url_loader_factory_.AddResponse(
       ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy", net::HTTP_OK);
   // Take the telemetry service offline and fast forward the environment
@@ -864,8 +944,7 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_ProcessesOffstoreExtensions) {
       telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
-  auto& file_data_dict =
-      profile_.GetPrefs()->GetDict(prefs::kExtensionTelemetryFileData);
+  auto& file_data_dict = prefs()->GetDict(prefs::kExtensionTelemetryFileData);
 
   // Test Extension 0.
   EXPECT_TRUE(file_data_dict.contains(kExtensionId[0]));
@@ -912,8 +991,7 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_IgnoresNonOffstoreExtensions) {
       telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
-  auto& file_data_dict =
-      profile_.GetPrefs()->GetDict(prefs::kExtensionTelemetryFileData);
+  auto& file_data_dict = prefs()->GetDict(prefs::kExtensionTelemetryFileData);
 
   // Only test extension 0 and 1 are processed.
   EXPECT_TRUE(file_data_dict.contains(kExtensionId[0]));
@@ -937,8 +1015,7 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_RemovesStaleExtensionFromPref) {
       telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
-  auto& file_data_dict =
-      profile_.GetPrefs()->GetDict(prefs::kExtensionTelemetryFileData);
+  auto& file_data_dict = prefs()->GetDict(prefs::kExtensionTelemetryFileData);
 
   // Extension 0 is removed from prefs since unregistered.
   EXPECT_FALSE(file_data_dict.contains(kExtensionId[0]));
@@ -953,8 +1030,7 @@ TEST_F(ExtensionTelemetryServiceTest,
   task_environment_.RunUntilIdle();
 
   // Save first processed timestamp.
-  auto& file_data_dict =
-      profile_.GetPrefs()->GetDict(prefs::kExtensionTelemetryFileData);
+  auto& file_data_dict = prefs()->GetDict(prefs::kExtensionTelemetryFileData);
   const std::string first_processed_timestamp =
       *(file_data_dict.FindDict(kExtensionId[0])
             ->FindString(kFileDataProcessTimestampPref));
@@ -994,16 +1070,15 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyTimestampsInPrefs) {
   base::Value::Dict empty_timestamps_dict;
   empty_timestamps_dict.Set(kExtensionId[0], std::move(extension_0_dict));
   empty_timestamps_dict.Set(kExtensionId[1], base::Value::Dict());
-  profile_.GetPrefs()->SetDict(prefs::kExtensionTelemetryFileData,
-                               std::move(empty_timestamps_dict));
+  prefs()->SetDict(prefs::kExtensionTelemetryFileData,
+                   std::move(empty_timestamps_dict));
 
   // Process extension 0 and 1 and save to prefs.
   task_environment_.FastForwardBy(
       telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
-  auto& file_data_dict =
-      profile_.GetPrefs()->GetDict(prefs::kExtensionTelemetryFileData);
+  auto& file_data_dict = prefs()->GetDict(prefs::kExtensionTelemetryFileData);
 
   // Test Extension 0.
   EXPECT_TRUE(file_data_dict.contains(kExtensionId[0]));
@@ -1028,7 +1103,7 @@ TEST_F(ExtensionTelemetryServiceTest,
 
   std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
   const auto& file_data_dict =
-      profile_.GetPrefs()->GetDict(prefs::kExtensionTelemetryFileData);
+      prefs()->GetDict(prefs::kExtensionTelemetryFileData);
 
   const base::Value::Dict* extension_0_dict =
       file_data_dict.FindDict(kExtensionId[0])->FindDict(kFileDataDictPref);
@@ -1059,12 +1134,6 @@ TEST_F(ExtensionTelemetryServiceTest,
   UnregisterExtensionWithExtensionService(kExtensionId[0]);
   UnregisterExtensionWithExtensionService(kExtensionId[1]);
   telemetry_service_->SetEnabledForESB(false);
-  // Enable necessary features.
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      // enabled_features
-      {{kExtensionTelemetryFileDataForCommandLineExtensions, {}}},
-      // disabled_features
-      {});
   // Create a commandline extension, set up the --load-extension commandline
   // switch, and re-enable the telemetry service.
   base::FilePath path = CreateExtensionForCommandLineLoad("commandline_crx");
@@ -1091,7 +1160,7 @@ TEST_F(ExtensionTelemetryServiceTest,
   // Verify that cmdline extension file data stored in prefs matches that in the
   // telemetry report.
   const auto& file_data_dict =
-      profile_.GetPrefs()->GetDict(prefs::kExtensionTelemetryFileData);
+      prefs()->GetDict(prefs::kExtensionTelemetryFileData);
   ASSERT_EQ(file_data_dict.size(), 1u);
   const base::Value::Dict* cmdline_extension_file_data_dict =
       file_data_dict.FindDict(cmdline_extension.id())
@@ -1149,8 +1218,8 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyFileDataInPrefs) {
   base::Value::Dict empty_file_data_dicts;
   empty_file_data_dicts.Set(kExtensionId[0], std::move(extension_0_dict));
   empty_file_data_dicts.Set(kExtensionId[1], base::Value::Dict());
-  profile_.GetPrefs()->SetDict(prefs::kExtensionTelemetryFileData,
-                               std::move(empty_file_data_dicts));
+  prefs()->SetDict(prefs::kExtensionTelemetryFileData,
+                   std::move(empty_file_data_dicts));
 
   std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
 
@@ -1188,11 +1257,6 @@ TEST_F(ExtensionTelemetryServiceTest,
 }
 
 TEST_F(ExtensionTelemetryServiceTest, DisableOffstoreExtensions) {
-  telemetry_service_->SetEnabledForESB(false);
-  scoped_feature_list.InitAndEnableFeature(
-      kExtensionTelemetryDisableOffstoreExtensions);
-  telemetry_service_->SetEnabledForESB(true);
-
   // Extension 0 is enabled and not on blocklist.
   EXPECT_TRUE(
       extension_registry_->enabled_extensions().Contains(kExtensionId[0]));
@@ -1229,10 +1293,6 @@ TEST_F(ExtensionTelemetryServiceTest,
   RegisterExtensionWithExtensionService(kExtensionId[3], kExtensionName[3],
                                         ManifestLocation::kComponent,
                                         Extension::NO_FLAGS);
-  telemetry_service_->SetEnabledForESB(false);
-  scoped_feature_list.InitAndEnableFeature(
-      kExtensionTelemetryDisableOffstoreExtensions);
-  telemetry_service_->SetEnabledForESB(true);
 
   // Extensions 2/3 is enabled and not on blocklist.
   EXPECT_TRUE(
@@ -1273,11 +1333,6 @@ TEST_F(ExtensionTelemetryServiceTest,
 }
 
 TEST_F(ExtensionTelemetryServiceTest, DisableOffstoreExtensions_Reenable) {
-  telemetry_service_->SetEnabledForESB(false);
-  scoped_feature_list.InitAndEnableFeature(
-      kExtensionTelemetryDisableOffstoreExtensions);
-  telemetry_service_->SetEnabledForESB(true);
-
   // Attach a MALWARE verdict for Extension 0 in telemetry report response.
   ExtensionTelemetryReportResponse malware_response;
   auto* malware_verdict = malware_response.add_offstore_extension_verdicts();

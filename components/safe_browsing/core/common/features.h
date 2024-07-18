@@ -124,6 +124,10 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions);
 // for enterprise.
 BASE_DECLARE_FEATURE(kExtensionTelemetryForEnteprise);
 
+// Specifies the reporting interval for enterprise telemetry reports.
+extern const base::FeatureParam<int>
+    kExtensionTelemetryEnterpriseReportingIntervalSeconds;
+
 // Enables collection of telemetry signal whenever an extension invokes the
 // chrome.tabs API methods.
 BASE_DECLARE_FEATURE(kExtensionTelemetryTabsApiSignal);

@@ -279,11 +279,11 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
   ConnectorsManager* connectors_manager =
       connectors_service->ConnectorsManagerForTesting();
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<void> future;
   connectors_service->ObserveTelemetryReporting(future.GetRepeatingCallback());
+
   ASSERT_FALSE(
       connectors_manager->GetTelemetryObserverCallbackForTesting().is_null());
-
   // Cache initially empty
   ASSERT_TRUE(
       connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
@@ -291,17 +291,18 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
   // Enable browser crash event
   test::SetOnSecurityEventReporting(pref_service(), true, {kBrowserCrashEvent},
                                     {});
-  EXPECT_FALSE(future.Take());
+  EXPECT_TRUE(future.WaitAndClear());
 
   // Clear enabled events (not cached when cleared)
   test::SetOnSecurityEventReporting(pref_service(), false, {}, {});
   ASSERT_TRUE(
       connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
+  EXPECT_TRUE(future.WaitAndClear());
 
   // Enable telemetry event
   test::SetOnSecurityEventReporting(pref_service(), true,
                                     {kExtensionTelemetryEvent}, {});
-  EXPECT_TRUE(future.Take());
+  EXPECT_TRUE(future.WaitAndClear());
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -108,7 +108,7 @@ class ConnectorsService : public KeyedService {
   ConnectorsManager* ConnectorsManagerForTesting();
 
   // Observe if reporting policies have changed to include telemetry event.
-  void ObserveTelemetryReporting(base::RepeatingCallback<void(bool)> callback);
+  void ObserveTelemetryReporting(base::RepeatingCallback<void()> callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceProfileTypeBrowserTest, IsEnabled);

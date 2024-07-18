@@ -100,16 +100,15 @@ class ConnectorsManager {
   std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
       AnalysisConnector connector);
 
-  void SetTelemetryObserverCallback(
-      base::RepeatingCallback<void(bool)> callback);
+  void SetTelemetryObserverCallback(base::RepeatingCallback<void()> callback);
 
   // Public testing functions.
   const AnalysisConnectorsSettings& GetAnalysisConnectorsSettingsForTesting()
       const;
   const ReportingConnectorsSettings& GetReportingConnectorsSettingsForTesting()
       const;
-  const base::RepeatingCallback<void(bool)>
-  GetTelemetryObserverCallbackForTesting() const;
+  const base::RepeatingCallback<void()> GetTelemetryObserverCallbackForTesting()
+      const;
 
  private:
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -147,6 +146,7 @@ class ConnectorsManager {
   // Re-cache analysis connector policy and update local agent connection if
   // needed.
   void OnPrefChanged(AnalysisConnector connector);
+  void OnPrefChanged(ReportingConnector connector);
 
   // Sets up |pref_change_registrar_|. Used by the constructor and
   // SetUpForTesting.
@@ -180,7 +180,7 @@ class ConnectorsManager {
   PrefChangeRegistrar pref_change_registrar_;
 
   // Used to report changes of reporting connector policy.
-  base::RepeatingCallback<void(bool)> telemetry_observer_callback_;
+  base::RepeatingCallback<void()> telemetry_observer_callback_;
 };
 
 }  // namespace enterprise_connectors

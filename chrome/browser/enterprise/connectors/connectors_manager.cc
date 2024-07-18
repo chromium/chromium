@@ -274,7 +274,7 @@ void ConnectorsManager::MaybeCloseLocalContentAnalysisAgentConnection() {
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 void ConnectorsManager::SetTelemetryObserverCallback(
-    base::RepeatingCallback<void(bool)> callback) {
+    base::RepeatingCallback<void()> callback) {
   telemetry_observer_callback_ = callback;
 }
 
@@ -283,6 +283,13 @@ void ConnectorsManager::OnPrefChanged(AnalysisConnector connector) {
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   MaybeCloseLocalContentAnalysisAgentConnection();
 #endif
+}
+
+void ConnectorsManager::OnPrefChanged(ReportingConnector connector) {
+  CacheReportingConnectorPolicy(connector);
+  if (!telemetry_observer_callback_.is_null()) {
+    telemetry_observer_callback_.Run();
+  }
 }
 
 void ConnectorsManager::CacheReportingConnectorPolicy(
@@ -295,15 +302,8 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
 
   const base::Value::List& policy_value = prefs()->GetList(pref);
   for (const base::Value& service_settings : policy_value) {
-    auto& settings = reporting_connector_settings_[connector].emplace_back(
+    reporting_connector_settings_[connector].emplace_back(
         service_settings, *service_provider_config_);
-
-    if (settings.GetReportingSettings().has_value() &&
-        !telemetry_observer_callback_.is_null()) {
-      telemetry_observer_callback_.Run(
-          settings.GetReportingSettings()->enabled_event_names.count(
-              kExtensionTelemetryEvent) == 1);
-    }
   }
 }
 
@@ -457,8 +457,10 @@ void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
   DCHECK(pref);
   if (!pref_change_registrar_.IsObserved(pref)) {
     pref_change_registrar_.Add(
-        pref, base::BindRepeating(&ConnectorsManager::OnPrefChanged,
-                                  base::Unretained(this), connector));
+        pref, base::BindRepeating(
+                  static_cast<void (ConnectorsManager::*)(AnalysisConnector)>(
+                      &ConnectorsManager::OnPrefChanged),
+                  base::Unretained(this), connector));
   }
 }
 
@@ -467,9 +469,10 @@ void ConnectorsManager::StartObservingPref(ReportingConnector connector) {
   DCHECK(pref);
   if (!pref_change_registrar_.IsObserved(pref)) {
     pref_change_registrar_.Add(
-        pref,
-        base::BindRepeating(&ConnectorsManager::CacheReportingConnectorPolicy,
-                            base::Unretained(this), connector));
+        pref, base::BindRepeating(
+                  static_cast<void (ConnectorsManager::*)(ReportingConnector)>(
+                      &ConnectorsManager::OnPrefChanged),
+                  base::Unretained(this), connector));
   }
 }
 
@@ -483,7 +486,7 @@ ConnectorsManager::GetReportingConnectorsSettingsForTesting() const {
   return reporting_connector_settings_;
 }
 
-const base::RepeatingCallback<void(bool)>
+const base::RepeatingCallback<void()>
 ConnectorsManager::GetTelemetryObserverCallbackForTesting() const {
   return telemetry_observer_callback_;
 }

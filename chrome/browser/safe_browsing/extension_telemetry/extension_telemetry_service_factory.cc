@@ -5,6 +5,8 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,18 +38,18 @@ ExtensionTelemetryServiceFactory::GetInstance() {
 
 ExtensionTelemetryServiceFactory::ExtensionTelemetryServiceFactory()
     : ProfileKeyedServiceFactory(
+          // AshInternals should be 'kNone' since ExtensionTelemetryService
+          // should not be initialized for internal profiles on ChromeOS Ash.
           "ExtensionTelemetryService",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {
+          ProfileSelections::BuildForRegularProfile()) {
   DependsOn(NetworkContextServiceFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionManagementFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
+  DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
+  DependsOn(enterprise_connectors::ExtensionTelemetryEventRouterFactory::
+                GetInstance());
 }
 
 std::unique_ptr<KeyedService>

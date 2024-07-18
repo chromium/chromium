@@ -491,7 +491,7 @@ ConnectorsManager* ConnectorsService::ConnectorsManagerForTesting() {
 }
 
 void ConnectorsService::ObserveTelemetryReporting(
-    base::RepeatingCallback<void(bool)> callback) {
+    base::RepeatingCallback<void()> callback) {
   connectors_manager_->SetTelemetryObserverCallback(callback);
 }
 
