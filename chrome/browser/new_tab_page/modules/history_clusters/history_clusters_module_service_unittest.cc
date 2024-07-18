@@ -88,8 +88,8 @@ class HistoryClustersModuleServiceTest : public testing::Test {
     mock_cart_service_ =
         std::make_unique<MockCartService>(testing_profile_.get());
     template_url_service_ = std::make_unique<TemplateURLService>(
-        testing_profile_->GetPrefs(),
-        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+        *testing_profile_->GetPrefs(),
+        *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
             testing_profile_.get()),
         kTemplateURLData);
     history_clusters_module_service_ =

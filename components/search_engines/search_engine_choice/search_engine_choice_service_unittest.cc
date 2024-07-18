@@ -128,7 +128,7 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
   TemplateURLService& template_url_service() {
     if (!template_url_service_) {
       template_url_service_ = std::make_unique<TemplateURLService>(
-          &pref_service_, &search_engine_choice_service());
+          pref_service_, search_engine_choice_service());
     }
 
     return CHECK_DEREF(template_url_service_.get());

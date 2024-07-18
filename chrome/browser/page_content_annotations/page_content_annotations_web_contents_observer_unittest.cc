@@ -151,7 +151,7 @@ std::unique_ptr<KeyedService> BuildTestTemplateURLService(
 
   // Set up a simple template URL service with a default search engine.
   auto template_url_service = std::make_unique<TemplateURLService>(
-      profile->GetPrefs(), search_engine_choice_service, kTemplateURLData);
+      *profile->GetPrefs(), *search_engine_choice_service, kTemplateURLData);
   TemplateURL* template_url = template_url_service->GetTemplateURLForKeyword(
       kDefaultTemplateURLKeyword);
   template_url_service->SetUserSelectedDefaultSearchProvider(template_url);

@@ -324,6 +324,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/omnibox/browser:test_support",
     "//components/search_engines",
+    "//components/search_engines:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/main/model",

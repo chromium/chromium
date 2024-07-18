@@ -28,8 +28,8 @@ const TemplateURLService::Initializer kServiceInitializers[] = {
 
 TEST_F(TabMatcherDesktopTest, IsTabOpenWithURLNeverReturnsActiveTab) {
   TemplateURLService service(
-      profile()->GetPrefs(),
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+      *profile()->GetPrefs(),
+      *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
           profile()),
       kServiceInitializers);
   TabMatcherDesktop matcher(&service, profile());
@@ -63,8 +63,8 @@ TEST_F(TabMatcherDesktopTest, GetOpenTabsOnlyWithinProfile) {
   AddTab(other_browser.get(), GURL("http://baz.chromium.org"));
 
   TemplateURLService service(
-      profile()->GetPrefs(),
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+      *profile()->GetPrefs(),
+      *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
           profile()),
       kServiceInitializers);
   TabMatcherDesktop matcher(&service, profile());
@@ -79,8 +79,8 @@ TEST_F(TabMatcherDesktopTest, GetOpenTabsOnlyWithinProfile) {
 
 TEST_F(TabMatcherDesktopTest, IsTabOpenUsesCanonicalSearchURL) {
   TemplateURLService turl_service(
-      profile()->GetPrefs(),
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+      *profile()->GetPrefs(),
+      *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
           profile()),
       kServiceInitializers);
   TabMatcherDesktop matcher(&turl_service, profile());

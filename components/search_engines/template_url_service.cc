@@ -418,12 +418,12 @@ TemplateURLService::TemplateURLService(
 }
 
 TemplateURLService::TemplateURLService(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    PrefService& prefs,
+    search_engines::SearchEngineChoiceService& search_engine_choice_service,
     base::span<const TemplateURLService::Initializer> initializers)
     : TemplateURLService(
-          prefs,
-          search_engine_choice_service,
+          &prefs,
+          &search_engine_choice_service,
           /*search_terms_data=*/std::make_unique<SearchTermsData>(),
           /*web_data_service=*/nullptr,
           /*client=*/nullptr,
@@ -435,9 +435,6 @@ TemplateURLService::TemplateURLService(
       ) {
   // This constructor is not intended to be used outside of tests.
   CHECK_IS_TEST();
-  // TODO(b/40287734): Update tests to pass the correct arguments to the
-  // constructor instead of null.
-  CHECK(search_engine_choice_service_ || !prefs);
   ApplyInitializersForTesting(initializers);  // IN-TEST
 }
 

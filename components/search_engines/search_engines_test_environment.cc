@@ -41,7 +41,7 @@ SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(const Deps& deps) {
       std::make_unique<SearchEngineChoiceService>(*pref_service_, local_state_);
 
   template_url_service_ = std::make_unique<TemplateURLService>(
-      pref_service_, search_engine_choice_service_.get(),
+      *pref_service_, *search_engine_choice_service_,
       deps.template_url_service_initializer);
 }
 

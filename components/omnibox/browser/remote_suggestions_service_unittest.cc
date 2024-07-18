@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/load_flags.h"
@@ -84,11 +85,16 @@ class RemoteSuggestionsServiceTest : public testing::Test {
                          const int response_code,
                          std::unique_ptr<std::string> response_body) {}
 
+  TemplateURLService& template_url_service() {
+    return *search_engines_test_environment_.template_url_service();
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
 TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_ZeroPrefixSuggest) {
@@ -100,14 +106,13 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_ZeroPrefixSuggest) {
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
-  TemplateURLService template_url_service(
-      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
+
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest,
-      template_url_service.GetDefaultSearchProvider(), search_terms_args,
-      template_url_service.search_terms_data(),
+      template_url_service().GetDefaultSearchProvider(), search_terms_args,
+      template_url_service().search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 
@@ -131,14 +136,13 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_Suggest) {
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
-  TemplateURLService template_url_service(
-      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
+
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   auto loader = service.StartSuggestionsRequest(
       RemoteRequestType::kSearch,
-      template_url_service.GetDefaultSearchProvider(), search_terms_args,
-      template_url_service.search_terms_data(),
+      template_url_service().GetDefaultSearchProvider(), search_terms_args,
+      template_url_service().search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 
@@ -182,15 +186,14 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
-  TemplateURLService template_url_service(
-      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
+
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   search_terms_args.bypass_cache = true;
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest,
-      template_url_service.GetDefaultSearchProvider(), search_terms_args,
-      template_url_service.search_terms_data(),
+      template_url_service().GetDefaultSearchProvider(), search_terms_args,
+      template_url_service().search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 
@@ -209,12 +212,10 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
 TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
   base::HistogramTester histogram_tester;
 
-  TemplateURLService template_url_service(
-      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
   TemplateURLData template_url_data;
   template_url_data.suggestions_url = "https://www.example.com/suggest";
-  template_url_service.SetUserSelectedDefaultSearchProvider(
-      template_url_service.Add(
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
           std::make_unique<TemplateURL>(template_url_data)));
 
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
@@ -222,9 +223,9 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
   TestObserver observer(&service);
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest,
-      template_url_service.GetDefaultSearchProvider(),
+      template_url_service().GetDefaultSearchProvider(),
       TemplateURLRef::SearchTermsArgs(),
-      template_url_service.search_terms_data(),
+      template_url_service().search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
                      base::Unretained(this)));
 

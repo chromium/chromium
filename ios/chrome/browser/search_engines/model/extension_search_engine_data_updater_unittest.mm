@@ -8,6 +8,7 @@
 #import <string_view>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_data.h"
 #import "components/search_engines/template_url_service.h"
@@ -27,14 +28,16 @@ class ExtensionSearchEngineDataUpdaterTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    template_url_service_ = std::make_unique<TemplateURLService>(
-        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
-    template_url_service_->Load();
+    template_url_service()->Load();
     observer_ = std::make_unique<ExtensionSearchEngineDataUpdater>(
-        template_url_service_.get());
+        template_url_service());
 
     NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
     [shared_defaults setBool:NO forKey:search_by_image_key_];
+  }
+
+  TemplateURLService* template_url_service() {
+    return search_engines_test_environment_.template_url_service();
   }
 
   bool StoredSupportsSearchByImage() {
@@ -47,9 +50,8 @@ class ExtensionSearchEngineDataUpdaterTest : public PlatformTest {
     return [shared_defaults boolForKey:is_google_key_];
   }
 
-  std::unique_ptr<TemplateURLService> template_url_service_;
-
  private:
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<ExtensionSearchEngineDataUpdater> observer_;
   NSString* search_by_image_key_;
   NSString* is_google_key_;
@@ -66,7 +68,7 @@ TEST_F(ExtensionSearchEngineDataUpdaterTest, AddSupportedSearchEngine) {
   supported_template_url_data.image_url_post_params = kPostParamsString;
   TemplateURL supported_template_url(supported_template_url_data);
 
-  template_url_service_->SetUserSelectedDefaultSearchProvider(
+  template_url_service()->SetUserSelectedDefaultSearchProvider(
       &supported_template_url);
 
   ASSERT_TRUE(StoredSupportsSearchByImage());
@@ -78,7 +80,7 @@ TEST_F(ExtensionSearchEngineDataUpdaterTest, AddUnsupportedSearchEngine) {
   TemplateURLData unsupported_template_url_data{};
   TemplateURL unsupported_template_url(unsupported_template_url_data);
 
-  template_url_service_->SetUserSelectedDefaultSearchProvider(
+  template_url_service()->SetUserSelectedDefaultSearchProvider(
       &unsupported_template_url);
 
   ASSERT_FALSE(StoredSupportsSearchByImage());
@@ -97,7 +99,7 @@ TEST_F(ExtensionSearchEngineDataUpdaterTest, AddGoogleSearchEngine) {
       std::u16string_view(), base::Value::List(), false, false, 0);
   TemplateURL google_template_url(google_template_url_data);
 
-  template_url_service_->SetUserSelectedDefaultSearchProvider(
+  template_url_service()->SetUserSelectedDefaultSearchProvider(
       &google_template_url);
 
   ASSERT_TRUE(StoredIsGoogleDefaultSearchEngine());

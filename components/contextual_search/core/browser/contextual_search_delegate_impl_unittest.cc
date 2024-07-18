@@ -23,6 +23,7 @@
 #include "components/contextual_search/core/browser/contextual_search_context.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "components/contextual_search/core/proto/client_discourse_context.pb.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -66,9 +67,10 @@ class ContextualSearchDelegateImplTest : public testing::Test {
     test_shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    template_url_service_.reset(CreateTemplateURLService());
+    UpdateTemplateURLServiceForContextualSearch();
     delegate_ = std::make_unique<ContextualSearchDelegateImpl>(
-        test_shared_url_loader_factory_, template_url_service_.get());
+        test_shared_url_loader_factory_,
+        search_engines_test_environment_.template_url_service());
 
     received_search_term_resolution_response_ = false;
   }
@@ -82,19 +84,18 @@ class ContextualSearchDelegateImplTest : public testing::Test {
     context_language_ = "";
   }
 
-  TemplateURLService* CreateTemplateURLService() {
+  void UpdateTemplateURLServiceForContextualSearch() {
     // Set a default search provider that supports Contextual Search.
     TemplateURLData data;
     data.SetURL("https://foobar.com/url?bar={searchTerms}");
     data.contextual_search_url =
         "https://foobar.com/_/contextualsearch?"
         "{google:contextualSearchVersion}{google:contextualSearchContextData}";
-    TemplateURLService* template_url_service = new TemplateURLService(
-        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr);
+    TemplateURLService& template_url_service =
+        *search_engines_test_environment_.template_url_service();
     TemplateURL* template_url =
-        template_url_service->Add(std::make_unique<TemplateURL>(data));
-    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
-    return template_url_service;
+        template_url_service.Add(std::make_unique<TemplateURL>(data));
+    template_url_service.SetUserSelectedDefaultSearchProvider(template_url);
   }
 
   void CreateDefaultSearchContextAndRequestSearchTerm() {
@@ -265,6 +266,8 @@ class ContextualSearchDelegateImplTest : public testing::Test {
     return received_search_term_resolution_response_;
   }
 
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
+
   // The delegate under test.
   std::unique_ptr<ContextualSearchDelegateImpl> delegate_;
   std::unique_ptr<ContextualSearchContext> test_context_;
@@ -330,7 +333,6 @@ class ContextualSearchDelegateImplTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  std::unique_ptr<TemplateURLService> template_url_service_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
 
