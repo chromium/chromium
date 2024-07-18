@@ -1536,8 +1536,9 @@ void FocusFakebox() {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"hello" flags:0];
 
   // Omnibox now should contain the page url suffixed with 'hello'
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-
       assertWithMatcher:chrome_test_util::OmniboxText(_URL1.GetContent() +
                                                       "hello")];
 
@@ -1545,6 +1546,8 @@ void FocusFakebox() {
 
   [ChromeEarlGreyUI focusOmnibox];
   // Omnibox contains the page url.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText(_URL1.GetContent())];
   // Simulate press the HW right arrow key.
@@ -1656,6 +1659,8 @@ void FocusFakebox() {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@" " flags:0];
 
   // Autocomplete removed.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assert:[OmniboxAppInterface displaysInlineAutocompleteText:NO]];
 }
