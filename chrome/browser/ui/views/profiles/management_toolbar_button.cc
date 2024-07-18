@@ -98,7 +98,6 @@ void ManagementToolbarButton::UpdateIcon() {
 
   SetImageModel(ButtonState::STATE_NORMAL, GetIcon());
 
-  SetInsets();
   SetVisible(CanShowManagementToolbarButton(*profile_->GetPrefs()));
 }
 
@@ -129,7 +128,6 @@ bool ManagementToolbarButton::ShouldPaintBorder() const {
 }
 
 void ManagementToolbarButton::UpdateText() {
-  SetInsets();
   SetTooltipText(l10n_util::GetStringUTF16(IDS_MANAGED));
   SetHighlight(/*text=*/base::UTF8ToUTF16(profile_->GetPrefs()->GetString(
                    prefs::kEnterpriseCustomLabel)),
@@ -167,27 +165,19 @@ ui::ImageModel ManagementToolbarButton::GetIcon() const {
   const int icon_size = ui::TouchUiController::Get()->touch_ui()
                             ? kDefaultIconSizeChromeRefresh
                             : kIconSizeForNonTouchUi;
-  constexpr int kIconPadding = 1;
-  ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, ui::kColorMenuIcon, icon_size);
-
   policy::BrowserManagementService* management_service =
       static_cast<policy::BrowserManagementService*>(
           policy::ManagementServiceFactory::GetForProfile(profile_));
-  if (!management_service->GetMetadata().GetManagementLogo().IsEmpty()) {
-    gfx::Image image = profiles::GetSizedAvatarIcon(
-        management_service->GetMetadata().GetManagementLogo(),
-        icon_size - 2 * kIconPadding, icon_size, profiles::SHAPE_CIRCLE);
-    gfx::ImageSkia sized_image_with_background =
-        gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-            icon_size / 2,
-            GetColorProvider()->GetColor(ui::kColorBubbleBackground),
-            image.AsImageSkia());
-    if (!sized_image_with_background.isNull()) {
-      icon = ui::ImageModel::FromImageSkia(sized_image_with_background);
-    }
+  gfx::Image management_logo =
+      management_service->GetMetadata().GetManagementLogo();
+  if (management_logo.IsEmpty()) {
+    return ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                          ui::kColorMenuIcon, icon_size);
   }
-  return icon;
+
+  gfx::Image image = profiles::GetSizedAvatarIcon(
+      management_logo, icon_size, icon_size, profiles::SHAPE_SQUARE);
+  return ui::ImageModel::FromImageSkia(image.AsImageSkia());
 }
 
 bool ManagementToolbarButton::IsLabelPresentAndVisible() const {
@@ -198,20 +188,8 @@ bool ManagementToolbarButton::IsLabelPresentAndVisible() const {
 }
 
 void ManagementToolbarButton::UpdateLayoutInsets() {
-  if (IsLabelPresentAndVisible()) {
-    SetLayoutInsets(::GetLayoutInsets(AVATAR_CHIP_PADDING));
-  } else {
-    SetLayoutInsets(::GetLayoutInsets(TOOLBAR_BUTTON));
-  }
-}
-
-void ManagementToolbarButton::SetInsets() {
-  // In non-touch mode we use a larger-than-normal icon size for icons so we
-  // need to compensate it by smaller insets.
-  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  gfx::Insets layout_insets(
-      touch_ui ? 0 : (kDefaultIconSize - kIconSizeForNonTouchUi) / 2);
-  SetLayoutInsetDelta(layout_insets);
+  SetLayoutInsets(::GetLayoutInsets(
+      IsLabelPresentAndVisible() ? AVATAR_CHIP_PADDING : TOOLBAR_BUTTON));
 }
 
 BEGIN_METADATA(ManagementToolbarButton)

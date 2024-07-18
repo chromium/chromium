@@ -36,8 +36,6 @@ class ManagementToolbarButton : public ToolbarButton {
 
   ui::ImageModel GetIcon() const;
 
-  void SetInsets();
-
   // Returns true if a text is set and is visible.
   bool IsLabelPresentAndVisible() const;
   // Updates the layout insets depending on whether it is a chip or a button.
