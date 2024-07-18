@@ -100,6 +100,7 @@ constexpr ActionChoice kGraphicsTabletOptions[] = {
      ::ash::mojom::StaticShortcutAction::kZoomOut},
     {IDS_SETTINGS_SCREENSHOT_OPTION_LABEL,
      AcceleratorAction::kTakePartialScreenshot},
+    {IDS_SETTINGS_OVERVIEW_OPTION_LABEL, AcceleratorAction::kToggleOverview},
 };
 
 mojom::ActionTypePtr GetActionType(AcceleratorAction accelerator_action) {
