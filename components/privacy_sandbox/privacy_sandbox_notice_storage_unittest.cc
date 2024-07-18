@@ -89,6 +89,8 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
         return "OptOut";
       case NoticeActionTaken::kSettings:
         return "Settings";
+      case NoticeActionTaken::kTimedOut:
+        return "TimedOut";
       case NoticeActionTaken::kOther:
         return "Other";
     }

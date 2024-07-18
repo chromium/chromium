@@ -61,8 +61,7 @@ void CreateTimingHistogram(const std::string& name, base::TimeDelta sample) {
                                 base::Days(10), 100);
 }
 
-std::string GetNoticeActionString(
-    NoticeActionTaken action) {
+std::string GetNoticeActionString(NoticeActionTaken action) {
   switch (action) {
     case NoticeActionTaken::kNotSet:
     case NoticeActionTaken::kUnknownActionPreMigration:
@@ -79,6 +78,8 @@ std::string GetNoticeActionString(
       return "OptOut";
     case NoticeActionTaken::kSettings:
       return "Settings";
+    case NoticeActionTaken::kTimedOut:
+      return "TimedOut";
     case NoticeActionTaken::kOther:
       return "Other";
   }
@@ -140,6 +141,9 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
         break;
       case NoticeActionTaken::kOther:
         startup_state = NoticeStartupState::kPromptOtherAction;
+        break;
+      case NoticeActionTaken::kTimedOut:
+        startup_state = NoticeStartupState::kTimedOut;
         break;
       case NoticeActionTaken::kAck:
       case NoticeActionTaken::kClosed:

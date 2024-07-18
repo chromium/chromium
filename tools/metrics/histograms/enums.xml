@@ -29871,6 +29871,7 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Other"/>
   <int value="7" label="Settings"/>
   <int value="8" label="UnknownActionPreMigration"/>
+  <int value="9" label="TimedOut"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeActionTaken) -->
@@ -29895,6 +29896,7 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="FlowCompletedWithOptOut"/>
   <int value="5" label="PromptWaiting"/>
   <int value="6" label="PromptOtherAction"/>
+  <int value="7" label="TimedOut"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeStartupState) -->

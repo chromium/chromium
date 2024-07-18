@@ -103,6 +103,8 @@ reviewer.
       summary="Any other action on a privacy sandbox notice."/>
   <variant name="Settings"
       summary="Settings action on a privacy sandbox notice."/>
+  <variant name="TimedOut"
+      summary="No action taken instead a privacy sandbox notice timed out."/>
 </variants>
 
 <histogram name="Privacy.3PCD.AdsHeuristicAddedToOverrides"

@@ -35,7 +35,9 @@ enum class NoticeStartupState {
   // Prompt/notice had an action other then the specified actions performed on
   // it.
   kPromptOtherAction = 6,
-  kMaxValue = kPromptOtherAction,
+  // Prompt/notice timed out.
+  kTimedOut = 7,
+  kMaxValue = kTimedOut,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeStartupState)
 
@@ -62,7 +64,9 @@ enum class NoticeActionTaken {
   kSettings = 7,
   // Action taken unknown as it was recorded pre-migration.
   kUnknownActionPreMigration = 8,
-  kMaxValue = kUnknownActionPreMigration,
+  // No action taken, the notice timed out.
+  kTimedOut = 9,
+  kMaxValue = kTimedOut,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeAction)
 
