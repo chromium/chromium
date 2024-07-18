@@ -28,10 +28,9 @@ found in the LICENSE file.
 </style>
 <oobe-adaptive-dialog id="userCreationDialog"
     for-step="create"
-    role="dialog"
-    aria-label$="[[i18nDynamic(locale, titleKey_)]]">
+    role="dialog">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-  <h1 slot="title">
+  <h1 slot="title" aria-live="polite">
     [[i18nDynamic(locale, titleKey_)]]
   </h1>
   <div slot="subtitle">
@@ -39,8 +38,7 @@ found in the LICENSE file.
   </div>
   <div slot="content" class="layout vertical landscape-vertical-centered">
     <cr-radio-group id="userType" selected="{{selectedUserType}}">
-      <cr-card-radio-button id="selfButton" class="flex focus-on-show"
-            name="self">
+      <cr-card-radio-button id="selfButton" class="flex" name="self">
         <div class="card-container">
           <hd-iron-icon class="card-icon" icon1x="oobe-48:avatar"
               icon2x="oobe-96:avatar">
@@ -103,10 +101,9 @@ found in the LICENSE file.
 </oobe-adaptive-dialog>
 <oobe-adaptive-dialog id="enrollTriageDialog"
     role="dialog"
-    for-step="enroll-triage"
-    aria-label$="[[i18nDynamic(locale, 'userCreationEnrollTriageTitle')]]">
+    for-step="enroll-triage">
   <iron-icon slot="icon" icon="oobe-32:work"></iron-icon>
-  <h1 slot="title">
+  <h1 slot="title" aria-live="polite">
     [[i18nDynamic(locale, 'userCreationEnrollTriageTitle')]]
   </h1>
   <div slot="subtitle">
@@ -131,7 +128,7 @@ found in the LICENSE file.
     <cr-radio-group id="enrollTriageMethod"
         selected="{{selectedEnrollTriageMethod}}">
       <cr-card-radio-button id="triageEnrollButton" name="enroll"
-          class="flex focus-on-show">
+          class="flex">
         <div class="card-container">
           <hd-iron-icon class="card-icon" icon1x="oobe-48:managed"
               icon2x="oobe-96:managed">
@@ -175,10 +172,9 @@ found in the LICENSE file.
 </oobe-adaptive-dialog>
 <oobe-adaptive-dialog id="childSetupDialog"
     role="dialog"
-    for-step="child-setup"
-    aria-label$="[[i18nDynamic(locale, 'userCreationChildSetupTitle')]]">
+    for-step="child-setup">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-  <h1 slot="title">
+  <h1 slot="title" aria-live="polite">
     [[i18nDynamic(locale, 'userCreationChildSetupTitle')]]
   </h1>
   <div slot="content" class="layout vertical landscape-vertical-centered">
