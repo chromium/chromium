@@ -1804,10 +1804,10 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_MENU_TEXT" desc="Text that appears when the user clicks the 3-dot icon at the top right of the notifications review subpage. Upon clicking on the text the user will be redirected to the Notifications settings page.">
         Go to notification settings
       </message>
-      <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_TITLE" desc="Title for a setting located in the 'Site settings' page. It toggles the automatic revocation of unused site permissions.">
         Automatically remove permissions
       </message>
-      <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_SUMMARY" desc="Subtitle for a setting located in the 'Site settings' page. It toggles the automatic revocation of unused site permissions.">
         To protect your data, let Chrome remove permissions from sites that you haven’t visited recently
       </message>
       <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFETY_TOOLS_TITLE" translateable="false">
