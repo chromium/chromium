@@ -12,6 +12,10 @@
 #include "base/functional/callback.h"
 #include "components/sync/base/model_type.h"
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 namespace password_manager {
 class PasswordStoreInterface;
 }  // namespace password_manager
@@ -21,7 +25,7 @@ class DualReadingListModel;
 }  // namespace reading_list
 
 namespace sync_bookmarks {
-class BookmarkSyncService;
+class BookmarkModelView;
 }  // namespace sync_bookmarks
 
 namespace syncer {
@@ -39,8 +43,7 @@ class LocalDataQueryHelper {
   LocalDataQueryHelper(
       password_manager::PasswordStoreInterface* profile_password_store,
       password_manager::PasswordStoreInterface* account_password_store,
-      sync_bookmarks::BookmarkSyncService* local_bookmark_sync_service,
-      sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
+      bookmarks::BookmarkModel* bookmark_model,
       reading_list::DualReadingListModel* dual_reading_list_model);
   ~LocalDataQueryHelper();
 
@@ -65,13 +68,17 @@ class LocalDataQueryHelper {
   std::list<std::unique_ptr<LocalDataQueryRequest>> request_list_;
 
   // For PASSWORDS.
-  raw_ptr<password_manager::PasswordStoreInterface> profile_password_store_;
-  raw_ptr<password_manager::PasswordStoreInterface> account_password_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface>
+      profile_password_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface>
+      account_password_store_;
   // For BOOKMARKS.
-  raw_ptr<sync_bookmarks::BookmarkSyncService> local_bookmark_sync_service_;
-  raw_ptr<sync_bookmarks::BookmarkSyncService> account_bookmark_sync_service_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView>
+      local_bookmark_model_view_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView>
+      account_bookmark_model_view_;
   // For READING_LIST.
-  raw_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
+  const raw_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
 };
 
 // Helper class to move all local data to account for the requested data types.
@@ -80,8 +87,7 @@ class LocalDataMigrationHelper {
   LocalDataMigrationHelper(
       password_manager::PasswordStoreInterface* profile_password_store,
       password_manager::PasswordStoreInterface* account_password_store,
-      sync_bookmarks::BookmarkSyncService* local_bookmark_sync_service,
-      sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
+      bookmarks::BookmarkModel* bookmark_model,
       reading_list::DualReadingListModel* dual_reading_list_model);
   ~LocalDataMigrationHelper();
 
@@ -100,13 +106,17 @@ class LocalDataMigrationHelper {
   std::list<std::unique_ptr<LocalDataMigrationRequest>> request_list_;
 
   // For PASSWORDS.
-  raw_ptr<password_manager::PasswordStoreInterface> profile_password_store_;
-  raw_ptr<password_manager::PasswordStoreInterface> account_password_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface>
+      profile_password_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface>
+      account_password_store_;
   // For BOOKMARKS.
-  raw_ptr<sync_bookmarks::BookmarkSyncService> local_bookmark_sync_service_;
-  raw_ptr<sync_bookmarks::BookmarkSyncService> account_bookmark_sync_service_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView>
+      local_bookmark_model_view_;
+  const std::unique_ptr<sync_bookmarks::BookmarkModelView>
+      account_bookmark_model_view_;
   // For READING_LIST.
-  raw_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
+  const raw_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
 };
 
 }  // namespace browser_sync

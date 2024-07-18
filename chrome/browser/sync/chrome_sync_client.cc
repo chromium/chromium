@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
@@ -311,23 +312,17 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       data_sharing::DataSharingServiceFactory::GetForProfile(profile_));
 
 #if BUILDFLAG(IS_ANDROID)
-  sync_bookmarks::BookmarkSyncService* local_or_syncable_bookmark_sync_service =
-      LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile_);
-  sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service =
-      AccountBookmarkSyncServiceFactory::GetForProfile(profile_);
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(
           profile_password_store.get(), account_password_store.get(),
-          local_or_syncable_bookmark_sync_service,
-          account_bookmark_sync_service,
+          BookmarkModelFactory::GetForBrowserContext(profile_),
           ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
               profile_));
 
   local_data_migration_helper_ =
       std::make_unique<browser_sync::LocalDataMigrationHelper>(
           profile_password_store.get(), account_password_store.get(),
-          local_or_syncable_bookmark_sync_service,
-          account_bookmark_sync_service,
+          BookmarkModelFactory::GetForBrowserContext(profile_),
           ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
               profile_));
 #endif  // BUILDFLAG(IS_ANDROID)

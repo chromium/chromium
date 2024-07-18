@@ -43,6 +43,7 @@
 #import "components/trusted_vault/trusted_vault_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
@@ -139,15 +140,13 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(
           profile_password_store_.get(), account_password_store_.get(),
-          local_or_syncable_bookmark_sync_service,
-          account_bookmark_sync_service,
+          ios::BookmarkModelFactory::GetForBrowserState(browser_state_),
           ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
               browser_state_));
   local_data_migration_helper_ =
       std::make_unique<browser_sync::LocalDataMigrationHelper>(
           profile_password_store_.get(), account_password_store_.get(),
-          local_or_syncable_bookmark_sync_service,
-          account_bookmark_sync_service,
+          ios::BookmarkModelFactory::GetForBrowserState(browser_state_),
           ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
               browser_state_));
 }
