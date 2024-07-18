@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_TITLE_VIEW_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_TITLE_VIEW_H_
 
+#include "ash/style/icon_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -19,6 +20,12 @@ class TitleView : public views::BoxLayoutView {
   TitleView(const TitleView&) = delete;
   TitleView& operator=(const TitleView&) = delete;
   ~TitleView() override;
+
+ private:
+  raw_ptr<IconButton> sidetone_button_ = nullptr;
+
+  void OnSidetoneButtonClicked(const ui::Event& event);
+  base::WeakPtrFactory<TitleView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::video_conference
