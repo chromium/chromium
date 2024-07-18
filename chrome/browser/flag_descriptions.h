@@ -981,6 +981,8 @@ extern const char kIPHExtensionsRequestAccessButtonFeatureName[];
 extern const char kIPHExtensionsRequestAccessButtonFeatureDescription[];
 extern const char kExtensionManifestV2DeprecationWarningName[];
 extern const char kExtensionManifestV2DeprecationWarningDescription[];
+extern const char kExtensionManifestV2DeprecationDisabledName[];
+extern const char kExtensionManifestV2DeprecationDisabledDescription[];
 
 extern const char kExtensionsToolbarZeroStateName[];
 extern const char kExtensionsToolbarZeroStateDescription[];
