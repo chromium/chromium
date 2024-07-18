@@ -3016,13 +3016,20 @@ void QuicSessionPoolTest::TestOnNetworkMadeDefaultNonMigratableStream(
   } else {
     client_maker_.set_connection_id(cid_on_old_path);
     socket_data.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeDataRstAckAndConnectionClosePacket(
-                         packet_num++, GetQpackDecoderStreamId(),
-                         StreamCancellationQpackDecoderInstruction(0),
-                         GetNthClientInitiatedBidirectionalStreamId(0),
-                         quic::QUIC_STREAM_CANCELLED, 1, 1,
-                         quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-                         "net error", /*path_response_frame*/ 0x1b));
+        SYNCHRONOUS,
+        client_maker_.Packet(packet_num++)
+            .AddStreamFrame(GetQpackDecoderStreamId(), /*fin=*/false,
+                            StreamCancellationQpackDecoderInstruction(0))
+            .AddStopSendingFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                                 quic::QUIC_STREAM_CANCELLED)
+            .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED)
+            .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
+                         /*smallest_received=*/1)
+            .AddConnectionCloseFrame(
+                quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
+                "net error", /*frame_type=*/0x1b)
+            .Build());
   }
 
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -7553,13 +7560,20 @@ void QuicSessionPoolTest::TestMigrateSessionEarlyNonMigratableStream(
   } else {
     client_maker_.set_connection_id(cid_on_old_path);
     socket_data.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeDataRstAckAndConnectionClosePacket(
-                         packet_num++, GetQpackDecoderStreamId(),
-                         StreamCancellationQpackDecoderInstruction(0),
-                         GetNthClientInitiatedBidirectionalStreamId(0),
-                         quic::QUIC_STREAM_CANCELLED, 1, 1,
-                         quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-                         "net error", /*path_response_frame*/ 0x1b));
+        SYNCHRONOUS,
+        client_maker_.Packet(packet_num++)
+            .AddStreamFrame(GetQpackDecoderStreamId(), /*fin=*/false,
+                            StreamCancellationQpackDecoderInstruction(0))
+            .AddStopSendingFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                                 quic::QUIC_STREAM_CANCELLED)
+            .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED)
+            .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
+                         /*smallest_received=*/1)
+            .AddConnectionCloseFrame(
+                quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
+                "net error", /*frame_type=*/0x1b)
+            .Build());
   }
 
   socket_data.AddSocketDataToFactory(socket_factory_.get());

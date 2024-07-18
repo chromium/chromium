@@ -223,47 +223,6 @@ QuicTestPacketMaker::MakeCombinedRetransmissionPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeDataRstAckAndConnectionClosePacket(
-    uint64_t packet_number,
-    quic::QuicStreamId data_stream_id,
-    std::string_view data,
-    quic::QuicStreamId rst_stream_id,
-    quic::QuicRstStreamErrorCode error_code,
-    uint64_t largest_received,
-    uint64_t smallest_received,
-    quic::QuicErrorCode quic_error,
-    const std::string& quic_error_details) {
-  return Packet(packet_number)
-      .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
-      .AddStreamFrame(data_stream_id, /* fin = */ false, data)
-      .AddStopSendingFrame(rst_stream_id, error_code)
-      .AddRstStreamFrame(rst_stream_id, error_code)
-      .AddConnectionCloseFrame(quic_error, quic_error_details)
-      .Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeDataRstAckAndConnectionClosePacket(
-    uint64_t packet_number,
-    quic::QuicStreamId data_stream_id,
-    std::string_view data,
-    quic::QuicStreamId rst_stream_id,
-    quic::QuicRstStreamErrorCode error_code,
-    uint64_t largest_received,
-    uint64_t smallest_received,
-    quic::QuicErrorCode quic_error,
-    const std::string& quic_error_details,
-    uint64_t frame_type) {
-  return Packet(packet_number)
-      .AddStreamFrame(data_stream_id, /* fin = */ false, data)
-      .AddStopSendingFrame(rst_stream_id, error_code)
-      .AddRstStreamFrame(rst_stream_id, error_code)
-      .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
-      .AddConnectionCloseFrame(quic_error, quic_error_details, frame_type)
-      .Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeStopSendingPacket(
     uint64_t packet_number,
     quic::QuicStreamId stream_id,
