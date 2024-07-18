@@ -29,6 +29,12 @@ static_library("logger") {
     "//components/reporting/client:report_queue",
     "//components/reporting/client:report_queue_provider",
     "//mojo/public/cpp/bindings",
+
+    # Due to a cycle we can't depend on c/b/ash but we need some of its
+    # public_deps.
+    # TODO(b:335294101): Move this to c/b/a/settings and add public_deps on
+    # that.
+    "//components/policy/core/common",
   ]
 
   deps = [
