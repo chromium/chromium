@@ -27,10 +27,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import enum
 import logging
 import re
 import os
-from typing import List, NamedTuple, Optional, Union
+from typing import List, Mapping, NamedTuple, Optional, Union
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.executive import Executive, ScriptError
@@ -47,6 +48,36 @@ class CommitRange(NamedTuple):
         return f'{self.start}...{self.end}'
 
 
+class FileStatusType(enum.Flag):
+    ADD = enum.auto()
+    COPY = enum.auto()
+    DELETE = enum.auto()
+    MODIFY = enum.auto()
+    RENAME = enum.auto()
+
+    def __str__(self) -> str:
+        return ''.join(status.name[0] for status in FileStatusType
+                       if status & self)
+
+    @classmethod
+    def parse_diff_filter(cls, pattern: str) -> 'FileStatusType':
+        """Parse a parameter to `git diff --diff-filter` [0].
+
+        [0]: https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
+        """
+        status_by_symbol = {member.name[0]: member for member in cls}
+        status = FileStatusType(0)
+        for symbol in pattern:
+            status |= status_by_symbol[symbol]
+        return status
+
+
+class FileStatus(NamedTuple):
+    status_type: FileStatusType
+    # Source path for copied and renamed files. Ignored for other files.
+    source: Optional[str] = None
+
+
 class Git:
     # Unless otherwise specified, methods are expected to return paths relative
     # to self.checkout_root.
@@ -54,6 +85,8 @@ class Git:
     # Git doesn't appear to document error codes, but seems to return
     # 1 or 128, mostly.
     ERROR_FILE_IS_MISSING = 128
+    DEFAULT_DIFF_FILTER = (FileStatusType.ADD | FileStatusType.DELETE
+                           | FileStatusType.MODIFY)
 
     def __init__(self,
                  cwd=None,
@@ -297,11 +330,13 @@ class Git:
 
         return self._remote_merge_base()
 
-    def changed_files(self,
-                      commits: Union[None, str, CommitRange] = None,
-                      diff_filter: str = 'ADM',
-                      path: Optional[str] = None):
-        # FIXME: --diff-filter could be used to avoid the "extract_filenames" step.
+    def changed_files(
+        self,
+        commits: Union[None, str, CommitRange] = None,
+        diff_filter: Union[str, FileStatusType] = DEFAULT_DIFF_FILTER,
+        path: Optional[str] = None,
+        rename_threshold: Optional[float] = None,
+    ) -> Mapping[str, FileStatus]:
         if isinstance(commits, CommitRange):
             commit_arg = str(commits)
         else:
@@ -309,17 +344,34 @@ class Git:
         status_command = [
             'diff',
             '-r',
+            '-z',
             '--name-status',
-            '--no-renames',
             '--no-ext-diff',
             '--full-index',
+            f'--diff-filter={diff_filter}',
             commit_arg,
         ]
+        if rename_threshold is None:
+            status_command.append('--no-renames')
+        else:
+            status_command.append(f'--find-renames={100 * rename_threshold}%')
         if path:
             status_command.append(path)
-        # Added (A), Copied (C), Deleted (D), Modified (M), Renamed (R)
-        return self._run_status_and_extract_filenames(
-            status_command, self._status_regexp(diff_filter))
+
+        file_statuses = {}
+        raw_output = self.run(status_command)
+        if not raw_output:
+            return file_statuses
+        values = iter(raw_output.rstrip('\x00').split('\x00'))
+        while (status_type := next(values, None)) is not None:
+            status_type = FileStatusType.parse_diff_filter(status_type[0])
+            affected_file = next(values)
+            if status_type in FileStatusType.COPY | FileStatusType.RENAME:
+                file_statuses[next(values)] = FileStatus(
+                    status_type, affected_file)
+            else:
+                file_statuses[affected_file] = FileStatus(status_type)
+        return file_statuses
 
     def added_files(self):
         return self._run_status_and_extract_filenames(self.status_command(),

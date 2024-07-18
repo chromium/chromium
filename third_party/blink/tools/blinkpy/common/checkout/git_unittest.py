@@ -6,11 +6,29 @@ import functools
 import sys
 import unittest
 
+from blinkpy.common.checkout.git import (
+    CommitRange,
+    FileStatus,
+    FileStatusType,
+    Git,
+)
 from blinkpy.common.system.executive import Executive, ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.filesystem_mock import MockFileSystem
-from blinkpy.common.checkout.git import CommitRange, Git
+
+
+class FileStatusTypeTest(unittest.TestCase):
+
+    def test_format_diff_filter(self):
+        self.assertEqual(str(FileStatusType.ADD), 'A')
+        self.assertEqual(str(FileStatusType.ADD | FileStatusType.MODIFY), 'AM')
+
+    def test_parse_diff_filter(self):
+        self.assertIs(FileStatusType.parse_diff_filter('A'),
+                      FileStatusType.ADD)
+        self.assertIs(FileStatusType.parse_diff_filter('AM'),
+                      FileStatusType.ADD | FileStatusType.MODIFY)
 
 
 # These tests could likely be run on Windows if we first used Git.find_executable_name.
@@ -196,10 +214,46 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         git.add_list(['a'])
         git.commit_locally_with_message('commit 2')
 
-        self.assertEqual(set(git.changed_files(CommitRange('HEAD~1', 'HEAD'))),
-                         {'a'})
-        self.assertEqual(set(git.changed_files(CommitRange('HEAD~2', 'HEAD'))),
-                         {'a', 'b'})
+        self.assertEqual(git.changed_files(CommitRange('HEAD~1', 'HEAD')), {
+            'a': FileStatus(FileStatusType.MODIFY),
+        })
+        self.assertEqual(
+            git.changed_files(CommitRange('HEAD~2', 'HEAD')), {
+                'a': FileStatus(FileStatusType.ADD),
+                'b': FileStatus(FileStatusType.ADD),
+            })
+
+    def test_changed_files_renamed(self):
+        self._chdir(self.untracking_checkout_path)
+        git = self.untracking_git
+        self._chdir(git.checkout_root)
+
+        contents = b'\n'.join([b'a', b'b', b'c', b''])
+        self.filesystem.write_binary_file('a', contents)
+        git.add_list(['a'])
+        git.commit_locally_with_message('commit 1')
+
+        self.filesystem.write_binary_file('a', contents + b'd\n')
+        git.move('a', 'b')
+        git.commit_locally_with_message('commit 2')
+
+        commits = CommitRange('HEAD~1', 'HEAD')
+        changed_files = git.changed_files(commits)
+        self.assertEqual(
+            changed_files, {
+                'a': FileStatus(FileStatusType.DELETE),
+                'b': FileStatus(FileStatusType.ADD),
+            })
+        changed_files = git.changed_files(commits,
+                                          diff_filter=FileStatusType.RENAME,
+                                          rename_threshold=0.5)
+        self.assertEqual(changed_files, {
+            'b': FileStatus(FileStatusType.RENAME, 'a'),
+        })
+        changed_files = git.changed_files(commits,
+                                          diff_filter=FileStatusType.RENAME,
+                                          rename_threshold=1)
+        self.assertEqual(changed_files, {})
 
     def test_move(self):
         self._chdir(self.untracking_checkout_path)

@@ -26,7 +26,7 @@ from typing import (
 )
 
 from blinkpy.common import path_finder
-from blinkpy.common.checkout.git import CommitRange
+from blinkpy.common.checkout.git import CommitRange, FileStatusType
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import CLRevisionID
 from blinkpy.common.system.executive import ScriptError
@@ -175,7 +175,15 @@ class ImportNotifier:
         platform_pattern = f'(platform|flag-specific){sep}([^{sep}]+){sep}'
         baseline_pattern = re.compile(f'web_tests{sep}({platform_pattern})?')
         import_range = CommitRange(f'{import_rev}~1', import_rev)
-        for changed_file in self.git.changed_files(import_range):
+        diff_filter = (FileStatusType.ADD | FileStatusType.MODIFY
+                       | FileStatusType.RENAME)
+        # Use a fairly high similarity threshold to avoid comparing unrelated
+        # baselines, which is worse than missing a rename and filing a duplicate
+        # bug.
+        changed_files = self.git.changed_files(import_range,
+                                               diff_filter=diff_filter,
+                                               rename_threshold=0.9)
+        for changed_file, status in changed_files.items():
             parts = baseline_pattern.split(changed_file, maxsplit=1)[1:]
             if not parts:
                 continue
@@ -185,7 +193,7 @@ class ImportNotifier:
             directory = self.find_directory_for_bug(test)
             if not directory:
                 continue
-            lines_before = self._read_baseline(changed_file,
+            lines_before = self._read_baseline(status.source or changed_file,
                                                import_range.start)
             lines_after = self._read_baseline(changed_file, import_range.end)
             if self.more_failures_in_baseline(lines_before, lines_after):

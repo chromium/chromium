@@ -11,6 +11,7 @@ import textwrap
 import unittest
 from unittest import mock
 
+from blinkpy.common.checkout.git import FileStatus, FileStatusType
 from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
@@ -61,9 +62,12 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
         git = MockGit(
             filesystem=self.tool.filesystem, executive=self.tool.executive)
-        git.changed_files = lambda **_: [
-            RELATIVE_WEB_TESTS + 'one/text-fail.html',
-            RELATIVE_WEB_TESTS + 'one/flaky-fail.html', ]
+        git.changed_files = lambda **_: {
+            RELATIVE_WEB_TESTS + 'one/text-fail.html':
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'one/flaky-fail.html':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.tool.git = lambda: git
 
         self.tool.builders = BuilderList({

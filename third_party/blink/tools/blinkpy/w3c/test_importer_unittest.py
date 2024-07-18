@@ -8,7 +8,11 @@ import textwrap
 import unittest
 from unittest import mock
 
-from blinkpy.common.checkout.git import CommitRange
+from blinkpy.common.checkout.git import (
+    CommitRange,
+    FileStatus,
+    FileStatusType,
+)
 from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.git_cl import BuildStatus
@@ -430,7 +434,10 @@ class TestImporterTest(LoggingTestCase):
             MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS',
             'someone@chromium.org\n')
         importer = self._get_test_importer(host)
-        importer.project_git.changed_files = lambda: [RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertEqual(importer.get_directory_owners(),
                          {('someone@chromium.org', ): ['external/wpt/foo']})
 
@@ -654,18 +661,26 @@ class TestImporterTest(LoggingTestCase):
     def test_has_wpt_changes(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertTrue(importer._has_wpt_changes())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'TestExpectations']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'TestExpectations':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertFalse(importer._has_wpt_changes())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME]
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertFalse(importer._has_wpt_changes())
 
     def test_file_and_record_bugs_update_bugs(self):
@@ -1043,27 +1058,42 @@ class TestImporterTest(LoggingTestCase):
     def test_need_sheriff_attention(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertFalse(importer._need_sheriff_attention())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.sh']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.sh':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertTrue(importer._need_sheriff_attention())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.py']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.py':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertTrue(importer._need_sheriff_attention())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.bat']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.bat':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertTrue(importer._need_sheriff_attention())
 
     # TODO(crbug.com/800570): Fix orphan baseline finding in the presence of

@@ -5,7 +5,12 @@
 import re
 from typing import Mapping, NamedTuple, Optional, Union
 
-from blinkpy.common.checkout.git import CommitRange
+from blinkpy.common.checkout.git import (
+    CommitRange,
+    FileStatus,
+    FileStatusType,
+    Git,
+)
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
@@ -167,10 +172,13 @@ class MockGit:
             self._filesystem.move(
                 self.absolute_path(origin), self.absolute_path(destination))
 
-    def changed_files(self,
-                      commits: Union[None, str, CommitRange] = None,
-                      diff_filter: str = 'ADM',
-                      path: Optional[str] = None):
+    def changed_files(
+        self,
+        commits: Union[None, str, CommitRange] = None,
+        diff_filter: Union[str, FileStatusType] = Git.DEFAULT_DIFF_FILTER,
+        path: Optional[str] = None,
+        rename_threshold: Optional[float] = None,
+    ) -> Mapping[str, FileStatus]:
         if not self._local_commits:
             return []
         if isinstance(commits, CommitRange):
@@ -183,16 +191,24 @@ class MockGit:
             files_before = self._local_commits[0].tree
             files_after = self._filesystem.files
 
-        changed_files = []
+        if isinstance(diff_filter, str):
+            diff_filter = FileStatusType.parse_diff_filter(diff_filter)
+
+        changed_files = {}
         for path in sorted(set(files_before) | set(files_after)):
             before, after = files_before.get(path), files_after.get(path)
-            added = 'A' in diff_filter and before is None and after is not None
-            deleted = ('D' in diff_filter and before is not None
-                       and after is None)
-            modified = 'M' in diff_filter and before != after
-            if added or deleted or modified:
-                changed_files.append(
-                    self._filesystem.relpath(path, self.checkout_root))
+            if before == after:
+                continue
+            elif before is None:
+                status = FileStatusType.ADD
+            elif after is None:
+                status = FileStatusType.DELETE
+            else:
+                status = FileStatusType.MODIFY
+            if status & diff_filter:
+                path_from_checkout_root = self._filesystem.relpath(
+                    path, self.checkout_root)
+                changed_files[path_from_checkout_root] = FileStatus(status)
         return changed_files
 
     def _get_commit_position(self, ref: str) -> int:

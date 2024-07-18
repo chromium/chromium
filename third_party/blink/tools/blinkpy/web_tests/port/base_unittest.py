@@ -35,6 +35,7 @@ import textwrap
 import unittest
 from unittest import mock
 
+from blinkpy.common.checkout.git import FileStatus, FileStatusType
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.log_testing import LoggingTestCase
@@ -851,9 +852,10 @@ class PortTest(LoggingTestCase):
             'rev-parse': '012345\n',
             'ls-files': '',
         }[command[0]]
-        mock_git.changed_files.return_value = [
-            'third_party/blink/web_tests/external/wpt/deleted.html'
-        ]
+        mock_git.changed_files.return_value = {
+            'third_party/blink/web_tests/external/wpt/deleted.html':
+            FileStatus(FileStatusType.DELETE),
+        }
 
         with mock.patch.object(port.host, 'git', return_value=mock_git):
             self.assertTrue(port.should_update_manifest('external/wpt'))
@@ -890,9 +892,10 @@ class PortTest(LoggingTestCase):
             'ls-files':
             'third_party/blink/web_tests/external/wpt/untracked.html\x00',
         }[command[0]]
-        mock_git.changed_files.return_value = [
-            'third_party/blink/web_tests/external/wpt/uncommitted.html'
-        ]
+        mock_git.changed_files.return_value = {
+            'third_party/blink/web_tests/external/wpt/uncommitted.html':
+            FileStatus(FileStatusType.ADD),
+        }
 
         with mock.patch.object(port.host, 'git', return_value=mock_git):
             self.assertFalse(port.should_update_manifest('external/wpt'))
@@ -934,9 +937,10 @@ class PortTest(LoggingTestCase):
             'rev-parse': '012345\n',
             'ls-files': '',
         }[command[0]]
-        mock_git.changed_files.return_value = [
-            'third_party/blink/web_tests/wpt_internal/changed.html'
-        ]
+        mock_git.changed_files.return_value = {
+            'third_party/blink/web_tests/wpt_internal/changed.html':
+            FileStatus(FileStatusType.MODIFY),
+        }
 
         with mock.patch.object(port.host, 'git', return_value=mock_git):
             self.assertTrue(port.should_update_manifest('wpt_internal'))
