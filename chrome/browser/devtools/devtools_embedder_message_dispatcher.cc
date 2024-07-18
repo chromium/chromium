@@ -460,8 +460,9 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
     d->RegisterHandlerWithCallback("doAidaConversation",
                                    &Delegate::DoAidaConversation, delegate);
-    d->RegisterHandler("registerAidaClientEvent",
-                       &Delegate::RegisterAidaClientEvent, delegate);
+    d->RegisterHandlerWithCallback("registerAidaClientEvent",
+                                   &Delegate::RegisterAidaClientEvent,
+                                   delegate);
   }
   return d;
 }

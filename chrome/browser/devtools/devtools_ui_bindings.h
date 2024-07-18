@@ -227,7 +227,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void DoAidaConversation(DispatchCallback callback,
                           const std::string& request,
                           int stream_id) override;
-  void RegisterAidaClientEvent(const std::string& request) override;
+  void RegisterAidaClientEvent(DispatchCallback callback,
+                               const std::string& request) override;
 
   void EnableRemoteDeviceCounter(bool enable);
 
@@ -297,9 +298,14 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
       base::TimeTicks start_time,
       const base::Value* response);
   void OnRegisterAidaClientEventRequest(
+      DispatchCallback callback,
       const std::string& request,
       absl::variant<network::ResourceRequest, std::string>
           resource_request_or_error);
+  void OnAidaClientResponse(
+      DispatchCallback callback,
+      std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+      std::unique_ptr<std::string> response_body);
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();
