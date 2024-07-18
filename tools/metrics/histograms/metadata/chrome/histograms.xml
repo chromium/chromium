@@ -148,16 +148,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2"
-    units="%" expires_after="2024-08-04">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow2 but emitted for the
-    browser UI of lacros-chrome.
-  </summary>
-</histogram>
-
 <histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
     expires_after="2024-12-08">
   <owner>gab@chromium.org</owner>

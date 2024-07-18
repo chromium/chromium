@@ -55,7 +55,6 @@
 #include "chrome/browser/lacros/suggestion_service_lacros.h"
 #include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
-#include "chrome/browser/lacros/ui_metric_recorder_lacros.h"
 #include "chrome/browser/lacros/views_text_services_context_menu_lacros.h"
 #include "chrome/browser/lacros/vpn_extension_tracker_lacros.h"
 #include "chrome/browser/lacros/web_app_provider_bridge_lacros.h"
@@ -304,8 +303,6 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     ::memory::OOMKillsMonitor::GetInstance().Initialize(
         g_browser_process->local_state());
   }
-
-  ui_metric_recorder_ = std::make_unique<UiMetricRecorderLacros>();
 
   if (chromeos::BrowserParamsProxy::Get()->VcControlsUiEnabled() &&
       chromeos::LacrosService::Get()
