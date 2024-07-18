@@ -367,6 +367,18 @@ public class AnswerSuggestionProcessorUnitTest {
         Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
         Assert.assertNull(suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
+        Assert.assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.omnibox.R.dimen
+                                        .omnibox_simple_card_top_padding),
+                suggHelper.mModel.get(AnswerSuggestionViewProperties.TOP_PADDING));
+        Assert.assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.omnibox.R.dimen
+                                        .omnibox_simple_card_leadin),
+                suggHelper.mModel.get(AnswerSuggestionViewProperties.RIGHT_PADDING));
 
         suggHelper = createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, false);
         Assert.assertFalse(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
@@ -379,6 +391,8 @@ public class AnswerSuggestionProcessorUnitTest {
         Assert.assertFalse(
                 suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
+        Assert.assertEquals(0, suggHelper.mModel.get(AnswerSuggestionViewProperties.TOP_PADDING));
+        Assert.assertEquals(0, suggHelper.mModel.get(AnswerSuggestionViewProperties.RIGHT_PADDING));
         Assert.assertEquals(
                 1, suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).size());
     }
