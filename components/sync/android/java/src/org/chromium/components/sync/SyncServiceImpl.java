@@ -21,6 +21,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -169,6 +170,16 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
         SyncServiceImplJni.get().getTypesWithUnsyncedData(mSyncServiceAndroidBridge, callback);
+    }
+
+    @Override
+    public void getLocalDataDescriptions(
+            Set<Integer> types, Callback<HashMap<Integer, LocalDataDescription>> callback) {
+        mThreadChecker.assertOnValidThread();
+        assert mSyncServiceAndroidBridge != 0;
+        SyncServiceImplJni.get()
+                .getLocalDataDescriptions(
+                        mSyncServiceAndroidBridge, userSelectableTypeSetToArray(types), callback);
     }
 
     @Override
@@ -450,6 +461,19 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         callback.onResult(modelTypeArrayToSet(types));
     }
 
+    @CalledByNative
+    private static void onGetLocalDataDescriptionsResult(
+            Callback<HashMap<Integer, LocalDataDescription>> callback,
+            int[] modelTypes,
+            LocalDataDescription[] localDataDescriptions) {
+        HashMap<Integer, LocalDataDescription> localDataDescription =
+                new HashMap<Integer, LocalDataDescription>();
+        for (int i = 0; i < modelTypes.length; i++) {
+            localDataDescription.put(modelTypes[i], localDataDescriptions[i]);
+        }
+        callback.onResult(localDataDescription);
+    }
+
     /** Invokes the onResult method of the callback from native code. */
     @CalledByNative
     private static void onGetAllNodesResult(Callback<JSONArray> callback, String serializedNodes) {
@@ -526,6 +550,11 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         void getTypesWithUnsyncedData(
                 long nativeSyncServiceAndroidBridge, Callback<Set<Integer>> callback);
+
+        void getLocalDataDescriptions(
+                long nativeSyncServiceAndroidBridge,
+                int[] types,
+                Callback<HashMap<Integer, LocalDataDescription>> callback);
 
         boolean isTypeManagedByPolicy(long nativeSyncServiceAndroidBridge, int type);
 

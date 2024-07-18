@@ -14,16 +14,18 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncServiceImpl;
 import org.chromium.components.sync.UserSelectableType;
 
+import java.util.HashMap;
 import java.util.Set;
 
 /**
  * Fake some SyncService methods for testing.
  *
- * Only what has been needed for tests so far has been faked.
+ * <p>Only what has been needed for tests so far has been faked.
  */
 public class FakeSyncServiceImpl implements SyncService {
     private final SyncService mDelegate;
@@ -223,6 +225,12 @@ public class FakeSyncServiceImpl implements SyncService {
     @Override
     public void getTypesWithUnsyncedData(Callback<Set<Integer>> callback) {
         mDelegate.getTypesWithUnsyncedData(callback);
+    }
+
+    @Override
+    public void getLocalDataDescriptions(
+            Set<Integer> types, Callback<HashMap<Integer, LocalDataDescription>> callback) {
+        mDelegate.getLocalDataDescriptions(types, callback);
     }
 
     @Override

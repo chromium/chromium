@@ -344,6 +344,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/suggestions/tile/TileRendererTest.java",
   "junit/src/org/chromium/chrome/browser/supervised_user/ChildAccountServiceTest.java",
   "junit/src/org/chromium/chrome/browser/survey/ChromeSurveyControllerTest.java",
+  "junit/src/org/chromium/chrome/browser/sync/LocalDataDescriptionTest.java",
   "junit/src/org/chromium/chrome/browser/sync/SyncErrorNotifierTest.java",
   "junit/src/org/chromium/chrome/browser/sync/ui/SyncErrorMessageImpressionTrackerTest.java",
   "junit/src/org/chromium/chrome/browser/tab/RequestDesktopUtilsUnitTest.java",

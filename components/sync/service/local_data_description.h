@@ -10,6 +10,10 @@
 
 #include "components/sync/base/model_type.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 namespace syncer {
 
 struct LocalDataDescription {
@@ -39,6 +43,14 @@ struct LocalDataDescription {
 // gmock printer helper.
 void PrintTo(const LocalDataDescription& local_data_description,
              std::ostream* os);
+
+#if BUILDFLAG(IS_ANDROID)
+// Constructs a Java LocalDataDescription from the provided C++
+// LocalDataDescription
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaLocalDataDescription(
+    JNIEnv* env,
+    const syncer::LocalDataDescription& local_data_description);
+#endif
 
 }  // namespace syncer
 

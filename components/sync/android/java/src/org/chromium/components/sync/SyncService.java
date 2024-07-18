@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -116,6 +117,16 @@ public interface SyncService {
      * Note: This includes deletions as well.
      */
     public void getTypesWithUnsyncedData(Callback<Set<Integer>> callback);
+
+    /**
+     * Queries the count and description/preview of existing local data for `types` data types. This
+     * is an asynchronous method which returns the result via the callback `callback` once the
+     * information for all the data types in `types` is available. Note: Only data types that are
+     * enabled and support this functionality are part of the response. Note: Only data types that
+     * are ready for migration are returned.
+     */
+    public void getLocalDataDescriptions(
+            Set<Integer> types, Callback<HashMap<Integer, LocalDataDescription>> callback);
 
     public boolean hasKeepEverythingSynced();
 
