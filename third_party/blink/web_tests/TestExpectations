@@ -6152,8 +6152,6 @@ crbug.com/1466721 external/wpt/fedcm/fedcm-userinfo.https.html [ Pass Timeout ]
 
 crbug.com/1472353 external/wpt/fedcm/fedcm-context.https.html [ Pass Timeout ]
 
-crbug.com/40284123 external/wpt/fedcm/fedcm-identity-assertion-nocors.https.html [ Failure ]
-
 crbug.com/1404951 [ Win ] external/wpt/fedcm/fedcm-nonce-is-optional.https.html [ Pass Timeout ]
 
 crbug.com/1480054 [ Win ] external/wpt/fedcm/fedcm-loginhint.https.html [ Pass Timeout ]
