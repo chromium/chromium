@@ -898,7 +898,7 @@ DrawingBuffer::ColorBuffer::~ColorBuffer() {
     return;
   }
 
-  sii->DestroySharedImage(receive_sync_token, std::move(shared_image));
+  shared_image->UpdateDestructionSyncToken(receive_sync_token);
   gl->DeleteTextures(1u, &texture_id);
 }
 
