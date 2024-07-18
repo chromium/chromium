@@ -124,12 +124,7 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
   source->AddResourcePaths(
       base::make_span(kRecorderAppResources, kRecorderAppResourcesSize));
 
-  // TODO(pihsun): See if there's a better way to handle client side
-  // navigation.
   source->AddResourcePath("", IDR_STATIC_INDEX_HTML);
-  source->AddResourcePath("playback", IDR_STATIC_INDEX_HTML);
-  source->AddResourcePath("record", IDR_STATIC_INDEX_HTML);
-  source->AddResourcePath("dev", IDR_STATIC_INDEX_HTML);
 
   source->AddLocalizedStrings(kLocalizedStrings);
 

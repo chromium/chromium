@@ -348,7 +348,7 @@ export class RecordPage extends ReactiveLitElement {
         // Permission denied, maybe user clicked cancel. Return to the main
         // page in this case.
         // TODO(pihsun): Better error handling/reporting and ask user to retry.
-        navigateTo(`/`);
+        navigateTo('/');
       } else {
         console.error(e);
       }

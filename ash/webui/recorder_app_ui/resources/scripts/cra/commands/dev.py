@@ -53,6 +53,13 @@ class _Route(NamedTuple):
     handler: Callable[[_RequestPath], tuple[bytes, str]]
 
 
+# importmap tag to make the import of /images/images.js independent of the base
+# path. The import is absolute because of build issue (See comment in
+# resources/BUILD.gn on ts_path_mappings).
+IMPORT_MAP = ('<script type="importmap">' +
+              '{"imports":{"/images/": "./images/"}}' + '</script>')
+
+
 class RequestHandler:
 
     def __init__(
@@ -75,6 +82,8 @@ class RequestHandler:
 
         relative_path = _get_root_relative_path(request_path)
         html = re.sub(r"(href|src)=\"/", f'\\1="{relative_path}/', html)
+        # Put the import map before the first script tag.
+        html = html.replace('<script', IMPORT_MAP + '<script')
 
         return html
 

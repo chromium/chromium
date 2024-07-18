@@ -11,10 +11,14 @@ function updateRoute() {
 }
 
 /**
- * Navigates to the given path.
+ * Navigates to the given "path".
+ *
+ * Note that this should only be used for pages under Recorder App, and not
+ * external link. Since we do client side navigation via URL hash (see the
+ * reason in pages/recorder-app.ts), the path is put into URL hash.
  */
 export function navigateTo(path: string): void {
-  window.history.pushState({}, '', path);
+  window.history.pushState({}, '', `#${path}`);
   updateRoute();
 }
 
@@ -37,8 +41,9 @@ export function installRouter(): void {
     }
 
     const href = anchor.href;
+    let url: URL;
     try {
-      const url = new URL(href);
+      url = new URL(href);
       if (url.origin !== window.location.origin) {
         return;
       }
@@ -49,7 +54,7 @@ export function installRouter(): void {
 
     e.preventDefault();
     if (href !== window.location.href) {
-      navigateTo(href);
+      navigateTo(url.pathname);
     }
   });
 
