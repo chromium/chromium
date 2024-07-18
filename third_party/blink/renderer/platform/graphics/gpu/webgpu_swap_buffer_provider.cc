@@ -418,9 +418,7 @@ WebGPUSwapBufferProvider::SwapBuffer::SwapBuffer(
 
 WebGPUSwapBufferProvider::SwapBuffer::~SwapBuffer() {
   if (context_provider) {
-    gpu::SharedImageInterface* sii =
-        context_provider->ContextProvider()->SharedImageInterface();
-    sii->DestroySharedImage(access_finished_token, std::move(shared_image));
+    shared_image->UpdateDestructionSyncToken(access_finished_token);
   }
 }
 
