@@ -146,6 +146,7 @@ class Delivery {
            network_anonymization_key());
     DCHECK(IsSubdomainOf(target_.origin.host() /* subdomain */,
                          endpoint.group_key.origin.host() /* superdomain */));
+    DCHECK_EQ(endpoint.group_key.target_type, target_.target_type);
     for (auto it = reports_begin; it != reports_end; ++it) {
       DCHECK_EQ((*reports_begin)->GetGroupKey(), (*it)->GetGroupKey());
       DCHECK((*it)->network_anonymization_key == network_anonymization_key());
@@ -332,7 +333,7 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
       Delivery::Target target(
           isolation_info, report_group_key.network_anonymization_key,
           report_group_key.origin, endpoint.info.url,
-          endpoint.group_key.reporting_source, ReportingTargetType::kDeveloper);
+          endpoint.group_key.reporting_source, endpoint.group_key.target_type);
       auto delivery_it = deliveries.find(target);
       if (delivery_it == deliveries.end()) {
         bool inserted;

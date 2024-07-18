@@ -50,7 +50,8 @@ ReportingReport::~ReportingReport() = default;
 
 ReportingEndpointGroupKey ReportingReport::GetGroupKey() const {
   return ReportingEndpointGroupKey(network_anonymization_key, reporting_source,
-                                   url::Origin::Create(url), group);
+                                   url::Origin::Create(url), group,
+                                   target_type);
 }
 
 bool ReportingReport::IsUploadPending() const {

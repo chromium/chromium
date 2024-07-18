@@ -24,6 +24,7 @@
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/network_error_logging/network_error_logging_service.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_test_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "sql/database.h"
@@ -212,8 +213,8 @@ class SQLitePersistentReportingAndNelStoreTest
     info.priority = priority;
     info.weight = weight;
     ReportingEndpoint endpoint(
-        ReportingEndpointGroupKey(network_anonymization_key, origin,
-                                  group_name),
+        ReportingEndpointGroupKey(network_anonymization_key, origin, group_name,
+                                  ReportingTargetType::kDeveloper),
         std::move(info));
     return endpoint;
   }
@@ -226,8 +227,8 @@ class SQLitePersistentReportingAndNelStoreTest
       OriginSubdomains include_subdomains = OriginSubdomains::DEFAULT,
       base::Time expires = kExpires) {
     return CachedReportingEndpointGroup(
-        ReportingEndpointGroupKey(network_anonymization_key, origin,
-                                  group_name),
+        ReportingEndpointGroupKey(network_anonymization_key, origin, group_name,
+                                  ReportingTargetType::kDeveloper),
         include_subdomains, expires, last_used);
   }
 

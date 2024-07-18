@@ -25,6 +25,7 @@
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_endpoint.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -95,13 +96,25 @@ class ReportingHeaderParserTestBase
   // There are 2^3 = 8 of these to test the different combinations of matching
   // vs mismatching NAK, origin, and group.
   const ReportingEndpointGroupKey kGroupKey11_ =
-      ReportingEndpointGroupKey(kNak_, kOrigin1_, kGroup1_);
+      ReportingEndpointGroupKey(kNak_,
+                                kOrigin1_,
+                                kGroup1_,
+                                ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroupKey21_ =
-      ReportingEndpointGroupKey(kNak_, kOrigin2_, kGroup1_);
+      ReportingEndpointGroupKey(kNak_,
+                                kOrigin2_,
+                                kGroup1_,
+                                ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroupKey12_ =
-      ReportingEndpointGroupKey(kNak_, kOrigin1_, kGroup2_);
+      ReportingEndpointGroupKey(kNak_,
+                                kOrigin1_,
+                                kGroup2_,
+                                ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroupKey22_ =
-      ReportingEndpointGroupKey(kNak_, kOrigin2_, kGroup2_);
+      ReportingEndpointGroupKey(kNak_,
+                                kOrigin2_,
+                                kGroup2_,
+                                ReportingTargetType::kDeveloper);
 
  private:
   raw_ptr<MockPersistentReportingStore> store_;
@@ -126,7 +139,8 @@ class ReportingHeaderParserTest : public ReportingHeaderParserTestBase {
       base::TimeDelta ttl = base::Days(1),
       url::Origin origin = url::Origin()) {
     ReportingEndpointGroupKey group_key(kNak_ /* unused */,
-                                        url::Origin() /* unused */, name);
+                                        url::Origin() /* unused */, name,
+                                        ReportingTargetType::kDeveloper);
     ReportingEndpointGroup group;
     group.group_key = group_key;
     group.include_subdomains = include_subdomains;
@@ -357,7 +371,8 @@ TEST_P(ReportingHeaderParserTest, PathAbsoluteURLEndpoint) {
 }
 
 TEST_P(ReportingHeaderParserTest, OmittedGroupName) {
-  ReportingEndpointGroupKey kGroupKey(kNak_, kOrigin1_, "default");
+  ReportingEndpointGroupKey kGroupKey(kNak_, kOrigin1_, "default",
+                                      ReportingTargetType::kDeveloper);
   std::vector<ReportingEndpoint::EndpointInfo> endpoints = {{kEndpoint1_}};
   std::string header =
       ConstructHeaderGroupString(MakeEndpointGroup(std::string(), endpoints));
@@ -447,7 +462,8 @@ TEST_P(ReportingHeaderParserTest, IncludeSubdomainsFalse) {
 }
 
 TEST_P(ReportingHeaderParserTest, IncludeSubdomainsEtldRejected) {
-  ReportingEndpointGroupKey kGroupKey(kNak_, kOriginEtld_, kGroup1_);
+  ReportingEndpointGroupKey kGroupKey(kNak_, kOriginEtld_, kGroup1_,
+                                      ReportingTargetType::kDeveloper);
   std::vector<ReportingEndpoint::EndpointInfo> endpoints = {{kEndpoint1_}};
 
   std::string header = ConstructHeaderGroupString(
@@ -462,7 +478,8 @@ TEST_P(ReportingHeaderParserTest, IncludeSubdomainsEtldRejected) {
 }
 
 TEST_P(ReportingHeaderParserTest, NonIncludeSubdomainsEtldAccepted) {
-  ReportingEndpointGroupKey kGroupKey(kNak_, kOriginEtld_, kGroup1_);
+  ReportingEndpointGroupKey kGroupKey(kNak_, kOriginEtld_, kGroup1_,
+                                      ReportingTargetType::kDeveloper);
   std::vector<ReportingEndpoint::EndpointInfo> endpoints = {{kEndpoint1_}};
 
   std::string header = ConstructHeaderGroupString(
@@ -776,14 +793,14 @@ TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
       ", " +
       ConstructHeaderGroupString(MakeEndpointGroup(kGroup2_, endpoints1));
 
-  const ReportingEndpointGroupKey kOtherGroupKey11 =
-      ReportingEndpointGroupKey(kOtherNak_, kOrigin1_, kGroup1_);
-  const ReportingEndpointGroupKey kOtherGroupKey21 =
-      ReportingEndpointGroupKey(kOtherNak_, kOrigin2_, kGroup1_);
-  const ReportingEndpointGroupKey kOtherGroupKey12 =
-      ReportingEndpointGroupKey(kOtherNak_, kOrigin1_, kGroup2_);
-  const ReportingEndpointGroupKey kOtherGroupKey22 =
-      ReportingEndpointGroupKey(kOtherNak_, kOrigin2_, kGroup2_);
+  const ReportingEndpointGroupKey kOtherGroupKey11 = ReportingEndpointGroupKey(
+      kOtherNak_, kOrigin1_, kGroup1_, ReportingTargetType::kDeveloper);
+  const ReportingEndpointGroupKey kOtherGroupKey21 = ReportingEndpointGroupKey(
+      kOtherNak_, kOrigin2_, kGroup1_, ReportingTargetType::kDeveloper);
+  const ReportingEndpointGroupKey kOtherGroupKey12 = ReportingEndpointGroupKey(
+      kOtherNak_, kOrigin1_, kGroup2_, ReportingTargetType::kDeveloper);
+  const ReportingEndpointGroupKey kOtherGroupKey22 = ReportingEndpointGroupKey(
+      kOtherNak_, kOrigin2_, kGroup2_, ReportingTargetType::kDeveloper);
 
   const struct {
     NetworkAnonymizationKey network_anonymization_key;
@@ -1197,11 +1214,16 @@ TEST_P(ReportingHeaderParserTest, OverwriteOldHeader) {
 }
 
 TEST_P(ReportingHeaderParserTest, OverwriteOldHeaderWithCompletelyNew) {
-  ReportingEndpointGroupKey kGroupKey1(kNak_, kOrigin1_, "1");
-  ReportingEndpointGroupKey kGroupKey2(kNak_, kOrigin1_, "2");
-  ReportingEndpointGroupKey kGroupKey3(kNak_, kOrigin1_, "3");
-  ReportingEndpointGroupKey kGroupKey4(kNak_, kOrigin1_, "4");
-  ReportingEndpointGroupKey kGroupKey5(kNak_, kOrigin1_, "5");
+  ReportingEndpointGroupKey kGroupKey1(kNak_, kOrigin1_, "1",
+                                       ReportingTargetType::kDeveloper);
+  ReportingEndpointGroupKey kGroupKey2(kNak_, kOrigin1_, "2",
+                                       ReportingTargetType::kDeveloper);
+  ReportingEndpointGroupKey kGroupKey3(kNak_, kOrigin1_, "3",
+                                       ReportingTargetType::kDeveloper);
+  ReportingEndpointGroupKey kGroupKey4(kNak_, kOrigin1_, "4",
+                                       ReportingTargetType::kDeveloper);
+  ReportingEndpointGroupKey kGroupKey5(kNak_, kOrigin1_, "5",
+                                       ReportingTargetType::kDeveloper);
   std::vector<ReportingEndpoint::EndpointInfo> endpoints1_1 = {{MakeURL(10)},
                                                                {MakeURL(11)}};
   std::vector<ReportingEndpoint::EndpointInfo> endpoints2_1 = {{MakeURL(20)},
@@ -1758,7 +1780,8 @@ class ReportingHeaderParserStructuredHeaderTest
       const std::vector<ReportingEndpoint::EndpointInfo>& endpoints,
       url::Origin origin = url::Origin()) {
     ReportingEndpointGroupKey group_key(kNak_ /* unused */,
-                                        url::Origin() /* unused */, name);
+                                        url::Origin() /* unused */, name,
+                                        ReportingTargetType::kDeveloper);
     ReportingEndpointGroup group;
     group.group_key = group_key;
     group.include_subdomains = OriginSubdomains::EXCLUDE;

@@ -26,6 +26,7 @@
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_service.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_test_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,9 +61,15 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   const NetworkAnonymizationKey kNak2_ =
       NetworkAnonymizationKey::CreateSameSite(SchemefulSite(kOrigin2_));
   const ReportingEndpointGroupKey kGroupKey_ =
-      ReportingEndpointGroupKey(kNak_, kOrigin_, kGroup_);
+      ReportingEndpointGroupKey(kNak_,
+                                kOrigin_,
+                                kGroup_,
+                                ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroupKey2_ =
-      ReportingEndpointGroupKey(kNak2_, kOrigin2_, kGroup_);
+      ReportingEndpointGroupKey(kNak2_,
+                                kOrigin2_,
+                                kGroup_,
+                                ReportingTargetType::kDeveloper);
   const IsolationInfo kIsolationInfo_ =
       IsolationInfo::Create(IsolationInfo::RequestType::kOther,
                             kOrigin_,
@@ -224,7 +231,9 @@ TEST_P(ReportingServiceTest, ProcessReportToHeader) {
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
   EXPECT_TRUE(context()->cache()->GetEndpointForTesting(
-      ReportingEndpointGroupKey(kNak_, kOrigin_, kGroup_), kEndpoint_));
+      ReportingEndpointGroupKey(kNak_, kOrigin_, kGroup_,
+                                ReportingTargetType::kDeveloper),
+      kEndpoint_));
 }
 
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
@@ -451,9 +460,12 @@ TEST_P(ReportingServiceTest, ProcessReportToHeaderNetworkIsolationKeyDisabled) {
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
   EXPECT_FALSE(context()->cache()->GetEndpointForTesting(
-      ReportingEndpointGroupKey(kNak_, kOrigin_, kGroup_), kEndpoint_));
+      ReportingEndpointGroupKey(kNak_, kOrigin_, kGroup_,
+                                ReportingTargetType::kDeveloper),
+      kEndpoint_));
   EXPECT_TRUE(context()->cache()->GetEndpointForTesting(
-      ReportingEndpointGroupKey(NetworkAnonymizationKey(), kOrigin_, kGroup_),
+      ReportingEndpointGroupKey(NetworkAnonymizationKey(), kOrigin_, kGroup_,
+                                ReportingTargetType::kDeveloper),
       kEndpoint_));
 }
 

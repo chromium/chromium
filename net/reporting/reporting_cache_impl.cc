@@ -20,6 +20,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
+#include "net/reporting/reporting_target_type.h"
 
 namespace net {
 
@@ -703,7 +704,6 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
     const ReportingEndpointGroupKey& group_key) {
   base::Time now = clock().Now();
   ConsistencyCheckClients();
-
   // If |group_key| has a defined |reporting_source| field, then this method is
   // being called for reports with an associated source. We need to first look
   // for a matching V1 endpoint, based on |reporting_source| and |group_name|.
@@ -728,7 +728,7 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
   // can be compared to any V0 endpoint groups.
   ReportingEndpointGroupKey v0_lookup_group_key(
       group_key.network_anonymization_key, group_key.origin,
-      group_key.group_name);
+      group_key.group_name, group_key.target_type);
 
   // Look for an exact origin match for |origin| and |group|.
   EndpointGroupMap::iterator group_it =
@@ -757,7 +757,7 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
       }
       ReportingEndpointGroupKey superdomain_lookup_group_key(
           v0_lookup_group_key.network_anonymization_key, client.origin,
-          v0_lookup_group_key.group_name);
+          v0_lookup_group_key.group_name, v0_lookup_group_key.target_type);
       group_it = FindEndpointGroupIt(superdomain_lookup_group_key);
 
       if (group_it == endpoint_groups_.end())
@@ -1312,9 +1312,11 @@ void ReportingCacheImpl::RemoveEndpointGroupsForClientOtherThan(
                                                        groups_to_keep_names);
 
   for (const std::string& group_name : groups_to_remove_names) {
-    EndpointGroupMap::iterator group_it =
-        FindEndpointGroupIt(ReportingEndpointGroupKey(network_anonymization_key,
-                                                      origin, group_name));
+    // The target_type is set to kDeveloper because this function is used for
+    // V0 reporting, which only includes web developer entities.
+    EndpointGroupMap::iterator group_it = FindEndpointGroupIt(
+        ReportingEndpointGroupKey(network_anonymization_key, origin, group_name,
+                                  ReportingTargetType::kDeveloper));
     RemoveEndpointGroupInternal(client_it, group_it);
   }
 }
@@ -1425,8 +1427,11 @@ ReportingCacheImpl::RemoveClientInternal(ClientMap::iterator client_it) {
 
   // Erase all groups in this client, and all endpoints in those groups.
   for (const std::string& group_name : client.endpoint_group_names) {
+    // The target_type is set to kDeveloper because this function is used for
+    // V0 reporting, which only includes web developer entities.
     ReportingEndpointGroupKey group_key(client.network_anonymization_key,
-                                        client.origin, group_name);
+                                        client.origin, group_name,
+                                        ReportingTargetType::kDeveloper);
     EndpointGroupMap::iterator group_it = FindEndpointGroupIt(group_key);
     if (context_->IsClientDataPersisted())
       store()->DeleteReportingEndpointGroup(group_it->second);
@@ -1513,8 +1518,11 @@ void ReportingCacheImpl::EvictEndpointsFromClient(ClientMap::iterator client_it,
     EndpointGroupMap::iterator stalest_group_it = endpoint_groups_.end();
     size_t stalest_group_endpoint_count = 0;
     for (const std::string& group_name : client.endpoint_group_names) {
+      // The target_type is set to kDeveloper because enterprise endpoints
+      // follow a different path.
       ReportingEndpointGroupKey group_key(network_anonymization_key, origin,
-                                          group_name);
+                                          group_name,
+                                          ReportingTargetType::kDeveloper);
       EndpointGroupMap::iterator group_it = FindEndpointGroupIt(group_key);
       size_t group_endpoint_count = GetEndpointCountInGroup(group_key);
 
@@ -1566,9 +1574,12 @@ bool ReportingCacheImpl::RemoveExpiredOrStaleGroups(
       client_it->second.endpoint_group_names);
 
   for (const std::string& group_name : groups_in_client_names) {
+    // The target_type is set to kDeveloper because enterprise endpoints
+    // follow a different path.
     EndpointGroupMap::iterator group_it = FindEndpointGroupIt(
         ReportingEndpointGroupKey(client_it->second.network_anonymization_key,
-                                  client_it->second.origin, group_name));
+                                  client_it->second.origin, group_name,
+                                  ReportingTargetType::kDeveloper));
     CHECK(group_it != endpoint_groups_.end(), base::NotFatalUntil::M130);
     const CachedReportingEndpointGroup& group = group_it->second;
     if (group.expires < now ||
@@ -1612,8 +1623,11 @@ base::Value ReportingCacheImpl::GetClientAsValue(const Client& client) const {
 
   base::Value::List group_list;
   for (const std::string& group_name : client.endpoint_group_names) {
+    // The target_type is set to kDeveloper because enterprise endpoints
+    // follow a different path.
     ReportingEndpointGroupKey group_key(client.network_anonymization_key,
-                                        client.origin, group_name);
+                                        client.origin, group_name,
+                                        ReportingTargetType::kDeveloper);
     const CachedReportingEndpointGroup& group = endpoint_groups_.at(group_key);
     group_list.Append(GetEndpointGroupAsValue(group));
   }

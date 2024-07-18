@@ -26,6 +26,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/extras/sqlite/sqlite_persistent_store_backend_base.h"
 #include "net/reporting/reporting_endpoint.h"
+#include "net/reporting/reporting_target_type.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -1386,6 +1387,8 @@ void SQLitePersistentReportingAndNelStore::Backend::
     if (!NetworkAnonymizationKeyFromString(endpoints_statement.ColumnString(0),
                                            &network_anonymization_key))
       continue;
+    // The target_type is set to kDeveloper because this function is used for
+    // V0 reporting, which only includes web developer entities.
     ReportingEndpointGroupKey group_key(
         network_anonymization_key,
         /* origin = */
@@ -1393,7 +1396,8 @@ void SQLitePersistentReportingAndNelStore::Backend::
             /* origin_scheme = */ endpoints_statement.ColumnString(1),
             /* origin_host = */ endpoints_statement.ColumnString(2),
             /* origin_port = */ endpoints_statement.ColumnInt(3)),
-        /* group_name = */ endpoints_statement.ColumnString(4));
+        /* group_name = */ endpoints_statement.ColumnString(4),
+        ReportingTargetType::kDeveloper);
     ReportingEndpoint::EndpointInfo endpoint_info;
     endpoint_info.url = GURL(endpoints_statement.ColumnString(5));
     endpoint_info.priority = endpoints_statement.ColumnInt(6);
@@ -1411,6 +1415,8 @@ void SQLitePersistentReportingAndNelStore::Backend::
             endpoint_groups_statement.ColumnString(0),
             &network_anonymization_key))
       continue;
+    // The target_type is set to kDeveloper because this function is used for
+    // V0 reporting, which only includes web developer entities.
     ReportingEndpointGroupKey group_key(
         network_anonymization_key,
         /* origin = */
@@ -1418,7 +1424,8 @@ void SQLitePersistentReportingAndNelStore::Backend::
             /* origin_scheme = */ endpoint_groups_statement.ColumnString(1),
             /* origin_host = */ endpoint_groups_statement.ColumnString(2),
             /* origin_port = */ endpoint_groups_statement.ColumnInt(3)),
-        /* group_name = */ endpoint_groups_statement.ColumnString(4));
+        /* group_name = */ endpoint_groups_statement.ColumnString(4),
+        ReportingTargetType::kDeveloper);
     OriginSubdomains include_subdomains =
         endpoint_groups_statement.ColumnBool(5) ? OriginSubdomains::INCLUDE
                                                 : OriginSubdomains::EXCLUDE;

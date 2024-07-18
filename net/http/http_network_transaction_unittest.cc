@@ -100,6 +100,7 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "net/proxy_resolution/proxy_resolver_factory.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/client_socket_pool_manager.h"
@@ -23676,7 +23677,8 @@ TEST_P(HttpNetworkTransactionReportingTest, ProcessReportToHeaderHttps) {
       reporting_context()->cache()->GetEndpointForTesting(
           ReportingEndpointGroupKey(
               kNetworkAnonymizationKey,
-              url::Origin::Create(GURL("https://www.example.org/")), "nel"),
+              url::Origin::Create(GURL("https://www.example.org/")), "nel",
+              ReportingTargetType::kDeveloper),
           GURL("https://www.example.org/upload/"));
   EXPECT_TRUE(endpoint);
 }

@@ -24,6 +24,7 @@
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_delegate.h"
 #include "net/reporting/reporting_endpoint.h"
+#include "net/reporting/reporting_target_type.h"
 
 namespace net {
 
@@ -135,8 +136,11 @@ bool ProcessEndpointGroup(
       return false;
     group_name = maybe_group_name->GetString();
   }
+  // The target_type is set to kDeveloper because enterprise endpoints are
+  // created on a different path.
   ReportingEndpointGroupKey group_key(network_anonymization_key, origin,
-                                      group_name);
+                                      group_name,
+                                      ReportingTargetType::kDeveloper);
   parsed_endpoint_group_out->group_key = group_key;
 
   int ttl_sec = dict->FindInt(kMaxAgeKey).value_or(-1);
@@ -223,8 +227,11 @@ bool ProcessV1Endpoint(ReportingDelegate* delegate,
                        const std::string& endpoint_url_string,
                        ReportingEndpoint& parsed_endpoint_out) {
   DCHECK(!reporting_source.is_empty());
+  // The target_type is set to kDeveloper because enterprise endpoints are
+  // created on a different path.
   ReportingEndpointGroupKey group_key(network_anonymization_key,
-                                      reporting_source, origin, endpoint_name);
+                                      reporting_source, origin, endpoint_name,
+                                      ReportingTargetType::kDeveloper);
   parsed_endpoint_out.group_key = group_key;
 
   ReportingEndpoint::EndpointInfo parsed_endpoint;

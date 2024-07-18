@@ -80,7 +80,8 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   void UploadFirstReportAndStartTimer() {
     ReportingEndpointGroupKey dummy_group(
         NetworkAnonymizationKey(),
-        url::Origin::Create(GURL("https://dummy.test")), "dummy");
+        url::Origin::Create(GURL("https://dummy.test")), "dummy",
+        ReportingTargetType::kDeveloper);
     ASSERT_TRUE(SetEndpointInCache(
         dummy_group, GURL("https://dummy.test/upload"), kExpires_));
     AddReport(std::nullopt, dummy_group.network_anonymization_key,
@@ -97,7 +98,8 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   void UploadFirstDocumentReportAndStartTimer() {
     ReportingEndpointGroupKey dummy_group(
         kNak_, kDocumentReportingSource_,
-        url::Origin::Create(GURL("https://dummy.test")), "dummy");
+        url::Origin::Create(GURL("https://dummy.test")), "dummy",
+        ReportingTargetType::kDeveloper);
     SetV1EndpointInCache(dummy_group, kDocumentReportingSource_,
                          kIsolationInfo_, GURL("https://dummy.test/upload"));
     AddReport(kDocumentReportingSource_, dummy_group.network_anonymization_key,
@@ -145,7 +147,10 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   const std::string kType_ = "type";
   const base::Time kExpires_ = base::Time::Now() + base::Days(7);
   const ReportingEndpointGroupKey kGroupKey_ =
-      ReportingEndpointGroupKey(kNak_, kOrigin_, kGroup_);
+      ReportingEndpointGroupKey(kNak_,
+                                kOrigin_,
+                                kGroup_,
+                                ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kDocumentGroupKey_ =
       ReportingEndpointGroupKey(kGroupKey_, kDocumentReportingSource_);
 };
@@ -509,8 +514,8 @@ TEST_F(ReportingDeliveryAgentTest, DisallowedUpload) {
 }
 
 TEST_F(ReportingDeliveryAgentTest, RemoveEndpointUpload) {
-  static const ReportingEndpointGroupKey kOtherGroupKey(kNak_, kOtherOrigin_,
-                                                        kGroup_);
+  static const ReportingEndpointGroupKey kOtherGroupKey(
+      kNak_, kOtherOrigin_, kGroup_, ReportingTargetType::kDeveloper);
 
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
   ASSERT_TRUE(SetEndpointInCache(kOtherGroupKey, kEndpoint_, kExpires_));
@@ -608,10 +613,14 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemoveDuringPermissionsCheck) {
 // reports for the same (NAK, origin).
 TEST_F(ReportingDeliveryAgentTest, OnlyBatchSameNakAndOrigin) {
   const ReportingEndpointGroupKey kGroupKeys[] = {
-      ReportingEndpointGroupKey(kNak_, kOrigin_, kGroup_),
-      ReportingEndpointGroupKey(kNak_, kOtherOrigin_, kGroup_),
-      ReportingEndpointGroupKey(kOtherNak_, kOrigin_, kGroup_),
-      ReportingEndpointGroupKey(kOtherNak_, kOtherOrigin_, kGroup_),
+      ReportingEndpointGroupKey(kNak_, kOrigin_, kGroup_,
+                                ReportingTargetType::kDeveloper),
+      ReportingEndpointGroupKey(kNak_, kOtherOrigin_, kGroup_,
+                                ReportingTargetType::kDeveloper),
+      ReportingEndpointGroupKey(kOtherNak_, kOrigin_, kGroup_,
+                                ReportingTargetType::kDeveloper),
+      ReportingEndpointGroupKey(kOtherNak_, kOtherOrigin_, kGroup_,
+                                ReportingTargetType::kDeveloper),
   };
   for (const ReportingEndpointGroupKey& group_key : kGroupKeys) {
     ASSERT_TRUE(SetEndpointInCache(group_key, kEndpoint_, kExpires_));
@@ -710,8 +719,8 @@ TEST_F(ReportingDeliveryAgentTest, SerializeUploadsToGroup) {
 TEST_F(ReportingDeliveryAgentTest, ParallelizeUploadsAcrossGroups) {
   static const GURL kDifferentEndpoint("https://endpoint2/");
   static const std::string kDifferentGroup("group2");
-  const ReportingEndpointGroupKey kDifferentGroupKey(kNak_, kOrigin_,
-                                                     kDifferentGroup);
+  const ReportingEndpointGroupKey kDifferentGroupKey(
+      kNak_, kOrigin_, kDifferentGroup, ReportingTargetType::kDeveloper);
 
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
   ASSERT_TRUE(
@@ -754,8 +763,8 @@ TEST_F(ReportingDeliveryAgentTest, ParallelizeUploadsAcrossGroups) {
 // URL.
 TEST_F(ReportingDeliveryAgentTest, BatchReportsAcrossGroups) {
   static const std::string kDifferentGroup("group2");
-  const ReportingEndpointGroupKey kDifferentGroupKey(kNak_, kOrigin_,
-                                                     kDifferentGroup);
+  const ReportingEndpointGroupKey kDifferentGroupKey(
+      kNak_, kOrigin_, kDifferentGroup, ReportingTargetType::kDeveloper);
 
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
   ASSERT_TRUE(SetEndpointInCache(kDifferentGroupKey, kEndpoint_, kExpires_));
@@ -819,15 +828,20 @@ TEST_F(ReportingDeliveryAgentTest, SendReportsForSource) {
   // Set up identical endpoint configuration for kReportingSource1 and
   // kReportingSource2. kReportingSource3 is independent.
   const ReportingEndpointGroupKey kGroup1Key1(kNak_, kReportingSource1,
-                                              kOrigin_, kGroup_);
+                                              kOrigin_, kGroup_,
+                                              ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroup2Key1(kNak_, kReportingSource1,
-                                              kOrigin_, kGroup2);
+                                              kOrigin_, kGroup2,
+                                              ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroup1Key2(kNak_, kReportingSource2,
-                                              kOrigin_, kGroup_);
+                                              kOrigin_, kGroup_,
+                                              ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroup2Key2(kNak_, kReportingSource2,
-                                              kOrigin_, kGroup2);
-  const ReportingEndpointGroupKey kOtherGroupKey(kOtherNak_, kReportingSource3,
-                                                 kOtherOrigin_, kGroup_);
+                                              kOrigin_, kGroup2,
+                                              ReportingTargetType::kDeveloper);
+  const ReportingEndpointGroupKey kOtherGroupKey(
+      kOtherNak_, kReportingSource3, kOtherOrigin_, kGroup_,
+      ReportingTargetType::kDeveloper);
 
   SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kIsolationInfo1, kUrl_);
   SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kIsolationInfo1, kUrl_);
@@ -889,15 +903,20 @@ TEST_F(ReportingDeliveryAgentTest, SendReportsForMultipleSources) {
   // Set up identical endpoint configuration for kReportingSource1 and
   // kReportingSource2. kReportingSource3 is independent.
   const ReportingEndpointGroupKey kGroup1Key1(kNak_, kReportingSource1,
-                                              kOrigin_, kGroup_);
+                                              kOrigin_, kGroup_,
+                                              ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroup2Key1(kNak_, kReportingSource1,
-                                              kOrigin_, kGroup2);
+                                              kOrigin_, kGroup2,
+                                              ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroup1Key2(kNak_, kReportingSource2,
-                                              kOrigin_, kGroup_);
+                                              kOrigin_, kGroup_,
+                                              ReportingTargetType::kDeveloper);
   const ReportingEndpointGroupKey kGroup2Key2(kNak_, kReportingSource2,
-                                              kOrigin_, kGroup2);
-  const ReportingEndpointGroupKey kOtherGroupKey(kOtherNak_, kReportingSource3,
-                                                 kOtherOrigin_, kGroup_);
+                                              kOrigin_, kGroup2,
+                                              ReportingTargetType::kDeveloper);
+  const ReportingEndpointGroupKey kOtherGroupKey(
+      kOtherNak_, kReportingSource3, kOtherOrigin_, kGroup_,
+      ReportingTargetType::kDeveloper);
 
   SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kIsolationInfo1, kUrl_);
   SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kIsolationInfo1, kUrl_);

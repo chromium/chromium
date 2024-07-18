@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/reporting/reporting_target_type.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -25,13 +26,15 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   ReportingEndpointGroupKey(
       const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
-      const std::string& group_name);
+      const std::string& group_name,
+      ReportingTargetType target_type);
 
   ReportingEndpointGroupKey(
       const NetworkAnonymizationKey& network_anonymization_key,
       std::optional<base::UnguessableToken> reporting_source,
       const url::Origin& origin,
-      const std::string& group_name);
+      const std::string& group_name,
+      ReportingTargetType target_type);
 
   ReportingEndpointGroupKey(
       const ReportingEndpointGroupKey& other,
@@ -65,10 +68,17 @@ struct NET_EXPORT ReportingEndpointGroupKey {
 
   // Name of the endpoint group (defaults to "default" during header parsing).
   std::string group_name;
+
+  // Used to distinguish web developer and enterprise entities so that
+  // enterprise reports aren’t sent to web developer endpoints and web developer
+  // reports aren’t sent to enterprise endpoints.
+  ReportingTargetType target_type = ReportingTargetType::kDeveloper;
+
+  NET_EXPORT friend bool operator==(const ReportingEndpointGroupKey& lhs,
+                                    const ReportingEndpointGroupKey& rhs) =
+      default;
 };
 
-NET_EXPORT bool operator==(const ReportingEndpointGroupKey& lhs,
-                           const ReportingEndpointGroupKey& rhs);
 NET_EXPORT bool operator!=(const ReportingEndpointGroupKey& lhs,
                            const ReportingEndpointGroupKey& rhs);
 NET_EXPORT bool operator<(const ReportingEndpointGroupKey& lhs,

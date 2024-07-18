@@ -15,6 +15,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_report.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,7 +56,10 @@ class ReportingNetworkChangeObserverTest : public ReportingTestBase {
   const std::string kGroup_ = "group";
   const std::string kType_ = "default";
   const ReportingEndpointGroupKey kGroupKey_ =
-      ReportingEndpointGroupKey(NetworkAnonymizationKey(), kOrigin_, kGroup_);
+      ReportingEndpointGroupKey(NetworkAnonymizationKey(),
+                                kOrigin_,
+                                kGroup_,
+                                ReportingTargetType::kDeveloper);
 };
 
 TEST_F(ReportingNetworkChangeObserverTest, ClearNothing) {
