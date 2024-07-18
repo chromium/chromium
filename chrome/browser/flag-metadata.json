@@ -5454,7 +5454,7 @@
   {
     "name": "ios-tips-notifications",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 128
+    "expiry_milestone": 132
   },
   {
     "name": "ip-protection-proxy-opt-out",
