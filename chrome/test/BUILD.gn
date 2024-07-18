@@ -10280,7 +10280,6 @@ test("unit_tests") {
       "../browser/ui/views/tabs/tab_unittest.cc",
       "../browser/ui/views/toolbar/chrome_labs/chrome_labs_button_unittest.cc",
       "../browser/ui/views/toolbar/chrome_labs/chrome_labs_unittest.cc",
-      "../browser/ui/views/toolbar/management_toolbar_button_unittest.cc",
       "../browser/ui/views/toolbar/pinned_toolbar_actions_container_unittest.cc",
       "../browser/ui/views/toolbar/reload_button_unittest.cc",
       "../browser/ui/views/toolbar/toolbar_action_view_unittest.cc",
@@ -10348,7 +10347,10 @@ test("unit_tests") {
       ]
     }
     if (is_linux || is_win || is_mac) {
-      sources += [ "../browser/ui/views/global_media_controls/media_dialog_view_unittest.cc" ]
+      sources += [
+        "../browser/ui/views/global_media_controls/media_dialog_view_unittest.cc",
+        "../browser/ui/views/toolbar/management_toolbar_button_unittest.cc",
+      ]
     }
     if (use_aura) {
       sources += [

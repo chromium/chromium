@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -45,13 +44,9 @@ namespace {
 constexpr int kIconSizeForNonTouchUi = 22;
 
 bool CanShowManagementToolbarButton(const PrefService& pref_service) {
-#if BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else
   return base::FeatureList::IsEnabled(features::kManagementToolbarButton) ||
          !pref_service.GetString(prefs::kEnterpriseCustomLabel).empty() ||
          !pref_service.GetString(prefs::kEnterpriseLogoUrl).empty();
-#endif
 }
 
 }  // namespace
