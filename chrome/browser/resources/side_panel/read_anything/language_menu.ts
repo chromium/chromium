@@ -44,6 +44,23 @@ interface LanguageDropdownItem {
   callback: () => void;
 }
 
+function isDownloading(voiceStatus: VoiceClientSideStatusCode) {
+  switch (voiceStatus) {
+    case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST:
+    case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY:
+    case VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE:
+      return true;
+    case VoiceClientSideStatusCode.AVAILABLE:
+    case VoiceClientSideStatusCode.ERROR_INSTALLING:
+    case VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION:
+    case VoiceClientSideStatusCode.NOT_INSTALLED:
+      return false;
+    default:
+      // This ensures the switch statement is exhaustive
+      return voiceStatus satisfies never;
+  }
+}
+
 const LanguageMenuElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class LanguageMenuElement extends LanguageMenuElementBase {
@@ -113,38 +130,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     this.addEventListener('cr-dialog-open', () => {
       this.$.languageMenu.querySelector<CrInputElement>('.search-field')
           ?.focus();
-
-      // Since the downloading messages will be cleared fairly quickly as
-      // we get voice pack updates, we should go ahead and show the message
-      // when we're actively downloading a voice pack, even if it was
-      // previously shown.
-      this.restoreDownloadingMessages();
     });
-  }
-
-  private restoreDownloadingMessages() {
-    if (!this.voicePackInstallStatus) {
-      return;
-    }
-
-    for (const key of Object.keys(this.voicePackInstallStatus)) {
-      const status = this.voicePackInstallStatus[key];
-      switch (status) {
-        case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST:
-        case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY:
-        case VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE:
-          this.setNotification(key, status);
-          break;
-        case VoiceClientSideStatusCode.AVAILABLE:
-        case VoiceClientSideStatusCode.ERROR_INSTALLING:
-        case VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION:
-        case VoiceClientSideStatusCode.NOT_INSTALLED:
-          continue;
-        default:
-          // This ensures the switch statement is exhaustive
-          return status satisfies never;
-      }
-    }
   }
 
   // Returns a copy of voicePackInstallStatus to use as a snapshot of the
@@ -153,16 +139,18 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   // any differences, add these to the currentNotifications_ map.
   private voicePackInstallStatusChanged_(
       newValue: {[language: string]: VoiceClientSideStatusCode},
-      oldValue: {[language: string]: VoiceClientSideStatusCode}) {
-    this.restoreDownloadingMessages();
-    if (!oldValue) {
-      return;
-    }
-
+      oldValue?: {[language: string]: VoiceClientSideStatusCode}) {
     for (const key of Object.keys(newValue)) {
-      if (oldValue[key] !== newValue[key]) {
+      const newStatus = newValue[key];
+      // Since the downloading messages are cleared quickly, we should still
+      // show "downloading" notifications, even if they were previously shown.
+      if (isDownloading(newStatus)) {
+        this.setNotification(key, newStatus);
+      } else if (oldValue && oldValue[key] !== newStatus) {
         // Update the notification status for recently changed language keys.
-        this.setNotification(key, newValue[key]);
+        // Only show updates that occur while the language menu is open- don't
+        // show notifications if updates occurred before the menu opened.
+        this.setNotification(key, newStatus);
       }
     }
   }
