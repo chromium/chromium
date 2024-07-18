@@ -57,14 +57,16 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
 
 bool EmbeddedPermissionPromptContentScrimView::OnMousePressed(
     const ui::MouseEvent& event) {
-  delegate_->DismissScrim();
+  if (delegate_) {
+    delegate_->DismissScrim();
+  }
   return true;
 }
 
 void EmbeddedPermissionPromptContentScrimView::OnGestureEvent(
     ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_DOUBLE_TAP) {
+  if (delegate_ && (event->type() == ui::ET_GESTURE_TAP ||
+                    event->type() == ui::ET_GESTURE_DOUBLE_TAP)) {
     delegate_->DismissScrim();
   }
 }
@@ -78,6 +80,9 @@ void EmbeddedPermissionPromptContentScrimView::OnWidgetDestroyed(
 void EmbeddedPermissionPromptContentScrimView::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
+  if (!delegate_) {
+    return;
+  }
   if (auto permission_prompt_delegate =
           delegate_->GetPermissionPromptDelegate()) {
     GetWidget()->SetBounds(
