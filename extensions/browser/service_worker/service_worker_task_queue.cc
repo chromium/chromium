@@ -711,13 +711,15 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
     const ExtensionId& extension_id,
     const base::UnguessableToken& activation_token,
-    bool success) {
+    blink::ServiceWorkerStatusCode status) {
+  bool success = status == blink::ServiceWorkerStatusCode::kOk;
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState", success);
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
       "DeactivateExtension",
       success);
+  // TODO(crbug.com/346732739): Emit `status` as a metric.
 
   if (g_test_observer) {
     g_test_observer->WorkerUnregistered(extension_id);

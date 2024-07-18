@@ -312,7 +312,7 @@ class ServiceWorkerTaskQueue
   void DidUnregisterServiceWorker(
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token,
-      bool success);
+      blink::ServiceWorkerStatusCode status);
 
   void DidStartWorkerForScope(const SequencedContextId& context_id,
                               base::Time start_time,

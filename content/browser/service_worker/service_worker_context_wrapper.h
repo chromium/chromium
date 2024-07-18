@@ -198,7 +198,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                ResultCallback callback) override;
   void UnregisterServiceWorkerImmediately(const GURL& scope,
                                           const blink::StorageKey& key,
-                                          ResultCallback callback) override;
+                                          StatusCodeCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
       ServiceWorkerExternalRequestTimeoutType timeout_type,
@@ -473,12 +473,17 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                     bool include_installing_version,
                                     FindRegistrationCallback callback);
 
-  // Helper method for `UnregisterServiceWorker()` and
-  // `UnregisterServiceWorkerImmediately()`.
+  // Helper methods for `UnregisterServiceWorker()` and
+  // `UnregisterServiceWorkerImmediately()`. `ResultCallback` provides a boolean
+  // for success while `StatusCodeCallback` additionally provides the
+  // status that was encountered.
   void UnregisterServiceWorkerImpl(const GURL& scope,
                                    const blink::StorageKey& key,
                                    bool is_immediate,
                                    ResultCallback callback);
+  void UnregisterServiceWorkerImmediatelyImpl(const GURL& scope,
+                                              const blink::StorageKey& key,
+                                              StatusCodeCallback callback);
 
   void MaybeProcessPendingWarmUpRequest();
 

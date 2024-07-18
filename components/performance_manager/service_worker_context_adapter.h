@@ -64,7 +64,7 @@ class ServiceWorkerContextAdapter
                                ResultCallback callback) override;
   void UnregisterServiceWorkerImmediately(const GURL& scope,
                                           const blink::StorageKey& key,
-                                          ResultCallback callback) override;
+                                          StatusCodeCallback callback) override;
   content::ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
       content::ServiceWorkerExternalRequestTimeoutType timeout_type,
