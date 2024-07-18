@@ -189,10 +189,12 @@ void RecorderAppUI::EnsureOnDeviceModelService() {
 
 #if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
   if (!on_device_model_service_) {
+    auto pipe_handle =
+        on_device_model_service_.BindNewPipeAndPassReceiver().PassPipe();
     on_device_model_service_.reset_on_disconnect();
     ash::mojo_service_manager::GetServiceManagerProxy()->Request(
         chromeos::mojo_services::kCrosOdmlService, std::nullopt,
-        on_device_model_service_.BindNewPipeAndPassReceiver().PassPipe());
+        std::move(pipe_handle));
   }
 #endif
 }
