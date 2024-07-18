@@ -636,10 +636,7 @@ bool AndroidAutofillProvider::ShouldShowCredManForField(
           features::kAutofillVirtualViewStructureAndroid)) {
     return false;
   }
-  // TODO: crbug.com/352241673 - use field.parsed_autocomplete() when populated.
-  std::optional<AutocompleteParsingResult> parsed_autocomplete =
-      ParseAutocompleteAttribute(field.autocomplete_attribute());
-  if (!parsed_autocomplete || !parsed_autocomplete->webauthn) {
+  if (!field.parsed_autocomplete() || !field.parsed_autocomplete()->webauthn) {
     return false;  // Only trigger conditional requests if a site prefers it.
   }
   // TODO: crbug.com/332471454 - Trigger Chrome no-passkey sheet?
