@@ -1126,9 +1126,6 @@
   "ios_internal/chrome/app/ios_internal_strings.grd": {
     "messages": [1300],
   },
-  "ios_internal/chrome/app/theme/mobile_theme_resources.grd": {
-    "structures": [1320],
-  },
   "ios_internal/chrome/app/ios_internal_chromium_strings.grd": {
     "META": {"join": 2},
     "messages": [7280],
