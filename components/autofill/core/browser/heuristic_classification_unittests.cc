@@ -546,6 +546,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   std::vector<base::test::FeatureRef> enabled_features = {
       // Support for new field types.
       features::kAutofillUseI18nAddressModel,
+      features::kAutofillUseAUAddressModel,
       features::kAutofillUseBRAddressModel,
       features::kAutofillUseCAAddressModel,
       features::kAutofillUseDEAddressModel,
