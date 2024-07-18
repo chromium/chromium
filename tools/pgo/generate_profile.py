@@ -55,13 +55,16 @@ class MergeError(RuntimeError):
 # Use this custom Namespace to provide type checking and type hinting.
 class OptionsNamespace(argparse.Namespace):
     builddir: str
+    # Technically profiledir defaults to `None`, but it is always set before
+    # parse_args returns, so leave it as `str` to avoid type errors for methods
+    # that take an OptionsNamespace instance.
     profiledir: str
     keep_temps: bool
-    android_browser: str
-    android_device_path: str
+    android_browser: Optional[str]
+    android_device_path: Optional[str]
     skip_profdata: bool
     run_public_benchmarks_only: bool
-    temporal_trace_length: int
+    temporal_trace_length: Optional[int]
     repeats: int
     verbose: int
     quiet: int
@@ -80,6 +83,7 @@ def parse_args():
                         'builddir/profile.')
     parser.add_argument('--keep-temps',
                         action='store_true',
+                        default=False,
                         help='Whether to keep temp files')
     parser.add_argument('--android-browser',
                         help='The type of android browser to test, e.g. '
@@ -98,6 +102,7 @@ def parse_args():
     parser.add_argument(
         '--run-public-benchmarks-only',
         action='store_true',
+        default=False,
         help='Only run benchmarks that do not require any special access. See '
         'https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners '
         'for more information.')
