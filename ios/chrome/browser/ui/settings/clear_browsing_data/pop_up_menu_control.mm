@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
 namespace {
 
@@ -15,14 +16,8 @@ namespace {
 constexpr CGFloat kChevronIconSize = 16;
 
 // Height/trailing/leading constraints of the label and the button.
-constexpr CGFloat kLeadingOffset = 20;
-constexpr CGFloat kHeightOffset = 10;
-constexpr CGFloat kTrailingOffset = 16;
 constexpr CGFloat kSubtitleLeadingOffset = 20;
 constexpr CGFloat kChevronLeadingOffset = 5;
-
-// Control's height.
-constexpr CGFloat kControlHeight = 40;
 
 }  // namespace
 
@@ -61,8 +56,8 @@ constexpr CGFloat kControlHeight = 40;
     UIImage* chevronUpDownDefault =
         DefaultSymbolWithPointSize(kChevronUpDown, kChevronIconSize);
     UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-        configurationWithHierarchicalColor:[UIColor
-                                               colorNamed:kTextTertiaryColor]];
+        configurationWithHierarchicalColor:
+            [UIColor colorNamed:kTextQuaternaryColor]];
     _chevronUpDown = [[UIImageView alloc]
         initWithImage:[chevronUpDownDefault
                           imageByApplyingSymbolConfiguration:configuration]];
@@ -77,34 +72,40 @@ constexpr CGFloat kControlHeight = 40;
 
       // Make the title be on the left of the subtitle. Make the chevron be on
       // the right of the subtitle. Add some horizontal offset between element.
-      [_titleLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
-                                                constant:kLeadingOffset],
+      [_titleLabel.leadingAnchor
+          constraintEqualToAnchor:self.leadingAnchor
+                         constant:kTableViewHorizontalSpacing],
       [_subtitleLabel.leadingAnchor
           constraintEqualToAnchor:_titleLabel.trailingAnchor
                          constant:kSubtitleLeadingOffset],
       [_chevronUpDown.leadingAnchor
           constraintEqualToAnchor:_subtitleLabel.trailingAnchor
                          constant:kChevronLeadingOffset],
-      [_chevronUpDown.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
-                                                    constant:-kTrailingOffset],
+      [_chevronUpDown.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor
+                         constant:-kTableViewHorizontalSpacing],
 
       // Add some vertical offset.
-      [_titleLabel.heightAnchor constraintEqualToAnchor:self.heightAnchor
-                                               constant:-kHeightOffset],
-      [_subtitleLabel.heightAnchor constraintEqualToAnchor:self.heightAnchor
-                                                  constant:-kHeightOffset],
+      [_titleLabel.heightAnchor
+          constraintEqualToAnchor:self.heightAnchor
+                         constant:-kTableViewOneLabelCellVerticalSpacing],
+      [_subtitleLabel.heightAnchor
+          constraintEqualToAnchor:self.heightAnchor
+                         constant:-kTableViewOneLabelCellVerticalSpacing],
       [_chevronUpDown.heightAnchor
           constraintLessThanOrEqualToAnchor:self.heightAnchor
-                                   constant:-kHeightOffset],
+                                   constant:
+                                       -kTableViewOneLabelCellVerticalSpacing],
 
       // Make sure that the cell is always bigger than any of its contents.
       [self.heightAnchor
           constraintGreaterThanOrEqualToAnchor:_titleLabel.heightAnchor
-                                      constant:kControlHeight],
+                                      constant:kChromeTableViewCellHeight],
       [self.heightAnchor
           constraintGreaterThanOrEqualToAnchor:_subtitleLabel.heightAnchor
-                                      constant:kControlHeight],
-      [self.heightAnchor constraintGreaterThanOrEqualToConstant:kControlHeight],
+                                      constant:kChromeTableViewCellHeight],
+      [self.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight],
     ]];
   }
   return self;
