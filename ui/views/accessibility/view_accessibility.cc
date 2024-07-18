@@ -707,6 +707,14 @@ void ViewAccessibility::RemoveKeyShortcuts() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts);
 }
 
+void ViewAccessibility::SetAccessKey(const std::string& access_key) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kAccessKey, access_key);
+}
+
+void ViewAccessibility::RemoveAccessKey() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kAccessKey);
+}
+
 void ViewAccessibility::SetChildTreeNodeAppId(const std::string& app_id) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId,
                            app_id);

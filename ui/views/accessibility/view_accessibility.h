@@ -325,6 +325,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetKeyShortcuts(const std::string& key_shortcuts);
   void RemoveKeyShortcuts();
 
+  void SetAccessKey(const std::string& access_key);
+  void RemoveAccessKey();
+
   void SetChildTreeNodeAppId(const std::string& app_id);
   void RemoveChildTreeNodeAppId();
 
