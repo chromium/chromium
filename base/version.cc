@@ -83,6 +83,8 @@ Version::Version() = default;
 
 Version::Version(const Version& other) = default;
 
+Version::Version(Version&& other) = default;
+
 Version::~Version() = default;
 
 Version::Version(std::string_view version_str) {
