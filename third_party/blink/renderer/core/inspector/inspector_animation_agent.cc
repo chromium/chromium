@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -142,6 +143,38 @@ void InspectorAnimationAgent::InvalidateInternalState() {
 protocol::Response InspectorAnimationAgent::enable() {
   enabled_.Set(true);
   instrumenting_agents_->AddInspectorAnimationAgent(this);
+
+  Document* document = inspected_frames_->Root()->GetDocument();
+  DocumentAnimations& document_animations = document->GetDocumentAnimations();
+  HeapVector<Member<Animation>> animations =
+      document_animations.getAnimations(document->GetTreeScope());
+  for (Animation* animation : animations) {
+    const String& animation_id = String::Number(animation->SequenceNumber());
+    blink::Animation::AnimationPlayState play_state =
+        animation->CalculateAnimationPlayState();
+    bool is_play_state_running_or_finished =
+        play_state == blink::Animation::kRunning ||
+        play_state == blink::Animation::kFinished;
+    if (!is_play_state_running_or_finished ||
+        cleared_animations_.Contains(animation_id) ||
+        id_to_animation_.Contains(animation_id)) {
+      continue;
+    }
+
+    AnimationSnapshot* snapshot;
+    if (id_to_animation_snapshot_.Contains(animation_id)) {
+      snapshot = id_to_animation_snapshot_.at(animation_id);
+    } else {
+      snapshot = MakeGarbageCollected<AnimationSnapshot>();
+      id_to_animation_snapshot_.Set(animation_id, snapshot);
+    }
+
+    this->CompareAndUpdateInternalSnapshot(*animation, snapshot);
+    id_to_animation_.Set(animation_id, animation);
+    GetFrontend()->animationCreated(animation_id);
+    GetFrontend()->animationStarted(BuildObjectForAnimation(*animation));
+  }
+
   return protocol::Response::Success();
 }
 
@@ -825,6 +858,10 @@ DocumentTimeline& InspectorAnimationAgent::ReferenceTimeline() {
 double InspectorAnimationAgent::NormalizedStartTime(
     blink::Animation& animation) {
   V8CSSNumberish* start_time = animation.startTime();
+  if (!start_time) {
+    return 0;
+  }
+
   if (start_time->IsDouble()) {
     double time_ms = start_time->GetAsDouble();
     auto* document_timeline =
