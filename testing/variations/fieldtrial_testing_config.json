@@ -25906,6 +25906,21 @@
             ]
         }
     ],
+    "WinSboxACProfileWithoutFirewall": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinSboxACProfileWithoutFirewall"
+                    ]
+                }
+            ]
+        }
+    ],
     "WinSboxNoFakeGdiInit": [
         {
             "platforms": [
