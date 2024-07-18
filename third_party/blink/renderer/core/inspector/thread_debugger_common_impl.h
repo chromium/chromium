@@ -89,9 +89,11 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
       v8::Local<v8::Value>) override;
   double currentTimeMS() override;
   bool isInspectableHeapObject(v8::Local<v8::Object>) override;
-  void consoleTime(const v8_inspector::StringView& title) override;
-  void consoleTimeEnd(const v8_inspector::StringView& title) override;
-  void consoleTimeStamp(const v8_inspector::StringView& title) override;
+  void consoleTime(v8::Isolate* isolate, v8::Local<v8::String> label) override;
+  void consoleTimeEnd(v8::Isolate* isolate,
+                      v8::Local<v8::String> label) override;
+  void consoleTimeStamp(v8::Isolate* isolate,
+                        v8::Local<v8::String> label) override;
   void startRepeatingTimer(double,
                            v8_inspector::V8InspectorClient::TimerCallback,
                            void* data) override;

@@ -280,13 +280,13 @@ protocol::Response InspectorPerformanceAgent::getMetrics(
   return protocol::Response::Success();
 }
 
-void InspectorPerformanceAgent::ConsoleTimeStamp(
-    const v8_inspector::StringView& title) {
+void InspectorPerformanceAgent::ConsoleTimeStamp(v8::Isolate* isolate,
+                                                 v8::Local<v8::String> label) {
   if (!enabled_.Get())
     return;
   std::unique_ptr<protocol::Array<protocol::Performance::Metric>> metrics;
   getMetrics(&metrics);
-  GetFrontend()->metrics(std::move(metrics), ToCoreString(title));
+  GetFrontend()->metrics(std::move(metrics), ToCoreString(isolate, label));
 }
 
 void InspectorPerformanceAgent::ScriptStarts() {

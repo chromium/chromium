@@ -183,7 +183,7 @@ interface CoreProbes {
   void ShouldForceCorsPreflight(ExecutionContext*, bool* result);
   void ShouldBlockRequest(CoreProbeSink*, const KURL&, bool* result);
   void ShouldBypassServiceWorker(ExecutionContext* context, bool* result);
-  void ConsoleTimeStamp(v8::Isolate*, const v8_inspector::StringView& title);
+  void ConsoleTimeStamp([Keep] v8::Isolate* isolate, v8::Local<v8::String> label);
   void WillStartDebuggerTask(CoreProbeSink*);
   void DidFinishDebuggerTask(CoreProbeSink*);
   void LifecycleEvent([Keep] LocalFrame*, DocumentLoader*, const char* name, double timestamp);
