@@ -5,6 +5,7 @@
 
 import collections
 import functools
+import hashlib
 import itertools
 import multiprocessing
 import os
@@ -119,6 +120,10 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
   dicts.sort(key=lambda d: (d['FILE_PATH'] not in priority_java_sources, d[
       'FULL_CLASS_NAME']))
 
+  whole_hash = None
+  priority_hash = None
+  if options.enable_jni_multiplexing:
+    whole_hash, priority_hash = _GenerateHashes(dicts, priority_java_sources)
   stubs = _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources_set,
                                   java_sources_set)
   combined_dict = {}
@@ -163,7 +168,8 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
 
   if options.header_path:
     combined_dict['NAMESPACE'] = options.namespace or ''
-    header_content = CreateFromDict(gen_jni_class, options, combined_dict)
+    header_content = CreateHeaderFromDict(gen_jni_class, options, combined_dict,
+                                          whole_hash, priority_hash)
     with common.atomic_output(options.header_path, mode='w') as f:
       f.write(header_content)
 
@@ -176,7 +182,10 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
         common.add_to_zip_hermetic(
             srcjar,
             f'{short_gen_jni_class.full_name_with_slashes}.java',
-            data=CreateProxyJavaFromDict(options, gen_jni_class, combined_dict))
+            data=CreateProxyJavaFromDict(options,
+                                         gen_jni_class,
+                                         combined_dict,
+                                         hash_val=whole_hash))
         # org/jni_zero/GEN_JNI.java
         common.add_to_zip_hermetic(
             srcjar,
@@ -233,6 +242,29 @@ Unneeded Java files:
     sys.exit(1)
 
   return [_GenerateStubs(o.proxy_natives) for o in java_only_jni_objs]
+
+
+def _GenerateHashes(dicts, priority_java_sources):
+  # We assume that if we have identical files and they are in the same order, we
+  # will have switch number alignment. We do this, instead of directly
+  # inspecting the switch numbers, because differentiating the priority sources
+  # is a big pain.
+  whole_hash = hashlib.md5()
+  if priority_java_sources:
+    priority_hash = hashlib.md5()
+  else:
+    priority_hash = whole_hash
+  for d in dicts:
+    path = os.path.relpath(d['FILE_PATH'], start=os.path.dirname(__file__))
+    encoded = path.encode('utf-8')
+    whole_hash.update(encoded)
+    if path in priority_java_sources:
+      priority_hash.update(encoded)
+  uint64_t_max = (1 << 64) - 1
+  int64_t_min = -(1 << 63)
+  whole_hash_uint = int(whole_hash.hexdigest(), 16) % uint64_t_max
+  priority_hash_uint = int(priority_hash.hexdigest(), 16) % uint64_t_max
+  return whole_hash_uint + int64_t_min, priority_hash_uint + int64_t_min
 
 
 def _GenerateStubs(natives):
@@ -426,7 +458,8 @@ def CreateProxyJavaFromDict(options,
                             gen_jni_class,
                             registration_dict,
                             stub_methods='',
-                            forwarding=False):
+                            forwarding=False,
+                            hash_val=None):
   template = string.Template("""\
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -454,7 +487,12 @@ ${METHODS}
         'REQUIRE_MOCK': str(options.require_mocks).lower(),
     })
   else:
-    fields = ''
+    if options.enable_jni_multiplexing:
+      fields = f'''\
+    public static final long MUXING_HASH = {hash_val}L;
+'''
+    else:
+      fields = ''
 
   if forwarding:
     methods = registration_dict['FORWARDING_PROXY_METHODS']
@@ -470,7 +508,8 @@ ${METHODS}
   })
 
 
-def CreateFromDict(gen_jni_class, options, registration_dict):
+def CreateHeaderFromDict(gen_jni_class, options, registration_dict, whole_hash,
+                         priority_hash):
   """Returns the content of the header file."""
   header_guard = os.path.splitext(options.header_path)[0].upper() + '_'
   header_guard = re.sub(r'[/.-]', '_', header_guard)
@@ -485,7 +524,7 @@ def CreateFromDict(gen_jni_class, options, registration_dict):
   registration_dict['EPILOGUE'] = epilogue
   template = string.Template("""\
 ${PREAMBLE}
-
+${POSSIBLE_MULTIPLEXING_HASHES}
 ${CLASS_ACCESSORS}
 // Forward declarations (methods).
 
@@ -497,6 +536,14 @@ ${EPILOGUE}
   _SetProxyRegistrationFields(options, gen_jni_class, registration_dict)
   if not options.enable_jni_multiplexing:
     registration_dict['FORWARDING_CALLS'] = ''
+    registration_dict['POSSIBLE_MULTIPLEXING_HASHES'] = ''
+  else:
+    module_name = ''
+    if options.module_name:
+      module_name = options.module_name
+    registration_dict['POSSIBLE_MULTIPLEXING_HASHES'] = f'''\
+extern const int64_t kJniZeroHash{module_name}Whole = {whole_hash}LL;
+extern const int64_t kJniZeroHash{module_name}Priority = {priority_hash}LL;'''
   if len(registration_dict['FORWARD_DECLARATIONS']) == 0:
     return ''
 

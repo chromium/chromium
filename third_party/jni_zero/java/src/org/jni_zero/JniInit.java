@@ -16,4 +16,27 @@ public class JniInit {
         // RegisterNatives(), but simpler to return an array than to make Java->Native work.
         return new Object[] {Collections.EMPTY_LIST, Collections.EMPTY_MAP};
     }
+
+    @CalledByNative
+    private static void crashIfMultiplexingMisaligned(long wholeHash, long priorityHash) {
+        try {
+            long javaHash = Class.forName("J.N").getField("MUXING_HASH").getLong(null);
+            // We compare what we have in our Java to what is all in native's JNI, or the "priority"
+            // elements (to cover the case of Webview) in native.
+            if (javaHash != wholeHash && javaHash != priorityHash) {
+                throw new RuntimeException(
+                        "JNI Zero multiplexing hashes do not align. Native: "
+                                + Long.toString(wholeHash)
+                                + " or "
+                                + Long.toString(priorityHash)
+                                + " Java: "
+                                + Long.toString(javaHash));
+            }
+        } catch (ReflectiveOperationException e) {
+            // This check is just a backup. If we fail to actually do the check, we assert so that
+            // we get some notice on debug/assert enabled builds, but don't want to crash everyone
+            // since it's likely fine.
+            assert false : "JNI multiplexing hash lookup failed with " + e.getMessage();
+        }
+    }
 }
