@@ -147,7 +147,7 @@ class AutofillSuggestionControllerTestBase
 
   TestPersonalDataManager& personal_data() {
     return static_cast<TestPersonalDataManager&>(
-        *PersonalDataManagerFactory::GetForProfile(profile()));
+        *PersonalDataManagerFactory::GetForBrowserContext(profile()));
   }
 
   // Shows empty suggestions with the type ids passed as

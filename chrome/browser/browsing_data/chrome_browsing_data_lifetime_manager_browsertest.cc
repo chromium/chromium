@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
       "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");
   autofill::AddTestProfile(GetProfile(), profile);
   auto* personal_data_manager =
-      autofill::PersonalDataManagerFactory::GetForProfile(GetProfile());
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(GetProfile());
   EXPECT_EQ(profile.Compare(
                 *personal_data_manager->address_data_manager().GetProfileByGUID(
                     profile.guid())),

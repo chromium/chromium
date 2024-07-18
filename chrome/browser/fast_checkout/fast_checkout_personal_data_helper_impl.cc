@@ -9,7 +9,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 
@@ -19,10 +18,9 @@ FastCheckoutPersonalDataHelperImpl::FastCheckoutPersonalDataHelperImpl(
 
 autofill::PersonalDataManager*
 FastCheckoutPersonalDataHelperImpl::GetPersonalDataManager() const {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   autofill::PersonalDataManager* pdm =
-      autofill::PersonalDataManagerFactory::GetForProfile(profile);
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(
+          web_contents_->GetBrowserContext());
   DCHECK(pdm);
   return pdm;
 }

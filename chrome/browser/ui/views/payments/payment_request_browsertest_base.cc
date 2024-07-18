@@ -471,7 +471,7 @@ PaymentRequestBrowserTestBase::GetPaymentRequests() {
 }
 
 autofill::PersonalDataManager* PaymentRequestBrowserTestBase::GetDataManager() {
-  return autofill::PersonalDataManagerFactory::GetForProfile(
+  return autofill::PersonalDataManagerFactory::GetForBrowserContext(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
 }
 

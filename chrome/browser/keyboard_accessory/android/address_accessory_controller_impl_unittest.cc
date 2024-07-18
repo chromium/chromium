@@ -127,7 +127,7 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
   TestPersonalDataManager* personal_data_manager() {
     return static_cast<TestPersonalDataManager*>(
-        PersonalDataManagerFactory::GetForProfile(profile()));
+        PersonalDataManagerFactory::GetForBrowserContext(profile()));
   }
 
   MockAutofillClient& autofill_client() {

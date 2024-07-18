@@ -188,8 +188,8 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
                "AddressAccessoryControllerImpl::RefreshSuggestions");
   if (!personal_data_manager_) {
     personal_data_manager_ =
-        autofill::PersonalDataManagerFactory::GetForProfile(
-            Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+        autofill::PersonalDataManagerFactory::GetForBrowserContext(
+            GetWebContents().GetBrowserContext());
     personal_data_manager_->AddObserver(this);
   }
   CHECK(source_observer_);

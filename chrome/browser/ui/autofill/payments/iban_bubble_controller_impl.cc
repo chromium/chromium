@@ -174,7 +174,7 @@ AccountInfo IbanBubbleControllerImpl::GetAccountInfo() {
     return AccountInfo();
   }
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(profile);
+      PersonalDataManagerFactory::GetForBrowserContext(profile);
   if (!personal_data_manager) {
     return AccountInfo();
   }
@@ -303,10 +303,8 @@ IbanBubbleControllerImpl::IbanBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
       content::WebContentsUserData<IbanBubbleControllerImpl>(*web_contents),
-      personal_data_manager_(
-          PersonalDataManagerFactory::GetInstance()->GetForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-}
+      personal_data_manager_(PersonalDataManagerFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext())) {}
 
 IbanBubbleType IbanBubbleControllerImpl::GetBubbleType() const {
   return current_bubble_type_;

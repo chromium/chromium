@@ -25,10 +25,6 @@ class PersonalDataManager;
 // associated PersonalDataManager.
 class PersonalDataManagerFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the PersonalDataManager for |profile|, creating it if it is not
-  // yet created.
-  static PersonalDataManager* GetForProfile(Profile* profile);
-
   // Returns the PersonalDataManager for |context|, creating it if it is not
   // yet created.
   static PersonalDataManager* GetForBrowserContext(

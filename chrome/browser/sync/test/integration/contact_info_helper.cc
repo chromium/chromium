@@ -25,7 +25,7 @@ AutofillProfile BuildTestAccountProfile() {
 }
 
 autofill::PersonalDataManager* GetPersonalDataManager(Profile* profile) {
-  return autofill::PersonalDataManagerFactory::GetForProfile(profile);
+  return autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
 }
 
 AddressDataManagerProfileChecker::AddressDataManagerProfileChecker(

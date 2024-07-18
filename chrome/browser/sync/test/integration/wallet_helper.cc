@@ -247,7 +247,7 @@ void GetModelTypeStateOnDBSequence(syncer::ModelType model_type,
 namespace wallet_helper {
 
 PersonalDataManager* GetPersonalDataManager(int index) {
-  return autofill::PersonalDataManagerFactory::GetForProfile(
+  return autofill::PersonalDataManagerFactory::GetForBrowserContext(
       test()->GetProfile(index));
 }
 

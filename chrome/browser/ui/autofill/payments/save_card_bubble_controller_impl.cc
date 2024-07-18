@@ -103,11 +103,10 @@ SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
     : AutofillBubbleControllerBase(web_contents),
       content::WebContentsUserData<SaveCardBubbleControllerImpl>(
           *web_contents) {
-  personal_data_manager_ =
-      PersonalDataManagerFactory::GetInstance()->GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  personal_data_manager_ = PersonalDataManagerFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
 
-  sync_service_ = SyncServiceFactory::GetInstance()->GetForProfile(
+  sync_service_ = SyncServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 }
 
@@ -388,7 +387,7 @@ AccountInfo SaveCardBubbleControllerImpl::GetAccountInfo() {
     return AccountInfo();
   }
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(profile);
+      PersonalDataManagerFactory::GetForBrowserContext(profile);
   if (!personal_data_manager) {
     return AccountInfo();
   }

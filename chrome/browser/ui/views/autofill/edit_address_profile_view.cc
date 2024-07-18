@@ -75,12 +75,10 @@ EditAddressProfileView::~EditAddressProfileView() = default;
 void EditAddressProfileView::ShowForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto address_editor_controller = std::make_unique<AddressEditorController>(
       controller_->GetProfileToEdit(),
-      autofill::PersonalDataManagerFactory::GetForProfile(
-          profile->GetOriginalProfile()),
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext()),
       controller_->GetIsValidatable());
 
   // Storing subscription (which gets canceled in the destructor) in a property

@@ -36,13 +36,12 @@ void ChromeFacilitatedPaymentsClient::LoadRiskData(
 
 autofill::PaymentsDataManager*
 ChromeFacilitatedPaymentsClient::GetPaymentsDataManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
-  if (!profile) {
+  content::BrowserContext* context = GetWebContents().GetBrowserContext();
+  if (!context) {
     return nullptr;
   }
   autofill::PersonalDataManager* pdm =
-      autofill::PersonalDataManagerFactory::GetForProfile(profile);
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(context);
   return pdm ? &pdm->payments_data_manager() : nullptr;
 }
 

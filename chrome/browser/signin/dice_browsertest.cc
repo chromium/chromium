@@ -1339,7 +1339,7 @@ class DiceExplicitSigninRollbackBrowserTest : public InProcessBrowserTest {
         SyncServiceFactory::GetForProfile(browser()->profile())
             ->GetUserSettings();
     return {.autofill_sync_toggle_available =
-                autofill::PersonalDataManagerFactory::GetForProfile(
+                autofill::PersonalDataManagerFactory::GetForBrowserContext(
                     browser()->profile())
                     ->address_data_manager()
                     .IsAutofillSyncToggleAvailable(),
@@ -1519,7 +1519,7 @@ class DiceExplicitSigninBrowserTest : public InProcessBrowserTest {
         SyncServiceFactory::GetForProfile(browser()->profile())
             ->GetUserSettings();
     return {.autofill_sync_toggle_available =
-                autofill::PersonalDataManagerFactory::GetForProfile(
+                autofill::PersonalDataManagerFactory::GetForBrowserContext(
                     browser()->profile())
                     ->address_data_manager()
                     .IsAutofillSyncToggleAvailable(),

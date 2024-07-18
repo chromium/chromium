@@ -306,7 +306,8 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("http://test.com")));
-    personal_data_ = PersonalDataManagerFactory::GetForProfile(profile());
+    personal_data_ =
+        PersonalDataManagerFactory::GetForBrowserContext(profile());
 
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
@@ -1062,7 +1063,8 @@ class PasswordsFallbackWithUIInteractionsTest
     // The next lines perform the same set up as the parent class
     // `BaseAutofillContextMenuManagerTest()`, with the exception that a
     // password form is created and attached.
-    personal_data_ = PersonalDataManagerFactory::GetForProfile(profile());
+    personal_data_ =
+        PersonalDataManagerFactory::GetForBrowserContext(profile());
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
         *main_rfh(), content::ContextMenuParams());

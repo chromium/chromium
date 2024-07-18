@@ -331,7 +331,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
   TestPersonalDataManager* personal_data_manager() {
     return static_cast<TestPersonalDataManager*>(
-        PersonalDataManagerFactory::GetForProfile(profile()));
+        PersonalDataManagerFactory::GetForBrowserContext(profile()));
   }
 
   TestAutofillClock test_clock_;

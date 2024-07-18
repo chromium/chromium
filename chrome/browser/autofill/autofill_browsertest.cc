@@ -147,7 +147,8 @@ class AutofillTest : public InProcessBrowserTest {
   }
 
   PersonalDataManager* personal_data_manager() {
-    return PersonalDataManagerFactory::GetForProfile(browser()->profile());
+    return PersonalDataManagerFactory::GetForBrowserContext(
+        browser()->profile());
   }
 
   typedef std::map<std::string, std::string> FormMap;

@@ -315,7 +315,7 @@ class DISABLED_FastCheckoutClientImplTest
 
   autofill::TestPersonalDataManager* personal_data_manager() {
     return static_cast<autofill::TestPersonalDataManager*>(
-        autofill::PersonalDataManagerFactory::GetForProfile(profile()));
+        autofill::PersonalDataManagerFactory::GetForBrowserContext(profile()));
   }
 
   FastCheckoutClientImpl* fast_checkout_client() { return test_client_.get(); }

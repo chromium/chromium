@@ -23,9 +23,9 @@ namespace payments::test {
 
 void AddAutofillProfile(content::BrowserContext* browser_context,
                         const autofill::AutofillProfile& autofill_profile) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
   autofill::PersonalDataManager* personal_data_manager =
-      autofill::PersonalDataManagerFactory::GetForProfile(profile);
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(
+          browser_context);
   size_t profile_count =
       personal_data_manager->address_data_manager().GetProfiles().size();
   autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
@@ -37,9 +37,9 @@ void AddAutofillProfile(content::BrowserContext* browser_context,
 
 void AddCreditCard(content::BrowserContext* browser_context,
                    const autofill::CreditCard& card) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
   autofill::PersonalDataManager* personal_data_manager =
-      autofill::PersonalDataManagerFactory::GetForProfile(profile);
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(
+          browser_context);
   size_t card_count =
       personal_data_manager->payments_data_manager().GetCreditCards().size();
   autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);

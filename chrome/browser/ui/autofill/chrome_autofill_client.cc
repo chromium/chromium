@@ -240,9 +240,8 @@ ChromeAutofillClient::GetAutofillMlPredictionModelHandler() {
 }
 
 PersonalDataManager* ChromeAutofillClient::GetPersonalDataManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return PersonalDataManagerFactory::GetForProfile(profile);
+  return PersonalDataManagerFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext());
 }
 
 AutocompleteHistoryManager*

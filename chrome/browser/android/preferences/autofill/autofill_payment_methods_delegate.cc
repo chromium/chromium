@@ -43,7 +43,8 @@ void RunVirtualCardEnrollmentFieldsLoadedCallback(
 
 AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)
     : profile_(profile) {
-  personal_data_manager_ = PersonalDataManagerFactory::GetForProfile(profile);
+  personal_data_manager_ =
+      PersonalDataManagerFactory::GetForBrowserContext(profile);
   payments_network_interface_ =
       std::make_unique<payments::PaymentsNetworkInterface>(
           profile->GetURLLoaderFactory(),

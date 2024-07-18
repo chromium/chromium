@@ -226,7 +226,7 @@ AutofillProfile CreateUniqueAutofillProfile() {
 }
 
 PersonalDataManager* GetPersonalDataManager(int index) {
-  return autofill::PersonalDataManagerFactory::GetForProfile(
+  return autofill::PersonalDataManagerFactory::GetForBrowserContext(
       test()->GetProfile(index));
 }
 

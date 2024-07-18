@@ -138,8 +138,8 @@ void ChromePaymentRequestDelegate::ShowProcessingSpinner() {
 
 autofill::PersonalDataManager*
 ChromePaymentRequestDelegate::GetPersonalDataManager() {
-  return autofill::PersonalDataManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(GetBrowserContextOrNull()));
+  return autofill::PersonalDataManagerFactory::GetForBrowserContext(
+      GetBrowserContextOrNull());
 }
 
 const std::string& ChromePaymentRequestDelegate::GetApplicationLocale() const {

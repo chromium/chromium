@@ -58,7 +58,7 @@ void OfferNotificationBubbleViewsTestBase::SetUpOnMainThread() {
   AddEventObserverToController(controller);
 
   personal_data_ =
-      PersonalDataManagerFactory::GetForProfile(browser()->profile());
+      PersonalDataManagerFactory::GetForBrowserContext(browser()->profile());
   coupon_service_ = CouponServiceFactory::GetForProfile(browser()->profile());
 
   // Mimic the user is signed in so payments integration is considered enabled.

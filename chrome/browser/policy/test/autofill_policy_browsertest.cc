@@ -62,7 +62,7 @@ class AutofillPolicyTest : public PolicyTest {
   }
 
   autofill::PersonalDataManager* personal_data_manager() {
-    return autofill::PersonalDataManagerFactory::GetForProfile(
+    return autofill::PersonalDataManagerFactory::GetForBrowserContext(
         browser()->profile());
   }
 

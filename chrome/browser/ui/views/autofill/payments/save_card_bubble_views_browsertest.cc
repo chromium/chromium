@@ -370,7 +370,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(GetProfile(0));
     CoreAccountInfo core_info =
-        PersonalDataManagerFactory::GetForProfile(GetProfile(0))
+        PersonalDataManagerFactory::GetForBrowserContext(GetProfile(0))
             ->payments_data_manager()
             .GetAccountInfoForPaymentsServer();
 
@@ -1526,7 +1526,7 @@ IN_PROC_BROWSER_TEST_F(
   // zipcode than the one to be filled in the form below.
   AutofillProfile address_profile = test::GetFullProfile();
   address_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"91111");
-  PersonalDataManagerFactory::GetForProfile(GetProfile(0))
+  PersonalDataManagerFactory::GetForBrowserContext(GetProfile(0))
       ->address_data_manager()
       .AddProfile(address_profile);
 

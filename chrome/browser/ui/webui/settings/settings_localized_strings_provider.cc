@@ -1290,7 +1290,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   is_guest_mode = profile->IsOffTheRecord();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   autofill::PersonalDataManager* personal_data =
-      autofill::PersonalDataManagerFactory::GetForProfile(profile);
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
   html_source->AddBoolean(
       "migrationEnabled",
       !is_guest_mode &&

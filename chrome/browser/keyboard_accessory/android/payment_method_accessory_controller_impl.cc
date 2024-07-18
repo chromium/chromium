@@ -361,8 +361,8 @@ PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
     content::WebContents* web_contents)
     : content::WebContentsUserData<PaymentMethodAccessoryControllerImpl>(
           *web_contents),
-      personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+      personal_data_manager_(PersonalDataManagerFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext())) {
   if (personal_data_manager_)
     personal_data_manager_->AddObserver(this);
 }

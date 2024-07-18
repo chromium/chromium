@@ -38,13 +38,6 @@ const std::string GetCountryCodeFromVariations() {
 }  // namespace
 
 // static
-PersonalDataManager* PersonalDataManagerFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<PersonalDataManager*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
-}
-
-// static
 PersonalDataManager* PersonalDataManagerFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   return static_cast<PersonalDataManager*>(

@@ -512,7 +512,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           CreateTaskCompletionClosure(TracingDataType::kAutofillOrigins));
 
       autofill::PersonalDataManager* data_manager =
-          autofill::PersonalDataManagerFactory::GetForProfile(profile_);
+          autofill::PersonalDataManagerFactory::GetForBrowserContext(profile_);
       if (data_manager)
         data_manager->Refresh();
     }
@@ -1067,7 +1067,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           CreateTaskCompletionClosure(TracingDataType::kAutofillData));
 
       autofill::PersonalDataManager* data_manager =
-          autofill::PersonalDataManagerFactory::GetForProfile(profile_);
+          autofill::PersonalDataManagerFactory::GetForBrowserContext(profile_);
       if (data_manager)
         data_manager->Refresh();
     }

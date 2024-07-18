@@ -33,7 +33,7 @@
 namespace autofill {
 
 static PersonalDataManager* GetPersonalDataManager(Profile* profile) {
-  return PersonalDataManagerFactory::GetForProfile(profile);
+  return PersonalDataManagerFactory::GetForBrowserContext(profile);
 }
 
 void AddTestProfile(Profile* base_profile, const AutofillProfile& profile) {
@@ -70,7 +70,7 @@ void WaitForPersonalDataChange(Profile* base_profile) {
 
 void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
   PersonalDataManager* pdm =
-      PersonalDataManagerFactory::GetForProfile(base_profile);
+      PersonalDataManagerFactory::GetForBrowserContext(base_profile);
   while (!pdm->IsDataLoaded())
     WaitForPersonalDataChange(base_profile);
 }

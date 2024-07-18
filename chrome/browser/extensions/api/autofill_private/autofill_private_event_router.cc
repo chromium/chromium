@@ -48,12 +48,13 @@ AutofillPrivateEventRouter::AutofillPrivateEventRouter(
   if (!event_router_)
     return;
 
-  Profile* profile = Profile::FromBrowserContext(context_);
-  personal_data_ = autofill::PersonalDataManagerFactory::GetForProfile(profile);
+  personal_data_ =
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(context_);
   if (personal_data_) {
     pdm_observer_.Observe(personal_data_);
   }
-  if (syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile)) {
+  if (syncer::SyncService* sync = SyncServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context_))) {
     sync_observer_.Observe(sync);
   }
 }

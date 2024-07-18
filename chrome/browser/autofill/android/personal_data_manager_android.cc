@@ -899,7 +899,7 @@ static jlong JNI_PersonalDataManager_Init(JNIEnv* env,
   CHECK(profile);
   PersonalDataManagerAndroid* personal_data_manager_android =
       new PersonalDataManagerAndroid(
-          env, obj, PersonalDataManagerFactory::GetForProfile(profile),
+          env, obj, PersonalDataManagerFactory::GetForBrowserContext(profile),
           profile->GetPrefs());
   return reinterpret_cast<intptr_t>(personal_data_manager_android);
 }

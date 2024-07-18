@@ -958,7 +958,8 @@ class RemoveAutofillTester {
  public:
   explicit RemoveAutofillTester(TestingProfile* profile)
       : personal_data_manager_(
-            autofill::PersonalDataManagerFactory::GetForProfile(profile)) {
+            autofill::PersonalDataManagerFactory::GetForBrowserContext(
+                profile)) {
     autofill::test::DisableSystemServices(profile->GetPrefs());
   }
 
