@@ -1720,8 +1720,8 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_SAFETY_MODULES_SECTION_HEADER" translateable="false">
         Safety at a glance
       </message>
-      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SECTION_HEADER" translateable="false">
-        More ways to stay safer with Chrome
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SECTION_HEADER" desc="Title for the user education section of Safety Hub. A series of entries that encourage the user to explore several safety related surfaces follows.">
+        Learn how Chrome keeps you safe
       </message>
       <message name="IDS_SAFETY_HUB_DESCRIPTION" translateable="false">
         Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs review.
@@ -1810,22 +1810,22 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_SUMMARY" desc="Subtitle for a setting located in the 'Site settings' page. It toggles the automatic revocation of unused site permissions.">
         To protect your data, let Chrome remove permissions from sites that you haven’t visited recently
       </message>
-      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFETY_TOOLS_TITLE" translateable="false">
-        Learn about Chrome's safety tools
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFETY_TOOLS_TITLE" desc="Title for a entry in the Safety Hub user education section. The entry leads the user to the safety section of the Chrome website.">
+        Chrome’s safety tools
       </message>
-      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFETY_TOOLS_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFETY_TOOLS_SUMMARY" desc="Subtitle for a entry in the Safety Hub user education section. The entry leads the user to the safety section on the Chrome website.">
         With tools from Chrome, you can browse safely and stay in control
       </message>
-      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_INCOGNITO_TITLE" translateable="false">
-        Learn about Chrome Incognito
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_INCOGNITO_TITLE" desc="Title for a entry in the Safety Hub user education section. The entry leads the user to a help center article about Incognito.">
+        Chrome Incognito
       </message>
-      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_INCOGNITO_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_INCOGNITO_SUMMARY" desc="Subtitle for a entry in the Safety Hub user education section. The entry leads the user to a help center article about Incognito.">
         Incognito mode keeps your browsing private from others who use your device
       </message>
-      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFE_BROWSING_TITLE" translateable="false">
-        Learn about Safe Browsing
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFE_BROWSING_TITLE" desc="Title for a entry in the Safety Hub user education section. The entry leads the user to a help center article about Safe Browsing.">
+        Safe Browsing
       </message>
-      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFE_BROWSING_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFE_BROWSING_SUMMARY" desc="Subtitle for a entry in the Safety Hub user education section. The entry leads the user to a help center article about Safe Browsing.">
         Chrome warns you about unsafe sites and downloads
       </message>
       <message name="IDS_SAFETY_HUB_SAFE_BROWSER_STATE_TITLE" translateable="false">
