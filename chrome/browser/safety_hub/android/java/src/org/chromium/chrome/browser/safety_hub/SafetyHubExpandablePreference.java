@@ -77,7 +77,6 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         assert expandButton != null;
         expandButton.setImageDrawable(mDrawable);
         expandButton.setChecked(mExpanded);
-        expandButton.setOnClickListener((v) -> setExpanded(!isExpanded()));
 
         ViewGroup buttonsContainer = (ViewGroup) holder.findViewById(R.id.buttons_container);
         assert buttonsContainer != null;
@@ -88,6 +87,11 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         summary.setVisibility(getSummary() != null && isExpanded() ? View.VISIBLE : View.GONE);
 
         mHolder = holder;
+    }
+
+    @Override
+    protected void onClick() {
+        setExpanded(!isExpanded());
     }
 
     void setExpanded(boolean expanded) {

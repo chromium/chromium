@@ -26,7 +26,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
@@ -247,7 +246,7 @@ public final class SafetyHubTest {
 
         // Module should be collapsed initially since it's in an info state.
         verifyButtonsNextToTextVisibility(permissionsTitle, false);
-        clickOnExpandButtonNextToText(permissionsTitle);
+        expandPreferenceWithText(permissionsTitle);
 
         // Open the permissions subpage.
         scrollToExpandedPreference(permissionsTitle);
@@ -290,7 +289,7 @@ public final class SafetyHubTest {
 
         // Module should be collapsed initially since it's in an info state.
         verifyButtonsNextToTextVisibility(permissionsTitle, false);
-        clickOnExpandButtonNextToText(permissionsTitle);
+        expandPreferenceWithText(permissionsTitle);
 
         // Open the permissions subpage.
         scrollToExpandedPreference(permissionsTitle);
@@ -382,7 +381,7 @@ public final class SafetyHubTest {
 
         // Module should be collapsed initially since it's in an info state.
         verifyButtonsNextToTextVisibility(notificationsTitle, false);
-        clickOnExpandButtonNextToText(notificationsTitle);
+        expandPreferenceWithText(notificationsTitle);
 
         // Open the notifications subpage.
         scrollToExpandedPreference(notificationsTitle);
@@ -428,7 +427,7 @@ public final class SafetyHubTest {
 
         // Module should be collapsed initially since it's in an info state.
         verifyButtonsNextToTextVisibility(notificationsTitle, false);
-        clickOnExpandButtonNextToText(notificationsTitle);
+        expandPreferenceWithText(notificationsTitle);
 
         // Open the notifications subpage.
         scrollToExpandedPreference(notificationsTitle);
@@ -488,7 +487,7 @@ public final class SafetyHubTest {
         verifySummaryNextToTextVisibility(safeBrowsingTitle, false);
 
         // Expand the module to show the buttons.
-        clickOnExpandButtonNextToText(safeBrowsingTitle);
+        expandPreferenceWithText(safeBrowsingTitle);
 
         // Click on the secondary button and verity that the Safe Browsing settings is opened.
         scrollToExpandedPreference(safeBrowsingTitle);
@@ -551,12 +550,12 @@ public final class SafetyHubTest {
         verifySummaryNextToTextVisibility(safeBrowsingTitle, true);
 
         // Click on collapse button.
-        clickOnExpandButtonNextToText(safeBrowsingTitle);
+        expandPreferenceWithText(safeBrowsingTitle);
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
         verifySummaryNextToTextVisibility(safeBrowsingTitle, false);
 
         // Click on expand button.
-        clickOnExpandButtonNextToText(safeBrowsingTitle);
+        expandPreferenceWithText(safeBrowsingTitle);
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
         verifySummaryNextToTextVisibility(safeBrowsingTitle, true);
     }
@@ -581,7 +580,7 @@ public final class SafetyHubTest {
 
         // Module should be collapsed initially since it's in an info state.
         verifyButtonsNextToTextVisibility(permissionsTitle, false);
-        clickOnExpandButtonNextToText(permissionsTitle);
+        expandPreferenceWithText(permissionsTitle);
 
         // Click on the Got it button and verify the permissions module has changed to a safe
         // state.
@@ -621,7 +620,7 @@ public final class SafetyHubTest {
 
         // Module should be collapsed initially since it's in a safe state.
         verifyButtonsNextToTextVisibility(permissionsTitle, false);
-        clickOnExpandButtonNextToText(permissionsTitle);
+        expandPreferenceWithText(permissionsTitle);
 
         // Click on the secondary button and verify that the site settings page is opened.
         scrollToExpandedPreference(permissionsTitle);
@@ -652,7 +651,7 @@ public final class SafetyHubTest {
 
         // Module should be collapsed initially since it's in a info state.
         verifyButtonsNextToTextVisibility(notificationsTitle, false);
-        clickOnExpandButtonNextToText(notificationsTitle);
+        expandPreferenceWithText(notificationsTitle);
 
         // Click on the reset all button and verify the notification module has changed to a
         // safe state.
@@ -695,7 +694,7 @@ public final class SafetyHubTest {
 
         // Module should be collapsed initially since it's in a safe state.
         verifyButtonsNextToTextVisibility(notificationsTitle, false);
-        clickOnExpandButtonNextToText(notificationsTitle);
+        expandPreferenceWithText(notificationsTitle);
 
         // Click on the secondary button and verify that notifications site settings page is
         // opened.
@@ -728,7 +727,7 @@ public final class SafetyHubTest {
         onView(withText(R.string.safety_hub_safety_tips_safe_browsing_title)).check(doesNotExist());
 
         // Click on expand button.
-        clickOnExpandButtonNextToText(safetyTipsTitle);
+        expandPreferenceWithText(safetyTipsTitle);
         scrollToLastPosition();
 
         // Verify the child preferences are now visible.
@@ -754,7 +753,7 @@ public final class SafetyHubTest {
 
         // The module should be collapsed in it's initial state and the children are hidden.
         // Click on expand button.
-        clickOnExpandButtonNextToText(safetyTipsTitle);
+        expandPreferenceWithText(safetyTipsTitle);
         scrollToLastPosition();
 
         // The module should be expanded in it's initial state and all its children are visible.
@@ -784,7 +783,7 @@ public final class SafetyHubTest {
 
         // The module should be collapsed in it's initial state and the children are hidden.
         // Click on expand button.
-        clickOnExpandButtonNextToText(safetyTipsTitle);
+        expandPreferenceWithText(safetyTipsTitle);
         scrollToLastPosition();
 
         // The module should be expanded in it's initial state and all its children are visible.
@@ -814,7 +813,7 @@ public final class SafetyHubTest {
 
         // The module should be collapsed in it's initial state and the children are hidden.
         // Click on expand button.
-        clickOnExpandButtonNextToText(safetyTipsTitle);
+        expandPreferenceWithText(safetyTipsTitle);
         scrollToLastPosition();
 
         // Verify the Safe browsing preference is displayed and clicking on it opens the correct
@@ -879,14 +878,8 @@ public final class SafetyHubTest {
                 .perform(click());
     }
 
-    private void clickOnExpandButtonNextToText(String text) {
-        onViewWaiting(
-                        allOf(
-                                withId(R.id.checkable_image_view),
-                                anyOf(
-                                        is(hasSibling(withChild(withText(text)))),
-                                        is(withParent(hasSibling(withChild(withText(text))))))))
-                .perform(click());
+    private void expandPreferenceWithText(String text) {
+        onView(withText(text)).perform(click());
     }
 
     private void verifyButtonsNextToTextVisibility(String text, boolean visible) {

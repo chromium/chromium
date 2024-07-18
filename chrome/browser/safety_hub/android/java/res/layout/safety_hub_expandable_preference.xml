@@ -65,9 +65,9 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.CheckableImageView
             android:id="@+id/checkable_image_view"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:padding="12dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:scaleType="center"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"/>
     </RelativeLayout>
