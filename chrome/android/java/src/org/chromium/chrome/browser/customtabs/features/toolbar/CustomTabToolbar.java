@@ -1899,6 +1899,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     getResources().getDimensionPixelSize(R.dimen.custom_tabs_url_bar_active_height);
             mUrlBar.setLayoutParams(lp);
 
+            mTitleUrlContainer.setPadding(
+                    mTitleUrlContainer.getPaddingLeft(),
+                    mTitleUrlContainer.getPaddingTop(),
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding),
+                    mTitleUrlContainer.getPaddingBottom());
+
             mTitleUrlContainer.setOnClickListener(
                     v -> {
                         RecordUserAction.record("CustomTabs.OmniboxClicked");
