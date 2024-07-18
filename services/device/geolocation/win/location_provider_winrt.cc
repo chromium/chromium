@@ -27,6 +27,9 @@ using ABI::Windows::Devices::Enumeration::DeviceAccessStatus;
 using ABI::Windows::Devices::Enumeration::DeviceClass;
 using ABI::Windows::Devices::Enumeration::IDeviceAccessInformation;
 using ABI::Windows::Devices::Enumeration::IDeviceAccessInformationStatics;
+using ABI::Windows::Devices::Geolocation::AltitudeReferenceSystem;
+using ABI::Windows::Devices::Geolocation::AltitudeReferenceSystem_Ellipsoid;
+using ABI::Windows::Devices::Geolocation::AltitudeReferenceSystem_Unspecified;
 using ABI::Windows::Devices::Geolocation::BasicGeoposition;
 using ABI::Windows::Devices::Geolocation::Geolocator;
 using ABI::Windows::Devices::Geolocation::IGeocoordinate;
@@ -34,6 +37,7 @@ using ABI::Windows::Devices::Geolocation::IGeocoordinateWithPoint;
 using ABI::Windows::Devices::Geolocation::IGeolocator;
 using ABI::Windows::Devices::Geolocation::IGeopoint;
 using ABI::Windows::Devices::Geolocation::IGeoposition;
+using ABI::Windows::Devices::Geolocation::IGeoshape;
 using ABI::Windows::Devices::Geolocation::IPositionChangedEventArgs;
 using ABI::Windows::Devices::Geolocation::IStatusChangedEventArgs;
 using ABI::Windows::Devices::Geolocation::PositionAccuracy;
@@ -95,27 +99,37 @@ bool IsSystemLocationSettingEnabled() {
            status == DeviceAccessStatus::DeviceAccessStatus_DeniedByUser);
 }
 
-std::optional<BasicGeoposition> GetPositionFromCoordinate(
+ComPtr<IGeopoint> GetPointFromCoordinate(
     const ComPtr<IGeocoordinate>& coordinate) {
   ComPtr<IGeocoordinateWithPoint> coordinate_with_point = nullptr;
   const HRESULT query_result = coordinate.As(&coordinate_with_point);
   if (FAILED(query_result) || !coordinate_with_point) {
-    return std::nullopt;
+    return nullptr;
   }
 
   ComPtr<IGeopoint> point = nullptr;
   const HRESULT point_result = coordinate_with_point->get_Point(&point);
-  if (FAILED(point_result) || !point) {
-    return std::nullopt;
+  if (FAILED(point_result)) {
+    return nullptr;
+  }
+  return point;
+}
+
+AltitudeReferenceSystem GetAltitudeReferenceSystemFromPoint(
+    const ComPtr<IGeopoint>& point) {
+  ComPtr<IGeoshape> shape;
+  HRESULT hr = point.As(&shape);
+  if (FAILED(hr)) {
+    return AltitudeReferenceSystem_Unspecified;
   }
 
-  BasicGeoposition position;
-  const HRESULT position_result = point->get_Position(&position);
-  if (FAILED(position_result)) {
-    return std::nullopt;
+  AltitudeReferenceSystem reference_system =
+      AltitudeReferenceSystem_Unspecified;
+  hr = shape->get_AltitudeReferenceSystem(&reference_system);
+  if (FAILED(hr)) {
+    return AltitudeReferenceSystem_Unspecified;
   }
-
-  return position;
+  return reference_system;
 }
 
 }  // namespace
@@ -408,15 +422,21 @@ mojom::GeopositionPtr LocationProviderWinrt::CreateGeoposition(
     return nullptr;
   }
 
-  const std::optional<BasicGeoposition> position =
-      GetPositionFromCoordinate(coordinate);
-  if (!position) {
+  ComPtr<IGeopoint> point = GetPointFromCoordinate(coordinate);
+  if (!point) {
     return nullptr;
   }
+
+  BasicGeoposition position;
+  hr = point->get_Position(&position);
+  if (FAILED(hr)) {
+    return nullptr;
+  }
+
   auto location_data = mojom::Geoposition::New();
-  location_data->latitude = position->Latitude;
-  location_data->longitude = position->Longitude;
-  location_data->altitude = position->Altitude;
+  location_data->latitude = position.Latitude;
+  location_data->longitude = position.Longitude;
+  location_data->altitude = position.Altitude;
   location_data->accuracy = GetOptionalDouble([&](DOUBLE* value) -> HRESULT {
                               return coordinate->get_Accuracy(value);
                             }).value_or(device::mojom::kBadAccuracy);
@@ -434,8 +454,11 @@ mojom::GeopositionPtr LocationProviderWinrt::CreateGeoposition(
       }).value_or(device::mojom::kBadSpeed);
   location_data->timestamp = base::Time::Now();
 
-  // Overwrite the altitude if the accuracy is known to be bad.
-  if (location_data->altitude_accuracy == device::mojom::kBadAccuracy) {
+  // Overwrite the altitude if the accuracy is known to be bad or it is not
+  // using ellipsoid altitude reference system.
+  if (location_data->altitude_accuracy == device::mojom::kBadAccuracy ||
+      GetAltitudeReferenceSystemFromPoint(point) !=
+          AltitudeReferenceSystem_Ellipsoid) {
     location_data->altitude = device::mojom::kBadAltitude;
   }
 
