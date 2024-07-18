@@ -37,6 +37,9 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSafetyHubNotificationPermissionsModuleListCountHistogram',
       'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram',
       'recordSafetyHubUnusedSitePermissionsModuleListCountHistogram',
+      // <if expr="_google_chrome and is_win">
+      'recordFeatureNotificationsChange',
+      // </if>
     ]);
   }
 
@@ -185,4 +188,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
         'recordSafetyHubUnusedSitePermissionsModuleListCountHistogram',
         suggestions);
   }
+
+  // <if expr="_google_chrome and is_win">
+  recordFeatureNotificationsChange(enabled: boolean) {
+    this.methodCalled('recordFeatureNotificationsChange', enabled);
+  }
+  // </if>
 }

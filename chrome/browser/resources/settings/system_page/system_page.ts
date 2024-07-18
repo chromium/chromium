@@ -21,6 +21,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+// <if expr="_google_chrome and is_win">
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+// </if>
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {getTemplate} from './system_page.html.js';
@@ -57,6 +60,16 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
       // <if expr="chromeos_lacros">
       isSecondaryUser_: Boolean,
       // </if>
+
+      // <if expr="_google_chrome and is_win">
+      showFeatureNotificationsSetting_: {
+        readOnly: true,
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showFeatureNotificationsSetting');
+        },
+      },
+      // </if>
     };
   }
 
@@ -78,6 +91,9 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
   private isProxyDefault_: boolean;
   // <if expr="chromeos_lacros">
   private isSecondaryUser_: boolean;
+  // </if>
+  // <if expr="_google_chrome and is_win">
+  private showFeatureNotificationsSetting_: boolean;
   // </if>
 
   private observeProxyPrefChanged_() {
@@ -118,6 +134,14 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
     const proxy = SystemPageBrowserProxyImpl.getInstance();
     return enabled !== proxy.wasHardwareAccelerationEnabledAtStartup();
   }
+
+  // <if expr="_google_chrome and is_win">
+  private onFeatureNotificationsChange_(e: Event) {
+    const enabled = (e.target as SettingsToggleButtonElement).checked;
+    MetricsBrowserProxyImpl.getInstance().recordFeatureNotificationsChange(
+        enabled);
+  }
+  // </if>
 }
 
 declare global {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/preloading/preloading_features.h"
@@ -20,6 +21,10 @@
 #include "crypto/crypto_buildflags.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/compositor/compositor_switches.h"
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/browser_features.h"
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
@@ -476,11 +481,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SyncAccountControl) {
 }
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SettingsTest, SystemPage) {
-  RunTest("settings/system_page_test.js", "mocha.run()");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, TabDiscardExceptionDialog) {
   RunTest("settings/tab_discard_exception_dialog_test.js", "mocha.run()");
@@ -499,6 +499,20 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, OfferWritingHelpPage) {
 IN_PROC_BROWSER_TEST_F(SettingsTest, ZoomLevels) {
   RunTest("settings/zoom_levels_test.js", "mocha.run()");
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class SettingsSystemPageTest : public SettingsBrowserTest {
+ private:
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kRegisterOsUpdateHandlerWin};
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsSystemPageTest, SystemPage) {
+  RunTest("settings/system_page_test.js", "mocha.run()");
+}
+#endif
 
 using SettingsAboutPageTest = SettingsBrowserTest;
 

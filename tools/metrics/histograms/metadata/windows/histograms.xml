@@ -112,6 +112,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Windows.FeatureNotificationsSettingChange"
+    enum="BooleanEnabled" expires_after="2025-07-14">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    Reported when the user toggles the feature notifications setting in Chrome's
+    System settings. Its value represents what the setting was changed to.
+  </summary>
+</histogram>
+
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
     expires_after="2025-01-05">
   <owner>brucedawson@chromium.org</owner>

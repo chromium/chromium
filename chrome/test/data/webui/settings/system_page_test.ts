@@ -13,6 +13,12 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
+// <if expr="_google_chrome and is_win">
+import {MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
+
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+// </if>
+
 // clang-format on
 
 const HARDWARE_ACCELERATION_AT_STARTUP: boolean = true;
@@ -35,12 +41,19 @@ class TestSystemPageBrowserProxy extends TestBrowserProxy implements
 suite('settings system page', function() {
   let systemBrowserProxy: TestSystemPageBrowserProxy;
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
+  // <if expr="_google_chrome and is_win">
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+  // </if>
   let systemPage: SettingsSystemPageElement;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
+    // <if expr="_google_chrome and is_win">
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+    // </if>
     systemBrowserProxy = new TestSystemPageBrowserProxy();
     SystemPageBrowserProxyImpl.setInstance(systemBrowserProxy);
 
@@ -65,8 +78,21 @@ suite('settings system page', function() {
         type: chrome.settingsPrivate.PrefType.DICTIONARY,
         value: {mode: 'system'},
       },
+      // <if expr="_google_chrome and is_win">
+      feature_notifications: {
+        enabled: {
+          key: 'feature_notifications_enabled',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: true,
+        },
+      },
+      // </if>
     });
     document.body.appendChild(systemPage);
+
+    // Ensure that dynamic Polymer nodes (i.e., featureNotificationsEnabled,
+    // which is behind a `dom-if` block) are loaded.
+    flush();
   });
 
   teardown(function() {
@@ -136,4 +162,32 @@ suite('settings system page', function() {
     assertNotEquals(null, control.querySelector('cr-policy-pref-indicator'));
     assertTrue(showProxyButton.hidden);
   });
+
+  // <if expr="_google_chrome and is_win">
+  test('feature notifications changed', async function() {
+    function getPrefValue(): boolean {
+      return systemPage.get('feature_notifications_enabled', systemPage.prefs)
+          .value;
+    }
+
+    // Toggle is behind a `dom-if`, so retrieve it via `querySelector`
+    // (`systemPage.$` only contains static Polymer nodes).
+    const toggle = systemPage.shadowRoot!.querySelector<HTMLElement>(
+        '#featureNotificationsEnabled');
+    assertTrue(!!toggle);
+    assertTrue(getPrefValue());
+
+    toggle.click();
+    assertFalse(getPrefValue());
+    assertFalse(await metricsBrowserProxy.whenCalled(
+        'recordFeatureNotificationsChange'));
+
+    metricsBrowserProxy.reset();
+
+    toggle.click();
+    assertTrue(getPrefValue());
+    assertTrue(await metricsBrowserProxy.whenCalled(
+        'recordFeatureNotificationsChange'));
+  });
+  // </if>
 });

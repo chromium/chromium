@@ -3176,6 +3176,11 @@ inline constexpr char kQRCodeGeneratorEnabled[] = "qr_code_generator_enabled";
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 inline constexpr char kOsUpdateHandlerEnabled[] = "os_update_handler_enabled";
+
+// A boolean pref that determines whether Chrome shows system notifications
+// about its features.
+inline constexpr char kFeatureNotificationsEnabled[] =
+    "feature_notifications_enabled";
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // *************** SERVICE PREFS ***************

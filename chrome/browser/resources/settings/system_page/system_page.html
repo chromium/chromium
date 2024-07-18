@@ -18,6 +18,17 @@
       </template>
     </settings-toggle-button>
 
+    <!-- <if expr="_google_chrome and is_win"> -->
+      <template is="dom-if" if="[[showFeatureNotificationsSetting_]]">
+        <div class="hr"></div>
+        <settings-toggle-button id="featureNotificationsEnabled"
+            on-settings-boolean-control-change="onFeatureNotificationsChange_"
+            pref="{{prefs.feature_notifications_enabled}}"
+            label="$i18n{featureNotificationsLabel}">
+        </settings-toggle-button>
+      </template>
+    <!-- </if> -->
+
     <div id="proxy" class="cr-row" on-click="onProxyClick_"
         actionable$="[[isProxyDefault_]]">
       <div class="flex cr-row-text" hidden$="[[!isProxyDefault_]]">

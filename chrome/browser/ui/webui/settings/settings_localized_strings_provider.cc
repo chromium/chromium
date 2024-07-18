@@ -3480,6 +3480,10 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
       {"useAshProxyLabel", IDS_SETTINGS_SYSTEM_USE_ASH_PROXY_LABEL},
       {"usesAshProxyLabel", IDS_SETTINGS_SYSTEM_USES_ASH_PROXY_LABEL},
 #endif
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"featureNotificationsLabel",
+       IDS_SETTINGS_SYSTEM_FEATURE_NOTIFICATIONS_LABEL},
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
