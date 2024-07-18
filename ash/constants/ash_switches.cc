@@ -313,6 +313,10 @@ const char kAshUiModeTablet[] = "touch_view";
 // instead of displaying an interactive animation.
 const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
 
+// Sets the birch ranker to assume it is evening for birch chip ranking
+// purposes.
+const char kBirchIsEvening[] = "birch-is-evening";
+
 // Sets the birch ranker to assume it is morning for birch chip ranking
 // purposes.
 const char kBirchIsMorning[] = "birch-is-morning";

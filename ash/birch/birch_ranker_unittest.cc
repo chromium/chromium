@@ -565,8 +565,8 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
 
   ASSERT_EQ(1u, items.size());
 
-  // The item had a lower priority ranking assigned.
-  EXPECT_FLOAT_EQ(items[0].ranking(), 39.f);
+  // The item was not ranked.
+  EXPECT_FLOAT_EQ(items[0].ranking(), std::numeric_limits<float>::max());
 }
 
 }  // namespace

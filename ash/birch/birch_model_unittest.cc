@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,6 +32,17 @@
 namespace ash {
 
 namespace {
+
+// Returns true if `items` contains BirchItems of each of `types` in any order.
+bool HasItemTypes(const std::vector<std::unique_ptr<BirchItem>>& items,
+                  const std::vector<BirchItemType>& types) {
+  return base::ranges::all_of(types, [&](BirchItemType type) {
+    return base::ranges::any_of(items,
+                                [&](const std::unique_ptr<BirchItem>& item) {
+                                  return item->GetType() == type;
+                                });
+  });
+}
 
 std::vector<BirchFileItem> MakeFileItemList(int item_count) {
   std::vector<BirchFileItem> file_item_list;
@@ -876,9 +888,11 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
   EXPECT_EQ(all_items.size(), 3u);
-  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kWeather);
-  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
-  EXPECT_EQ(all_items[2]->GetType(), BirchItemType::kTab);
+  EXPECT_TRUE(HasItemTypes(all_items, {
+                                          BirchItemType::kWeather,
+                                          BirchItemType::kFile,
+                                          BirchItemType::kTab,
+                                      }));
   EXPECT_FALSE(model->IsDataFresh());
 }
 
@@ -1203,14 +1217,16 @@ TEST_F(BirchModelTest, GetAllItems) {
   // code didn't skip a type.
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
   ASSERT_EQ(all_items.size(), 8u);
-  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kWeather);
-  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kReleaseNotes);
-  EXPECT_EQ(all_items[2]->GetType(), BirchItemType::kCalendar);
-  EXPECT_EQ(all_items[3]->GetType(), BirchItemType::kAttachment);
-  EXPECT_EQ(all_items[4]->GetType(), BirchItemType::kFile);
-  EXPECT_EQ(all_items[5]->GetType(), BirchItemType::kTab);
-  EXPECT_EQ(all_items[6]->GetType(), BirchItemType::kLastActive);
-  EXPECT_EQ(all_items[7]->GetType(), BirchItemType::kMostVisited);
+  EXPECT_TRUE(HasItemTypes(all_items, {
+                                          BirchItemType::kWeather,
+                                          BirchItemType::kReleaseNotes,
+                                          BirchItemType::kCalendar,
+                                          BirchItemType::kAttachment,
+                                          BirchItemType::kFile,
+                                          BirchItemType::kTab,
+                                          BirchItemType::kLastActive,
+                                          BirchItemType::kMostVisited,
+                                      }));
 }
 
 TEST_F(BirchModelTest, SetItemListRecordsHistogram) {

@@ -21,11 +21,13 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time_override.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
 
 namespace ash {
+namespace {
 
 // A data provider that does nothing.
 class StubBirchDataProvider : public BirchDataProvider {
@@ -77,9 +79,11 @@ BirchWeatherProvider* GetWeatherProvider() {
 
 class BirchWeatherProviderTest : public AshTestBase {
  public:
-  BirchWeatherProviderTest() {
+  BirchWeatherProviderTest() : clock_override_(&GetTestTime, nullptr, nullptr) {
     feature_list_.InitWithFeatures(
         {features::kForestFeature, features::kBirchWeather}, {});
+    // Ensure the time is morning (7 AM) so weather will be fetched.
+    SetTestTime(base::Time::Now().LocalMidnight() + base::Hours(7));
   }
   ~BirchWeatherProviderTest() override = default;
 
@@ -103,12 +107,21 @@ class BirchWeatherProviderTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  static base::Time GetTestTime() { return test_time_; }
+
+  static void SetTestTime(base::Time test_time) { test_time_ = test_time; }
+
   raw_ptr<FakeAmbientBackendControllerImpl> ambient_backend_controller_;
   std::unique_ptr<TestImageDownloader> image_downloader_;
 
  private:
+  base::subtle::ScopedTimeClockOverrides clock_override_;
+  static base::Time test_time_;
   base::test::ScopedFeatureList feature_list_;
 };
+
+// static
+base::Time BirchWeatherProviderTest::test_time_;
 
 TEST_F(BirchWeatherProviderTest, GetWeather) {
   auto* birch_model = Shell::Get()->birch_model();
@@ -207,6 +220,30 @@ TEST_F(BirchWeatherProviderTest, WeatherNotFetchedForStubUser) {
   // Simulate a stub user login.
   ClearLogin();
   SimulateUserLogin(user_manager::StubAccountId());
+
+  // Fetch birch data.
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
+  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
+  run_loop.Run();
+
+  // The weather was not fetched.
+  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
+}
+
+TEST_F(BirchWeatherProviderTest, WeatherNotFetchedInAfternoon) {
+  auto* birch_model = Shell::Get()->birch_model();
+
+  // Set up fake backend weather.
+  WeatherInfo info;
+  info.condition_description = "Sunny";
+  info.condition_icon_url = "https://fake-icon-url";
+  info.temp_f = 72.0f;
+  ambient_backend_controller_->SetWeatherInfo(info);
+
+  // Simulate afternoon (2 PM).
+  SetTestTime(base::Time::Now().LocalMidnight() + base::Hours(14));
 
   // Fetch birch data.
   base::RunLoop run_loop;
@@ -558,4 +595,5 @@ TEST_F(BirchWeatherProviderTest, IconCache) {
   EXPECT_FALSE(icon_cache->Get("https://sunny-icon-url").isNull());
 }
 
+}  // namespace
 }  // namespace ash

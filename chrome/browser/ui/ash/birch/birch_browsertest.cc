@@ -344,6 +344,10 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, WeatherChip) {
   Shell::Get()->birch_model()->OverrideWeatherProviderForTest(
       std::make_unique<TestWeatherProvider>());
 
+  // Force it to be morning so the weather item will be ranked and appear.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kBirchIsMorning);
+
   // Disable the prefs for data providers other than weather. This ensures the
   // data is fresh once the weather provider replies.
   DisableAllDataTypePrefsExcept(prefs::kBirchUseWeather);

@@ -242,11 +242,8 @@ void BirchRanker::RankLostMediaItems(std::vector<BirchLostMediaItem>* items) {
 }
 
 void BirchRanker::RankWeatherItems(std::vector<BirchWeatherItem>* items) {
-  // TODO(jamescook): Limit weather to `IsMorning()`. For now show it at a much
-  // lower priority during non-morning hours as this helps with debugging and
-  // dogfooding.
-  if (!items->empty()) {
-    (*items)[0].set_ranking(IsMorning() ? 5.f : 39.f);
+  if (!items->empty() && IsMorning()) {
+    (*items)[0].set_ranking(5.f);
   }
 
   // TODO(b/305094126): Figure out how to query the next day's weather and show
@@ -276,9 +273,12 @@ float BirchRanker::GetReleaseNotesItemRanking(
 }
 
 bool BirchRanker::IsMorning() const {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kBirchIsMorning)) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kBirchIsMorning)) {
     return true;
+  }
+  if (command_line->HasSwitch(switches::kBirchIsEvening)) {
+    return false;
   }
   base::Time last_midnight = now_.LocalMidnight();
   base::Time five_am_today = last_midnight + base::Hours(5);
@@ -287,6 +287,13 @@ bool BirchRanker::IsMorning() const {
 }
 
 bool BirchRanker::IsEvening() const {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kBirchIsEvening)) {
+    return true;
+  }
+  if (command_line->HasSwitch(switches::kBirchIsMorning)) {
+    return false;
+  }
   base::Time last_midnight = now_.LocalMidnight();
   base::Time five_pm_today = last_midnight + base::Hours(17);
   return five_pm_today <= now_;

@@ -10,6 +10,7 @@
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
+#include "ash/birch/birch_ranker.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -120,6 +121,13 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
       Shell::Get()->session_controller()->GetUserSession(0);
   if (session->user_info.account_id == user_manager::StubAccountId()) {
     // Weather is not allowed for stub users, which don't have valid Gaia IDs.
+    birch_model_->SetWeatherItems({});
+    return;
+  }
+  // The ranker only shows weather in the mornings, so only fetch the data in
+  // the mornings to limit QPS on the backend.
+  BirchRanker ranker(base::Time::Now());
+  if (!ranker.IsMorning()) {
     birch_model_->SetWeatherItems({});
     return;
   }
