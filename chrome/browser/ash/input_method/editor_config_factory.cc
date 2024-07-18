@@ -73,9 +73,17 @@ orca::mojom::EditorConfigPtr InternationalizedConfig() {
 
 orca::mojom::EditorConfigPtr BuildConfigFor(const LanguageCategory& language) {
   switch (language) {
+    case LanguageCategory::kDanish:
+    case LanguageCategory::kDutch:
+    case LanguageCategory::kFinnish:
     case LanguageCategory::kFrench:
     case LanguageCategory::kGerman:
+    case LanguageCategory::kItalian:
     case LanguageCategory::kJapanese:
+    case LanguageCategory::kNorwegian:
+    case LanguageCategory::kPortugese:
+    case LanguageCategory::kSpanish:
+    case LanguageCategory::kSwedish:
       return InternationalizedConfig();
     case LanguageCategory::kEnglish:
     default:

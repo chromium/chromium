@@ -148,9 +148,17 @@ class InternationalizedCases
 INSTANTIATE_TEST_SUITE_P(EditorConfigFactoryTest,
                          InternationalizedCases,
                          testing::ValuesIn<LanguageCategory>({
+                             LanguageCategory::kDanish,
+                             LanguageCategory::kDutch,
+                             LanguageCategory::kFinnish,
                              LanguageCategory::kFrench,
                              LanguageCategory::kGerman,
+                             LanguageCategory::kItalian,
                              LanguageCategory::kJapanese,
+                             LanguageCategory::kNorwegian,
+                             LanguageCategory::kPortugese,
+                             LanguageCategory::kSpanish,
+                             LanguageCategory::kSwedish,
                          }));
 
 TEST_P(InternationalizedCases, WithNothingDisabled) {
