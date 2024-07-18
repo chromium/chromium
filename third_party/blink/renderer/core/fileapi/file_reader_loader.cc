@@ -238,16 +238,15 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
     DCHECK_EQ(error_code_, FileErrorCode::kOK);
 
     bytes_loaded_ += buffer.size();
-    std::string_view chars = base::as_string_view(buffer);
 
     if (auto err = client_->DidReceiveData(
-            chars.data(), base::checked_cast<unsigned>(chars.size()));
+            buffer.first(base::checked_cast<unsigned>(buffer.size())));
         err != FileErrorCode::kOK) {
       Failed(err, FailureType::kClientFailure);
       return;
     }
 
-    consumer_handle_->EndReadData(chars.size());
+    consumer_handle_->EndReadData(buffer.size());
     if (BytesLoaded() >= total_bytes_) {
       received_all_data_ = true;
       if (received_on_complete_)

@@ -21,11 +21,6 @@
  *  Boston, MA 02110-1301 USA
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
 
 #include <memory>
@@ -249,9 +244,9 @@ class XMLHttpRequest::BlobLoader final
   FileErrorCode DidStartLoading(uint64_t) override {
     return FileErrorCode::kOK;
   }
-  FileErrorCode DidReceiveData(const char* data, unsigned length) override {
-    DCHECK_LE(length, static_cast<unsigned>(INT_MAX));
-    xhr_->DidReceiveData(base::span(data, length));
+  FileErrorCode DidReceiveData(base::span<const uint8_t> data) override {
+    DCHECK_LE(data.size(), static_cast<size_t>(INT_MAX));
+    xhr_->DidReceiveData(base::as_chars(data));
     return FileErrorCode::kOK;
   }
   void DidFinishLoading() override { xhr_->DidFinishLoadingFromBlob(); }

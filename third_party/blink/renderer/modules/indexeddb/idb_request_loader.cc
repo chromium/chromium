@@ -107,12 +107,13 @@ FileErrorCode IDBRequestLoader::DidStartLoading(uint64_t) {
   return FileErrorCode::kOK;
 }
 
-FileErrorCode IDBRequestLoader::DidReceiveData(const char* data,
-                                               unsigned data_length) {
-  DCHECK_LE(wrapped_data_.size() + data_length, wrapped_data_.capacity())
+FileErrorCode IDBRequestLoader::DidReceiveData(base::span<const uint8_t> data) {
+  DCHECK_LE(wrapped_data_.size() + data.size(), wrapped_data_.capacity())
       << "The reader returned more data than we were prepared for";
 
-  wrapped_data_.Append(data, data_length);
+  auto char_data = base::as_chars(data);
+  wrapped_data_.Append(char_data.data(),
+                       base::checked_cast<wtf_size_t>(char_data.size()));
   return FileErrorCode::kOK;
 }
 

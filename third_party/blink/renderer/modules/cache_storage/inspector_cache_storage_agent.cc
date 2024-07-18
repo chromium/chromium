@@ -507,9 +507,8 @@ class CachedResponseFileReaderLoaderClient final
     dispose();
   }
 
-  FileErrorCode DidReceiveData(const char* data,
-                               unsigned data_length) override {
-    data_.Append(data, data_length);
+  FileErrorCode DidReceiveData(base::span<const uint8_t> data) override {
+    data_.Append(data);
     return FileErrorCode::kOK;
   }
 

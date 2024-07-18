@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 
 #include "third_party/blink/renderer/core/fileapi/file_read_type.h"
@@ -28,17 +23,18 @@ FileErrorCode FileReaderAccumulator::DidStartLoading(uint64_t total_bytes) {
   return DidStartLoading();
 }
 
-FileErrorCode FileReaderAccumulator::DidReceiveData(const char* data,
-                                                    unsigned data_length) {
+FileErrorCode FileReaderAccumulator::DidReceiveData(
+    base::span<const uint8_t> data) {
   // Fill out the buffer
-  if (bytes_loaded_ + data_length > raw_data_.DataLength()) {
+  if (bytes_loaded_ + data.size() > raw_data_.DataLength()) {
     raw_data_.Reset();
     bytes_loaded_ = 0;
     return FileErrorCode::kNotReadableErr;
   }
-  memcpy(static_cast<char*>(raw_data_.Data()) + bytes_loaded_, data,
-         data_length);
-  bytes_loaded_ += data_length;
+  raw_data_.ByteSpan()
+      .subspan(base::checked_cast<size_t>(bytes_loaded_), data.size())
+      .copy_from(data);
+  bytes_loaded_ += data.size();
   return DidReceiveData();
 }
 

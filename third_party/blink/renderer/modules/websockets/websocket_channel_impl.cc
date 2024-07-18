@@ -138,7 +138,7 @@ class WebSocketChannelImpl::BlobLoader final
 
   // FileReaderClient functions.
   FileErrorCode DidStartLoading(uint64_t) override;
-  FileErrorCode DidReceiveData(const char* data, unsigned data_length) override;
+  FileErrorCode DidReceiveData(base::span<const uint8_t> data) override;
   void DidFinishLoading() override;
   void DidFail(FileErrorCode) override;
 
@@ -190,13 +190,13 @@ FileErrorCode WebSocketChannelImpl::BlobLoader::DidStartLoading(uint64_t) {
 }
 
 FileErrorCode WebSocketChannelImpl::BlobLoader::DidReceiveData(
-    const char* data,
-    unsigned data_length) {
-  const size_t data_to_copy =
-      std::min(size_ - offset_, static_cast<size_t>(data_length));
-  if (!data_to_copy)
+    base::span<const uint8_t> data) {
+  auto remaining_message = base::span(data_.get(), size_).subspan(offset_);
+  const size_t data_to_copy = std::min(remaining_message.size(), data.size());
+  if (!data_to_copy) {
     return FileErrorCode::kOK;
-  memcpy(data_.get() + offset_, data, data_to_copy);
+  }
+  remaining_message.copy_prefix_from(base::as_chars(data.first(data_to_copy)));
   offset_ += data_to_copy;
   return FileErrorCode::kOK;
 }

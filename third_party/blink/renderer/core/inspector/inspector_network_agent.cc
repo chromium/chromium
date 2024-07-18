@@ -225,11 +225,10 @@ class InspectorFileReaderLoaderClient final
     return FileErrorCode::kOK;
   }
 
-  FileErrorCode DidReceiveData(const char* data,
-                               unsigned data_length) override {
-    if (!data_length)
-      return FileErrorCode::kOK;
-    raw_data_.Append(data, data_length);
+  FileErrorCode DidReceiveData(base::span<const uint8_t> data) override {
+    if (!data.empty()) {
+      raw_data_.Append(data);
+    }
     return FileErrorCode::kOK;
   }
 
