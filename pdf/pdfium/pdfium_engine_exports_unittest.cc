@@ -341,15 +341,14 @@ TEST_F(PDFiumEngineExportsTest, SearchifyBigImage) {
     constexpr float kFloatTolerance = 0.00001f;
     ScopedLibraryInitializer initializer;
     // The middle 2 positions are for auto-generated "\r\n".
-    // TODO(crbug.com/352482331): The positions here are wrong.
     const std::vector<gfx::RectF> positions =
         GetTextPositions(output_pdf_buffer, 0);
     ASSERT_EQ(4u, positions.size());
-    EXPECT_RECTF_NEAR(gfx::RectF(0, -6.8608f, 0.64f, 1.28f), positions[0],
+    EXPECT_RECTF_NEAR(gfx::RectF(0, 56.32f, 0.64f, 1.28f), positions[0],
                       kFloatTolerance);
     EXPECT_TRUE(positions[1].IsEmpty());
     EXPECT_TRUE(positions[2].IsEmpty());
-    EXPECT_RECTF_NEAR(gfx::RectF(61.44f, -63.1808f, 2.56f, 1.28f), positions[3],
+    EXPECT_RECTF_NEAR(gfx::RectF(61.44f, 0, 2.56f, 1.28f), positions[3],
                       kFloatTolerance);
   }
 }

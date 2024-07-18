@@ -162,7 +162,8 @@ void AddTextOnImage(FPDF_DOCUMENT document,
                     FPDF_PAGE page,
                     FPDF_FONT font,
                     FPDF_PAGEOBJECT image,
-                    screen_ai::mojom::VisualAnnotationPtr annotation) {
+                    screen_ai::mojom::VisualAnnotationPtr annotation,
+                    const gfx::Size& image_pixel_size) {
   FS_QUADPOINTSF quadpoints;
   if (!FPDFPageObj_GetRotatedBounds(image, &quadpoints)) {
     DLOG(ERROR) << "Failed to get image rendered dimensions";
@@ -182,14 +183,6 @@ void AddTextOnImage(FPDF_DOCUMENT document,
   const gfx::SizeF image_rendered_size(
       hypotf(quadpoints.x1 - quadpoints.x2, quadpoints.y1 - quadpoints.y2),
       hypotf(quadpoints.x2 - quadpoints.x3, quadpoints.y2 - quadpoints.y3));
-  unsigned int image_pixel_width;
-  unsigned int image_pixel_height;
-  if (!FPDFImageObj_GetImagePixelSize(image, &image_pixel_width,
-                                      &image_pixel_height)) {
-    DLOG(ERROR) << "Failed to get image dimensions";
-    return;
-  }
-  const gfx::Size image_pixel_size(image_pixel_width, image_pixel_height);
   image_scale_matrix = {
       image_rendered_size.width() / image_pixel_size.width(),   0, 0,
       image_rendered_size.height() / image_pixel_size.height(), 0, 0};
@@ -206,7 +199,7 @@ void AddTextOnImage(FPDF_DOCUMENT document,
   for (const auto& line : annotation->lines) {
     SearchifyBoundingBoxOrigin baseline_origin =
         ConvertToPdfOrigin(line->baseline_box, line->baseline_box_angle,
-                           image_rendered_size.height());
+                           image_pixel_size.height());
 
     for (const auto& word : line->words) {
       if (word->bounding_box.IsEmpty()) {
@@ -215,7 +208,7 @@ void AddTextOnImage(FPDF_DOCUMENT document,
 
       SearchifyBoundingBoxOrigin origin =
           ConvertToPdfOrigin(word->bounding_box, word->bounding_box_angle,
-                             image_rendered_size.height());
+                             image_pixel_size.height());
       move_matrix = CalculateWordMoveMatrix(
           ProjectToBaseline(origin.point, baseline_origin),
           word->bounding_box.width(),
@@ -287,7 +280,8 @@ std::vector<uint8_t> PDFiumSearchify(
         return {};
       }
       AddTextOnImage(document.get(), page.get(), font.get(), image,
-                     std::move(annotation));
+                     std::move(annotation),
+                     gfx::Size(bitmap.width(), bitmap.height()));
     }
     if (!FPDFPage_GenerateContent(page.get())) {
       DLOG(ERROR) << "Failed to generate content";
@@ -356,7 +350,7 @@ void PdfiumProgressiveSearchifier::AddPage(
   CHECK(FPDFImageObj_LoadJpegFileInline(nullptr, 0, image.get(), &file_access));
   CHECK(FPDFImageObj_SetMatrix(image.get(), width, 0, 0, height, 0, 0));
   AddTextOnImage(doc_.get(), page.get(), font_.get(), image.get(),
-                 std::move(annotation));
+                 std::move(annotation), gfx::Size(width, height));
   FPDFPage_InsertObject(page.get(), image.release());
   CHECK(FPDFPage_GenerateContent(page.get()));
 }
