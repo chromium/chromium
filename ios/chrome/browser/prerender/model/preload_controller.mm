@@ -692,7 +692,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   // execute thier side effects (eg. AppLauncherTabHelper launching app).
   _policyDeciderBridge =
       std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
-  AttachTabHelpers(_webState.get(), /*for_prerender=*/true);
+  AttachTabHelpers(_webState.get(), TabHelperFilter::kPrerender);
 
   _webState->SetDelegate(_webStateDelegate.get());
   _webState->AddObserver(_webStateObserver.get());

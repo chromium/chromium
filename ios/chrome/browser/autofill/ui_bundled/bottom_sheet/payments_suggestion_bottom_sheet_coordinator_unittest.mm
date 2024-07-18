@@ -80,7 +80,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
   int InsertWebState() {
     web::WebState::CreateParams params(browser_state_.get());
     std::unique_ptr<web::WebState> web_state = web::WebState::Create(params);
-    AttachTabHelpers(web_state.get(), NO);
+    AttachTabHelpers(web_state.get());
 
     int insertion_index = browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),

@@ -63,7 +63,7 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
     _webStateDelegateBridge =
         std::make_unique<web::WebStateDelegateBridge>(self);
     _webState->SetDelegate(_webStateDelegateBridge.get());
-    AttachTabHelpers(_webState.get(), NO);
+    AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
     _policyDeciderBridge = std::make_unique<web::WebStatePolicyDeciderBridge>(
         _webState.get(), self);
     _isIncognito = isIncognito;
