@@ -65,17 +65,16 @@ SearchifyBoundingBoxOrigin ConvertToPdfOrigin(const gfx::Rect& rect,
 
 // Project the text object's origin to the baseline's origin.
 SearchifyBoundingBoxOrigin ProjectToBaseline(
-    const SearchifyBoundingBoxOrigin& origin,
+    const gfx::PointF& origin_point,
     const SearchifyBoundingBoxOrigin& baseline_origin) {
+  const float sin_theta = sinf(baseline_origin.theta);
+  const float cos_theta = cosf(baseline_origin.theta);
   // The length between `origin` and `baseline_origin`.
-  const float length = (origin.point.x() - baseline_origin.point.x()) *
-                           cosf(baseline_origin.theta) +
-                       (origin.point.y() - baseline_origin.point.y()) *
-                           sinf(baseline_origin.theta);
-  return {.point = {baseline_origin.point.x() +
-                        length * cosf(baseline_origin.theta),
-                    baseline_origin.point.y() +
-                        length * sinf(baseline_origin.theta)},
+  const float length =
+      (origin_point.x() - baseline_origin.point.x()) * cos_theta +
+      (origin_point.y() - baseline_origin.point.y()) * sin_theta;
+  return {.point = {baseline_origin.point.x() + length * cos_theta,
+                    baseline_origin.point.y() + length * sin_theta},
           .theta = baseline_origin.theta};
 }
 
@@ -84,14 +83,15 @@ SearchifyBoundingBoxOrigin ProjectToBaseline(
 FS_MATRIX CalculateWordMoveMatrix(const SearchifyBoundingBoxOrigin& word_origin,
                                   int word_bounding_box_width,
                                   bool word_is_rtl) {
-  FS_MATRIX move_matrix(cosf(word_origin.theta), sinf(word_origin.theta),
-                        -sinf(word_origin.theta), cosf(word_origin.theta),
+  const float sin_theta = sinf(word_origin.theta);
+  const float cos_theta = cosf(word_origin.theta);
+  FS_MATRIX move_matrix(cos_theta, sin_theta, -sin_theta, cos_theta,
                         word_origin.point.x(), word_origin.point.y());
   if (word_is_rtl) {
     move_matrix.a = -move_matrix.a;
     move_matrix.b = -move_matrix.b;
-    move_matrix.e += cosf(word_origin.theta) * word_bounding_box_width;
-    move_matrix.f += sinf(word_origin.theta) * word_bounding_box_width;
+    move_matrix.e += cos_theta * word_bounding_box_width;
+    move_matrix.f += sin_theta * word_bounding_box_width;
   }
   return move_matrix;
 }
@@ -196,9 +196,8 @@ void AddTextOnImage(FPDF_DOCUMENT document,
       SearchifyBoundingBoxOrigin origin =
           ConvertToPdfOrigin(word->bounding_box, word->bounding_box_angle,
                              image_rendered_size.height());
-      origin = ProjectToBaseline(origin, baseline_origin);
       const FS_MATRIX move_matrix = CalculateWordMoveMatrix(
-          ProjectToBaseline(origin, baseline_origin),
+          ProjectToBaseline(origin.point, baseline_origin),
           word->bounding_box.width(),
           word->direction ==
               screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT);
