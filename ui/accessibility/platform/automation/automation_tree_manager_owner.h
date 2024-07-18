@@ -189,8 +189,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
       const std::vector<ui::AXEvent>& events) override;
   void DispatchAccessibilityLocationChange(
       const ui::AXTreeID& tree_id,
-      int32_t node_id,
-      const ui::AXRelativeBounds& bounds) override;
+      const blink::mojom::AXLocationAndScrollUpdatesPtr changes) override;
   void DispatchActionResult(const ui::AXActionData& data, bool result) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

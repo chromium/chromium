@@ -47,7 +47,7 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   const std::vector<ui::AXTreeUpdate>& GetHandledAccUpdates();
   void ClearHandledUpdates();
 
-  std::vector<blink::mojom::LocationChangesPtr>& GetLocationChanges();
+  std::vector<blink::mojom::AXLocationChangePtr>& GetLocationChanges();
 
   int CountAccessibilityNodesSentToBrowser();
 

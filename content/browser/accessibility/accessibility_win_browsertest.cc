@@ -148,7 +148,8 @@ class AccessibilityWinBrowserTest : public AccessibilityBrowserTest {
 
  private:
   void SetUpInputFieldHelper(
-      Microsoft::WRL::ComPtr<IAccessibleText>* input_text);
+      Microsoft::WRL::ComPtr<IAccessibleText>* input_text,
+      bool scrollable = false);
   void SetUpSampleParagraphHelper(
       Microsoft::WRL::ComPtr<IAccessibleText>* accessible_text);
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
@@ -187,7 +188,7 @@ void AccessibilityWinBrowserTest::SetUpScrollableInputField(
   ASSERT_NE(nullptr, input_text);
 
   LoadScrollableInputField("text");
-  SetUpInputFieldHelper(input_text);
+  SetUpInputFieldHelper(input_text, /*scrollable*/ true);
 }
 
 // Loads a page with  an input text field and places sample text in it that
@@ -196,7 +197,7 @@ void AccessibilityWinBrowserTest::SetUpScrollableInputTypeSearchField(
     Microsoft::WRL::ComPtr<IAccessibleText>* input_text) {
   ASSERT_NE(nullptr, input_text);
   LoadScrollableInputField("search");
-  SetUpInputFieldHelper(input_text);
+  SetUpInputFieldHelper(input_text, /*scrollable*/ true);
 }
 
 // Loads a page with an input text field and places a single character in it.
@@ -265,7 +266,8 @@ void AccessibilityWinBrowserTest::SetUpSingleCharRtlInputField(
 }
 
 void AccessibilityWinBrowserTest::SetUpInputFieldHelper(
-    Microsoft::WRL::ComPtr<IAccessibleText>* input_text) {
+    Microsoft::WRL::ComPtr<IAccessibleText>* input_text,
+    bool scrollable) {
   Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
   std::vector<base::win::ScopedVariant> document_children =
       GetAllAccessibleChildren(document.Get());
@@ -296,9 +298,13 @@ void AccessibilityWinBrowserTest::SetUpInputFieldHelper(
   ASSERT_HRESULT_SUCCEEDED(input.As(input_text));
 
   // Set the caret before the last character.
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
+  ui::AXEventGenerator::Event event_to_wait =
+      scrollable
+          ? ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED
+          : ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED;
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete, event_to_wait);
   std::wstring caret_offset =
       base::NumberToWString(InputContentsString().size() - 1);
   ExecuteScript(base::WideToUTF16(

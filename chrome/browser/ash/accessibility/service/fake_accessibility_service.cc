@@ -133,8 +133,7 @@ void FakeAccessibilityService::DispatchAccessibilityEvents(
 
 void FakeAccessibilityService::DispatchAccessibilityLocationChange(
     const ui::AXTreeID& tree_id,
-    int node_id,
-    const ui::AXRelativeBounds& bounds) {
+    const blink::mojom::AXLocationAndScrollUpdatesPtr changes) {
   location_changes_.emplace_back(tree_id);
   if (automation_events_closure_)
     std::move(automation_events_closure_).Run();

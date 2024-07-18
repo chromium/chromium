@@ -62,7 +62,8 @@ class MockAutomationEventRouter
       const std::vector<ui::AXEvent>& events) override {}
 
   void DispatchAccessibilityLocationChange(
-      const ui::AXLocationChanges& details) override {}
+      const ui::AXTreeID& tree_id,
+      const blink::mojom::AXLocationAndScrollUpdatesPtr& details) override {}
 
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override {}
 

@@ -56,14 +56,18 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
 }
 
 void AutomationManagerLacros::DispatchAccessibilityLocationChange(
-    const ui::AXLocationChanges& details) {
-  ui::AXTreeID tree_id = details.ax_tree_id;
+    const ui::AXTreeID& tree_id,
+    const blink::mojom::AXLocationAndScrollUpdatesPtr& details) {
   if (!tree_id.token())
     return;
 
   DCHECK(automation_remote_);
-  automation_remote_->DispatchAccessibilityLocationChange(
-      *tree_id.token(), details.id, details.new_location);
+
+  // TODO: move this to use new AXLocationAndScrollUpdatesPtr directly.
+  for (auto& change : details->location_changes) {
+    automation_remote_->DispatchAccessibilityLocationChange(
+        *tree_id.token(), change->id, change->new_location);
+  }
 }
 
 void AutomationManagerLacros::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {

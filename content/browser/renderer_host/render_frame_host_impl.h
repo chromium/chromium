@@ -164,6 +164,7 @@
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-forward.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom-forward.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/sensor/web_sensor_provider.mojom-forward.h"
@@ -3451,7 +3452,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                       uint32_t reset_token);
   void HandleAXLocationChanges(
       const ui::AXTreeID& tree_id,
-      std::vector<blink::mojom::LocationChangesPtr> changes,
+      const blink::mojom::AXLocationAndScrollUpdatesPtr& changes,
       uint32_t reset_token);
 
   // mojom::DomAutomationControllerHost:

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "services/accessibility/automation_impl.h"
+
+#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace ax {
@@ -42,8 +44,7 @@ void AutomationImpl::DispatchAccessibilityEvents(
 
 void AutomationImpl::DispatchAccessibilityLocationChange(
     const ui::AXTreeID& tree_id,
-    int node_id,
-    const ui::AXRelativeBounds& bounds) {
+    const blink::mojom::AXLocationAndScrollUpdatesPtr changes) {
   // TODO(crbug.com/1355633): Send location change to accessibility features.
   // When implementing this method, cc an IPC security reviewer.
 }

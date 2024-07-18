@@ -413,7 +413,7 @@ void BrowserAccessibilityManagerAndroid::FireAriaNotificationEvent(
 }
 
 void BrowserAccessibilityManagerAndroid::SendLocationChangeEvents(
-    const std::vector<ui::AXLocationChanges>& changes) {
+    const std::vector<blink::mojom::AXLocationChangePtr>& changes) {
   // Android is not very efficient at handling notifications, and location
   // changes in particular are frequent and not time-critical. If a lot of
   // nodes changed location, just send a single notification after a short

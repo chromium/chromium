@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom-forward.h"
 
 namespace content {
 
@@ -38,7 +39,7 @@ void RenderAccessibilityHost::HandleAXEvents(
 }
 
 void RenderAccessibilityHost::HandleAXLocationChanges(
-    std::vector<blink::mojom::LocationChangesPtr> changes,
+    blink::mojom::AXLocationAndScrollUpdatesPtr changes,
     uint32_t reset_token) {
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&RenderFrameHostImpl::HandleAXLocationChanges,

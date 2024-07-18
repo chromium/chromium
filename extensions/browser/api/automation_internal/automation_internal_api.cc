@@ -353,11 +353,10 @@ class AutomationWebContentsObserver
   }
 
   void AccessibilityLocationChangesReceived(
-      const std::vector<ui::AXLocationChanges>& details) override {
+      const ui::AXTreeID& tree_id,
+      const blink::mojom::AXLocationAndScrollUpdatesPtr& details) override {
     AutomationEventRouter* router = AutomationEventRouter::GetInstance();
-    for (const auto& src : details) {
-      router->DispatchAccessibilityLocationChange(src);
-    }
+    router->DispatchAccessibilityLocationChange(tree_id, details);
   }
 
   void MediaStartedPlaying(const MediaPlayerInfo& video_type,

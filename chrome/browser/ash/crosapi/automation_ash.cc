@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 
+#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom-forward.h"
+#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom.h"
+
 namespace crosapi {
 
 AutomationAsh::AutomationAsh() {
@@ -63,12 +66,15 @@ void AutomationAsh::DispatchAccessibilityLocationChange(
     const base::UnguessableToken& tree_id,
     int32_t node_id,
     const ui::AXRelativeBounds& bounds) {
-  ui::AXLocationChanges details;
-  details.ax_tree_id = ui::AXTreeID::FromToken(tree_id);
-  details.id = node_id;
-  details.new_location = bounds;
+  ui::AXTreeID ax_tree_id = ui::AXTreeID::FromToken(tree_id);
+
+  blink::mojom::AXLocationAndScrollUpdatesPtr details =
+      blink::mojom::AXLocationAndScrollUpdates::New();
+  details->location_changes.push_back(
+      blink::mojom::AXLocationChange::New(node_id, bounds));
+
   extensions::AutomationEventRouter::GetInstance()
-      ->DispatchAccessibilityLocationChange(details);
+      ->DispatchAccessibilityLocationChange(ax_tree_id, details);
 }
 
 void AutomationAsh::DispatchTreeDestroyedEvent(

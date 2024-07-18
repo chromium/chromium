@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_tree.h"
 #include "base/i18n/string_search.h"
+#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
@@ -1102,29 +1103,32 @@ void AutomationTreeManagerOwner::DispatchAccessibilityEvents(
 
 void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
     const ui::AXTreeID& tree_id,
-    int32_t node_id,
-    const ui::AXRelativeBounds& bounds) {
+    const blink::mojom::AXLocationAndScrollUpdatesPtr changes) {
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   if (!tree_wrapper) {
     return;
   }
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
-  if (!node) {
-    return;
-  }
 
-  std::optional<gfx::Rect> previous_accessibility_focused_global_bounds =
-      GetAccessibilityFocusedLocation();
+  for (auto& change : changes->location_changes) {
+    AXNode* node =
+        tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), change->id);
+    if (!node) {
+      return;
+    }
 
-  node->SetLocation(bounds.offset_container_id, bounds.bounds,
-                    bounds.transform.get());
+    std::optional<gfx::Rect> previous_accessibility_focused_global_bounds =
+        GetAccessibilityFocusedLocation();
 
-  if (previous_accessibility_focused_global_bounds.has_value() &&
-      previous_accessibility_focused_global_bounds !=
-          GetAccessibilityFocusedLocation()) {
-    SendAccessibilityFocusedLocationChange(gfx::Point());
+    node->SetLocation(change->new_location.offset_container_id,
+                      change->new_location.bounds,
+                      change->new_location.transform.get());
+
+    if (previous_accessibility_focused_global_bounds.has_value() &&
+        previous_accessibility_focused_global_bounds !=
+            GetAccessibilityFocusedLocation()) {
+      SendAccessibilityFocusedLocationChange(gfx::Point());
+    }
   }
 }
 

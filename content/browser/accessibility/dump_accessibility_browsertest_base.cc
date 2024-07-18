@@ -280,19 +280,14 @@ void DumpAccessibilityTestBase::RunTest(
 // Event::kAccessibilityClean, etc. because this can be used multiple times
 // per test.
 void DumpAccessibilityTestBase::WaitForEndOfTest(ui::AXMode mode) const {
-  // To make sure we've handled all accessibility events, add a sentinel by
-  // calling SignalEndOfTest on each frame and waiting for a kEndOfTest event
-  // in response.
-  auto hosts = content::CollectAllRenderFrameHosts(GetWebContents());
-  for (auto* host : hosts) {
-    ui::AXActionData action_data;
-    action_data.action = ax::mojom::Action::kSignalEndOfTest;
-    host->AccessibilityPerformAction(action_data);
-  }
-
   AccessibilityNotificationWaiter waiter(GetWebContents(), mode,
                                          ax::mojom::Event::kEndOfTest);
-  ASSERT_TRUE(waiter.WaitForNotification(true));
+
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      GetWebContents()->GetPrimaryMainFrame());
+  main_frame->browser_accessibility_manager()->SignalEndOfTest();
+
+  ASSERT_TRUE(waiter.WaitForNotification());
 }
 
 void DumpAccessibilityTestBase::PerformAndWaitForDefaultActions(
@@ -372,11 +367,11 @@ void DumpAccessibilityTestBase::WaitForFinalTreeContents(ui::AXMode mode) {
   if (scenario_.wait_for.size()) {
     // Wait for expected text from @WAIT-FOR.
     WaitForExpectedText(mode);
-  } else {
-    // Wait until all accessibility events and dirty objects have been
-    // processed.
-    WaitForEndOfTest(mode);
   }
+
+  // Wait until all accessibility events and dirty objects have been
+  // processed.
+  WaitForEndOfTest(mode);
 }
 
 void DumpAccessibilityTestBase::RunTestForPlatform(

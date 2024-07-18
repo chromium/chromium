@@ -5206,11 +5206,13 @@ void WebContentsImpl::ProcessAccessibilityUpdatesAndEvents(
 }
 
 void WebContentsImpl::AccessibilityLocationChangesReceived(
-    const std::vector<ui::AXLocationChanges>& details) {
+    const ui::AXTreeID& tree_id,
+    const blink::mojom::AXLocationAndScrollUpdatesPtr& details) {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::AccessibilityLocationChangesReceived");
   observers_.NotifyObservers(
-      &WebContentsObserver::AccessibilityLocationChangesReceived, details);
+      &WebContentsObserver::AccessibilityLocationChangesReceived, tree_id,
+      details);
 }
 
 ui::AXNode* WebContentsImpl::GetAccessibilityRootNode() {
