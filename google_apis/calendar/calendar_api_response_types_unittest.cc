@@ -108,6 +108,7 @@ TEST(CalendarAPIResponseTypesTest, ParseEventList) {
   EXPECT_EQ(event.self_response_status(),
             CalendarEvent::ResponseStatus::kNeedsAction);
   EXPECT_EQ(event.location(), "location 1");
+  EXPECT_FALSE(event.has_other_attendee());
 }
 
 TEST(CalendarAPIResponseTypesTest, ParseConferenceDataUri) {
@@ -212,6 +213,22 @@ TEST(CalendarAPIResponseTypesTest,
             CalendarEvent::ResponseStatus::kUnknown);
   EXPECT_EQ(event_list->items()[7]->self_response_status(),
             CalendarEvent::ResponseStatus::kUnknown);
+}
+
+TEST(CalendarAPIResponseTypesTest,
+     ParseEventListWithCorrectHasOtherAttendeeValue) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/events.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(3U, event_list->items().size());
+
+  EXPECT_FALSE(event_list->items()[0]->has_other_attendee());
+  EXPECT_FALSE(event_list->items()[1]->has_other_attendee());
+  EXPECT_TRUE(event_list->items()[2]->has_other_attendee());
 }
 
 TEST(CalendarAPIResponseTypesTest, ParseFailed) {

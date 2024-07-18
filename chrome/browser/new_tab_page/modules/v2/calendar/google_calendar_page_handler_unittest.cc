@@ -5,6 +5,7 @@
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -158,7 +159,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
             /*start_time=*/base::Time::Now() - base::Minutes(15),
             /*end_time=*/base::Time::Now() + base::Hours(12),
             /*single_events=*/true,
-            /*max_attendees=*/1,
+            /*max_attendees=*/std::nullopt,
             /*max_results=*/2500, event_types,
             /*experiment=*/"ntp-calendar",
             /*order_by=*/"startTime"),
@@ -394,7 +395,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
               /*start_time=*/base::Time::Now() + base::Minutes(30),
               /*end_time=*/base::Time::Now() + base::Hours(8),
               /*single_events=*/true,
-              /*max_attendees*/ 1,
+              /*max_attendees*/ std::nullopt,
               /*max_results*/ 2500, event_types,
               /*experiment=*/"test_experiment_param",
               /*order_by=*/"startTime"),

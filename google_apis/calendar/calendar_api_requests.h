@@ -108,6 +108,7 @@ class CalendarApiCalendarListRequest : public CalendarApiGetRequest {
 // Request to fetch calendar events. By default, an event fetch for the primary
 // calendar is requested. If a calendar ID is passed, an event fetch is
 // requested for the calendar matching that ID.
+// Only fetches a maximum of 1 attendee per event.
 // |url_generator|  The UrlGenerator to use for the request.
 // |callback|       The callback to send the parsed |EventList| to when the
 //                  request is complete.
@@ -131,7 +132,7 @@ class CalendarApiEventsRequest : public CalendarApiGetRequest {
                            const base::Time& end_time,
                            bool include_attachments = false);
   // Creates a CalendarApiEventsRequest for the user's primary calendar with
-  // extra params.
+  // extra params and does not limit the number of attendees per event.
   // |event_types|          A vector of |EventType| to filter
   //                        for. If the vector is empty, no filtering by
   //                        event_types will occur.
@@ -182,6 +183,7 @@ class CalendarApiEventsRequest : public CalendarApiGetRequest {
   const base::Time end_time_;
   const std::vector<EventType> event_types_;
   const std::string experiment_;
+  const std::optional<int> max_attendees_;
   const std::string order_by_;
   const base::Time start_time_;
 

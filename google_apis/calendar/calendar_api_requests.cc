@@ -190,6 +190,7 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
       calendar_color_id_(calendar_color_id),
       calendar_id_(calendar_id),
       end_time_(end_time),
+      max_attendees_(kMaxAttendees),
       start_time_(start_time) {
   CHECK(!callback_.is_null());
 }
@@ -207,6 +208,7 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
       url_generator_(url_generator),
       calendar_id_(kPrimaryCalendarId),
       end_time_(end_time),
+      max_attendees_(kMaxAttendees),
       start_time_(start_time) {
   CHECK(!callback_.is_null());
 }
@@ -240,7 +242,7 @@ GURL CalendarApiEventsRequest::GetURLInternal() const {
   return url_generator_.GetCalendarEventListUrl(
       calendar_id_, start_time_, end_time_,
       /*single_events=*/true,
-      /*max_attendees=*/kMaxAttendees,
+      /*max_attendees=*/max_attendees_,
       /*max_results=*/kMaxResults, event_types_, experiment_, order_by_);
 }
 

@@ -47,13 +47,13 @@
       "attendees": [
         {
           "email": "test4@google.com",
-          "responseStatus": "needsAction"
+          "responseStatus": "declined"
         },
         {
           "email": "google.com_726f6f6d5f75735f6d7test@resource.calendar.google.com",
           "displayName": "MTV-1055-2-Pellucid (3) [GVC, Jamboard, Phone]",
           "resource": true,
-          "responseStatus": "declined"
+          "responseStatus": "accepted"
         },
         {
           "email": "test1@google.com",
@@ -64,7 +64,7 @@
         {
           "email": "test2@google.com",
           "displayName": "test2 testlatname2",
-          "responseStatus": "accepted"
+          "responseStatus": "declined"
         }
       ],
       "hangoutLink": "https://meet.google.com/jbe-test",
@@ -138,12 +138,12 @@
         {
           "email": "test4@google.com",
           "displayName": "test test4",
-          "responseStatus": "accepted"
+          "responseStatus": "declined"
         },
         {
           "email": "test6@google.com",
           "displayName": "test test6",
-          "responseStatus": "accepted"
+          "responseStatus": "declined"
         },
         {
           "email": "test1@google.com",

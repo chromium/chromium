@@ -226,16 +226,27 @@ class CalendarEvent {
     self_response_status_ = self_response_status;
   }
 
+  // Boolean indicating if there is an attendee other than the user
+  // attending the event. If the version of the request only fetches
+  // 1 attendee, this will always be false.
+  bool has_other_attendee() const { return has_other_attendee_; }
+  void set_has_other_attendee(bool has_other_attendee) {
+    has_other_attendee_ = has_other_attendee;
+  }
+
   // The location of the event.
   const std::string& location() const { return location_; }
   void set_location(const std::string& location) { location_ = location; }
 
+  // The start time of the event.
   const DateTime& start_time() const { return start_time_; }
   void set_start_time(const DateTime& start_time) { start_time_ = start_time; }
 
+  // The end time of the event.
   const DateTime& end_time() const { return end_time_; }
   void set_end_time(const DateTime& end_time) { end_time_ = end_time; }
 
+  // Boolean indicating if the event lasts all day.
   const bool& all_day_event() const { return all_day_event_; }
   void set_all_day_event(const bool& all_day_event) {
     all_day_event_ = all_day_event;
@@ -263,6 +274,7 @@ class CalendarEvent {
   std::string color_id_;
   EventStatus status_ = EventStatus::kUnknown;
   ResponseStatus self_response_status_ = ResponseStatus::kUnknown;
+  bool has_other_attendee_ = false;
   std::string location_;
   DateTime start_time_;
   DateTime end_time_;
