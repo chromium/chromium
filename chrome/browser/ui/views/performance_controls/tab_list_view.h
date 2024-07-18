@@ -24,6 +24,8 @@ class TabListView : public views::View {
   TabListView(const TabListView&) = delete;
   TabListView& operator=(const TabListView&) = delete;
 
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
  private:
   void RemoveRow(resource_attribution::PageContext context,
                  TabListRowView* row_view);

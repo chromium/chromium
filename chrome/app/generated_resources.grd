@@ -17691,6 +17691,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_PERFORMANCE_INTERVENTION_DIALOG_TITLE_V3" desc="Title text for a dialog with information on tabs that could be causing performance issues.">
         Keep performance speedy
         </message>
+        <!--TODO(crbug.com/338620692): Finalize intervention strings and mark them as translatable -->
+        <message name="IDS_PERFORMANCE_INTERVENTION_CLOSE_BUTTON_ACCNAME" desc="The accessibility text for the performance intervention close button that removes an item from the list of tabs to deactivate when clicked." translateable="false">
+        Remove <ph name="SITE_NAME">$1<ex>Google</ex></ph> from list of tabs to deactivate.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME" desc="The accessibility text for a suggested tab in the performance intervention dialog when the user have removed all but one suggested tab." translateable="false">
+        You have removed all recommended tabs and you can re-open the performance alert to see all recommended tabs again.
+        </message>
+        <message name="IDS_PERFORMANCE_INTERVENTION_TAB_LIST_ACCNAME" desc="The accessbility text for the tab list in the performance intervention dialog." translateable="false">
+          {NUM_TABS, plural,
+          =1 {List box with 1 item.}
+          other {List box with {NUM_TABS} items.}}
+        </message>
       <if expr="use_titlecase">
         <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
         Fix Now

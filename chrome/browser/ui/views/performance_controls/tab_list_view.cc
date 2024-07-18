@@ -8,9 +8,13 @@
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/tab_list_model.h"
 #include "chrome/browser/ui/views/performance_controls/tab_list_row_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
 
@@ -19,6 +23,8 @@ TabListView::TabListView(TabListModel* tab_list_model)
   views::FlexLayout* const flex_layout =
       views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout->SetOrientation(views::LayoutOrientation::kVertical);
+
+  views::FocusManager::set_arrow_key_traversal_enabled(true);
 
   for (resource_attribution::PageContext context :
        tab_list_model->page_contexts()) {
@@ -36,6 +42,12 @@ void TabListView::RemoveRow(resource_attribution::PageContext context,
   tab_list_model_->RemovePageContext(context);
   RemoveChildViewT(row_view);
   RecordTabRemovedFromTabList(tab_list_model_->count());
+}
+
+void TabListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kListBox;
+  node_data->SetNameChecked(l10n_util::GetPluralStringFUTF16(
+      IDS_PERFORMANCE_INTERVENTION_TAB_LIST_ACCNAME, tab_list_model_->count()));
 }
 
 BEGIN_METADATA(TabListView)
