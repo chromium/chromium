@@ -497,22 +497,35 @@ export class RealboxElement extends RealboxElementBase {
       return;
     }
 
-    // Query for zero-prefix matches if user is tabbing into an empty input and
-    // matches are not visible.
-    if (!this.$.input.value && !this.dropdownIsVisible) {
-      this.queryAutocomplete_('');
+    if (!this.dropdownIsVisible) {
+      // Query for zero-prefix matches if user is tabbing into an empty input
+      // and matches are not visible.
+      if (!this.$.input.value) {
+        this.queryAutocomplete_('');
+      } else if (this.showThumbnail) {
+        // Query current input if tabbing into input while thumbnail is showing
+        // and matches are not visible.
+        this.queryAutocomplete_(this.$.input.value);
+      }
     }
   }
 
   private onInputMouseDown_(e: MouseEvent) {
+    // Non-main (generally left) mouse clicks are ignored.
     if (e.button !== 0) {
       return;
     }
 
-    // Query for zero-prefix matches when the main (generally left) mouse button
-    // is pressed on an empty input and matches are not visible.
-    if (!this.$.input.value && !this.dropdownIsVisible) {
-      this.queryAutocomplete_('');
+    if (!this.dropdownIsVisible) {
+      // Query for zero-prefix matches if user is clicking into an empty input
+      // and matches are not visible.
+      if (!this.$.input.value) {
+        this.queryAutocomplete_('');
+      } else if (this.showThumbnail) {
+        // Query current input if clicking into input while thumbnail is
+        // showing and matches are not visible.
+        this.queryAutocomplete_(this.$.input.value);
+      }
     }
   }
 

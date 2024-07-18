@@ -638,6 +638,44 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(args.clearResult);
   });
 
+  test(
+      'autocomplete triggers on focus on non-empty input with thumbnail',
+      async () => {
+        testProxy.callbackRouterRemote.setThumbnail('foo.png');
+        await waitAfterNextRender(realbox);
+        const thumbnail = realbox.$.inputWrapper.querySelector('#thumbnail');
+        assertTrue(thumbnail !== null);
+        realbox.$.input.value = 'hi';
+        realbox.$.input.dispatchEvent(new InputEvent('input'));
+        // Make sure realbox is not focused and matches aren't showing.
+        realbox.$.input.blur();
+        assertFalse(await areMatchesShowing());
+
+        // Click on realbox.
+        realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
+
+        // Check that autocomplete gets queried with last input on click with
+        // non empty input when thumbnail is showing.
+        let args = await testProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals(decodeString16(args.input), realbox.$.input.value);
+
+        // Make sure realbox focus is not focused and matches aren't showing.
+        realbox.$.input.blur();
+        assertFalse(await areMatchesShowing());
+
+        // Tabbing into realbox.
+        realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
+          bubbles: true,
+          cancelable: true,
+          key: 'Tab',
+        }));
+
+        // Check that autocomplete gets queried with last input on keyup with
+        // non empty input when thumbnail is showing.
+        args = await testProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals(decodeString16(args.input), realbox.$.input.value);
+      });
+
   //============================================================================
   // Test Autocomplete Response
   //============================================================================
