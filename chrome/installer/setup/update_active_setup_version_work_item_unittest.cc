@@ -33,32 +33,32 @@ struct UpdateActiveSetupVersionWorkItemTestCase {
   const wchar_t* expected_result;
 } const kUpdateActiveSetupVersionWorkItemTestCases[] = {
     // Initial install.
-    {nullptr, false, L"44,0,0,0"},
+    {nullptr, false, L"43,0,0,0"},
     // No-op update.
-    {L"44,0,0,0", false, L"44,0,0,0"},
+    {L"43,0,0,0", false, L"43,0,0,0"},
     // Update only major component.
-    {L"24,1,2,3", false, L"44,0,0,0"},
+    {L"24,1,2,3", false, L"43,0,0,0"},
     // Reset from bogus value.
-    {L"zzz", false, L"44,0,0,0"},
+    {L"zzz", false, L"43,0,0,0"},
     // Reset from invalid version (too few components).
-    {L"1,2", false, L"44,0,0,0"},
+    {L"1,2", false, L"43,0,0,0"},
     // Reset from invalid version (too many components).
-    {L"44,1,2,3,10", false, L"44,1,2,3"},
+    {L"43,1,2,3,10", false, L"43,1,2,3"},
     // Reset from empty string.
-    {L"", false, L"44,0,0,0"},
+    {L"", false, L"43,0,0,0"},
 
     // Same tests with a SELECTIVE_TRIGGER component bump.
-    {nullptr, true, L"44,0,0,0"},
-    {L"44,0,0,0", true, L"44,0,1,0"},
-    {L"44,0,46,0", true, L"44,0,47,0"},
-    {L"24,1,2,3", true, L"44,0,0,0"},
-    {L"zzz", true, L"44,0,0,0"},
-    {L"1,2", true, L"44,0,0,0"},
-    {L"44,1,2,3,10", true, L"44,1,3,3"},
-    {L"", true, L"44,0,0,0"},
+    {nullptr, true, L"43,0,0,0"},
+    {L"43,0,0,0", true, L"43,0,1,0"},
+    {L"43,0,46,0", true, L"43,0,47,0"},
+    {L"24,1,2,3", true, L"43,0,0,0"},
+    {L"zzz", true, L"43,0,0,0"},
+    {L"1,2", true, L"43,0,0,0"},
+    {L"43,1,2,3,10", true, L"43,1,3,3"},
+    {L"", true, L"43,0,0,0"},
     // Bumping a negative selective trigger component should result in it being
     // reset and subsequently bumped to 1.
-    {L"44,11,-123,33", true, L"44,11,1,33"},
+    {L"43,11,-123,33", true, L"43,11,1,33"},
 };
 
 // Implements PrintTo in order for gtest to be able to print the problematic

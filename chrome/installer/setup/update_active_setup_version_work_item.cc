@@ -21,7 +21,7 @@ namespace {
 // done by setup.exe --configure-user-settings on user login by way of Active
 // Setup.  Increase this value if the work done when handling Active Setup
 // should be executed again for all existing users.
-#define ACTIVE_SETUP_MAJOR_VERSION 44
+#define ACTIVE_SETUP_MAJOR_VERSION 43
 
 #define AsWString2(m) L#m
 #define AsWString(m) AsWString2(m)

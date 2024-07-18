@@ -363,6 +363,7 @@ std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
   }
   base::CommandLine os_update_handler_cmd(
       target_path.Append(installed_version).Append(kOsUpdateHandlerExe));
+  InstallUtil::AppendModeAndChannelSwitches(&os_update_handler_cmd);
   os_update_handler_cmd.AppendArgNative(
       base::StrCat({last_os_version, L"-", current_os_version}));
   return os_update_handler_cmd;
@@ -712,12 +713,8 @@ void HandleOsUpgradeForBrowser(const InstallerState& installer_state,
     work_item_list->Rollback();
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // For system installs, this will be done via Active Setup in the context of
-  // the interactive user.
-  if (!installer_state.system_install()) {
-    LaunchOSUpdateHandlerIfNeeded(
-        installer_state, base::ASCIIToWide(installed_version.GetString()));
-  }
+  LaunchOSUpdateHandlerIfNeeded(
+      installer_state, base::ASCIIToWide(installed_version.GetString()));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   UpdateOsUpgradeBeacon();
@@ -772,13 +769,6 @@ void HandleActiveSetupForBrowser(const InstallerState& installer_state,
   RunShortcutCreationInChildProc(installer_state, setup_path,
                                  InitialPreferences::Path(installation_root),
                                  CURRENT_USER, install_operation);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // This is run for each user, at user-level, via Active Setup. For user-level
-  // installs, HandleOsUpgradeForBrowser handles this directly.
-  LaunchOSUpdateHandlerIfNeeded(installer_state,
-                                base::ASCIIToWide(chrome::kChromeVersion));
-#endif  //  BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   UpdateDefaultBrowserBeaconForPath(installation_root.Append(kChromeExe));
 }
