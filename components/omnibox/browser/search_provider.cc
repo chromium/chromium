@@ -154,14 +154,18 @@ void SearchProvider::RegisterDisplayedAnswers(
   // only be in the second slot if AutocompleteController ranked a local search
   // history or a verbatim item higher than the answer.
   auto match = result.begin();
-  if (!match->answer && result.size() > 1)
+  if (match->answer_type == omnibox::ANSWER_TYPE_UNSPECIFIED &&
+      result.size() > 1) {
     ++match;
-  if (!match->answer || match->fill_into_edit.empty())
+  }
+
+  if (match->answer_type == omnibox::ANSWER_TYPE_UNSPECIFIED ||
+      match->fill_into_edit.empty()) {
     return;
+  }
 
   // Valid answer encountered, cache it for further queries.
-  answers_cache_.UpdateRecentAnswers(match->fill_into_edit,
-                                     match->answer->type());
+  answers_cache_.UpdateRecentAnswers(match->fill_into_edit, match->answer_type);
 }
 
 // static

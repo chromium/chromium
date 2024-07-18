@@ -4046,7 +4046,7 @@ TEST_F(SearchProviderTest, AnswersCache) {
   ACMatches matches;
   AutocompleteMatch match1;
   match1.answer = SuggestionAnswer();
-  match1.answer->set_type(2334);
+  match1.answer_type = omnibox::ANSWER_TYPE_WEATHER;
   match1.fill_into_edit = u"weather los angeles";
 
   AutocompleteMatch non_answer_match1;
@@ -4058,11 +4058,30 @@ TEST_F(SearchProviderTest, AnswersCache) {
   result.AppendMatches(matches);
   provider_->RegisterDisplayedAnswers(result);
   ASSERT_FALSE(provider_->answers_cache_.empty());
+  AnswersQueryData answer =
+      provider_->answers_cache_.GetTopAnswerEntry(u"weather l");
+  EXPECT_EQ(u"weather los angeles", answer.full_query_text);
+
+  AutocompleteMatch match2;
+  match2.answer_template = omnibox::RichAnswerTemplate();
+  match2.answer_type = omnibox::ANSWER_TYPE_WEATHER;
+  match2.fill_into_edit = u"weather san diego";
+
+  AutocompleteResult result2;
+  ACMatches matches2;
+  matches2.push_back(match2);
+  matches2.push_back(non_answer_match1);
+  result2.AppendMatches(matches2);
+  provider_->RegisterDisplayedAnswers(result2);
+  ASSERT_FALSE(provider_->answers_cache_.empty());
+  AnswersQueryData answer2 =
+      provider_->answers_cache_.GetTopAnswerEntry(u"weather s");
+  EXPECT_EQ(u"weather san diego", answer2.full_query_text);
 
   // Without scored results, no answers will be retrieved.
-  AnswersQueryData answer = provider_->FindAnswersPrefetchData();
+  answer = provider_->FindAnswersPrefetchData();
   EXPECT_TRUE(answer.full_query_text.empty());
-  EXPECT_EQ(-1, answer.query_type);
+  EXPECT_EQ(omnibox::ANSWER_TYPE_UNSPECIFIED, answer.query_type);
 
   // Inject a scored result, which will trigger answer retrieval.
   std::u16string query = u"weather los angeles";
@@ -4077,7 +4096,7 @@ TEST_F(SearchProviderTest, AnswersCache) {
   provider_->transformed_default_history_results_.push_back(suggest_result);
   answer = provider_->FindAnswersPrefetchData();
   EXPECT_EQ(u"weather los angeles", answer.full_query_text);
-  EXPECT_EQ(2334, answer.query_type);
+  EXPECT_EQ(omnibox::ANSWER_TYPE_WEATHER, answer.query_type);
 }
 
 TEST_F(SearchProviderTest, RemoveExtraAnswers) {
