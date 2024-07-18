@@ -3,6 +3,23 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+android_library_factory("factory_java") {
+  deps = [ "//components/browser_ui/settings/android:java" ]
+
+  sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsLauncherFactory.java" ]
+}
+
+android_library("internal_java") {
+  deps = [
+    # Exception: depends on :chrome_java for SettingsLauncherImpl.
+    "//chrome/android:chrome_java",
+    "//components/browser_ui/settings/android:java",
+  ]
+
+  sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsLauncherFactory.java" ]
+}
 
 android_library("java") {
   sources = [
@@ -11,6 +28,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/settings/FaviconLoader.java",
     "android/java/src/org/chromium/chrome/browser/settings/ProfileDependentSetting.java",
   ]
+  public_deps = [ ":factory_java" ]
   deps = [
     "//base:base_java",
     "//chrome/browser/feedback/android:java",

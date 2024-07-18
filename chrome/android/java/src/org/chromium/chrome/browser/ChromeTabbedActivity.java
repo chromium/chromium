@@ -169,7 +169,7 @@ import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackBuilder;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
@@ -295,7 +295,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // Name of the ChromeTabbedActivity alias that handles MAIN intents.
     public static final String MAIN_LAUNCHER_ACTIVITY_NAME = "com.google.android.apps.chrome.Main";
 
-    public static final SettingsLauncher SETTINGS_LAUNCHER = new SettingsLauncherImpl();
+    public static final SettingsLauncher SETTINGS_LAUNCHER =
+            SettingsLauncherFactory.createSettingsLauncher();
 
     public static final Set<String> TABBED_MODE_COMPONENT_NAMES =
             Set.of(

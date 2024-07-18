@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /** JNI wrapper for C++ FacilitatedPaymentsController. */
@@ -17,19 +18,17 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 class FacilitatedPaymentsPaymentMethodsControllerBridge
         implements FacilitatedPaymentsPaymentMethodsComponent.Delegate {
     private long mNativeFacilitatedPaymentsController;
-    private SettingsLauncher mSettingsLauncher;
 
     private FacilitatedPaymentsPaymentMethodsControllerBridge(
-            SettingsLauncher settingsLauncher, long nativeFacilitatedPaymentsController) {
-        mSettingsLauncher = settingsLauncher;
+            long nativeFacilitatedPaymentsController) {
         mNativeFacilitatedPaymentsController = nativeFacilitatedPaymentsController;
     }
 
     @CalledByNative
     static FacilitatedPaymentsPaymentMethodsControllerBridge create(
-            SettingsLauncher settingsLauncher, long nativeFacilitatedPaymentsController) {
+            long nativeFacilitatedPaymentsController) {
         return new FacilitatedPaymentsPaymentMethodsControllerBridge(
-                settingsLauncher, nativeFacilitatedPaymentsController);
+                nativeFacilitatedPaymentsController);
     }
 
     // FacilitatedPaymentsPaymentMethodsComponent.Delegate
@@ -54,8 +53,9 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
         if (context == null) {
             return false;
         }
-        mSettingsLauncher.launchSettingsActivity(
-                context, SettingsLauncher.SettingsFragment.FINANCIAL_ACCOUNTS);
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(
+                        context, SettingsLauncher.SettingsFragment.FINANCIAL_ACCOUNTS);
         return true;
     }
 
