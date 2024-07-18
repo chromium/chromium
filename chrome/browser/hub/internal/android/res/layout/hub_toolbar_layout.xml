@@ -36,9 +36,8 @@ found in the LICENSE file.
       style="@style/ToolbarButton"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
-      android:layout_gravity="center"
+      android:layout_gravity="center_horizontal|bottom"
       android:visibility="gone"
-      android:layout_marginBottom="3dp"
       app:tabIndicator="@drawable/m3_tabs_line_indicator"
       app:tabIndicatorFullWidth="true"/>
 
