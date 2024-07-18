@@ -6,10 +6,10 @@
 
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/test/power_monitor_test_utils.h"
+#include "chrome/browser/performance_manager/test_support/fake_child_process_tuning_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_memory_saver_mode_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
-#include "chrome/browser/performance_manager/test_support/fake_render_tuning_delegate.h"
 #include "components/prefs/pref_service.h"
 
 namespace performance_manager::user_tuning {
@@ -51,7 +51,8 @@ void TestUserPerformanceTuningManagerEnvironment::SetUp(
   battery_saver_mode_manager_.reset(new user_tuning::BatterySaverModeManager(
       local_state,
       std::make_unique<FakeFrameThrottlingDelegate>(&throttling_enabled_),
-      std::make_unique<FakeRenderTuningDelegate>(&render_tuning_enabled_)));
+      std::make_unique<FakeChildProcessTuningDelegate>(
+          &child_process_tuning_enabled_)));
   user_performance_tuning_manager_->Start();
   battery_saver_mode_manager_->Start();
 }

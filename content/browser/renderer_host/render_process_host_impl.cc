@@ -2011,7 +2011,7 @@ void RenderProcessHostImpl::ReinitializeLogging(
 
 void RenderProcessHostImpl::SetBatterySaverMode(
     bool battery_saver_mode_enabled) {
-  GetRendererInterface()->SetBatterySaverMode(battery_saver_mode_enabled);
+  child_process_->SetBatterySaverMode(battery_saver_mode_enabled);
 }
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

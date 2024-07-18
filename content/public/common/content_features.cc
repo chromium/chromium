@@ -96,6 +96,16 @@ BASE_FEATURE(kBackForwardCacheMemoryControls,
 #endif
 );
 
+// If enabled, makes battery saver request render process tuning.
+BASE_FEATURE(kBatterySaverModeRenderTuning,
+             "BatterySaverModeRenderTuning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, makes battery saver request heavy align wake ups.
+BASE_FEATURE(kBatterySaverModeAlignWakeUps,
+             "BatterySaverModeAlignWakeUps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When this feature is enabled, private network requests initiated from
 // non-secure contexts in the `public` address space  are blocked.
 //

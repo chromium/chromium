@@ -396,6 +396,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnMemoryPressureFromBrowserReceived(
       base::MemoryPressureListener::MemoryPressureLevel level) override;
 #endif
+  void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
 
   bool IsMainThread();
 
@@ -433,7 +434,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void PurgeResourceCache(PurgeResourceCacheCallback callback) override;
   void SetProcessState(base::Process::Priority priority,
                        mojom::RenderProcessVisibleState visible_state) override;
-  void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
   void SetIsLockedToSite() override;
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void WriteClangProfilingProfile(

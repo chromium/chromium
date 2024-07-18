@@ -147,6 +147,8 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   // Called when the process refcount is 0.
   virtual void OnProcessFinalRelease();
 
+  virtual void SetBatterySaverMode(bool battery_saver_mode_enabled);
+
   // Must be called by subclasses during initialization if and only if they set
   // |Options::expose_interfaces_to_browser| to |true|. This makes |binders|
   // available to handle incoming interface requests from the browser.

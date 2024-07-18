@@ -434,4 +434,9 @@ void ChildProcessHostImpl::NotifyMemoryPressureToChildProcess(
 }
 #endif
 
+void ChildProcessHostImpl::SetBatterySaverMode(
+    bool battery_saver_mode_enabled) {
+  child_process()->SetBatterySaverMode(battery_saver_mode_enabled);
+}
+
 }  // namespace content

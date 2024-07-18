@@ -1381,7 +1381,9 @@ void RenderThreadImpl::SetProcessState(
 }
 
 void RenderThreadImpl::SetBatterySaverMode(bool battery_saver_mode_enabled) {
-  blink::SetBatterySaverModeForAllIsolates(battery_saver_mode_enabled);
+  if (base::FeatureList::IsEnabled(features::kBatterySaverModeRenderTuning)) {
+    blink::SetBatterySaverModeForAllIsolates(battery_saver_mode_enabled);
+  }
 }
 
 void RenderThreadImpl::SetIsLockedToSite() {

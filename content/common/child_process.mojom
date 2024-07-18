@@ -122,4 +122,9 @@ interface ChildProcess {
   // See https://crbug.com/1393283 for details.
   [EnableIf=is_android]
   OnMemoryPressure(mojo_base.mojom.MemoryPressureLevel memory_pressure_level);
+
+  // Asks the child process to modify its internal settings to bias towards
+  // energy efficiency because the embedder is in battery saver mode. The
+  // default is `false`.
+  SetBatterySaverMode(bool battery_saver_mode_enabled);
 };

@@ -48,6 +48,7 @@ class MockChildProcess : public mojom::ChildProcess {
   MOCK_METHOD1(EnableSystemTracingService,
                void(mojo::PendingRemote<tracing::mojom::SystemTracingService>));
   MOCK_METHOD1(SetPseudonymizationSalt, void(uint32_t salt));
+  MOCK_METHOD1(SetBatterySaverMode, void(bool battery_saver_mode_enabled));
 };
 
 class ChildProcessTaskPortProviderTest : public testing::Test,

@@ -47,12 +47,11 @@ class BatterySaverModeManager {
     virtual ~FrameThrottlingDelegate() = default;
   };
 
-  class RenderTuningDelegate {
+  class ChildProcessTuningDelegate {
    public:
-    virtual void EnableRenderBatterySaverMode() = 0;
-    virtual void DisableRenderBatterySaverMode() = 0;
+    virtual void SetBatterySaverModeForAllChildProcessHosts(bool enabled) = 0;
 
-    virtual ~RenderTuningDelegate() = default;
+    virtual ~ChildProcessTuningDelegate() = default;
   };
 
   class FreezingDelegate {
@@ -174,7 +173,8 @@ class BatterySaverModeManager {
       PrefService* local_state,
       std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate =
           nullptr,
-      std::unique_ptr<RenderTuningDelegate> render_tuning_delegate = nullptr,
+      std::unique_ptr<ChildProcessTuningDelegate>
+          child_process_tuning_delegate = nullptr,
       std::unique_ptr<FreezingDelegate> freezing_delegate = nullptr);
 
   void Start();
@@ -188,7 +188,7 @@ class BatterySaverModeManager {
   void NotifyOnBatteryThresholdReached();
 
   std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate_;
-  std::unique_ptr<RenderTuningDelegate> render_tuning_delegate_;
+  std::unique_ptr<ChildProcessTuningDelegate> child_process_tuning_delegate_;
   std::unique_ptr<FreezingDelegate> freezing_delegate_;
   std::unique_ptr<BatterySaverProvider> battery_saver_provider_;
 

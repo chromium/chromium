@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/message_loop/message_pump.h"
 #include "base/notreached.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor.h"
@@ -25,10 +26,15 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_child_process_host.h"
+#include "content/public/browser/browser_child_process_host_iterator.h"
+#include "content/public/browser/browser_child_process_observer.h"
+#include "content/public/browser/child_process_data.h"
 #include "content/public/browser/frame_rate_throttling.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -78,16 +84,29 @@ class FrameThrottlingDelegateImpl
   ~FrameThrottlingDelegateImpl() override = default;
 };
 
-class RenderTuningDelegateImpl
-    : public BatterySaverModeManager::RenderTuningDelegate,
+class ChildProcessTuningDelegateImpl
+    : public BatterySaverModeManager::ChildProcessTuningDelegate,
       public content::RenderProcessHostCreationObserver,
+      public content::BrowserChildProcessObserver,
       public content::RenderProcessHostObserver {
  public:
-  ~RenderTuningDelegateImpl() override = default;
-  RenderTuningDelegateImpl() = default;
+  ~ChildProcessTuningDelegateImpl() override {
+    content::BrowserChildProcessObserver::Remove(this);
+  }
+  ChildProcessTuningDelegateImpl() {
+    content::BrowserChildProcessObserver::Add(this);
+  }
 
  private:
-  void ToggleRenderBatterySaverModeForAllRenderProcessHosts(bool enabled) {
+  void SetBatterySaverModeForAllChildProcessHosts(bool enabled) override {
+    for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+      if (!iter.GetData().GetProcess().IsValid()) {
+        continue;
+      }
+
+      iter.GetHost()->SetBatterySaverMode(enabled);
+    }
+
     for (content::RenderProcessHost::iterator iter(
              content::RenderProcessHost::AllHostsIterator());
          !iter.IsAtEnd(); iter.Advance()) {
@@ -97,16 +116,7 @@ class RenderTuningDelegateImpl
         host->SetBatterySaverMode(enabled);
       }
     }
-
     battery_saver_mode_enabled_ = enabled;
-  }
-
-  void EnableRenderBatterySaverMode() override {
-    ToggleRenderBatterySaverModeForAllRenderProcessHosts(true);
-  }
-
-  void DisableRenderBatterySaverMode() override {
-    ToggleRenderBatterySaverModeForAllRenderProcessHosts(false);
   }
 
   // content::RenderProcessHostCreationObserver:
@@ -125,6 +135,23 @@ class RenderTuningDelegateImpl
     // be set to true.
     if (battery_saver_mode_enabled_) {
       host->SetBatterySaverMode(battery_saver_mode_enabled_);
+    }
+  }
+
+  // content::BrowserChildProcessObserver:
+  void BrowserChildProcessLaunchedAndConnected(
+      const content::ChildProcessData& data) override {
+    // TODO(etiennep): Replace this by a CHECK.
+    if (!data.GetProcess().IsValid()) {
+      return;
+    }
+    if (battery_saver_mode_enabled_) {
+      content::BrowserChildProcessHost* host =
+          content::BrowserChildProcessHost::FromID(data.id);
+      if (!host) {
+        return;
+      }
+      host->GetHost()->SetBatterySaverMode(battery_saver_mode_enabled_);
     }
   }
 
@@ -544,16 +571,16 @@ bool BatterySaverModeManager::IsBatterySaverModeDisabledForSession() const {
 BatterySaverModeManager::BatterySaverModeManager(
     PrefService* local_state,
     std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate,
-    std::unique_ptr<RenderTuningDelegate> render_tuning_delegate,
+    std::unique_ptr<ChildProcessTuningDelegate> child_process_tuning_delegate,
     std::unique_ptr<FreezingDelegate> freezing_delegate)
     : frame_throttling_delegate_(
           frame_throttling_delegate
               ? std::move(frame_throttling_delegate)
               : std::make_unique<FrameThrottlingDelegateImpl>()),
-      render_tuning_delegate_(
-          render_tuning_delegate
-              ? std::move(render_tuning_delegate)
-              : std::make_unique<RenderTuningDelegateImpl>()),
+      child_process_tuning_delegate_(
+          child_process_tuning_delegate
+              ? std::move(child_process_tuning_delegate)
+              : std::make_unique<ChildProcessTuningDelegateImpl>()),
       freezing_delegate_(freezing_delegate
                              ? std::move(freezing_delegate)
                              : std::make_unique<FreezingDelegateImpl>()) {
@@ -589,16 +616,23 @@ void BatterySaverModeManager::NotifyOnBatterySaverActiveChanged(
     bool battery_saver_mode_active) {
   if (battery_saver_mode_active) {
     frame_throttling_delegate_->StartThrottlingAllFrameSinks();
+    if (base::FeatureList::IsEnabled(
+            ::features::kBatterySaverModeAlignWakeUps)) {
+      base::MessagePump::OverrideAlignWakeUpsState(true,
+                                                   base::Milliseconds(32));
+    }
   } else {
     frame_throttling_delegate_->StopThrottlingAllFrameSinks();
+    if (base::FeatureList::IsEnabled(
+            ::features::kBatterySaverModeAlignWakeUps)) {
+      base::MessagePump::ResetAlignWakeUpsState();
+    }
   }
 
-  if (base::FeatureList::IsEnabled(features::kBatterySaverModeRenderTuning)) {
-    if (battery_saver_mode_active) {
-      render_tuning_delegate_->EnableRenderBatterySaverMode();
-    } else {
-      render_tuning_delegate_->DisableRenderBatterySaverMode();
-    }
+  if (base::FeatureList::IsEnabled(::features::kBatterySaverModeAlignWakeUps) ||
+      base::FeatureList::IsEnabled(::features::kBatterySaverModeRenderTuning)) {
+    child_process_tuning_delegate_->SetBatterySaverModeForAllChildProcessHosts(
+        battery_saver_mode_active);
   }
 
   freezing_delegate_->ToggleFreezingOnBatterySaverMode(

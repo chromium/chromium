@@ -192,6 +192,12 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   //   3. Main thread, ChildThreadImpl::BindReceiver (virtual).
   virtual void BindReceiver(mojo::GenericPendingReceiver receiver) = 0;
 
+  // Asks the child process to prioritize energy efficiency because the
+  // embedder is in battery saver mode. The default state is `false`, meaning
+  // the power/speed tuning is left up to the different components to figure
+  // out.
+  virtual void SetBatterySaverMode(bool battery_saver_mode_enabled) = 0;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Reinitializes the child process's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home

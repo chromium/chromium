@@ -25,6 +25,7 @@
 #include "base/logging.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
+#include "base/message_loop/message_pump.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
@@ -51,7 +52,9 @@
 #include "content/common/in_process_child_thread_params.h"
 #include "content/common/mojo_core_library_support.h"
 #include "content/common/pseudonymization_salt.h"
+#include "content/public/child/child_thread.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_logging.h"
@@ -450,6 +453,21 @@ class ChildThreadImpl::IOThreadState
                        weak_main_thread_, level));
   }
 #endif
+
+  void SetBatterySaverMode(bool battery_saver_mode_enabled) override {
+    if (base::FeatureList::IsEnabled(features::kBatterySaverModeAlignWakeUps)) {
+      if (battery_saver_mode_enabled) {
+        base::MessagePump::OverrideAlignWakeUpsState(true,
+                                                     base::Milliseconds(32));
+      } else {
+        base::MessagePump::ResetAlignWakeUpsState();
+      }
+    }
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ChildThreadImpl::SetBatterySaverMode, weak_main_thread_,
+                       battery_saver_mode_enabled));
+  }
 
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
   const base::WeakPtr<ChildThreadImpl> weak_main_thread_;
@@ -946,6 +964,8 @@ void ChildThreadImpl::OnProcessFinalRelease() {
 
   quit_closure_.Run();
 }
+
+void ChildThreadImpl::SetBatterySaverMode(bool battery_saver_mode_enabled) {}
 
 void ChildThreadImpl::EnsureConnected() {
   VLOG(0) << "ChildThreadImpl::EnsureConnected()";

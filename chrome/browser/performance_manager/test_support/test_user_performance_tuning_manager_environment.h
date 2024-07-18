@@ -41,7 +41,7 @@ class TestUserPerformanceTuningManagerEnvironment {
   std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
 
   bool throttling_enabled_ = false;
-  bool render_tuning_enabled_ = false;
+  bool child_process_tuning_enabled_ = false;
   std::unique_ptr<UserPerformanceTuningManager>
       user_performance_tuning_manager_;
   std::unique_ptr<BatterySaverModeManager> battery_saver_mode_manager_;
