@@ -31,6 +31,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+#include <limits>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -439,6 +441,44 @@ TEST(StringBuilderTest, ReserveCapacityTwice16) {
 
   builder.ReserveCapacity(400);
   EXPECT_LE(400u, builder.Capacity());
+}
+
+TEST(StringBuilderTest, DoesAppendCauseOverflow) {
+  {
+    StringBuilder builder;
+    EXPECT_FALSE(builder.DoesAppendCauseOverflow(0));
+  }
+
+  {
+    StringBuilder builder;
+    EXPECT_FALSE(builder.DoesAppendCauseOverflow(1));
+  }
+
+  {
+    StringBuilder builder;
+    EXPECT_FALSE(builder.DoesAppendCauseOverflow(
+        std::numeric_limits<wtf_size_t>::max() / 4 - 1));
+  }
+
+  {
+    StringBuilder builder;
+    EXPECT_FALSE(builder.DoesAppendCauseOverflow(
+        std::numeric_limits<wtf_size_t>::max() / 4));
+  }
+
+  {
+    StringBuilder builder;
+    builder.Ensure16Bit();
+    EXPECT_FALSE(builder.DoesAppendCauseOverflow(
+        std::numeric_limits<wtf_size_t>::max() / 8 - 1));
+  }
+
+  {
+    StringBuilder builder;
+    builder.Ensure16Bit();
+    EXPECT_FALSE(builder.DoesAppendCauseOverflow(
+        std::numeric_limits<wtf_size_t>::max() / 8));
+  }
 }
 
 }  // namespace WTF
