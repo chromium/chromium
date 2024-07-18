@@ -77,13 +77,7 @@ constexpr gfx::Rect kInitialBounds(0, 0, 100, 100);
 class TestClientControlledStateDelegate
     : public ClientControlledState::Delegate {
  public:
-  TestClientControlledStateDelegate() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kFasterSplitScreenSetup,
-                              features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
+  TestClientControlledStateDelegate() = default;
 
   TestClientControlledStateDelegate(const TestClientControlledStateDelegate&) =
       delete;

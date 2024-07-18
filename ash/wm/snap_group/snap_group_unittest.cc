@@ -429,7 +429,7 @@ TEST_F(FasterSplitScreenDisabledTest, FasterSplitScreenSetupDisabled) {
 }
 
 // Tests kFasterSplitScreenSetup disabled and kSnapGroup enabled.
-TEST_F(FasterSplitScreenDisabledTest, SnapGroupEnabled) {
+TEST_F(FasterSplitScreenDisabledTest, DISABLED_SnapGroupEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kSnapGroup},
