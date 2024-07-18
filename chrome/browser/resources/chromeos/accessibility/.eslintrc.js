@@ -79,7 +79,11 @@ module.exports = {
                 modifiers: ['private'],
                 trailingUnderscore: 'allow',
                 filter: {
-                  regex: '^createITutorial_$',
+                  regex: '^(' +
+                  // Exclude ISearch and ITutorial.
+                  'createNewISearch_|destroyISearch_|setRangeToISearchNode_|' +
+                  'createITutorial_' +
+                  ')$',
                   match: false,
                 },
               },

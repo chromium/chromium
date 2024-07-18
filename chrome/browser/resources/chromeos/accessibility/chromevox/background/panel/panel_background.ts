@@ -26,29 +26,37 @@ import {ISearch} from './i_search.js';
 import {ISearchHandler} from './i_search_handler.js';
 import {PanelNodeMenuBackground} from './panel_node_menu_background.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type ActionType = chrome.automation.ActionType;
+type AutomationEvent = chrome.automation.AutomationEvent;
+type AutomationNode = chrome.automation.AutomationNode;
+type CustomAction = chrome.automation.CustomAction;
+type Dir = constants.Dir;
+const EventType = chrome.automation.EventType;
 const TARGET = BridgeConstants.PanelBackground.TARGET;
 const Action = BridgeConstants.PanelBackground.Action;
 
-/** @implements {ISearchHandler} */
-export class PanelBackground {
-  /** @private */
-  constructor() {
-    /** @private {ISearch} */
-    this.iSearch_;
-    /** @private {!Promise} */
-    this.menusLoaded_ = Promise.resolve();
-    /** @private {AutomationNode} */
-    this.savedNode_;
-    /** @private {Promise} */
-    this.resolvePanelCollapsed_;
-    /** @private {function()|undefined} */
-    this.tutorialReadyCallback_;
-    /** @private {boolean} */
-    this.tutorialReadyForTesting_ = false;
-  }
+type VoidPromise = Promise<void>;
 
-  static init() {
+interface Actions {
+  standardActions: ActionType[];
+  customActions: CustomAction[];
+}
+
+export class PanelBackground implements ISearchHandler {
+  private iSearch_: ISearch | null = null;
+  private menusLoaded_: VoidPromise = Promise.resolve();
+  private savedNode_?: AutomationNode | null;
+  private resolvePanelCollapsed_?: VoidPromise;
+
+  tutorialReadyCallback?: VoidFunction;
+  tutorialReadyForTesting = false;
+
+  static instance: PanelBackground;
+  private static rangeObserver_: PanelRangeObserver;
+
+  private constructor() {}
+
+  static init(): void {
     if (PanelBackground.instance) {
       throw 'Trying to create two copies of singleton PanelBackground';
     }
@@ -61,9 +69,9 @@ export class PanelBackground {
         () => PanelBackground.instance.clearSavedNode_());
     BridgeHelper.registerHandler(
         TARGET, Action.CREATE_ALL_NODE_MENU_BACKGROUNDS,
-        opt_activateMenuTitle =>
+        (activateMenuTitle?: string) =>
             PanelBackground.instance.createAllNodeMenuBackgrounds_(
-                opt_activateMenuTitle));
+                activateMenuTitle));
     BridgeHelper.registerHandler(
         TARGET, Action.CREATE_NEW_I_SEARCH,
         () => PanelBackground.instance.createNewISearch_());
@@ -75,20 +83,22 @@ export class PanelBackground {
         () => PanelBackground.instance.getActionsForCurrentNode_());
     BridgeHelper.registerHandler(
         TARGET, Action.INCREMENTAL_SEARCH,
-        (searchStr, dir, opt_nextObject) =>
+        (searchStr: string, dir: Dir, nextObject?: boolean) =>
             PanelBackground.instance.incrementalSearch_(
-                searchStr, dir, opt_nextObject));
+                searchStr, dir, nextObject));
     BridgeHelper.registerHandler(
         TARGET, Action.ON_TUTORIAL_READY,
         () => PanelBackground.instance.onTutorialReady_());
     BridgeHelper.registerHandler(
         TARGET, Action.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
-        actionId => PanelBackground.instance.performCustomActionOnCurrentNode_(
-            actionId));
+        (actionId: number) =>
+            PanelBackground.instance.performCustomActionOnCurrentNode_(
+                actionId));
     BridgeHelper.registerHandler(
         TARGET, Action.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE,
-        action => PanelBackground.instance.performStandardActionOnCurrentNode_(
-            action));
+        (action: ActionType) =>
+            PanelBackground.instance.performStandardActionOnCurrentNode_(
+                action));
     BridgeHelper.registerHandler(
         TARGET, Action.SAVE_CURRENT_NODE,
         () => PanelBackground.instance.saveCurrentNode_());
@@ -106,43 +116,38 @@ export class PanelBackground {
   /**
    * Waits for menus that have already started loading to finish.
    * If menus have not started loading, resolves immediately.
-   * @return {!Promise}
    */
-  static waitForMenusLoaded() {
+  static waitForMenusLoaded(): Promise<void> {
     return PanelBackground.instance?.menusLoaded_ ?? Promise.resolve();
   }
 
-  /** @private */
-  clearSavedNode_() {
+  private clearSavedNode_(): void {
     this.savedNode_ = null;
   }
 
   /**
-   * @param {string=} opt_activateMenuTitleId Optional string specifying the
-   *     activated menu.
-   * @private
+   * @param activateMenuTitleId Optional string specifying the activated menu.
    */
-  createAllNodeMenuBackgrounds_(opt_activateMenuTitleId) {
+  private createAllNodeMenuBackgrounds_(activateMenuTitleId?: string): void {
     if (!this.savedNode_) {
       return;
     }
-    const promises = [];
+    const promises: VoidPromise[] = [];
     for (const data of ALL_PANEL_MENU_NODE_DATA) {
-      const isActivatedMenu = opt_activateMenuTitleId === data.titleId;
+      const isActivatedMenu = activateMenuTitleId === data.titleId;
       const menuBackground =
           new PanelNodeMenuBackground(data, this.savedNode_, isActivatedMenu);
       menuBackground.populate();
       promises.push(menuBackground.waitForFinish());
     }
-    this.menusLoaded_ = Promise.all(promises);
+    this.menusLoaded_ = Promise.all(promises) as Promise<any>;
   }
 
   /**
    * Creates a new ISearch object, ready to search starting from the current
    * ChromeVox focus.
-   * @private
    */
-  createNewISearch_() {
+  private createNewISearch_(): void {
     if (this.iSearch_) {
       this.iSearch_.clear();
     }
@@ -155,24 +160,15 @@ export class PanelBackground {
     this.iSearch_.handler = this;
   }
 
-  /**
-   * Destroy the ISearch object so it can be garbage collected.
-   * @private
-   */
-  destroyISearch_() {
-    this.iSearch_.handler = null;
+  /** Destroy the ISearch object so it can be garbage collected. */
+  private destroyISearch_(): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    this.iSearch_!.handler = null;
     this.iSearch_ = null;
   }
 
-  /**
-   * @return {{
-   *     standardActions: !Array<!chrome.automation.ActionType>,
-   *     customActions: !Array<!chrome.automation.CustomAction>
-   * }}
-   * @private
-   */
-  getActionsForCurrentNode_() {
-    const result = {
+  private getActionsForCurrentNode_(): Actions {
+    const result: Actions = {
       standardActions: [],
       customActions: [],
     };
@@ -188,54 +184,37 @@ export class PanelBackground {
     return result;
   }
 
-  /**
-   * @param {string} searchStr
-   * @param {constants.Dir} dir
-   * @param {boolean=} opt_nextObject
-   * @private
-   */
-  incrementalSearch_(searchStr, dir, opt_nextObject) {
+  private incrementalSearch_(
+      searchStr: string, dir: Dir, nextObject?: boolean): void {
     if (!this.iSearch_) {
       console.error('Trying to search when no ISearch has been created');
       return;
     }
 
-    this.iSearch_.search(searchStr, dir, opt_nextObject);
+    this.iSearch_.search(searchStr, dir, nextObject);
   }
 
-  /** @private */
-  onTutorialReady_() {
-    this.tutorialReadyForTesting_ = true;
-    if (this.tutorialReadyCallback_) {
-      this.tutorialReadyCallback_();
+  private onTutorialReady_(): void {
+    this.tutorialReadyForTesting = true;
+    if (this.tutorialReadyCallback) {
+      this.tutorialReadyCallback();
     }
   }
 
-  /**
-   * @param {number} actionId
-   * @private
-   */
-  performCustomActionOnCurrentNode_(actionId) {
+  private performCustomActionOnCurrentNode_(actionId: number): void {
     if (this.savedNode_) {
       this.savedNode_.performCustomAction(actionId);
     }
   }
 
-  /**
-   * @param {!chrome.automation.ActionType} action
-   * @private
-   */
-  performStandardActionOnCurrentNode_(action) {
+  private performStandardActionOnCurrentNode_(action: ActionType): void {
     if (this.savedNode_) {
       this.savedNode_.performStandardAction(action);
     }
   }
 
-  /**
-   * Sets the current ChromeVox focus to the current ISearch node.
-   * @private
-   */
-  setRangeToISearchNode_() {
+  /** Sets the current ChromeVox focus to the current ISearch node. */
+  private setRangeToISearchNode_(): void {
     if (!this.iSearch_) {
       console.error(
           'Setting range to ISearch node when no ISearch in progress');
@@ -249,62 +228,54 @@ export class PanelBackground {
     ChromeVoxRange.navigateTo(CursorRange.fromNode(node));
   }
 
-  /** @override */
-  onSearchReachedBoundary(boundaryNode) {
+  /** ISearchHandler implementation */
+  onSearchReachedBoundary(boundaryNode: AutomationNode): void {
     this.iSearchOutput_(boundaryNode);
     ChromeVox.earcons.playEarcon(EarconId.WRAP);
   }
 
-  /** @override */
-  onSearchResultChanged(node, start, end) {
+  /** ISearchHandler implementation */
+  onSearchResultChanged(
+      node: AutomationNode, start: number, end: number): void {
     this.iSearchOutput_(node, start, end);
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @param {number=} opt_start
-   * @param {number=} opt_end
-   * @private
-   */
-  iSearchOutput_(node, opt_start, opt_end) {
+  private iSearchOutput_(node: AutomationNode, start?: number, end?: number)
+      : void {
     Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
     const o = new Output();
-    if (opt_start && opt_end) {
+    if (start && end) {
+      // TODO(b/314203187): Not null asserted, check that this is correct.
       o.withString([
-        node.name.substr(0, opt_start),
-        node.name.substr(opt_start, opt_end - opt_start),
-        node.name.substr(opt_end),
+        node.name!.substr(0, start),
+        node.name!.substr(start, end - start),
+        node.name!.substr(end),
       ].join(', '));
       o.format('$role', node);
     } else {
       o.withRichSpeechAndBraille(
-          CursorRange.fromNode(node), null, OutputCustomEvent.NAVIGATE);
+          CursorRange.fromNode(node), undefined, OutputCustomEvent.NAVIGATE);
     }
     o.go();
 
     ChromeVoxRange.set(CursorRange.fromNode(node));
   }
 
-  /**
-   * Adds an event listener to detect panel collapse.
-   * @private
-   */
-  async setPanelCollapseWatcher_() {
+  /** Adds an event listener to detect panel collapse. */
+  private async setPanelCollapseWatcher_(): Promise<void> {
     const desktop = await AsyncUtil.getDesktop();
-    let notifyPanelCollapsed;
-    this.resolvePanelCollapsed_ = new Promise(resolve => {
+    let notifyPanelCollapsed: VoidFunction;
+    this.resolvePanelCollapsed_ = new Promise<void>(resolve => {
       notifyPanelCollapsed = resolve;
     });
-    const onFocus = event => {
-      if (event.target.docUrl &&
-          event.target.docUrl.includes('chromevox/panel')) {
+    const onFocus = (event: AutomationEvent): void => {
+      if (event.target!.docUrl &&
+          event.target!.docUrl.includes('chromevox/panel')) {
         return;
       }
 
-      desktop.removeEventListener(
-          chrome.automation.EventType.FOCUS, onFocus, true);
-      desktop.removeEventListener(
-          chrome.automation.EventType.BLUR, onBlur, true);
+      desktop.removeEventListener(EventType.FOCUS, onFocus, true);
+      desktop.removeEventListener(EventType.BLUR, onBlur, true);
 
       // Clears focus on the page by focusing the root explicitly. This makes
       // sure we don't get future focus events as a result of giving this
@@ -316,51 +287,39 @@ export class PanelBackground {
       notifyPanelCollapsed();
     };
 
-    const onBlur = event => {
+    const onBlur = (event: AutomationEvent): void => {
       if (!event.target.docUrl ||
           !event.target.docUrl.includes('chromevox/panel')) {
         return;
       }
 
-      desktop.removeEventListener(
-          chrome.automation.EventType.BLUR, onBlur, true);
-      desktop.removeEventListener(
-          chrome.automation.EventType.FOCUS, onFocus, true);
+      desktop.removeEventListener(EventType.BLUR, onBlur, true);
+      desktop.removeEventListener(EventType.FOCUS, onFocus, true);
 
       notifyPanelCollapsed();
     };
 
 
-    desktop.addEventListener(chrome.automation.EventType.BLUR, onBlur, true);
-    desktop.addEventListener(chrome.automation.EventType.FOCUS, onFocus, true);
+    desktop.addEventListener(EventType.BLUR, onBlur, true);
+    desktop.addEventListener(EventType.FOCUS, onFocus, true);
   }
 
-  /** @private */
-  saveCurrentNode_() {
+  private saveCurrentNode_(): void {
     if (ChromeVoxRange.current) {
       this.savedNode_ = ChromeVoxRange.current.start.node;
     }
   }
 
-  /**
-   * Wait for the promise to notify panel collapse to resolved.
-   * @private
-   */
-  async waitForPanelCollapse_() {
+  /** Wait for the promise to notify panel collapse to resolved. */
+  private async waitForPanelCollapse_(): Promise<void> {
     return this.resolvePanelCollapsed_;
   }
 }
 
-/** @type {PanelBackground} */
-PanelBackground.instance;
 
-/** @private {PanelRangeObserver} */
-PanelBackground.rangeObserver_;
-
-/** @implements {ChromeVoxRangeObserver} */
-class PanelRangeObserver {
-  /** @override */
-  onCurrentRangeChanged(range, opt_fromEditing) {
+class PanelRangeObserver implements ChromeVoxRangeObserver {
+  /** ChromeVoxRangeObserver implementation */
+  onCurrentRangeChanged(_range: CursorRange, _fromEditing?: boolean): void {
     PanelBridge.onCurrentRangeChanged();
   }
 }
