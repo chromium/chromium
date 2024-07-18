@@ -223,22 +223,6 @@ QuicTestPacketMaker::MakeCombinedRetransmissionPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeDatagramPacket(uint64_t packet_number,
-                                        std::string_view datagram) {
-  return Packet(packet_number).AddMessageFrame(datagram).Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeDatagramPacket(uint64_t packet_number,
-                                        std::vector<std::string> datagrams) {
-  auto& builder = Packet(packet_number);
-  for (auto& datagram : datagrams) {
-    builder.AddMessageFrame(datagram);
-  }
-  return builder.Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeAckAndDataPacket(uint64_t packet_number,
                                           quic::QuicStreamId stream_id,
                                           uint64_t largest_received,

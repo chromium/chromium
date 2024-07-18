@@ -38,8 +38,9 @@ class QuicSocketDataProviderTest : public TestWithTaskEnvironment {
 
   // Create a simple test packet.
   std::unique_ptr<quic::QuicReceivedPacket> TestPacket(uint64_t packet_number) {
-    return packet_maker_->MakeDatagramPacket(
-        packet_number, base::NumberToString(packet_number));
+    return packet_maker_->Packet(packet_number)
+        .AddMessageFrame(base::NumberToString(packet_number))
+        .Build();
   }
 
  protected:

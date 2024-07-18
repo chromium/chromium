@@ -413,7 +413,7 @@ QuicSessionPoolTestBase::ConstructClientH3DatagramPacket(
     std::unique_ptr<quic::QuicEncryptedPacket> inner) {
   std::string data = ConstructClientH3DatagramFrame(
       quarter_stream_id, context_id, std::move(inner));
-  return client_maker_.MakeDatagramPacket(packet_number, data);
+  return client_maker_.Packet(packet_number).AddMessageFrame(data).Build();
 }
 
 std::unique_ptr<quic::QuicEncryptedPacket>

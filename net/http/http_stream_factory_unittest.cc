@@ -2082,7 +2082,7 @@ class HttpStreamFactoryQuicTest
       uint64_t quarter_stream_id,
       uint64_t context_id,
       std::vector<std::unique_ptr<quic::QuicEncryptedPacket>> packets) {
-    std::vector<std::string> datagrams;
+    auto& builder = packet_maker.Packet(packet_number);
     for (auto& packet : packets) {
       std::string data;
       // Allow enough space for payload and two varint-62's.
@@ -2092,9 +2092,9 @@ class HttpStreamFactoryQuicTest
       CHECK(writer.WriteVarInt62(context_id));
       CHECK(writer.WriteBytes(packet->data(), packet->length()));
       data.resize(writer.length());
-      datagrams.push_back(std::move(data));
+      builder.AddMessageFrame(data);
     }
-    return packet_maker.MakeDatagramPacket(packet_number, datagrams);
+    return builder.Build();
   }
 
   // Make a `QuicTestPacketMaker` for the current test with the given
