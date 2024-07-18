@@ -18,13 +18,13 @@
 
 namespace ash {
 
-SplitViewDivider* snap_group_divider() {
+SplitViewDivider* GetTopmostSnapGroupDivider() {
   auto* top_snap_group = SnapGroupController::Get()->GetTopmostSnapGroup();
   return top_snap_group ? top_snap_group->snap_group_divider() : nullptr;
 }
 
-gfx::Rect snap_group_divider_bounds_in_screen() {
-  return snap_group_divider()->GetDividerBoundsInScreen(
+gfx::Rect GetTopmostSnapGroupDividerBoundsInScreen() {
+  return GetTopmostSnapGroupDivider()->GetDividerBoundsInScreen(
       /*is_dragging=*/false);
 }
 
@@ -75,16 +75,17 @@ void SnapTwoTestWindows(aura::Window* window1,
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(window1, window2));
 
   // The snap group divider will show on two windows snapped.
-  EXPECT_TRUE(snap_group_divider()->divider_widget());
+  EXPECT_TRUE(GetTopmostSnapGroupDivider()->divider_widget());
   // There can be a slight rounding error when ChromeVox is on.
   EXPECT_NEAR(chromeos::kDefaultSnapRatio,
               *WindowState::Get(window1)->snap_ratio(), .01);
   EXPECT_NEAR(chromeos::kDefaultSnapRatio,
               *WindowState::Get(window2)->snap_ratio(), .01);
 
-  gfx::Rect divider_bounds(snap_group_divider_bounds_in_screen());
+  gfx::Rect divider_bounds(GetTopmostSnapGroupDividerBoundsInScreen());
   EXPECT_EQ(work_area.CenterPoint().x(), divider_bounds.CenterPoint().x());
-  UnionBoundsEqualToWorkAreaBounds(window1, window2, snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(window1, window2,
+                                   GetTopmostSnapGroupDivider());
 
   if (horizontal) {
     primary_bounds.set_width(primary_bounds.width() -

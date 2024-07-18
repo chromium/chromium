@@ -19,10 +19,9 @@ namespace ash {
 
 class SplitViewDivider;
 
-// TODO(michelefan@): Rename the test APIs to `GetFoo()`.
-SplitViewDivider* snap_group_divider();
+SplitViewDivider* GetTopmostSnapGroupDivider();
 
-gfx::Rect snap_group_divider_bounds_in_screen();
+gfx::Rect GetTopmostSnapGroupDividerBoundsInScreen();
 
 void ClickOverviewItem(ui::test::EventGenerator* event_generator,
                        aura::Window* window);

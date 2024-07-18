@@ -65,7 +65,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   auto* event_generator = GetEventGenerator();
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true, event_generator);
 
-  auto* divider_widget = snap_group_divider()->divider_widget();
+  auto* divider_widget = GetTopmostSnapGroupDivider()->divider_widget();
   ASSERT_TRUE(divider_widget);
 
   // Verify the snap group divider UI components on default state.
@@ -76,7 +76,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   // Move the mouse to the position that is a off the center(divider handler
   // view).
   event_generator->MoveMouseTo(
-      snap_group_divider_bounds_in_screen().CenterPoint() +
+      GetTopmostSnapGroupDividerBoundsInScreen().CenterPoint() +
       gfx::Vector2d(0, 10));
 
   // Verify the snap group divider UI components on mouse hover.
@@ -102,7 +102,7 @@ TEST_F(SnapGroupPixelTest, PartialSplit) {
   auto* snap_group_controller = SnapGroupController::Get();
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
-  auto* divider_widget = snap_group_divider()->divider_widget();
+  auto* divider_widget = GetTopmostSnapGroupDivider()->divider_widget();
   ASSERT_TRUE(divider_widget);
 
   // Verify the snap group divider UI components on in 2/3 and 1/3 split screen
@@ -226,7 +226,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
   auto* event_generator = GetEventGenerator();
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/false, event_generator);
 
-  auto* divider_widget = snap_group_divider()->divider_widget();
+  auto* divider_widget = GetTopmostSnapGroupDivider()->divider_widget();
   ASSERT_TRUE(divider_widget);
 
   // Verify the snap group divider UI components on default state in portrait
@@ -238,7 +238,7 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
   // Move the mouse to the position that is a off the center(divider handler
   // view).
   event_generator->MoveMouseTo(
-      snap_group_divider_bounds_in_screen().CenterPoint() +
+      GetTopmostSnapGroupDividerBoundsInScreen().CenterPoint() +
       gfx::Vector2d(10, 0));
 
   // Verify the snap group divider UI components on mouse hover in portrait
