@@ -338,9 +338,8 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
-        assertEquals(
-                WARNING_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
-        assertTrue(mUpdateCheckPreference.isExpanded());
+        assertEquals(INFO_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertFalse(mUpdateCheckPreference.isExpanded());
     }
 
     @Test

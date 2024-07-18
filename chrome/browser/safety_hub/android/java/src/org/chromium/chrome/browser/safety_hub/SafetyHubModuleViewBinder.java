@@ -609,12 +609,12 @@ public class SafetyHubModuleViewBinder {
             case SafetyHubModuleProperties.ModuleOption.UPDATE_CHECK:
                 UpdateStatusProvider.UpdateStatus updateStatus =
                         model.get(SafetyHubModuleProperties.UPDATE_STATUS);
-                if (updateStatus == null) {
-                    return SafetyHubModuleProperties.ModuleState.UNAVAILABLE;
-                }
-                if (updateStatus.updateState == UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE
+                if (updateStatus == null
                         || updateStatus.updateState
                                 == UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION) {
+                    return SafetyHubModuleProperties.ModuleState.UNAVAILABLE;
+                }
+                if (updateStatus.updateState == UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE) {
                     return SafetyHubModuleProperties.ModuleState.WARNING;
                 }
                 return SafetyHubModuleProperties.ModuleState.SAFE;
