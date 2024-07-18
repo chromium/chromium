@@ -10090,6 +10090,7 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -16071,7 +16072,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.tangorpro.cc_unittests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

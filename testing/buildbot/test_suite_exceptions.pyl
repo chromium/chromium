@@ -1293,6 +1293,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter',
         ],
       },
+      'android-14-arm64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter',
+        ],
+      },
       'android-15-x64-fyi-rel': {
         # TODO(crbug.com/343210417) : Remove once fixed.
         'experiment_percentage': 100,
@@ -1305,7 +1310,7 @@
       },
       'android-tablet-14-arm64-fyi-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.tangorpro.cc_unittests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter',
         ],
       },
       'fuchsia-code-coverage': {
