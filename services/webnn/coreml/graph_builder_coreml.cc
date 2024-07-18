@@ -120,6 +120,7 @@ constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpConvTranspose2dTypeName[] = "conv_transpose";
 constexpr char kOpEluTypeName[] = "elu";
+constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpGatherTypeName[] = "gather_along_axis";
 constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
 constexpr char kOpInstanceNormalizationTypeName[] = "instance_norm";
@@ -756,6 +757,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForElu(*operation->get_elu(), block));
         break;
       }
+      case mojom::Operation::Tag::kExpand: {
+        RETURN_IF_ERROR(AddOperationForExpand(*operation->get_expand(), block));
+        break;
+      }
       case mojom::Operation::Tag::kGather: {
         RETURN_IF_ERROR(AddOperationForGather(*operation->get_gather(), block));
         break;
@@ -858,7 +863,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForWhere(*operation->get_where(), block));
         break;
       }
-      case mojom::Operation::Tag::kExpand:
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
@@ -1700,6 +1704,60 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForElu(
 
   SetInputWithValue(*op->mutable_inputs(), kOpParamAlpha,
                     CreateScalarImmediateValue<float>(operation.alpha));
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForExpand(
+    const mojom::Expand& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  // Emulated by reshaping to output shape, then tile.
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  const OperandInfo& output_operand_info =
+      GetOperandInfo(operation.output_operand_id);
+
+  uint64_t reshaped_input = operation.input_operand_id;
+  size_t input_rank = input_operand_info.dimensions.size();
+  size_t output_rank = output_operand_info.dimensions.size();
+  std::vector<uint32_t> reshaped_dimensions(output_rank, 1);
+  if (input_rank < output_rank) {
+    // According to broadcasting rules, right align the dimensions and fill
+    // beginning dimensions with ones.
+    for (size_t i = 0; i < input_rank; ++i) {
+      reshaped_dimensions[output_rank - i - 1] =
+          input_operand_info.dimensions[input_rank - i - 1];
+    }
+
+    ASSIGN_OR_RETURN(reshaped_input, GenerateInternalOperandInfo(
+                                         input_operand_info.mil_data_type,
+                                         reshaped_dimensions));
+    RETURN_IF_ERROR(AddOperationForReshape(operation.input_operand_id,
+                                           reshaped_input, block));
+  } else {
+    reshaped_dimensions = input_operand_info.dimensions;
+  }
+
+  // Dimension i of input will be replicated reps[i] times.
+  std::vector<int32_t> reps;
+  reps.reserve(output_rank);
+  for (size_t i = 0; i < output_rank; ++i) {
+    if (output_operand_info.dimensions[i] == reshaped_dimensions[i]) {
+      reps.push_back(1u);
+    } else {
+      CHECK_EQ(reshaped_dimensions[i], 1u);
+      reps.push_back(
+          base::checked_cast<int32_t>(output_operand_info.dimensions[i]));
+    }
+  }
+  ASSIGN_OR_RETURN(
+      CoreML::Specification::MILSpec::Operation * op,
+      CreateUnaryOperation(SupportedDataType::kFloatsAndInt32,
+                           kOpExpandTypeName, reshaped_input,
+                           operation.output_operand_id, block, ops::kExpand));
+  constexpr char kParamReps[] = "reps";
+
+  SetInputWithValue(*op->mutable_inputs(), kParamReps,
+                    Create1DTensorImmediateValue<int32_t>(reps));
   return base::ok();
 }
 
