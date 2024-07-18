@@ -7,6 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker.h"
 
 // A singleton that acts as a rendezvous for dialog observers to register and
 // the dialog managers/delegates to post their activities.
@@ -16,7 +17,7 @@ class DesktopMediaPickerManager {
   class DialogObserver : public base::CheckedObserver {
    public:
     // Called when a media dialog is opened/shown.
-    virtual void OnDialogOpened() = 0;
+    virtual void OnDialogOpened(const DesktopMediaPicker::Params&) = 0;
 
     // Called when a media dialog is closed/hidden.
     virtual void OnDialogClosed() = 0;
@@ -33,7 +34,7 @@ class DesktopMediaPickerManager {
   void RemoveObserver(DialogObserver* observer);
 
   // For the notifiers
-  void OnShowDialog();
+  void OnShowDialog(const DesktopMediaPicker::Params&);
   void OnHideDialog();
 
  private:

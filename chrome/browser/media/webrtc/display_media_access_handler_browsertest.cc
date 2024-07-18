@@ -54,7 +54,7 @@ class DisplayMediaAccessHandlerTest
   }
 
   // DesktopMediaPickerManager::DialogObserver implementation:
-  void OnDialogOpened() override {
+  void OnDialogOpened(const DesktopMediaPicker::Params&) override {
     dialog_opened_ = true;
     if (run_loop_) {
       run_loop_->Quit();

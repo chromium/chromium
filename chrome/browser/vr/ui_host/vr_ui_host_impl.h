@@ -80,7 +80,7 @@ class VRUiHostImpl : public content::VrUiHost,
 
   // DesktopMediaPickerManager::DialogObserver
   // These are dialogs displayed in response to getDisplayMedia()
-  void OnDialogOpened() override;
+  void OnDialogOpened(const DesktopMediaPicker::Params&) override;
   void OnDialogClosed() override;
 
   void ShowExternalNotificationPrompt();

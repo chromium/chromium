@@ -24,9 +24,11 @@ void DesktopMediaPickerManager::RemoveObserver(DialogObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void DesktopMediaPickerManager::OnShowDialog() {
-  for (auto& observer : observers_)
-    observer.OnDialogOpened();
+void DesktopMediaPickerManager::OnShowDialog(
+    const DesktopMediaPicker::Params& params) {
+  for (auto& observer : observers_) {
+    observer.OnDialogOpened(params);
+  }
 }
 
 void DesktopMediaPickerManager::OnHideDialog() {

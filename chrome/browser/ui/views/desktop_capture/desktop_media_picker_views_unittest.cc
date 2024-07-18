@@ -59,7 +59,9 @@ class TestDialogObserver : public DesktopMediaPickerManager::DialogObserver {
   }
 
  private:
-  void OnDialogOpened() override { opened_ = true; }
+  void OnDialogOpened(const DesktopMediaPicker::Params&) override {
+    opened_ = true;
+  }
   void OnDialogClosed() override { closed_ = true; }
 
   bool opened_ = false;

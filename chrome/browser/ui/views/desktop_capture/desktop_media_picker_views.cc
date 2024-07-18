@@ -1171,7 +1171,7 @@ void DesktopMediaPickerViews::Show(
     const DesktopMediaPicker::Params& params,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
     DoneCallback done_callback) {
-  DesktopMediaPickerManager::Get()->OnShowDialog();
+  DesktopMediaPickerManager::Get()->OnShowDialog(params);
 
   request_source_ = params.request_source;
   callback_ = std::move(done_callback);

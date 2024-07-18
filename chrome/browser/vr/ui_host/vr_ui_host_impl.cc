@@ -207,7 +207,7 @@ void VRUiHostImpl::OnPromptRemoved() {
   RemoveHeadsetNotificationPrompt();
 }
 
-void VRUiHostImpl::OnDialogOpened() {
+void VRUiHostImpl::OnDialogOpened(const DesktopMediaPicker::Params&) {
   ShowExternalNotificationPrompt();
 }
 

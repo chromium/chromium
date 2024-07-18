@@ -367,7 +367,7 @@ void ShareThisTabDialogViews::Show(
   CHECK(!callback_);
   CHECK(!dialog_);
 
-  DesktopMediaPickerManager::Get()->OnShowDialog();
+  DesktopMediaPickerManager::Get()->OnShowDialog(params);
   callback_ = std::move(done_callback);
   dialog_ = new ShareThisTabDialogView(params, this);
 }
