@@ -7559,6 +7559,11 @@ crbug.com/346387874 [ Win11 ] fast/backgrounds/size/contain-and-cover.html [ Fai
 # Gardener 2024-06-12
 crbug.com/346706682 http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 
+# Temporarily skipped to land crrev.com/c/5718130
+crbug.com/349554230 http/tests/devtools/animation/animation-group-matching-animations.js [ Failure Skip ]
+crbug.com/349554230 http/tests/devtools/animation/animation-group-matching-transitions.js [ Failure Skip ]
+crbug.com/349554230 http/tests/devtools/animation/animation-group-matching.js [ Failure Skip ]
+
 crbug.com/40899458 [ Mac14 ] fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
 
 crbug.com/342438266 external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
