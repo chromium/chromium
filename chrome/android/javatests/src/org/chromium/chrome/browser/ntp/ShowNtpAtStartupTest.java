@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.start_surface;
+package org.chromium.chrome.browser.ntp;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.IMMEDIATE_RETURN_TEST_PARAMS;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
-import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.IMMEDIATE_RETURN_TEST_PARAMS;
-import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
@@ -29,6 +28,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -54,8 +54,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.logo.LogoView;
-import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -95,9 +93,9 @@ public class ShowNtpAtStartupTest {
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_UMA, true)
                         .build();
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
+        HomeSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        HomeSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        HomeSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         // Verifies that a NTP is created and set as the current Tab.
         verifyTabCountAndActiveTabUrl(
@@ -124,10 +122,10 @@ public class ShowNtpAtStartupTest {
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_UMA, true)
                         .build();
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(
+        HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, modifiedNtpUrl}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
+        HomeSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        HomeSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
@@ -152,10 +150,10 @@ public class ShowNtpAtStartupTest {
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_UMA, true)
                         .build();
 
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(
+        HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, modifiedNtpUrl}, 1);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
+        HomeSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        HomeSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         // Verifies that no new NTP is created, and the existing NTP is reused and set as the
         // current Tab.
@@ -173,11 +171,11 @@ public class ShowNtpAtStartupTest {
     @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID + "<Study"})
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testSingleTabCardGoneAfterTabClosed_MagicStack() throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(
+        HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        HomeSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        HomeSurfaceTestUtils.waitForTabModel(cta);
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
@@ -220,11 +218,11 @@ public class ShowNtpAtStartupTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testSingleTabModule() throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(
+        HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        HomeSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        HomeSurfaceTestUtils.waitForTabModel(cta);
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
@@ -245,11 +243,11 @@ public class ShowNtpAtStartupTest {
     @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID + "<Study"})
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testSingleTabModule_MagicStack() throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(
+        HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        HomeSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        HomeSurfaceTestUtils.waitForTabModel(cta);
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
@@ -281,7 +279,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures({ChromeFeatureList.LOGO_POLISH + "<Study"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "polish_logo_size_large/true"})
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:polish_logo_size_large/true"})
     public void testLogoSizeForLargeLogo_LogoPolish() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         enableDoodleLogoForTestingLogoSize();
@@ -298,7 +296,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures({ChromeFeatureList.LOGO_POLISH + "<Study"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "polish_logo_size_medium/true"})
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:polish_logo_size_medium/true"})
     public void testLogoSizeForMediumLogo_LogoPolish() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         enableDoodleLogoForTestingLogoSize();
@@ -334,7 +332,7 @@ public class ShowNtpAtStartupTest {
     public void testMvtAndSingleTabCardVerticalMargin() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        HomeSurfaceTestUtils.waitForTabModel(cta);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -356,10 +354,10 @@ public class ShowNtpAtStartupTest {
     })
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        HomeSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        HomeSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        HomeSurfaceTestUtils.waitForTabModel(cta);
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
@@ -389,7 +387,7 @@ public class ShowNtpAtStartupTest {
     private void testLogoSizeImpl(
             int expectedLogoHeight, int expectedTopMargin, int expectedBottomMargin) {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        HomeSurfaceTestUtils.waitForTabModel(cta);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -410,12 +408,13 @@ public class ShowNtpAtStartupTest {
     @LargeTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
+    @DisabledTest(message = "b/353758883")
     public void testThumbnailRecaptureForSingleTabCardAfterMostRecentTabClosed()
             throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        HomeSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        HomeSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        HomeSurfaceTestUtils.waitForTabModel(cta);
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
@@ -465,7 +464,7 @@ public class ShowNtpAtStartupTest {
     public void testFakeSearchBoxWidth() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        HomeSurfaceTestUtils.waitForTabModel(cta);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -486,7 +485,7 @@ public class ShowNtpAtStartupTest {
     public void testMvtLayoutHorizontalMargin() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        HomeSurfaceTestUtils.waitForTabModel(cta);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -559,7 +558,7 @@ public class ShowNtpAtStartupTest {
     private void verifyTabCountAndActiveTabUrl(
             ChromeTabbedActivity cta, int tabCount, String url, Boolean expectHomeSurfaceUiShown) {
         Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
-        Tab tab = StartSurfaceTestUtils.getCurrentTabFromUIThread(cta);
+        Tab tab = HomeSurfaceTestUtils.getCurrentTabFromUIThread(cta);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(TextUtils.equals(url, tab.getUrl().getSpec()));

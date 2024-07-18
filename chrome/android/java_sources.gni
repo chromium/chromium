@@ -6,8 +6,6 @@ import("//build/config/android/config.gni")
 import("//chrome/android/chrome_java_sources.gni")
 import("//chrome/android/chrome_junit_test_java_sources.gni")
 import("//chrome/android/chrome_test_java_sources.gni")
-import(
-    "//chrome/android/features/start_surface/javatests/start_surface_test_java_sources.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
 import(
@@ -31,7 +29,6 @@ if (enable_offline_pages_harness) {
 
 chrome_junit_test_java_sources += feed_junit_test_java_sources
 chrome_test_java_sources += feed_test_java_sources
-chrome_test_java_sources += start_surface_test_java_sources
 chrome_test_java_sources += tab_groups_test_java_sources
 chrome_junit_test_java_sources += tab_management_junit_java_sources
 chrome_junit_test_java_sources += price_tracking_junit_test_java_sources

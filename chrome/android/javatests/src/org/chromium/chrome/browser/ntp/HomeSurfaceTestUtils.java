@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.start_surface;
+package org.chromium.chrome.browser.ntp;
 
 import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
 
@@ -39,11 +39,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/** Utility methods and classes for testing Start Surface. */
-public class StartSurfaceTestUtils {
-    public static final String START_SURFACE_TEST_BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:";
-
+/** Utility methods and classes for testing home Surface. */
+public class HomeSurfaceTestUtils {
     public static final String IMMEDIATE_RETURN_TEST_PARAMS =
             "force-fieldtrial-params=Study.Group:"
                     + ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS_PARAM
