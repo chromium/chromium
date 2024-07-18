@@ -38,6 +38,11 @@
 // 2016-06-30 - Changed matchlen() input; changed search() to return struct.
 //                --Samuel Huang <huangs@chromium.org>
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.

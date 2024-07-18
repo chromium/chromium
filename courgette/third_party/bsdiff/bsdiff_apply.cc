@@ -31,6 +31,11 @@
 // 2013-04-10 - Add wrapper method to apply a patch to files directly.
 //                --Joshua Pawlicki <waffles@chromium.org>
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.

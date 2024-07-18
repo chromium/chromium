@@ -25,6 +25,11 @@
 // 2016-07-22 - Initial commit and adaption to use PagedArray.
 //                --Samuel Huang <huangs@chromium.org>
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "courgette/third_party/divsufsort/divsufsort_private.h"
 
 #define TR_INSERTIONSORT_THRESHOLD (8)

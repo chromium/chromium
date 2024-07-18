@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // 'courgette_minimal_tool' is not meant to be a serious command-line tool.  It
 // has the minimum logic to apply a Courgette patch to a file.  The main purpose
 // is to monitor the code size of the patcher.
