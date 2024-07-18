@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -53,6 +54,15 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
+namespace {
+String MaybeRemoveCSSImportant(String string) {
+  const StringView kImportantSuffix(" !important");
+  return string.EndsWith(kImportantSuffix)
+             ? string.Substring(0, string.length() - kImportantSuffix.length())
+             : string;
+}
+}  // namespace
 
 namespace blink {
 
@@ -324,14 +334,27 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
       // Rules below override rules from html.css and other UA sheets regardless
       // of specificity. See comment in StyleResolver::MatchUARules().
       StringBuilder builder;
-      builder.Append("video::-webkit-media-text-track-display { ");
-      AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
-                                settings->GetTextTrackWindowColor());
-      AddTextTrackCSSProperties(&builder, CSSPropertyID::kBorderRadius,
-                                settings->GetTextTrackWindowRadius());
-      builder.Append(" } video::cue { ");
-      AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
-                                settings->GetTextTrackBackgroundColor());
+      Color color;
+      // Use the text track window color if it is set and non-transparent,
+      // otherwise use the background color. This is only applicable to caption
+      // settings on MacOS, which allows users to specify a window color in
+      // addition to a background color. The WebVTT spec does not have a concept
+      // of a window background, so this workaround allows the default caption
+      // styles on MacOS to render as expected.
+      builder.Append("video::cue { ");
+      if (CSSParser::ParseColor(
+              color,
+              MaybeRemoveCSSImportant(settings->GetTextTrackWindowColor()),
+              /*strict=*/true) &&
+          color.Alpha() > 0) {
+        AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
+                                  settings->GetTextTrackWindowColor());
+        AddTextTrackCSSProperties(&builder, CSSPropertyID::kBorderRadius,
+                                  settings->GetTextTrackWindowRadius());
+      } else {
+        AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
+                                  settings->GetTextTrackBackgroundColor());
+      }
       AddTextTrackCSSProperties(&builder, CSSPropertyID::kFontFamily,
                                 settings->GetTextTrackFontFamily());
       AddTextTrackCSSProperties(&builder, CSSPropertyID::kFontStyle,
