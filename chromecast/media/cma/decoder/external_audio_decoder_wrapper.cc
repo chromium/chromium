@@ -140,6 +140,7 @@ class ExternalAudioDecoderWrapper::DecodedBuffer : public DecoderBufferBase {
   size_t data_size() const override { return size_; }
   const CastDecryptConfig* decrypt_config() const override { return nullptr; }
   bool end_of_stream() const override { return false; }
+  bool is_key_frame() const override { return false; }
 
  private:
   ~DecodedBuffer() override = default;

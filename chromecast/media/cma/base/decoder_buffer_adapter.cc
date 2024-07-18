@@ -32,13 +32,12 @@ EncryptionScheme ToEncryptionScheme(::media::EncryptionScheme scheme) {
 
 DecoderBufferAdapter::DecoderBufferAdapter(
     const scoped_refptr<::media::DecoderBuffer>& buffer)
-    : DecoderBufferAdapter(kPrimary, buffer) {
-}
+    : DecoderBufferAdapter(kPrimary, buffer) {}
 
 DecoderBufferAdapter::DecoderBufferAdapter(
-    StreamId stream_id, const scoped_refptr<::media::DecoderBuffer>& buffer)
-    : stream_id_(stream_id),
-      buffer_(buffer) {
+    StreamId stream_id,
+    const scoped_refptr<::media::DecoderBuffer>& buffer)
+    : stream_id_(stream_id), buffer_(buffer) {
   DCHECK(buffer_);
 
   const ::media::DecryptConfig* decrypt_config =
@@ -69,8 +68,7 @@ DecoderBufferAdapter::DecoderBufferAdapter(
   }
 }
 
-DecoderBufferAdapter::~DecoderBufferAdapter() {
-}
+DecoderBufferAdapter::~DecoderBufferAdapter() {}
 
 StreamId DecoderBufferAdapter::stream_id() const {
   return stream_id_;
@@ -102,6 +100,10 @@ const CastDecryptConfig* DecoderBufferAdapter::decrypt_config() const {
 
 bool DecoderBufferAdapter::end_of_stream() const {
   return buffer_->end_of_stream();
+}
+
+bool DecoderBufferAdapter::is_key_frame() const {
+  return buffer_->is_key_frame();
 }
 
 }  // namespace media

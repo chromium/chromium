@@ -68,5 +68,9 @@ bool CastDecoderBufferImpl::end_of_stream() const {
   return data_ == nullptr;
 }
 
+bool CastDecoderBufferImpl::is_key_frame() const {
+  return false;
+}
+
 }  // namespace media
 }  // namespace chromecast

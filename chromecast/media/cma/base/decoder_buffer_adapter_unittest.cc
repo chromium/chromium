@@ -176,6 +176,17 @@ TEST(DecoderBufferAdapterTest, SetsEncryptionSchemeOfCbcsDecryptConfig) {
             EncryptionScheme::kAesCbc);
 }
 
+TEST(DecoderBufferAdapterTest, HandlesIsKeyFrame) {
+  scoped_refptr<::media::DecoderBuffer> buffer = MakeDecoderBuffer();
+  auto buffer_adapter = base::MakeRefCounted<DecoderBufferAdapter>(buffer);
+
+  buffer->set_is_key_frame(true);
+  EXPECT_TRUE(buffer_adapter->is_key_frame());
+
+  buffer->set_is_key_frame(false);
+  EXPECT_FALSE(buffer_adapter->is_key_frame());
+}
+
 }  // namespace
 }  // namespace media
 }  // namespace chromecast

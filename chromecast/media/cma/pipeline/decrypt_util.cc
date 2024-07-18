@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <string>
 
 #include "base/functional/bind.h"
@@ -29,8 +30,7 @@ void OnBufferDecrypted(scoped_refptr<DecoderBufferBase> buffer,
 DecoderBufferClear::DecoderBufferClear(scoped_refptr<DecoderBufferBase> buffer)
     : buffer_(buffer) {}
 
-DecoderBufferClear::~DecoderBufferClear() {
-}
+DecoderBufferClear::~DecoderBufferClear() {}
 
 StreamId DecoderBufferClear::stream_id() const {
   return buffer_->stream_id();
@@ -63,6 +63,10 @@ const CastDecryptConfig* DecoderBufferClear::decrypt_config() const {
 
 bool DecoderBufferClear::end_of_stream() const {
   return buffer_->end_of_stream();
+}
+
+bool DecoderBufferClear::is_key_frame() const {
+  return buffer_->is_key_frame();
 }
 
 void DecryptDecoderBuffer(scoped_refptr<DecoderBufferBase> buffer,

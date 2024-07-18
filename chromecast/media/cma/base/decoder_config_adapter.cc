@@ -233,8 +233,9 @@ AudioConfig DecoderConfigAdapter::ToCastAudioConfig(
     StreamId id,
     const ::media::AudioDecoderConfig& config) {
   AudioConfig audio_config;
-  if (!config.IsValidConfig())
+  if (!config.IsValidConfig()) {
     return audio_config;
+  }
 
   audio_config.id = id;
   audio_config.codec = ToAudioCodec(config.codec());
@@ -250,8 +251,9 @@ AudioConfig DecoderConfigAdapter::ToCastAudioConfig(
 #if BUILDFLAG(IS_ANDROID)
   // On Android, Chromium's mp4 parser adds extra data for AAC, but we don't
   // need this with CMA.
-  if (audio_config.codec == kCodecAAC)
+  if (audio_config.codec == kCodecAAC) {
     audio_config.extra_data.clear();
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return audio_config;
@@ -341,9 +343,10 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
   video_config.id = id;
   video_config.codec = ToCastVideoCodec(config.codec(), config.profile());
   video_config.profile = ToCastVideoProfile(config.profile());
+  video_config.codec_profile_level = config.level();
   video_config.extra_data = config.extra_data();
-  video_config.encryption_scheme = ToEncryptionScheme(
-      config.encryption_scheme());
+  video_config.encryption_scheme =
+      ToEncryptionScheme(config.encryption_scheme());
 
   video_config.primaries =
       static_cast<PrimaryID>(config.color_space_info().primaries);

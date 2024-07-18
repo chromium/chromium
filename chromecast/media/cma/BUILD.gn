@@ -53,6 +53,7 @@ cast_source_set("unittests") {
     "base/buffering_controller_unittest.cc",
     "base/buffering_frame_provider_unittest.cc",
     "base/decoder_buffer_adapter_unittest.cc",
+    "base/decoder_config_adapter_unittest.cc",
     "base/demuxer_stream_adapter_unittest.cc",
     "base/demuxer_stream_for_test.cc",
     "base/demuxer_stream_for_test.h",

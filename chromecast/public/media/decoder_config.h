@@ -6,6 +6,7 @@
 #define CHROMECAST_PUBLIC_MEDIA_DECODER_CONFIG_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "cast_decrypt_config.h"
@@ -357,6 +358,8 @@ struct VideoConfig {
   VideoCodec codec = VideoCodec::kVideoCodecUnknown;
   // Video codec profile.
   VideoProfile profile = VideoProfile::kVideoProfileUnknown;
+  // Video codec level.
+  uint32_t codec_profile_level = 0;
   // Additional video config for the video stream if available. Consumers of
   // this structure should make an explicit copy of |additional_config| if it
   // will be used after SetConfig() finishes.

@@ -31,6 +31,7 @@ class CastDecoderBufferImpl : public DecoderBufferBase {
   size_t data_size() const override;
   const CastDecryptConfig* decrypt_config() const override;
   bool end_of_stream() const override;
+  bool is_key_frame() const override;
 
  private:
   // This constructor is used by CreateEOSBuffer.
