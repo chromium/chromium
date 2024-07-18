@@ -251,6 +251,21 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormData_IdAndNames) {
   EXPECT_EQ(form_data.fields()[0].name_attribute(), u"input-name");
 }
 
+// Tests that form extraction measures how long label extraction took.
+TEST_F(FormAutofillUtilsTest,
+       ExtractFormDataMeasuresDurationOfLabelExtraction) {
+  base::HistogramTester histogram_tester;
+  LoadHTML(R"(
+    <form id=form-id>
+      <input type=text>
+    </form>
+  )");
+  FormData form_data =
+      *ExtractFormData(GetFormElementById(GetDocument(), "form-id"));
+  histogram_tester.ExpectTotalCount(
+      "Autofill.TimingPrecise.InferLabelForElement", 1);
+}
+
 // Tests that large option values/contents are truncated while building the
 // FormData.
 TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {

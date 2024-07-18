@@ -25,6 +25,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
@@ -2027,21 +2028,25 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   DCHECK_EQ(control_elements.size(), fields_extracted.size());
   DCHECK_EQ(fields.size(),
             base::as_unsigned(base::ranges::count(fields_extracted, true)));
-  for (size_t element_index = 0, field_index = 0;
-       element_index < control_elements.size(); ++element_index) {
-    if (!fields_extracted[element_index]) {
-      continue;
-    }
-    const WebFormControlElement& control_element =
-        control_elements[element_index];
-    FormFieldData& field = fields[field_index++];
-    if (field.label().empty()) {
-      if (auto label = InferLabelForElement(control_element)) {
-        field.set_label(std::move(label->label));
-        field.set_label_source(label->source);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+        "Autofill.TimingPrecise.InferLabelForElement");
+    for (size_t element_index = 0, field_index = 0;
+         element_index < control_elements.size(); ++element_index) {
+      if (!fields_extracted[element_index]) {
+        continue;
       }
+      const WebFormControlElement& control_element =
+          control_elements[element_index];
+      FormFieldData& field = fields[field_index++];
+      if (field.label().empty()) {
+        if (auto label = InferLabelForElement(control_element)) {
+          field.set_label(std::move(label->label));
+          field.set_label_source(label->source);
+        }
+      }
+      field.set_label(std::move(field.label()).substr(0, kMaxStringLength));
     }
-    field.set_label(std::move(field.label()).substr(0, kMaxStringLength));
   }
 
   // Extracts the frame tokens of |iframe_elements|.

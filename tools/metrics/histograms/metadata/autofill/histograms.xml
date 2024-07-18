@@ -5798,11 +5798,18 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records the number of microseconds passed between the start and end of
-    {Callee}. This is effectively the aggregation of
-    Autofill.TimingPrecise.{Callee}.*. The metric is recorded on all platforms
-    except for iOS and is only recorded for clients with high-resolution clocks.
+    {Callee}. Where a more detailed breakdown exists, this metric is effectively
+    the aggregation of Autofill.TimingPrecise.{Callee}.*. The metric is recorded
+    on all platforms except for iOS and is only recorded for clients with
+    high-resolution clocks.
   </summary>
-  <token key="Callee" variants="Autofill.TimingPrecise.Callee"/>
+  <token key="Callee">
+    <variant name="ExtractFormData"/>
+    <variant name="InferLabelForElement"
+        summary="Time for all InferLabelForElement calls for the fields of a
+                 form."/>
+    <variant name="UpdateFormCache"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.TimingPrecise.{Callee}.{Caller}" units="microseconds"
