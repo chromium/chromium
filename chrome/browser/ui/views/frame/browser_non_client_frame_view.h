@@ -158,6 +158,9 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   virtual void PaintThemedFrame(gfx::Canvas* canvas) {}
 #endif
 
+  // Sets the bounds of `frame_`.
+  virtual void SetFrameBounds(const gfx::Rect& bounds);
+
  protected:
   // Called when |frame_|'s "paint as active" state has changed.
   virtual void PaintAsActiveChanged();

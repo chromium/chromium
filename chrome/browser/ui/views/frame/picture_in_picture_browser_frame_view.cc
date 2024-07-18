@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/frame/browser_frame_bounds_change_animation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/buildflags/buildflags.h"
+#include "media/base/media_switches.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -35,6 +37,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -915,6 +918,18 @@ SkRRect PictureInPictureBrowserFrameView::GetRestoredClipRegion() const {
   return clip;
 }
 #endif
+
+void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
+  if (!base::FeatureList::IsEnabled(
+          media::kDocumentPictureInPictureAnimateResize) ||
+      !gfx::Animation::ShouldRenderRichAnimation()) {
+    BrowserNonClientFrameView::SetFrameBounds(bounds);
+    return;
+  }
+  bounds_change_animation_ =
+      std::make_unique<BrowserFrameBoundsChangeAnimation>(*frame(), bounds);
+  bounds_change_animation_->Start();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // ChromeLocationBarModelDelegate implementations:

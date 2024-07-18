@@ -5384,6 +5384,8 @@ static_library("ui") {
       "views/frame/app_menu_button_observer.h",
       "views/frame/browser_frame.cc",
       "views/frame/browser_frame.h",
+      "views/frame/browser_frame_bounds_change_animation.cc",
+      "views/frame/browser_frame_bounds_change_animation.h",
       "views/frame/browser_non_client_frame_view.cc",
       "views/frame/browser_non_client_frame_view.h",
       "views/frame/browser_root_view.cc",

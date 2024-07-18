@@ -9809,6 +9809,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVideoPictureInPictureMinimizeButtonDescription,
      kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kVideoPictureInPictureMinimizeButton)},
+
+    {"document-picture-in-picture-animate-resize",
+     flag_descriptions::kDocumentPictureInPictureAnimateResizeName,
+     flag_descriptions::kDocumentPictureInPictureAnimateResizeDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kDocumentPictureInPictureAnimateResize)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 

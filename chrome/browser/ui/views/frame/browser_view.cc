@@ -1366,7 +1366,14 @@ void BrowserView::SetBounds(const gfx::Rect& bounds) {
   }
 
   ExitFullscreen();
-  frame_->SetBounds(bounds);
+
+  // If the BrowserNonClientFrameView has been created, give it a chance to
+  // handle the BrowserFrame's bounds change.
+  if (frame_->GetFrameView()) {
+    frame_->GetFrameView()->SetFrameBounds(bounds);
+  } else {
+    frame_->SetBounds(bounds);
+  }
 }
 
 void BrowserView::Close() {

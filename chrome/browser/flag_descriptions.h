@@ -659,6 +659,13 @@ extern const char kDeviceForceScheduledRebootDescription[];
 extern const char kDevicePostureName[];
 extern const char kDevicePostureDescription[];
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+extern const char kDocumentPictureInPictureAnimateResizeName[];
+extern const char kDocumentPictureInPictureAnimateResizeDescription[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 extern const char kEnableTLS13EarlyDataName[];
 extern const char kEnableTLS13EarlyDataDescription[];
 

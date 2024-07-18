@@ -2154,6 +2154,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "document-picture-in-picture-animate-resize",
+    "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "double-buffer-compositing",
     "owners": [ "hob@chromium.org", "chromeos-gfx@google.com" ],
     "expiry_milestone": 100

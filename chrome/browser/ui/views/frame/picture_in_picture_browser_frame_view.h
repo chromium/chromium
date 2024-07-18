@@ -47,6 +47,8 @@
 #include "ui/aura/window_observer.h"
 #endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
+class BrowserFrameBoundsChangeAnimation;
+
 namespace views {
 class FrameBackground;
 class Label;
@@ -106,6 +108,7 @@ class PictureInPictureBrowserFrameView
   gfx::Insets GetInputInsets() const override;
   SkRRect GetRestoredClipRegion() const override;
 #endif
+  void SetFrameBounds(const gfx::Rect& bounds) override;
 
   // ChromeLocationBarModelDelegate:
   content::WebContents* GetActiveWebContents() const override;
@@ -383,6 +386,10 @@ class PictureInPictureBrowserFrameView
 
   // If non-null, this displays the allow / block setting overlay for autopip.
   raw_ptr<AutoPipSettingOverlayView> auto_pip_setting_overlay_ = nullptr;
+
+  // Animates programmatic changes to bounds (e.g. via `resizeTo()` or
+  // `resizeBy()` calls).
+  std::unique_ptr<BrowserFrameBoundsChangeAnimation> bounds_change_animation_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_

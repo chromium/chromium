@@ -218,6 +218,10 @@ int BrowserNonClientFrameView::GetTranslucentTopAreaHeight() const {
   return 0;
 }
 
+void BrowserNonClientFrameView::SetFrameBounds(const gfx::Rect& bounds) {
+  frame_->SetBounds(bounds);
+}
+
 void BrowserNonClientFrameView::PaintAsActiveChanged() {
   // Changing the activation state may change the visible frame color.
   SchedulePaint();

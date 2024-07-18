@@ -648,6 +648,11 @@ BASE_FEATURE(kDeferAudioFocusUntilAudible,
 #endif
 );
 
+// Adds an animation to document picture-in-picture resizes.
+BASE_FEATURE(kDocumentPictureInPictureAnimateResize,
+             "DocumentPictureInPictureAnimateResize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows document picture-in-picture pages to request capture.
 BASE_FEATURE(kDocumentPictureInPictureCapture,
              "DocumentPictureInPictureCapture",

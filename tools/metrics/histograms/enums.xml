@@ -18649,6 +18649,8 @@ from previous Chrome versions.
   <int value="-920794084" label="PickerFlip:disabled"/>
   <int value="-920483976" label="AccessCodeCastRememberDevices:disabled"/>
   <int value="-920404312" label="ArcXdgMode:disabled"/>
+  <int value="-920284092"
+      label="DocumentPictureInPictureAnimateResize:enabled"/>
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>
   <int value="-920001827" label="NearbySharingSelfShareAutoAccept:disabled"/>
   <int value="-919300982" label="ArcSwitchToKeyMintOnT:disabled"/>
@@ -20468,6 +20470,8 @@ from previous Chrome versions.
   <int value="-146315671" label="PrivacyAdvisor:enabled"/>
   <int value="-146032762"
       label="CrOSLateBootAudioOffloadCrasDSPToSOF:disabled"/>
+  <int value="-145804373"
+      label="DocumentPictureInPictureAnimateResize:disabled"/>
   <int value="-145418947" label="webview-disable-package-allowlist-throttling"/>
   <int value="-145345223" label="ThirdPartyStoragePartitioning:enabled"/>
   <int value="-144134779" label="AndroidPayIntegrationV2:disabled"/>
