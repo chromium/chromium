@@ -2496,6 +2496,31 @@ TEST_F(CookieMonsterTest, DeleteExpiredPartitionedCookiesAfterTimeElapsed) {
   EXPECT_EQ("__Host-A", cookies[0].Name());
 }
 
+// This test is for verifying the fix of https://crbug.com/353034832.
+TEST_F(CookieMonsterTest, ExpireSinglePartitionedCookie) {
+  auto cm = std::make_unique<CookieMonster>(
+      /*store=*/nullptr, net::NetLog::Get());
+  auto cookie_partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"));
+
+  // Set a cookie with a Max-Age. Since we only parse integers for this
+  // attribute, 1 second is the minimum allowable time.
+  ASSERT_TRUE(SetCookie(cm.get(), https_www_bar_.url(),
+                        "__Host-A=1; secure; path=/; partitioned; max-age=1",
+                        cookie_partition_key));
+  CookieList cookies =
+      GetAllCookiesForURL(cm.get(), https_www_bar_.url(),
+                          CookiePartitionKeyCollection(cookie_partition_key));
+  ASSERT_EQ(1u, cookies.size());
+
+  // Sleep for entire Max-Age of the cookie.
+  base::PlatformThread::Sleep(base::Seconds(1));
+
+  cookies = GetAllCookiesForURL(cm.get(), https_www_bar_.url(),
+                                CookiePartitionKeyCollection::ContainsAll());
+  EXPECT_EQ(0u, cookies.size());
+}
+
 TEST_F(CookieMonsterTest, DeleteExpiredAfterTimeElapsed_GetAllCookies) {
   auto cm = std::make_unique<CookieMonster>(
       /*store=*/nullptr, net::NetLog::Get());

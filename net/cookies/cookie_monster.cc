@@ -737,9 +737,17 @@ void CookieMonster::GetCookieListWithOptions(
 
     if (!cookie_partition_key_collection.IsEmpty()) {
       if (cookie_partition_key_collection.ContainsAllKeys()) {
-        for (const auto& it : partitioned_cookies_) {
+        for (PartitionedCookieMap::iterator partition_it =
+                 partitioned_cookies_.begin();
+             partition_it != partitioned_cookies_.end();) {
+          // InternalDeletePartitionedCookie may invalidate |partition_it| if
+          // that cookie partition only has one cookie and it expires.
+          auto cur_partition_it = partition_it;
+          ++partition_it;
+
           std::vector<CanonicalCookie*> partitioned_cookie_ptrs =
-              FindPartitionedCookiesForRegistryControlledHost(it.first, url);
+              FindPartitionedCookiesForRegistryControlledHost(
+                  cur_partition_it->first, url);
           cookie_ptrs.insert(cookie_ptrs.end(), partitioned_cookie_ptrs.begin(),
                              partitioned_cookie_ptrs.end());
         }
