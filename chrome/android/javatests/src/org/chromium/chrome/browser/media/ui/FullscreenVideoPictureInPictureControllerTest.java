@@ -139,9 +139,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
-            message = "https://crbug.com/339501283")
+    @DisabledTest(message = "b/354013006")
     public void testExitOnCloseTab() throws Throwable {
         // We want 2 Tabs so we can close the first without any special behaviour.
         mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(TEST_PATH));
