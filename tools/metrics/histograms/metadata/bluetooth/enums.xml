@@ -652,6 +652,7 @@ chromium-metrics-reviews@google.com.
   <int value="1254514264"
       label="PocketLab; f000aa05-0452-4000-b000-000000000000"/>
   <int value="1254532025" label="user_control_point"/>
+  <int value="1263339895" label="iRobot; 0c228c94-2528-4493-add5-e06ec28eafc3"/>
   <int value="1266038031" label="1266038031 (Unknown; not a 16bit UUID)"/>
   <int value="1288236137" label="hid_control_point"/>
   <int value="1293962119"
@@ -719,6 +720,7 @@ chromium-metrics-reviews@google.com.
   <int value="1501299347"
       label="nRF candy machine; a6c31338-6c07-453e-961a-d8a8a41bf368"/>
   <int value="1502604093" label="serial_number_string"/>
+  <int value="1508496228" label="iRobot; 0c228c94-2528-4493-add5-e06ec28eafc2"/>
   <int value="1511396316" label="ln_control_point"/>
   <int value="1511953014"
       label="Eddystone Config Capabilities;
