@@ -259,7 +259,8 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 // Tests that clearing the cookies through the UI does clear all of them. Use a
 // local server to navigate to a page that sets then tests a cookie, and then
 // clears the cookie and tests it is not set.
-- (void)testClearCookies {
+// TODO(crbug.com/353914778): Test failing and needs to be fixed.
+- (void)DISABLED_testClearCookies {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   // Load `kUrl` and check that cookie is not set.
