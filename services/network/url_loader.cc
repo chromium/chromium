@@ -1695,6 +1695,12 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   DCHECK(url_request == url_request_.get());
   has_received_response_ = true;
 
+  if (keepalive_) {
+    base::UmaHistogramEnumeration(
+        "FetchKeepAlive.Requests2.Network",
+        internal::FetchKeepAliveRequestNetworkMetricType::kOnResponse);
+  }
+
   // Use `true` to force sending the cookie accessed update now. This is because
   // for navigations the CookieObserver might get torn down by the time the
   // request completes.

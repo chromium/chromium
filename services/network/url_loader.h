@@ -79,6 +79,21 @@ namespace cors {
 class OriginAccessList;
 }
 
+namespace internal {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(FetchKeepAliveRequestNetworkMetricType)
+enum class FetchKeepAliveRequestNetworkMetricType {
+  kOnCreate = 0,
+  kOnResponse = 1,
+  kMaxValue = kOnResponse
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FetchKeepAliveRequestNetworkMetricType)
+
+}  // namespace internal
+
 constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
 
 class KeepaliveStatisticsRecorder;

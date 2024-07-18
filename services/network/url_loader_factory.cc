@@ -222,7 +222,9 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
 
   int keepalive_request_size = 0;
   if (resource_request.keepalive) {
-    base::UmaHistogramBoolean("FetchKeepAlive.Requests2.Created.Network", true);
+    base::UmaHistogramEnumeration(
+        "FetchKeepAlive.Requests2.Network",
+        internal::FetchKeepAliveRequestNetworkMetricType::kOnCreate);
   }
   if (resource_request.keepalive && keepalive_statistics_recorder) {
     const size_t url_size = resource_request.url.spec().size();
