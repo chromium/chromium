@@ -73,6 +73,11 @@ class PLATFORM_EXPORT LayoutUnit {
   static constexpr int kIntMax = INT_MAX / kFixedPointDenominator;
   static constexpr int kIntMin = INT_MIN / kFixedPointDenominator;
 
+  template <typename T>
+  static constexpr int ClampRawValue(T raw_value) {
+    return base::saturated_cast<int>(raw_value);
+  }
+
   constexpr LayoutUnit() : value_(0) {}
   // Creates a LayoutUnit with the specified integer value.
   // If the specified value is smaller than LayoutUnit::Min(), the new
@@ -93,48 +98,48 @@ class PLATFORM_EXPORT LayoutUnit {
   }
   constexpr explicit LayoutUnit(std::integral auto value)
     requires(sizeof(value) > sizeof(int))
-      : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
+      : value_(ClampRawValue(value * kFixedPointDenominator)) {}
   // The specified `value` is truncated to a multiple of 1/64 near 0, and
   // is clamped by Min() and Max().
   // A NaN `value` produces LayoutUnit(0).
   constexpr explicit LayoutUnit(float value)
-      : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
+      : value_(ClampRawValue(value * kFixedPointDenominator)) {}
   constexpr explicit LayoutUnit(double value)
-      : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
+      : value_(ClampRawValue(value * kFixedPointDenominator)) {}
 
   // The specified `value` is rounded up to a multiple of 1/64, and
   // is clamped by Min() and Max().
   // A NaN `value` produces LayoutUnit(0).
   static LayoutUnit FromFloatCeil(float value) {
-    return FromRawValue(
-        base::saturated_cast<int>(ceilf(value * kFixedPointDenominator)));
+    return FromRawValueWithClamp(ceilf(value * kFixedPointDenominator));
   }
 
   // The specified `value` is truncated to a multiple of 1/64, and is clamped
   // by Min() and Max().
   // A NaN `value` produces LayoutUnit(0).
   static LayoutUnit FromFloatFloor(float value) {
-    return FromRawValue(
-        base::saturated_cast<int>(floorf(value * kFixedPointDenominator)));
+    return FromRawValueWithClamp(floorf(value * kFixedPointDenominator));
   }
 
   // The specified `value` is rounded to a multiple of 1/64, and
   // is clamped by Min() and Max().
   // A NaN `value` produces LayoutUnit(0).
   static LayoutUnit FromFloatRound(float value) {
-    return FromRawValue(
-        base::saturated_cast<int>(roundf(value * kFixedPointDenominator)));
+    return FromRawValueWithClamp(roundf(value * kFixedPointDenominator));
   }
 
   static LayoutUnit FromDoubleRound(double value) {
-    return FromRawValue(
-        base::saturated_cast<int>(round(value * kFixedPointDenominator)));
+    return FromRawValueWithClamp(round(value * kFixedPointDenominator));
   }
 
   static constexpr LayoutUnit FromRawValue(int raw_value) {
     LayoutUnit v;
     v.value_ = raw_value;
     return v;
+  }
+  template <typename T>
+  static constexpr LayoutUnit FromRawValueWithClamp(T raw_value) {
+    return FromRawValue(ClampRawValue(raw_value));
   }
 
   constexpr int ToInt() const { return value_ / kFixedPointDenominator; }
@@ -565,13 +570,13 @@ constexpr double operator*(const double a, const LayoutUnit& b) {
 inline LayoutUnit operator/(const LayoutUnit& a, const LayoutUnit& b) {
   int64_t raw_val = static_cast<int64_t>(LayoutUnit::kFixedPointDenominator) *
                     a.RawValue() / b.RawValue();
-  return LayoutUnit::FromRawValue(base::saturated_cast<int>(raw_val));
+  return LayoutUnit::FromRawValueWithClamp(raw_val);
 }
 
 inline LayoutUnit LayoutUnit::MulDiv(LayoutUnit m, LayoutUnit d) const {
   int64_t n = static_cast<int64_t>(RawValue()) * m.RawValue();
   int64_t q = n / d.RawValue();
-  return FromRawValue(base::saturated_cast<int>(q));
+  return FromRawValueWithClamp(q);
 }
 
 constexpr float operator/(const LayoutUnit& a, float b) {

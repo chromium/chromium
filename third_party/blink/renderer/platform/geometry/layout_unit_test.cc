@@ -135,6 +135,15 @@ TEST(LayoutUnitTest, LayoutUnitFloat) {
   EXPECT_EQ(LayoutUnit(), LayoutUnit::Clamp(Limits::quiet_NaN()));
 }
 
+// Test that `constexpr` constructors are constant expressions.
+TEST(LayoutUnitTest, ConstExprCtor) {
+  [[maybe_unused]] constexpr LayoutUnit from_int(1);
+  [[maybe_unused]] constexpr LayoutUnit from_float(1.0f);
+  [[maybe_unused]] constexpr LayoutUnit from_raw = LayoutUnit::FromRawValue(1);
+  [[maybe_unused]] constexpr LayoutUnit from_raw_with_clamp =
+      LayoutUnit::FromRawValueWithClamp(1);
+}
+
 TEST(LayoutUnitTest, FromFloatCeil) {
   const float kTolerance = 1.0f / LayoutUnit::kFixedPointDenominator;
   EXPECT_EQ(LayoutUnit(1.25f), LayoutUnit::FromFloatCeil(1.25f));
