@@ -9,7 +9,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
-#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -21,7 +20,7 @@ using proto::SegmentId;
 // Default parameters for AndroidHomeModuleRanker model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER;
-constexpr int64_t kModelVersion = 3;
+constexpr int64_t kModelVersion = 4;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
 // Wait until we have 0 days of data.
@@ -30,7 +29,7 @@ constexpr int64_t kMinSignalCollectionLength = 0;
 constexpr int64_t kResultTTLDays = 7;
 
 constexpr std::array<const char*, 3> kAndroidHomeModuleLabels = {
-    kSingleTab, kPriceChange, kTabResumptionForAndroidHome};
+    kPriceChange, kSingleTab, kTabResumptionForAndroidHome};
 
 constexpr std::array<const char*, 3> kAndroidHomeModuleInputContextKeys = {
     kSingleTabFreshness, kPriceChangeFreshness,
@@ -48,155 +47,55 @@ constexpr std::array<int32_t, 1> kEnumValueForTabResumption{
     /*TabResumption=*/2};
 
 // Set UMA metrics to use as input.
-constexpr std::array<MetadataWriter::UMAFeature, 24> kUMAFeatures = {
-    // Tab Resumption Module
-    // 0
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.Click",
-        7,
-        kEnumValueForSingleTab.data(),
-        kEnumValueForSingleTab.size()),
-    // 1
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.Click",
-        7,
-        kEnumValueForSingleTab.data(),
-        kEnumValueForSingleTab.size()),
-    // 2
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
-        7,
-        kEnumValueForSingleTab.data(),
-        kEnumValueForSingleTab.size()),
-    // 3
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.TopImpressionV2",
-        7,
-        kEnumValueForSingleTab.data(),
-        kEnumValueForSingleTab.size()),
-    // 4
+constexpr std::array<MetadataWriter::UMAFeature, 6> kUMAFeatures = {
+    // Single Tab Module
+    // 0 : click
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "MagicStack.Clank.NewTabPage.Module.Click",
         28,
         kEnumValueForSingleTab.data(),
         kEnumValueForSingleTab.size()),
-    // 5
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.Click",
-        28,
-        kEnumValueForSingleTab.data(),
-        kEnumValueForSingleTab.size()),
-    // 6
+    // 1 : impression
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
-        28,
-        kEnumValueForSingleTab.data(),
-        kEnumValueForSingleTab.size()),
-    // 7
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.TopImpressionV2",
         28,
         kEnumValueForSingleTab.data(),
         kEnumValueForSingleTab.size()),
     // Price Change Module
-    // 8
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.Click",
-        7,
-        kEnumValueForPriceChange.data(),
-        kEnumValueForPriceChange.size()),
-    // 9
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.Click",
-        7,
-        kEnumValueForPriceChange.data(),
-        kEnumValueForPriceChange.size()),
-    // 10
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
-        7,
-        kEnumValueForPriceChange.data(),
-        kEnumValueForPriceChange.size()),
-    // 11
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.TopImpressionV2",
-        7,
-        kEnumValueForPriceChange.data(),
-        kEnumValueForPriceChange.size()),
-    // 12
+    // 2 : click
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "MagicStack.Clank.NewTabPage.Module.Click",
         28,
         kEnumValueForPriceChange.data(),
         kEnumValueForPriceChange.size()),
-    // 13
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.Click",
-        28,
-        kEnumValueForPriceChange.data(),
-        kEnumValueForPriceChange.size()),
-    // 14
+    // 3 : impression
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
-        28,
-        kEnumValueForPriceChange.data(),
-        kEnumValueForPriceChange.size()),
-    // 15
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.TopImpressionV2",
         28,
         kEnumValueForPriceChange.data(),
         kEnumValueForPriceChange.size()),
     // Tab Resumption Module
-    // 16
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.Click",
-        7,
-        kEnumValueForTabResumption.data(),
-        kEnumValueForTabResumption.size()),
-    // 17
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.Click",
-        7,
-        kEnumValueForTabResumption.data(),
-        kEnumValueForTabResumption.size()),
-    // 18
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
-        7,
-        kEnumValueForTabResumption.data(),
-        kEnumValueForTabResumption.size()),
-    // 19
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.TopImpressionV2",
-        7,
-        kEnumValueForTabResumption.data(),
-        kEnumValueForTabResumption.size()),
-    // 20
+    // 4 : click
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "MagicStack.Clank.NewTabPage.Module.Click",
         28,
         kEnumValueForTabResumption.data(),
         kEnumValueForTabResumption.size()),
-    // 21
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.Click",
-        28,
-        kEnumValueForTabResumption.data(),
-        kEnumValueForTabResumption.size()),
-    // 22
+    // 5 : impression
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
-        28,
-        kEnumValueForTabResumption.data(),
-        kEnumValueForTabResumption.size()),
-    // 23
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "MagicStack.Clank.StartSurface.Module.TopImpressionV2",
         28,
         kEnumValueForTabResumption.data(),
         kEnumValueForTabResumption.size()),
 };
+
+float TransformFreshness(float freshness_score, float freshness_threshold) {
+  float new_freshness_score = 0.0;
+  if (freshness_score >= 0.0 and freshness_score <= freshness_threshold) {
+    new_freshness_score = 1.0;
+  }
+  return new_freshness_score;
+}
 
 }  // namespace
 
@@ -216,7 +115,9 @@ std::unique_ptr<Config> AndroidHomeModuleRanker::GetConfig() {
 }
 
 AndroidHomeModuleRanker::AndroidHomeModuleRanker()
-    : DefaultModelProvider(kSegmentId) {}
+    : DefaultModelProvider(kSegmentId),
+      isAndroidHomeModuleRankerV2Enabled(base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformAndroidHomeModuleRankerV2)) {}
 
 std::unique_ptr<DefaultModelProvider::ModelConfig>
 AndroidHomeModuleRanker::GetModelConfig() {
@@ -229,7 +130,7 @@ AndroidHomeModuleRanker::GetModelConfig() {
   // Set output config.
   writer.AddOutputConfigForMultiClassClassifier(kAndroidHomeModuleLabels,
                                                 kAndroidHomeModuleLabels.size(),
-                                                /*threshold=*/0);
+                                                /*threshold=*/-99999.0);
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{},
       /*default_ttl=*/kResultTTLDays, proto::TimeUnit::DAY);
@@ -237,8 +138,7 @@ AndroidHomeModuleRanker::GetModelConfig() {
   // Set features.
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
 
-  if (base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformAndroidHomeModuleRankerV2)) {
+  if (isAndroidHomeModuleRankerV2Enabled) {
     // Add freshness for all modules as custom input.
     writer.AddFromInputContext("single_tab_input", kSingleTabFreshness);
     writer.AddFromInputContext("price_change_input", kPriceChangeFreshness);
@@ -254,8 +154,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
     ExecutionCallback callback) {
   // Invalid inputs.
   size_t expected_input_size =
-      base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformAndroidHomeModuleRankerV2)
+      isAndroidHomeModuleRankerV2Enabled
           ? kUMAFeatures.size() + kAndroidHomeModuleInputContextKeys.size()
           : kUMAFeatures.size();
   if (inputs.size() != expected_input_size) {
@@ -265,12 +164,45 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
   }
 
   // Add logic here.
+  // Single Tab score calculation.
+  float single_tab_weights[3] = {1.5, -0.5, 1.0};
+  float single_tab_engagement = inputs[0];
+  float single_tab_impression = inputs[1];
+  float single_tab_freshness = isAndroidHomeModuleRankerV2Enabled
+                                   ? TransformFreshness(inputs[6], 1.0)
+                                   : 0.0;
+  float single_tab_score = single_tab_weights[0] * single_tab_engagement +
+                           single_tab_weights[1] * single_tab_impression +
+                           single_tab_weights[2] * single_tab_freshness;
+
+  // Price Change score calculation.
+  float price_change_weights[3] = {2.0, -1.0, 2.0};
+  float price_change_engagement = inputs[2];
+  float price_change_impression = inputs[3];
+  float price_change_freshness = isAndroidHomeModuleRankerV2Enabled
+                                     ? TransformFreshness(inputs[7], 1.0)
+                                     : 0.0;
+  float price_change_score = price_change_weights[0] * price_change_engagement +
+                             price_change_weights[1] * price_change_impression +
+                             price_change_weights[2] * price_change_freshness;
+
+  // Tab Resumption score calculation.
+  float tab_resumption_weights[3] = {1.5, -0.5, 1.0};
+  float tab_resumption_engagement = inputs[4];
+  float tab_resumption_impression = inputs[5];
+  float tab_resumption_freshness = isAndroidHomeModuleRankerV2Enabled
+                                       ? TransformFreshness(inputs[8], 1.0)
+                                       : 0.0;
+  float tab_resumption_score =
+      tab_resumption_weights[0] * tab_resumption_engagement +
+      tab_resumption_weights[1] * tab_resumption_impression +
+      tab_resumption_weights[2] * tab_resumption_freshness;
 
   ModelProvider::Response response(kAndroidHomeModuleLabels.size(), 0);
   // Default ranking
-  response[0] = 2;  // Single Tab
-  response[1] = 3;  // Price Change
-  response[2] = 1;  // Tab Resumption
+  response[0] = price_change_score;    // Price Change
+  response[1] = single_tab_score;      // Single tab
+  response[2] = tab_resumption_score;  // Tab Resumption
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));

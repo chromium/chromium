@@ -16,9 +16,17 @@ class AndroidHomeModuleRankerTest : public DefaultModelTestBase {
       : DefaultModelTestBase(std::make_unique<AndroidHomeModuleRanker>()) {}
   ~AndroidHomeModuleRankerTest() override = default;
 
-  void SetUp() override { DefaultModelTestBase::SetUp(); }
+  void SetUp() override {
+    DefaultModelTestBase::SetUp();
+    bool isAndroidHomeModuleRankerV2Enabled = base::FeatureList::IsEnabled(
+        features::kSegmentationPlatformAndroidHomeModuleRankerV2);
+    input_size = isAndroidHomeModuleRankerV2Enabled ? 9 : 6;
+  }
 
   void TearDown() override { DefaultModelTestBase::TearDown(); }
+
+ protected:
+  size_t input_size;
 };
 
 TEST_F(AndroidHomeModuleRankerTest, InitAndFetchModel) {
@@ -30,14 +38,37 @@ TEST_F(AndroidHomeModuleRankerTest, ExecuteModelWithInputForAllModules) {
   ASSERT_TRUE(fetched_metadata_);
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
-  size_t input_size =
-      base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformAndroidHomeModuleRankerV2)
-          ? 27
-          : 24;
   std::vector<float> input(input_size, 0);
   ExpectClassifierResults(
       input, {kPriceChange, kSingleTab, kTabResumptionForAndroidHome});
+}
+
+TEST_F(AndroidHomeModuleRankerTest,
+       ExecuteModelWithInputForAllModulesWithEngagement) {
+  ExpectInitAndFetchModel();
+  ASSERT_TRUE(fetched_metadata_);
+
+  EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
+  std::vector<float> input(input_size, 0);
+  input[0] = 1;
+  input[2] = 1;
+  input[4] = 1;
+  ExpectClassifierResults(
+      input, {kPriceChange, kSingleTab, kTabResumptionForAndroidHome});
+}
+
+TEST_F(AndroidHomeModuleRankerTest,
+       ExecuteModelWithInputForAllModulesWithImpressions) {
+  ExpectInitAndFetchModel();
+  ASSERT_TRUE(fetched_metadata_);
+
+  EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
+  std::vector<float> input(input_size, 0);
+  input[1] = 1;
+  input[3] = 1;
+  input[5] = 1;
+  ExpectClassifierResults(
+      input, {kSingleTab, kTabResumptionForAndroidHome, kPriceChange});
 }
 
 }  // namespace segmentation_platform
