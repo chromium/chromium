@@ -344,7 +344,7 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(0, mMediator.getModuleTypeToModuleProviderMapForTesting().size());
         assertEquals(0, mMediator.getModuleTypeToRankingIndexMapForTesting().size());
 
-        verify(mModel).clear();
+        assertEquals(0, mModel.size());
         verify(mSetVisibilityCallback).onResult(false);
     }
 
@@ -532,6 +532,12 @@ public class HomeModulesMediatorUnitTest {
         for (int i = 0; i < 3; i++) {
             when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
                     .thenReturn(true);
+        }
+        ModuleProvider[] moduleProviders = new ModuleProvider[MODULE_TYPES];
+        for (int i = 0; i < MODULE_TYPES; i++) {
+            moduleProviders[i] = Mockito.mock(ModuleProvider.class);
+            // Modules are built successfully.
+            mMediator.onModuleBuilt(mModuleTypeList[i], moduleProviders[i]);
         }
         assertEquals(0, mMediator.getModuleResultsWaitingIndexForTesting());
 

@@ -205,8 +205,8 @@ public class HomeModulesMediator {
             mHandler.postDelayed(this::onModuleFetchTimeOut, MODULE_FETCHING_TIMEOUT_MS);
         } else {
             mIsFetchingModules = false;
-            // If there isn't any module to build, hide the magic stack now to clean up data.
-            hide();
+            // If there isn't any module to build, clean up data now.
+            cleanup();
         }
     }
 
@@ -353,8 +353,11 @@ public class HomeModulesMediator {
     /** Adds all of the cached responses to the RecyclerView after time out. */
     @VisibleForTesting
     void onModuleFetchTimeOut() {
-        // It is possible that onModuleFetchTimeOut() is called after home modules hide, early exits
-        // here.
+        finalizeModules(/* forceHide= */ false);
+    }
+
+    private void maybeFinalizeModuleFetch() {
+        // It is possible that maybeFinalizeModuleFetch() has been called before, early exits here.
         if (!mIsFetchingModules) {
             return;
         }
@@ -378,12 +381,6 @@ public class HomeModulesMediator {
                 append(cachedResponse);
             }
             mModuleResultsWaitingIndex++;
-        }
-
-        if (mModel.size() == 0) {
-            // It is possible that there isn't any module has data to show, hide the magic stack
-            // now to clean up data.
-            hide();
         }
     }
 
@@ -451,7 +448,7 @@ public class HomeModulesMediator {
         mModuleFetchResultsCache[index] = null;
 
         if (mModel.size() == 0) {
-            hide();
+            cleanup();
         }
         return true;
     }
@@ -461,17 +458,41 @@ public class HomeModulesMediator {
      * stack.
      */
     void hide() {
+        finalizeModules(/* forceHide= */ true);
+    }
+
+    /**
+     * Finalizes module fetching if hasn't completed yet and: 1) hides all showing modules and
+     * cleans up if forceHide is true; 2) cleans up when there isn't any module if forceHide is
+     * false.
+     *
+     * @param forceHide Whether to force hiding all modules if shown.
+     */
+    private void finalizeModules(boolean forceHide) {
         if (!mIsShown) {
             return;
         }
 
+        maybeFinalizeModuleFetch();
+
+        if (forceHide) {
+            for (int i = 0; i < mModel.size(); i++) {
+                int moduleType = mModel.get(i).type;
+                ModuleProvider moduleProvider = mModuleTypeToModuleProviderMap.get(moduleType);
+                moduleProvider.hideModule();
+            }
+            mModel.clear();
+            assert mModel.size() == 0;
+        }
+
+        if (mModel.size() == 0) {
+            cleanup();
+        }
+    }
+
+    private void cleanup() {
         mIsFetchingModules = false;
         mIsShown = false;
-        for (int i = 0; i < mModel.size(); i++) {
-            int moduleType = mModel.get(i).type;
-            ModuleProvider moduleProvider = mModuleTypeToModuleProviderMap.get(moduleType);
-            moduleProvider.hideModule();
-        }
 
         mModuleResultsWaitingIndex = 0;
         mModuleFetchResultsIndicator = null;
