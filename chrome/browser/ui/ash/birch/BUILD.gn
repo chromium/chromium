@@ -30,8 +30,6 @@ static_library("birch") {
     "birch_release_notes_provider.h",
     "birch_self_share_provider.cc",
     "birch_self_share_provider.h",
-    "birch_weather_v2_provider.cc",
-    "birch_weather_v2_provider.h",
     "refresh_token_waiter.cc",
     "refresh_token_waiter.h",
   ]
@@ -53,7 +51,6 @@ static_library("birch") {
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/calendar",
     "//chrome/common",
-    "//chromeos/ash/components/geolocation",
     "//components/favicon_base",
     "//components/history/core/browser",
     "//components/prefs",
@@ -63,8 +60,6 @@ static_library("birch") {
     "//components/sync/service",
     "//components/sync_sessions",
     "//net/traffic_annotation",
-    "//services/data_decoder/public/cpp",
-    "//services/network/public/cpp",
     "//ui/base",
     "//url",
   ]
@@ -82,7 +77,6 @@ source_set("unit_tests") {
     "birch_keyed_service_unittest.cc",
     "birch_last_active_provider_unittest.cc",
     "birch_most_visited_provider_unittest.cc",
-    "birch_weather_v2_provider_unittest.cc",
     "refresh_token_waiter_unittest.cc",
   ]
 
@@ -104,7 +98,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/geolocation",
     "//components/favicon/core/test:test_support",
     "//components/prefs",
     "//components/send_tab_to_self",
@@ -117,9 +110,7 @@ source_set("unit_tests") {
     "//components/user_manager",
     "//content/test:test_support",
     "//net:test_support",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/media_session/public/cpp/test:test_support",
-    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -178,13 +178,6 @@ class TestBirchClient : public BirchClient {
             base::BindRepeating(&BirchModel::SetReleaseNotesItems,
                                 base::Unretained(birch_model)),
             std::string());
-    if (features::IsBirchWeatherV2Enabled()) {
-      weather_provider_ =
-          std::make_unique<TestBirchDataProvider<BirchWeatherItem>>(
-              base::BindRepeating(&BirchModel::SetWeatherItems,
-                                  base::Unretained(birch_model)),
-              prefs::kBirchUseWeather);
-    }
     EXPECT_TRUE(test_dir_.CreateUniqueTempDir());
   }
   TestBirchClient(const TestBirchClient&) = delete;
@@ -223,11 +216,6 @@ class TestBirchClient : public BirchClient {
     lost_media_provider_->set_items(items);
   }
 
-  void SetWeatherItems(const std::vector<BirchWeatherItem>& items) {
-    ASSERT_TRUE(weather_provider_);
-    weather_provider_->set_items(items);
-  }
-
   // Clear all items.
   void Reset() {
     calendar_provider_->ClearItems();
@@ -237,9 +225,6 @@ class TestBirchClient : public BirchClient {
     release_notes_provider_->ClearItems();
     self_share_provider_->ClearItems();
     lost_media_provider_->ClearItems();
-    if (weather_provider_) {
-      weather_provider_->ClearItems();
-    }
   }
 
   // BirchClient:
@@ -267,10 +252,6 @@ class TestBirchClient : public BirchClient {
   BirchDataProvider* GetReleaseNotesProvider() override {
     return release_notes_provider_.get();
   }
-  BirchDataProvider* GetWeatherV2Provider() override {
-    return weather_provider_.get();
-  }
-
   void WaitForRefreshTokens(base::OnceClosure callback) override {
     std::move(callback).Run();
   }
@@ -310,34 +291,24 @@ class TestBirchClient : public BirchClient {
       lost_media_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchReleaseNotesItem>>
       release_notes_provider_;
-  std::unique_ptr<TestBirchDataProvider<BirchWeatherItem>> weather_provider_;
   base::ScopedTempDir test_dir_;
 };
 
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// BirchBarBaseTest:
+// BirchBarTest:
 // The test class of birch bar with Forest feature enabled by default.
-class BirchBarTestBase : public AshTestBase {
+class BirchBarTest : public AshTestBase {
  public:
-  BirchBarTestBase(bool use_weather_v2_provider)
-      : use_weather_v2_provider_(use_weather_v2_provider) {
-    if (use_weather_v2_provider) {
-      feature_list_.InitWithFeatures(
-          {features::kForestFeature, features::kBirchWeather,
-           features::kBirchWeatherV2},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {features::kForestFeature, features::kBirchWeather},
-          {features::kBirchWeatherV2});
-    }
+  BirchBarTest() {
+    feature_list_.InitWithFeatures(
+        {features::kForestFeature, features::kBirchWeather}, {});
   }
 
-  BirchBarTestBase(const BirchBarTestBase&) = delete;
-  BirchBarTestBase& operator=(const BirchBarTestBase&) = delete;
-  ~BirchBarTestBase() override = default;
+  BirchBarTest(const BirchBarTest&) = delete;
+  BirchBarTest& operator=(const BirchBarTest&) = delete;
+  ~BirchBarTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -357,15 +328,13 @@ class BirchBarTestBase : public AshTestBase {
     auto* birch_model = Shell::Get()->birch_model();
     birch_client_ = std::make_unique<TestBirchClient>(birch_model);
     birch_model->SetClientAndInit(birch_client_.get());
-    if (!use_weather_v2_provider_) {
-      auto weather_provider =
-          std::make_unique<TestBirchDataProvider<BirchWeatherItem>>(
-              base::BindRepeating(&BirchModel::SetWeatherItems,
-                                  base::Unretained(birch_model)),
-              prefs::kBirchUseWeather);
-      weather_provider_ = weather_provider.get();
-      birch_model->OverrideWeatherProviderForTest(std::move(weather_provider));
-    }
+    auto weather_provider =
+        std::make_unique<TestBirchDataProvider<BirchWeatherItem>>(
+            base::BindRepeating(&BirchModel::SetWeatherItems,
+                                base::Unretained(birch_model)),
+            prefs::kBirchUseWeather);
+    weather_provider_ = weather_provider.get();
+    birch_model->OverrideWeatherProviderForTest(std::move(weather_provider));
     base::RunLoop run_loop;
     Shell::Get()
         ->birch_model()
@@ -509,43 +478,26 @@ class BirchBarTestBase : public AshTestBase {
                              /*icon*/ ui::ImageModel());
       item_list.back().set_ranking(1.0f);
     }
-    if (use_weather_v2_provider_) {
-      birch_client_->SetWeatherItems(item_list);
-    } else {
-      weather_provider_->set_items(item_list);
-    }
+    weather_provider_->set_items(item_list);
   }
 
   std::unique_ptr<TestBirchClient> birch_client_;
   raw_ptr<TestBirchDataProvider<BirchWeatherItem>> weather_provider_;
 
  private:
-  const bool use_weather_v2_provider_;
-
   base::test::ScopedFeatureList feature_list_;
   // Ensure base::Time::Now() is a fixed value.
   base::ScopedMockClockOverride mock_clock_override_;
 };
 
-class BirchBarTest : public BirchBarTestBase,
-                     public testing::WithParamInterface<bool> {
- public:
-  BirchBarTest() : BirchBarTestBase(/*use_weather_v2_provider=*/GetParam()) {}
-  BirchBarTest(const BirchBarTest&) = delete;
-  BirchBarTest& operator=(const BirchBarTest&) = delete;
-  ~BirchBarTest() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(UsingWeatherV2Provider, BirchBarTest, testing::Bool());
-
 // Tests that the birch bar will be shown in the normal Overview.
-TEST_P(BirchBarTest, ShowBirchBar) {
+TEST_F(BirchBarTest, ShowBirchBar) {
   EnterOverview();
   EXPECT_TRUE(
       OverviewGridTestApi(Shell::GetPrimaryRootWindow()).birch_bar_view());
 }
 
-TEST_P(BirchBarTest, DoNotShowBirchBarForSecondaryUser) {
+TEST_F(BirchBarTest, DoNotShowBirchBarForSecondaryUser) {
   // Sign in a secondary user.
   SimulateUserLogin("user2@test.com");
   ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
@@ -555,7 +507,7 @@ TEST_P(BirchBarTest, DoNotShowBirchBarForSecondaryUser) {
       OverviewGridTestApi(Shell::GetPrimaryRootWindow()).birch_bar_view());
 }
 
-TEST_P(BirchBarTest, RecordsHistogramWhenChipsShown) {
+TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
   // Ensure a consistent timezone for this test.
   calendar_test_utils::ScopedLibcTimeZone scoped_timezone(
       "America/Los_Angeles");
@@ -597,7 +549,7 @@ TEST_P(BirchBarTest, RecordsHistogramWhenChipsShown) {
 
 // Tests that the birch bar will be hidden in the partial Overview with a split
 // screen.
-TEST_P(BirchBarTest, HideBirchBarInPartialSplitScreen) {
+TEST_F(BirchBarTest, HideBirchBarInPartialSplitScreen) {
   // Create two windows.
   auto window_1 = CreateAppWindow(gfx::Rect(100, 100));
   // Need another window to keep partial Overview when `window_1` is snapped in
@@ -621,7 +573,7 @@ TEST_P(BirchBarTest, HideBirchBarInPartialSplitScreen) {
   EXPECT_TRUE(grid_test_api.birch_bar_view());
 }
 
-TEST_P(BirchBarTest, ShowBirchBarInTabletMode) {
+TEST_F(BirchBarTest, ShowBirchBarInTabletMode) {
   EnterOverview();
   // Convert to Tablet mode, the birch bar should be shown in Overview mode.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
@@ -635,18 +587,16 @@ TEST_P(BirchBarTest, ShowBirchBarInTabletMode) {
 ////////////////////////////////////////////////////////////////////////////////
 // BirchBarMenuTest:
 // The test class of birch bar context menu.
-class BirchBarMenuTest : public BirchBarTestBase,
-                         public testing::WithParamInterface<bool> {
+class BirchBarMenuTest : public BirchBarTest {
  public:
-  BirchBarMenuTest()
-      : BirchBarTestBase(/*use_weather_v2_provider=*/GetParam()) {}
+  BirchBarMenuTest() = default;
   BirchBarMenuTest(const BirchBarMenuTest&) = delete;
   BirchBarMenuTest& operator=(const BirchBarMenuTest&) = delete;
   ~BirchBarMenuTest() override = default;
 
   // BirchBarTest:
   void SetUp() override {
-    BirchBarTestBase::SetUp();
+    BirchBarTest::SetUp();
     // Clear existing items.
     birch_client_->Reset();
     // Ensure screen is large enough to be able to click on all menu items.
@@ -669,12 +619,8 @@ class BirchBarMenuTest : public BirchBarTestBase,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(UsingWeatherV2Provider,
-                         BirchBarMenuTest,
-                         testing::Bool());
-
 // Tests that removing a suggestion from context menu.
-TEST_P(BirchBarMenuTest, RemoveChip) {
+TEST_F(BirchBarMenuTest, RemoveChip) {
   // Create 5 suggestions with different item types.
   SetWeatherItems(/*num=*/1);
   SetCalendarItems(/*num=*/2);
@@ -757,7 +703,7 @@ TEST_P(BirchBarMenuTest, RemoveChip) {
 }
 
 // Tests showing/hiding suggestions from context menu.
-TEST_P(BirchBarMenuTest, ShowHideBar) {
+TEST_F(BirchBarMenuTest, ShowHideBar) {
   // Create a suggestion for test.
   SetFileItems(/*num=*/1);
 
@@ -845,7 +791,7 @@ TEST_P(BirchBarMenuTest, ShowHideBar) {
 }
 
 // Tests customizing suggestions from context menu.
-TEST_P(BirchBarMenuTest, CustomizeSuggestions) {
+TEST_F(BirchBarMenuTest, CustomizeSuggestions) {
   // Create 4 suggestions, as the bar shows a maximum of 4 chips.
   SetWeatherItems(/*num=*/1);
   SetCalendarItems(/*num=*/1);
@@ -931,7 +877,7 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestions) {
 
 // The bar shows a maximum of 4 suggestion chips. The above test verifies
 // customizing the first 4 suggestion types; this test verifies the rest.
-TEST_P(BirchBarMenuTest, CustomizeSuggestionsExtended) {
+TEST_F(BirchBarMenuTest, CustomizeSuggestionsExtended) {
   SetLastActiveItems(/*num=*/1);
   SetMostVisitedItems(/*num=*/1);
   SetSelfShareItems(/*num=*/1);
@@ -1004,7 +950,7 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestionsExtended) {
 }
 
 // Tests resetting suggestions from context menu.
-TEST_P(BirchBarMenuTest, ResetSuggestions) {
+TEST_F(BirchBarMenuTest, ResetSuggestions) {
   // Create 4 suggestions, one for each customizable suggestion type.
   SetCalendarItems(/*num=*/1);
   SetFileItems(/*num=*/1);
@@ -1077,7 +1023,7 @@ TEST_P(BirchBarMenuTest, ResetSuggestions) {
 
 // The bar shows a maximum of 4 suggestion chips. The above test verifies
 // resetting the first 4 suggestion types; this test verifies the rest.
-TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
+TEST_F(BirchBarMenuTest, ResetSuggestionsExtended) {
   SetLastActiveItems(/*num=*/1);
   SetMostVisitedItems(/*num=*/1);
   SetLostMediaItems(/*num=*/1);
@@ -1125,7 +1071,7 @@ TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
       bar_chips));
 }
 
-TEST_P(BirchBarMenuTest, ToggleFahrenheitCelsiusPref) {
+TEST_F(BirchBarMenuTest, ToggleFahrenheitCelsiusPref) {
   // The pref defaults to Fahrenheit.
   EXPECT_FALSE(GetPrefService()->GetBoolean(prefs::kBirchUseCelsius));
 
@@ -1163,7 +1109,7 @@ TEST_P(BirchBarMenuTest, ToggleFahrenheitCelsiusPref) {
 
 // Tests that there is no crash if hiding the suggestions by toggle the switch
 // button in chip's submenu.
-TEST_P(BirchBarMenuTest, NoCrashHideSuggestionsByChipSubmenu) {
+TEST_F(BirchBarMenuTest, NoCrashHideSuggestionsByChipSubmenu) {
   // Set show suggestions initially.
   GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
 
@@ -1202,7 +1148,7 @@ TEST_P(BirchBarMenuTest, NoCrashHideSuggestionsByChipSubmenu) {
 
 // Tests that there is no crash if customizing the suggestions by selecting the
 // checkboxes in chip's submenu.
-TEST_P(BirchBarMenuTest, NoCrashCustomizeSuggestionsByChipSubmenu) {
+TEST_F(BirchBarMenuTest, NoCrashCustomizeSuggestionsByChipSubmenu) {
   // Set show suggestions and enable weather suggestions initially.
   GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
 
@@ -1265,7 +1211,7 @@ TEST_P(BirchBarMenuTest, NoCrashCustomizeSuggestionsByChipSubmenu) {
 }
 
 // Tests hiding certain types of suggestions from context menu.
-TEST_P(BirchBarMenuTest, HideSuggestionTypes) {
+TEST_F(BirchBarMenuTest, HideSuggestionTypes) {
   // Create suggestions, at least one for each customizable suggestion type.
   SetWeatherItems(/*num=*/1);
   SetCalendarItems(/*num=*/2);
@@ -1369,17 +1315,17 @@ struct LayoutTestParams {
 // BirchBarLayoutTest:
 // The test class of birch bar layout.
 class BirchBarLayoutTest
-    : public BirchBarTestBase,
+    : public BirchBarTest,
       public testing::WithParamInterface<LayoutTestParams> {
  public:
-  BirchBarLayoutTest() : BirchBarTestBase(/*use_weather_v2_provider=*/false) {}
+  BirchBarLayoutTest() = default;
   BirchBarLayoutTest(const BirchBarLayoutTest&) = delete;
   BirchBarLayoutTest& operator=(const BirchBarLayoutTest&) = delete;
   ~BirchBarLayoutTest() override = default;
 
   // BirchBarTest:
   void SetUp() override {
-    BirchBarTestBase::SetUp();
+    BirchBarTest::SetUp();
 
     // Clear existing items.
     birch_client_->Reset();

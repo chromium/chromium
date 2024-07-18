@@ -227,10 +227,6 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // Returns true if most visited items should be included in the results.
   bool ShouldShowMostVisited();
 
-  // Returns the weather provider to use, depending on whether BirchWeatherV2
-  // feature is enabled. Returns nullptr if weather provider is disabled.
-  BirchDataProvider* GetWeatherProvider();
-
   // Whether this is a post-login fetch (occurring right after login).
   bool is_post_login_fetch_ = false;
 

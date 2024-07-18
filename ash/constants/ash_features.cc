@@ -263,12 +263,6 @@ BASE_FEATURE(kBatterySaverAlwaysOn,
 // Display weather information in birch UI.
 BASE_FEATURE(kBirchWeather, "BirchWeather", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Display weather information in birch UI, with weather getting fetched from
-// chromeos-system-ui endpoint.
-BASE_FEATURE(kBirchWeatherV2,
-             "BirchWeatherV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 BASE_FEATURE(kBluetoothFixA2dpPacketSize,
@@ -3520,9 +3514,6 @@ bool IsBirchWeatherEnabled() {
   return base::FeatureList::IsEnabled(kBirchWeather);
 }
 
-bool IsBirchWeatherV2Enabled() {
-  return base::FeatureList::IsEnabled(kBirchWeatherV2);
-}
 bool IsBluetoothDisconnectWarningEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothDisconnectWarning);
 }

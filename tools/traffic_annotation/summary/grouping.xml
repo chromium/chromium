@@ -310,7 +310,6 @@ after discussions on the right group.
       <annotation id="remoting_corp_session_reauthorize_host"/>
       <annotation id="weather_icon"/>
       <annotation id="birch_calendar_provider"/>
-      <annotation id="birch_weather_provider"/>
       <annotation id="recovery_key_store_fetch"/>
       <annotation id="enterprise_logo_fetcher"/>
       <annotation id="remoting_corp_logging_report_session_disconnected"/>

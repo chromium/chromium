@@ -64,10 +64,7 @@ BirchModel::BirchModel()
       release_notes_data_(prefs::kBirchUseReleaseNotes, "ReleaseNotes"),
       weather_data_(prefs::kBirchUseWeather, "Weather"),
       icon_cache_(std::make_unique<BirchIconCache>()) {
-  if (features::IsBirchWeatherEnabled() &&
-      !features::IsBirchWeatherV2Enabled()) {
-    // If BirchWeatherV2 is enabled, the weather provider is owned by birch
-    // client.
+  if (features::IsBirchWeatherEnabled()) {
     weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
   }
   Shell::Get()->session_controller()->AddObserver(this);
@@ -236,16 +233,6 @@ void BirchModel::StartDataFetchIfNeeded(DataTypeInfo<T>& data_info,
   data_provider->RequestBirchDataFetch();
 }
 
-BirchDataProvider* BirchModel::GetWeatherProvider() {
-  if (!features::IsBirchWeatherEnabled()) {
-    return nullptr;
-  }
-  if (features::IsBirchWeatherV2Enabled()) {
-    return birch_client_ ? birch_client_->GetWeatherV2Provider() : nullptr;
-  }
-  return weather_provider_.get();
-}
-
 void BirchModel::RequestBirchDataFetch(bool is_post_login,
                                        base::OnceClosure callback) {
   if (!Shell::Get()->session_controller()->IsUserPrimary()) {
@@ -307,7 +294,7 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
     StartDataFetchIfNeeded(release_notes_data_,
                            birch_client_->GetReleaseNotesProvider());
   }
-  StartDataFetchIfNeeded(weather_data_, GetWeatherProvider());
+  StartDataFetchIfNeeded(weather_data_, weather_provider_.get());
   MaybeRespondToDataFetchRequest();
 }
 
@@ -516,7 +503,7 @@ bool BirchModel::IsDataFresh() {
        release_notes_data_.is_fresh);
 
   // Use the same logic for weather.
-  bool is_weather_fresh = !GetWeatherProvider() || weather_data_.is_fresh;
+  bool is_weather_fresh = !weather_provider_ || weather_data_.is_fresh;
   return is_birch_client_fresh && is_weather_fresh;
 }
 
@@ -735,7 +722,7 @@ void BirchModel::OnLostMediaPrefChanged() {
 }
 
 void BirchModel::OnWeatherPrefChanged() {
-  StartDataFetchIfNeeded(weather_data_, GetWeatherProvider());
+  StartDataFetchIfNeeded(weather_data_, weather_provider_.get());
 }
 
 void BirchModel::OnReleaseNotesPrefChanged() {

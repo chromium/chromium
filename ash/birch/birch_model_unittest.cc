@@ -99,12 +99,7 @@ class StubBirchDataProvider : public BirchDataProvider {
 // A BirchClient that returns data providers that do nothing.
 class StubBirchClient : public BirchClient {
  public:
-  StubBirchClient() {
-    EXPECT_TRUE(test_dir_.CreateUniqueTempDir());
-    if (features::IsBirchWeatherV2Enabled()) {
-      weather_provider_ = std::make_unique<StubBirchDataProvider>();
-    }
-  }
+  StubBirchClient() { EXPECT_TRUE(test_dir_.CreateUniqueTempDir()); }
   ~StubBirchClient() override = default;
 
   // BirchClient:
@@ -132,9 +127,6 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetReleaseNotesProvider() override {
     return &release_notes_provider_;
   }
-  BirchDataProvider* GetWeatherV2Provider() override {
-    return weather_provider_.get();
-  }
   void WaitForRefreshTokens(base::OnceClosure callback) override {
     std::move(callback).Run();
   }
@@ -160,8 +152,6 @@ class StubBirchClient : public BirchClient {
   StubBirchDataProvider self_share_provider_;
   StubBirchDataProvider lost_media_provider_;
   StubBirchDataProvider release_notes_provider_;
-  std::unique_ptr<StubBirchDataProvider> weather_provider_;
-
   base::ScopedTempDir test_dir_;
   base::FilePath last_removed_path_;
 };

@@ -73,7 +73,6 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetSelfShareProvider() override { return nullptr; }
   BirchDataProvider* GetLostMediaProvider() override { return nullptr; }
   BirchDataProvider* GetReleaseNotesProvider() override { return nullptr; }
-  BirchDataProvider* GetWeatherV2Provider() override { return nullptr; }
   void WaitForRefreshTokens(base::OnceClosure callback) override {}
   base::FilePath GetRemovedItemsFilePath() override { return base::FilePath(); }
   void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
