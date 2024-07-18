@@ -1981,6 +1981,8 @@ static_library("browser") {
   libs = []
   ldflags = []
 
+  # Any circular includes must depend on the target
+  # "browser_public_dependencies".
   allow_circular_includes_from = [
     "//chrome/browser/ai",
     "//chrome/browser/autofill",
@@ -2022,48 +2024,16 @@ static_library("browser") {
   }
 
   public_deps = [
-    "//base",
+    # WARNING WARNING WARNING
+    # Do not add a new dependency here that is outside of chrome/browser.
+    # Instead add it to browser_public_depedenencies. See
+    # browser_public_dependencies for more details.
+    ":browser_public_dependencies",
     "//chrome/browser/google",
     "//chrome/browser/headless",
     "//chrome/browser/profiles",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
     "//chrome/browser/ui/tabs:tab_enums",
-    "//chrome/common",
-    "//chrome/common:buildflags",
-    "//chrome/common:constants",
-    "//chrome/services/file_util/public/mojom",
-    "//components/account_id",
-    "//components/autofill/core/browser",
-    "//components/commerce/core/product_specifications:product_specifications",
-    "//components/cross_device/logging",
-    "//components/enterprise/buildflags",
-    "//components/enterprise/common:files_scan_data",
-    "//components/input",
-    "//components/nacl/common:buildflags",
-    "//components/optimization_guide:machine_learning_tflite_buildflags",
-    "//components/page_info",
-    "//components/page_info/core",
-    "//components/payments/core",
-    "//components/payments/core:error_strings",
-    "//components/policy/proto",
-    "//components/reporting/proto:configuration_file_proto",
-    "//components/safe_browsing:buildflags",
-    "//components/search_engines",
-    "//components/services/storage/public/mojom",
-    "//components/session_proto_db:session_proto_db",
-    "//components/sharing_message",
-    "//components/sync",
-    "//components/sync_device_info",
-    "//components/system_cpu:system_cpu",
-    "//components/url_deduplication",
-    "//content/public/browser",
-    "//ipc",
-    "//pdf:buildflags",
-    "//services/data_decoder/public/mojom",
-    "//services/image_annotation/public/mojom",
-    "//services/network/public/mojom",
-    "//services/screen_ai/buildflags",
-    "//sql",
   ]
 
   deps = [
@@ -2698,6 +2668,8 @@ static_library("browser") {
       "//ui/web_dialogs",
     ]
 
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
     allow_circular_includes_from += [
       # TODO(crbug.com/339497734): Remove circular dependencies.
       "//chrome/browser/ui/lens",
@@ -3540,10 +3512,6 @@ static_library("browser") {
       "webauthn/android/webauthn_request_delegate_android.h",
       "webid/digital_identity_provider_android.cc",
       "webid/digital_identity_provider_android.h",
-    ]
-    public_deps += [
-      "//chrome/android/features/dev_ui:buildflags",
-      "//components/image_fetcher/core",
     ]
     deps += [
       ":delta_file_proto",
@@ -4715,11 +4683,9 @@ static_library("browser") {
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
     ]
-    public_deps += [
-      "//chrome/common:buildflags",
-      "//components/commerce/core:coupon_db_content_proto",
-      "//extensions/buildflags",
-    ]
+
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
     allow_circular_includes_from += [
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
@@ -5247,11 +5213,6 @@ static_library("browser") {
       "webauthn/unexportable_key_utils_chromeos.cc",
     ]
 
-    public_deps += [
-      "//chromeos/components/sharesheet:constants",
-      "//ui/lottie",
-    ]
-
     deps += [
       "//ash",
       "//ash/components/arc",
@@ -5683,6 +5644,8 @@ static_library("browser") {
       "//ui/wm/public",
     ]
 
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/app_list/arc",
@@ -6371,6 +6334,8 @@ static_library("browser") {
       "//ui/wm/public",
     ]
 
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
@@ -6547,13 +6512,6 @@ static_library("browser") {
       "win/uninstallation_via_os_settings.h",
       "win/util_win_service.cc",
       "win/util_win_service.h",
-    ]
-    public_deps += [
-      ":titlebar_config",
-      "//build:branding_buildflags",
-      "//chrome/services/util_win/public/mojom",
-      "//ui/views",
-      "//ui/views/controls/webview",
     ]
 
     deps += [
@@ -7062,7 +7020,6 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/services/system_signals/public/cpp/browser",
     ]
-    public_deps += [ "//components/enterprise/core" ]
 
     if (is_win) {
       deps += [ "//components/device_signals/core/browser/win" ]
@@ -7504,7 +7461,6 @@ static_library("browser") {
       "//printing",
       "//printing/backend",
     ]
-    public_deps += [ "//components/printing/common:mojo_interfaces" ]
 
     if (is_win) {
       sources += [
@@ -8156,11 +8112,6 @@ static_library("browser") {
       ]
     }
 
-    public_deps += [
-      "//components/offline_pages/core",
-      "//components/offline_pages/core/background:background_offliner",
-    ]
-
     deps += [
       "//chrome/common:offline_page_auto_fetcher_mojom",
       "//components/offline_pages/content/background_loader",
@@ -8258,12 +8209,6 @@ static_library("browser") {
       "rlz/chrome_rlz_tracker_delegate.h",
       "rlz/chrome_rlz_tracker_web_contents_observer.cc",
       "rlz/chrome_rlz_tracker_web_contents_observer.h",
-    ]
-
-    public_deps += [
-      "//components/google/core/common",
-      "//components/rlz",
-      "//rlz:rlz_lib",
     ]
   }
 
@@ -8604,6 +8549,120 @@ static_library("browser") {
 
   if (is_chrome_for_testing) {
     deps += [ "//chrome/browser/chrome_for_testing" ]
+  }
+}
+
+# These are the dependencies for the "browser" target that are outside of
+# //chrome/browser. All gn targets that have circular dependencies with
+# "browser" should include this dependency.
+# The "browser" target is being broken into smaller targets. In order for this
+# process to be incremental, we allow circular dependencies via
+# allow_circular_includes_from. This has a drawback: the gn build graph may miss
+# generated dependencies, which will result in compile errors. Consider the
+# following:
+#  static_library("browser") {
+#    sources = [ "header_file_that_depends_on_generate_cpp.h" ]
+#    public_deps = [ "//content/generate_cpp" ]
+#    deps = [ "new_target_with_circular_dependencies" ]
+#    allow_circular_includes_from = [ "new_target_with_circular_dependencies" ]
+#  }
+#  static_library("new_target_with_circular_dependencies") {
+#    sources = [ "file_that_depends_on_the_header_file_above.cc" ]
+#    dep = []
+#  }
+# In this situation, the new_target depends on //content/generate_cpp, but this
+# will not be reflected in the build graph. To work around this problem, we move
+# all public deps of "browser" into a new target, and all circular dependencies
+# must include this target in a public_dep. This ensures stability and
+# correctness of the build-graph outside of //chrome/browser.
+static_library("browser_public_dependencies") {
+  public_deps = [
+    "//base",
+    "//chrome/common",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
+    "//chrome/services/file_util/public/mojom",
+    "//components/account_id",
+    "//components/autofill/core/browser",
+    "//components/commerce/core/product_specifications:product_specifications",
+    "//components/cross_device/logging",
+    "//components/enterprise/buildflags",
+    "//components/enterprise/common:files_scan_data",
+    "//components/input",
+    "//components/nacl/common:buildflags",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/page_info",
+    "//components/page_info/core",
+    "//components/payments/core",
+    "//components/payments/core:error_strings",
+    "//components/policy/proto",
+    "//components/reporting/proto:configuration_file_proto",
+    "//components/safe_browsing:buildflags",
+    "//components/search_engines",
+    "//components/services/storage/public/mojom",
+    "//components/session_proto_db:session_proto_db",
+    "//components/sharing_message",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//components/system_cpu:system_cpu",
+    "//components/url_deduplication",
+    "//content/public/browser",
+    "//ipc",
+    "//pdf:buildflags",
+    "//services/data_decoder/public/mojom",
+    "//services/image_annotation/public/mojom",
+    "//services/network/public/mojom",
+    "//services/screen_ai/buildflags",
+    "//sql",
+  ]
+  if (is_android) {
+    public_deps += [
+      "//chrome/android/features/dev_ui:buildflags",
+      "//components/image_fetcher/core",
+    ]
+  } else {
+    public_deps += [
+      "//components/commerce/core:coupon_db_content_proto",
+      "//extensions/buildflags",
+    ]
+  }
+  if (is_chromeos_ash) {
+    public_deps += [
+      "//chromeos/components/sharesheet:constants",
+      "//ui/lottie",
+    ]
+  }
+  if (is_win) {
+    public_deps += [
+      ":titlebar_config",
+      "//build:branding_buildflags",
+      "//chrome/services/util_win/public/mojom",
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
+    arflags = [ "/llvmlibempty" ]
+  }
+  if (is_linux || is_win || is_mac) {
+    public_deps += [ "//components/enterprise/core" ]
+  }
+  if (enable_printing) {
+    public_deps += [ "//components/printing/common:mojo_interfaces" ]
+  }
+  if (enable_bound_session_credentials) {
+    public_deps += [ ":bound_session_credentials_proto" ]
+  }
+  if (enable_offline_pages) {
+    public_deps += [
+      "//components/offline_pages/core",
+      "//components/offline_pages/core/background:background_offliner",
+    ]
+  }
+  if (enable_rlz) {
+    public_deps += [
+      "//components/google/core/common",
+      "//components/rlz",
+      "//rlz:rlz_lib",
+    ]
   }
 }
 
