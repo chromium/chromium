@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/tab_groups/tab_group_id.h"
 
@@ -43,6 +44,37 @@ SavedTabGroupModelListener::~SavedTabGroupModelListener() {
   for (Browser* browser : *BrowserList::GetInstance()) {
     OnBrowserRemoved(browser);
   }
+}
+
+void SavedTabGroupModelListener::OnTabGroupAdded(
+    const tab_groups::TabGroupId& group_id) {
+  if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    return;
+  }
+
+  if (local_tab_group_listeners_.contains(group_id)) {
+    return;
+  }
+
+  auto group_web_contents_map_pair = CreateSavedTabGroupAndTabMapping(group_id);
+
+  SavedTabGroup copy_group = group_web_contents_map_pair.first;
+  std::map<content::WebContents*, base::Uuid> copy_web_contents_to_uuid_map =
+      group_web_contents_map_pair.second;
+  wrapper_service_->AddGroup(std::move(copy_group));
+
+  std::optional<SavedTabGroup> group = wrapper_service_->GetGroup(group_id);
+  ConnectToLocalTabGroup(group.value(),
+                         std::move(copy_web_contents_to_uuid_map));
+}
+
+void SavedTabGroupModelListener::OnTabGroupWillBeRemoved(
+    const tab_groups::TabGroupId& group_id) {
+  if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    return;
+  }
+
+  DisconnectLocalTabGroup(group_id);
 }
 
 void SavedTabGroupModelListener::OnTabGroupChanged(
@@ -266,6 +298,44 @@ void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
   }
 
   browser->tab_strip_model()->RemoveObserver(this);
+}
+
+std::pair<SavedTabGroup, std::map<content::WebContents*, base::Uuid>>
+SavedTabGroupModelListener::CreateSavedTabGroupAndTabMapping(
+    const tab_groups::TabGroupId& group_id) {
+  Browser* browser =
+      tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+  CHECK(browser);
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  CHECK(tab_strip_model);
+  CHECK(tab_strip_model->SupportsTabGroups());
+
+  TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
+
+  tab_groups::SavedTabGroup saved_tab_group(
+      tab_group->visual_data()->title(), tab_group->visual_data()->color(), {},
+      std::nullopt, std::nullopt, group_id);
+  saved_tab_group.SetPinned(
+      /*pinned=*/tab_groups::SavedTabGroupUtils::ShouldAutoPinNewTabGroups(
+          profile_));
+
+  const gfx::Range tab_range = tab_group->ListTabs();
+  std::map<content::WebContents*, base::Uuid> opened_web_contents_to_uuid;
+  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+    CHECK(web_contents);
+
+    tab_groups::SavedTabGroupTab saved_tab_group_tab =
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
+            web_contents, saved_tab_group.saved_guid());
+
+    opened_web_contents_to_uuid.emplace(web_contents,
+                                        saved_tab_group_tab.saved_tab_guid());
+    saved_tab_group.AddTabLocally(std::move(saved_tab_group_tab));
+  }
+
+  return std::pair(std::move(saved_tab_group),
+                   std::move(opened_web_contents_to_uuid));
 }
 
 }  // namespace tab_groups

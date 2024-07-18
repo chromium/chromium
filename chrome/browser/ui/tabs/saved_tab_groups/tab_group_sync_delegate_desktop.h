@@ -9,10 +9,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/types.h"
+
+class Profile;
 
 namespace tab_groups {
 class TabGroupSyncService;
@@ -20,7 +23,8 @@ class TabGroupSyncService;
 // Desktop implementation of TabGroupSyncDelegate.
 class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
  public:
-  explicit TabGroupSyncDelegateDesktop(TabGroupSyncService* service);
+  explicit TabGroupSyncDelegateDesktop(TabGroupSyncService* service,
+                                       Profile* profile);
   ~TabGroupSyncDelegateDesktop() override;
 
   // TabGroupSyncDelegate implementation.
@@ -38,6 +42,7 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
  private:
   raw_ptr<TabGroupSyncService> service_;
   std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
+  std::unique_ptr<SavedTabGroupModelListener> listener_;
 };
 
 }  // namespace tab_groups

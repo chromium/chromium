@@ -111,7 +111,8 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<TabGroupSyncDelegate> delegate;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-  delegate = std::make_unique<TabGroupSyncDelegateDesktop>(service.get());
+  delegate =
+      std::make_unique<TabGroupSyncDelegateDesktop>(service.get(), profile);
 #else
   delegate = std::make_unique<EmptyTabGroupSyncDelegate>();
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
