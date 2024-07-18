@@ -100,6 +100,9 @@ void DawnD3DImageRepresentation::EndAccess() {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
   d3d_image_backing->EndAccessDawn(device_, texture_);
 
+  // All further operations on the textures are errors (they would be racy
+  // with other backings).
+  texture_.Destroy();
   texture_ = nullptr;
 }
 
