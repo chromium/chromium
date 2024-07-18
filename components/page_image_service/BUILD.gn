@@ -48,6 +48,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",
+    "//components/search_engines:test_support",
     "//components/sync:test_support",
     "//components/variations:test_support",
     "//testing/gmock",

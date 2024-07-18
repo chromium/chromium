@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,43 +43,7 @@ class TestingSchemeClassifier : public AutocompleteSchemeClassifier {
   }
 };
 
-}  // namespace
-
-class KeywordProviderTest : public testing::Test {
- protected:
-  template<class ResultType>
-  struct MatchType {
-    const ResultType member;
-    bool allowed_to_be_default_match;
-  };
-
-  template<class ResultType>
-  struct TestData {
-    const std::u16string input;
-    const size_t num_results;
-    const MatchType<ResultType> output[3];
-  };
-
-  KeywordProviderTest() : kw_provider_(nullptr) {}
-  ~KeywordProviderTest() override = default;
-
-  void SetUp() override;
-
-  template<class ResultType>
-  void RunTest(TestData<ResultType>* keyword_cases,
-               int num_cases,
-               ResultType AutocompleteMatch::* member);
-
- protected:
-  static const TemplateURLService::Initializer kTestData[];
-
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<MockAutocompleteProviderClient> client_;
-  scoped_refptr<KeywordProvider> kw_provider_;
-};
-
-// static
-const TemplateURLService::Initializer KeywordProviderTest::kTestData[] = {
+const TemplateURLService::Initializer kTestData[] = {
     {"aa", "aa.com?foo={searchTerms}", "aa"},
     {"aaaa", "http://aaaa/?aaaa=1&b={searchTerms}&c", "aaaa"},
     {"aaaaa", "{searchTerms}", "aaaaa"},
@@ -114,10 +79,45 @@ const TemplateURLService::Initializer KeywordProviderTest::kTestData[] = {
      "clean v8 slash"},
 };
 
+}  // namespace
+
+class KeywordProviderTest : public testing::Test {
+ protected:
+  template <class ResultType>
+  struct MatchType {
+    const ResultType member;
+    bool allowed_to_be_default_match;
+  };
+
+  template <class ResultType>
+  struct TestData {
+    const std::u16string input;
+    const size_t num_results;
+    const MatchType<ResultType> output[3];
+  };
+
+  KeywordProviderTest() : kw_provider_(nullptr) {}
+  ~KeywordProviderTest() override = default;
+
+  void SetUp() override;
+
+  template <class ResultType>
+  void RunTest(TestData<ResultType>* keyword_cases,
+               int num_cases,
+               ResultType AutocompleteMatch::*member);
+
+ protected:
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_{
+      {.template_url_service_initializer = kTestData}};
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<MockAutocompleteProviderClient> client_;
+  scoped_refptr<KeywordProvider> kw_provider_;
+};
+
 void KeywordProviderTest::SetUp() {
   client_ = std::make_unique<MockAutocompleteProviderClient>();
   client_->set_template_url_service(
-      std::make_unique<TemplateURLService>(kTestData, std::size(kTestData)));
+      search_engines_test_environment_.ReleaseTemplateURLService());
   kw_provider_ = new KeywordProvider(client_.get(), nullptr);
 }
 

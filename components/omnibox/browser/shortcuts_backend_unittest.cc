@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/shortcuts_constants.h"
 #include "components/omnibox/browser/shortcuts_database.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,6 +59,10 @@ class ShortcutsBackendTest : public testing::Test,
     changed_notified_ = changed_notified;
   }
 
+  TemplateURLService* template_url_service() {
+    return search_engines_test_environment_.template_url_service();
+  }
+
   void InitBackend();
   bool AddShortcut(const ShortcutsDatabase::Shortcut& shortcut);
   bool UpdateShortcut(const ShortcutsDatabase::Shortcut& shortcut);
@@ -70,8 +75,8 @@ class ShortcutsBackendTest : public testing::Test,
   ShortcutsDatabase::Shortcut::MatchCore MatchToMatchCore(
       const AutocompleteMatch& match) {
     SearchTermsData search_terms_data;
-    return ShortcutsBackend::MatchToMatchCore(
-        match, template_url_service_.get(), &search_terms_data);
+    return ShortcutsBackend::MatchToMatchCore(match, template_url_service(),
+                                              &search_terms_data);
   }
 
   ShortcutsBackend* backend() { return backend_.get(); }
@@ -87,7 +92,7 @@ class ShortcutsBackendTest : public testing::Test,
   // being destroyed.
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TemplateURLService> template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<history::HistoryService> history_service_;
 
   scoped_refptr<ShortcutsBackend> backend_;
@@ -122,13 +127,12 @@ void ShortcutsBackendTest::SetSearchProvider() {
   data.SetKeyword(u"foo");
 
   TemplateURL* template_url =
-      template_url_service_->Add(std::make_unique<TemplateURL>(data));
-  template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
+      template_url_service()->Add(std::make_unique<TemplateURL>(data));
+  template_url_service()->SetUserSelectedDefaultSearchProvider(template_url);
 }
 
 void ShortcutsBackendTest::SetUp() {
   ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
-  template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
   history_service_ =
       history::CreateHistoryService(profile_dir_.GetPath(), true);
   ASSERT_TRUE(history_service_);
@@ -136,7 +140,7 @@ void ShortcutsBackendTest::SetUp() {
   base::FilePath shortcuts_database_path =
       profile_dir_.GetPath().Append(kShortcutsDatabaseName);
   backend_ = new ShortcutsBackend(
-      template_url_service_.get(), std::make_unique<SearchTermsData>(),
+      template_url_service(), std::make_unique<SearchTermsData>(),
       history_service_.get(), shortcuts_database_path, false);
   ASSERT_TRUE(backend_.get());
   backend_->AddObserver(this);

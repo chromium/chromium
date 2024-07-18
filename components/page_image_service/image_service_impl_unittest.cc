@@ -25,7 +25,7 @@
 #include "components/page_image_service/metrics_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom-shared.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
-#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -80,7 +80,6 @@ class ImageServiceImplTest : public testing::Test {
          kImageServiceOptimizationGuideSalientImages},
         {});
 
-    template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
         /*document_suggestions_service=*/nullptr,
         test_url_loader_factory_.GetSafeWeakWrapper());
@@ -88,9 +87,9 @@ class ImageServiceImplTest : public testing::Test {
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     image_service_ = std::make_unique<ImageServiceImpl>(
-        template_url_service_.get(), remote_suggestions_service_.get(),
-        test_opt_guide_.get(), test_sync_service_.get(),
-        std::make_unique<TestSchemeClassifier>());
+        search_engines_test_environment_.template_url_service(),
+        remote_suggestions_service_.get(), test_opt_guide_.get(),
+        test_sync_service_.get(), std::make_unique<TestSchemeClassifier>());
   }
 
   PageImageServiceConsentStatus GetConsentStatusToFetchImageAwaitResult(
@@ -119,7 +118,7 @@ class ImageServiceImplTest : public testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
-  std::unique_ptr<TemplateURLService> template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<RemoteSuggestionsService> remote_suggestions_service_;
   std::unique_ptr<optimization_guide::ImageServiceTestOptGuide> test_opt_guide_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
@@ -483,7 +482,6 @@ class DisabledOptGuideImageServiceImplTest : public ImageServiceImplTest {
         /*enabled_features=*/{kImageService, kImageServiceSuggestPoweredImages},
         /*disabled_features=*/{kImageServiceOptimizationGuideSalientImages});
 
-    template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
         /*document_suggestions_service=*/nullptr,
         test_url_loader_factory_.GetSafeWeakWrapper());
@@ -491,9 +489,9 @@ class DisabledOptGuideImageServiceImplTest : public ImageServiceImplTest {
         std::make_unique<optimization_guide::ImageServiceTestOptGuide>();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     image_service_ = std::make_unique<ImageServiceImpl>(
-        template_url_service_.get(), remote_suggestions_service_.get(),
-        test_opt_guide_.get(), test_sync_service_.get(),
-        std::make_unique<TestSchemeClassifier>());
+        search_engines_test_environment_.template_url_service(),
+        remote_suggestions_service_.get(), test_opt_guide_.get(),
+        test_sync_service_.get(), std::make_unique<TestSchemeClassifier>());
   }
 };
 

@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "//components/favicon/core",
     "//components/favicon/ios",
     "//components/search_engines",
+    "//components/search_engines:test_support",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

@@ -257,6 +257,7 @@ if (use_blink) {
       "//components/prefs:test_support",
       "//components/reading_list/features:flags",
       "//components/search_engines",
+      "//components/search_engines:test_support",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/supervised_user/core/common:buildflags",

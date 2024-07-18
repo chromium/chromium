@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,6 +134,8 @@ class InMemoryURLIndexTest : public testing::Test {
   void ExpectPrivateDataEqual(const URLIndexPrivateData& expected,
                               const URLIndexPrivateData& actual);
 
+  TemplateURLService* template_url_service();
+
   ScoredHistoryMatches HistoryItemsForTerms(const std::u16string& term_string,
                                             size_t cursor_position,
                                             const std::string& host_filter,
@@ -147,9 +150,14 @@ class InMemoryURLIndexTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<history::HistoryService> history_service_;
   raw_ptr<history::HistoryDatabase> history_database_ = nullptr;
-  std::unique_ptr<TemplateURLService> template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_{
+      {.template_url_service_initializer = kTemplateURLData}};
   std::unique_ptr<InMemoryURLIndex> url_index_;
 };
+
+TemplateURLService* InMemoryURLIndexTest::template_url_service() {
+  return search_engines_test_environment_.template_url_service();
+}
 
 sql::Database& InMemoryURLIndexTest::GetDB() {
   return history_database_->GetDB();
@@ -241,11 +249,9 @@ void InMemoryURLIndexTest::SetUp() {
   BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
   // Set up a simple template URL service with a default search engine.
-  template_url_service_ = std::make_unique<TemplateURLService>(
-      kTemplateURLData, std::size(kTemplateURLData));
-  TemplateURL* template_url = template_url_service_->GetTemplateURLForKeyword(
+  TemplateURL* template_url = template_url_service()->GetTemplateURLForKeyword(
       kDefaultTemplateURLKeyword);
-  template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
+  template_url_service()->SetUserSelectedDefaultSearchProvider(template_url);
 
   if (InitializeInMemoryURLIndexInSetUp())
     InitializeInMemoryURLIndex();
@@ -273,8 +279,8 @@ void InMemoryURLIndexTest::InitializeInMemoryURLIndex() {
   SchemeSet client_schemes_to_allowlist;
   client_schemes_to_allowlist.insert(kClientAllowlistedScheme);
   url_index_ = std::make_unique<InMemoryURLIndex>(
-      nullptr, history_service_.get(), template_url_service_.get(),
-      base::FilePath(), client_schemes_to_allowlist);
+      nullptr, history_service_.get(), template_url_service(), base::FilePath(),
+      client_schemes_to_allowlist);
   url_index_->Init();
 
   BlockUntilHistoryProcessesPendingRequests(history_service_.get());
@@ -505,9 +511,9 @@ TEST_F(InMemoryURLIndexTest, Retrieval) {
   EXPECT_EQ(0U, matches.size());
 
   // But if it's not from the default search engine, it should be returned.
-  TemplateURL* template_url = template_url_service_->GetTemplateURLForKeyword(
+  TemplateURL* template_url = template_url_service()->GetTemplateURLForKeyword(
       kNonDefaultTemplateURLKeyword);
-  template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
+  template_url_service()->SetUserSelectedDefaultSearchProvider(template_url);
   matches = HistoryItemsForTerms(u"query", std::u16string::npos, "",
                                  kProviderMaxMatches);
   EXPECT_EQ(1U, matches.size());

@@ -10,9 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-
-class TemplateURLService;
 
 namespace search_engines {
 
@@ -28,11 +27,14 @@ class SearchEnginesTestEnvironment {
     raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service =
         nullptr;
     raw_ptr<TestingPrefServiceSimple> local_state = nullptr;
+    base::span<const TemplateURLService::Initializer>
+        template_url_service_initializer;
   };
 
-  explicit SearchEnginesTestEnvironment(const Deps& deps = {
-                                            /*pref_service=*/nullptr,
-                                            /*local_state=*/nullptr});
+  explicit SearchEnginesTestEnvironment(
+      const Deps& deps = {/*pref_service=*/nullptr,
+                          /*local_state=*/nullptr,
+                          /*template_url_service_initializer=*/{}});
   SearchEnginesTestEnvironment(const SearchEnginesTestEnvironment&) = delete;
   SearchEnginesTestEnvironment& operator=(const SearchEnginesTestEnvironment&) =
       delete;

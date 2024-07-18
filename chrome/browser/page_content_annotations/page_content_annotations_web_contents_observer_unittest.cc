@@ -21,6 +21,7 @@
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/google/core/common/google_switches.h"
@@ -34,7 +35,7 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/navigation_simulator.h"
@@ -144,10 +145,14 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
 
 std::unique_ptr<KeyedService> BuildTestTemplateURLService(
     content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  search_engines::SearchEngineChoiceService* search_engine_choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile);
+
   // Set up a simple template URL service with a default search engine.
   auto template_url_service = std::make_unique<TemplateURLService>(
-      kTemplateURLData, std::size(kTemplateURLData));
-  auto* template_url = template_url_service->GetTemplateURLForKeyword(
+      profile->GetPrefs(), search_engine_choice_service, kTemplateURLData);
+  TemplateURL* template_url = template_url_service->GetTemplateURLForKeyword(
       kDefaultTemplateURLKeyword);
   template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
   return std::move(template_url_service);

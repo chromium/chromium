@@ -15,16 +15,12 @@
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/query_tiles/test/fake_tile_service.h"
-#include "components/search_engines/search_terms_data.h"
-#include "components/search_engines/template_url_service.h"
 
 FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
-  set_template_url_service(std::make_unique<TemplateURLService>(nullptr, 0));
+  set_template_url_service(
+      search_engines_test_enviroment_.ReleaseTemplateURLService());
 
-  pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-  local_state_ = std::make_unique<TestingPrefServiceSimple>();
   tile_service_ = std::make_unique<query_tiles::FakeTileService>();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   on_device_tail_model_service_ =
@@ -35,6 +31,14 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
 }
 
 FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
+  // `ShortcutsBackend` depends on `TemplateURLService` so it should be
+  // destroyed before it.
+  shortcuts_backend_.reset();
+
+  // We explicitly set `TemplateURLService` to `nullptr` because its object
+  // lives in the parent class `MockAutocompleteProviderClient` while its
+  // services live in `SearchEnginesTestEnvironment` in this class.
+  set_template_url_service(nullptr);
   // The InMemoryURLIndex must be explicitly shut down or it will DCHECK() in
   // its destructor.
   if (in_memory_url_index_)
@@ -44,11 +48,11 @@ FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
 }
 
 PrefService* FakeAutocompleteProviderClient::GetPrefs() const {
-  return pref_service_.get();
+  return &search_engines_test_enviroment_.pref_service();
 }
 
 PrefService* FakeAutocompleteProviderClient::GetLocalState() {
-  return local_state_.get();
+  return &search_engines_test_enviroment_.local_state();
 }
 
 const AutocompleteSchemeClassifier&

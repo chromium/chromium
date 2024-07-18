@@ -138,6 +138,7 @@ source_set("unit_tests") {
     "//components/page_image_service",
     "//components/prefs:test_support",
     "//components/search_engines",
+    "//components/search_engines:test_support",
     "//components/site_engagement/core",
     "//services/network:test_support",
     "//testing/gtest",

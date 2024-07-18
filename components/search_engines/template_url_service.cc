@@ -441,26 +441,6 @@ TemplateURLService::TemplateURLService(
   ApplyInitializersForTesting(initializers);  // IN-TEST
 }
 
-TemplateURLService::TemplateURLService(const Initializer* initializers,
-                                       const size_t count)
-    : pre_loading_providers_(std::make_unique<PreLoadingProviders>()),
-      default_search_manager_(
-          /*pref_service=*/nullptr,
-          /*search_engine_choice_service=*/nullptr,
-          base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
-                              base::Unretained(this))
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-              ,
-          false
-#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
-          ),
-      enterprise_site_search_manager_(
-          GetEnterpriseSiteSearchManager(/*prefs=*/nullptr)) {
-  CHECK_IS_TEST();
-  Init();
-  ApplyInitializersForTesting(base::make_span(initializers, count));  // IN-TEST
-}
-
 TemplateURLService::~TemplateURLService() {
   // |web_data_service_| should be deleted during Shutdown().
   DCHECK(!web_data_service_);

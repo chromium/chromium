@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
@@ -60,8 +61,8 @@ class ZeroSuggestVerbatimMatchProviderTest
   bool IsVerbatimMatchEligible() const;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  scoped_refptr<ZeroSuggestVerbatimMatchProvider> provider_;
   FakeAutocompleteProviderClient mock_client_;
+  scoped_refptr<ZeroSuggestVerbatimMatchProvider> provider_;
 };
 
 bool ZeroSuggestVerbatimMatchProviderTest::IsVerbatimMatchEligible() const {
@@ -239,10 +240,6 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
        NoFillIntoEditResolutionWithNoSearchEngines) {
   base::test::ScopedFeatureList features;
-  // No TemplateURLServices to parse or resolve the URL.
-  mock_client_.set_template_url_service(
-      std::make_unique<TemplateURLService>(nullptr, 0));
-
   std::string url("https://www.search.com/q=abc");
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
@@ -265,8 +262,6 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   // Default TemplateURL to parse the URL.
   std::unique_ptr<TemplateURLData> engine =
       GenerateSimpleTemplateURLData("www.search.com");
-  mock_client_.set_template_url_service(
-      std::make_unique<TemplateURLService>(nullptr, 0));
   mock_client_.GetTemplateURLService()->ApplyDefaultSearchChangeForTesting(
       engine.get(), DefaultSearchManager::FROM_USER);
 
@@ -294,8 +289,10 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   // Other search engines.
   TemplateURLService::Initializer other_engines[] = {
       {"non-default", "https://www.non-default.com/q=abc", "non-default"}};
-  mock_client_.set_template_url_service(std::make_unique<TemplateURLService>(
-      other_engines, std::size(other_engines)));
+  search_engines::SearchEnginesTestEnvironment test_environment(
+      {.template_url_service_initializer = other_engines});
+  mock_client_.set_template_url_service(
+      test_environment.ReleaseTemplateURLService());
   mock_client_.GetTemplateURLService()->ApplyDefaultSearchChangeForTesting(
       engine.get(), DefaultSearchManager::FROM_USER);
 
@@ -312,6 +309,11 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
               provider_->matches()[0].fill_into_edit);
     ASSERT_EQ(u"title", provider_->matches()[0].description);
   }
+
+  // Some dependencies of `mock_client_`'s `TemplateURLService` are owned by
+  // `test_environment`, which is going out of scope here. Destroy it to
+  // avoid dangling pointers.
+  mock_client_.set_template_url_service(nullptr);
 }
 #endif
 

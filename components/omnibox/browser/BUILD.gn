@@ -735,6 +735,7 @@ static_library("test_support") {
     "//components/query_tiles/test:test_support",
     "//components/resources",
     "//components/search_engines",
+    "//components/search_engines:test_support",
     "//components/sessions",
     "//net",
     "//services/network:test_support",

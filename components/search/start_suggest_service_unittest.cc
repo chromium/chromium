@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/search/search.h"
 #include "components/search/search_provider_observer.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -106,10 +107,8 @@ class StartSuggestServiceTest : public ::testing::Test {
   ~StartSuggestServiceTest() override = default;
 
   void SetUp() override {
-    template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
-
     service_ = std::make_unique<TestStartSuggestService>(
-        template_url_service_.get(),
+        search_engines_test_environment_.template_url_service(),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         std::make_unique<TestSchemeClassifier>(), GURL());
@@ -141,13 +140,13 @@ class StartSuggestServiceTest : public ::testing::Test {
   }
 
   TemplateURLService* template_url_service() {
-    return template_url_service_.get();
+    return search_engines_test_environment_.template_url_service();
   }
 
   TestStartSuggestService* service() { return service_.get(); }
 
   const TemplateURL* default_search_provider() {
-    return template_url_service_->GetDefaultSearchProvider();
+    return template_url_service()->GetDefaultSearchProvider();
   }
 
   base::WeakPtr<StartSuggestServiceTest> GetWeakPtr() {
@@ -166,7 +165,7 @@ class StartSuggestServiceTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-  std::unique_ptr<TemplateURLService> template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestStartSuggestService> service_;

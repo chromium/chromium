@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,7 +132,9 @@ class FakeOptimizationGuideDecider
 
 class PageContentAnnotationsServiceTest : public testing::Test {
  public:
-  PageContentAnnotationsServiceTest() {
+  PageContentAnnotationsServiceTest()
+      : search_engines_test_environment_(
+            {.template_url_service_initializer = kTemplateURLData}) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPageContentAnnotations,
           {
@@ -151,16 +154,14 @@ class PageContentAnnotationsServiceTest : public testing::Test {
     history_service_ =
         std::make_unique<testing::StrictMock<MockHistoryService>>();
 
-    template_url_service_ = std::make_unique<TemplateURLService>(
-        kTemplateURLData, std::size(kTemplateURLData));
-
     optimization_guide_decider_ =
         std::make_unique<FakeOptimizationGuideDecider>();
 
     // Instantiate service.
     service_ = std::make_unique<PageContentAnnotationsService>(
         "en-US", "us", optimization_guide_model_provider_.get(),
-        history_service_.get(), template_url_service_.get(),
+        history_service_.get(),
+        search_engines_test_environment_.template_url_service(),
         /*zero_suggest_cache_service=*/nullptr,
         /*database_provider=*/nullptr,
         /*database_dir=*/base::FilePath(),
@@ -208,7 +209,7 @@ class PageContentAnnotationsServiceTest : public testing::Test {
 
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
-  std::unique_ptr<TemplateURLService> template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestPageContentAnnotator> test_annotator_;
   std::unique_ptr<FakeOptimizationGuideDecider> optimization_guide_decider_;
   std::unique_ptr<PageContentAnnotationsService> service_;

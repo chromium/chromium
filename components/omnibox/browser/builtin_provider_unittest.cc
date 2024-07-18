@@ -19,7 +19,7 @@
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -101,7 +101,7 @@ class BuiltinProviderTest : public testing::Test {
   void SetUp() override {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     client_->set_template_url_service(
-        std::make_unique<TemplateURLService>(nullptr, 0));
+        search_engines_test_environment_.ReleaseTemplateURLService());
     provider_ = new BuiltinProvider(client_.get());
   }
   void TearDown() override { provider_ = nullptr; }
@@ -124,6 +124,7 @@ class BuiltinProviderTest : public testing::Test {
     }
   }
 
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<BuiltinProvider> provider_;
 };

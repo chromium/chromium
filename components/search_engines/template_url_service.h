@@ -147,11 +147,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
 
-  // For testing only.
-  // DEPRECATED, prefer the constructor that takes a `PrefService`.
-  // TODO(crbug.com/40287734): Remove once all usage is cleaned up.
-  TemplateURLService(const Initializer* initializers, const size_t count);
-
   // For testing only. `initializers` will be used to simulate having loaded
   // some template URL data.
   explicit TemplateURLService(
