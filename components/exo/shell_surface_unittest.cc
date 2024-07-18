@@ -47,6 +47,8 @@
 #include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/window.h"
@@ -70,6 +72,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -5073,6 +5076,29 @@ TEST_F(ShellSurfaceTest, HandlesDisplayChangeNoWidget) {
   // Trigger an update to the display configuration, the shell surface should
   // handle this without crashing.
   UpdateDisplay("1200x800");
+}
+
+TEST_F(ShellSurfaceTest, AccessibleChildTreeNodeAppId) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  ui::AXNodeData data;
+
+  shell_surface->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId));
+
+  data = ui::AXNodeData();
+  shell_surface->SetApplicationId("child_app_id");
+  shell_surface->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      "child_app_id",
+      data.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId));
+
+  data = ui::AXNodeData();
+  shell_surface->SetApplicationId(nullptr);
+  shell_surface->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId));
 }
 
 }  // namespace exo
