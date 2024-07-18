@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -96,6 +97,67 @@ FS_MATRIX CalculateWordMoveMatrix(const SearchifyBoundingBoxOrigin& word_origin,
   return move_matrix;
 }
 
+void AddWordOnImage(FPDF_DOCUMENT document,
+                    FPDF_PAGE page,
+                    FPDF_FONT font,
+                    const screen_ai::mojom::WordBoxPtr& word,
+                    base::span<const FS_MATRIX> transform_matrices) {
+  ScopedFPDFPageObject text(
+      FPDFPageObj_CreateTextObj(document, font, word->bounding_box.height()));
+  CHECK(text);
+
+  std::string word_string = word->word;
+  // TODO(crbug.com/41487613): A more accurate width would be the distance
+  // from current word's origin to next word's origin.
+  if (word->has_space_after) {
+    word_string.push_back(' ');
+  }
+
+  if (word_string.empty()) {
+    DLOG(ERROR) << "Got empty word";
+    return;
+  }
+
+  std::vector<uint32_t> charcodes = Utf8ToCharcodes(word_string);
+  if (!FPDFText_SetCharcodes(text.get(), charcodes.data(), charcodes.size())) {
+    DLOG(ERROR) << "Failed to set charcodes";
+    return;
+  }
+
+  // Make text invisible
+  if (!FPDFTextObj_SetTextRenderMode(text.get(),
+                                     FPDF_TEXTRENDERMODE_INVISIBLE)) {
+    DLOG(ERROR) << "Failed to make text invisible";
+    return;
+  }
+
+  float left;
+  float bottom;
+  float right;
+  float top;
+  if (!FPDFPageObj_GetBounds(text.get(), &left, &bottom, &right, &top)) {
+    DLOG(ERROR) << "Failed to get the bounding box of text object";
+    return;
+  }
+
+  const gfx::SizeF text_object_size(right - left, top - bottom);
+  CHECK_GT(text_object_size.width(), 0);
+  CHECK_GT(text_object_size.height(), 0);
+  const FS_MATRIX text_scale_matrix(
+      word->bounding_box.width() / text_object_size.width(), 0, 0,
+      word->bounding_box.height() / text_object_size.height(), 0, 0);
+  FPDFPageObj_Transform(text.get(), text_scale_matrix.a, text_scale_matrix.b,
+                        text_scale_matrix.c, text_scale_matrix.d,
+                        text_scale_matrix.e, text_scale_matrix.f);
+
+  for (const auto& matrix : transform_matrices) {
+    FPDFPageObj_Transform(text.get(), matrix.a, matrix.b, matrix.c, matrix.d,
+                          matrix.e, matrix.f);
+  }
+
+  FPDFPage_InsertObject(page, text.release());
+}
+
 void AddTextOnImage(FPDF_DOCUMENT document,
                     FPDF_PAGE page,
                     FPDF_FONT font,
@@ -106,6 +168,16 @@ void AddTextOnImage(FPDF_DOCUMENT document,
     DLOG(ERROR) << "Failed to get image rendered dimensions";
     return;
   }
+
+  // The transformation matrices is applied as follows:
+  std::array<FS_MATRIX, 3> transform_matrices;
+  // Move text object to the corresponding text position on the full image.
+  FS_MATRIX& move_matrix = transform_matrices[0];
+  // Scale from full image size to rendered image size on the PDF.
+  FS_MATRIX& image_scale_matrix = transform_matrices[1];
+  // Apply the image's transformation matrix on the PDF page without the
+  // scaling matrix.
+  FS_MATRIX& image_without_scaling_matrix = transform_matrices[2];
 
   const gfx::SizeF image_rendered_size(
       hypotf(quadpoints.x1 - quadpoints.x2, quadpoints.y1 - quadpoints.y2),
@@ -118,11 +190,10 @@ void AddTextOnImage(FPDF_DOCUMENT document,
     return;
   }
   const gfx::Size image_pixel_size(image_pixel_width, image_pixel_height);
-  const FS_MATRIX image_scale_matrix(
-      image_rendered_size.width() / image_pixel_size.width(), 0, 0,
-      image_rendered_size.height() / image_pixel_size.height(), 0, 0);
+  image_scale_matrix = {
+      image_rendered_size.width() / image_pixel_size.width(),   0, 0,
+      image_rendered_size.height() / image_pixel_size.height(), 0, 0};
 
-  FS_MATRIX image_without_scaling_matrix;
   if (!FPDFPageObj_GetMatrix(image, &image_without_scaling_matrix)) {
     DLOG(ERROR) << "Failed to get image matrix";
     return;
@@ -142,84 +213,15 @@ void AddTextOnImage(FPDF_DOCUMENT document,
         continue;
       }
 
-      ScopedFPDFPageObject text(FPDFPageObj_CreateTextObj(
-          document, font, word->bounding_box.height()));
-      CHECK(text);
-
-      std::string word_string = word->word;
-      // TODO(crbug.com/41487613): A more accurate width would be the distance
-      // from current word's origin to next word's origin.
-      if (word->has_space_after) {
-        word_string.push_back(' ');
-      }
-
-      if (word_string.empty()) {
-        DLOG(ERROR) << "Got empty word";
-        continue;
-      }
-
-      std::vector<uint32_t> charcodes = Utf8ToCharcodes(word_string);
-      if (!FPDFText_SetCharcodes(text.get(), charcodes.data(),
-                                 charcodes.size())) {
-        DLOG(ERROR) << "Failed to set charcodes";
-        continue;
-      }
-
-      // Make text invisible
-      if (!FPDFTextObj_SetTextRenderMode(text.get(),
-                                         FPDF_TEXTRENDERMODE_INVISIBLE)) {
-        DLOG(ERROR) << "Failed to make text invisible";
-        continue;
-      }
-
-      float left;
-      float bottom;
-      float right;
-      float top;
-      if (!FPDFPageObj_GetBounds(text.get(), &left, &bottom, &right, &top)) {
-        DLOG(ERROR) << "Failed to get the bounding box of text object";
-        continue;
-      }
-
-      const gfx::SizeF text_object_size(right - left, top - bottom);
-      CHECK_GT(text_object_size.width(), 0);
-      CHECK_GT(text_object_size.height(), 0);
-      const FS_MATRIX text_scale_matrix(
-          word->bounding_box.width() / text_object_size.width(), 0, 0,
-          word->bounding_box.height() / text_object_size.height(), 0, 0);
-      FPDFPageObj_Transform(text.get(), text_scale_matrix.a,
-                            text_scale_matrix.b, text_scale_matrix.c,
-                            text_scale_matrix.d, text_scale_matrix.e,
-                            text_scale_matrix.f);
-
-      // Move text object to the corresponding text position on the full image.
       SearchifyBoundingBoxOrigin origin =
           ConvertToPdfOrigin(word->bounding_box, word->bounding_box_angle,
                              image_rendered_size.height());
-      const FS_MATRIX move_matrix = CalculateWordMoveMatrix(
+      move_matrix = CalculateWordMoveMatrix(
           ProjectToBaseline(origin.point, baseline_origin),
           word->bounding_box.width(),
           word->direction ==
               screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT);
-      FPDFPageObj_Transform(text.get(), move_matrix.a, move_matrix.b,
-                            move_matrix.c, move_matrix.d, move_matrix.e,
-                            move_matrix.f);
-
-      // Scale from full image size to rendered image size on the PDF.
-      FPDFPageObj_Transform(text.get(), image_scale_matrix.a,
-                            image_scale_matrix.b, image_scale_matrix.c,
-                            image_scale_matrix.d, image_scale_matrix.e,
-                            image_scale_matrix.f);
-
-      // Apply the image's transformation matrix on the PDF page without the
-      // scaling matrix.
-      FPDFPageObj_Transform(
-          text.get(), image_without_scaling_matrix.a,
-          image_without_scaling_matrix.b, image_without_scaling_matrix.c,
-          image_without_scaling_matrix.d, image_without_scaling_matrix.e,
-          image_without_scaling_matrix.f);
-
-      FPDFPage_InsertObject(page, text.release());
+      AddWordOnImage(document, page, font, word, transform_matrices);
     }
   }
 }
