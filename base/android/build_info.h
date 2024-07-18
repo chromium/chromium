@@ -37,6 +37,7 @@ enum SdkVersion {
   SDK_VERSION_Sv2 = 32,
   SDK_VERSION_T = 33,
   SDK_VERSION_U = 34,
+  SDK_VERSION_V = 35,
 };
 
 // BuildInfo is a singleton class that stores android build and device
