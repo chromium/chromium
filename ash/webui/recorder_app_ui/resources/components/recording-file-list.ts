@@ -89,7 +89,7 @@ export class RecordingFileList extends ReactiveLitElement {
       flex-flow: column;
       gap: 16px;
       overflow-y: auto;
-      padding: 8px 32px 24px;
+      padding: 8px 0 24px;
     }
 
     #sort-recording-menu {
@@ -99,7 +99,7 @@ export class RecordingFileList extends ReactiveLitElement {
     .section-heading {
       color: var(--cros-sys-on_surface);
       font: var(--cros-title-1-font);
-      padding-top: 16px;
+      margin: 16px 32px 0;
     }
   `;
 
@@ -110,13 +110,6 @@ export class RecordingFileList extends ReactiveLitElement {
   recordingMetadataMap: RecordingMetadataMap = {};
 
   private readonly sortMenuRef = createRef<Menu>();
-
-  // TODO: b/336963138 - Add back action menu for delete.
-  // private onDeleteRecordingClick(id: string) {
-  //   this.dispatchEvent(
-  //       new CustomEvent('delete-recording-clicked', {detail: id}),
-  //   );
-  // }
 
   private onSortingTypeClick(newSortType: RecordingSortType) {
     settings.mutate((d) => {

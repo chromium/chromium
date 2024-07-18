@@ -6,10 +6,13 @@ import './cra/cra-button.js';
 import './cra/cra-dialog.js';
 
 import {
+  classMap,
   createRef,
   css,
   CSSResultGroup,
   html,
+  nothing,
+  PropertyDeclarations,
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -21,9 +24,19 @@ import {CraDialog} from './cra/cra-dialog.js';
 export class DeleteRecordingDialog extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
     cra-dialog {
-      width: 368px;
+      width: 440px;
+
+      &.current {
+        width: 368px;
+      }
     }
   `;
+
+  static override properties: PropertyDeclarations = {
+    current: {type: Boolean},
+  };
+
+  current = false;
 
   private readonly dialog = createRef<CraDialog>();
 
@@ -41,8 +54,19 @@ export class DeleteRecordingDialog extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    return html`<cra-dialog ${ref(this.dialog)}>
-      <div slot="headline">${i18n.recordDeleteDialogHeader}</div>
+    const classes = {
+      currnet: this.current,
+    };
+
+    const headline = this.current ? i18n.recordDeleteDialogCurrentHeader :
+                                    i18n.recordDeleteDialogHeader;
+    const description = this.current ?
+      nothing :
+      html` <div slot="content">${i18n.recordDeleteDialogDescription}</div> `;
+
+    return html`<cra-dialog ${ref(this.dialog)} class=${classMap(classes)}>
+      <div slot="headline">${headline}</div>
+      ${description}
       <div slot="actions">
         <cra-button
           .label=${i18n.recordDeleteDialogCancelButton}

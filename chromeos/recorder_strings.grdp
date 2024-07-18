@@ -112,11 +112,17 @@ You can turn this off at anytime in Settings.
   <message desc="Button to cancel deleting recording in the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_CANCEL_BUTTON">
     Cancel
   </message>
+  <message desc="Header of the delete recording dialog before stopping recording." name="IDS_RECORDER_RECORD_DELETE_DIALOG_CURRENT_HEADER">
+    Delete current recording?
+  </message>
   <message desc="Button to delete recording in the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_DELETE_BUTTON">
     Delete
   </message>
+  <message desc="Description of the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_DESCRIPTION">
+    This action is permanent and cannot be undone.
+  </message>
   <message desc="Header of the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_HEADER">
-    Delete current recording?
+    Delete recording?
   </message>
   <message desc="Button to cancel exiting recording in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_CANCEL_BUTTON">
     Cancel

@@ -5,10 +5,16 @@
 import {DataDir} from './data_dir.js';
 import {computed, ReadonlySignal, signal} from './reactive/signal.js';
 import {concatTextTokens, TextToken, textTokenSchema} from './soda/soda.js';
-import {assertExists} from './utils/assert.js';
+import {
+  ExportAudioFormat,
+  ExportSettings,
+  ExportTranscriptionFormat,
+} from './state/settings.js';
+import {assertExhaustive, assertExists} from './utils/assert.js';
 import {AsyncJobQueue} from './utils/async_job_queue.js';
 import {Infer, z} from './utils/schema.js';
 import {ulid} from './utils/ulid.js';
+import {downloadFile} from './utils/utils.js';
 
 /**
  * The base recording metadata.
@@ -251,8 +257,12 @@ export class RecordingDataManager {
     return this.cachedMetadataMap;
   }
 
+  private getMetadataRaw(id: string): RecordingMetadata|null {
+    return this.cachedMetadataMap.value[id] ?? null;
+  }
+
   getMetadata(id: string): ReadonlySignal<RecordingMetadata|null> {
-    return computed(() => this.cachedMetadataMap.value[id] ?? null);
+    return computed(() => this.getMetadataRaw(id));
   }
 
   setMetadata(id: string, meta: RecordingMetadata): void {
@@ -308,5 +318,60 @@ export class RecordingDataManager {
     void this.dataDir.remove(audioName(id));
     void this.dataDir.remove(transcriptionName(id));
     void this.dataDir.remove(audioPowerName(id));
+  }
+
+  private async exportAudio(id: string, format: ExportAudioFormat) {
+    const metadata = this.getMetadataRaw(id);
+    if (metadata === null) {
+      return;
+    }
+
+    const file = await this.getAudioFile(id);
+    switch (format) {
+      case ExportAudioFormat.WEBM_ORIGINAL: {
+        const filename = getDefaultFileNameWithoutExtension(metadata) + '.webm';
+        downloadFile(filename, file);
+        break;
+      }
+      default:
+        assertExhaustive(format);
+    }
+  }
+
+  private async exportTranscription(
+    id: string,
+    format: ExportTranscriptionFormat,
+  ) {
+    const metadata = this.getMetadataRaw(id);
+    if (metadata === null) {
+      return;
+    }
+    const {textTokens} = await this.getTranscription(id);
+    // TODO(pihsun): This "transcription available" logic exists at multiple
+    // places, consolidate them.
+    if (textTokens === null || textTokens.length === 0) {
+      return;
+    }
+
+    switch (format) {
+      case ExportTranscriptionFormat.TXT: {
+        const text = concatTextTokens(textTokens);
+        const blob = new Blob([text], {type: 'text/plain'});
+        const filename = getDefaultFileNameWithoutExtension(metadata) + '.txt';
+        downloadFile(filename, blob);
+        break;
+      }
+      default:
+        assertExhaustive(format);
+    }
+  }
+
+  async exportRecording(id: string, settings: ExportSettings): Promise<void> {
+    if (settings.transcription) {
+      await this.exportTranscription(id, settings.transcriptionFormat);
+    }
+    if (settings.audio) {
+      await this.exportAudio(id, settings.audioFormat);
+    }
   }
 }

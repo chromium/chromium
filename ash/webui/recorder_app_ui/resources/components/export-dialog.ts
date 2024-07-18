@@ -20,7 +20,11 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
-import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {useRecordingDataManager} from '../core/lit/context.js';
+import {
+  ReactiveLitElement,
+  ScopedAsyncComputed,
+} from '../core/reactive/lit.js';
 import {computed} from '../core/reactive/signal.js';
 import {
   ExportAudioFormat,
@@ -32,6 +36,7 @@ import {
   assertInstanceof,
   assertString,
 } from '../core/utils/assert.js';
+import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
 import {CraDropdown} from './cra/cra-dropdown.js';
@@ -69,10 +74,12 @@ export class ExportDialog extends ReactiveLitElement {
   `;
 
   static override properties: PropertyDeclarations = {
-    transcriptionEnabled: {type: Boolean},
+    recordingId: {type: String},
   };
 
-  transcriptionEnabled = true;
+  recordingId: string|null = null;
+
+  private readonly recordingIdSignal = this.propSignal('recordingId');
 
   private readonly dialog = createRef<CraDialog>();
 
@@ -80,15 +87,35 @@ export class ExportDialog extends ReactiveLitElement {
     () => settings.value.exportSettings,
   );
 
+  private readonly recordingDataManager = useRecordingDataManager();
+
+  private readonly textTokens = new ScopedAsyncComputed(this, async () => {
+    if (this.recordingIdSignal.value === null) {
+      return null;
+    }
+    const {textTokens} = await this.recordingDataManager.getTranscription(
+      this.recordingIdSignal.value,
+    );
+    return textTokens;
+  });
+
+  private readonly transcriptionAvailable = computed(
+    () => this.textTokens.value !== null && this.textTokens.value.length > 0,
+  );
+
+  private readonly exportQueue = new AsyncJobQueue('drop');
+
   private get saveEnabled() {
     return (
       this.exportSettings.value.audio ||
-      (this.transcriptionEnabled && this.exportSettings.value.transcription)
+      (this.transcriptionAvailable.value &&
+       this.exportSettings.value.transcription)
     );
   }
 
-  async show(): Promise<void> {
-    await this.dialog.value?.show();
+  show(): void {
+    // There's no user waiting for the dialog open animation to be done.
+    void this.dialog.value?.show();
   }
 
   hide(): void {
@@ -96,13 +123,20 @@ export class ExportDialog extends ReactiveLitElement {
   }
 
   private save() {
-    if (!this.saveEnabled) {
+    const recordingId = this.recordingId;
+    const exportSettings = this.exportSettings.value;
+    if (!this.saveEnabled || recordingId === null) {
       return;
     }
     // TODO(pihsun): Loading state for export recording.
-    this.dispatchEvent(
-      new CustomEvent('save', {detail: this.exportSettings.value}),
-    );
+    // TODO(pihsun): Handle failure.
+    this.exportQueue.push(async () => {
+      await this.recordingDataManager.exportRecording(
+        recordingId,
+        exportSettings,
+      );
+      this.hide();
+    });
   }
 
   private toggleExportAudio() {
@@ -201,7 +235,7 @@ export class ExportDialog extends ReactiveLitElement {
         <expandable-card
           ?expanded=${this.exportSettings.value.transcription}
           @toggle-expand=${this.toggleExportTranscription}
-          ?disabled=${!this.transcriptionEnabled}
+          ?disabled=${!this.transcriptionAvailable.value}
         >
           <span slot="header" class="header">
             ${i18n.exportDialogTranscriptionHeader}

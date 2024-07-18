@@ -726,6 +726,7 @@ export class RecordPage extends ReactiveLitElement {
         </div>
       </div>
       <delete-recording-dialog
+        current
         @delete=${this.deleteRecording}
         ${ref(this.deleteDialog)}
       >

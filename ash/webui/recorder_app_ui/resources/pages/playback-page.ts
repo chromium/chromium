@@ -45,20 +45,9 @@ import {
   ScopedAsyncEffect,
 } from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
-import {
-  getDefaultFileNameWithoutExtension,
-} from '../core/recording_data_manager.js';
-import {concatTextTokens} from '../core/soda/soda.js';
 import {navigateTo} from '../core/state/route.js';
-import {
-  ExportAudioFormat,
-  ExportSettings,
-  ExportTranscriptionFormat,
-} from '../core/state/settings.js';
-import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
-import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
+import {assertInstanceof} from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
-import {downloadFile} from '../core/utils/utils.js';
 
 /**
  * Playback page of Recorder App.
@@ -342,9 +331,6 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly showTranscription = signal(false);
 
-  // TODO(pihsun): Move export functions out of the component.
-  private readonly exportQueue = new AsyncJobQueue('drop');
-
   constructor() {
     super();
 
@@ -397,56 +383,6 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private toggleTranscription() {
     this.showTranscription.update((s) => !s);
-  }
-
-  private async exportAudio(exportSettings: ExportSettings) {
-    if (!exportSettings.audio || this.recordingId === null ||
-        this.recordingMetadata.value === null) {
-      return;
-    }
-    const file = await this.recordingDataManager.getAudioFile(this.recordingId);
-    switch (exportSettings.audioFormat) {
-      case ExportAudioFormat.WEBM_ORIGINAL: {
-        const filename =
-          getDefaultFileNameWithoutExtension(this.recordingMetadata.value) +
-          '.webm';
-        downloadFile(filename, file);
-        break;
-      }
-      default:
-        assertExhaustive(exportSettings.audioFormat);
-    }
-  }
-
-  private exportTranscription(exportSettings: ExportSettings) {
-    if (!exportSettings.transcription || this.textTokens.value === null ||
-        this.recordingMetadata.value === null) {
-      return;
-    }
-    switch (exportSettings.transcriptionFormat) {
-      case ExportTranscriptionFormat.TXT: {
-        const text = concatTextTokens(this.textTokens.value);
-        const blob = new Blob([text], {type: 'text/plain'});
-        const filename =
-          getDefaultFileNameWithoutExtension(this.recordingMetadata.value) +
-          '.txt';
-        downloadFile(filename, blob);
-        break;
-      }
-      default:
-        assertExhaustive(exportSettings.transcriptionFormat);
-    }
-  }
-
-  private onExportSave(ev: CustomEvent<ExportSettings>) {
-    // TODO(pihsun): Loading state for export recording.
-    // Use the settings while the button is clicked.
-    const exportSettings = ev.detail;
-    this.exportQueue.push(async () => {
-      this.exportTranscription(exportSettings);
-      await this.exportAudio(exportSettings);
-      this.exportDialog.value?.hide();
-    });
   }
 
   private renderAudioWaveform() {
@@ -536,8 +472,6 @@ export class PlaybackPage extends ReactiveLitElement {
   }
 
   private renderMenu() {
-    const exportTranscriptionEnabled =
-      this.textTokens.value !== null && this.textTokens.value.length > 0;
     // TODO: b/344789992 - Implements show detail.
     return html`
       <cra-menu ${ref(this.menu)} anchor="show-menu">
@@ -554,11 +488,7 @@ export class PlaybackPage extends ReactiveLitElement {
           @cros-menu-item-triggered=${this.onDeleteClick}
         ></cra-menu-item>
       </cra-menu>
-      <export-dialog
-        ${ref(this.exportDialog)}
-        .transcriptionEnabled=${exportTranscriptionEnabled}
-        @save=${this.onExportSave}
-      >
+      <export-dialog ${ref(this.exportDialog)} .recordingId=${this.recordingId}>
       </export-dialog>
       <delete-recording-dialog
         ${ref(this.deleteRecordingDialog)}

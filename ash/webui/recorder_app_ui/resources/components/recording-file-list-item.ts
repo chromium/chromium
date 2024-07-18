@@ -7,6 +7,7 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 
 import {
+  classMap,
   css,
   html,
   nothing,
@@ -14,8 +15,8 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {signal} from '../core/reactive/signal.js';
 import {RecordingMetadata} from '../core/recording_data_manager.js';
-import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 import {
   formatDate,
   formatDuration,
@@ -32,11 +33,24 @@ export class RecordingFileListItem extends ReactiveLitElement {
       display: block;
     }
 
-    .recording {
+    #root {
+      position: relative;
+    }
+
+    #recording {
       --cros-card-padding: 24px;
       --cros-card-hover-color: none;
 
+      margin: 0 32px;
       position: relative;
+
+      /* TODO: b/336963138 - Align with the motion spec. */
+      transition: transform 200ms ease;
+      z-index: 1;
+
+      &.menu-shown {
+        transform: translateX(-144px);
+      }
 
       & > cros-card {
         background-color: var(--cros-sys-app_base);
@@ -52,16 +66,9 @@ export class RecordingFileListItem extends ReactiveLitElement {
           gap: 16px;
         }
       }
-
-      & > .options {
-        position: absolute;
-        right: 0;
-        top: 0;
-        z-index: 1;
-      }
     }
 
-    .recording-info {
+    #recording-info {
       align-items: stretch;
       display: flex;
       flex: 1;
@@ -70,7 +77,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
       min-width: 0;
     }
 
-    .title {
+    #title {
       font: var(--cros-title-1-font);
       overflow: hidden;
 
@@ -80,14 +87,14 @@ export class RecordingFileListItem extends ReactiveLitElement {
       white-space: nowrap;
     }
 
-    .timeline {
+    #timeline {
       background-color: var(--cros-sys-primary);
       border-radius: 2px;
       height: 4px;
       margin-top: 16px;
     }
 
-    .timestamps {
+    #timestamps {
       display: flex;
       flex-flow: row;
       font: var(--cros-body-2-font);
@@ -95,6 +102,30 @@ export class RecordingFileListItem extends ReactiveLitElement {
 
       & > span:first-child {
         flex: 1;
+      }
+    }
+
+    #options {
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: 1;
+    }
+
+    #menu {
+      align-items: center;
+      bottom: 0;
+      display: flex;
+      flex-flow: row;
+      margin: auto 0;
+      padding: 0;
+      position: absolute;
+      right: 32px;
+      top: 0;
+      transition: right 200ms ease;
+
+      &.menu-shown {
+        right: 16px;
       }
     }
   `;
@@ -105,12 +136,44 @@ export class RecordingFileListItem extends ReactiveLitElement {
 
   recording: RecordingMetadata|null = null;
 
-  private onRecordingClick(ev: PointerEvent) {
-    const target = assertInstanceof(ev.currentTarget, HTMLElement);
-    const id = assertExists(target.dataset['recordingId']);
+  menuShown = signal(false);
+
+  private onRecordingClick() {
+    if (this.recording === null) {
+      return;
+    }
+
     this.dispatchEvent(
       new CustomEvent('recording-clicked', {
-        detail: id,
+        detail: this.recording.id,
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  private onDeleteRecordingClick() {
+    if (this.recording === null) {
+      return;
+    }
+
+    this.dispatchEvent(
+      new CustomEvent('delete-recording-clicked', {
+        detail: this.recording.id,
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  private onExportRecordingClick() {
+    if (this.recording === null) {
+      return;
+    }
+
+    this.dispatchEvent(
+      new CustomEvent('export-recording-clicked', {
+        detail: this.recording.id,
         bubbles: true,
         composed: true,
       }),
@@ -127,6 +190,17 @@ export class RecordingFileListItem extends ReactiveLitElement {
     // TODO: b/336963138 - Implements options.
     ev.preventDefault();
     ev.stopPropagation();
+    this.menuShown.update((s) => !s);
+  }
+
+  private onFocusOut(ev: FocusEvent) {
+    const target = ev.relatedTarget;
+    if (target !== null && target instanceof Node &&
+        this.shadowRoot?.contains(target)) {
+      // New target still within this element.
+      return;
+    }
+    this.menuShown.value = false;
   }
 
   private renderRecordingTimeline(recording: RecordingMetadata) {
@@ -135,8 +209,8 @@ export class RecordingFileListItem extends ReactiveLitElement {
     });
     // TODO: b/336963138 - Actually render which parts have speech.
     return [
-      html`<div class="timeline"></div>`,
-      html`<div class="timestamps">
+      html`<div id="timeline"></div>`,
+      html`<div id="timestamps">
         <span>
           ${formatDate(recording.recordedAt)} •
           ${formatTime(recording.recordedAt)}
@@ -150,36 +224,68 @@ export class RecordingFileListItem extends ReactiveLitElement {
     if (this.recording === null) {
       return nothing;
     }
+
+    const classes = {
+      'menu-shown': this.menuShown.value,
+    };
     // TODO(pihsun): Check why the ripple sometimes doesn't happen on touch
     // long-press but sometimes does.
-    return html`<div class="recording">
-      <cros-card
-        @click=${this.onRecordingClick}
-        data-recording-id=${this.recording.id}
-        cardstyle="filled"
-        tabindex="0"
-        interactive
-      >
-        <cra-icon-button
-          shape="circle"
-          @click=${this.onPlayClick}
-          @pointerdown=${/* To prevent ripple on card. */ stopPropagation}
-        >
-          <cra-icon slot="icon" name="play_arrow"></cra-icon>
-        </cra-icon-button>
-        <div class="recording-info">
-          <div class="title">${this.recording.title}</div>
-          ${this.renderRecordingTimeline(this.recording)}
+    // TODO: b/336963138 - Implements swipe left/right on the card to open/close
+    // menu.
+    // TODO: b/344785395 - Implements showing info.
+    return html`
+      <div id="root" @focusout=${this.onFocusOut}>
+        <div id="recording" class=${classMap(classes)}>
+          <cros-card
+            @click=${this.onRecordingClick}
+            cardstyle="filled"
+            tabindex="0"
+            interactive
+          >
+            <cra-icon-button
+              shape="circle"
+              @click=${this.onPlayClick}
+              @pointerdown=${/* To prevent ripple on card. */ stopPropagation}
+            >
+              <cra-icon slot="icon" name="play_arrow"></cra-icon>
+            </cra-icon-button>
+            <div id="recording-info">
+              <div id="title">${this.recording.title}</div>
+              ${this.renderRecordingTimeline(this.recording)}
+            </div>
+          </cros-card>
+          <cra-icon-button
+            buttonstyle="floating"
+            id="options"
+            @click=${this.onOptionsClick}
+          >
+            <cra-icon slot="icon" name="more_vertical"></cra-icon>
+          </cra-icon-button>
         </div>
-      </cros-card>
-      <cra-icon-button
-        buttonstyle="floating"
-        class="options"
-        @click=${this.onOptionsClick}
-      >
-        <cra-icon slot="icon" name="more_vertical"></cra-icon>
-      </cra-icon-button>
-    </div>`;
+        <div id="menu" class=${classMap(classes)}>
+          <cra-icon-button
+            buttonstyle="floating"
+            ?disabled=${!this.menuShown.value}
+          >
+            <cra-icon slot="icon" name="info"></cra-icon>
+          </cra-icon-button>
+          <cra-icon-button
+            buttonstyle="floating"
+            ?disabled=${!this.menuShown.value}
+            @click=${this.onExportRecordingClick}
+          >
+            <cra-icon slot="icon" name="export"></cra-icon>
+          </cra-icon-button>
+          <cra-icon-button
+            buttonstyle="floating"
+            ?disabled=${!this.menuShown.value}
+            @click=${this.onDeleteRecordingClick}
+          >
+            <cra-icon slot="icon" name="delete"></cra-icon>
+          </cra-icon-button>
+        </div>
+      </div>
+    `;
   }
 }
 

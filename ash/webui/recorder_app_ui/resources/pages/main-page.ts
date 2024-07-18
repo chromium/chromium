@@ -10,15 +10,19 @@ import '../components/secondary-button.js';
 import '../components/settings-menu.js';
 import '../components/cra/cra-icon.js';
 import '../components/cra/cra-icon-button.js';
+import '../components/delete-recording-dialog.js';
 
-import {css, html} from 'chrome://resources/mwc/lit/index.js';
+import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 
+import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
+import {ExportDialog} from '../components/export-dialog.js';
 import {MicSelectionMenu} from '../components/mic-selection-menu.js';
 import {SettingsMenu} from '../components/settings-menu.js';
 import {useRecordingDataManager} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {navigateTo} from '../core/state/route.js';
 import {settings} from '../core/state/settings.js';
+import {assertExists} from '../core/utils/assert.js';
 
 /**
  * Main page of Recorder App.
@@ -80,6 +84,12 @@ export class MainPage extends ReactiveLitElement {
   private readonly recordingMetadataMap =
     this.recordingDataManager.getAllMetadata();
 
+  private readonly deleteRecordingDialog = createRef<DeleteRecordingDialog>();
+
+  private readonly exportDialog = createRef<ExportDialog>();
+
+  private lastDeleteId: string|null = null;
+
   private get micSelectionMenu(): MicSelectionMenu|null {
     return this.shadowRoot?.querySelector('mic-selection-menu') ?? null;
   }
@@ -88,15 +98,29 @@ export class MainPage extends ReactiveLitElement {
     return this.shadowRoot?.querySelector('settings-menu') ?? null;
   }
 
-  private onRecordingClick(id: string) {
-    navigateTo(`/playback?id=${id}`);
+  private onRecordingClick(ev: CustomEvent<string>) {
+    navigateTo(`/playback?id=${ev.detail}`);
   }
 
-  private onDeleteRecordingClick(id: string) {
-    // TODO(pihsun): Custom prompt instead of using `confirm()`.
-    if (confirm('Really delete recording?')) {
-      this.recordingDataManager.remove(id);
+  private onDeleteRecordingClick(ev: CustomEvent<string>) {
+    this.lastDeleteId = ev.detail;
+    // TODO(pihsun): Separate delete recording dialog while recording and while
+    // playback/on main page, so the latter can take a recordingId and does
+    // deletion inside the component.
+    this.deleteRecordingDialog.value?.show();
+  }
+
+  private onDeleteRecording() {
+    if (this.lastDeleteId !== null) {
+      this.recordingDataManager.remove(this.lastDeleteId);
+      this.lastDeleteId = null;
     }
+  }
+
+  private onExportRecordingClick(ev: CustomEvent<string>) {
+    const dialog = assertExists(this.exportDialog.value);
+    dialog.recordingId = ev.detail;
+    dialog.show();
   }
 
   private renderRecordButton() {
@@ -141,22 +165,23 @@ export class MainPage extends ReactiveLitElement {
         s.onboardingDone = true;
       });
     }
-    const onRecordingClick = (ev: CustomEvent<string>) => {
-      this.onRecordingClick(ev.detail);
-    };
-    const onDeleteRecordingClick = (ev: CustomEvent<string>) => {
-      this.onDeleteRecordingClick(ev.detail);
-    };
     return html`
       <onboarding-dialog
         ?open=${onboarding}
         @close=${onOnboardingDone}
       ></onboarding-dialog>
+      <delete-recording-dialog
+        ${ref(this.deleteRecordingDialog)}
+        @delete=${this.onDeleteRecording}
+      >
+      </delete-recording-dialog>
+      <export-dialog ${ref(this.exportDialog)}></export-dialog>
       <div id="root" ?inert=${onboarding}>
         <recording-file-list
           .recordingMetadataMap=${this.recordingMetadataMap.value}
-          @recording-clicked=${onRecordingClick}
-          @delete-recording-clicked=${onDeleteRecordingClick}
+          @recording-clicked=${this.onRecordingClick}
+          @delete-recording-clicked=${this.onDeleteRecordingClick}
+          @export-recording-clicked=${this.onExportRecordingClick}
         >
         </recording-file-list>
         <div id="actions">
