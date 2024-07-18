@@ -95,6 +95,7 @@ source_set("configs") {
       "//chrome/browser/ash/system_web_apps/apps/projector_app",
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
       "//chrome/browser/ash/system_web_apps/apps/vc_background_ui",
+      "//chrome/browser/ui/ash/holding_space",
       "//chromeos/ash/components/kiosk/vision/webui",
       "//components/cross_device/logging",
     ]

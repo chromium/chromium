@@ -8590,7 +8590,6 @@ test("unit_tests") {
       "../browser/ui/ash/accelerator_metadata_unittest.cc",
       "../browser/ui/ash/app_access_notifier_unittest.cc",
       "../browser/ui/ash/app_icon_color_cache_unittest.cc",
-      "../browser/ui/ash/holding_space/holding_space_keyed_service_unittest.cc",
       "../browser/ui/ash/ime_controller_client_impl_unittest.cc",
       "../browser/ui/ash/in_session_auth_dialog_client_unittest.cc",
       "../browser/ui/ash/keyboard/chrome_keyboard_ui_unittest.cc",
@@ -8773,6 +8772,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash",
       "//chrome/browser/ui/ash:test_support",
       "//chrome/browser/ui/ash/assistant",
+      "//chrome/browser/ui/ash/holding_space",
       "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/browser/ui/chromeos/magic_boost",
       "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
@@ -8899,6 +8899,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/device_scheduled_reboot:unit_tests",
       "//chrome/browser/ui/ash/glanceables:unit_tests",
       "//chrome/browser/ui/ash/global_media_controls:unit_tests",
+      "//chrome/browser/ui/ash/holding_space:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
