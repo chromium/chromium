@@ -21,6 +21,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/heuristic_source.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -380,6 +381,10 @@ const auto& GetFailingTestNames() {
 // to GetFailingTestNames(), directly above, instead of renaming the test to
 // DISABLED_DataDrivenHeuristics.
 TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
+  if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
+    GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
+                    "parsing patterns";
+  }
   bool is_expected_to_pass =
       !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetIOSOutputDirectory(),

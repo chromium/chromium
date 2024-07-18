@@ -139,6 +139,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -515,6 +516,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
              "--run-internal-tests --test-launcher-timeout 100000 "
              "to execute these tests.";
     }
+    ASSERT_NE(GetActiveHeuristicSource(), HeuristicSource::kLegacy)
+        << "Internal tests are only supported with internal parsing patterns";
     ASSERT_GE(TestTimeouts::test_launcher_timeout().InSeconds(), 100)
         << "This is a long-running test; you must specify "
            "--test-launcher-timeout to have a value of at least 100000.";

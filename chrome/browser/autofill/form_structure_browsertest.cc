@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/form_structure.h"
+
 #include <algorithm>
 #include <vector>
 
@@ -30,7 +32,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -299,6 +301,10 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
 #define MAYBE_DataDrivenHeuristics DataDrivenHeuristics
 #endif
 IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, MAYBE_DataDrivenHeuristics) {
+  if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
+    GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
+                    "parsing patterns";
+  }
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
   bool is_expected_to_pass =
