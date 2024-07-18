@@ -162,32 +162,6 @@ bool CanSetSystemTimezoneFromManagedGuestSession() {
           enterprise_management::SystemTimezoneProto::USERS_DECIDE);
 }
 
-// Returns true if the given user is allowed to set the system timezone - that
-// is, the single timezone at TimezoneSettings::GetInstance()->GetTimezone(),
-// which is also stored in a file at /var/lib/timezone/localtime.
-bool CanSetSystemTimezone(const user_manager::User* user) {
-  if (!user->is_logged_in())
-    return false;
-
-  switch (user->GetType()) {
-    case user_manager::UserType::kRegular:
-    case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
-    case user_manager::UserType::kChild:
-      return true;
-
-    case user_manager::UserType::kGuest:
-      return false;
-
-    case user_manager::UserType::kPublicAccount:
-      return CanSetSystemTimezoneFromManagedGuestSession();
-
-      // No default case means the compiler makes sure we handle new types.
-  }
-  NOTREACHED_IN_MIGRATION();
-  return false;
-}
-
 }  // namespace
 
 namespace ash {
@@ -352,6 +326,31 @@ void UpdateSystemTimezone(Profile* profile) {
 
   if (user_manager->GetPrimaryUser() == user && PerUserTimezoneEnabled())
     SetSystemTimezone(user, value);
+}
+
+// TODO(b/353580799): Add unit tests for this function.
+bool CanSetSystemTimezone(const user_manager::User* user) {
+  if (!user->is_logged_in()) {
+    return false;
+  }
+
+  switch (user->GetType()) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kChild:
+      return true;
+
+    case user_manager::UserType::kGuest:
+      return false;
+
+    case user_manager::UserType::kPublicAccount:
+      return CanSetSystemTimezoneFromManagedGuestSession();
+
+      // No default case means the compiler makes sure we handle new types.
+  }
+  NOTREACHED_IN_MIGRATION();
+  return false;
 }
 
 bool SetSystemTimezone(const user_manager::User* user,

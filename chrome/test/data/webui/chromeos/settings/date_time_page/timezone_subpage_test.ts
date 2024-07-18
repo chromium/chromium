@@ -46,6 +46,7 @@ function testTeardown() {
 
 suite('<timezone-subpage> with logged-in user', () => {
   setup(async () => {
+    loadTimeData.overrideValues({canSetSystemTimezone: true});
     await init();
   });
 
@@ -158,9 +159,9 @@ suite('<timezone-subpage> with logged-in user', () => {
       });
 });
 
-suite('<timezone-subpage> with guest user', () => {
+suite('<timezone-subpage> with user who can not set system timezone', () => {
   setup(async () => {
-    loadTimeData.overrideValues({isGuest: true});
+    loadTimeData.overrideValues({canSetSystemTimezone: false});
     await init();
   });
 

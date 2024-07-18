@@ -62,10 +62,10 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
         notify: true,
       },
 
-      isGuest_: {
+      canSetSystemTimezone_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isGuest');
+          return loadTimeData.getBoolean('canSetSystemTimezone');
         },
       },
 
@@ -97,7 +97,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   }
 
   activeTimeZoneDisplayName: string;
-  private isGuest_: boolean;
+  private canSetSystemTimezone_: boolean;
   private browserProxy_: DateTimeBrowserProxy;
   private showEnableSystemGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
