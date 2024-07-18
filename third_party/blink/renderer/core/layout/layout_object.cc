@@ -3212,6 +3212,12 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     if (old_style->HasOutOfFlowPosition() != style_->HasOutOfFlowPosition()) {
       SetScrollAnchorDisablingStyleChangedOnAncestor();
       MarkParentForSpannerOrOutOfFlowPositionedChange();
+      if (old_style->HasOutOfFlowPosition()) {
+        if (auto* box = DynamicTo<LayoutBox>(this)) {
+          box->NotifyContainingDisplayLocksForAnchorPositioning(
+              box->DisplayLocksAffectedByAnchors(), nullptr);
+        }
+      }
     } else if (old_style->GetColumnSpan() != style_->GetColumnSpan()) {
       MarkParentForSpannerOrOutOfFlowPositionedChange();
     }

@@ -92,6 +92,7 @@ PhysicalAnchorReference::PhysicalAnchorReference(
     const WritingModeConverter& converter)
     : rect(converter.ToPhysical(logical_reference.rect)),
       layout_object(logical_reference.layout_object),
+      display_locks(logical_reference.display_locks),
       is_out_of_flow(logical_reference.is_out_of_flow) {}
 
 void LogicalAnchorReference::InsertInReverseTreeOrderInto(
@@ -211,9 +212,16 @@ const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
 void LogicalAnchorQuery::Set(const AnchorKey& key,
                              const LayoutObject& layout_object,
                              const LogicalRect& rect,
-                             SetOptions options) {
+                             SetOptions options,
+                             Element* element_for_display_lock) {
+  HeapHashSet<Member<Element>>* display_locks = nullptr;
+  if (element_for_display_lock) {
+    display_locks = MakeGarbageCollected<HeapHashSet<Member<Element>>>();
+    display_locks->insert(element_for_display_lock);
+  }
   Set(key, MakeGarbageCollected<LogicalAnchorReference>(
-               layout_object, rect, options == SetOptions::kOutOfFlow));
+               layout_object, rect, options == SetOptions::kOutOfFlow,
+               display_locks));
 }
 
 void LogicalAnchorQuery::Set(const AnchorKey& key,
@@ -270,7 +278,8 @@ void LogicalAnchorQuery::SetFromPhysical(
     const PhysicalAnchorQuery& physical_query,
     const WritingModeConverter& converter,
     const LogicalOffset& additional_offset,
-    SetOptions options) {
+    SetOptions options,
+    Element* element_for_display_lock) {
   for (auto entry : physical_query) {
     // For each key, only the last reference in tree order is reachable
     // under normal circumstances. However, the presence of anchor-scope
@@ -282,9 +291,20 @@ void LogicalAnchorQuery::SetFromPhysical(
          reference = reference->next) {
       LogicalRect rect = converter.ToLogical(reference->rect);
       rect.offset += additional_offset;
+
+      HeapHashSet<Member<Element>>* display_locks = nullptr;
+      if (reference->display_locks || element_for_display_lock) {
+        display_locks = MakeGarbageCollected<HeapHashSet<Member<Element>>>();
+      }
+      if (reference->display_locks) {
+        *display_locks = *reference->display_locks;
+      }
+      if (element_for_display_lock) {
+        display_locks->insert(element_for_display_lock);
+      }
       Set(entry.key, MakeGarbageCollected<LogicalAnchorReference>(
                          *reference->layout_object, rect,
-                         options == SetOptions::kOutOfFlow));
+                         options == SetOptions::kOutOfFlow, display_locks));
     }
   }
 }
@@ -549,6 +569,12 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     return std::nullopt;
   }
 
+  if (anchor_reference->display_locks) {
+    for (auto& display_lock : *anchor_reference->display_locks) {
+      display_locks_affected_by_anchors_->insert(display_lock);
+    }
+  }
+
   PhysicalRect inset_area_modified_containing_block_rect =
       InsetAreaModifiedContainingBlock(inset_area_offsets);
 
@@ -585,6 +611,12 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
       ResolveAnchorReference(anchor_specifier, position_anchor);
   if (!anchor_reference) {
     return std::nullopt;
+  }
+
+  if (anchor_reference->display_locks) {
+    for (auto& display_lock : *anchor_reference->display_locks) {
+      display_locks_affected_by_anchors_->insert(display_lock);
+    }
   }
 
   DCHECK(AnchorQuery());
@@ -738,11 +770,13 @@ PhysicalRect AnchorEvaluatorImpl::InsetAreaModifiedContainingBlock(
 void LogicalAnchorReference::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object);
   visitor->Trace(next);
+  visitor->Trace(display_locks);
 }
 
 void PhysicalAnchorReference::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object);
   visitor->Trace(next);
+  visitor->Trace(display_locks);
 }
 
 }  // namespace blink

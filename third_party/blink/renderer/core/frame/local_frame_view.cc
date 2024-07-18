@@ -2511,6 +2511,13 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
     });
   }
 
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    auto lifecycle_observers = frame_view.lifecycle_observers_;
+    for (auto& observer : lifecycle_observers) {
+      observer->DidFinishLayout();
+    }
+  });
+
   return Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean;
 }
 

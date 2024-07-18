@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_space.h"
@@ -328,6 +329,14 @@ void LayoutResult::CopyMutableOutOfFlowData(const LayoutResult& other) const {
       other.OutOfFlowPositionedOffset());
 }
 
+void LayoutResult::MutableForOutOfFlow::SetDisplayLocksAffectedByAnchors(
+    HeapHashSet<Member<Element>>* display_locks) {
+  if (layout_result_->rare_data_ || display_locks) {
+    layout_result_->EnsureRareData()->display_locks_affected_by_anchors =
+        display_locks;
+  }
+}
+
 #if DCHECK_IS_ON()
 void LayoutResult::CheckSameForSimplifiedLayout(
     const LayoutResult& other,
@@ -394,6 +403,7 @@ void LayoutResult::RareData::Trace(Visitor* visitor) const {
   // constructor and never changed.
   if (const BlockData* data = GetBlockData())
     visitor->Trace(data->column_spanner_path);
+  visitor->Trace(display_locks_affected_by_anchors);
 }
 
 }  // namespace blink

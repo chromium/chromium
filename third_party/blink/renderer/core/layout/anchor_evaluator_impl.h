@@ -23,6 +23,7 @@
 namespace blink {
 
 class AnchorSpecifierValue;
+class Element;
 class LayoutObject;
 class LogicalAnchorQuery;
 class LogicalAnchorQueryMap;
@@ -160,6 +161,7 @@ struct CORE_EXPORT PhysicalAnchorReference
   // A singly linked list in the reverse tree order. There can be at most one
   // in-flow reference, which if exists must be at the end of the list.
   Member<PhysicalAnchorReference> next;
+  Member<HeapHashSet<Member<Element>>> display_locks;
   bool is_out_of_flow = false;
 };
 
@@ -184,9 +186,11 @@ struct CORE_EXPORT LogicalAnchorReference
     : public GarbageCollected<LogicalAnchorReference> {
   LogicalAnchorReference(const LayoutObject& layout_object,
                          const LogicalRect& rect,
-                         bool is_out_of_flow)
+                         bool is_out_of_flow,
+                         HeapHashSet<Member<Element>>* display_locks)
       : rect(rect),
         layout_object(&layout_object),
+        display_locks(display_locks),
         is_out_of_flow(is_out_of_flow) {}
 
   // Insert |this| into the given singly linked list in the reverse tree order.
@@ -199,6 +203,7 @@ struct CORE_EXPORT LogicalAnchorReference
   // A singly linked list in the reverse tree order. There can be at most one
   // in-flow reference, which if exists must be at the end of the list.
   Member<LogicalAnchorReference> next;
+  Member<HeapHashSet<Member<Element>>> display_locks;
   bool is_out_of_flow = false;
 };
 
@@ -221,15 +226,21 @@ class CORE_EXPORT LogicalAnchorQuery
     // An out-of-flow entry.
     kOutOfFlow,
   };
+  // If the element owning this object has a display lock, the element should be
+  // passed as |element_for_display_lock|.
   void Set(const AnchorKey&,
            const LayoutObject& layout_object,
            const LogicalRect& rect,
-           SetOptions);
+           SetOptions,
+           Element* element_for_display_lock);
   void Set(const AnchorKey&, LogicalAnchorReference* reference);
+  // If the element owning this object has a display lock, the element should be
+  // passed as |element_for_display_lock|.
   void SetFromPhysical(const PhysicalAnchorQuery& physical_query,
                        const WritingModeConverter& converter,
                        const LogicalOffset& additional_offset,
-                       SetOptions);
+                       SetOptions,
+                       Element* element_for_display_lock);
 
   // Evaluate the |anchor_value| for the given reference. Returns |nullopt| if
   // the query is invalid (due to wrong axis).
@@ -269,7 +280,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        containing_block_rect_(offset_to_padding_box, available_size) {
+        containing_block_rect_(offset_to_padding_box, available_size),
+        display_locks_affected_by_anchors_(
+            MakeGarbageCollected<HeapHashSet<Member<Element>>>()) {
     DCHECK(anchor_query_);
   }
 
@@ -289,7 +302,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
         containing_block_(&containing_block),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        containing_block_rect_(offset_to_padding_box, available_size) {
+        containing_block_rect_(offset_to_padding_box, available_size),
+        display_locks_affected_by_anchors_(
+            MakeGarbageCollected<HeapHashSet<Member<Element>>>()) {
     DCHECK(anchor_queries_);
     DCHECK(containing_block_);
   }
@@ -319,6 +334,10 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       const ComputedStyleBuilder&) override;
 
   const LogicalAnchorQuery* AnchorQuery() const;
+
+  HeapHashSet<Member<Element>>* GetDisplayLocksAffectedByAnchors() const {
+    return display_locks_affected_by_anchors_;
+  }
 
  private:
   const LogicalAnchorReference* ResolveAnchorReference(
@@ -419,6 +438,11 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   mutable bool needs_scroll_adjustment_in_x_ = false;
   mutable bool needs_scroll_adjustment_in_y_ = false;
+
+  // A set of elements whose display locks' skipping status are potentially
+  // impacted by anchors found by this evaluator.
+  mutable HeapHashSet<Member<Element>>* display_locks_affected_by_anchors_ =
+      nullptr;
 };
 
 }  // namespace blink

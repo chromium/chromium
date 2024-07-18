@@ -150,6 +150,9 @@ class CORE_EXPORT LocalFrameView final
     // These are called when the lifecycle updates start/finish.
     virtual void WillStartLifecycleUpdate(const LocalFrameView&) {}
     virtual void DidFinishLifecycleUpdate(const LocalFrameView&) {}
+
+    // Called after the layout lifecycle phase.
+    virtual void DidFinishLayout() {}
   };
 
   explicit LocalFrameView(LocalFrame&);

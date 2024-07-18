@@ -506,6 +506,12 @@ void LayoutBox::WillBeDestroyed() {
     DisassociatePhysicalFragments();
   }
 
+  if (Style() && StyleRef().HasOutOfFlowPosition()) {
+    if (auto* display_locks = DisplayLocksAffectedByAnchors()) {
+      NotifyContainingDisplayLocksForAnchorPositioning(display_locks, nullptr);
+    }
+  }
+
   LayoutBoxModelObject::WillBeDestroyed();
 }
 
@@ -4389,6 +4395,34 @@ const BoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
   });
 #endif
   return GetLayoutResults().front()->OutOfFlowInsetsForGetComputedStyle();
+}
+
+const HeapHashSet<Member<Element>>* LayoutBox::DisplayLocksAffectedByAnchors()
+    const {
+  const auto& layout_results = GetLayoutResults();
+  if (layout_results.empty()) {
+    return nullptr;
+  }
+  return layout_results.front()->DisplayLocksAffectedByAnchors();
+}
+
+void LayoutBox::NotifyContainingDisplayLocksForAnchorPositioning(
+    const HeapHashSet<Member<Element>>* past_display_locks_affected_by_anchors,
+    const HeapHashSet<Member<Element>>* display_locks_affected_by_anchors)
+    const {
+  auto notify_display_locks =
+      [](const HeapHashSet<Member<Element>>* display_locks) {
+        if (!display_locks) {
+          return;
+        }
+        for (auto& display_lock_element : *display_locks) {
+          display_lock_element->GetDisplayLockContext()
+              ->SetAnchorPositioningRenderStateMayHaveChanged();
+        }
+      };
+
+  notify_display_locks(past_display_locks_affected_by_anchors);
+  notify_display_locks(display_locks_affected_by_anchors);
 }
 
 bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInX() const {

@@ -48,7 +48,7 @@ struct StitchedAnchorReference
   LogicalAnchorReference* GetStitchedAnchorReference() const {
     DCHECK(layout_object);
     return MakeGarbageCollected<LogicalAnchorReference>(
-        *layout_object, StitchedRect(), /* is_out_of_flow */ false);
+        *layout_object, StitchedRect(), /* is_out_of_flow */ false, nullptr);
   }
 
   void Unite(const LogicalRect& other_rect,

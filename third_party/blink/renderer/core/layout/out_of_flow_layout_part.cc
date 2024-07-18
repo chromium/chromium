@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
@@ -1740,6 +1742,11 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
     NodeToLayout& oof_node_to_layout,
     const ConstraintSpace* fragmentainer_constraint_space,
     bool is_last_fragmentainer_so_far) {
+  const HeapHashSet<Member<Element>>* past_display_lock_elements = nullptr;
+  if (auto* box = oof_node_to_layout.node_info.node.GetLayoutBox()) {
+    past_display_lock_elements = box->DisplayLocksAffectedByAnchors();
+  }
+
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   OffsetInfo& offset_info = oof_node_to_layout.offset_info;
 
@@ -1816,6 +1823,19 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
       DCHECK(!freeze_horizontal || !freeze_vertical ||
              scrollbars_after == scrollbars_before);
     } while (scrollbars_after != scrollbars_before);
+  }
+
+  auto& state = oof_node_to_layout.node_info.node.GetLayoutBox()
+                    ->GetDocument()
+                    .GetDisplayLockDocumentState();
+
+  if (state.DisplayLockCount() >
+      state.DisplayLockBlockingAllActivationCount()) {
+    if (auto* box = oof_node_to_layout.node_info.node.GetLayoutBox()) {
+      box->NotifyContainingDisplayLocksForAnchorPositioning(
+          past_display_lock_elements,
+          offset_info.display_locks_affected_by_anchors);
+    }
   }
 
   return layout_result;
@@ -2013,6 +2033,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   } else {
     DCHECK(offset_info->non_overflowing_scroll_ranges.empty());
   }
+
+  offset_info->display_locks_affected_by_anchors =
+      anchor_evaluator.GetDisplayLocksAffectedByAnchors();
 
   return *offset_info;
 }
@@ -2342,6 +2365,9 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
 
   layout_result->GetMutableForOutOfFlow().SetNonOverflowingScrollRanges(
       offset_info.non_overflowing_scroll_ranges);
+
+  layout_result->GetMutableForOutOfFlow().SetDisplayLocksAffectedByAnchors(
+      offset_info.display_locks_affected_by_anchors);
 
   UpdatePositionVisibilityAfterLayout(offset_info,
                                       oof_node_to_layout.node_info.node,
