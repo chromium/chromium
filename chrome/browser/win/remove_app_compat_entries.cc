@@ -50,6 +50,13 @@ bool RemoveCompatLayers(std::wstring& layers) {
     return false;  // Nothing to remove.
   }
 
+  static constexpr std::wstring_view kMagicToken(L"~");
+  if (tokens.size() == 1 && tokens.front() == kMagicToken) {
+    // The input is nothing but the leading token.
+    layers.clear();
+    return true;
+  }
+
   // Remove all known compatibility mode layer names.
   static constexpr auto kCompatModeTokens =
       base::MakeFixedFlatSet<std::wstring_view>({
@@ -67,7 +74,7 @@ bool RemoveCompatLayers(std::wstring& layers) {
     return false;  // No changes made.
   }
   tokens.erase(new_end, tokens.end());
-  if (tokens.empty()) {
+  if (tokens.empty() || (tokens.size() == 1 && tokens.front() == kMagicToken)) {
     layers.clear();
   } else {
     layers = base::JoinString(tokens, L" ");

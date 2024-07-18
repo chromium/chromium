@@ -14,7 +14,6 @@
 TEST(RemoveCompatLayersTest, None) {
   static constexpr std::wstring_view kInputs[] = {
       L"",
-      L"~",
       L"see the wind",
       L"fuzzWIN98buzz",
   };
@@ -44,12 +43,13 @@ TEST(RemoveCompatLayersTest, All) {
 TEST(RemoveCompatLayersTest, Some) {
   static constexpr std::tuple<std::wstring_view, std::wstring_view> kInputs[] =
       {
-          {L"~ NT4SP5", L"~"},
+          {L"~", L""},
+          {L"~ NT4SP5", L""},
           {L"~ NT4SP5 VISTARTM VISTASP1 VISTASP2 WIN10RTM WIN2000 WIN4SP5 "
            L"WIN7RTM "
            L"WIN7SP1 WIN8RTM WIN81RTM WIN95 WIN98 WINSRV03SP1 WINSRV08SP1 "
            L"WINSRV16RTM WINSRV19RTM WINXPSP2 WINXPSP3",
-           L"~"},
+           L""},
           {L"~ something NT4SP5 rotten", L"~ something rotten"},
           {L"~ NT4SP5 i love you", L"~ i love you"},
           {L"~ dont leave me VISTARTM", L"~ dont leave me"},
