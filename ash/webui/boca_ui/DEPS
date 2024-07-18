@@ -1,0 +1,4 @@
+include_rules = [
+  "+chromeos/grit/chromeos_boca_app_bundle_resources.h",
+  "+chromeos/grit/chromeos_boca_app_bundle_resources_map.h",
+]

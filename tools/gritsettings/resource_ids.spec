@@ -787,7 +787,14 @@
   "chromeos/ash/resources/internal/ash_internal_strings.grd": {
     "messages": [5820],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/boca_ui/resources/prod/resources.grd": {
+  # Both boca_app_bundle_resources.grd and boca_app_bundle_mock_resources.grd
+  # start with the same id because only one of them is built depending on if
+  # actual app is available.
+  "ash/webui/boca_ui/resources/prod/boca_app_bundle_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [5840],
+  },
+  "ash/webui/boca_ui/resources/mock/boca_app_bundle_mock_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [5840],
   },

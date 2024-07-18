@@ -1,0 +1,11 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+
+assert(is_chromeos_ash, "Boca App is ash-chrome only")
+
+ts_library("build_ts") {
+  in_files = [ "app_bin.ts" ]
+}

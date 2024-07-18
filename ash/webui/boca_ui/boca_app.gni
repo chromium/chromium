@@ -1,0 +1,11 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+declare_args() {
+  # Whether to enable the "real" ChromeOS Boca App. When false, a mock app is
+  # bundled for testing integration points.
+  enable_cros_boca_app = is_chromeos_ash && is_chrome_branded
+}

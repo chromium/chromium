@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/boca_ui/boca_app.gni")
 import("//ash/webui/eche_app_ui/eche_app_ui.gni")
 import("//ash/webui/help_app_ui/help_app_ui.gni")
 import("//ash/webui/media_app_ui/media_app_ui.gni")
@@ -33,6 +34,29 @@ template("ash_generated_grit") {
     ]
     output_dir = "$ash_webui_grit_output_dir"
   }
+}
+
+# Boca app resource bundle, obtained via DEPS.
+grit("boca_app_bundle_resources") {
+  if (enable_cros_boca_app) {
+    # Obtained via an internal CIPD package in src / DEPS.
+    source = "//ash/webui/boca_ui/resources/prod/boca_app_bundle_resources.grd"
+  } else {
+    source =
+        "//ash/webui/boca_ui/resources/mock/boca_app_bundle_mock_resources.grd"
+    deps = [ "//ash/webui/boca_ui/resources/mock:build_ts" ]
+  }
+  use_brotli = true
+
+  # TODO(crbug.com/40250824): Prefix of outputs should be changed to ash
+  # when.grd from internal CIPD package is updated.
+  outputs = [
+    "grit/chromeos_boca_app_bundle_resources.h",
+    "grit/chromeos_boca_app_bundle_resources_map.cc",
+    "grit/chromeos_boca_app_bundle_resources_map.h",
+    "chromeos_boca_app_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
 }
 
 # Resources used by chrome://camera-app.
