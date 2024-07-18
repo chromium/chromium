@@ -1753,28 +1753,28 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_RESET_SNACKBAR" desc="Snackbar text displayed when the user click the 'Unsubscribe all' button at the bottom of the notifications review subpage or in the notifications review module of the dashboard. Informs the user about the number of sites for which the notifications were unsubscribed.">
         Notifications not allowed for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
       </message>
-      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_TITLE" desc="Title for the Safe Browsing check row in the Safety Check page indicating that the user currently has Safe Browsing turned on and is getting the standard level of protection.">
         Safe Browsing is on
       </message>
-      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_SUMMARY" desc="Summary for the Safe Browsing check row in the Safety Check page indicating that the user currently has the standard level of Safe Browsing enabled, which is Chrome's second strongest security setting.">
         You're getting standard protection
       </message>
-      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_SUMMARY_MANAGED" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_SUMMARY_MANAGED" desc="Summary for the Safe Browsing check row in the Safety Check page indicating that the organization of the user's account or device has turned on Standard level of Safe Browsing for the user, which is Chrome's second strongest security setting.">
         Your organization turned on Safe Browsing
       </message>
-      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_TITLE" desc="Title for the Safe Browsing check row in the Safety Check page indicating that the user currently has Safe Browsing turned on and is getting the enhanced level of protection.">
         Enhanced Safe Browsing is on
       </message>
-      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_SUMMARY" desc="Summary for the Safe Browsing check row in the Safety Check page indicating that the user currently has the enhanced level of Safe Browsing enabled, which is Chrome's strongest security setting.">
         You have Chrome's strongest security
       </message>
-      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_SUMMARY_MANAGED" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_SUMMARY_MANAGED" desc="Summary for the Safe Browsing check row in the Safety Check page indicating that the organization of the user's account or device has turned on Enhanced level of Safe Browsing for the user, which is Chrome's strongest security setting.">
         Your organization turned on Enhanced Safe Browsing
       </message>
-      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_OFF_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_OFF_SUMMARY" desc="Summary for the Safe Browsing check row in the Safety Check page indicating that the user currently has Safe Browsing disabled, and urging the user to turn on Safe browsing to get protection from dangerous sites.">
         Turn on Safe Browsing to get protection against dangerous sites
       </message>
-      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_OFF_SUMMARY_MANAGED" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_OFF_SUMMARY_MANAGED" desc="Summary for the Safe Browsing check row in the Safety Check page indicating that the organization of the user's account or device has turned off Safe Browsing for the user.">
         Your organization turned off Safe Browsing
       </message>
       <message name="IDS_SAFETY_HUB_VIEW_SITES_BUTTON" translateable="false">
@@ -1789,10 +1789,10 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_GO_TO_SETTINGS_BUTTON" translateable="false">
         Go to Settings
       </message>
-      <message name="IDS_SAFETY_HUB_GO_TO_SECURITY_SETTINGS_BUTTON" translateable="false">
+      <message name="IDS_SAFETY_HUB_GO_TO_SECURITY_SETTINGS_BUTTON" desc="Text for the button in the Safe Browsing check row in the Safety Check page indicating that upon clicking on it, the user will be redirected to the Safe Browsing security settings page in Chrome.">
         Go to security settings
       </message>
-      <message name="IDS_SAFETY_HUB_TURN_ON_BUTTON" translateable="false">
+      <message name="IDS_SAFETY_HUB_TURN_ON_BUTTON" desc="Text for the button in the Safe Browsing check row in the Safety Check page urging the user to turn on Safe Browsing. Upon clicking on it, the user will be redirected to the Safe Browsing security settings page in Chrome to make a decision.">
         Turn on
       </message>
       <message name="IDS_SAFETY_HUB_GO_TO_NOTIFICATIONS_BUTTON" translateable="false">
