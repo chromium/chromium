@@ -59,7 +59,6 @@ source_set("browser") {
     "aw_contents_statics.cc",
     "aw_context_menu_helper.cc",
     "aw_context_menu_helper.h",
-    "aw_context_permissions_delegate.h",
     "aw_cookie_access_policy.cc",
     "aw_cookie_access_policy.h",
     "aw_crash_keys.cc",

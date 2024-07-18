@@ -231,7 +231,6 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateAttributionBehaviorLocked(env, obj);
   UpdateSpeculativeLoadingAllowedLocked(env, obj);
   UpdateBackForwardCacheEnabledLocked(env, obj);
-  UpdateGeolocationEnabledLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -526,16 +525,6 @@ void AwSettings::UpdateBackForwardCacheEnabledLocked(
         bfcache_enabled_in_java_settings_ ? "Enabled" : "Disabled",
         variations::SyntheticTrialAnnotationMode::kNextLog);
   }
-}
-
-void AwSettings::UpdateGeolocationEnabledLocked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!web_contents()) {
-    return;
-  }
-
-  geolocation_enabled_ = Java_AwSettings_getGeolocationEnabled(env, obj);
 }
 
 void AwSettings::RenderViewHostChanged(content::RenderViewHost* old_host,

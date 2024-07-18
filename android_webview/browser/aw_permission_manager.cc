@@ -11,9 +11,6 @@
 
 #include "android_webview/browser/aw_app_defined_websites.h"
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
-#include "android_webview/browser/aw_contents.h"
-#include "android_webview/browser/aw_context_permissions_delegate.h"
-#include "android_webview/browser/aw_settings.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -21,7 +18,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
-#include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/permission_controller.h"
@@ -237,10 +233,8 @@ class AwPermissionManager::PendingRequest {
   bool cancelled_;
 };
 
-AwPermissionManager::AwPermissionManager(
-    const AwContextPermissionsDelegate& context_delegate)
-    : context_delegate_(context_delegate),
-      result_cache_(new LastRequestResultCache) {}
+AwPermissionManager::AwPermissionManager()
+    : result_cache_(new LastRequestResultCache) {}
 
 AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
@@ -512,30 +506,18 @@ PermissionStatus AwPermissionManager::GetPermissionStatus(
     PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  return GetPermissionStatusInternal(permission, requesting_origin,
-                                     embedding_origin,
-                                     /*web_contents=*/nullptr);
-}
-
-PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
-    PermissionType permission,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    content::WebContents* web_contents) {
   switch (permission) {
     case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
       // Method is called outside the Permissions API only for this permission.
       return result_cache_->GetResult(permission, requesting_origin,
                                       embedding_origin);
-    case blink::PermissionType::GEOLOCATION:
-      return GetGeolocationPermission(requesting_origin, web_contents);
-
     case blink::PermissionType::MIDI:
     case blink::PermissionType::SENSORS:
       // These permissions are auto-granted by WebView.
       return PermissionStatus::GRANTED;
 
     case blink::PermissionType::MIDI_SYSEX:
+    case blink::PermissionType::GEOLOCATION:
     case blink::PermissionType::AUDIO_CAPTURE:
     case blink::PermissionType::VIDEO_CAPTURE:
       // These permissions are always forwarded to the app to handle.
@@ -577,28 +559,6 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
   NOTREACHED() << "Unhandled permission type: " << static_cast<int>(permission);
 }
 
-PermissionStatus AwPermissionManager::GetGeolocationPermission(
-    const GURL& requesting_origin,
-    content::WebContents* web_contents) {
-  if (!web_contents) {
-    // If we don't have a web_contents, we can't determine if we have
-    // permission.
-    return PermissionStatus::ASK;
-  }
-
-  AwSettings* settings = AwSettings::FromWebContents(web_contents);
-  if (!settings->geolocation_enabled()) {
-    return PermissionStatus::DENIED;
-  }
-  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
-  if (!aw_contents->UseLegacyGeolocationPermissionAPI()) {
-    // The new geolocation API does not have a cache for permission decisions,
-    // so if that's in use, we will need to ask the app.
-    return PermissionStatus::ASK;
-  }
-  return context_delegate_->GetGeolocationPermission(requesting_origin);
-}
-
 content::PermissionResult
 AwPermissionManager::GetPermissionResultForOriginWithoutContext(
     blink::PermissionType permission,
@@ -615,15 +575,12 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForCurrentDocument(
     PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  return GetPermissionStatusInternal(
+  return GetPermissionStatus(
       permission,
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-          render_frame_host->GetMainFrame()),
-      web_contents);
+          render_frame_host->GetMainFrame()));
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatusForWorker(
@@ -637,11 +594,10 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
     blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {
-  return GetPermissionStatusInternal(
+  return GetPermissionStatus(
       permission, requesting_origin.GetURL(),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-          render_frame_host->GetMainFrame()),
-      content::WebContents::FromRenderFrameHost(render_frame_host));
+          render_frame_host->GetMainFrame()));
 }
 
 AwPermissionManager::SubscriptionId

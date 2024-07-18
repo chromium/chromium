@@ -437,7 +437,7 @@ content::SSLHostStateDelegate* AwBrowserContext::GetSSLHostStateDelegate() {
 
 AwPermissionManager* AwBrowserContext::GetPermissionControllerDelegate() {
   if (!permission_manager_.get())
-    permission_manager_ = std::make_unique<AwPermissionManager>(*this);
+    permission_manager_ = std::make_unique<AwPermissionManager>();
   return permission_manager_.get();
 }
 
@@ -740,19 +740,6 @@ void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AwBrowserContext_deleteSharedPreferences(
       env, base::android::ConvertUTF8ToJavaString(env, relative_path.value()));
-}
-blink::mojom::PermissionStatus AwBrowserContext::GetGeolocationPermission(
-    const GURL& origin) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (!obj_) {
-    return blink::mojom::PermissionStatus::ASK;
-  }
-
-  base::android::ScopedJavaLocalRef<jstring> j_origin(
-      base::android::ConvertUTF8ToJavaString(env, origin.spec()));
-  return static_cast<blink::mojom::PermissionStatus>(
-      Java_AwBrowserContext_getGeolocationPermission(env, obj_, j_origin));
 }
 
 }  // namespace android_webview

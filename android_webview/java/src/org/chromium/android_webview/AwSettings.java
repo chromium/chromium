@@ -308,31 +308,23 @@ public class AwSettings {
         }
 
         void updateWebkitPreferencesLocked() {
-            runOnUiThreadBlockingAndLocked(
-                    AwSettings.this::updateWebkitPreferencesOnUiThreadLocked);
+            runOnUiThreadBlockingAndLocked(() -> updateWebkitPreferencesOnUiThreadLocked());
         }
 
         void updateCookiePolicyLocked() {
-            runOnUiThreadBlockingAndLocked(AwSettings.this::updateCookiePolicyOnUiThreadLocked);
+            runOnUiThreadBlockingAndLocked(() -> updateCookiePolicyOnUiThreadLocked());
         }
 
         void updateAllowFileAccessLocked() {
-            runOnUiThreadBlockingAndLocked(AwSettings.this::updateAllowFileAccessOnUiThreadLocked);
+            runOnUiThreadBlockingAndLocked(() -> updateAllowFileAccessOnUiThreadLocked());
         }
 
         void updateSpeculativeLoadingAllowedLocked() {
-            runOnUiThreadBlockingAndLocked(
-                    AwSettings.this::updateSpeculativeLoadingAllowedOnUiThreadLocked);
+            runOnUiThreadBlockingAndLocked(() -> updateSpeculativeLoadingAllowedOnUiThreadLocked());
         }
 
         void updateBackForwardCacheEnabled() {
-            runOnUiThreadBlockingAndLocked(
-                    AwSettings.this::updateBackForwardCacheEnabledOnUiThreadLocked);
-        }
-
-        void updateGeolocationEnabled() {
-            runOnUiThreadBlockingAndLocked(
-                    AwSettings.this::updateGeolocationEnabledOnUiThreadLocked);
+            runOnUiThreadBlockingAndLocked(() -> updateBackForwardCacheEnabledOnUiThreadLocked());
         }
     }
 
@@ -730,14 +722,10 @@ public class AwSettings {
                 flushBackForwardCacheOnUiThreadLocked();
             }
             mGeolocationEnabled = flag;
-            mEventHandler.updateGeolocationEnabled();
         }
     }
 
-    /**
-     * @return Returns if geolocation is currently enabled.
-     */
-    @CalledByNative
+    /** @return Returns if geolocation is currently enabled. */
     boolean getGeolocationEnabled() {
         synchronized (mAwSettingsLock) {
             return mGeolocationEnabled;
@@ -2148,14 +2136,6 @@ public class AwSettings {
         }
     }
 
-    private void updateGeolocationEnabledOnUiThreadLocked() {
-        assert mEventHandler.mHandler != null;
-        ThreadUtils.assertOnUiThread();
-        if (mNativeAwSettings != 0) {
-            AwSettingsJni.get().updateGeolocationEnabledLocked(mNativeAwSettings, AwSettings.this);
-        }
-    }
-
     public void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled) {
         synchronized (mAwSettingsLock) {
             mEventHandler.runOnUiThreadBlockingAndLocked(
@@ -2278,7 +2258,5 @@ public class AwSettings {
                 long nativeAwSettings, AwSettings caller);
 
         String[] updateXRequestedWithAllowListOriginMatcher(long nativeAwSettings, String[] rules);
-
-        void updateGeolocationEnabledLocked(long nativeAwSettings, AwSettings caller);
     }
 }
