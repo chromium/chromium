@@ -126,7 +126,7 @@ def cmd(build_dir: pathlib.Path) -> int:
         path = js_paths.get_nowait()
         dir = path.parent
         response = handle(path).decode()
-        for match in re.finditer(r'\bimport\s+(?:[^;]*?)([\'"])([^\'"]*?)\1',
+        for match in re.finditer(r'^import\s+(?:[^;]*?)([\'"])([^\'"]*?)\1',
                                  response, re.MULTILINE | re.DOTALL):
             # Why is there no normpath in pathlib... T_T
             import_path = _RequestPath(os.path.normpath(dir / match[2]))
