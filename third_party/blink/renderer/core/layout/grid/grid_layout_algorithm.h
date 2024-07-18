@@ -220,8 +220,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       const LogicalSize& fixed_available_size,
       GridLayoutSubtree&& opt_layout_subtree = GridLayoutSubtree(),
       bool min_block_size_should_encompass_intrinsic_size = false,
-      std::optional<LayoutUnit> opt_fragment_relative_block_offset =
-          std::nullopt) const;
+      std::optional<LayoutUnit> opt_child_block_offset = std::nullopt) const;
 
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.
@@ -232,8 +231,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       LogicalRect* containing_grid_area = nullptr,
       LayoutUnit unavailable_block_size = LayoutUnit(),
       bool min_block_size_should_encompass_intrinsic_size = false,
-      std::optional<LayoutUnit> opt_fragment_relative_block_offset =
-          std::nullopt) const;
+      std::optional<LayoutUnit> opt_child_block_offset = std::nullopt) const;
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const SubgriddedItemData& subgridded_item,

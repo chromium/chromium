@@ -3289,7 +3289,7 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
     const LogicalSize& fixed_available_size,
     GridLayoutSubtree&& opt_layout_subtree,
     bool min_block_size_should_encompass_intrinsic_size,
-    std::optional<LayoutUnit> opt_fragment_relative_block_offset) const {
+    std::optional<LayoutUnit> opt_child_block_offset) const {
   const auto& container_constraint_space = GetConstraintSpace();
 
   ConstraintSpaceBuilder builder(
@@ -3324,13 +3324,12 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
   builder.SetBlockAutoBehavior(grid_item.row_auto_behavior);
 
   if (container_constraint_space.HasBlockFragmentation() &&
-      opt_fragment_relative_block_offset) {
+      opt_child_block_offset) {
     if (min_block_size_should_encompass_intrinsic_size)
       builder.SetMinBlockSizeShouldEncompassIntrinsicSize();
 
     SetupSpaceBuilderForFragmentation(container_builder_, grid_item.node,
-                                      *opt_fragment_relative_block_offset,
-                                      &builder);
+                                      *opt_child_block_offset, &builder);
   }
   return builder.ToConstraintSpace();
 }
@@ -3342,7 +3341,7 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
     LogicalRect* containing_grid_area,
     LayoutUnit unavailable_block_size,
     bool min_block_size_should_encompass_intrinsic_size,
-    std::optional<LayoutUnit> opt_fragment_relative_block_offset) const {
+    std::optional<LayoutUnit> opt_child_block_offset) const {
   LayoutUnit inline_offset, block_offset;
 
   LogicalSize containing_grid_area_size = {
@@ -3376,11 +3375,10 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
         grid_item.has_subgridded_rows ? fixed_block_size : kIndefiniteSize};
   }
 
-  return CreateConstraintSpace(LayoutResultCacheSlot::kLayout, grid_item,
-                               containing_grid_area_size, fixed_available_size,
-                               std::move(opt_layout_subtree),
-                               min_block_size_should_encompass_intrinsic_size,
-                               opt_fragment_relative_block_offset);
+  return CreateConstraintSpace(
+      LayoutResultCacheSlot::kLayout, grid_item, containing_grid_area_size,
+      fixed_available_size, std::move(opt_layout_subtree),
+      min_block_size_should_encompass_intrinsic_size, opt_child_block_offset);
 }
 
 ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
@@ -3839,10 +3837,12 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           break_token = To<BlockBreakToken>((child_break_token_it++)->Get());
       }
 
-      const LayoutUnit fragment_relative_block_offset =
+      const LayoutUnit child_block_offset =
           IsBreakInside(break_token) ? LayoutUnit()
                                      : item_placement_data.offset.block_offset -
                                            *consumed_grid_block_size;
+      LayoutUnit fragmentainer_block_offset =
+          FragmentainerOffsetForChildren() + child_block_offset;
       const bool min_block_size_should_encompass_intrinsic_size =
           MinBlockSizeShouldEncompassIntrinsicSize(
               grid_item,
@@ -3876,8 +3876,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       const auto space = CreateConstraintSpaceForLayout(
           grid_item, layout_data, std::move(subgrid_layout_subtree), &grid_area,
           unavailable_block_size,
-          min_block_size_should_encompass_intrinsic_size,
-          fragment_relative_block_offset);
+          min_block_size_should_encompass_intrinsic_size, child_block_offset);
 
       // Make the grid area relative to this fragment.
       const auto item_row_set_index = grid_item.SetIndices(kForRows).begin;
@@ -3905,7 +3904,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           DisableLayoutSideEffectsScope disable_side_effects;
           auto* result = grid_item.node.Layout(space, break_token);
           PropagateSpaceShortage(constraint_space, result,
-                                 fragment_relative_block_offset,
+                                 fragmentainer_block_offset,
                                  fragmentainer_block_size, &container_builder_);
         }
         has_subsequent_children = true;
@@ -3919,14 +3918,13 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       result_and_offsets.emplace_back(
           result,
           LogicalOffset(item_placement_data.offset.inline_offset,
-                        fragment_relative_block_offset),
+                        child_block_offset),
           item_placement_data.relative_offset);
 
       const LogicalBoxFragment fragment(
           container_writing_direction,
           To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
-      baseline_accumulator.Accumulate(grid_item, fragment,
-                                      fragment_relative_block_offset);
+      baseline_accumulator.Accumulate(grid_item, fragment, child_block_offset);
 
       // If the row has container separation we are able to push it into the
       // next fragmentainer. If it doesn't we, need to take the current
@@ -3952,17 +3950,17 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
         // TODO(layout-dev): Explain the special usage of
         // MovePastBreakpoint(). No fragment builder passed?
-        if (!::blink::MovePastBreakpoint(
-                constraint_space, grid_item.node, *result,
-                fragment_relative_block_offset, fragmentainer_block_size,
-                appeal_before,
-                /*builder=*/nullptr)) {
+        if (!::blink::MovePastBreakpoint(constraint_space, grid_item.node,
+                                         *result, fragmentainer_block_offset,
+                                         fragmentainer_block_size,
+                                         appeal_before,
+                                         /*builder=*/nullptr)) {
           UpdateBreakpointRowSetIndex(item_row_set_index);
 
           // We are choosing to add an early breakpoint at a row. Propagate our
           // space shortage to the column balancer.
           PropagateSpaceShortage(constraint_space, result,
-                                 fragment_relative_block_offset,
+                                 fragmentainer_block_offset,
                                  fragmentainer_block_size, &container_builder_);
 
           // We may have "break-before:avoid" or similar on this row. Instead
@@ -4030,9 +4028,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
       // Keep track of the tallest item, in case it overflows the fragmentainer
       // with monolithic content.
-      max_item_block_end =
-          std::max(max_item_block_end,
-                   fragment_relative_block_offset + fragment.BlockSize());
+      max_item_block_end = std::max(max_item_block_end,
+                                    child_block_offset + fragment.BlockSize());
     }
   };
 
