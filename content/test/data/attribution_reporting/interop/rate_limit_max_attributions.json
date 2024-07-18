@@ -464,6 +464,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x11",
               "value": 123
             }
@@ -474,7 +475,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "3601500",
@@ -485,6 +486,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x22",
               "value": 321
             }
@@ -495,7 +497,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3603",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "3603001",

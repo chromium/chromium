@@ -554,6 +554,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 1
             }
@@ -564,7 +565,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -575,6 +576,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 2
             }
@@ -585,7 +587,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -596,6 +598,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 3
             }
@@ -606,7 +609,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -617,6 +620,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 4
             }
@@ -627,7 +631,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -638,6 +642,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 5
             }
@@ -648,7 +653,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -659,6 +664,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 6
             }
@@ -669,7 +675,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -680,6 +686,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 7
             }
@@ -690,7 +697,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -701,6 +708,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 8
             }
@@ -711,7 +719,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -722,6 +730,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 9
             }
@@ -732,7 +741,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -743,6 +752,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 10
             }
@@ -753,7 +763,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -764,6 +774,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 11
             }
@@ -774,7 +785,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -785,6 +796,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 12
             }
@@ -795,7 +807,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -806,6 +818,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 13
             }
@@ -816,7 +829,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -827,6 +840,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 14
             }
@@ -837,7 +851,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -848,6 +862,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 15
             }
@@ -858,7 +873,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -869,6 +884,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 16
             }
@@ -879,7 +895,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -890,6 +906,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 17
             }
@@ -900,7 +917,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -911,6 +928,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 18
             }
@@ -921,7 +939,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -932,6 +950,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 19
             }
@@ -942,7 +961,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -953,6 +972,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 20
             }
@@ -963,7 +983,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",

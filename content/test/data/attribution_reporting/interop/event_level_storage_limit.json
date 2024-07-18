@@ -186,6 +186,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x11",
               "value": 111
             }
@@ -196,7 +197,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3603",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "3603000",
@@ -207,6 +208,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x22",
               "value": 222
             }
@@ -217,7 +219,7 @@
             "reporting_origin": "https://another-reporter.test",
             "scheduled_report_time": "3604",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "3604000",
@@ -228,6 +230,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x33",
               "value": 333
             }
@@ -238,7 +241,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3605",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "3605000",

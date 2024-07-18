@@ -423,6 +423,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x401",
             "value": 789
           } ],
@@ -432,7 +433,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3608",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "3608000",

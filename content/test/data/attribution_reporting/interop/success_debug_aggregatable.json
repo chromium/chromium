@@ -208,6 +208,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x11",
               "value": 111
             }
@@ -219,7 +220,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           },
           "source_debug_key": "111",
           "trigger_debug_key": "333"
@@ -232,6 +233,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x11",
               "value": 111
             }
@@ -243,7 +245,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           },
           "source_debug_key": "111",
           "trigger_debug_key": "333"
@@ -256,6 +258,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x11",
               "value": 222
             }
@@ -266,7 +269,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3602",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           },
           "source_debug_key": "111"
         },
@@ -278,6 +281,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x11",
               "value": 333
             }
@@ -288,7 +292,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3603",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           },
           "source_debug_key": "111"
         },
@@ -300,6 +304,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x12",
               "value": 444
             }
@@ -310,7 +315,7 @@
             "reporting_origin": "https://another-reporter.test",
             "scheduled_report_time": "3604",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           },
           "trigger_debug_key": "555"
         },
@@ -322,6 +327,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x13",
               "value": 555
             }
@@ -332,7 +338,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3605",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           },
           "trigger_debug_key": "666"
         },

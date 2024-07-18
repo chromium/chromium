@@ -159,6 +159,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x159",
             "value": 321
           } ],
@@ -168,7 +169,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "0",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           },
           "trigger_context_id": ""
         },
@@ -204,6 +205,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 123
             }
@@ -214,7 +216,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "0",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           },
           "trigger_context_id": "456"
         },
@@ -225,6 +227,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x0",
             "value": 0
           } ],
@@ -234,7 +237,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "0",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           },
           "trigger_context_id": "654"
         },

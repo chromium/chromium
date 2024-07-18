@@ -29,10 +29,12 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/features.h"
@@ -99,6 +101,7 @@ using ::attribution_reporting::AggregatableValues;
 using ::attribution_reporting::AggregatableValuesValue;
 using ::attribution_reporting::FilterConfig;
 using ::attribution_reporting::FilterPair;
+using ::attribution_reporting::kDefaultFilteringId;
 using ::attribution_reporting::MaxEventLevelReports;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::TriggerSpec;
@@ -2460,7 +2463,7 @@ TEST_F(AttributionResolverTest, AggregatableDedupKeysFiltering) {
               /*source_keys=*/{"0"}, FilterPair())};
 
   auto aggregatable_values = {*AggregatableValues::Create(
-      {{"0", *AggregatableValuesValue::Create(1, /*filtering_id=*/0u)}},
+      {{"0", *AggregatableValuesValue::Create(1, kDefaultFilteringId)}},
       FilterPair())};
 
   storage()->StoreSource(
@@ -3453,7 +3456,7 @@ TEST_F(AttributionResolverTest, TopLevelTriggerFiltering) {
               /*source_keys=*/{"0"}, FilterPair())};
 
   auto aggregatable_values = {*AggregatableValues::Create(
-      {{"0", *AggregatableValuesValue::Create(1, /*filtering_id=*/0u)}},
+      {{"0", *AggregatableValuesValue::Create(1, kDefaultFilteringId)}},
       FilterPair())};
 
   storage()->StoreSource(
@@ -3590,7 +3593,7 @@ TEST_F(AttributionResolverTest,
                 TriggerBuilder()
                     .SetAggregatableValues({*AggregatableValues::Create(
                         {{"0", *AggregatableValuesValue::Create(
-                                   123, /*filtering_id=*/0u)}},
+                                   123, kDefaultFilteringId)}},
                         FilterPair(
                             /*positive=*/{*FilterConfig::Create(
                                 {{"product", {"2"}}})},
@@ -3705,7 +3708,7 @@ TEST_F(AttributionResolverTest,
                 TriggerBuilder()
                     .SetAggregatableValues({*AggregatableValues::Create(
                         {{"0", *AggregatableValuesValue::Create(
-                                   123, /*filtering_id=*/0u)}},
+                                   123, kDefaultFilteringId)}},
                         FilterPair())})
                     .Build()),
             AttributionTrigger::AggregatableResult::kSuccess);
@@ -4328,8 +4331,7 @@ TEST_F(AttributionResolverTest,
                    /*bucket=*/1, /*value=*/65536,
                    /*filtering_id=*/std::nullopt),
                AggregatableReportHistogramContribution(
-                   /*bucket=*/2, /*value=*/1,
-                   /*filtering_id=*/std::nullopt)}),
+                   /*bucket=*/2, /*value=*/1, /*filtering_id=*/std::nullopt)}),
           /*remaining_budget=*/std::nullopt,
           /*source_id=*/std::nullopt),
       AllOf(Field(&ProcessAggregatableDebugReportResult::report,
@@ -4345,8 +4347,7 @@ TEST_F(AttributionResolverTest,
                    /*bucket=*/1, /*value=*/65535,
                    /*filtering_id=*/std::nullopt),
                AggregatableReportHistogramContribution(
-                   /*bucket=*/2, /*value=*/1,
-                   /*filtering_id=*/std::nullopt)}),
+                   /*bucket=*/2, /*value=*/1, /*filtering_id=*/std::nullopt)}),
           /*remaining_budget=*/std::nullopt,
           /*source_id=*/std::nullopt),
       AllOf(Field(&ProcessAggregatableDebugReportResult::report,
@@ -4359,8 +4360,7 @@ TEST_F(AttributionResolverTest,
       storage()->ProcessAggregatableDebugReport(
           CreateAggregatableDebugReport(
               {AggregatableReportHistogramContribution(
-                  /*bucket=*/1, /*value=*/1,
-                  /*filtering_id=*/std::nullopt)}),
+                  /*bucket=*/1, /*value=*/1, /*filtering_id=*/std::nullopt)}),
           /*remaining_budget=*/std::nullopt,
           /*source_id=*/std::nullopt),
       AllOf(Field(&ProcessAggregatableDebugReportResult::report,
@@ -4377,11 +4377,9 @@ TEST_F(AttributionResolverTest,
       storage()->ProcessAggregatableDebugReport(
           CreateAggregatableDebugReport(
               {AggregatableReportHistogramContribution(
-                   /*bucket=*/1, /*value=*/1000,
-                   /*filtering_id=*/std::nullopt),
+                   /*bucket=*/1, /*value=*/1000, /*filtering_id=*/std::nullopt),
                AggregatableReportHistogramContribution(
-                   /*bucket=*/2, /*value=*/1,
-                   /*filtering_id=*/std::nullopt)}),
+                   /*bucket=*/2, /*value=*/1, /*filtering_id=*/std::nullopt)}),
           /*remaining_budget=*/1000,
           /*source_id=*/std::nullopt),
       AllOf(Field(&ProcessAggregatableDebugReportResult::report,
@@ -4394,11 +4392,9 @@ TEST_F(AttributionResolverTest,
       storage()->ProcessAggregatableDebugReport(
           CreateAggregatableDebugReport(
               {AggregatableReportHistogramContribution(
-                   /*bucket=*/1, /*value=*/999,
-                   /*filtering_id=*/std::nullopt),
+                   /*bucket=*/1, /*value=*/999, /*filtering_id=*/std::nullopt),
                AggregatableReportHistogramContribution(
-                   /*bucket=*/2, /*value=*/1,
-                   /*filtering_id=*/std::nullopt)}),
+                   /*bucket=*/2, /*value=*/1, /*filtering_id=*/std::nullopt)}),
           /*remaining_budget=*/1000,
           /*source_id=*/std::nullopt),
       AllOf(Field(&ProcessAggregatableDebugReportResult::report,

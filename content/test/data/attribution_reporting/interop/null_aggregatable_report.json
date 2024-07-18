@@ -186,6 +186,7 @@
           "aggregation_coordinator_origin": "https://c2.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 123
             }
@@ -196,7 +197,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "435601",
             "source_registration_time": "432000",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -206,6 +207,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://c2.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x0",
             "value": 0
           } ],
@@ -215,7 +217,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "435601",
             "source_registration_time": "259200",
-            "version": "0.1"
+            "version": "1.0"
          }
         },
         "report_time": "435601000",
@@ -225,6 +227,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://c2.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x0",
             "value": 0
           } ],
@@ -234,7 +237,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "435601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "435601000",
@@ -244,6 +247,7 @@
         "payload": {
            "aggregation_coordinator_origin": "https://c1.test",
            "histograms": [ {
+              "id": "0",
               "key": "0x0",
               "value": 0
            } ],
@@ -253,7 +257,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "435602",
             "source_registration_time": "432000",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "435602000",
@@ -263,6 +267,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x0",
             "value": 0
           } ],
@@ -272,7 +277,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "435602",
             "source_registration_time": "259200",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "435602000",
@@ -282,6 +287,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x0",
             "value": 0
           } ],
@@ -291,7 +297,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "435602",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "435602000",
@@ -301,6 +307,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x359",
             "value": 321
           } ],
@@ -310,7 +317,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "435603",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "435603000",
@@ -320,6 +327,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://c1.test",
           "histograms": [ {
+              "id": "0",
               "key": "0x0",
               "value": 0
            } ],
@@ -329,7 +337,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "435604",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "435604000",

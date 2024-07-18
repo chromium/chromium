@@ -149,6 +149,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x1",
             "value": 321
           } ],
@@ -158,7 +159,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "3601000",
@@ -168,6 +169,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [ {
+            "id": "0",
             "key": "0x1",
             "value": 456
           } ],
@@ -177,7 +179,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3603",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "3603000",

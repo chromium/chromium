@@ -22,6 +22,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -898,7 +899,7 @@ TriggerBuilder DefaultAggregatableTriggerBuilder(
     aggregatable_values.emplace(
         std::move(key_id),
         *attribution_reporting::AggregatableValuesValue::Create(
-            histogram_values[i], /*filtering_id=*/0u));
+            histogram_values[i], attribution_reporting::kDefaultFilteringId));
   }
 
   return TriggerBuilder()
@@ -915,7 +916,7 @@ DefaultAggregatableHistogramContributions(
       contributions;
   for (size_t i = 0; i < histogram_values.size(); ++i) {
     contributions.emplace_back(absl::MakeUint128(i, i), histogram_values[i],
-                               /*filtering_id=*/std::nullopt);
+                               attribution_reporting::kDefaultFilteringId);
   }
   return contributions;
 }

@@ -271,14 +271,17 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0xffffffffffffffffffffffffffffffff",
               "value": 999
             },
             {
+              "id": "0",
               "key": "0x11",
               "value": 123
             },
             {
+              "id": "0",
               "key": "0x12",
               "value": 456
             }
@@ -289,7 +292,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -300,10 +303,12 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x11",
               "value": 321
             },
             {
+              "id": "0",
               "key": "0x2",
               "value": 654
             }
@@ -314,7 +319,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3602",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -325,10 +330,12 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x1",
               "value": 456
             },
             {
+              "id": "0",
               "key": "0x22",
               "value": 789
             }
@@ -339,7 +346,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3603",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -350,10 +357,12 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0xffffffffffffffffffffffffffffffff",
               "value": 333
             },
             {
+              "id": "0",
               "key": "0x1",
               "value": 666
             }
@@ -364,7 +373,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3606",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "3606000",

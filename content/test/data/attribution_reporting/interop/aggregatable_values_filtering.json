@@ -184,6 +184,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0xa85",
               "value": 1
             }
@@ -194,7 +195,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3602",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",

@@ -220,6 +220,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x11",
               "value": 123
             }
@@ -230,7 +231,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "7199",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
@@ -255,6 +256,7 @@
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x32",
               "value": 321
             }
@@ -265,7 +267,7 @@
             "reporting_origin": "https://reporter2.test",
             "scheduled_report_time": "92000",
             "source_registration_time": "0",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         // 90,000,000 ms  = 86,400 s (clamped aggregatable_report_window)  + 1

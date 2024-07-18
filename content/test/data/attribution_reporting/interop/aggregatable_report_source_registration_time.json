@@ -130,6 +130,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [ {
+            "id": "0",
             "key": "0xa",
             "value": 1
           } ],
@@ -139,7 +140,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "90000",
             "source_registration_time": "86400",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "90000001",
@@ -149,6 +150,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [ {
+            "id": "0",
             "key": "0xb",
             "value": 2
           } ],
@@ -158,7 +160,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "90001",
             "source_registration_time": "86400",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "90001001",
@@ -168,6 +170,7 @@
         "payload": {
           "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [ {
+            "id": "0",
             "key": "0xc",
             "value": 3
           } ],
@@ -177,7 +180,7 @@
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "176399",
             "source_registration_time": "86400",
-            "version": "0.1"
+            "version": "1.0"
           }
         },
         "report_time": "176399001",

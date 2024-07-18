@@ -125,11 +125,10 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   // "key3" is not present as no value is found.
   EXPECT_THAT(
       contributions,
-      ElementsAre(
-          AggregatableReportHistogramContribution(
-              /*bucket=*/1369, /*value=*/32768, /*filtering_id=*/std::nullopt),
-          AggregatableReportHistogramContribution(
-              /*bucket=*/2693, /*value=*/1664, /*filtering_id=*/std::nullopt)));
+      ElementsAre(AggregatableReportHistogramContribution(
+                      /*bucket=*/1369, /*value=*/32768, kDefaultFilteringId),
+                  AggregatableReportHistogramContribution(
+                      /*bucket=*/2693, /*value=*/1664, kDefaultFilteringId)));
 
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 60, 1);
@@ -195,7 +194,7 @@ TEST(AggregatableAttributionUtilsTest,
                             {{"product", {"1"}}})},
                         /*negative=*/{}))},
            .expected = {AggregatableReportHistogramContribution(
-               1029, 1664, /*filtering_id=*/std::nullopt)},
+               1029, 1664, kDefaultFilteringId)},
        },
        {
            .description = "second_entry_ignored",
@@ -216,7 +215,7 @@ TEST(AggregatableAttributionUtilsTest,
                         /*negative=*/{}))},
            .expected = {AggregatableReportHistogramContribution(
                1369, 32768,
-               /*filtering_id=*/std::nullopt)},
+               kDefaultFilteringId)},
        },
        {
            .description = "filters_matched_keys_mismatched_no_contributions",
@@ -256,7 +255,7 @@ TEST(AggregatableAttributionUtilsTest,
                             {{"product", {"1"}}})},
                         /*negative=*/{}))},
            .expected = {AggregatableReportHistogramContribution(
-               1029, 1664, /*filtering_id=*/std::nullopt)},
+               1029, 1664, kDefaultFilteringId)},
        }};
   for (auto& test_case : kTestCases) {
     std::vector<AggregatableReportHistogramContribution> contributions =
@@ -487,6 +486,10 @@ TEST(AggregatableAttributionUtilsTest,
 
 TEST(AggregatableAttributionUtilsTest,
      AggregatableReportRequestWithFilteringIdsFeatureDisabled_UnsetInRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      attribution_reporting::features::
+          kAttributionReportingAggregatableFilteringIds);
   std::optional<AggregatableReportRequest> request =
       CreateAggregatableReportRequest(
           ReportBuilder(AttributionInfoBuilder().Build(),
