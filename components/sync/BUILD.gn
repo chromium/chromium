@@ -258,6 +258,7 @@ source_set("unit_tests") {
     "service/data_type_manager_impl_unittest.cc",
     "service/glue/sync_engine_impl_unittest.cc",
     "service/glue/sync_transport_data_prefs_unittest.cc",
+    "service/local_data_description_unittest.cc",
     "service/model_load_manager_unittest.cc",
     "service/model_type_controller_unittest.cc",
     "service/passphrase_type_metrics_provider_unittest.cc",

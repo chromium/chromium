@@ -92,6 +92,7 @@ static_library("service") {
     "//components/sync/protocol",
     "//components/sync/protocol:util",
     "//components/trusted_vault",
+    "//components/url_formatter",
     "//net",
     "//url",
   ]

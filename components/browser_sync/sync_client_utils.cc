@@ -5,6 +5,7 @@
 #include "components/browser_sync/sync_client_utils.h"
 
 #include <algorithm>
+#include <functional>
 #include <set>
 #include <string>
 #include <utility>
@@ -35,32 +36,12 @@ namespace {
 const syncer::ModelTypeSet kSupportedTypes = {
     syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST};
 
-std::string GetDomainFromUrl(const GURL& url) {
-  // TODO(crbug.com/40065374): Return UTF16 strings to avoid converting back for
-  // display in the UI.
-  return base::UTF16ToUTF8(
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          url));
-}
-
 template <typename ContainerT, typename F>
-syncer::LocalDataDescription CreateLocalDataDescription(syncer::ModelType type,
-                                                        ContainerT&& items,
+syncer::LocalDataDescription CreateLocalDataDescription(ContainerT&& items,
                                                         F&& url_extractor) {
-  syncer::LocalDataDescription desc;
-  desc.item_count = items.size();
-  // Using a set to get only the distinct domains. This also ensures an
-  // alphabetical ordering of the domains.
-  std::set<std::string> domains;
-  base::ranges::transform(
-      items, std::inserter(domains, domains.end()),
-      [&](const auto& item) { return GetDomainFromUrl(url_extractor(item)); });
-  auto it = domains.begin();
-  // Add up to 3 domains as examples to be used in a string shown to the user.
-  base::ranges::copy_n(it, std::min(size_t{3}, domains.size()),
-                       std::back_inserter(desc.domains));
-  desc.domain_count = domains.size();
-  return desc;
+  std::vector<GURL> urls;
+  std::ranges::transform(items, std::back_inserter(urls), url_extractor);
+  return syncer::LocalDataDescription(std::move(urls));
 }
 
 // Returns urls of all the bookmarks which can be moved to the account store,
@@ -185,7 +166,7 @@ class LocalDataQueryHelper::LocalDataQueryRequest
     result_.emplace(
         syncer::PASSWORDS,
         CreateLocalDataDescription(
-            syncer::PASSWORDS, std::move(local_passwords),
+            std::move(local_passwords),
             [](const std::unique_ptr<password_manager::PasswordForm>&
                    password_form) { return password_form->url; }));
 
@@ -197,9 +178,8 @@ class LocalDataQueryHelper::LocalDataQueryRequest
     std::vector<GURL> bookmarked_urls = GetAllUserBookmarksExcludingFolders(
         helper_->local_bookmark_model_view_.get());
     result_.emplace(syncer::BOOKMARKS,
-                    CreateLocalDataDescription(
-                        syncer::BOOKMARKS, std::move(bookmarked_urls),
-                        [](const GURL& url) { return url; }));
+                    CreateLocalDataDescription(std::move(bookmarked_urls),
+                                               std::identity()));
     // Trigger the barrier closure.
     barrier_callback_.Run();
   }
@@ -210,8 +190,7 @@ class LocalDataQueryHelper::LocalDataQueryRequest
 
     result_.emplace(
         syncer::READING_LIST,
-        CreateLocalDataDescription(syncer::READING_LIST, std::move(keys),
-                                   [](const GURL& url) { return url; }));
+        CreateLocalDataDescription(std::move(keys), std::identity()));
     // Trigger the barrier closure.
     barrier_callback_.Run();
   }
