@@ -1472,8 +1472,14 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
         std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
             TextResourceDecoderOptions::kPlainTextContent, encoding_)),
         background_task_runner_,
-        CrossThreadBindOnce(&BackgroundProcessor::OnFinishScriptDecode,
-                            weak_factory_.GetWeakPtr()));
+        CrossThreadBindOnce(
+            [](base::WeakPtr<BackgroundProcessor> weak_self,
+               ScriptDecoder::Result result) {
+              if (auto* self = weak_self.get()) {
+                self->OnFinishScriptDecode(std::move(result));
+              }
+            },
+            weak_factory_.GetWeakPtr()));
     data_pipe_script_decoder_->Start(std::move(body_));
     // The cached metadata must be passed to the worker thread to avoid UAF,
     // because `this` is deleted when the request is canceled.
@@ -1765,10 +1771,19 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::
   consume_code_cache_task->Run();
   PostCrossThreadTask(
       *background_task_runner, FROM_HERE,
-      CrossThreadBindOnce(&BackgroundProcessor::OnFinishCodeCacheConsumer,
-                          std::move(background_processor_weak_ptr),
-                          std::move(consume_code_cache_task),
-                          std::move(cached_metadata)));
+      CrossThreadBindOnce(
+          [](base::WeakPtr<BackgroundProcessor> weak_self,
+             std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+                 consume_code_cache_task,
+             mojo_base::BigBuffer cached_metadata) {
+            if (auto* self = weak_self.get()) {
+              self->OnFinishCodeCacheConsumer(
+                  std::move(consume_code_cache_task),
+                  std::move(cached_metadata));
+            }
+          },
+          std::move(background_processor_weak_ptr),
+          std::move(consume_code_cache_task), std::move(cached_metadata)));
 }
 
 void BackgroundResourceScriptStreamer::BackgroundProcessor::
