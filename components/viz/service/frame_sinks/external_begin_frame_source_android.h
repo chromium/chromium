@@ -49,7 +49,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
 
   void SetEnabled(bool enabled);
   void OnVSyncImpl(int64_t time_nanos,
-                   int64_t deadline_nanos,
                    base::TimeDelta vsync_period,
                    std::optional<PossibleDeadlines> possible_deadlines);
 

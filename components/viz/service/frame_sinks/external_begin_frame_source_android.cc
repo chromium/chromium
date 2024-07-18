@@ -194,11 +194,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
   DCHECK(self);
   self_for_frame_callback_.reset(self);
   if (vsync_notification_enabled_) {
-    // TODO(crbug.com/40829076): If `possible_deadlines` is present, should
-    // really pick a deadline from `possible_deadlines`. However some code
-    // still assume the deadline is a multiple of interval from frame time.
-    int64_t deadline = frame_time_nanos + vsync_period_.InNanoseconds();
-    client_->OnVSyncImpl(frame_time_nanos, deadline, vsync_period_,
+    client_->OnVSyncImpl(frame_time_nanos, vsync_period_,
                          std::move(possible_deadlines));
     RequestVsyncIfNeeded();
   }
@@ -253,20 +249,21 @@ void ExternalBeginFrameSourceAndroid::OnVSync(
     const base::android::JavaParamRef<jobject>& obj,
     jlong time_micros,
     jlong period_micros) {
-  OnVSyncImpl(time_micros * 1000, (time_micros + period_micros) * 1000,
-              base::Microseconds(period_micros),
+  OnVSyncImpl(time_micros * 1000, base::Microseconds(period_micros),
               /*possible_deadlines=*/std::nullopt);
 }
 
 void ExternalBeginFrameSourceAndroid::OnVSyncImpl(
     int64_t time_nanos,
-    int64_t deadline_nanos,
     base::TimeDelta vsync_period,
     std::optional<PossibleDeadlines> possible_deadlines) {
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
   base::TimeTicks frame_time = ToTimeTicks(time_nanos);
-  base::TimeTicks deadline = ToTimeTicks(deadline_nanos);
+  // TODO(crbug.com/40829076): If `possible_deadlines` is present, should
+  // really pick a deadline from `possible_deadlines`. However some code
+  // still assume the deadline is a multiple of interval from frame time.
+  base::TimeTicks deadline = frame_time + vsync_period;
 
   auto begin_frame_args = begin_frame_args_generator_.GenerateBeginFrameArgs(
       source_id(), frame_time, deadline, vsync_period);
