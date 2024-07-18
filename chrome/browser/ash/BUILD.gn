@@ -241,6 +241,8 @@ static_library("ash") {
     "policy/server_backed_state/server_backed_device_state.h",
     "policy/server_backed_state/server_backed_state_keys_broker.cc",
     "policy/server_backed_state/server_backed_state_keys_broker.h",
+    "policy/skyvault/drive_skyvault_uploader.cc",
+    "policy/skyvault/drive_skyvault_uploader.h",
     "policy/skyvault/drive_upload_observer.cc",
     "policy/skyvault/drive_upload_observer.h",
     "policy/skyvault/file_location_utils.cc",

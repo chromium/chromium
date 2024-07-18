@@ -13,6 +13,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/io_task_controller.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/drive_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -24,6 +28,17 @@ namespace {
 // Called after `uploader` is fully stopped.
 void OnMigrationStopped(std::unique_ptr<MigrationCloudUploader> uploader) {
   VLOG(1) << "Local files migration stopped";
+}
+
+// Returns a path combining `destination_dir` with the file's parent path
+// relative to MyFiles.
+base::FilePath GetDestinationPath(Profile* profile,
+                                  const base::FilePath& file_path,
+                                  const std::string& destination_dir) {
+  base::FilePath my_files_path = GetMyFilesPath(profile);
+  base::FilePath destination_path = base::FilePath(destination_dir);
+  my_files_path.AppendRelativePath(file_path.DirName(), &destination_path);
+  return destination_path;
 }
 
 }  // namespace
@@ -115,11 +130,8 @@ void OneDriveMigrationUploader::Run() {
   // need chunking.
   for (const auto& file_path : files_) {
     // TODO(aidazolic): Ignore files that failed previously.
-    base::FilePath my_files_path = GetMyFilesPath(profile_);
-    // Append the file's path up to MyFiles to the base destination name.
-    base::FilePath target_path = base::FilePath(destination_dir_);
-    my_files_path.AppendRelativePath(file_path.DirName(), &target_path);
-
+    base::FilePath target_path =
+        GetDestinationPath(profile_, file_path, destination_dir_);
     auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
         profile_, file_path,
         ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration,
@@ -188,14 +200,54 @@ GoogleDriveMigrationUploader::GoogleDriveMigrationUploader(
 GoogleDriveMigrationUploader::~GoogleDriveMigrationUploader() = default;
 
 void GoogleDriveMigrationUploader::Run() {
-  if (callback_) {
-    std::move(callback_).Run({});
+  if (files_.empty()) {
+    if (callback_) {
+      std::move(callback_).Run({});
+      return;
+    }
+  }
+
+  // TODO(aidazolic): Consider if we can start all jobs at the same time, or we
+  // need chunking.
+  for (const auto& file_path : files_) {
+    base::FilePath target_path =
+        GetDestinationPath(profile_, file_path, destination_dir_);
+    std::unique_ptr<DriveSkyvaultUploader> uploader =
+        std::make_unique<DriveSkyvaultUploader>(
+            profile_, file_path, target_path,
+            base::BindOnce(&GoogleDriveMigrationUploader::OnUploadDone,
+                           weak_ptr_factory_.GetWeakPtr(), file_path));
+
+    auto uploader_ptr = uploader.get();
+    uploaders_.insert({file_path, std::move(uploader)});
+    uploader_ptr->Run();
   }
 }
 
 void GoogleDriveMigrationUploader::Stop(base::OnceClosure callback) {
   // TODO(b/349097807): Stop IO tasks.
   std::move(callback).Run();
+}
+
+void GoogleDriveMigrationUploader::OnUploadDone(
+    const base::FilePath& file_path,
+    std::optional<MigrationUploadError> error) {
+  if (error.has_value()) {
+    // TODO(aidazolic): UMA.
+    // TODO(aidazolic): Persist the failed file to memory.
+
+    // If we only failed to delete the file, don't fail the entire migration
+    // because of it.
+    if (error != MigrationUploadError::kDeleteFailed) {
+      errors_.insert({file_path, error.value()});
+    }
+  }
+
+  uploaders_.erase(file_path);
+  // If all files are done, invoke the callback.
+  if (uploaders_.empty() && callback_) {
+    std::move(callback_).Run({});
+  }
 }
 
 }  // namespace policy::local_user_files

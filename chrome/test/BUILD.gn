@@ -4632,6 +4632,7 @@ if (!is_android) {
         "../browser/ash/policy/reporting/metrics_reporting/usb/usb_events_browsertest.cc",
         "../browser/ash/policy/reporting/os_updates/os_updates_reporter_browsertest.cc",
         "../browser/ash/policy/reporting/user_added_removed/user_added_removed_reporter_browsertest.cc",
+        "../browser/ash/policy/skyvault/drive_skyvault_uploader_browsertest.cc",
         "../browser/ash/policy/skyvault/drive_upload_observer_browsertest.cc",
         "../browser/ash/policy/skyvault/file_location_utils_browsertest.cc",
         "../browser/ash/policy/skyvault/local_files_cleanup_browsertest.cc",

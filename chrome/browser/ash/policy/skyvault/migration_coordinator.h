@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/policy/skyvault/drive_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -160,6 +161,13 @@ class GoogleDriveMigrationUploader : public MigrationCloudUploader {
   void Stop(base::OnceClosure stopped_callback) override;
 
  private:
+  void OnUploadDone(const base::FilePath& file_path,
+                    std::optional<MigrationUploadError> error);
+
+  // Maps source urls of files being uploaded to corresponding
+  // DriveSkyvaultUploader instances.
+  std::map<base::FilePath, std::unique_ptr<DriveSkyvaultUploader>> uploaders_;
+
   base::WeakPtrFactory<GoogleDriveMigrationUploader> weak_ptr_factory_{this};
 };
 
