@@ -772,6 +772,28 @@ INSTANTIATE_TEST_SUITE_P(
         {"xkb:jp::jpn", "InputMethod.Manta.Orca.Japanese.States."},
         {"nacl_mozc_us", "InputMethod.Manta.Orca.Japanese.States."},
         {"nacl_mozc_jp", "InputMethod.Manta.Orca.Japanese.States."},
+        // Danish
+        {"xkb:dk::dan", "InputMethod.Manta.Orca.Danish.States."},
+        // Dutch
+        {"xkb:be::nld", "InputMethod.Manta.Orca.Dutch.States."},
+        {"xkb:us:intl_pc:nld", "InputMethod.Manta.Orca.Dutch.States."},
+        {"xkb:us:intl:nld", "InputMethod.Manta.Orca.Dutch.States."},
+        // Finnish
+        {"xkb:fi::fin", "InputMethod.Manta.Orca.Finnish.States."},
+        // Italian
+        {"xkb:it::ita", "InputMethod.Manta.Orca.Italian.States."},
+        // Norwegian
+        {"xkb:no::nob", "InputMethod.Manta.Orca.Norwegian.States."},
+        // Portugese
+        {"xkb:br::por", "InputMethod.Manta.Orca.Portugese.States."},
+        {"xkb:pt::por", "InputMethod.Manta.Orca.Portugese.States."},
+        {"xkb:us:intl_pc:por", "InputMethod.Manta.Orca.Portugese.States."},
+        {"xkb:us:intl:por", "InputMethod.Manta.Orca.Portugese.States."},
+        // Spanish
+        {"xkb:latam::spa", "InputMethod.Manta.Orca.Spanish.States."},
+        {"xkb:es::spa", "InputMethod.Manta.Orca.Spanish.States."},
+        // Swedish
+        {"xkb:se::swe", "InputMethod.Manta.Orca.Swedish.States."},
     }));
 
 TEST_P(EditorStateMetricsSegmentedByLanguage,
@@ -890,6 +912,28 @@ INSTANTIATE_TEST_SUITE_P(
         {"xkb:jp::jpn", "InputMethod.Manta.Orca.Other."},
         {"nacl_mozc_us", "InputMethod.Manta.Orca.Other."},
         {"nacl_mozc_jp", "InputMethod.Manta.Orca.Other."},
+        // Danish
+        {"xkb:dk::dan", "InputMethod.Manta.Orca.Other."},
+        // Dutch
+        {"xkb:be::nld", "InputMethod.Manta.Orca.Other."},
+        {"xkb:us:intl_pc:nld", "InputMethod.Manta.Orca.Other."},
+        {"xkb:us:intl:nld", "InputMethod.Manta.Orca.Other."},
+        // Finnish
+        {"xkb:fi::fin", "InputMethod.Manta.Orca.Other."},
+        // Italian
+        {"xkb:it::ita", "InputMethod.Manta.Orca.Other."},
+        // Norwegian
+        {"xkb:no::nob", "InputMethod.Manta.Orca.Other."},
+        // Portugese
+        {"xkb:br::por", "InputMethod.Manta.Orca.Other."},
+        {"xkb:pt::por", "InputMethod.Manta.Orca.Other."},
+        {"xkb:us:intl_pc:por", "InputMethod.Manta.Orca.Other."},
+        {"xkb:us:intl:por", "InputMethod.Manta.Orca.Other."},
+        // Spanish
+        {"xkb:latam::spa", "InputMethod.Manta.Orca.Other."},
+        {"xkb:es::spa", "InputMethod.Manta.Orca.Other."},
+        // Swedish
+        {"xkb:se::swe", "InputMethod.Manta.Orca.Other."},
     }));
 
 TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,

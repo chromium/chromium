@@ -85,15 +85,30 @@ std::string_view AsString(const EditorOpportunityMode& mode) {
 
 std::string_view AsString(const LanguageCategory& category) {
   switch (category) {
+    case LanguageCategory::kDanish:
+      return "Danish";
+    case LanguageCategory::kDutch:
+      return "Dutch";
+    case LanguageCategory::kFinnish:
+      return "Finnish";
     case LanguageCategory::kEnglish:
       return "English";
     case LanguageCategory::kFrench:
       return "French";
     case LanguageCategory::kGerman:
       return "German";
+    case LanguageCategory::kItalian:
+      return "Italian";
     case LanguageCategory::kJapanese:
       return "Japanese";
-    case LanguageCategory::kOther:
+    case LanguageCategory::kNorwegian:
+      return "Norwegian";
+    case LanguageCategory::kPortugese:
+      return "Portugese";
+    case LanguageCategory::kSpanish:
+      return "Spanish";
+    case LanguageCategory::kSwedish:
+      return "Swedish";
     default:
       return "Other";
   }
