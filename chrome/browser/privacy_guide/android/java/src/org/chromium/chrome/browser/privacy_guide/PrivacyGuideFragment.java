@@ -61,7 +61,8 @@ public class PrivacyGuideFragment extends Fragment
         FragmentType.COOKIES,
         FragmentType.SEARCH_SUGGESTIONS,
         FragmentType.PRELOAD,
-        FragmentType.DONE
+        FragmentType.DONE,
+        FragmentType.AD_TOPICS
     })
     @interface FragmentType {
         int WELCOME = 0;
@@ -72,7 +73,8 @@ public class PrivacyGuideFragment extends Fragment
         int SEARCH_SUGGESTIONS = 5;
         int PRELOAD = 6;
         int DONE = 7;
-        int MAX_VALUE = DONE;
+        int AD_TOPICS = 8;
+        int MAX_VALUE = AD_TOPICS;
     }
 
     public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER =
@@ -94,7 +96,9 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.SAFE_BROWSING,
                             FragmentType.SEARCH_SUGGESTIONS,
                             FragmentType.PRELOAD,
+                            FragmentType.AD_TOPICS,
                             FragmentType.DONE));
+
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
     private CustomTabIntentHelper mCustomTabHelper;

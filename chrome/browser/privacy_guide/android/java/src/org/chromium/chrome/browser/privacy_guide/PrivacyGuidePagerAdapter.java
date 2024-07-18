@@ -72,7 +72,9 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                 && displayHandler.shouldDisplayPreload()) {
             fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.PRELOAD);
         }
-
+        if (displayHandler.shouldDisplayAdTopics()) {
+            fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.AD_TOPICS);
+        }
         return Collections.unmodifiableSet(fragmentTypesToDisplay);
     }
 
@@ -94,6 +96,8 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                 return new SearchSuggestionsFragment();
             case PrivacyGuideFragment.FragmentType.PRELOAD:
                 return new PreloadFragment();
+            case PrivacyGuideFragment.FragmentType.AD_TOPICS:
+                return new AdTopicsFragment();
             case PrivacyGuideFragment.FragmentType.DONE:
                 return new DoneFragment();
         }

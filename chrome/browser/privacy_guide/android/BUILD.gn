@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/privacy_guide/AdTopicsFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/CookiesFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/DoneFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/HistorySyncFragment.java",
@@ -67,6 +68,7 @@ android_library("java") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.privacy_guide"
   sources = [
+    "junit/src/org/chromium/chrome/browser/privacy_guide/AdTopicsFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/CookiesFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/DoneFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/HistorySyncFragmentTest.java",
@@ -159,6 +161,7 @@ android_library("javatests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-night/privacy_guide_ad_topics_image.xml",
     "java/res/drawable-night/privacy_guide_cookies_image.xml",
     "java/res/drawable-night/privacy_guide_done_image.xml",
     "java/res/drawable-night/privacy_guide_history_sync_image.xml",
@@ -169,6 +172,7 @@ android_resources("java_resources") {
     "java/res/drawable-night/privacy_guide_welcome_image.xml",
     "java/res/drawable/active_tab_circle.xml",
     "java/res/drawable/inactive_tab_circle.xml",
+    "java/res/drawable/privacy_guide_ad_topics_image.xml",
     "java/res/drawable/privacy_guide_cookies_image.xml",
     "java/res/drawable/privacy_guide_done_image.xml",
     "java/res/drawable/privacy_guide_history_sync_image.xml",
@@ -178,6 +182,7 @@ android_resources("java_resources") {
     "java/res/drawable/privacy_guide_search_suggestions_image.xml",
     "java/res/drawable/privacy_guide_welcome_image.xml",
     "java/res/drawable/tab_selector.xml",
+    "java/res/layout/privacy_guide_ad_topics_step.xml",
     "java/res/layout/privacy_guide_cookies_step.xml",
     "java/res/layout/privacy_guide_done.xml",
     "java/res/layout/privacy_guide_explanation_heading.xml",
@@ -203,5 +208,6 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+    "//components/strings:privacy_sandbox_strings_grd",
   ]
 }

@@ -26,6 +26,7 @@ class PrivacyGuideMetricsDelegate {
     private static final String INITIAL_COOKIES_CONTROL_MODE = "INITIAL_COOKIES_CONTROL_MODE";
     private static final String INITIAL_SEARCH_SUGGESTIONS_STATE =
             "INITIAL_SEARCH_SUGGESTIONS_STATE";
+    private static final String INITIAL_AD_TOPICS_STATE = "INITIAL_AD_TOPICS_STATE";
 
     private final Profile mProfile;
 
@@ -45,6 +46,9 @@ class PrivacyGuideMetricsDelegate {
      * Initial state of the Search Suggestions when {@link SearchSuggestionsFragment} is created.
      */
     private @Nullable Boolean mInitialSearchSuggestionsState;
+
+    /** Initial state of Ad topics when {@link AdTopicsFragment} is created. */
+    private @Nullable Boolean mInitialAdTopicsState;
 
     PrivacyGuideMetricsDelegate(Profile profile) {
         mProfile = profile;
@@ -67,6 +71,9 @@ class PrivacyGuideMetricsDelegate {
         if (mInitialSearchSuggestionsState != null) {
             bundle.putBoolean(INITIAL_SEARCH_SUGGESTIONS_STATE, mInitialSearchSuggestionsState);
         }
+        if (mInitialAdTopicsState != null) {
+            bundle.putBoolean(INITIAL_AD_TOPICS_STATE, mInitialAdTopicsState);
+        }
     }
 
     /** A method to restore the initial state of all Fragments on Activity recreation. */
@@ -85,6 +92,9 @@ class PrivacyGuideMetricsDelegate {
         }
         if (bundle.containsKey(INITIAL_SEARCH_SUGGESTIONS_STATE)) {
             mInitialSearchSuggestionsState = bundle.getBoolean(INITIAL_SEARCH_SUGGESTIONS_STATE);
+        }
+        if (bundle.containsKey(INITIAL_AD_TOPICS_STATE)) {
+            mInitialAdTopicsState = bundle.getBoolean(INITIAL_AD_TOPICS_STATE);
         }
     }
 
@@ -294,6 +304,13 @@ class PrivacyGuideMetricsDelegate {
                     // here.
                     break;
                 }
+            case PrivacyGuideFragment.FragmentType.AD_TOPICS:
+                {
+                    // TODO(b/347054774): Dynamically retrieve Ad Topics API state using
+                    // PrivacyGuideUtils.
+                    mInitialAdTopicsState = false;
+                    break;
+                }
             case PrivacyGuideFragment.FragmentType.WELCOME:
             case PrivacyGuideFragment.FragmentType.DONE:
                 // The Welcome and Done cards don't store/update any state.
@@ -343,6 +360,11 @@ class PrivacyGuideMetricsDelegate {
                 {
                     // TODO(crbug.com/40281867): Metrics on next for preload card should be recorded
                     // here.
+                    break;
+                }
+            case PrivacyGuideFragment.FragmentType.AD_TOPICS:
+                {
+                    // TODO(b/347054774): Record metrics for Ad Topics API.
                     break;
                 }
             default:
@@ -495,6 +517,11 @@ class PrivacyGuideMetricsDelegate {
                 {
                     // TODO(crbug.com/40281867): Metrics for preload card back click should be
                     // recorded here.
+                    break;
+                }
+            case PrivacyGuideFragment.FragmentType.AD_TOPICS:
+                {
+                    // TODO(b/347054774): Record metrics for Ad Topics API.
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.DONE:

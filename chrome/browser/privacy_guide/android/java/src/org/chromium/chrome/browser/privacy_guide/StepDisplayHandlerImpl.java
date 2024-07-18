@@ -77,4 +77,10 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
                         == PreloadPagesState.STANDARD_PRELOADING
                 || PreloadPagesSettingsBridge.getState(mProfile) == PreloadPagesState.NO_PRELOADING;
     }
+
+    @Override
+    public boolean shouldDisplayAdTopics() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS);
+    }
 }

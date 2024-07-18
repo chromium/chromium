@@ -25,4 +25,9 @@ public interface StepDisplayHandler {
      * @return Whether the Privacy Guide Preload page should be displayed.
      */
     boolean shouldDisplayPreload();
+
+    /**
+     * @return Whether the Privacy Guide Ad Topics page should be displayed.
+     */
+    boolean shouldDisplayAdTopics();
 }

@@ -166,6 +166,8 @@ public class PrivacyGuideFragmentTest {
                     R.string.improve_search_suggestions_title,
                     FragmentType.PRELOAD,
                     R.string.preload_pages_privacy_guide_summary,
+                    FragmentType.AD_TOPICS,
+                    R.string.settings_privacy_guide_ad_topics_toggle_label,
                     FragmentType.DONE,
                     R.string.privacy_guide_done_title);
 
@@ -535,7 +537,8 @@ public class PrivacyGuideFragmentTest {
     @Feature({"PrivacyGuide"})
     @EnableFeatures({
         ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
-        ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
+        ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID,
+        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS
     })
     public void testForwardNavAllActionsPreloadPG3() {
         setMSBBState(false);
@@ -574,11 +577,16 @@ public class PrivacyGuideFragmentTest {
         onView(withId(R.id.search_suggestions_switch)).check(matches(isChecked()));
 
         navigateFromCardToNext(FragmentType.SEARCH_SUGGESTIONS);
-        testButtonVisibility(false, true, true);
+        testButtonVisibility(true, true, false);
         onView(withId(R.id.standard_option)).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.standard_option).check(matches(isChecked()));
 
         navigateFromCardToNext(FragmentType.PRELOAD);
+        testButtonVisibility(false, true, true);
+        onView(withId(R.id.ad_topics_switch)).perform(click());
+        onView(withId(R.id.ad_topics_switch)).check(matches(isChecked()));
+
+        navigateFromCardToNext(FragmentType.AD_TOPICS);
         testButtonVisibility(false, false, false);
     }
 
@@ -625,7 +633,8 @@ public class PrivacyGuideFragmentTest {
     @Feature({"PrivacyGuide"})
     @EnableFeatures({
         ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
-        ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
+        ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID,
+        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS
     })
     @DisableIf.Build(
             message = "Flaky on P. See http://crbug.com/1487153",
@@ -641,6 +650,11 @@ public class PrivacyGuideFragmentTest {
 
         launchPrivacyGuide();
         goToCard(FragmentType.DONE);
+
+        pressBack();
+        onViewWaiting(allOf(withId(R.id.ad_topics_switch), isCompletelyDisplayed()));
+        onView(withId(R.id.ad_topics_switch)).perform(click());
+        onView(withId(R.id.ad_topics_switch)).check(matches(isChecked()));
 
         pressBack();
         onViewWaiting(withText(R.string.preload_pages_privacy_guide_summary));
