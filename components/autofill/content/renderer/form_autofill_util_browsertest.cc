@@ -193,6 +193,12 @@ bool HaveSameFormControlId(const WebFormControlElement& element,
 
 class FormAutofillUtilsTest : public content::RenderViewTest {
  public:
+  static constexpr CallTimerState kCallTimerStateDummy = {
+      .call_site = CallTimerState::CallSite::kUpdateFormCache,
+      .last_autofill_agent_reset = {},
+      .last_dom_content_loaded = {},
+  };
+
   FormAutofillUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
@@ -221,12 +227,6 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   FieldDataManager& field_data_manager() { return *field_data_manager_; }
 
  private:
-  static constexpr CallTimerState kCallTimerStateDummy = {
-      .call_site = CallTimerState::CallSite::kUpdateFormCache,
-      .last_autofill_agent_reset = {},
-      .last_dom_content_loaded = {},
-  };
-
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<FieldDataManager> field_data_manager_ =
       base::MakeRefCounted<FieldDataManager>();
@@ -249,6 +249,27 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormData_IdAndNames) {
   EXPECT_EQ(form_data.fields()[0].name(), u"input-name");
   EXPECT_EQ(form_data.fields()[0].id_attribute(), u"input-id");
   EXPECT_EQ(form_data.fields()[0].name_attribute(), u"input-name");
+}
+
+// Tests that form extraction measures its total time, also split by caller.
+TEST_F(FormAutofillUtilsTest, ExtractFormDataMeasuresTotalTime) {
+  base::HistogramTester histogram_tester;
+  LoadHTML(R"(
+    <input>
+  )");
+  FormData form_data = *ExtractFormData(WebFormElement());
+  histogram_tester.ExpectTotalCount("Autofill.TimingPrecise.ExtractFormData",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.TimingPrecise.ExtractFormData.UpdateFormCache", 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.TimingInterval.ExtractFormData.UpdateFormCache."
+      "AutofillAgentReset",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.TimingInterval.ExtractFormData.UpdateFormCache."
+      "DOMContentLoaded",
+      1);
 }
 
 // Tests that form extraction measures how long label extraction took.

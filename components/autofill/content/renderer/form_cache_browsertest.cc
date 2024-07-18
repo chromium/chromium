@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
@@ -557,6 +558,24 @@ TEST_F(FormCacheBrowserTest, MAYBE_FieldAndFrameLimit) {
       &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
 
   EXPECT_TRUE(forms.removed_forms.empty());
+}
+
+// Tests that form extraction measures its total time.
+TEST_F(FormCacheBrowserTest, UpdateFormCacheMeasuresTotalTime) {
+  base::HistogramTester histogram_tester;
+  LoadHTML(R"(
+    <input>
+  )");
+  // FormCache::UpdateFormCache() is called by AutofillAgent.
+  histogram_tester.ExpectTotalCount(  //
+      "Autofill.TimingPrecise.UpdateFormCache", 1);
+  histogram_tester.ExpectTotalCount(  //
+      "Autofill.TimingPrecise.UpdateFormCache.UpdateFormCache", 1);
+  // form_util::ExtractFormData() is also called by PasswordAutofillAgent.
+  histogram_tester.ExpectTotalCount(  //
+      "Autofill.TimingPrecise.ExtractFormData", 3);
+  histogram_tester.ExpectTotalCount(  //
+      "Autofill.TimingPrecise.ExtractFormData.UpdateFormCache", 1);
 }
 
 }  // namespace

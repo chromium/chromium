@@ -70,11 +70,11 @@ ScopedCallTimer::~ScopedCallTimer() {
 
   {
     // Emit the duration of the timer's scope.
-    auto record = [&](base::TimeDelta value, std::string_view suffix) {
+    auto record = [this](base::TimeDelta value, std::string_view suffix) {
       static constexpr std::string_view kPrefix = "Autofill.TimingPrecise.";
       base::UmaHistogramCustomMicrosecondsTimes(
-          base::StrCat({kPrefix, name_, call_site}), value,
-          base::Microseconds(0), base::Seconds(1), 100);
+          base::StrCat({kPrefix, name_, suffix.empty() ? "" : ".", suffix}),
+          value, base::Microseconds(1), base::Seconds(1), 100);
     };
     record(after - before_, "");
     record(after - before_, call_site);
@@ -83,14 +83,16 @@ ScopedCallTimer::~ScopedCallTimer() {
   {
     // Emit the interval metrics from `state_.last_*` until the end of the
     // timer's scope.
-    auto record = [&](base::TimeDelta value, std::string_view suffix) {
+    auto record = [this, call_site](base::TimeDelta value,
+                                    std::string_view suffix) {
       static constexpr std::string_view kPrefix = "Autofill.TimingInterval.";
+      DCHECK(!suffix.empty());
       base::UmaHistogramCustomMicrosecondsTimes(
-          base::StrCat({kPrefix, name_, ".", call_site, suffix}), value,
-          base::Microseconds(0), base::Seconds(10), 100);
+          base::StrCat({kPrefix, name_, ".", call_site, ".", suffix}), value,
+          base::Microseconds(1), base::Seconds(10), 100);
     };
-    record(after - state_.last_autofill_agent_reset, ".AutofillAgentReset");
-    record(after - state_.last_dom_content_loaded, ".DOMContentLoaded");
+    record(after - state_.last_autofill_agent_reset, "AutofillAgentReset");
+    record(after - state_.last_dom_content_loaded, "DOMContentLoaded");
   }
 }
 
