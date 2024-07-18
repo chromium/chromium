@@ -2704,7 +2704,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'WlxOPlNtl9XcnRJI8U3wWmmzA2mRKSP4DKU_69BYowsC',
+        'version': 'NVc0T9b7TqduRmUhWedA9saSgcyN_aZyokjth3K6I7gC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
