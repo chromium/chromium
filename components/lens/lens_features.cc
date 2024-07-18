@@ -197,6 +197,9 @@ constexpr base::FeatureParam<std::string> kLensOverlayGscQueryParamValue{
 const base::FeatureParam<bool> kLensOverlayEnableInFullscreen{
     &kLensOverlay, "enable-in-fullscreen", true};
 
+constexpr base::FeatureParam<int> kLensOverlaySegmentationMaskCornerRadius{
+    &kLensOverlay, "segmentation-mask-corner-radius", 12};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -547,6 +550,10 @@ std::string GetLensOverlayGscQueryParamValue() {
 
 bool GetLensOverlayEnableInFullscreen() {
   return kLensOverlayEnableInFullscreen.Get();
+}
+
+int GetLensOverlaySegmentationMaskCornerRadius() {
+  return kLensOverlaySegmentationMaskCornerRadius.Get();
 }
 
 }  // namespace lens::features

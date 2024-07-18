@@ -473,6 +473,10 @@ extern std::string GetLensOverlayGscQueryParamValue();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlayEnableInFullscreen();
 
+// The corner radius in pixels for the vertex corners of the segmentation mask.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlaySegmentationMaskCornerRadius();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

@@ -134,6 +134,9 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       lens::features::GetLensOverlayPostSelectionComparisonThreshold());
   html_source->AddBoolean("enableErrorPage",
                           lens::features::GetLensOverlayEnableErrorPage());
+  html_source->AddInteger(
+      "segmentationMaskCornerRadius",
+      lens::features::GetLensOverlaySegmentationMaskCornerRadius());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

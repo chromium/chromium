@@ -369,6 +369,8 @@ export class ObjectLayerElement extends PolymerElement {
     }
 
     context.beginPath();
+    const cornerRadius =
+        loadTimeData.getInteger('segmentationMaskCornerRadius');
     for (const polygon of polygons) {
       // TODO(b/330183480): Currently, we are assuming that polygon
       // coordinates are normalized. We should still implement
@@ -380,9 +382,41 @@ export class ObjectLayerElement extends PolymerElement {
       const firstVertex = polygon.vertex[0];
       context.moveTo(
           firstVertex.x * this.canvasWidth, firstVertex.y * this.canvasHeight);
-      for (const vertex of polygon.vertex.slice(1)) {
+      // Draw the segmentation mask, rounding each corner by the configured
+      // radius.
+      for (let i = 1; i < polygon.vertex.length; i++) {
+        const currentVertex = polygon.vertex[i];
+        const previousVertex = polygon.vertex[i - 1];
+
+        // Calculate the distance between the current and previous vertices.
+        const dx = currentVertex.x - previousVertex.x;
+        const dy = currentVertex.y - previousVertex.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // The control point distance should be the desired relative corner
+        // radius or the radius of the arc between the two points. Whichever is
+        // smaller.
+        const controlPointDistance =
+            Math.min(distance / 2, cornerRadius / this.canvasWidth);
+
+        // Use linear interpolation to find the control points.
+        const controlPoint1x =
+            previousVertex.x + (dx * controlPointDistance) / distance;
+        const controlPoint1y =
+            previousVertex.y + (dy * controlPointDistance) / distance;
+        const controlPoint2x =
+            currentVertex.x - (dx * controlPointDistance) / distance;
+        const controlPoint2y =
+            currentVertex.y - (dy * controlPointDistance) / distance;
+
         context.lineTo(
-            vertex.x * this.canvasWidth, vertex.y * this.canvasHeight);
+            controlPoint1x * this.canvasWidth,
+            controlPoint1y * this.canvasHeight);
+        context.arcTo(
+            controlPoint1x * this.canvasWidth,
+            controlPoint1y * this.canvasHeight,
+            controlPoint2x * this.canvasWidth,
+            controlPoint2y * this.canvasHeight, cornerRadius);
       }
     }
     context.closePath();
