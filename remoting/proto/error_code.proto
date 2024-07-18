@@ -21,30 +21,11 @@ enum ErrorCode {
   // No errors.
   NONE = 1;
 
-  // TODO: yuweih - Remove (and reserve) client errors from the protobuf here.
-
-  // Unavailable to reach the host in the signaling channel despite the
-  // directory reporting the host as online.
-  HOST_UNREACHABLE = 2;
-
-  // The host has gone offline.  This usually occurs when the client copy of the
-  // host list is out of sync with the Chromoting Directory.
-  HOST_IS_OFFLINE = 25;
-
   // Connection rejected since the host is not started.
   SESSION_REJECTED = 3;
 
   // The protocol does not match between host and client.
   INCOMPATIBLE_PROTOCOL = 4;
-
-  // A network issue has prevented the remote connection.
-  NETWORK_FAILURE = 5;
-
-  // The access code provided does not match the expected code.
-  INVALID_ACCESS_CODE = 6;
-
-  // The plugin on the client side is missing.
-  MISSING_PLUGIN = 7;
 
   // Authentication has failed for the connection.
   AUTHENTICATION_FAILED = 8;
@@ -56,26 +37,14 @@ enum ErrorCode {
   // There has been an issue connecting peer-to-peer.
   P2P_FAILURE = 10;
 
-  // Connection dropped since the client computer is sleeping.
-  CLIENT_SUSPENDED = 11;
-
-  // The plugin fails to initialize as Native Client is disabled.
-  NACL_DISABLED = 12;
-
   // Maximum session duration has been reached.
   MAX_SESSION_LENGTH = 13;
 
   // Host failed to initialize the session.
   HOST_CONFIGURATION_ERROR = 14;
 
-  // Host failed to initialize the session.
-  NACL_PLUGIN_CRASHED = 15;
-
   // Host security policies do not allow connections from client.
   INVALID_ACCOUNT = 16;
-
-  // Connection fails due to invalid third-party authentication token.
-  INVALID_THIRD_PARTY_TOKEN = 17;
 
   // Connection fails due to an error in connecting the signaling channel.
   SIGNALING_ERROR = 26;
@@ -83,17 +52,8 @@ enum ErrorCode {
   // Connection fails due to the jingle messages timing out.
   SIGNALING_TIMEOUT = 27;
 
-  // The user canceled an operation.
-  CANCELED = 38;
-
-  // The remote user rejected a support request.
-  REJECTED_BY_USER = 39;
-
   // The user was not authorized to connect to the host (per BeyondCorp policy).
   AUTHZ_POLICY_CHECK_FAILED = 40;
-
-  // Video playback failed on the client since it was blocked by the browser.
-  PLAYBACK_DISALLOWED = 41;
 
   // The user was not authorized to connect to the host (not policy related).
   UNAUTHORIZED_ACCOUNT = 42;
@@ -130,7 +90,8 @@ enum ErrorCode {
   // and the client.
   NO_COMMON_AUTH_METHOD = 62;
 
-  reserved 19 to 24, 28 to 37, 51 to 61;
+  reserved 2, 11, 12, 15, 17, 41;
+  reserved 5 to 7, 19 to 25, 28 to 39, 51 to 61;
 
   // [400, 699] are reserved for internal errors.
   reserved 400 to 699;
