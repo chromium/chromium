@@ -30,6 +30,7 @@ import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js'
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
+import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -266,11 +267,13 @@ export class CertificateManagerV2Element extends
   private onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
     this.selectedPage_ = Page.PLATFORM_CERTS;
+    this.$.platformCertsSection.setInitialFocus();
   }
 
   private onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
     this.selectedPage_ = Page.ADMIN_CERTS;
+    this.$.adminCertsSection.setInitialFocus();
   }
 
   // TODO(crbug.com/40928765): Make this work with multiple subpages, either by
@@ -279,6 +282,7 @@ export class CertificateManagerV2Element extends
   // on<OptionalContext><EventName>_).
   private onNavigateBack_() {
     this.selectedPage_ = Page.LOCAL_CERTS;
+    focusWithoutInk(this.$.localMenuItem);
   }
 
   private onImportResult_(e: CustomEvent<ImportResult|null>) {
