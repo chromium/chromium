@@ -157,6 +157,10 @@ constexpr char kCheckSidePanelThumbnailShownScript[] =
     "return window.getComputedStyle(thumbContainer).display !== 'none' && "
     "       imageSrc.startsWith('data:image/jpeg');})();";
 
+constexpr char kHistoryStateScript[] =
+    "(function() {history.replaceState({'test':1}, 'test'); "
+    "history.pushState({'test':1}, 'test'); history.back();})();";
+
 constexpr char kTestSuggestSignals[] = "suggest_signals";
 
 constexpr char kStartTimeQueryParamKey[] = "qsubts";
@@ -2852,6 +2856,36 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Overlay should close
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OverlayStaysOpenWithHistoryState) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the Overlay
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(contents);
+
+  // Call replaceState, pushState, and back on the underlying page.
+  EXPECT_TRUE(content::ExecJs(
+      contents->GetPrimaryMainFrame(), kHistoryStateScript,
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Overlay should have stayed open.
+  ASSERT_TRUE(controller->state() == State::kOverlay);
 }
 
 // TODO(b/340886492): Fix and reenable test on MSAN.
