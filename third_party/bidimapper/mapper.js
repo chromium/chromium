@@ -1004,7 +1004,7 @@ var mapperTab = (function () {
 	    async handleUserPrompt(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        try {
-	            await context.handleUserPrompt(params);
+	            await context.handleUserPrompt(params.accept, params.userText);
 	        }
 	        catch (error) {
 	            // Heuristically determine the error
@@ -1081,7 +1081,7 @@ var mapperTab = (function () {
 	var assert$1 = {};
 
 	Object.defineProperty(assert$1, "__esModule", { value: true });
-	assert$1.assert = void 0;
+	assert$1.assert = assert;
 	/**
 	 * Copyright 2023 Google LLC.
 	 * Copyright (c) Microsoft Corporation.
@@ -1103,7 +1103,6 @@ var mapperTab = (function () {
 	        throw new Error(message ?? 'Internal assertion failed.');
 	    }
 	}
-	assert$1.assert = assert;
 
 	var ActionDispatcher$1 = {};
 
@@ -1126,7 +1125,8 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	Object.defineProperty(GraphemeTools, "__esModule", { value: true });
-	GraphemeTools.isSingleGrapheme = GraphemeTools.isSingleComplexGrapheme = void 0;
+	GraphemeTools.isSingleComplexGrapheme = isSingleComplexGrapheme;
+	GraphemeTools.isSingleGrapheme = isSingleGrapheme;
 	/**
 	 * Check if the given string is a single complex grapheme. A complex grapheme is one that
 	 * is made up of multiple characters.
@@ -1134,7 +1134,6 @@ var mapperTab = (function () {
 	function isSingleComplexGrapheme(value) {
 	    return isSingleGrapheme(value) && value.length > 1;
 	}
-	GraphemeTools.isSingleComplexGrapheme = isSingleComplexGrapheme;
 	/**
 	 * Check if the given string is a single grapheme.
 	 */
@@ -1145,7 +1144,6 @@ var mapperTab = (function () {
 	    const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
 	    return [...segmenter.segment(value)].length === 1;
 	}
-	GraphemeTools.isSingleGrapheme = isSingleGrapheme;
 
 	var InputSource = {};
 
@@ -1318,7 +1316,9 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	Object.defineProperty(keyUtils, "__esModule", { value: true });
-	keyUtils.getKeyLocation = keyUtils.getKeyCode = keyUtils.getNormalizedKey = void 0;
+	keyUtils.getNormalizedKey = getNormalizedKey;
+	keyUtils.getKeyCode = getKeyCode;
+	keyUtils.getKeyLocation = getKeyLocation;
 	/**
 	 * Returns the normalized key value for a given key according to the table:
 	 * https://w3c.github.io/webdriver/#dfn-normalized-key-value
@@ -1470,7 +1470,6 @@ var mapperTab = (function () {
 	            return value;
 	    }
 	}
-	keyUtils.getNormalizedKey = getNormalizedKey;
 	/**
 	 * Returns the key code for a given key according to the table:
 	 * https://w3c.github.io/webdriver/#dfn-shifted-character
@@ -1746,7 +1745,6 @@ var mapperTab = (function () {
 	            return;
 	    }
 	}
-	keyUtils.getKeyCode = getKeyCode;
 	/**
 	 * Returns the location of the key according to the table:
 	 * https://w3c.github.io/webdriver/#dfn-key-location
@@ -1796,7 +1794,6 @@ var mapperTab = (function () {
 	            return 0;
 	    }
 	}
-	keyUtils.getKeyLocation = getKeyLocation;
 
 	var USKeyboardLayout = {};
 
@@ -3177,59 +3174,6 @@ var mapperTab = (function () {
 
 	var NetworkProcessor$1 = {};
 
-	var NetworkUtils = {};
-
-	var Base64 = {};
-
-	/**
-	 * Copyright 2024 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	Object.defineProperty(Base64, "__esModule", { value: true });
-	Base64.base64ToString = void 0;
-	/**
-	 * Encodes a string to base64.
-	 *
-	 * Uses the native Web API if available, otherwise falls back to a NodeJS Buffer.
-	 * @param {string} base64Str
-	 * @return {string}
-	 */
-	function base64ToString(base64Str) {
-	    // Available only if run in a browser context.
-	    if ('atob' in globalThis) {
-	        return globalThis.atob(base64Str);
-	    }
-	    // Available only if run in a NodeJS context.
-	    return Buffer.from(base64Str, 'base64').toString('ascii');
-	}
-	Base64.base64ToString = base64ToString;
-
-	var UrlPattern = {};
-
-	var M=Object.defineProperty;var Pe=Object.getOwnPropertyDescriptor;var Re=Object.getOwnPropertyNames;var Ee=Object.prototype.hasOwnProperty;var Oe=(e,t)=>{for(var r in t)M(e,r,{get:t[r],enumerable:!0});},ke=(e,t,r,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of Re(t))!Ee.call(e,a)&&a!==r&&M(e,a,{get:()=>t[a],enumerable:!(n=Pe(t,a))||n.enumerable});return e};var Te=e=>ke(M({},"__esModule",{value:!0}),e);var Ne={};Oe(Ne,{URLPattern:()=>Y});var urlpattern=Te(Ne);var R=class{type=3;name="";prefix="";value="";suffix="";modifier=3;constructor(t,r,n,a,c,l){this.type=t,this.name=r,this.prefix=n,this.value=a,this.suffix=c,this.modifier=l;}hasCustomName(){return this.name!==""&&typeof this.name!="number"}},Ae=/[$_\p{ID_Start}]/u,ye=/[$_\u200C\u200D\p{ID_Continue}]/u,v=".*";function we(e,t){return (/^[\x00-\x7F]*$/).test(e)}function D(e,t=!1){let r=[],n=0;for(;n<e.length;){let a=e[n],c=function(l){if(!t)throw new TypeError(l);r.push({type:"INVALID_CHAR",index:n,value:e[n++]});};if(a==="*"){r.push({type:"ASTERISK",index:n,value:e[n++]});continue}if(a==="+"||a==="?"){r.push({type:"OTHER_MODIFIER",index:n,value:e[n++]});continue}if(a==="\\"){r.push({type:"ESCAPED_CHAR",index:n++,value:e[n++]});continue}if(a==="{"){r.push({type:"OPEN",index:n,value:e[n++]});continue}if(a==="}"){r.push({type:"CLOSE",index:n,value:e[n++]});continue}if(a===":"){let l="",s=n+1;for(;s<e.length;){let i=e.substr(s,1);if(s===n+1&&Ae.test(i)||s!==n+1&&ye.test(i)){l+=e[s++];continue}break}if(!l){c(`Missing parameter name at ${n}`);continue}r.push({type:"NAME",index:n,value:l}),n=s;continue}if(a==="("){let l=1,s="",i=n+1,o=!1;if(e[i]==="?"){c(`Pattern cannot start with "?" at ${i}`);continue}for(;i<e.length;){if(!we(e[i])){c(`Invalid character '${e[i]}' at ${i}.`),o=!0;break}if(e[i]==="\\"){s+=e[i++]+e[i++];continue}if(e[i]===")"){if(l--,l===0){i++;break}}else if(e[i]==="("&&(l++,e[i+1]!=="?")){c(`Capturing groups are not allowed at ${i}`),o=!0;break}s+=e[i++];}if(o)continue;if(l){c(`Unbalanced pattern at ${n}`);continue}if(!s){c(`Missing pattern at ${n}`);continue}r.push({type:"REGEX",index:n,value:s}),n=i;continue}r.push({type:"CHAR",index:n,value:e[n++]});}return r.push({type:"END",index:n,value:""}),r}function F(e,t={}){let r=D(e);t.delimiter??="/#?",t.prefixes??="./";let n=`[^${S(t.delimiter)}]+?`,a=[],c=0,l=0,i=new Set,o=h=>{if(l<r.length&&r[l].type===h)return r[l++].value},f=()=>o("OTHER_MODIFIER")??o("ASTERISK"),d=h=>{let u=o(h);if(u!==void 0)return u;let{type:p,index:A}=r[l];throw new TypeError(`Unexpected ${p} at ${A}, expected ${h}`)},T=()=>{let h="",u;for(;u=o("CHAR")??o("ESCAPED_CHAR");)h+=u;return h},xe=h=>h,L=t.encodePart||xe,I="",U=h=>{I+=h;},$=()=>{I.length&&(a.push(new R(3,"","",L(I),"",3)),I="");},X=(h,u,p,A,Z)=>{let g=3;switch(Z){case"?":g=1;break;case"*":g=0;break;case"+":g=2;break}if(!u&&!p&&g===3){U(h);return}if($(),!u&&!p){if(!h)return;a.push(new R(3,"","",L(h),"",g));return}let m;p?p==="*"?m=v:m=p:m=n;let O=2;m===n?(O=1,m=""):m===v&&(O=0,m="");let P;if(u?P=u:p&&(P=c++),i.has(P))throw new TypeError(`Duplicate name '${P}'.`);i.add(P),a.push(new R(O,P,L(h),m,L(A),g));};for(;l<r.length;){let h=o("CHAR"),u=o("NAME"),p=o("REGEX");if(!u&&!p&&(p=o("ASTERISK")),u||p){let g=h??"";t.prefixes.indexOf(g)===-1&&(U(g),g=""),$();let m=f();X(g,u,p,"",m);continue}let A=h??o("ESCAPED_CHAR");if(A){U(A);continue}if(o("OPEN")){let g=T(),m=o("NAME"),O=o("REGEX");!m&&!O&&(O=o("ASTERISK"));let P=T();d("CLOSE");let be=f();X(g,m,O,P,be);continue}$(),d("END");}return a}function S(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function B(e){return e&&e.ignoreCase?"ui":"u"}function q(e,t,r){return W(F(e,r),t,r)}function k(e){switch(e){case 0:return "*";case 1:return "?";case 2:return "+";case 3:return ""}}function W(e,t,r={}){r.delimiter??="/#?",r.prefixes??="./",r.sensitive??=!1,r.strict??=!1,r.end??=!0,r.start??=!0,r.endsWith="";let n=r.start?"^":"";for(let s of e){if(s.type===3){s.modifier===3?n+=S(s.value):n+=`(?:${S(s.value)})${k(s.modifier)}`;continue}t&&t.push(s.name);let i=`[^${S(r.delimiter)}]+?`,o=s.value;if(s.type===1?o=i:s.type===0&&(o=v),!s.prefix.length&&!s.suffix.length){s.modifier===3||s.modifier===1?n+=`(${o})${k(s.modifier)}`:n+=`((?:${o})${k(s.modifier)})`;continue}if(s.modifier===3||s.modifier===1){n+=`(?:${S(s.prefix)}(${o})${S(s.suffix)})`,n+=k(s.modifier);continue}n+=`(?:${S(s.prefix)}`,n+=`((?:${o})(?:`,n+=S(s.suffix),n+=S(s.prefix),n+=`(?:${o}))*)${S(s.suffix)})`,s.modifier===0&&(n+="?");}let a=`[${S(r.endsWith)}]|$`,c=`[${S(r.delimiter)}]`;if(r.end)return r.strict||(n+=`${c}?`),r.endsWith.length?n+=`(?=${a})`:n+="$",new RegExp(n,B(r));r.strict||(n+=`(?:${c}(?=${a}))?`);let l=!1;if(e.length){let s=e[e.length-1];s.type===3&&s.modifier===3&&(l=r.delimiter.indexOf(s)>-1);}return l||(n+=`(?=${c}|${a})`),new RegExp(n,B(r))}var x={delimiter:"",prefixes:"",sensitive:!0,strict:!0},J={delimiter:".",prefixes:"",sensitive:!0,strict:!0},Q={delimiter:"/",prefixes:"/",sensitive:!0,strict:!0};function ee(e,t){return e.length?e[0]==="/"?!0:!t||e.length<2?!1:(e[0]=="\\"||e[0]=="{")&&e[1]=="/":!1}function te(e,t){return e.startsWith(t)?e.substring(t.length,e.length):e}function Ce(e,t){return e.endsWith(t)?e.substr(0,e.length-t.length):e}function _(e){return !e||e.length<2?!1:e[0]==="["||(e[0]==="\\"||e[0]==="{")&&e[1]==="["}var re=["ftp","file","http","https","ws","wss"];function N(e){if(!e)return !0;for(let t of re)if(e.test(t))return !0;return !1}function ne(e,t){if(e=te(e,"#"),t||e==="")return e;let r=new URL("https://example.com");return r.hash=e,r.hash?r.hash.substring(1,r.hash.length):""}function se(e,t){if(e=te(e,"?"),t||e==="")return e;let r=new URL("https://example.com");return r.search=e,r.search?r.search.substring(1,r.search.length):""}function ie(e,t){return t||e===""?e:_(e)?K(e):j(e)}function ae(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.password=e,r.password}function oe(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.username=e,r.username}function ce(e,t,r){if(r||e==="")return e;if(t&&!re.includes(t))return new URL(`${t}:${e}`).pathname;let n=e[0]=="/";return e=new URL(n?e:"/-"+e,"https://example.com").pathname,n||(e=e.substring(2,e.length)),e}function le(e,t,r){return z(t)===e&&(e=""),r||e===""?e:G(e)}function fe(e,t){return e=Ce(e,":"),t||e===""?e:y(e)}function z(e){switch(e){case"ws":case"http":return "80";case"wws":case"https":return "443";case"ftp":return "21";default:return ""}}function y(e){if(e==="")return e;if(/^[-+.A-Za-z0-9]*$/.test(e))return e.toLowerCase();throw new TypeError(`Invalid protocol '${e}'.`)}function he(e){if(e==="")return e;let t=new URL("https://example.com");return t.username=e,t.username}function ue(e){if(e==="")return e;let t=new URL("https://example.com");return t.password=e,t.password}function j(e){if(e==="")return e;if(/[\t\n\r #%/:<>?@[\]^\\|]/g.test(e))throw new TypeError(`Invalid hostname '${e}'`);let t=new URL("https://example.com");return t.hostname=e,t.hostname}function K(e){if(e==="")return e;if(/[^0-9a-fA-F[\]:]/g.test(e))throw new TypeError(`Invalid IPv6 hostname '${e}'`);return e.toLowerCase()}function G(e){if(e===""||/^[0-9]*$/.test(e)&&parseInt(e)<=65535)return e;throw new TypeError(`Invalid port '${e}'.`)}function de(e){if(e==="")return e;let t=new URL("https://example.com");return t.pathname=e[0]!=="/"?"/-"+e:e,e[0]!=="/"?t.pathname.substring(2,t.pathname.length):t.pathname}function pe(e){return e===""?e:new URL(`data:${e}`).pathname}function ge(e){if(e==="")return e;let t=new URL("https://example.com");return t.search=e,t.search.substring(1,t.search.length)}function me(e){if(e==="")return e;let t=new URL("https://example.com");return t.hash=e,t.hash.substring(1,t.hash.length)}var H=class{#i;#n=[];#t={};#e=0;#s=1;#l=0;#o=0;#d=0;#p=0;#g=!1;constructor(t){this.#i=t;}get result(){return this.#t}parse(){for(this.#n=D(this.#i,!0);this.#e<this.#n.length;this.#e+=this.#s){if(this.#s=1,this.#n[this.#e].type==="END"){if(this.#o===0){this.#b(),this.#f()?this.#r(9,1):this.#h()?this.#r(8,1):this.#r(7,0);continue}else if(this.#o===2){this.#u(5);continue}this.#r(10,0);break}if(this.#d>0)if(this.#A())this.#d-=1;else continue;if(this.#T()){this.#d+=1;continue}switch(this.#o){case 0:this.#P()&&this.#u(1);break;case 1:if(this.#P()){this.#C();let t=7,r=1;this.#E()?(t=2,r=3):this.#g&&(t=2),this.#r(t,r);}break;case 2:this.#S()?this.#u(3):(this.#x()||this.#h()||this.#f())&&this.#u(5);break;case 3:this.#O()?this.#r(4,1):this.#S()&&this.#r(5,1);break;case 4:this.#S()&&this.#r(5,1);break;case 5:this.#y()?this.#p+=1:this.#w()&&(this.#p-=1),this.#k()&&!this.#p?this.#r(6,1):this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 6:this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 7:this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 8:this.#f()&&this.#r(9,1);break;}}this.#t.hostname!==void 0&&this.#t.port===void 0&&(this.#t.port="");}#r(t,r){switch(this.#o){case 0:break;case 1:this.#t.protocol=this.#c();break;case 2:break;case 3:this.#t.username=this.#c();break;case 4:this.#t.password=this.#c();break;case 5:this.#t.hostname=this.#c();break;case 6:this.#t.port=this.#c();break;case 7:this.#t.pathname=this.#c();break;case 8:this.#t.search=this.#c();break;case 9:this.#t.hash=this.#c();break;}this.#o!==0&&t!==10&&([1,2,3,4].includes(this.#o)&&[6,7,8,9].includes(t)&&(this.#t.hostname??=""),[1,2,3,4,5,6].includes(this.#o)&&[8,9].includes(t)&&(this.#t.pathname??=this.#g?"/":""),[1,2,3,4,5,6,7].includes(this.#o)&&t===9&&(this.#t.search??="")),this.#R(t,r);}#R(t,r){this.#o=t,this.#l=this.#e+r,this.#e+=r,this.#s=0;}#b(){this.#e=this.#l,this.#s=0;}#u(t){this.#b(),this.#o=t;}#m(t){return t<0&&(t=this.#n.length-t),t<this.#n.length?this.#n[t]:this.#n[this.#n.length-1]}#a(t,r){let n=this.#m(t);return n.value===r&&(n.type==="CHAR"||n.type==="ESCAPED_CHAR"||n.type==="INVALID_CHAR")}#P(){return this.#a(this.#e,":")}#E(){return this.#a(this.#e+1,"/")&&this.#a(this.#e+2,"/")}#S(){return this.#a(this.#e,"@")}#O(){return this.#a(this.#e,":")}#k(){return this.#a(this.#e,":")}#x(){return this.#a(this.#e,"/")}#h(){if(this.#a(this.#e,"?"))return !0;if(this.#n[this.#e].value!=="?")return !1;let t=this.#m(this.#e-1);return t.type!=="NAME"&&t.type!=="REGEX"&&t.type!=="CLOSE"&&t.type!=="ASTERISK"}#f(){return this.#a(this.#e,"#")}#T(){return this.#n[this.#e].type=="OPEN"}#A(){return this.#n[this.#e].type=="CLOSE"}#y(){return this.#a(this.#e,"[")}#w(){return this.#a(this.#e,"]")}#c(){let t=this.#n[this.#e],r=this.#m(this.#l).index;return this.#i.substring(r,t.index)}#C(){let t={};Object.assign(t,x),t.encodePart=y;let r=q(this.#c(),void 0,t);this.#g=N(r);}};var V=["protocol","username","password","hostname","port","pathname","search","hash"],E="*";function Se(e,t){if(typeof e!="string")throw new TypeError("parameter 1 is not of type 'string'.");let r=new URL(e,t);return {protocol:r.protocol.substring(0,r.protocol.length-1),username:r.username,password:r.password,hostname:r.hostname,port:r.port,pathname:r.pathname,search:r.search!==""?r.search.substring(1,r.search.length):void 0,hash:r.hash!==""?r.hash.substring(1,r.hash.length):void 0}}function b(e,t){return t?C(e):e}function w(e,t,r){let n;if(typeof t.baseURL=="string")try{n=new URL(t.baseURL),t.protocol===void 0&&(e.protocol=b(n.protocol.substring(0,n.protocol.length-1),r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&(e.username=b(n.username,r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&t.password===void 0&&(e.password=b(n.password,r)),t.protocol===void 0&&t.hostname===void 0&&(e.hostname=b(n.hostname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&(e.port=b(n.port,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&(e.pathname=b(n.pathname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&(e.search=b(n.search.substring(1,n.search.length),r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&t.hash===void 0&&(e.hash=b(n.hash.substring(1,n.hash.length),r));}catch{throw new TypeError(`invalid baseURL '${t.baseURL}'.`)}if(typeof t.protocol=="string"&&(e.protocol=fe(t.protocol,r)),typeof t.username=="string"&&(e.username=oe(t.username,r)),typeof t.password=="string"&&(e.password=ae(t.password,r)),typeof t.hostname=="string"&&(e.hostname=ie(t.hostname,r)),typeof t.port=="string"&&(e.port=le(t.port,e.protocol,r)),typeof t.pathname=="string"){if(e.pathname=t.pathname,n&&!ee(e.pathname,r)){let a=n.pathname.lastIndexOf("/");a>=0&&(e.pathname=b(n.pathname.substring(0,a+1),r)+e.pathname);}e.pathname=ce(e.pathname,e.protocol,r);}return typeof t.search=="string"&&(e.search=se(t.search,r)),typeof t.hash=="string"&&(e.hash=ne(t.hash,r)),e}function C(e){return e.replace(/([+*?:{}()\\])/g,"\\$1")}function Le(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function Ie(e,t){t.delimiter??="/#?",t.prefixes??="./",t.sensitive??=!1,t.strict??=!1,t.end??=!0,t.start??=!0,t.endsWith="";let r=".*",n=`[^${Le(t.delimiter)}]+?`,a=/[$_\u200C\u200D\p{ID_Continue}]/u,c="";for(let l=0;l<e.length;++l){let s=e[l];if(s.type===3){if(s.modifier===3){c+=C(s.value);continue}c+=`{${C(s.value)}}${k(s.modifier)}`;continue}let i=s.hasCustomName(),o=!!s.suffix.length||!!s.prefix.length&&(s.prefix.length!==1||!t.prefixes.includes(s.prefix)),f=l>0?e[l-1]:null,d=l<e.length-1?e[l+1]:null;if(!o&&i&&s.type===1&&s.modifier===3&&d&&!d.prefix.length&&!d.suffix.length)if(d.type===3){let T=d.value.length>0?d.value[0]:"";o=a.test(T);}else o=!d.hasCustomName();if(!o&&!s.prefix.length&&f&&f.type===3){let T=f.value[f.value.length-1];o=t.prefixes.includes(T);}o&&(c+="{"),c+=C(s.prefix),i&&(c+=`:${s.name}`),s.type===2?c+=`(${s.value})`:s.type===1?i||(c+=`(${n})`):s.type===0&&(!i&&(!f||f.type===3||f.modifier!==3||o||s.prefix!=="")?c+="*":c+=`(${r})`),s.type===1&&i&&s.suffix.length&&a.test(s.suffix[0])&&(c+="\\"),c+=C(s.suffix),o&&(c+="}"),s.modifier!==3&&(c+=k(s.modifier));}return c}var Y=class{#i;#n={};#t={};#e={};#s={};#l=!1;constructor(t={},r,n){try{let a;if(typeof r=="string"?a=r:n=r,typeof t=="string"){let i=new H(t);if(i.parse(),t=i.result,a===void 0&&typeof t.protocol!="string")throw new TypeError("A base URL must be provided for a relative constructor string.");t.baseURL=a;}else {if(!t||typeof t!="object")throw new TypeError("parameter 1 is not of type 'string' and cannot convert to dictionary.");if(a)throw new TypeError("parameter 1 is not of type 'string'.")}typeof n>"u"&&(n={ignoreCase:!1});let c={ignoreCase:n.ignoreCase===!0},l={pathname:E,protocol:E,username:E,password:E,hostname:E,port:E,search:E,hash:E};this.#i=w(l,t,!0),z(this.#i.protocol)===this.#i.port&&(this.#i.port="");let s;for(s of V){if(!(s in this.#i))continue;let i={},o=this.#i[s];switch(this.#t[s]=[],s){case"protocol":Object.assign(i,x),i.encodePart=y;break;case"username":Object.assign(i,x),i.encodePart=he;break;case"password":Object.assign(i,x),i.encodePart=ue;break;case"hostname":Object.assign(i,J),_(o)?i.encodePart=K:i.encodePart=j;break;case"port":Object.assign(i,x),i.encodePart=G;break;case"pathname":N(this.#n.protocol)?(Object.assign(i,Q,c),i.encodePart=de):(Object.assign(i,x,c),i.encodePart=pe);break;case"search":Object.assign(i,x,c),i.encodePart=ge;break;case"hash":Object.assign(i,x,c),i.encodePart=me;break}try{this.#s[s]=F(o,i),this.#n[s]=W(this.#s[s],this.#t[s],i),this.#e[s]=Ie(this.#s[s],i),this.#l=this.#l||this.#s[s].some(f=>f.type===2);}catch{throw new TypeError(`invalid ${s} pattern '${this.#i[s]}'.`)}}}catch(a){throw new TypeError(`Failed to construct 'URLPattern': ${a.message}`)}}test(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return !1;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return !1}let a;for(a of V)if(!this.#n[a].exec(n[a]))return !1;return !0}exec(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return null}let a={};r?a.inputs=[t,r]:a.inputs=[t];let c;for(c of V){let l=this.#n[c].exec(n[c]);if(!l)return null;let s={};for(let[i,o]of this.#t[c].entries())if(typeof o=="string"||typeof o=="number"){let f=l[i+1];s[o]=f;}a[c]={input:n[c]??"",groups:s};}return a}static compareComponent(t,r,n){let a=(i,o)=>{for(let f of ["type","modifier","prefix","value","suffix"]){if(i[f]<o[f])return -1;if(i[f]===o[f])continue;return 1}return 0},c=new R(3,"","","","",3),l=new R(0,"","","","",3),s=(i,o)=>{let f=0;for(;f<Math.min(i.length,o.length);++f){let d=a(i[f],o[f]);if(d)return d}return i.length===o.length?0:a(i[f]??c,o[f]??c)};return !r.#e[t]&&!n.#e[t]?0:r.#e[t]&&!n.#e[t]?s(r.#s[t],[l]):!r.#e[t]&&n.#e[t]?s([l],n.#s[t]):s(r.#s[t],n.#s[t])}get protocol(){return this.#e.protocol}get username(){return this.#e.username}get password(){return this.#e.password}get hostname(){return this.#e.hostname}get port(){return this.#e.port}get pathname(){return this.#e.pathname}get search(){return this.#e.search}get hash(){return this.#e.hash}get hasRegExpGroups(){return this.#l}};
-
-	const { URLPattern: URLPattern$2 } = urlpattern;
-
-	var urlpatternPolyfill = { URLPattern: URLPattern$2 };
-
-	if (!globalThis.URLPattern) {
-	  globalThis.URLPattern = URLPattern$2;
-	}
-
-	Object.defineProperty(UrlPattern, "__esModule", { value: true });
-	UrlPattern.URLPattern = void 0;
 	/**
 	 * Copyright 2023 Google LLC.
 	 * Copyright (c) Microsoft Corporation.
@@ -3246,275 +3190,9 @@ var mapperTab = (function () {
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	const urlpattern_polyfill_1 = urlpatternPolyfill;
-	// XXX: Switch to native URLPattern when available.
-	// https://github.com/nodejs/node/issues/40844
-	let URLPattern$1 = urlpattern_polyfill_1.URLPattern;
-	UrlPattern.URLPattern = URLPattern$1;
-	if ('URLPattern' in globalThis) {
-	    UrlPattern.URLPattern = URLPattern$1 = globalThis.URLPattern;
-	}
-
-	/*
-	 * Copyright 2023 Google LLC.
-	 * Copyright (c) Microsoft Corporation.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *     http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 *
-	 */
-	Object.defineProperty(NetworkUtils, "__esModule", { value: true });
-	NetworkUtils.matchUrlPattern = NetworkUtils.isSpecialScheme = NetworkUtils.sameSiteBiDiToCdp = NetworkUtils.bidiToCdpCookie = NetworkUtils.deserializeByteValue = NetworkUtils.cdpToBiDiCookie = NetworkUtils.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction = NetworkUtils.cdpFetchHeadersFromBidiNetworkHeaders = NetworkUtils.bidiNetworkHeadersFromCdpFetchHeaders = NetworkUtils.cdpNetworkHeadersFromBidiNetworkHeaders = NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeadersEntries = NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeaders = NetworkUtils.computeHeadersSize = void 0;
-	const ErrorResponse_js_1 = ErrorResponse;
-	const Base64_js_1 = Base64;
-	const UrlPattern_js_1 = UrlPattern;
-	function computeHeadersSize(headers) {
-	    const requestHeaders = headers.reduce((acc, header) => {
-	        return `${acc}${header.name}: ${header.value.value}\r\n`;
-	    }, '');
-	    return new TextEncoder().encode(requestHeaders).length;
-	}
-	NetworkUtils.computeHeadersSize = computeHeadersSize;
-	/** Converts from CDP Network domain headers to BiDi network headers. */
-	function bidiNetworkHeadersFromCdpNetworkHeaders(headers) {
-	    if (!headers) {
-	        return [];
-	    }
-	    return Object.entries(headers).map(([name, value]) => ({
-	        name,
-	        value: {
-	            type: 'string',
-	            value,
-	        },
-	    }));
-	}
-	NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeaders = bidiNetworkHeadersFromCdpNetworkHeaders;
-	/** Converts from CDP Fetch domain headers to BiDi network headers. */
-	function bidiNetworkHeadersFromCdpNetworkHeadersEntries(headers) {
-	    if (!headers) {
-	        return [];
-	    }
-	    return headers.map(({ name, value }) => ({
-	        name,
-	        value: {
-	            type: 'string',
-	            value,
-	        },
-	    }));
-	}
-	NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeadersEntries = bidiNetworkHeadersFromCdpNetworkHeadersEntries;
-	/** Converts from Bidi network headers to CDP Network domain headers. */
-	function cdpNetworkHeadersFromBidiNetworkHeaders(headers) {
-	    if (headers === undefined) {
-	        return undefined;
-	    }
-	    return headers.reduce((result, header) => {
-	        // TODO: Distinguish between string and bytes?
-	        result[header.name] = header.value.value;
-	        return result;
-	    }, {});
-	}
-	NetworkUtils.cdpNetworkHeadersFromBidiNetworkHeaders = cdpNetworkHeadersFromBidiNetworkHeaders;
-	/** Converts from CDP Fetch domain header entries to Bidi network headers. */
-	function bidiNetworkHeadersFromCdpFetchHeaders(headers) {
-	    if (!headers) {
-	        return [];
-	    }
-	    return headers.map(({ name, value }) => ({
-	        name,
-	        value: {
-	            type: 'string',
-	            value,
-	        },
-	    }));
-	}
-	NetworkUtils.bidiNetworkHeadersFromCdpFetchHeaders = bidiNetworkHeadersFromCdpFetchHeaders;
-	/** Converts from Bidi network headers to CDP Fetch domain header entries. */
-	function cdpFetchHeadersFromBidiNetworkHeaders(headers) {
-	    if (headers === undefined) {
-	        return undefined;
-	    }
-	    return headers.map(({ name, value }) => ({
-	        name,
-	        value: value.value,
-	    }));
-	}
-	NetworkUtils.cdpFetchHeadersFromBidiNetworkHeaders = cdpFetchHeadersFromBidiNetworkHeaders;
-	/** Converts from Bidi auth action to CDP auth challenge response. */
-	function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(action) {
-	    switch (action) {
-	        case 'default':
-	            return 'Default';
-	        case 'cancel':
-	            return 'CancelAuth';
-	        case 'provideCredentials':
-	            return 'ProvideCredentials';
-	    }
-	}
-	NetworkUtils.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction = cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction;
-	/**
-	 * Converts from CDP Network domain cookie to BiDi network cookie.
-	 * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Cookie
-	 * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
-	 */
-	function cdpToBiDiCookie(cookie) {
-	    const result = {
-	        name: cookie.name,
-	        value: { type: 'string', value: cookie.value },
-	        domain: cookie.domain,
-	        path: cookie.path,
-	        size: cookie.size,
-	        httpOnly: cookie.httpOnly,
-	        secure: cookie.secure,
-	        sameSite: cookie.sameSite === undefined
-	            ? "none" /* Network.SameSite.None */
-	            : sameSiteCdpToBiDi(cookie.sameSite),
-	        ...(cookie.expires >= 0 ? { expiry: cookie.expires } : undefined),
-	    };
-	    // Extending with CDP-specific properties with `goog:` prefix.
-	    result[`goog:session`] = cookie.session;
-	    result[`goog:priority`] = cookie.priority;
-	    result[`goog:sameParty`] = cookie.sameParty;
-	    result[`goog:sourceScheme`] = cookie.sourceScheme;
-	    result[`goog:sourcePort`] = cookie.sourcePort;
-	    if (cookie.partitionKey !== undefined) {
-	        result[`goog:partitionKey`] = cookie.partitionKey;
-	    }
-	    if (cookie.partitionKeyOpaque !== undefined) {
-	        result[`goog:partitionKeyOpaque`] = cookie.partitionKeyOpaque;
-	    }
-	    return result;
-	}
-	NetworkUtils.cdpToBiDiCookie = cdpToBiDiCookie;
-	/**
-	 * Decodes a byte value to a string.
-	 * @param {Network.BytesValue} value
-	 * @return {string}
-	 */
-	function deserializeByteValue(value) {
-	    if (value.type === 'base64') {
-	        return (0, Base64_js_1.base64ToString)(value.value);
-	    }
-	    return value.value;
-	}
-	NetworkUtils.deserializeByteValue = deserializeByteValue;
-	/**
-	 * Converts from BiDi set network cookie params to CDP Network domain cookie.
-	 * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
-	 * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-CookieParam
-	 */
-	function bidiToCdpCookie(params, partitionKey) {
-	    const deserializedValue = deserializeByteValue(params.cookie.value);
-	    const result = {
-	        name: params.cookie.name,
-	        value: deserializedValue,
-	        domain: params.cookie.domain,
-	        path: params.cookie.path ?? '/',
-	        secure: params.cookie.secure ?? false,
-	        httpOnly: params.cookie.httpOnly ?? false,
-	        ...(partitionKey.sourceOrigin !== undefined && {
-	            partitionKey: {
-	                hasCrossSiteAncestor: false,
-	                // CDP's `partitionKey.topLevelSite` is the BiDi's `partition.sourceOrigin`.
-	                topLevelSite: partitionKey.sourceOrigin,
-	            },
-	        }),
-	        ...(params.cookie.expiry !== undefined && {
-	            expires: params.cookie.expiry,
-	        }),
-	        ...(params.cookie.sameSite !== undefined && {
-	            sameSite: sameSiteBiDiToCdp(params.cookie.sameSite),
-	        }),
-	    };
-	    // Extending with CDP-specific properties with `goog:` prefix.
-	    if (params.cookie[`goog:url`] !== undefined) {
-	        result.url = params.cookie[`goog:url`];
-	    }
-	    if (params.cookie[`goog:priority`] !== undefined) {
-	        result.priority = params.cookie[`goog:priority`];
-	    }
-	    if (params.cookie[`goog:sameParty`] !== undefined) {
-	        result.sameParty = params.cookie[`goog:sameParty`];
-	    }
-	    if (params.cookie[`goog:sourceScheme`] !== undefined) {
-	        result.sourceScheme = params.cookie[`goog:sourceScheme`];
-	    }
-	    if (params.cookie[`goog:sourcePort`] !== undefined) {
-	        result.sourcePort = params.cookie[`goog:sourcePort`];
-	    }
-	    return result;
-	}
-	NetworkUtils.bidiToCdpCookie = bidiToCdpCookie;
-	function sameSiteCdpToBiDi(sameSite) {
-	    switch (sameSite) {
-	        case 'Strict':
-	            return "strict" /* Network.SameSite.Strict */;
-	        case 'None':
-	            return "none" /* Network.SameSite.None */;
-	        case 'Lax':
-	            return "lax" /* Network.SameSite.Lax */;
-	        default:
-	            // Defaults to `Lax`:
-	            // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
-	            return "lax" /* Network.SameSite.Lax */;
-	    }
-	}
-	function sameSiteBiDiToCdp(sameSite) {
-	    switch (sameSite) {
-	        case "strict" /* Network.SameSite.Strict */:
-	            return 'Strict';
-	        case "lax" /* Network.SameSite.Lax */:
-	            return 'Lax';
-	        case "none" /* Network.SameSite.None */:
-	            return 'None';
-	    }
-	    throw new ErrorResponse_js_1.InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
-	}
-	NetworkUtils.sameSiteBiDiToCdp = sameSiteBiDiToCdp;
-	/**
-	 * Returns true if the given protocol is special.
-	 * Special protocols are those that have a default port.
-	 *
-	 * Example inputs: 'http', 'http:'
-	 *
-	 * @see https://url.spec.whatwg.org/#special-scheme
-	 */
-	function isSpecialScheme(protocol) {
-	    return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(protocol.replace(/:$/, ''));
-	}
-	NetworkUtils.isSpecialScheme = isSpecialScheme;
-	/** Matches the given URLPattern against the given URL. */
-	function matchUrlPattern(urlPattern, url) {
-	    switch (urlPattern.type) {
-	        case 'string': {
-	            const pattern = new UrlPattern_js_1.URLPattern(urlPattern.pattern);
-	            return new UrlPattern_js_1.URLPattern({
-	                protocol: pattern.protocol,
-	                hostname: pattern.hostname,
-	                port: pattern.port,
-	                pathname: pattern.pathname,
-	                search: pattern.search,
-	            }).test(url);
-	        }
-	        case 'pattern':
-	            return new UrlPattern_js_1.URLPattern(urlPattern).test(url);
-	    }
-	}
-	NetworkUtils.matchUrlPattern = matchUrlPattern;
-
 	Object.defineProperty(NetworkProcessor$1, "__esModule", { value: true });
 	NetworkProcessor$1.NetworkProcessor = void 0;
 	const protocol_js_1$h = protocol;
-	const NetworkUtils_js_1$3 = NetworkUtils;
 	/** Dispatches Network domain commands. */
 	class NetworkProcessor {
 	    #browsingContextStorage;
@@ -3540,31 +3218,22 @@ var mapperTab = (function () {
 	        };
 	    }
 	    async continueRequest(params) {
-	        const { url, method, headers: commandHeaders, body, request: networkId, } = params;
 	        if (params.url !== undefined) {
 	            NetworkProcessor.parseUrlString(params.url);
 	        }
 	        if (params.method !== undefined) {
 	            if (!NetworkProcessor.isMethodValid(params.method)) {
-	                throw new protocol_js_1$h.InvalidArgumentException(`Method '${method}' is invalid.`);
+	                throw new protocol_js_1$h.InvalidArgumentException(`Method '${params.method}' is invalid.`);
 	            }
 	        }
 	        if (params.headers) {
 	            NetworkProcessor.validateHeaders(params.headers);
 	        }
-	        const request = this.#getBlockedRequestOrFail(networkId, [
+	        const request = this.#getBlockedRequestOrFail(params.request, [
 	            "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
 	        ]);
-	        const headers = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(commandHeaders);
-	        // TODO: Set / expand.
-	        // ; Step 9. cookies
 	        try {
-	            await request.continueRequest({
-	                url,
-	                method,
-	                headers,
-	                postData: getCdpBodyFromBiDiBytesValue(body),
-	            });
+	            await request.continueRequest(params);
 	        }
 	        catch (error) {
 	            throw NetworkProcessor.wrapInterceptionError(error);
@@ -3572,48 +3241,18 @@ var mapperTab = (function () {
 	        return {};
 	    }
 	    async continueResponse(params) {
-	        const { request: networkId, statusCode, reasonPhrase, headers } = params;
 	        if (params.headers) {
 	            NetworkProcessor.validateHeaders(params.headers);
 	        }
-	        const responseHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
-	        const request = this.#getBlockedRequestOrFail(networkId, [
+	        const request = this.#getBlockedRequestOrFail(params.request, [
 	            "authRequired" /* Network.InterceptPhase.AuthRequired */,
 	            "responseStarted" /* Network.InterceptPhase.ResponseStarted */,
 	        ]);
-	        if (request.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
-	            if (params.credentials) {
-	                await Promise.all([
-	                    request.waitNextPhase,
-	                    request.continueWithAuth({
-	                        response: 'ProvideCredentials',
-	                        username: params.credentials.username,
-	                        password: params.credentials.password,
-	                    }),
-	                ]);
-	            }
-	            else {
-	                // We need to use `ProvideCredentials`
-	                // As `Default` may cancel the request
-	                await request.continueWithAuth({
-	                    response: 'ProvideCredentials',
-	                });
-	                return {};
-	            }
+	        try {
+	            await request.continueResponse(params);
 	        }
-	        if (request.interceptPhase === "responseStarted" /* Network.InterceptPhase.ResponseStarted */) {
-	            // TODO: Set / expand.
-	            // ; Step 10. cookies
-	            try {
-	                await request.continueResponse({
-	                    responseCode: statusCode,
-	                    responsePhrase: reasonPhrase,
-	                    responseHeaders,
-	                });
-	            }
-	            catch (error) {
-	                throw NetworkProcessor.wrapInterceptionError(error);
-	            }
+	        catch (error) {
+	            throw NetworkProcessor.wrapInterceptionError(error);
 	        }
 	        return {};
 	    }
@@ -3622,19 +3261,7 @@ var mapperTab = (function () {
 	        const request = this.#getBlockedRequestOrFail(networkId, [
 	            "authRequired" /* Network.InterceptPhase.AuthRequired */,
 	        ]);
-	        let username;
-	        let password;
-	        if (params.action === 'provideCredentials') {
-	            const { credentials } = params;
-	            username = credentials.username;
-	            password = credentials.password;
-	        }
-	        const response = (0, NetworkUtils_js_1$3.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction)(params.action);
-	        await request.continueWithAuth({
-	            response,
-	            username,
-	            password,
-	        });
+	        await request.continueWithAuth(params);
 	        return {};
 	    }
 	    async failRequest({ request: networkId, }) {
@@ -3649,44 +3276,16 @@ var mapperTab = (function () {
 	        return {};
 	    }
 	    async provideResponse(params) {
-	        const { statusCode, reasonPhrase: responsePhrase, headers, body, request: networkId, } = params;
 	        if (params.headers) {
 	            NetworkProcessor.validateHeaders(params.headers);
 	        }
-	        // TODO: Step 6
-	        // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
-	        const responseHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
-	        // TODO: Set / expand.
-	        // ; Step 10. cookies
-	        const request = this.#getBlockedRequestOrFail(networkId, [
+	        const request = this.#getBlockedRequestOrFail(params.request, [
 	            "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
 	            "responseStarted" /* Network.InterceptPhase.ResponseStarted */,
 	            "authRequired" /* Network.InterceptPhase.AuthRequired */,
 	        ]);
-	        // We need to pass through if the request is already in
-	        // AuthRequired phase
-	        if (request.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
-	            // We need to use `ProvideCredentials`
-	            // As `Default` may cancel the request
-	            await request.continueWithAuth({
-	                response: 'ProvideCredentials',
-	            });
-	            return {};
-	        }
-	        // If we don't modify the response
-	        // just continue the request
-	        if (!body && !headers) {
-	            await request.continueRequest();
-	            return {};
-	        }
-	        const responseCode = statusCode ?? request.statusCode ?? 200;
 	        try {
-	            await request.provideResponse({
-	                responseCode,
-	                responsePhrase,
-	                responseHeaders,
-	                body: getCdpBodyFromBiDiBytesValue(body),
-	            });
+	            await request.provideResponse(params);
 	        }
 	        catch (error) {
 	            throw NetworkProcessor.wrapInterceptionError(error);
@@ -3860,16 +3459,6 @@ var mapperTab = (function () {
 	    }
 	    return result;
 	}
-	function getCdpBodyFromBiDiBytesValue(body) {
-	    let parsedBody;
-	    if (body?.type === 'string') {
-	        parsedBody = btoa(body.value);
-	    }
-	    else if (body?.type === 'base64') {
-	        parsedBody = body.value;
-	    }
-	    return parsedBody;
-	}
 
 	var PermissionsProcessor$1 = {};
 
@@ -3949,7 +3538,7 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	Object.defineProperty(uuid, "__esModule", { value: true });
-	uuid.uuidv4 = void 0;
+	uuid.uuidv4 = uuidv4;
 	/**
 	 * Generates a random v4 UUID, as specified in RFC4122.
 	 *
@@ -3992,7 +3581,6 @@ var mapperTab = (function () {
 	        bytesToHex(randomValues.subarray(10, 16)),
 	    ].join('-');
 	}
-	uuid.uuidv4 = uuidv4;
 
 	var ChannelProxy$1 = {};
 
@@ -4476,7 +4064,7 @@ var mapperTab = (function () {
 	    status() {
 	        return { ready: false, message: 'already connected' };
 	    }
-	    async create(_params) {
+	    async new(_params) {
 	        // Since mapper exists, there is a session already.
 	        // Still the mapper can handle capabilities for us.
 	        // Currently, only Puppeteer calls here but, eventually, every client
@@ -4507,6 +4095,369 @@ var mapperTab = (function () {
 	SessionProcessor$1.SessionProcessor = SessionProcessor;
 
 	var StorageProcessor$1 = {};
+
+	var NetworkUtils = {};
+
+	var Base64 = {};
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(Base64, "__esModule", { value: true });
+	Base64.base64ToString = base64ToString;
+	/**
+	 * Encodes a string to base64.
+	 *
+	 * Uses the native Web API if available, otherwise falls back to a NodeJS Buffer.
+	 * @param {string} base64Str
+	 * @return {string}
+	 */
+	function base64ToString(base64Str) {
+	    // Available only if run in a browser context.
+	    if ('atob' in globalThis) {
+	        return globalThis.atob(base64Str);
+	    }
+	    // Available only if run in a NodeJS context.
+	    return Buffer.from(base64Str, 'base64').toString('ascii');
+	}
+
+	var UrlPattern = {};
+
+	var M=Object.defineProperty;var Pe=Object.getOwnPropertyDescriptor;var Re=Object.getOwnPropertyNames;var Ee=Object.prototype.hasOwnProperty;var Oe=(e,t)=>{for(var r in t)M(e,r,{get:t[r],enumerable:!0});},ke=(e,t,r,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of Re(t))!Ee.call(e,a)&&a!==r&&M(e,a,{get:()=>t[a],enumerable:!(n=Pe(t,a))||n.enumerable});return e};var Te=e=>ke(M({},"__esModule",{value:!0}),e);var Ne={};Oe(Ne,{URLPattern:()=>Y});var urlpattern=Te(Ne);var R=class{type=3;name="";prefix="";value="";suffix="";modifier=3;constructor(t,r,n,a,c,l){this.type=t,this.name=r,this.prefix=n,this.value=a,this.suffix=c,this.modifier=l;}hasCustomName(){return this.name!==""&&typeof this.name!="number"}},Ae=/[$_\p{ID_Start}]/u,ye=/[$_\u200C\u200D\p{ID_Continue}]/u,v=".*";function we(e,t){return (/^[\x00-\x7F]*$/).test(e)}function D(e,t=!1){let r=[],n=0;for(;n<e.length;){let a=e[n],c=function(l){if(!t)throw new TypeError(l);r.push({type:"INVALID_CHAR",index:n,value:e[n++]});};if(a==="*"){r.push({type:"ASTERISK",index:n,value:e[n++]});continue}if(a==="+"||a==="?"){r.push({type:"OTHER_MODIFIER",index:n,value:e[n++]});continue}if(a==="\\"){r.push({type:"ESCAPED_CHAR",index:n++,value:e[n++]});continue}if(a==="{"){r.push({type:"OPEN",index:n,value:e[n++]});continue}if(a==="}"){r.push({type:"CLOSE",index:n,value:e[n++]});continue}if(a===":"){let l="",s=n+1;for(;s<e.length;){let i=e.substr(s,1);if(s===n+1&&Ae.test(i)||s!==n+1&&ye.test(i)){l+=e[s++];continue}break}if(!l){c(`Missing parameter name at ${n}`);continue}r.push({type:"NAME",index:n,value:l}),n=s;continue}if(a==="("){let l=1,s="",i=n+1,o=!1;if(e[i]==="?"){c(`Pattern cannot start with "?" at ${i}`);continue}for(;i<e.length;){if(!we(e[i])){c(`Invalid character '${e[i]}' at ${i}.`),o=!0;break}if(e[i]==="\\"){s+=e[i++]+e[i++];continue}if(e[i]===")"){if(l--,l===0){i++;break}}else if(e[i]==="("&&(l++,e[i+1]!=="?")){c(`Capturing groups are not allowed at ${i}`),o=!0;break}s+=e[i++];}if(o)continue;if(l){c(`Unbalanced pattern at ${n}`);continue}if(!s){c(`Missing pattern at ${n}`);continue}r.push({type:"REGEX",index:n,value:s}),n=i;continue}r.push({type:"CHAR",index:n,value:e[n++]});}return r.push({type:"END",index:n,value:""}),r}function F(e,t={}){let r=D(e);t.delimiter??="/#?",t.prefixes??="./";let n=`[^${S(t.delimiter)}]+?`,a=[],c=0,l=0,i=new Set,o=h=>{if(l<r.length&&r[l].type===h)return r[l++].value},f=()=>o("OTHER_MODIFIER")??o("ASTERISK"),d=h=>{let u=o(h);if(u!==void 0)return u;let{type:p,index:A}=r[l];throw new TypeError(`Unexpected ${p} at ${A}, expected ${h}`)},T=()=>{let h="",u;for(;u=o("CHAR")??o("ESCAPED_CHAR");)h+=u;return h},xe=h=>h,L=t.encodePart||xe,I="",U=h=>{I+=h;},$=()=>{I.length&&(a.push(new R(3,"","",L(I),"",3)),I="");},X=(h,u,p,A,Z)=>{let g=3;switch(Z){case"?":g=1;break;case"*":g=0;break;case"+":g=2;break}if(!u&&!p&&g===3){U(h);return}if($(),!u&&!p){if(!h)return;a.push(new R(3,"","",L(h),"",g));return}let m;p?p==="*"?m=v:m=p:m=n;let O=2;m===n?(O=1,m=""):m===v&&(O=0,m="");let P;if(u?P=u:p&&(P=c++),i.has(P))throw new TypeError(`Duplicate name '${P}'.`);i.add(P),a.push(new R(O,P,L(h),m,L(A),g));};for(;l<r.length;){let h=o("CHAR"),u=o("NAME"),p=o("REGEX");if(!u&&!p&&(p=o("ASTERISK")),u||p){let g=h??"";t.prefixes.indexOf(g)===-1&&(U(g),g=""),$();let m=f();X(g,u,p,"",m);continue}let A=h??o("ESCAPED_CHAR");if(A){U(A);continue}if(o("OPEN")){let g=T(),m=o("NAME"),O=o("REGEX");!m&&!O&&(O=o("ASTERISK"));let P=T();d("CLOSE");let be=f();X(g,m,O,P,be);continue}$(),d("END");}return a}function S(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function B(e){return e&&e.ignoreCase?"ui":"u"}function q(e,t,r){return W(F(e,r),t,r)}function k(e){switch(e){case 0:return "*";case 1:return "?";case 2:return "+";case 3:return ""}}function W(e,t,r={}){r.delimiter??="/#?",r.prefixes??="./",r.sensitive??=!1,r.strict??=!1,r.end??=!0,r.start??=!0,r.endsWith="";let n=r.start?"^":"";for(let s of e){if(s.type===3){s.modifier===3?n+=S(s.value):n+=`(?:${S(s.value)})${k(s.modifier)}`;continue}t&&t.push(s.name);let i=`[^${S(r.delimiter)}]+?`,o=s.value;if(s.type===1?o=i:s.type===0&&(o=v),!s.prefix.length&&!s.suffix.length){s.modifier===3||s.modifier===1?n+=`(${o})${k(s.modifier)}`:n+=`((?:${o})${k(s.modifier)})`;continue}if(s.modifier===3||s.modifier===1){n+=`(?:${S(s.prefix)}(${o})${S(s.suffix)})`,n+=k(s.modifier);continue}n+=`(?:${S(s.prefix)}`,n+=`((?:${o})(?:`,n+=S(s.suffix),n+=S(s.prefix),n+=`(?:${o}))*)${S(s.suffix)})`,s.modifier===0&&(n+="?");}let a=`[${S(r.endsWith)}]|$`,c=`[${S(r.delimiter)}]`;if(r.end)return r.strict||(n+=`${c}?`),r.endsWith.length?n+=`(?=${a})`:n+="$",new RegExp(n,B(r));r.strict||(n+=`(?:${c}(?=${a}))?`);let l=!1;if(e.length){let s=e[e.length-1];s.type===3&&s.modifier===3&&(l=r.delimiter.indexOf(s)>-1);}return l||(n+=`(?=${c}|${a})`),new RegExp(n,B(r))}var x={delimiter:"",prefixes:"",sensitive:!0,strict:!0},J={delimiter:".",prefixes:"",sensitive:!0,strict:!0},Q={delimiter:"/",prefixes:"/",sensitive:!0,strict:!0};function ee(e,t){return e.length?e[0]==="/"?!0:!t||e.length<2?!1:(e[0]=="\\"||e[0]=="{")&&e[1]=="/":!1}function te(e,t){return e.startsWith(t)?e.substring(t.length,e.length):e}function Ce(e,t){return e.endsWith(t)?e.substr(0,e.length-t.length):e}function _(e){return !e||e.length<2?!1:e[0]==="["||(e[0]==="\\"||e[0]==="{")&&e[1]==="["}var re=["ftp","file","http","https","ws","wss"];function N(e){if(!e)return !0;for(let t of re)if(e.test(t))return !0;return !1}function ne(e,t){if(e=te(e,"#"),t||e==="")return e;let r=new URL("https://example.com");return r.hash=e,r.hash?r.hash.substring(1,r.hash.length):""}function se(e,t){if(e=te(e,"?"),t||e==="")return e;let r=new URL("https://example.com");return r.search=e,r.search?r.search.substring(1,r.search.length):""}function ie(e,t){return t||e===""?e:_(e)?K(e):j(e)}function ae(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.password=e,r.password}function oe(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.username=e,r.username}function ce(e,t,r){if(r||e==="")return e;if(t&&!re.includes(t))return new URL(`${t}:${e}`).pathname;let n=e[0]=="/";return e=new URL(n?e:"/-"+e,"https://example.com").pathname,n||(e=e.substring(2,e.length)),e}function le(e,t,r){return z(t)===e&&(e=""),r||e===""?e:G(e)}function fe(e,t){return e=Ce(e,":"),t||e===""?e:y(e)}function z(e){switch(e){case"ws":case"http":return "80";case"wws":case"https":return "443";case"ftp":return "21";default:return ""}}function y(e){if(e==="")return e;if(/^[-+.A-Za-z0-9]*$/.test(e))return e.toLowerCase();throw new TypeError(`Invalid protocol '${e}'.`)}function he(e){if(e==="")return e;let t=new URL("https://example.com");return t.username=e,t.username}function ue(e){if(e==="")return e;let t=new URL("https://example.com");return t.password=e,t.password}function j(e){if(e==="")return e;if(/[\t\n\r #%/:<>?@[\]^\\|]/g.test(e))throw new TypeError(`Invalid hostname '${e}'`);let t=new URL("https://example.com");return t.hostname=e,t.hostname}function K(e){if(e==="")return e;if(/[^0-9a-fA-F[\]:]/g.test(e))throw new TypeError(`Invalid IPv6 hostname '${e}'`);return e.toLowerCase()}function G(e){if(e===""||/^[0-9]*$/.test(e)&&parseInt(e)<=65535)return e;throw new TypeError(`Invalid port '${e}'.`)}function de(e){if(e==="")return e;let t=new URL("https://example.com");return t.pathname=e[0]!=="/"?"/-"+e:e,e[0]!=="/"?t.pathname.substring(2,t.pathname.length):t.pathname}function pe(e){return e===""?e:new URL(`data:${e}`).pathname}function ge(e){if(e==="")return e;let t=new URL("https://example.com");return t.search=e,t.search.substring(1,t.search.length)}function me(e){if(e==="")return e;let t=new URL("https://example.com");return t.hash=e,t.hash.substring(1,t.hash.length)}var H=class{#i;#n=[];#t={};#e=0;#s=1;#l=0;#o=0;#d=0;#p=0;#g=!1;constructor(t){this.#i=t;}get result(){return this.#t}parse(){for(this.#n=D(this.#i,!0);this.#e<this.#n.length;this.#e+=this.#s){if(this.#s=1,this.#n[this.#e].type==="END"){if(this.#o===0){this.#b(),this.#f()?this.#r(9,1):this.#h()?this.#r(8,1):this.#r(7,0);continue}else if(this.#o===2){this.#u(5);continue}this.#r(10,0);break}if(this.#d>0)if(this.#A())this.#d-=1;else continue;if(this.#T()){this.#d+=1;continue}switch(this.#o){case 0:this.#P()&&this.#u(1);break;case 1:if(this.#P()){this.#C();let t=7,r=1;this.#E()?(t=2,r=3):this.#g&&(t=2),this.#r(t,r);}break;case 2:this.#S()?this.#u(3):(this.#x()||this.#h()||this.#f())&&this.#u(5);break;case 3:this.#O()?this.#r(4,1):this.#S()&&this.#r(5,1);break;case 4:this.#S()&&this.#r(5,1);break;case 5:this.#y()?this.#p+=1:this.#w()&&(this.#p-=1),this.#k()&&!this.#p?this.#r(6,1):this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 6:this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 7:this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 8:this.#f()&&this.#r(9,1);break;}}this.#t.hostname!==void 0&&this.#t.port===void 0&&(this.#t.port="");}#r(t,r){switch(this.#o){case 0:break;case 1:this.#t.protocol=this.#c();break;case 2:break;case 3:this.#t.username=this.#c();break;case 4:this.#t.password=this.#c();break;case 5:this.#t.hostname=this.#c();break;case 6:this.#t.port=this.#c();break;case 7:this.#t.pathname=this.#c();break;case 8:this.#t.search=this.#c();break;case 9:this.#t.hash=this.#c();break;}this.#o!==0&&t!==10&&([1,2,3,4].includes(this.#o)&&[6,7,8,9].includes(t)&&(this.#t.hostname??=""),[1,2,3,4,5,6].includes(this.#o)&&[8,9].includes(t)&&(this.#t.pathname??=this.#g?"/":""),[1,2,3,4,5,6,7].includes(this.#o)&&t===9&&(this.#t.search??="")),this.#R(t,r);}#R(t,r){this.#o=t,this.#l=this.#e+r,this.#e+=r,this.#s=0;}#b(){this.#e=this.#l,this.#s=0;}#u(t){this.#b(),this.#o=t;}#m(t){return t<0&&(t=this.#n.length-t),t<this.#n.length?this.#n[t]:this.#n[this.#n.length-1]}#a(t,r){let n=this.#m(t);return n.value===r&&(n.type==="CHAR"||n.type==="ESCAPED_CHAR"||n.type==="INVALID_CHAR")}#P(){return this.#a(this.#e,":")}#E(){return this.#a(this.#e+1,"/")&&this.#a(this.#e+2,"/")}#S(){return this.#a(this.#e,"@")}#O(){return this.#a(this.#e,":")}#k(){return this.#a(this.#e,":")}#x(){return this.#a(this.#e,"/")}#h(){if(this.#a(this.#e,"?"))return !0;if(this.#n[this.#e].value!=="?")return !1;let t=this.#m(this.#e-1);return t.type!=="NAME"&&t.type!=="REGEX"&&t.type!=="CLOSE"&&t.type!=="ASTERISK"}#f(){return this.#a(this.#e,"#")}#T(){return this.#n[this.#e].type=="OPEN"}#A(){return this.#n[this.#e].type=="CLOSE"}#y(){return this.#a(this.#e,"[")}#w(){return this.#a(this.#e,"]")}#c(){let t=this.#n[this.#e],r=this.#m(this.#l).index;return this.#i.substring(r,t.index)}#C(){let t={};Object.assign(t,x),t.encodePart=y;let r=q(this.#c(),void 0,t);this.#g=N(r);}};var V=["protocol","username","password","hostname","port","pathname","search","hash"],E="*";function Se(e,t){if(typeof e!="string")throw new TypeError("parameter 1 is not of type 'string'.");let r=new URL(e,t);return {protocol:r.protocol.substring(0,r.protocol.length-1),username:r.username,password:r.password,hostname:r.hostname,port:r.port,pathname:r.pathname,search:r.search!==""?r.search.substring(1,r.search.length):void 0,hash:r.hash!==""?r.hash.substring(1,r.hash.length):void 0}}function b(e,t){return t?C(e):e}function w(e,t,r){let n;if(typeof t.baseURL=="string")try{n=new URL(t.baseURL),t.protocol===void 0&&(e.protocol=b(n.protocol.substring(0,n.protocol.length-1),r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&(e.username=b(n.username,r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&t.password===void 0&&(e.password=b(n.password,r)),t.protocol===void 0&&t.hostname===void 0&&(e.hostname=b(n.hostname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&(e.port=b(n.port,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&(e.pathname=b(n.pathname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&(e.search=b(n.search.substring(1,n.search.length),r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&t.hash===void 0&&(e.hash=b(n.hash.substring(1,n.hash.length),r));}catch{throw new TypeError(`invalid baseURL '${t.baseURL}'.`)}if(typeof t.protocol=="string"&&(e.protocol=fe(t.protocol,r)),typeof t.username=="string"&&(e.username=oe(t.username,r)),typeof t.password=="string"&&(e.password=ae(t.password,r)),typeof t.hostname=="string"&&(e.hostname=ie(t.hostname,r)),typeof t.port=="string"&&(e.port=le(t.port,e.protocol,r)),typeof t.pathname=="string"){if(e.pathname=t.pathname,n&&!ee(e.pathname,r)){let a=n.pathname.lastIndexOf("/");a>=0&&(e.pathname=b(n.pathname.substring(0,a+1),r)+e.pathname);}e.pathname=ce(e.pathname,e.protocol,r);}return typeof t.search=="string"&&(e.search=se(t.search,r)),typeof t.hash=="string"&&(e.hash=ne(t.hash,r)),e}function C(e){return e.replace(/([+*?:{}()\\])/g,"\\$1")}function Le(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function Ie(e,t){t.delimiter??="/#?",t.prefixes??="./",t.sensitive??=!1,t.strict??=!1,t.end??=!0,t.start??=!0,t.endsWith="";let r=".*",n=`[^${Le(t.delimiter)}]+?`,a=/[$_\u200C\u200D\p{ID_Continue}]/u,c="";for(let l=0;l<e.length;++l){let s=e[l];if(s.type===3){if(s.modifier===3){c+=C(s.value);continue}c+=`{${C(s.value)}}${k(s.modifier)}`;continue}let i=s.hasCustomName(),o=!!s.suffix.length||!!s.prefix.length&&(s.prefix.length!==1||!t.prefixes.includes(s.prefix)),f=l>0?e[l-1]:null,d=l<e.length-1?e[l+1]:null;if(!o&&i&&s.type===1&&s.modifier===3&&d&&!d.prefix.length&&!d.suffix.length)if(d.type===3){let T=d.value.length>0?d.value[0]:"";o=a.test(T);}else o=!d.hasCustomName();if(!o&&!s.prefix.length&&f&&f.type===3){let T=f.value[f.value.length-1];o=t.prefixes.includes(T);}o&&(c+="{"),c+=C(s.prefix),i&&(c+=`:${s.name}`),s.type===2?c+=`(${s.value})`:s.type===1?i||(c+=`(${n})`):s.type===0&&(!i&&(!f||f.type===3||f.modifier!==3||o||s.prefix!=="")?c+="*":c+=`(${r})`),s.type===1&&i&&s.suffix.length&&a.test(s.suffix[0])&&(c+="\\"),c+=C(s.suffix),o&&(c+="}"),s.modifier!==3&&(c+=k(s.modifier));}return c}var Y=class{#i;#n={};#t={};#e={};#s={};#l=!1;constructor(t={},r,n){try{let a;if(typeof r=="string"?a=r:n=r,typeof t=="string"){let i=new H(t);if(i.parse(),t=i.result,a===void 0&&typeof t.protocol!="string")throw new TypeError("A base URL must be provided for a relative constructor string.");t.baseURL=a;}else {if(!t||typeof t!="object")throw new TypeError("parameter 1 is not of type 'string' and cannot convert to dictionary.");if(a)throw new TypeError("parameter 1 is not of type 'string'.")}typeof n>"u"&&(n={ignoreCase:!1});let c={ignoreCase:n.ignoreCase===!0},l={pathname:E,protocol:E,username:E,password:E,hostname:E,port:E,search:E,hash:E};this.#i=w(l,t,!0),z(this.#i.protocol)===this.#i.port&&(this.#i.port="");let s;for(s of V){if(!(s in this.#i))continue;let i={},o=this.#i[s];switch(this.#t[s]=[],s){case"protocol":Object.assign(i,x),i.encodePart=y;break;case"username":Object.assign(i,x),i.encodePart=he;break;case"password":Object.assign(i,x),i.encodePart=ue;break;case"hostname":Object.assign(i,J),_(o)?i.encodePart=K:i.encodePart=j;break;case"port":Object.assign(i,x),i.encodePart=G;break;case"pathname":N(this.#n.protocol)?(Object.assign(i,Q,c),i.encodePart=de):(Object.assign(i,x,c),i.encodePart=pe);break;case"search":Object.assign(i,x,c),i.encodePart=ge;break;case"hash":Object.assign(i,x,c),i.encodePart=me;break}try{this.#s[s]=F(o,i),this.#n[s]=W(this.#s[s],this.#t[s],i),this.#e[s]=Ie(this.#s[s],i),this.#l=this.#l||this.#s[s].some(f=>f.type===2);}catch{throw new TypeError(`invalid ${s} pattern '${this.#i[s]}'.`)}}}catch(a){throw new TypeError(`Failed to construct 'URLPattern': ${a.message}`)}}test(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return !1;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return !1}let a;for(a of V)if(!this.#n[a].exec(n[a]))return !1;return !0}exec(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return null}let a={};r?a.inputs=[t,r]:a.inputs=[t];let c;for(c of V){let l=this.#n[c].exec(n[c]);if(!l)return null;let s={};for(let[i,o]of this.#t[c].entries())if(typeof o=="string"||typeof o=="number"){let f=l[i+1];s[o]=f;}a[c]={input:n[c]??"",groups:s};}return a}static compareComponent(t,r,n){let a=(i,o)=>{for(let f of ["type","modifier","prefix","value","suffix"]){if(i[f]<o[f])return -1;if(i[f]===o[f])continue;return 1}return 0},c=new R(3,"","","","",3),l=new R(0,"","","","",3),s=(i,o)=>{let f=0;for(;f<Math.min(i.length,o.length);++f){let d=a(i[f],o[f]);if(d)return d}return i.length===o.length?0:a(i[f]??c,o[f]??c)};return !r.#e[t]&&!n.#e[t]?0:r.#e[t]&&!n.#e[t]?s(r.#s[t],[l]):!r.#e[t]&&n.#e[t]?s([l],n.#s[t]):s(r.#s[t],n.#s[t])}get protocol(){return this.#e.protocol}get username(){return this.#e.username}get password(){return this.#e.password}get hostname(){return this.#e.hostname}get port(){return this.#e.port}get pathname(){return this.#e.pathname}get search(){return this.#e.search}get hash(){return this.#e.hash}get hasRegExpGroups(){return this.#l}};
+
+	const { URLPattern: URLPattern$2 } = urlpattern;
+
+	var urlpatternPolyfill = { URLPattern: URLPattern$2 };
+
+	if (!globalThis.URLPattern) {
+	  globalThis.URLPattern = URLPattern$2;
+	}
+
+	Object.defineProperty(UrlPattern, "__esModule", { value: true });
+	UrlPattern.URLPattern = void 0;
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	const urlpattern_polyfill_1 = urlpatternPolyfill;
+	// XXX: Switch to native URLPattern when available.
+	// https://github.com/nodejs/node/issues/40844
+	let URLPattern$1 = urlpattern_polyfill_1.URLPattern;
+	UrlPattern.URLPattern = URLPattern$1;
+	if ('URLPattern' in globalThis) {
+	    UrlPattern.URLPattern = URLPattern$1 = globalThis.URLPattern;
+	}
+
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 */
+	Object.defineProperty(NetworkUtils, "__esModule", { value: true });
+	NetworkUtils.computeHeadersSize = computeHeadersSize;
+	NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeaders = bidiNetworkHeadersFromCdpNetworkHeaders;
+	NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeadersEntries = bidiNetworkHeadersFromCdpNetworkHeadersEntries;
+	NetworkUtils.cdpNetworkHeadersFromBidiNetworkHeaders = cdpNetworkHeadersFromBidiNetworkHeaders;
+	NetworkUtils.bidiNetworkHeadersFromCdpFetchHeaders = bidiNetworkHeadersFromCdpFetchHeaders;
+	NetworkUtils.cdpFetchHeadersFromBidiNetworkHeaders = cdpFetchHeadersFromBidiNetworkHeaders;
+	NetworkUtils.networkHeaderFromCookieHeaders = networkHeaderFromCookieHeaders;
+	NetworkUtils.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction = cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction;
+	NetworkUtils.cdpToBiDiCookie = cdpToBiDiCookie;
+	NetworkUtils.deserializeByteValue = deserializeByteValue;
+	NetworkUtils.bidiToCdpCookie = bidiToCdpCookie;
+	NetworkUtils.sameSiteBiDiToCdp = sameSiteBiDiToCdp;
+	NetworkUtils.isSpecialScheme = isSpecialScheme;
+	NetworkUtils.matchUrlPattern = matchUrlPattern;
+	NetworkUtils.bidiBodySizeFromCdpPostDataEntries = bidiBodySizeFromCdpPostDataEntries;
+	const ErrorResponse_js_1 = ErrorResponse;
+	const Base64_js_1 = Base64;
+	const UrlPattern_js_1 = UrlPattern;
+	function computeHeadersSize(headers) {
+	    const requestHeaders = headers.reduce((acc, header) => {
+	        return `${acc}${header.name}: ${header.value.value}\r\n`;
+	    }, '');
+	    return new TextEncoder().encode(requestHeaders).length;
+	}
+	/** Converts from CDP Network domain headers to BiDi network headers. */
+	function bidiNetworkHeadersFromCdpNetworkHeaders(headers) {
+	    if (!headers) {
+	        return [];
+	    }
+	    return Object.entries(headers).map(([name, value]) => ({
+	        name,
+	        value: {
+	            type: 'string',
+	            value,
+	        },
+	    }));
+	}
+	/** Converts from CDP Fetch domain headers to BiDi network headers. */
+	function bidiNetworkHeadersFromCdpNetworkHeadersEntries(headers) {
+	    if (!headers) {
+	        return [];
+	    }
+	    return headers.map(({ name, value }) => ({
+	        name,
+	        value: {
+	            type: 'string',
+	            value,
+	        },
+	    }));
+	}
+	/** Converts from Bidi network headers to CDP Network domain headers. */
+	function cdpNetworkHeadersFromBidiNetworkHeaders(headers) {
+	    if (headers === undefined) {
+	        return undefined;
+	    }
+	    return headers.reduce((result, header) => {
+	        // TODO: Distinguish between string and bytes?
+	        result[header.name] = header.value.value;
+	        return result;
+	    }, {});
+	}
+	/** Converts from CDP Fetch domain header entries to Bidi network headers. */
+	function bidiNetworkHeadersFromCdpFetchHeaders(headers) {
+	    if (!headers) {
+	        return [];
+	    }
+	    return headers.map(({ name, value }) => ({
+	        name,
+	        value: {
+	            type: 'string',
+	            value,
+	        },
+	    }));
+	}
+	/** Converts from Bidi network headers to CDP Fetch domain header entries. */
+	function cdpFetchHeadersFromBidiNetworkHeaders(headers) {
+	    if (headers === undefined) {
+	        return undefined;
+	    }
+	    return headers.map(({ name, value }) => ({
+	        name,
+	        value: value.value,
+	    }));
+	}
+	function networkHeaderFromCookieHeaders(headers) {
+	    if (headers === undefined) {
+	        return undefined;
+	    }
+	    const value = headers.reduce((acc, value, index) => {
+	        if (index > 0) {
+	            acc += ';';
+	        }
+	        const cookieValue = value.value.type === 'base64'
+	            ? btoa(value.value.value)
+	            : value.value.value;
+	        acc += `${value.name}=${cookieValue}`;
+	        return acc;
+	    }, '');
+	    return {
+	        name: 'Cookie',
+	        value: {
+	            type: 'string',
+	            value,
+	        },
+	    };
+	}
+	/** Converts from Bidi auth action to CDP auth challenge response. */
+	function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(action) {
+	    switch (action) {
+	        case 'default':
+	            return 'Default';
+	        case 'cancel':
+	            return 'CancelAuth';
+	        case 'provideCredentials':
+	            return 'ProvideCredentials';
+	    }
+	}
+	/**
+	 * Converts from CDP Network domain cookie to BiDi network cookie.
+	 * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Cookie
+	 * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
+	 */
+	function cdpToBiDiCookie(cookie) {
+	    const result = {
+	        name: cookie.name,
+	        value: { type: 'string', value: cookie.value },
+	        domain: cookie.domain,
+	        path: cookie.path,
+	        size: cookie.size,
+	        httpOnly: cookie.httpOnly,
+	        secure: cookie.secure,
+	        sameSite: cookie.sameSite === undefined
+	            ? "none" /* Network.SameSite.None */
+	            : sameSiteCdpToBiDi(cookie.sameSite),
+	        ...(cookie.expires >= 0 ? { expiry: cookie.expires } : undefined),
+	    };
+	    // Extending with CDP-specific properties with `goog:` prefix.
+	    result[`goog:session`] = cookie.session;
+	    result[`goog:priority`] = cookie.priority;
+	    result[`goog:sameParty`] = cookie.sameParty;
+	    result[`goog:sourceScheme`] = cookie.sourceScheme;
+	    result[`goog:sourcePort`] = cookie.sourcePort;
+	    if (cookie.partitionKey !== undefined) {
+	        result[`goog:partitionKey`] = cookie.partitionKey;
+	    }
+	    if (cookie.partitionKeyOpaque !== undefined) {
+	        result[`goog:partitionKeyOpaque`] = cookie.partitionKeyOpaque;
+	    }
+	    return result;
+	}
+	/**
+	 * Decodes a byte value to a string.
+	 * @param {Network.BytesValue} value
+	 * @return {string}
+	 */
+	function deserializeByteValue(value) {
+	    if (value.type === 'base64') {
+	        return (0, Base64_js_1.base64ToString)(value.value);
+	    }
+	    return value.value;
+	}
+	/**
+	 * Converts from BiDi set network cookie params to CDP Network domain cookie.
+	 * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
+	 * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-CookieParam
+	 */
+	function bidiToCdpCookie(params, partitionKey) {
+	    const deserializedValue = deserializeByteValue(params.cookie.value);
+	    const result = {
+	        name: params.cookie.name,
+	        value: deserializedValue,
+	        domain: params.cookie.domain,
+	        path: params.cookie.path ?? '/',
+	        secure: params.cookie.secure ?? false,
+	        httpOnly: params.cookie.httpOnly ?? false,
+	        ...(partitionKey.sourceOrigin !== undefined && {
+	            partitionKey: {
+	                hasCrossSiteAncestor: false,
+	                // CDP's `partitionKey.topLevelSite` is the BiDi's `partition.sourceOrigin`.
+	                topLevelSite: partitionKey.sourceOrigin,
+	            },
+	        }),
+	        ...(params.cookie.expiry !== undefined && {
+	            expires: params.cookie.expiry,
+	        }),
+	        ...(params.cookie.sameSite !== undefined && {
+	            sameSite: sameSiteBiDiToCdp(params.cookie.sameSite),
+	        }),
+	    };
+	    // Extending with CDP-specific properties with `goog:` prefix.
+	    if (params.cookie[`goog:url`] !== undefined) {
+	        result.url = params.cookie[`goog:url`];
+	    }
+	    if (params.cookie[`goog:priority`] !== undefined) {
+	        result.priority = params.cookie[`goog:priority`];
+	    }
+	    if (params.cookie[`goog:sameParty`] !== undefined) {
+	        result.sameParty = params.cookie[`goog:sameParty`];
+	    }
+	    if (params.cookie[`goog:sourceScheme`] !== undefined) {
+	        result.sourceScheme = params.cookie[`goog:sourceScheme`];
+	    }
+	    if (params.cookie[`goog:sourcePort`] !== undefined) {
+	        result.sourcePort = params.cookie[`goog:sourcePort`];
+	    }
+	    return result;
+	}
+	function sameSiteCdpToBiDi(sameSite) {
+	    switch (sameSite) {
+	        case 'Strict':
+	            return "strict" /* Network.SameSite.Strict */;
+	        case 'None':
+	            return "none" /* Network.SameSite.None */;
+	        case 'Lax':
+	            return "lax" /* Network.SameSite.Lax */;
+	        default:
+	            // Defaults to `Lax`:
+	            // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
+	            return "lax" /* Network.SameSite.Lax */;
+	    }
+	}
+	function sameSiteBiDiToCdp(sameSite) {
+	    switch (sameSite) {
+	        case "strict" /* Network.SameSite.Strict */:
+	            return 'Strict';
+	        case "lax" /* Network.SameSite.Lax */:
+	            return 'Lax';
+	        case "none" /* Network.SameSite.None */:
+	            return 'None';
+	    }
+	    throw new ErrorResponse_js_1.InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
+	}
+	/**
+	 * Returns true if the given protocol is special.
+	 * Special protocols are those that have a default port.
+	 *
+	 * Example inputs: 'http', 'http:'
+	 *
+	 * @see https://url.spec.whatwg.org/#special-scheme
+	 */
+	function isSpecialScheme(protocol) {
+	    return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(protocol.replace(/:$/, ''));
+	}
+	/** Matches the given URLPattern against the given URL. */
+	function matchUrlPattern(urlPattern, url) {
+	    switch (urlPattern.type) {
+	        case 'string': {
+	            const pattern = new UrlPattern_js_1.URLPattern(urlPattern.pattern);
+	            return new UrlPattern_js_1.URLPattern({
+	                protocol: pattern.protocol,
+	                hostname: pattern.hostname,
+	                port: pattern.port,
+	                pathname: pattern.pathname,
+	                search: pattern.search,
+	            }).test(url);
+	        }
+	        case 'pattern':
+	            return new UrlPattern_js_1.URLPattern(urlPattern).test(url);
+	    }
+	}
+	function bidiBodySizeFromCdpPostDataEntries(entries) {
+	    let size = 0;
+	    for (const entry of entries) {
+	        size += atob(entry.bytes ?? '').length;
+	    }
+	    return size;
+	}
 
 	Object.defineProperty(StorageProcessor$1, "__esModule", { value: true });
 	StorageProcessor$1.StorageProcessor = void 0;
@@ -4894,6 +4845,8 @@ var mapperTab = (function () {
 	                return await this.#networkProcessor.provideResponse(this.#parser.parseProvideResponseParams(command.params));
 	            case 'network.removeIntercept':
 	                return await this.#networkProcessor.removeIntercept(this.#parser.parseRemoveInterceptParams(command.params));
+	            case 'network.setCacheBehavior':
+	                throw new protocol_js_1$c.UnknownErrorException("Method 'network.setCacheBehavior' is not implemented.");
 	            // keep-sorted end
 	            // Permissions domain
 	            // keep-sorted start block=yes
@@ -4918,7 +4871,7 @@ var mapperTab = (function () {
 	            // Session domain
 	            // keep-sorted start block=yes
 	            case 'session.new':
-	                return await this.#sessionProcessor.create(command.params);
+	                return await this.#sessionProcessor.new(command.params);
 	            case 'session.status':
 	                return this.#sessionProcessor.status();
 	            case 'session.subscribe':
@@ -5082,12 +5035,11 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	Object.defineProperty(unitConversions, "__esModule", { value: true });
-	unitConversions.inchesFromCm = void 0;
+	unitConversions.inchesFromCm = inchesFromCm;
 	/** @return Given an input in cm, convert it to inches. */
 	function inchesFromCm(cm) {
 	    return cm / 2.54;
 	}
-	unitConversions.inchesFromCm = inchesFromCm;
 
 	var WindowRealm$1 = {};
 
@@ -5581,12 +5533,12 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	Object.defineProperty(SharedId, "__esModule", { value: true });
-	SharedId.parseSharedId = SharedId.getSharedId = void 0;
+	SharedId.getSharedId = getSharedId;
+	SharedId.parseSharedId = parseSharedId;
 	const SHARED_ID_DIVIDER = '_element_';
 	function getSharedId(frameId, documentId, backendNodeId) {
 	    return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
 	}
-	SharedId.getSharedId = getSharedId;
 	function parseLegacySharedId(sharedId) {
 	    const match = sharedId.match(new RegExp(`(.*)${SHARED_ID_DIVIDER}(.*)`));
 	    if (!match) {
@@ -5636,7 +5588,6 @@ var mapperTab = (function () {
 	        backendNodeId,
 	    };
 	}
-	SharedId.parseSharedId = parseSharedId;
 
 	/**
 	 * Copyright 2024 Google LLC.
@@ -5794,12 +5745,14 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	Object.defineProperty(BrowsingContextImpl$1, "__esModule", { value: true });
-	BrowsingContextImpl$1.serializeOrigin = BrowsingContextImpl$1.BrowsingContextImpl = void 0;
+	BrowsingContextImpl$1.BrowsingContextImpl = void 0;
+	BrowsingContextImpl$1.serializeOrigin = serializeOrigin;
 	const protocol_js_1$9 = protocol;
 	const assert_js_1$2 = assert$1;
 	const Deferred_js_1$2 = Deferred$1;
 	const log_js_1$9 = log$1;
 	const unitConversions_js_1 = unitConversions;
+	const uuid_1 = uuid;
 	const WindowRealm_js_1$1 = WindowRealm$1;
 	class BrowsingContextImpl {
 	    static LOGGER_PREFIX = `${log_js_1$9.LogType.debug}:browsingContext`;
@@ -5810,7 +5763,7 @@ var mapperTab = (function () {
 	     * The ID of the parent browsing context.
 	     * If null, this is a top-level context.
 	     */
-	    #parentId;
+	    #parentId = null;
 	    /** Direct children browsing contexts. */
 	    #children = new Set();
 	    #browsingContextStorage;
@@ -5831,8 +5784,17 @@ var mapperTab = (function () {
 	    #logger;
 	    // Keeps track of the previously set viewport.
 	    #previousViewport = { width: 0, height: 0 };
+	    // The URL of the navigation that is currently in progress. A workaround of the CDP
+	    // lacking URL for the pending navigation events, e.g. `Page.frameStartedLoading`.
+	    // Set on `Page.navigate`, `Page.reload` commands and on deprecated CDP event
+	    // `Page.frameScheduledNavigation`.
+	    #pendingNavigationUrl;
+	    #virtualNavigationId = (0, uuid_1.uuidv4)();
 	    #originalOpener;
-	    constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, logger) {
+	    // Set when the user prompt is opened. Required to provide the type in closing event.
+	    #lastUserPromptType;
+	    #unhandledPromptBehavior;
+	    constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger) {
 	        this.#cdpTarget = cdpTarget;
 	        this.#id = id;
 	        this.#parentId = parentId;
@@ -5840,22 +5802,36 @@ var mapperTab = (function () {
 	        this.#eventManager = eventManager;
 	        this.#browsingContextStorage = browsingContextStorage;
 	        this.#realmStorage = realmStorage;
+	        this.#unhandledPromptBehavior = unhandledPromptBehavior;
 	        this.#logger = logger;
 	        this.#url = url;
 	        this.#originalOpener = originalOpener;
 	    }
-	    static create(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, logger) {
-	        const context = new BrowsingContextImpl(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, logger);
+	    static create(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger) {
+	        const context = new BrowsingContextImpl(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, unhandledPromptBehavior, logger);
 	        context.#initListeners();
 	        browsingContextStorage.addContext(context);
 	        if (!context.isTopLevelContext()) {
 	            context.parent.addChild(context.id);
 	        }
-	        eventManager.registerEvent({
-	            type: 'event',
-	            method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-	            params: context.serializeToBidiValue(),
-	        }, context.id);
+	        // Hold on the `contextCreated` event until the target is unblocked. This is required,
+	        // as the parent of the context can be set later in case of reconnecting to an
+	        // existing browser instance + OOPiF.
+	        eventManager.registerPromiseEvent(context.targetUnblockedOrThrow().then(() => {
+	            return {
+	                kind: 'success',
+	                value: {
+	                    type: 'event',
+	                    method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+	                    params: context.serializeToBidiValue(),
+	                },
+	            };
+	        }, (error) => {
+	            return {
+	                kind: 'error',
+	                error,
+	            };
+	        }), context.id, protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.ContextCreated);
 	        return context;
 	    }
 	    static getTimestamp() {
@@ -5870,6 +5846,14 @@ var mapperTab = (function () {
 	     */
 	    get navigableId() {
 	        return this.#loaderId;
+	    }
+	    /**
+	     * Virtual navigation ID. Required, as CDP `loaderId` cannot be mapped 1:1 to all the
+	     * navigations (e.g. same document navigations). Updated after each navigation,
+	     * including same-document ones.
+	     */
+	    get virtualNavigationId() {
+	        return this.#virtualNavigationId;
 	    }
 	    dispose() {
 	        this.#deleteAllChildren();
@@ -5896,6 +5880,19 @@ var mapperTab = (function () {
 	    /** Returns the parent context ID. */
 	    get parentId() {
 	        return this.#parentId;
+	    }
+	    /** Sets the parent context ID and updates parent's children. */
+	    set parentId(parentId) {
+	        if (this.#parentId !== null) {
+	            this.#logger?.(log_js_1$9.LogType.debugError, 'Parent context already set');
+	            // Cannot do anything except logging, as throwing will stop event processing. So
+	            // just return,
+	            return;
+	        }
+	        this.#parentId = parentId;
+	        if (!this.isTopLevelContext()) {
+	            this.parent.addChild(this.id);
+	        }
 	    }
 	    /** Returns the parent context. */
 	    get parent() {
@@ -6004,6 +6001,7 @@ var mapperTab = (function () {
 	                return;
 	            }
 	            this.#url = params.frame.url + (params.frame.urlFragment ?? '');
+	            this.#pendingNavigationUrl = undefined;
 	            // At the point the page is initialized, all the nested iframes from the
 	            // previous page are detached and realms are destroyed.
 	            // Remove children from context.
@@ -6013,6 +6011,7 @@ var mapperTab = (function () {
 	            if (this.id !== params.frameId) {
 	                return;
 	            }
+	            this.#pendingNavigationUrl = undefined;
 	            const timestamp = BrowsingContextImpl.getTimestamp();
 	            this.#url = params.url;
 	            this.#navigation.withinDocument.resolve();
@@ -6021,7 +6020,7 @@ var mapperTab = (function () {
 	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
 	                params: {
 	                    context: this.id,
-	                    navigation: null,
+	                    navigation: this.#virtualNavigationId,
 	                    timestamp,
 	                    url: this.#url,
 	                },
@@ -6031,16 +6030,29 @@ var mapperTab = (function () {
 	            if (this.id !== params.frameId) {
 	                return;
 	            }
+	            // Generate a new virtual navigation id.
+	            this.#virtualNavigationId = (0, uuid_1.uuidv4)();
 	            this.#eventManager.registerEvent({
 	                type: 'event',
 	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
 	                params: {
 	                    context: this.id,
-	                    navigation: null,
+	                    navigation: this.#virtualNavigationId,
 	                    timestamp: BrowsingContextImpl.getTimestamp(),
-	                    url: '',
+	                    // The URL of the navigation that is currently in progress. Although the URL
+	                    // is not yet known in case of user-initiated navigations, it is possible to
+	                    // provide the URL in case of BiDi-initiated navigations.
+	                    // TODO: provide proper URL in case of user-initiated navigations.
+	                    url: this.#pendingNavigationUrl ?? 'UNKNOWN',
 	                },
 	            }, this.id);
+	        });
+	        // TODO: don't use deprecated `Page.frameScheduledNavigation` event.
+	        this.#cdpTarget.cdpClient.on('Page.frameScheduledNavigation', (params) => {
+	            if (this.id !== params.frameId) {
+	                return;
+	            }
+	            this.#pendingNavigationUrl = params.url;
 	        });
 	        this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
 	            if (this.id !== params.frameId) {
@@ -6072,7 +6084,7 @@ var mapperTab = (function () {
 	                        method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
 	                        params: {
 	                            context: this.id,
-	                            navigation: this.#loaderId ?? null,
+	                            navigation: this.#virtualNavigationId,
 	                            timestamp,
 	                            url: this.#url,
 	                        },
@@ -6085,7 +6097,7 @@ var mapperTab = (function () {
 	                        method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.Load,
 	                        params: {
 	                            context: this.id,
-	                            navigation: this.#loaderId ?? null,
+	                            navigation: this.#virtualNavigationId,
 	                            timestamp,
 	                            url: this.#url,
 	                        },
@@ -6154,30 +6166,88 @@ var mapperTab = (function () {
 	        });
 	        this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
 	            const accepted = params.result;
+	            if (this.#lastUserPromptType === undefined) {
+	                this.#logger?.(log_js_1$9.LogType.debugError, 'Unexpectedly no opening prompt event before closing one');
+	            }
 	            this.#eventManager.registerEvent({
 	                type: 'event',
 	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
 	                params: {
 	                    context: this.id,
 	                    accepted,
+	                    // `lastUserPromptType` should never be undefined here, so fallback to
+	                    // `UNKNOWN`. The fallback is required to prevent tests from hanging while
+	                    // waiting for the closing event. The cast is required, as the `UNKNOWN` value
+	                    // is not standard.
+	                    type: this.#lastUserPromptType ??
+	                        'UNKNOWN',
 	                    userText: accepted && params.userInput ? params.userInput : undefined,
 	                },
 	            }, this.id);
+	            this.#lastUserPromptType = undefined;
 	        });
 	        this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
+	            const promptType = BrowsingContextImpl.#getPromptType(params.type);
+	            // Set the last prompt type to provide it in closing event.
+	            this.#lastUserPromptType = promptType;
+	            const promptHandler = this.#getPromptHandler(promptType);
 	            this.#eventManager.registerEvent({
 	                type: 'event',
 	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
 	                params: {
 	                    context: this.id,
-	                    type: params.type,
+	                    handler: promptHandler,
+	                    type: promptType,
 	                    message: params.message,
 	                    ...(params.type === 'prompt'
 	                        ? { defaultValue: params.defaultPrompt }
 	                        : {}),
 	                },
 	            }, this.id);
+	            switch (promptHandler) {
+	                // Based on `unhandledPromptBehavior`, check if the prompt should be handled
+	                // automatically (`accept`, `dismiss`) or wait for the user to do it.
+	                case "accept" /* Session.UserPromptHandlerType.Accept */:
+	                    void this.handleUserPrompt(true);
+	                    break;
+	                case "dismiss" /* Session.UserPromptHandlerType.Dismiss */:
+	                    void this.handleUserPrompt(false);
+	                    break;
+	            }
 	        });
+	    }
+	    static #getPromptType(cdpType) {
+	        switch (cdpType) {
+	            case 'alert':
+	                return "alert" /* BrowsingContext.UserPromptType.Alert */;
+	            case 'beforeunload':
+	                return "beforeunload" /* BrowsingContext.UserPromptType.Beforeunload */;
+	            case 'confirm':
+	                return "confirm" /* BrowsingContext.UserPromptType.Confirm */;
+	            case 'prompt':
+	                return "prompt" /* BrowsingContext.UserPromptType.Prompt */;
+	        }
+	    }
+	    #getPromptHandler(promptType) {
+	        const defaultPromptHandler = "dismiss" /* Session.UserPromptHandlerType.Dismiss */;
+	        switch (promptType) {
+	            case "alert" /* BrowsingContext.UserPromptType.Alert */:
+	                return (this.#unhandledPromptBehavior?.alert ??
+	                    this.#unhandledPromptBehavior?.default ??
+	                    defaultPromptHandler);
+	            case "beforeunload" /* BrowsingContext.UserPromptType.Beforeunload */:
+	                return (this.#unhandledPromptBehavior?.beforeUnload ??
+	                    this.#unhandledPromptBehavior?.default ??
+	                    "accept" /* Session.UserPromptHandlerType.Accept */);
+	            case "confirm" /* BrowsingContext.UserPromptType.Confirm */:
+	                return (this.#unhandledPromptBehavior?.confirm ??
+	                    this.#unhandledPromptBehavior?.default ??
+	                    defaultPromptHandler);
+	            case "prompt" /* BrowsingContext.UserPromptType.Prompt */:
+	                return (this.#unhandledPromptBehavior?.prompt ??
+	                    this.#unhandledPromptBehavior?.default ??
+	                    defaultPromptHandler);
+	        }
 	    }
 	    #documentChanged(loaderId) {
 	        // Same document navigation.
@@ -6223,18 +6293,25 @@ var mapperTab = (function () {
 	            throw new protocol_js_1$9.InvalidArgumentException(`Invalid URL: ${url}`);
 	        }
 	        await this.targetUnblockedOrThrow();
+	        // Set the pending navigation URL to provide it in `browsingContext.navigationStarted`
+	        // event.
+	        // TODO: detect navigation start not from CDP. Check if
+	        //  `Page.frameRequestedNavigation` can be used for this purpose.
+	        this.#pendingNavigationUrl = url;
 	        // TODO: handle loading errors.
 	        const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
 	            url,
 	            frameId: this.id,
 	        });
 	        if (cdpNavigateResult.errorText) {
+	            // If navigation failed, no pending navigation is left.
+	            this.#pendingNavigationUrl = undefined;
 	            this.#eventManager.registerEvent({
 	                type: 'event',
 	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
 	                params: {
 	                    context: this.id,
-	                    navigation: cdpNavigateResult.loaderId ?? null,
+	                    navigation: this.#virtualNavigationId,
 	                    timestamp: BrowsingContextImpl.getTimestamp(),
 	                    url,
 	                },
@@ -6265,7 +6342,7 @@ var mapperTab = (function () {
 	                break;
 	        }
 	        return {
-	            navigation: cdpNavigateResult.loaderId ?? null,
+	            navigation: this.#virtualNavigationId,
 	            // Url can change due to redirect get the latest one.
 	            url: wait === "none" /* BrowsingContext.ReadinessState.None */ ? url : this.#url,
 	        };
@@ -6287,9 +6364,7 @@ var mapperTab = (function () {
 	                break;
 	        }
 	        return {
-	            navigation: wait === "none" /* BrowsingContext.ReadinessState.None */
-	                ? null
-	                : this.navigableId ?? null,
+	            navigation: this.#virtualNavigationId,
 	            url: this.url,
 	        };
 	    }
@@ -6331,10 +6406,10 @@ var mapperTab = (function () {
 	            }
 	        }
 	    }
-	    async handleUserPrompt(params) {
+	    async handleUserPrompt(accept, userText) {
 	        await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
-	            accept: params.accept ?? true,
-	            promptText: params.userText,
+	            accept: accept ?? true,
+	            promptText: userText,
 	        });
 	    }
 	    async activate() {
@@ -6842,7 +6917,6 @@ var mapperTab = (function () {
 	    }
 	    return origin;
 	}
-	BrowsingContextImpl$1.serializeOrigin = serializeOrigin;
 	function getImageFormatParameters(params) {
 	    const { quality, type } = params.format ?? {
 	        type: 'image/png',
@@ -7033,7 +7107,8 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	Object.defineProperty(logHelper, "__esModule", { value: true });
-	logHelper.getRemoteValuesText = logHelper.logMessageFormatter = void 0;
+	logHelper.logMessageFormatter = logMessageFormatter;
+	logHelper.getRemoteValuesText = getRemoteValuesText;
 	const assert_js_1$1 = assert$1;
 	const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
 	function isFormatSpecifier(str) {
@@ -7094,7 +7169,6 @@ var mapperTab = (function () {
 	    }
 	    return output;
 	}
-	logHelper.logMessageFormatter = logMessageFormatter;
 	/**
 	 * @param arg input remote value to be parsed
 	 * @return parsed text of the remote value
@@ -7187,7 +7261,6 @@ var mapperTab = (function () {
 	    })
 	        .join('\u0020');
 	}
-	logHelper.getRemoteValuesText = getRemoteValuesText;
 
 	Object.defineProperty(LogManager$1, "__esModule", { value: true });
 	LogManager$1.LogManager = void 0;
@@ -7343,7 +7416,7 @@ var mapperTab = (function () {
 	    #browsingContextStorage;
 	    #networkStorage;
 	    #unblocked = new Deferred_js_1$1.Deferred();
-	    #acceptInsecureCerts;
+	    #unhandledPromptBehavior;
 	    #logger;
 	    #networkDomainEnabled = false;
 	    #fetchDomainStages = {
@@ -7351,8 +7424,8 @@ var mapperTab = (function () {
 	        response: false,
 	        auth: false,
 	    };
-	    static create(targetId, cdpClient, browserCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts, logger) {
-	        const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts, logger);
+	    static create(targetId, cdpClient, browserCdpClient, realmStorage, eventManager, preloadScriptStorage, browsingContextStorage, networkStorage, unhandledPromptBehavior, logger) {
+	        const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, unhandledPromptBehavior, logger);
 	        LogManager_js_1.LogManager.create(cdpTarget, realmStorage, eventManager, logger);
 	        cdpTarget.#setEventListeners();
 	        // No need to await.
@@ -7360,7 +7433,7 @@ var mapperTab = (function () {
 	        void cdpTarget.#unblock();
 	        return cdpTarget;
 	    }
-	    constructor(targetId, cdpClient, browserCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, acceptInsecureCerts, logger) {
+	    constructor(targetId, cdpClient, browserCdpClient, eventManager, realmStorage, preloadScriptStorage, browsingContextStorage, networkStorage, unhandledPromptBehavior, logger) {
 	        this.#id = targetId;
 	        this.#cdpClient = cdpClient;
 	        this.#browserCdpClient = browserCdpClient;
@@ -7369,7 +7442,7 @@ var mapperTab = (function () {
 	        this.#preloadScriptStorage = preloadScriptStorage;
 	        this.#networkStorage = networkStorage;
 	        this.#browsingContextStorage = browsingContextStorage;
-	        this.#acceptInsecureCerts = acceptInsecureCerts;
+	        this.#unhandledPromptBehavior = unhandledPromptBehavior;
 	        this.#logger = logger;
 	    }
 	    /** Returns a deferred that resolves when the target is unblocked. */
@@ -7412,10 +7485,6 @@ var mapperTab = (function () {
 	                this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
 	                    enabled: true,
 	                }),
-	                // Set ignore certificate errors for each target.
-	                this.#cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
-	                    ignore: this.#acceptInsecureCerts,
-	                }),
 	                this.toggleNetworkIfNeeded(),
 	                this.#cdpClient.sendCommand('Target.setAutoAttach', {
 	                    autoAttach: true,
@@ -7444,12 +7513,21 @@ var mapperTab = (function () {
 	    }
 	    #restoreFrameTreeState(frameTree) {
 	        const frame = frameTree.frame;
-	        if (this.#browsingContextStorage.findContext(frame.id) === undefined &&
-	            frame.parentId !== undefined) {
-	            // Can restore only not yet known nested frames. The top-level frame is created
-	            // when the target is attached.
+	        const maybeContext = this.#browsingContextStorage.findContext(frame.id);
+	        if (maybeContext !== undefined) {
+	            // Restoring parent of already known browsing context. This means the target is
+	            // OOPiF and the BiDi session was connected to already existing browser instance.
+	            if (maybeContext.parentId === null &&
+	                frame.parentId !== null &&
+	                frame.parentId !== undefined) {
+	                maybeContext.parentId = frame.parentId;
+	            }
+	        }
+	        if (maybeContext === undefined && frame.parentId !== undefined) {
+	            // Restore not yet known nested frames. The top-level frame is created when the
+	            // target is attached.
 	            const parentBrowsingContext = this.#browsingContextStorage.getContext(frame.parentId);
-	            BrowsingContextImpl_js_1$1.BrowsingContextImpl.create(frame.id, frame.parentId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, frame.url, undefined, this.#logger);
+	            BrowsingContextImpl_js_1$1.BrowsingContextImpl.create(frame.id, frame.parentId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, frame.url, undefined, this.#unhandledPromptBehavior, this.#logger);
 	        }
 	        frameTree.childFrames?.map((frameTree) => this.#restoreFrameTreeState(frameTree));
 	    }
@@ -7573,13 +7651,12 @@ var mapperTab = (function () {
 	    #eventManager;
 	    #browsingContextStorage;
 	    #networkStorage;
-	    #acceptInsecureCerts;
 	    #preloadScriptStorage;
 	    #realmStorage;
 	    #defaultUserContextId;
 	    #logger;
-	    constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, preloadScriptStorage, acceptInsecureCerts, defaultUserContextId, logger) {
-	        this.#acceptInsecureCerts = acceptInsecureCerts;
+	    #unhandledPromptBehavior;
+	    constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, preloadScriptStorage, defaultUserContextId, unhandledPromptBehavior, logger) {
 	        this.#cdpConnection = cdpConnection;
 	        this.#browserCdpClient = browserCdpClient;
 	        this.#selfTargetId = selfTargetId;
@@ -7589,6 +7666,7 @@ var mapperTab = (function () {
 	        this.#networkStorage = networkStorage;
 	        this.#realmStorage = realmStorage;
 	        this.#defaultUserContextId = defaultUserContextId;
+	        this.#unhandledPromptBehavior = unhandledPromptBehavior;
 	        this.#logger = logger;
 	        this.#setEventListeners(browserCdpClient);
 	    }
@@ -7614,7 +7692,7 @@ var mapperTab = (function () {
 	            BrowsingContextImpl_js_1.BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, 
 	            // At this point, we don't know the URL of the frame yet, so it will be updated
 	            // later.
-	            'about:blank', undefined, this.#logger);
+	            'about:blank', undefined, this.#unhandledPromptBehavior, this.#logger);
 	        }
 	    }
 	    #handleFrameDetachedEvent(params) {
@@ -7654,7 +7732,7 @@ var mapperTab = (function () {
 	                    // "7.3.2.1 Creating browsing contexts".
 	                    // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
 	                    // TODO: check who to deal with non-null creator and its `creatorOrigin`.
-	                    targetInfo.url === '' ? 'about:blank' : targetInfo.url, targetInfo.openerId, this.#logger);
+	                    targetInfo.url === '' ? 'about:blank' : targetInfo.url, targetInfo.openerFrameId ?? targetInfo.openerId, this.#unhandledPromptBehavior, this.#logger);
 	                }
 	                return;
 	            }
@@ -7690,7 +7768,7 @@ var mapperTab = (function () {
 	    }
 	    #createCdpTarget(targetCdpClient, targetInfo) {
 	        this.#setEventListeners(targetCdpClient);
-	        const target = CdpTarget_js_1.CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#acceptInsecureCerts, this.#logger);
+	        const target = CdpTarget_js_1.CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#browsingContextStorage, this.#networkStorage, this.#unhandledPromptBehavior, this.#logger);
 	        this.#networkStorage.onCdpTargetCreated(target);
 	        return target;
 	    }
@@ -7889,6 +7967,7 @@ var mapperTab = (function () {
 	    #servedFromCache = false;
 	    #redirectCount;
 	    #request = {};
+	    #requestOverrides;
 	    #response = {};
 	    #eventManager;
 	    #networkStorage;
@@ -7928,20 +8007,12 @@ var mapperTab = (function () {
 	            '';
 	        const url = this.#response.info?.url ??
 	            this.#response.paused?.request.url ??
-	            this.#request.overrides?.url ??
+	            this.#requestOverrides?.url ??
 	            this.#request.auth?.request.url ??
 	            this.#request.info?.request.url ??
 	            this.#request.paused?.request.url ??
 	            NetworkRequest.unknownParameter;
 	        return `${url}${fragment}`;
-	    }
-	    get method() {
-	        return (this.#request.overrides?.method ??
-	            this.#request.info?.request.method ??
-	            this.#request.paused?.request.method ??
-	            this.#request.auth?.request.method ??
-	            this.#response.paused?.request.method ??
-	            NetworkRequest.unknownParameter);
 	    }
 	    get redirectCount() {
 	        return this.#redirectCount;
@@ -7955,8 +8026,115 @@ var mapperTab = (function () {
 	    isRedirecting() {
 	        return Boolean(this.#request.info);
 	    }
-	    isDataUrl() {
+	    #isDataUrl() {
 	        return this.url.startsWith('data:');
+	    }
+	    get #method() {
+	        return (this.#requestOverrides?.method ??
+	            this.#request.info?.request.method ??
+	            this.#request.paused?.request.method ??
+	            this.#request.auth?.request.method ??
+	            this.#response.paused?.request.method);
+	    }
+	    get #navigationId() {
+	        // Heuristic to determine if this is a navigation request, and if not return null.
+	        if (!this.#request.info ||
+	            !this.#request.info.loaderId ||
+	            // When we navigate all CDP network events have `loaderId`
+	            // CDP's `loaderId` and `requestId` match when
+	            // that request triggered the loading
+	            this.#request.info.loaderId !== this.#request.info.requestId) {
+	            return null;
+	        }
+	        // Get virtual navigation ID from the browsing context.
+	        return this.#networkStorage.getVirtualNavigationId(this.#context ?? undefined);
+	    }
+	    get #cookies() {
+	        let cookies = [];
+	        if (this.#request.extraInfo) {
+	            cookies = this.#request.extraInfo.associatedCookies
+	                .filter(({ blockedReasons }) => {
+	                return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
+	            })
+	                .map(({ cookie }) => (0, NetworkUtils_js_1$1.cdpToBiDiCookie)(cookie));
+	        }
+	        return cookies;
+	    }
+	    get #bodySize() {
+	        let bodySize = 0;
+	        if (typeof this.#requestOverrides?.bodySize === 'number') {
+	            bodySize = this.#requestOverrides.bodySize;
+	        }
+	        else {
+	            bodySize = (0, NetworkUtils_js_1$1.bidiBodySizeFromCdpPostDataEntries)(this.#request.info?.request.postDataEntries ?? []);
+	        }
+	        return bodySize;
+	    }
+	    get #context() {
+	        return (this.#response.paused?.frameId ??
+	            this.#request.info?.frameId ??
+	            this.#request.paused?.frameId ??
+	            this.#request.auth?.frameId ??
+	            null);
+	    }
+	    /** Returns the HTTP status code associated with this request if any. */
+	    get #statusCode() {
+	        return (this.#response.paused?.responseStatusCode ??
+	            this.#response.extraInfo?.statusCode ??
+	            this.#response.info?.status);
+	    }
+	    get #requestHeaders() {
+	        let headers = [];
+	        if (this.#requestOverrides?.headers) {
+	            headers = this.#requestOverrides.headers;
+	        }
+	        else {
+	            headers = [
+	                ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.info?.request.headers),
+	                ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.extraInfo?.headers),
+	            ];
+	        }
+	        return headers;
+	    }
+	    get #authChallenges() {
+	        // TODO: get headers from Fetch.requestPaused
+	        if (!this.#response.info) {
+	            return;
+	        }
+	        if (!(this.#statusCode === 401 || this.#statusCode === 407)) {
+	            return undefined;
+	        }
+	        const headerName = this.#statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
+	        const authChallenges = [];
+	        for (const [header, value] of Object.entries(this.#response.info.headers)) {
+	            // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
+	            // Or verify this works
+	            if (header.localeCompare(headerName, undefined, { sensitivity: 'base' }) === 0) {
+	                authChallenges.push({
+	                    scheme: value.split(' ').at(0) ?? '',
+	                    realm: value.match(REALM_REGEX)?.at(0) ?? '',
+	                });
+	            }
+	        }
+	        return authChallenges;
+	    }
+	    // TODO: implement.
+	    get #timings() {
+	        return {
+	            timeOrigin: 0,
+	            requestTime: 0,
+	            redirectStart: 0,
+	            redirectEnd: 0,
+	            fetchStart: 0,
+	            dnsStart: 0,
+	            dnsEnd: 0,
+	            connectStart: 0,
+	            connectEnd: 0,
+	            tlsStart: 0,
+	            requestStart: 0,
+	            responseStart: 0,
+	            responseEnd: 0,
+	        };
 	    }
 	    #phaseChanged() {
 	        this.waitNextPhase.resolve();
@@ -7985,7 +8163,7 @@ var mapperTab = (function () {
 	        // Flush redirects
 	        options.wasRedirected ||
 	            options.hasFailed ||
-	            this.isDataUrl() ||
+	            this.#isDataUrl() ||
 	            Boolean(this.#request.extraInfo) ||
 	            // Requests from cache don't have extra info
 	            this.#servedFromCache ||
@@ -7994,7 +8172,7 @@ var mapperTab = (function () {
 	            Boolean(this.#response.info && !this.#response.hasExtraInfo);
 	        const noInterceptionExpected = 
 	        // We can't intercept data urls from CDP
-	        this.isDataUrl() ||
+	        this.#isDataUrl() ||
 	            // Cached requests never hit the network
 	            this.#servedFromCache;
 	        const requestInterceptionExpected = !noInterceptionExpected &&
@@ -8093,7 +8271,7 @@ var mapperTab = (function () {
 	                this.#interceptPhase = "responseStarted" /* Network.InterceptPhase.ResponseStarted */;
 	            }
 	            else {
-	                void this.continueResponse();
+	                void this.#continueResponse();
 	            }
 	        }
 	        else {
@@ -8106,7 +8284,7 @@ var mapperTab = (function () {
 	                this.#interceptPhase = "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */;
 	            }
 	            else {
-	                void this.continueRequest();
+	                void this.#continueRequest();
 	            }
 	        }
 	        this.#emitEventsIfReady();
@@ -8120,7 +8298,9 @@ var mapperTab = (function () {
 	            this.#interceptPhase = "authRequired" /* Network.InterceptPhase.AuthRequired */;
 	        }
 	        else {
-	            void this.continueWithAuth();
+	            void this.#continueWithAuth({
+	                response: 'Default',
+	            });
 	        }
 	        this.#emitEvent(() => {
 	            return {
@@ -8134,6 +8314,24 @@ var mapperTab = (function () {
 	    }
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
 	    async continueRequest(overrides = {}) {
+	        const overrideHeaders = this.#getOverrideHeader(overrides.headers, overrides.cookies);
+	        const headers = (0, NetworkUtils_js_1$1.cdpFetchHeadersFromBidiNetworkHeaders)(overrideHeaders);
+	        const postData = getCdpBodyFromBiDiBytesValue(overrides.body);
+	        await this.#continueRequest({
+	            url: overrides.url,
+	            method: overrides.method,
+	            headers,
+	            postData,
+	        });
+	        this.#requestOverrides = {
+	            url: overrides.url,
+	            method: overrides.method,
+	            headers: overrides.headers,
+	            cookies: overrides.cookies,
+	            bodySize: getSizeFromBiDiBytesValue(overrides.body),
+	        };
+	    }
+	    async #continueRequest(overrides = {}) {
 	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
 	        await this.cdpClient.sendCommand('Fetch.continueRequest', {
 	            requestId: this.#fetchId,
@@ -8142,16 +8340,40 @@ var mapperTab = (function () {
 	            headers: overrides.headers,
 	            postData: overrides.postData,
 	        });
-	        // TODO: Store postData's size only
-	        this.#request.overrides = {
-	            url: overrides.url,
-	            method: overrides.method,
-	            headers: overrides.headers,
-	        };
 	        this.#interceptPhase = undefined;
 	    }
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
-	    async continueResponse({ responseCode, responsePhrase, responseHeaders, } = {}) {
+	    async continueResponse(overrides = {}) {
+	        if (this.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
+	            if (overrides.credentials) {
+	                await Promise.all([
+	                    this.waitNextPhase,
+	                    await this.#continueWithAuth({
+	                        response: 'ProvideCredentials',
+	                        username: overrides.credentials.username,
+	                        password: overrides.credentials.password,
+	                    }),
+	                ]);
+	            }
+	            else {
+	                // We need to use `ProvideCredentials`
+	                // As `Default` may cancel the request
+	                return await this.#continueWithAuth({
+	                    response: 'ProvideCredentials',
+	                });
+	            }
+	        }
+	        if (this.#interceptPhase === "responseStarted" /* Network.InterceptPhase.ResponseStarted */) {
+	            const overrideHeaders = this.#getOverrideHeader(overrides.headers, overrides.cookies);
+	            const responseHeaders = (0, NetworkUtils_js_1$1.cdpFetchHeadersFromBidiNetworkHeaders)(overrideHeaders);
+	            await this.#continueResponse({
+	                responseCode: overrides.statusCode,
+	                responsePhrase: overrides.reasonPhrase,
+	                responseHeaders,
+	            });
+	        }
+	    }
+	    async #continueResponse({ responseCode, responsePhrase, responseHeaders, } = {}) {
 	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
 	        await this.cdpClient.sendCommand('Fetch.continueResponse', {
 	            requestId: this.#fetchId,
@@ -8162,40 +8384,57 @@ var mapperTab = (function () {
 	        this.#interceptPhase = undefined;
 	    }
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
-	    async continueWithAuth(authChallengeResponse = {
-	        response: 'Default',
-	    }) {
+	    async continueWithAuth(authChallenge) {
+	        let username;
+	        let password;
+	        if (authChallenge.action === 'provideCredentials') {
+	            const { credentials } = authChallenge;
+	            username = credentials.username;
+	            password = credentials.password;
+	        }
+	        const response = (0, NetworkUtils_js_1$1.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction)(authChallenge.action);
+	        await this.#continueWithAuth({
+	            response,
+	            username,
+	            password,
+	        });
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
+	    async provideResponse(overrides) {
+	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        // We need to pass through if the request is already in
+	        // AuthRequired phase
+	        if (this.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
+	            // We need to use `ProvideCredentials`
+	            // As `Default` may cancel the request
+	            return await this.#continueWithAuth({
+	                response: 'ProvideCredentials',
+	            });
+	        }
+	        // If we don't modify the response
+	        // just continue the request
+	        if (!overrides.body && !overrides.headers) {
+	            return await this.#continueRequest();
+	        }
+	        const overrideHeaders = this.#getOverrideHeader(overrides.headers, overrides.cookies);
+	        const responseHeaders = (0, NetworkUtils_js_1$1.cdpFetchHeadersFromBidiNetworkHeaders)(overrideHeaders);
+	        const responseCode = overrides.statusCode ?? this.#statusCode ?? 200;
+	        await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
+	            requestId: this.#fetchId,
+	            responseCode,
+	            responsePhrase: overrides.reasonPhrase,
+	            responseHeaders,
+	            body: getCdpBodyFromBiDiBytesValue(overrides.body),
+	        });
+	        this.#interceptPhase = undefined;
+	    }
+	    async #continueWithAuth(authChallengeResponse) {
 	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
 	        await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
 	            requestId: this.#fetchId,
 	            authChallengeResponse,
 	        });
 	        this.#interceptPhase = undefined;
-	    }
-	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
-	    async provideResponse({ responseCode, responsePhrase, responseHeaders, body, }) {
-	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
-	        await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
-	            requestId: this.#fetchId,
-	            responseCode,
-	            responsePhrase,
-	            responseHeaders,
-	            body,
-	        });
-	        this.#interceptPhase = undefined;
-	    }
-	    get #context() {
-	        return (this.#response.paused?.frameId ??
-	            this.#request.info?.frameId ??
-	            this.#request.paused?.frameId ??
-	            this.#request.auth?.frameId ??
-	            null);
-	    }
-	    /** Returns the HTTP status code associated with this request if any. */
-	    get statusCode() {
-	        return (this.#response.paused?.responseStatusCode ??
-	            this.#response.extraInfo?.statusCode ??
-	            this.#response.info?.status);
 	    }
 	    #emitEvent(getEvent) {
 	        let event;
@@ -8231,7 +8470,7 @@ var mapperTab = (function () {
 	        }
 	        return {
 	            context: this.#context,
-	            navigation: this.#getNavigationId(),
+	            navigation: this.#navigationId,
 	            redirectCount: this.#redirectCount,
 	            request: this.#getRequestData(),
 	            // Timestamp should be in milliseconds, while CDP provides it in seconds.
@@ -8255,12 +8494,11 @@ var mapperTab = (function () {
 	            //   this.#response.paused?.responseHeaders
 	            // ),
 	        ];
-	        // TODO: get headers from Fetch.requestPaused
-	        const authChallenges = this.#authChallenges(this.#response.info?.headers ?? {});
+	        const authChallenges = this.#authChallenges;
 	        return {
 	            url: this.url,
 	            protocol: this.#response.info?.protocol ?? '',
-	            status: this.statusCode ?? -1, // TODO: Throw an exception or use some other status code?
+	            status: this.#statusCode ?? -1, // TODO: Throw an exception or use some other status code?
 	            statusText: this.#response.info?.statusText ||
 	                this.#response.paused?.responseStatusText ||
 	                '',
@@ -8278,63 +8516,25 @@ var mapperTab = (function () {
 	                size: 0,
 	            },
 	            ...(authChallenges ? { authChallenges } : {}),
+	            // @ts-expect-error this is a CDP-specific extension.
+	            'goog:securityDetails': this.#response.info?.securityDetails,
 	        };
 	    }
-	    #getNavigationId() {
-	        if (!this.#request.info ||
-	            !this.#request.info.loaderId ||
-	            // When we navigate all CDP network events have `loaderId`
-	            // CDP's `loaderId` and `requestId` match when
-	            // that request triggered the loading
-	            this.#request.info.loaderId !== this.#request.info.requestId) {
-	            return null;
-	        }
-	        return this.#request.info.loaderId;
-	    }
 	    #getRequestData() {
-	        const cookies = this.#request.extraInfo
-	            ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
-	            : [];
-	        let headers = [];
-	        if (this.#request.overrides?.headers) {
-	            headers = [
-	                ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeadersEntries)(this.#request.overrides?.headers),
-	            ];
-	        }
-	        else {
-	            headers = [
-	                ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.info?.request.headers),
-	                ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.extraInfo?.headers),
-	            ];
-	        }
+	        const headers = this.#requestHeaders;
 	        return {
 	            request: this.#id,
 	            url: this.url,
-	            method: this.method,
+	            method: this.#method ?? NetworkRequest.unknownParameter,
 	            headers,
-	            cookies,
+	            cookies: this.#cookies,
 	            headersSize: (0, NetworkUtils_js_1$1.computeHeadersSize)(headers),
-	            // TODO: implement.
-	            bodySize: 0,
-	            timings: this.#getTimings(),
-	        };
-	    }
-	    // TODO: implement.
-	    #getTimings() {
-	        return {
-	            timeOrigin: 0,
-	            requestTime: 0,
-	            redirectStart: 0,
-	            redirectEnd: 0,
-	            fetchStart: 0,
-	            dnsStart: 0,
-	            dnsEnd: 0,
-	            connectStart: 0,
-	            connectEnd: 0,
-	            tlsStart: 0,
-	            requestStart: 0,
-	            responseStart: 0,
-	            responseEnd: 0,
+	            bodySize: this.#bodySize,
+	            timings: this.#timings,
+	            // @ts-expect-error CDP-specific attribute.
+	            'goog:postData': this.#request.info?.request?.postData,
+	            'goog:hasPostData': this.#request.info?.request?.hasPostData,
+	            'goog:resourceType': this.#request.info?.type,
 	        };
 	    }
 	    #getBeforeRequestEvent() {
@@ -8354,10 +8554,6 @@ var mapperTab = (function () {
 	        };
 	    }
 	    #getResponseStartedEvent() {
-	        (0, assert_js_1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
-	        (0, assert_js_1.assert)(
-	        // The response paused comes before any data for the response
-	        this.#response.paused || this.#response.info, 'ResponseReceivedEvent is not set');
 	        return {
 	            method: protocol_js_1$6.ChromiumBidi.Network.EventNames.ResponseStarted,
 	            params: {
@@ -8367,8 +8563,6 @@ var mapperTab = (function () {
 	        };
 	    }
 	    #getResponseReceivedEvent() {
-	        (0, assert_js_1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
-	        (0, assert_js_1.assert)(this.#response.info, 'ResponseReceivedEvent is not set');
 	        return {
 	            method: protocol_js_1$6.ChromiumBidi.Network.EventNames.ResponseCompleted,
 	            params: {
@@ -8383,23 +8577,22 @@ var mapperTab = (function () {
 	            this.#request.info?.request.url.endsWith(faviconUrl) ??
 	            false);
 	    }
-	    #authChallenges(headers) {
-	        if (!(this.statusCode === 401 || this.statusCode === 407)) {
+	    #getOverrideHeader(headers, cookies) {
+	        if (!headers && !cookies) {
 	            return undefined;
 	        }
-	        const headerName = this.statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
-	        const authChallenges = [];
-	        for (const [header, value] of Object.entries(headers)) {
-	            // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
-	            // Or verify this works
-	            if (header.localeCompare(headerName, undefined, { sensitivity: 'base' }) === 0) {
-	                authChallenges.push({
-	                    scheme: value.split(' ').at(0) ?? '',
-	                    realm: value.match(REALM_REGEX)?.at(0) ?? '',
-	                });
-	            }
+	        let overrideHeaders = headers;
+	        const cookieHeader = (0, NetworkUtils_js_1$1.networkHeaderFromCookieHeaders)(cookies);
+	        if (cookieHeader && !overrideHeaders) {
+	            overrideHeaders = this.#requestHeaders;
 	        }
-	        return authChallenges;
+	        if (cookieHeader && overrideHeaders) {
+	            overrideHeaders.filter((header) => header.name.localeCompare('cookie', undefined, {
+	                sensitivity: 'base',
+	            }) !== 0);
+	            overrideHeaders.push(cookieHeader);
+	        }
+	        return overrideHeaders;
 	    }
 	    static #getInitiatorType(initiatorType) {
 	        switch (initiatorType) {
@@ -8411,15 +8604,27 @@ var mapperTab = (function () {
 	                return 'other';
 	        }
 	    }
-	    static #getCookies(associatedCookies) {
-	        return associatedCookies
-	            .filter(({ blockedReasons }) => {
-	            return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
-	        })
-	            .map(({ cookie }) => (0, NetworkUtils_js_1$1.cdpToBiDiCookie)(cookie));
-	    }
 	}
 	NetworkRequest$1.NetworkRequest = NetworkRequest;
+	function getCdpBodyFromBiDiBytesValue(body) {
+	    let parsedBody;
+	    if (body?.type === 'string') {
+	        parsedBody = btoa(body.value);
+	    }
+	    else if (body?.type === 'base64') {
+	        parsedBody = body.value;
+	    }
+	    return parsedBody;
+	}
+	function getSizeFromBiDiBytesValue(body) {
+	    if (body?.type === 'string') {
+	        return body.value.length;
+	    }
+	    else if (body?.type === 'base64') {
+	        return atob(body.value).length;
+	    }
+	    return 0;
+	}
 
 	Object.defineProperty(NetworkStorage$1, "__esModule", { value: true });
 	NetworkStorage$1.NetworkStorage = void 0;
@@ -8429,6 +8634,7 @@ var mapperTab = (function () {
 	const NetworkUtils_js_1 = NetworkUtils;
 	/** Stores network and intercept maps. */
 	class NetworkStorage {
+	    #browsingContextStorage;
 	    #eventManager;
 	    #logger;
 	    /**
@@ -8438,7 +8644,8 @@ var mapperTab = (function () {
 	    #requests = new Map();
 	    /** A map from intercept ID to track active network intercepts. */
 	    #intercepts = new Map();
-	    constructor(eventManager, browserClient, logger) {
+	    constructor(eventManager, browsingContextStorage, browserClient, logger) {
+	        this.#browsingContextStorage = browsingContextStorage;
 	        this.#eventManager = eventManager;
 	        browserClient.on('Target.detachedFromTarget', ({ sessionId }) => {
 	            this.disposeRequestMap(sessionId);
@@ -8614,6 +8821,16 @@ var mapperTab = (function () {
 	    }
 	    deleteRequest(id) {
 	        this.#requests.delete(id);
+	    }
+	    /**
+	     * Gets the virtual navigation ID for the given navigable ID.
+	     */
+	    getVirtualNavigationId(contextId) {
+	        if (contextId === undefined) {
+	            return null;
+	        }
+	        return (this.#browsingContextStorage.findContext(contextId)
+	            ?.virtualNavigationId ?? null);
 	    }
 	}
 	NetworkStorage$1.NetworkStorage = NetworkStorage;
@@ -8854,7 +9071,8 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	Object.defineProperty(DistinctValues, "__esModule", { value: true });
-	DistinctValues.deterministicJSONStringify = DistinctValues.distinctValues = void 0;
+	DistinctValues.distinctValues = distinctValues;
+	DistinctValues.deterministicJSONStringify = deterministicJSONStringify;
 	/**
 	 * Returns an array of distinct values. Order is not guaranteed.
 	 * @param values - The values to filter. Should be JSON-serializable.
@@ -8867,7 +9085,6 @@ var mapperTab = (function () {
 	    }
 	    return Array.from(map.values());
 	}
-	DistinctValues.distinctValues = distinctValues;
 	/**
 	 * Returns a stringified version of the object with keys sorted. This is required to
 	 * ensure that the stringified version of an object is deterministic independent of the
@@ -8878,7 +9095,6 @@ var mapperTab = (function () {
 	function deterministicJSONStringify(obj) {
 	    return JSON.stringify(normalizeObject(obj));
 	}
-	DistinctValues.deterministicJSONStringify = deterministicJSONStringify;
 	function normalizeObject(obj) {
 	    if (obj === undefined ||
 	        obj === null ||
@@ -8933,7 +9149,8 @@ var mapperTab = (function () {
 	var events = {};
 
 	Object.defineProperty(events, "__esModule", { value: true });
-	events.assertSupportedEvent = events.isCdpEvent = void 0;
+	events.isCdpEvent = isCdpEvent;
+	events.assertSupportedEvent = assertSupportedEvent;
 	/**
 	 * Copyright 2023 Google LLC.
 	 * Copyright (c) Microsoft Corporation.
@@ -8958,7 +9175,6 @@ var mapperTab = (function () {
 	function isCdpEvent(name) {
 	    return (name.split('.').at(0)?.startsWith(protocol_js_1$3.ChromiumBidi.BiDiModule.Cdp) ?? false);
 	}
-	events.isCdpEvent = isCdpEvent;
 	/**
 	 * Asserts that the given event is known to BiDi or BiDi+, or throws otherwise.
 	 */
@@ -8967,7 +9183,6 @@ var mapperTab = (function () {
 	        throw new protocol_js_1$3.InvalidArgumentException(`Unknown event: ${name}`);
 	    }
 	}
-	events.assertSupportedEvent = assertSupportedEvent;
 
 	var SubscriptionManager$1 = {};
 
@@ -8988,7 +9203,9 @@ var mapperTab = (function () {
 	 * limitations under the License.
 	 */
 	Object.defineProperty(SubscriptionManager$1, "__esModule", { value: true });
-	SubscriptionManager$1.SubscriptionManager = SubscriptionManager$1.unrollEvents = SubscriptionManager$1.cartesianProduct = void 0;
+	SubscriptionManager$1.SubscriptionManager = void 0;
+	SubscriptionManager$1.cartesianProduct = cartesianProduct;
+	SubscriptionManager$1.unrollEvents = unrollEvents;
 	const protocol_js_1$2 = protocol;
 	const events_js_1$1 = events;
 	/**
@@ -9000,7 +9217,6 @@ var mapperTab = (function () {
 	function cartesianProduct(...a) {
 	    return a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
 	}
-	SubscriptionManager$1.cartesianProduct = cartesianProduct;
 	/** Expands "AllEvents" events into atomic events. */
 	function unrollEvents(events) {
 	    const allEvents = new Set();
@@ -9029,7 +9245,6 @@ var mapperTab = (function () {
 	    }
 	    return [...allEvents.values()];
 	}
-	SubscriptionManager$1.unrollEvents = unrollEvents;
 	class SubscriptionManager {
 	    #subscriptionPriority = 0;
 	    // BrowsingContext `null` means the event has subscription across all the
@@ -9500,8 +9715,8 @@ var mapperTab = (function () {
 	        this.#transport = bidiTransport;
 	        this.#transport.setOnMessage(this.#handleIncomingMessage);
 	        this.#eventManager = new EventManager_js_1.EventManager(this.#browsingContextStorage);
-	        const networkStorage = new NetworkStorage_js_1.NetworkStorage(this.#eventManager, browserCdpClient, logger);
-	        new CdpTargetManager_js_1.CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, this.#preloadScriptStorage, options?.acceptInsecureCerts ?? false, defaultUserContextId, logger);
+	        const networkStorage = new NetworkStorage_js_1.NetworkStorage(this.#eventManager, this.#browsingContextStorage, browserCdpClient, logger);
+	        new CdpTargetManager_js_1.CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, this.#preloadScriptStorage, defaultUserContextId, options?.unhandledPromptBehavior, logger);
 	        this.#commandProcessor = new CommandProcessor_js_1.CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, parser, this.#logger);
 	        this.#eventManager.on("event" /* EventManagerEvents.Event */, ({ message, event }) => {
 	            this.emitOutgoingMessage(message, event);
@@ -9521,6 +9736,10 @@ var mapperTab = (function () {
 	        const [{ browserContextIds }, { targetInfos }] = await Promise.all([
 	            browserCdpClient.sendCommand('Target.getBrowserContexts'),
 	            browserCdpClient.sendCommand('Target.getTargets'),
+	            // This is required to ignore certificate errors when service worker is fetched.
+	            browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
+	                ignore: options?.acceptInsecureCerts ?? false,
+	            }),
 	        ]);
 	        let defaultUserContextId = 'default';
 	        for (const info of targetInfos) {
@@ -14292,7 +14511,7 @@ var mapperTab = (function () {
 		        browserVersion: zod_1.default.string().optional(),
 		        platformName: zod_1.default.string().optional(),
 		        proxy: Session.ProxyConfigurationSchema.optional(),
-		        webSocketUrl: zod_1.default.boolean().optional(),
+		        unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
 		    })
 		        .and(exports.ExtensibleSchema));
 		})(Session || (exports.Session = Session = {}));
@@ -14346,6 +14565,18 @@ var mapperTab = (function () {
 		        .and(exports.ExtensibleSchema));
 		})(Session || (exports.Session = Session = {}));
 		(function (Session) {
+		    Session.UserPromptHandlerSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        alert: Session.UserPromptHandlerTypeSchema.optional(),
+		        beforeUnload: Session.UserPromptHandlerTypeSchema.optional(),
+		        confirm: Session.UserPromptHandlerTypeSchema.optional(),
+		        default: Session.UserPromptHandlerTypeSchema.optional(),
+		        prompt: Session.UserPromptHandlerTypeSchema.optional(),
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.UserPromptHandlerTypeSchema = zod_1.default.lazy(() => zod_1.default.enum(['accept', 'dismiss', 'ignore']));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
 		    Session.SubscriptionRequestSchema = zod_1.default.lazy(() => zod_1.default.object({
 		        events: zod_1.default.array(zod_1.default.string()).min(1),
 		        contexts: zod_1.default
@@ -14389,6 +14620,7 @@ var mapperTab = (function () {
 		            setWindowRect: zod_1.default.boolean(),
 		            userAgent: zod_1.default.string(),
 		            proxy: Session.ProxyConfigurationSchema.optional(),
+		            unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
 		            webSocketUrl: zod_1.default.string().optional(),
 		        })
 		            .and(exports.ExtensibleSchema),
@@ -14577,6 +14809,9 @@ var mapperTab = (function () {
 		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
 		(function (BrowsingContext) {
 		    BrowsingContext.ReadinessStateSchema = zod_1.default.lazy(() => zod_1.default.enum(['none', 'interactive', 'complete']));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.UserPromptTypeSchema = zod_1.default.lazy(() => zod_1.default.enum(['alert', 'beforeunload', 'confirm', 'prompt']));
 		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
 		(function (BrowsingContext) {
 		    BrowsingContext.ActivateSchema = zod_1.default.lazy(() => zod_1.default.object({
@@ -14889,6 +15124,7 @@ var mapperTab = (function () {
 		    BrowsingContext.UserPromptClosedParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
 		        context: BrowsingContext.BrowsingContextSchema,
 		        accepted: zod_1.default.boolean(),
+		        type: BrowsingContext.UserPromptTypeSchema,
 		        userText: zod_1.default.string().optional(),
 		    }));
 		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
@@ -14901,8 +15137,9 @@ var mapperTab = (function () {
 		(function (BrowsingContext) {
 		    BrowsingContext.UserPromptOpenedParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
 		        context: BrowsingContext.BrowsingContextSchema,
-		        type: zod_1.default.enum(['alert', 'confirm', 'prompt', 'beforeunload']),
+		        handler: Session.UserPromptHandlerTypeSchema,
 		        message: zod_1.default.string(),
+		        type: BrowsingContext.UserPromptTypeSchema,
 		        defaultValue: zod_1.default.string().optional(),
 		    }));
 		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
@@ -14914,6 +15151,7 @@ var mapperTab = (function () {
 		    Network.FailRequestSchema,
 		    Network.ProvideResponseSchema,
 		    Network.RemoveInterceptSchema,
+		    Network.SetCacheBehaviorSchema,
 		]));
 		exports.NetworkEventSchema = zod_1.default.lazy(() => zod_1.default.union([
 		    Network.AuthRequiredSchema,
@@ -15209,6 +15447,21 @@ var mapperTab = (function () {
 		(function (Network) {
 		    Network.RemoveInterceptParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
 		        intercept: Network.InterceptSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.SetCacheBehaviorSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.setCacheBehavior'),
+		        params: Network.SetCacheBehaviorParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.SetCacheBehaviorParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        cacheBehavior: zod_1.default.enum(['default', 'bypass']),
+		        contexts: zod_1.default
+		            .array(BrowsingContext.BrowsingContextSchema)
+		            .min(1)
+		            .optional(),
 		    }));
 		})(Network || (exports.Network = Network = {}));
 		exports.ScriptEventSchema = zod_1.default.lazy(() => zod_1.default.union([
@@ -16337,7 +16590,8 @@ var mapperTab = (function () {
 	    return result;
 	};
 	Object.defineProperty(protocolParser, "__esModule", { value: true });
-	protocolParser.Permissions = protocolParser.Cdp = protocolParser.Storage = protocolParser.Input = protocolParser.Session = protocolParser.BrowsingContext = protocolParser.Script = protocolParser.Network = protocolParser.Browser = protocolParser.parseObject = void 0;
+	protocolParser.Permissions = protocolParser.Cdp = protocolParser.Storage = protocolParser.Input = protocolParser.Session = protocolParser.BrowsingContext = protocolParser.Script = protocolParser.Network = protocolParser.Browser = void 0;
+	protocolParser.parseObject = parseObject;
 	/**
 	 * @fileoverview Provides parsing and validator for WebDriver BiDi protocol.
 	 * Parser types should match the `../protocol` types.
@@ -16357,7 +16611,6 @@ var mapperTab = (function () {
 	        .join(' ');
 	    throw new protocol_js_1.InvalidArgumentException(errorMessage);
 	}
-	protocolParser.parseObject = parseObject;
 	/** @see https://w3c.github.io/webdriver-bidi/#module-browser */
 	var Browser;
 	(function (Browser) {
@@ -16746,7 +16999,8 @@ var mapperTab = (function () {
 	var mapperTabPage = {};
 
 	Object.defineProperty(mapperTabPage, "__esModule", { value: true });
-	mapperTabPage.log = mapperTabPage.generatePage = void 0;
+	mapperTabPage.generatePage = generatePage;
+	mapperTabPage.log = log;
 	/**
 	 * Copyright 2022 Google LLC.
 	 * Copyright (c) Microsoft Corporation.
@@ -16775,7 +17029,6 @@ var mapperTab = (function () {
 	    // Show a confirmation dialog when the user tries to leave the Mapper tab.
 	    globalThis.window.onbeforeunload = () => 'Closing or reloading this tab will stop the BiDi process. Are you sure you want to leave?';
 	}
-	mapperTabPage.generatePage = generatePage;
 	function stringify(message) {
 	    if (typeof message === 'object') {
 	        return JSON.stringify(message, null, 2);
@@ -16806,7 +17059,6 @@ var mapperTab = (function () {
 	        debugContainer.removeChild(debugContainer.childNodes[0]);
 	    }
 	}
-	mapperTabPage.log = log;
 
 	var Transport = {};
 
