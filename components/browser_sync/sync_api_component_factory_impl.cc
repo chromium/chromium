@@ -79,8 +79,8 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
   controller_builder_.SetPasswordStore(profile_password_store,
                                        account_password_store);
   controller_builder_.SetPowerBookmarkService(power_bookmark_service);
-  controller_builder_.SetPlusAddressSettingService(
-      plus_address_setting_service, plus_address_webdata_service);
+  controller_builder_.SetPlusAddressServices(plus_address_setting_service,
+                                             plus_address_webdata_service);
   controller_builder_.SetProductSpecificationsService(
       product_specifications_service);
 

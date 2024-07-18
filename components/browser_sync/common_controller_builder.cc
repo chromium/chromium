@@ -246,7 +246,7 @@ void CommonControllerBuilder::SetPasswordStore(
   account_password_store_.Set(account_password_store);
 }
 
-void CommonControllerBuilder::SetPlusAddressSettingService(
+void CommonControllerBuilder::SetPlusAddressServices(
     plus_addresses::PlusAddressSettingService* plus_address_setting_service,
     const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
         plus_address_webdata_service) {

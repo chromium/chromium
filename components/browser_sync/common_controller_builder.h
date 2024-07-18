@@ -150,7 +150,7 @@ class CommonControllerBuilder {
           profile_password_store,
       const scoped_refptr<password_manager::PasswordStoreInterface>&
           account_password_store);
-  void SetPlusAddressSettingService(
+  void SetPlusAddressServices(
       plus_addresses::PlusAddressSettingService* plus_address_setting_service,
       const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
           plus_address_webdata_service);
