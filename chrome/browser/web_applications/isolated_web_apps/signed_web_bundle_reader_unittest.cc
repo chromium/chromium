@@ -24,6 +24,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -61,10 +62,6 @@ using testing::UnorderedElementsAre;
 
 using VerificationAction = SignedWebBundleReader::SignatureVerificationAction;
 
-constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
-    0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2,
-    0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0};
-
 constexpr std::array<uint8_t, 64> kEd25519Signature = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
@@ -74,7 +71,7 @@ void StartReadingIntegrityBlock(
     SignedWebBundleReader* reader,
     VerificationAction requested_verification_action,
     SignedWebBundleReader::ReadErrorCallback callback,
-    std::array<uint8_t, 32> expected_key) {
+    web_package::Ed25519PublicKey expected_key) {
   auto proceed_with_action = base::BindOnce(
       [](base::WeakPtr<SignedWebBundleReader> reader,
          SignedWebBundleReader::ReadErrorCallback callback,
@@ -88,7 +85,7 @@ void StartReadingIntegrityBlock(
 
   auto validate_key_and_return_action = base::BindOnce(
       [](VerificationAction requested_verification_action,
-         std::array<uint8_t, 32> expected_key,
+         web_package::Ed25519PublicKey expected_key,
          base::expected<web_package::SignedWebBundleIntegrityBlock,
                         UnusableSwbnFileError> result) -> VerificationAction {
         ASSIGN_OR_RETURN(
@@ -105,8 +102,7 @@ void StartReadingIntegrityBlock(
                      .entries()[0]
                      .signature_info());
         EXPECT_TRUE(ed25519_signature_info);
-        EXPECT_THAT(ed25519_signature_info->public_key().bytes(),
-                    testing::ElementsAreArray(expected_key));
+        EXPECT_EQ(ed25519_signature_info->public_key(), expected_key);
 
         return requested_verification_action;
       },
@@ -122,8 +118,8 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
  protected:
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    SetTrustedWebBundleIdsForTesting(
-        {*web_package::SignedWebBundleId::Create(kTestEd25519WebBundleId)});
+    SetTrustedWebBundleIdsForTesting({test::GetDefaultEd25519WebBundleId()});
+    IwaIdentityValidator::CreateSingleton();
   }
 
   void TearDown() override {
@@ -155,11 +151,9 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
             std::make_unique<web_package::test::FakeSignatureVerifier>(
                 signature_verifier_error));
 
-    std::array<uint8_t, 32> expected_public_key;
-    base::ranges::copy(kTestPublicKey, expected_public_key.begin());
     StartReadingIntegrityBlock(reader.get(), std::move(verification_action),
                                std::move(callback),
-                               std::move(expected_public_key));
+                               test::GetDefaultEd25519KeyPair().public_key);
     return reader;
   }
 
@@ -335,8 +329,8 @@ class SignedWebBundleReaderTest : public testing::Test {
 
     auto signature_info_ed25519 =
         web_package::mojom::SignatureInfoEd25519::New();
-    signature_info_ed25519->public_key = web_package::Ed25519PublicKey::Create(
-        base::make_span(kEd25519PublicKey));
+    signature_info_ed25519->public_key =
+        test::GetDefaultEd25519KeyPair().public_key;
     signature_info_ed25519->signature = web_package::Ed25519Signature::Create(
         base::make_span(kEd25519Signature));
 
@@ -393,7 +387,8 @@ class SignedWebBundleReaderTest : public testing::Test {
                 signature_verifier_error));
 
     StartReadingIntegrityBlock(reader.get(), std::move(verification_action),
-                               std::move(callback), kEd25519PublicKey);
+                               std::move(callback),
+                               test::GetDefaultEd25519KeyPair().public_key);
     return reader;
   }
 
@@ -988,8 +983,7 @@ class UnsecureSignedWebBundleReaderTest : public testing::Test {
  protected:
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    SetTrustedWebBundleIdsForTesting(
-        {*web_package::SignedWebBundleId::Create(kTestEd25519WebBundleId)});
+    SetTrustedWebBundleIdsForTesting({test::GetDefaultEd25519WebBundleId()});
   }
 
   void TearDown() override {
@@ -1020,10 +1014,7 @@ TEST_F(UnsecureSignedWebBundleReaderTest, ReadValidId) {
       bundle_id_result = read_web_bundle_id_future.Take();
 
   ASSERT_TRUE(bundle_id_result.has_value());
-  web_package::Ed25519PublicKey public_key =
-      web_package::Ed25519PublicKey::Create(base::make_span(kTestPublicKey));
-  EXPECT_THAT(bundle_id_result.value(),
-              web_package::SignedWebBundleId::CreateForPublicKey(public_key));
+  EXPECT_THAT(bundle_id_result.value(), test::GetDefaultEd25519WebBundleId());
 }
 
 TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {

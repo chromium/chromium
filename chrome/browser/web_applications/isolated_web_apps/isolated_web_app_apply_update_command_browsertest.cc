@@ -83,7 +83,7 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
     TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault(
         TestSignedWebBundleBuilder::BuildOptions()
             .SetVersion(version)
-            .SetKeyPair(key_pair_)
+            .AddKeyPair(key_pair_)
             .SetAppName(app_name));
     ASSERT_THAT(base::WriteFile(path, bundle.data), IsTrue());
   }
@@ -138,13 +138,11 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
   base::ScopedTempDir scoped_temp_dir_;
 
   web_package::WebBundleSigner::Ed25519KeyPair key_pair_ =
-      web_package::WebBundleSigner::Ed25519KeyPair(kTestPublicKey,
-                                                   kTestPrivateKey);
+      test::GetDefaultEd25519KeyPair();
 
   IsolatedWebAppUrlInfo url_info_ =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateForPublicKey(
-              key_pair_.public_key));
+          test::GetDefaultEd25519WebBundleId());
 
   base::FilePath installed_bundle_path_;
   std::optional<IsolatedWebAppInstallSource> install_source_;

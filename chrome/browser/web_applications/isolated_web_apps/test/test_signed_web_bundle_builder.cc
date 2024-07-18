@@ -39,6 +39,46 @@ constexpr std::string_view kTestManifest = R"({
         }
       ]
     })";
+
+constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
+    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51,
+    0x66, 0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02,
+    0x72, 0xFE, 0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
+
+constexpr std::array<uint8_t, 64> kEd25519PrivateKey = {
+    0x1F, 0x27, 0x3F, 0x93, 0xE9, 0x59, 0x4E, 0xC7, 0x88, 0x82, 0xC7, 0x49,
+    0xF8, 0x79, 0x3D, 0x8C, 0xDB, 0xE4, 0x60, 0x1C, 0x21, 0xF1, 0xD9, 0xF9,
+    0xBC, 0x3A, 0xB5, 0xC7, 0x7F, 0x2D, 0x95, 0xE1,
+    // public key (part of the private key)
+    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51, 0x66,
+    0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02, 0x72, 0xFE,
+    0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
+
+constexpr std::array<uint8_t, 33> kEcdsaP256PublicKey = {
+    0x03, 0x0A, 0x22, 0xFC, 0x5C, 0x0B, 0x1E, 0x14, 0x85, 0x90, 0xE1,
+    0xF9, 0x87, 0xCC, 0x4E, 0x0D, 0x49, 0x2E, 0xF8, 0xE5, 0x1E, 0x23,
+    0xF9, 0xB3, 0x63, 0x75, 0xE1, 0x52, 0xB2, 0x4A, 0xEC, 0xA5, 0xE6};
+
+constexpr std::array<uint8_t, 32> kEcdsaP256PrivateKey = {
+    0x24, 0xAB, 0xA9, 0x6A, 0x44, 0x4B, 0xEB, 0xE9, 0x3C, 0xD2, 0x88,
+    0x47, 0x22, 0x63, 0x02, 0xB8, 0xE4, 0xA0, 0x16, 0x1A, 0x0E, 0x95,
+    0xAA, 0x36, 0x95, 0x26, 0x83, 0x49, 0xEE, 0xCD, 0x27, 0x1A};
+
+// Returns the value of `web_bundle_id` if specified, or generates a fallback ID
+// from `key_pair`'s public key.
+web_package::SignedWebBundleId GetWebBundleIdWithFallback(
+    const std::optional<web_package::SignedWebBundleId>& web_bundle_id,
+    const web_package::WebBundleSigner::KeyPair& key_pair) {
+  if (web_bundle_id) {
+    return *web_bundle_id;
+  }
+  return absl::visit(
+      [](const auto& key_pair) {
+        return web_package::SignedWebBundleId::CreateForPublicKey(
+            key_pair.public_key);
+      },
+      key_pair);
+}
 }  // namespace
 
 namespace test {
@@ -49,6 +89,26 @@ std::string EncodeAsPng(const SkBitmap& bitmap) {
   sk_sp<SkData> icon_skdata = stream.detachAsData();
   return std::string(static_cast<const char*>(icon_skdata->data()),
                      icon_skdata->size());
+}
+
+web_package::WebBundleSigner::Ed25519KeyPair GetDefaultEd25519KeyPair() {
+  return web_package::WebBundleSigner::Ed25519KeyPair(kEd25519PublicKey,
+                                                      kEd25519PrivateKey);
+}
+
+web_package::SignedWebBundleId GetDefaultEd25519WebBundleId() {
+  return web_package::SignedWebBundleId::CreateForPublicKey(
+      GetDefaultEd25519KeyPair().public_key);
+}
+
+web_package::WebBundleSigner::EcdsaP256KeyPair GetDefaultEcdsaP256KeyPair() {
+  return web_package::WebBundleSigner::EcdsaP256KeyPair(kEcdsaP256PublicKey,
+                                                        kEcdsaP256PrivateKey);
+}
+
+web_package::SignedWebBundleId GetDefaultEcdsaP256WebBundleId() {
+  return web_package::SignedWebBundleId::CreateForPublicKey(
+      GetDefaultEcdsaP256KeyPair().public_key);
 }
 
 }  // namespace test
@@ -65,14 +125,26 @@ TestSignedWebBundle::TestSignedWebBundle(TestSignedWebBundle&&) = default;
 TestSignedWebBundle::~TestSignedWebBundle() = default;
 
 TestSignedWebBundleBuilder::TestSignedWebBundleBuilder(
-    web_package::WebBundleSigner::Ed25519KeyPair key_pair,
+    web_package::WebBundleSigner::KeyPair key_pair,
     web_package::WebBundleSigner::ErrorsForTesting errors_for_testing)
-    : key_pair_(key_pair), errors_for_testing_(errors_for_testing) {}
+    : key_pairs_({std::move(key_pair)}),
+      errors_for_testing_(errors_for_testing) {}
+
+TestSignedWebBundleBuilder::TestSignedWebBundleBuilder(
+    std::vector<web_package::WebBundleSigner::KeyPair> key_pairs,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    web_package::WebBundleSigner::ErrorsForTesting errors_for_testing)
+    : key_pairs_(std::move(key_pairs)),
+      web_bundle_id_(web_bundle_id),
+      errors_for_testing_(std::move(errors_for_testing)) {
+  CHECK_GE(key_pairs_.size(), 1U)
+      << "At least 1 key has to be specified for signing.";
+}
+
+TestSignedWebBundleBuilder::~TestSignedWebBundleBuilder() = default;
 
 TestSignedWebBundleBuilder::BuildOptions::BuildOptions()
-    : key_pair_(web_package::WebBundleSigner::Ed25519KeyPair(kTestPublicKey,
-                                                             kTestPrivateKey)),
-      version_(base::Version("1.0.0")),
+    : version_(base::Version("1.0.0")),
       app_name_("Simple Isolated App"),
       errors_for_testing_(
           {/*integrity_block_errors=*/{}, /*signatures_errors=*/{}}) {}
@@ -148,17 +220,31 @@ void TestSignedWebBundleBuilder::AddPrimaryUrl(GURL url) {
 }
 
 TestSignedWebBundle TestSignedWebBundleBuilder::Build() {
+  web_package::SignedWebBundleId web_bundle_id =
+      GetWebBundleIdWithFallback(web_bundle_id_, key_pairs_[0]);
+
   return TestSignedWebBundle(
       web_package::WebBundleSigner::SignBundle(
-          builder_.CreateBundle(), {key_pair_}, /*ib_attributes=*/{},
+          builder_.CreateBundle(), key_pairs_,
+          /*ib_attributes=*/{{.web_bundle_id = web_bundle_id.id()}},
           errors_for_testing_),
-      web_package::SignedWebBundleId::CreateForPublicKey(key_pair_.public_key));
+      web_bundle_id);
 }
 
 TestSignedWebBundle TestSignedWebBundleBuilder::BuildDefault(
     BuildOptions build_options) {
-  TestSignedWebBundleBuilder builder = TestSignedWebBundleBuilder(
-      build_options.key_pair_, build_options.errors_for_testing_);
+  if (build_options.key_pairs_.empty()) {
+    build_options.AddKeyPair(test::GetDefaultEd25519KeyPair());
+  }
+  CHECK(build_options.key_pairs_.size() == 1 || build_options.web_bundle_id_)
+      << "`web_bundle_id` must always be set if there's more than 1 key "
+         "involved.";
+
+  web_package::SignedWebBundleId web_bundle_id = GetWebBundleIdWithFallback(
+      build_options.web_bundle_id_, build_options.key_pairs_[0]);
+  auto builder = TestSignedWebBundleBuilder(
+      std::move(build_options.key_pairs_), std::move(web_bundle_id),
+      std::move(build_options.errors_for_testing_));
 
   if (build_options.primary_url_.has_value()) {
     builder.AddPrimaryUrl(build_options.primary_url_.value());

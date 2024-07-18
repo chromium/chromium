@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_fake_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -96,12 +97,8 @@ IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
 }
 
 IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
-  web_package::SignedWebBundleId signed_web_bundle_id =
-      web_package::SignedWebBundleId::CreateForPublicKey(
-          web_package::Ed25519PublicKey::Create(
-              base::make_span(kTestPublicKey)));
   return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      signed_web_bundle_id);
+      test::GetDefaultEd25519WebBundleId());
 }
 
 IwaSourceWithMode CreateDevProxySource(
@@ -154,6 +151,7 @@ std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
 class IsolatedWebAppInstallCommandHelperTest : public ::testing::Test {
  public:
   void SetUp() override {
+    IwaIdentityValidator::CreateSingleton();
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
   }

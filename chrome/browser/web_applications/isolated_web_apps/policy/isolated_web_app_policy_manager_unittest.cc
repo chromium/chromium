@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
@@ -476,7 +477,7 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
         web_app::TestSignedWebBundleBuilder::BuildDefault();
     web_app::TestSignedWebBundle swbn_app2 =
         web_app::TestSignedWebBundleBuilder::BuildDefault(
-            TestSignedWebBundleBuilder::BuildOptions().SetKeyPair(
+            TestSignedWebBundleBuilder::BuildOptions().AddKeyPair(
                 web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom()));
 
     lazy_app1_id_ = swbn_app1.id;
@@ -498,6 +499,7 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
+    IwaIdentityValidator::CreateSingleton();
     SetCommandScheduler();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
     SetUpServedIwas();

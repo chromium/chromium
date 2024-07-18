@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -117,12 +118,8 @@ IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
 }
 
 IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
-  web_package::SignedWebBundleId signed_web_bundle_id =
-      web_package::SignedWebBundleId::CreateForPublicKey(
-          web_package::Ed25519PublicKey::Create(
-              base::make_span(kTestPublicKey)));
   return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      signed_web_bundle_id);
+      test::GetDefaultEd25519WebBundleId());
 }
 
 IwaSourceProxy CreateDevProxySource() {
@@ -156,6 +153,7 @@ GURL CreateDefaultManifestURL(const GURL& application_url) {
 class InstallIsolatedWebAppCommandTest : public WebAppTest {
  public:
   InstallIsolatedWebAppCommandTest() {
+    IwaIdentityValidator::CreateSingleton();
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
   }
@@ -792,8 +790,8 @@ class InstallIsolatedWebAppCommandBundleTest
            {}});
     }
 
-    TestSignedWebBundleBuilder builder;
-    TestSignedWebBundle bundle = builder.BuildDefault(std::move(build_options));
+    TestSignedWebBundle bundle =
+        TestSignedWebBundleBuilder::BuildDefault(std::move(build_options));
     ASSERT_THAT(base::WriteFile(bundle_path, bundle.data), IsTrue());
   }
 
@@ -895,8 +893,7 @@ class InstallIsolatedWebAppCommandBundleInstallSourceTest
 TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
        InstallationFinalizedWithCorrectInstallSurface) {
   IsolatedWebAppBuilder builder{ManifestBuilder()};
-  auto app = builder.BuildBundle(web_package::WebBundleSigner::Ed25519KeyPair(
-      base::make_span(kTestPublicKey), base::make_span(kTestPrivateKey)));
+  auto app = builder.BuildBundle(test::GetDefaultEd25519KeyPair());
   app->FakeInstallPageState(profile());
   app->TrustSigningKey();
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();

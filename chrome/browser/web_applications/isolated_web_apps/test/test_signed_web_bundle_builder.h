@@ -18,27 +18,20 @@
 class SkBitmap;
 
 namespace web_app {
+
 namespace test {
-  std::string EncodeAsPng(const SkBitmap& bitmap);
-}
 
-inline constexpr uint8_t kTestPublicKey[] = {
-    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51,
-    0x66, 0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02,
-    0x72, 0xFE, 0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
+std::string EncodeAsPng(const SkBitmap& bitmap);
 
-inline constexpr uint8_t kTestPrivateKey[] = {
-    0x1F, 0x27, 0x3F, 0x93, 0xE9, 0x59, 0x4E, 0xC7, 0x88, 0x82, 0xC7, 0x49,
-    0xF8, 0x79, 0x3D, 0x8C, 0xDB, 0xE4, 0x60, 0x1C, 0x21, 0xF1, 0xD9, 0xF9,
-    0xBC, 0x3A, 0xB5, 0xC7, 0x7F, 0x2D, 0x95, 0xE1,
-    // public key (part of the private key)
-    0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51, 0x66,
-    0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02, 0x72, 0xFE,
-    0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
+// Pieces related to Ed25519 keys:
+web_package::WebBundleSigner::Ed25519KeyPair GetDefaultEd25519KeyPair();
+web_package::SignedWebBundleId GetDefaultEd25519WebBundleId();
 
-// Derived from `kTestPublicKey`.
-inline constexpr std::string_view kTestEd25519WebBundleId =
-    "4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic";
+// Pieces related to EcdsaP256 keys:
+web_package::WebBundleSigner::EcdsaP256KeyPair GetDefaultEcdsaP256KeyPair();
+web_package::SignedWebBundleId GetDefaultEcdsaP256WebBundleId();
+
+}  // namespace test
 
 struct TestSignedWebBundle {
   TestSignedWebBundle(std::vector<uint8_t> data,
@@ -56,19 +49,27 @@ struct TestSignedWebBundle {
 class TestSignedWebBundleBuilder {
  public:
   explicit TestSignedWebBundleBuilder(
-      web_package::WebBundleSigner::Ed25519KeyPair key_pair =
+      web_package::WebBundleSigner::KeyPair key_pair =
           web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom(),
       web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {
           /*integrity_block_errors=*/{},
           /*signatures_errors=*/{}});
+
+  explicit TestSignedWebBundleBuilder(
+      std::vector<web_package::WebBundleSigner::KeyPair> key_pairs,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {
+          /*integrity_block_errors=*/{},
+          /*signatures_errors=*/{}});
+  ~TestSignedWebBundleBuilder();
 
   static constexpr std::string_view kTestManifestUrl =
       "/.well-known/manifest.webmanifest";
   static constexpr std::string_view kTestIconUrl = "/256x256-green.png";
   static constexpr std::string_view kTestHtmlUrl = "/index.html";
 
-  // TODO(crbug.com/40264793): Use a struct instead when designated initializers
-  // are supported.
+  // TODO(crbug.com/40264793): Use a struct instead when designated
+  // initializers are supported.
   class BuildOptions {
    public:
     BuildOptions();
@@ -76,9 +77,13 @@ class TestSignedWebBundleBuilder {
     BuildOptions(BuildOptions&&);
     ~BuildOptions();
 
-    BuildOptions& SetKeyPair(
-        web_package::WebBundleSigner::Ed25519KeyPair key_pair) {
-      key_pair_ = std::move(key_pair);
+    BuildOptions& AddKeyPair(web_package::WebBundleSigner::KeyPair key_pair) {
+      key_pairs_.push_back(std::move(key_pair));
+      return *this;
+    }
+
+    BuildOptions& SetWebBundleId(web_package::SignedWebBundleId web_bundle_id) {
+      web_bundle_id_ = std::move(web_bundle_id);
       return *this;
     }
 
@@ -113,7 +118,8 @@ class TestSignedWebBundleBuilder {
       return *this;
     }
 
-    web_package::WebBundleSigner::Ed25519KeyPair key_pair_;
+    std::vector<web_package::WebBundleSigner::KeyPair> key_pairs_;
+    std::optional<web_package::SignedWebBundleId> web_bundle_id_;
     base::Version version_;
     std::string app_name_;
     std::optional<GURL> primary_url_;
@@ -149,7 +155,10 @@ class TestSignedWebBundleBuilder {
       BuildOptions build_options = BuildOptions());
 
  private:
-  web_package::WebBundleSigner::Ed25519KeyPair key_pair_;
+  std::vector<web_package::WebBundleSigner::KeyPair> key_pairs_;
+
+  // This field is always set if there's more than one entry in `key_pairs_`.
+  std::optional<web_package::SignedWebBundleId> web_bundle_id_;
   web_package::WebBundleSigner::ErrorsForTesting errors_for_testing_;
   web_package::WebBundleBuilder builder_;
 };

@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -189,6 +190,7 @@ class IsolatedWebAppUpdateManagerTest : public WebAppTest {
     // Clearing Cache will clear PNACL cache, which needs this delegate set.
     nacl_browser_delegate_.Init(profile_manager().profile_manager());
 #endif  // BUILDFLAG(ENABLE_NACL)
+    IwaIdentityValidator::CreateSingleton();
   }
 
   void TearDown() override {
@@ -267,7 +269,7 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
       TestSignedWebBundleBuilder::BuildOptions()
           .SetVersion(base::Version("2.0.0"))
           .SetAppName("updated iwa")
-          .SetKeyPair(key_pair));
+          .AddKeyPair(key_pair));
 
   ASSERT_THAT(temp_dir_.CreateUniqueTempDir(), IsTrue());
   base::FilePath path = temp_dir_.GetPath().AppendASCII("bundle.swbn");
@@ -421,7 +423,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
     return TestSignedWebBundleBuilder::BuildDefault(
         TestSignedWebBundleBuilder::BuildOptions()
             .SetVersion(version)
-            .SetKeyPair(key_pair));
+            .AddKeyPair(key_pair));
   }
 
   virtual void SeedWebAppDatabase() {}

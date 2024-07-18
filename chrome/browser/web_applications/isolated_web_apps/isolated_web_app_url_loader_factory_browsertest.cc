@@ -130,10 +130,8 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public WebAppBrowserTestBase {
 
   base::FilePath SignAndWriteBundleToDisk(
       const std::vector<uint8_t>& unsigned_bundle) {
-    web_package::WebBundleSigner::Ed25519KeyPair key_pair(kTestPublicKey,
-                                                          kTestPrivateKey);
-    auto signed_bundle =
-        web_package::WebBundleSigner::SignBundle(unsigned_bundle, {key_pair});
+    auto signed_bundle = web_package::WebBundleSigner::SignBundle(
+        unsigned_bundle, {test::GetDefaultEd25519KeyPair()});
     return WriteBundleToDisk(signed_bundle);
   }
 
@@ -222,7 +220,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public WebAppBrowserTestBase {
   base::ScopedTempDir temp_dir_;
   IsolatedWebAppUrlInfo url_info_ =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          *web_package::SignedWebBundleId::Create(kTestEd25519WebBundleId));
+          test::GetDefaultEd25519WebBundleId());
   const GURL kUrl = url_info_.origin().GetURL();
 };
 
@@ -412,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        NoCrashIfBrowserIsClosed) {
   auto bundle = TestSignedWebBundleBuilder::BuildDefault();
   base::FilePath bundle_path = WriteBundleToDisk(bundle.data);
-  EXPECT_THAT(bundle.id.id(), Eq(kTestEd25519WebBundleId));
+  EXPECT_EQ(bundle.id, test::GetDefaultEd25519WebBundleId());
   TrustWebBundleId();
 
   base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,

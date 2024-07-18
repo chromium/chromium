@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -210,6 +211,8 @@ class FakeIsolatedWebAppsEnabledPrefObserver
 class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
  public:
   void SetUp() override {
+    web_app::IwaIdentityValidator::CreateSingleton();
+
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
@@ -261,7 +264,7 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
 
     GURL url(
         base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                      kTestEd25519WebBundleId,
+                      test::GetDefaultEd25519WebBundleId().id(),
                       "/.well-known/_generated_install_page.html"}));
     auto& page_state = fake_web_contents_manager.GetOrCreatePageState(url);
 
