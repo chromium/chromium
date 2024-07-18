@@ -265,7 +265,8 @@ AccessibilityTextStyleInfo CalculateTextRunStyleInfo(FPDF_TEXTPAGE text_page,
     style_info.stroke_color = MakeARGB(0xff, 0, 0, 0);
   }
 
-  int render_mode = FPDFText_GetTextRenderMode(text_page, char_index);
+  FPDF_PAGEOBJECT text_object = FPDFText_GetTextObject(text_page, char_index);
+  int render_mode = FPDFTextObj_GetTextRenderMode(text_object);
   DCHECK_GE(render_mode,
             static_cast<int>(AccessibilityTextRenderMode::kUnknown));
   DCHECK_LE(render_mode,
