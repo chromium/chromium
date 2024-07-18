@@ -90,17 +90,16 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   RegisterTableViewCell<TableViewIdentityCell>(self.tableView);
   RegisterTableViewCell<SettingsImageDetailTextCell>(self.tableView);
   RegisterTableViewCell<TableViewTextCell>(self.tableView);
-  [self setUpBottomSheetPresentationController];
   [self setUpNavigationController];
   [self setUpTableContent];
   [self updatePrimaryAccount];
-  [self setUpBottomSheetDetents];
+  [self.sheetPresentationController invalidateDetents];
 }
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
   // Update the bottom sheet height.
-  [self setUpBottomSheetDetents];
+  [self.sheetPresentationController invalidateDetents];
 }
 
 #pragma mark - Private
@@ -221,18 +220,24 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   return cell;
 }
 
-// Sets up the sheet presentation controller and its properties when using
-// UIModalPresentationPageSheet mode.
 - (void)setUpBottomSheetPresentationController {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-  presentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
+  __weak __typeof(self) weakSelf = self;
+  auto preferredHeightForContent = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakSelf preferredHeightForContent];
+  };
+  UISheetPresentationControllerDetent* customDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
+                            resolver:preferredHeightForContent];
+  presentationController.detents = @[ customDetent ];
+  presentationController.selectedDetentIdentifier =
+      kCustomMinimizedDetentIdentifier;
 }
 
 - (void)userTappedOnClose {
@@ -283,22 +288,17 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
-// Updates the bottom sheet height.
-- (void)setUpBottomSheetDetents {
+// Returns the sheet presentation controller if it exists.
+- (UISheetPresentationController*)sheetPresentationController {
   UISheetPresentationController* presentationController =
-      self.sheetPresentationController;
-    CGFloat bottomSheetHeight = [self preferredHeightForContent];
-    auto resolver = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return bottomSheetHeight;
-    };
-    UISheetPresentationControllerDetent* customDetent =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                              resolver:resolver];
-    presentationController.detents = @[ customDetent ];
-    presentationController.selectedDetentIdentifier =
-        kCustomMinimizedDetentIdentifier;
+      self.navigationController.sheetPresentationController;
+  if (presentationController) {
+    return presentationController;
+  }
+  // The sheet presentation controller when the popover is adapted as a sheet on
+  // compact width screen.
+  return self.navigationController.popoverPresentationController
+      .adaptiveSheetPresentationController;
 }
 
 // Returns preferred height according to the container view width.

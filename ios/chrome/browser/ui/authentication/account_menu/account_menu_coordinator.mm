@@ -113,6 +113,7 @@
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
   _viewController.dataSource = _mediator;
+  [_viewController setUpBottomSheetPresentationController];
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];

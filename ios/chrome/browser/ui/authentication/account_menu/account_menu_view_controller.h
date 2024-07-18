@@ -32,6 +32,11 @@ extern const char kEditAccountListIdentifier[];
 // The data source for the account menu.
 @property(nonatomic, weak) id<AccountMenuDataSource> dataSource;
 
+// Sets up the sheet presentation controller and its properties.
+// It must be called before the view is presented, in order to work on
+// popover adapted as sheet on compact width tablets.
+- (void)setUpBottomSheetPresentationController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_H_
