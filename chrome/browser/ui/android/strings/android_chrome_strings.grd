@@ -1783,7 +1783,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PASSWORDS_NAVIGATION_BUTTON" desc="Text for the button in the password check row in the Safety Check page indicating that upon clicking on it, the user will be redirected to the Google password manager.">
         Go to Password Manager
       </message>
-      <message name="IDS_SAFETY_HUB_GO_TO_GOOGLE_PLAY_BUTTON" translateable="false">
+      <message name="IDS_SAFETY_HUB_GO_TO_GOOGLE_PLAY_BUTTON" desc="Text for the button in the update check row in the Safety Check page indicating that upon clicking on it, the user will be redirected to the Google Play store.">
         Go to Google Play
       </message>
       <message name="IDS_SAFETY_HUB_GO_TO_SETTINGS_BUTTON" translateable="false">
@@ -1843,13 +1843,13 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY_MANAGED" desc="Summary for the password check row in the Safety Check page indicating that the organization of the user's account or device has disabled saving new passwords to the Google password manager.">
         Your organization turned off saving passwords
       </message>
-      <message name="IDS_SAFETY_HUB_UPDATES_OUTDATED_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_UPDATES_OUTDATED_SUMMARY" desc="Summary for the update check row in the Safety Check page indicating that the current installed version of Chrome is not up to date and that there is a newer version available for install.">
         New version of Chrome is available
       </message>
-      <message name="IDS_SAFETY_HUB_VERSION_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_VERSION_SUMMARY" desc="Summary for the update check row in the Safety Check page indicating the current Chrome version.">
         Version <ph name="VERSION_NUMBER">%1$s<ex>123.0.5678.90</ex></ph>
       </message>
-      <message name="IDS_SAFETY_HUB_UPDATE_UNAVAILABLE_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_UPDATE_UNAVAILABLE_TITLE" desc="Title for the update check row in the Safety Check page indicating that Safety Check could not check Chrome for updates and that it does not know whether the current version is the latest.">
         Can’t check Chrome version
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_OK_SUMMARY" translateable="false">
