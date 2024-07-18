@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -28,6 +27,11 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "sql/database.h"
+#include "sql/transaction.h"
+
+namespace base {
+class Time;
+}  // namespace base
 
 namespace sql {
 class Statement;
@@ -38,7 +42,6 @@ namespace content {
 class AggregatableDebugReport;
 class AttributionResolverDelegate;
 class StorableSource;
-class StoreSourceResult;
 struct AttributionInfo;
 
 enum class RateLimitResult : int;
@@ -61,6 +64,27 @@ class CONTENT_EXPORT AttributionStorageSql {
 
   static_assert(kCompatibleVersionNumber <= kCurrentVersionNumber);
   static_assert(kDeprecatedVersionNumber < kCompatibleVersionNumber);
+
+  // Scoper which encapsulates a transaction of changes on the database.
+  class Transaction {
+   public:
+    Transaction(const Transaction&) = delete;
+    Transaction& operator=(const Transaction&) = delete;
+    Transaction(Transaction&&) = delete;
+    Transaction& operator=(Transaction&&) = delete;
+    ~Transaction();
+
+    [[nodiscard]] bool Commit();
+
+   private:
+    friend class AttributionStorageSql;
+
+    static std::unique_ptr<Transaction> CreateAndStart(sql::Database& db);
+
+    explicit Transaction(sql::Database& db);
+
+    sql::Transaction transaction_;
+  };
 
   // If `user_data_directory` is empty, the DB is created in memory and no data
   // is persisted to disk.
@@ -138,10 +162,20 @@ class CONTENT_EXPORT AttributionStorageSql {
     int num_reports;
   };
 
+  [[nodiscard]] std::unique_ptr<Transaction> StartTransaction();
+
   // Deletes corrupt sources/reports if `deletion_counts` is not `nullptr`.
   void VerifyReports(DeletionCounts* deletion_counts);
 
-  StoreSourceResult StoreSource(StorableSource source);
+  [[nodiscard]] std::optional<StoredSource> InsertSource(
+      const StorableSource& source,
+      base::Time source_time,
+      int num_attributions,
+      bool event_level_active,
+      double randomized_response_rate,
+      StoredSource::AttributionLogic attribution_logic,
+      base::Time aggregatable_report_window_time);
+
   CreateReportResult MaybeCreateAndStoreReport(AttributionTrigger);
   std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
@@ -203,6 +237,43 @@ class CONTENT_EXPORT AttributionStorageSql {
       const StoredSource& source,
       RateLimitTable::Scope scope);
 
+  [[nodiscard]] base::expected<std::vector<StoredSource::Id>,
+                               RateLimitTable::Error>
+  GetSourcesToDeactivateForDestinationLimit(const StorableSource& source,
+                                            base::Time source_time);
+
+  enum class DbCreationPolicy {
+    // Create the db if it does not exist.
+    kCreateIfAbsent,
+    // Do not create the db if it does not exist.
+    kIgnoreIfAbsent,
+  };
+
+  // Initializes the database if necessary, and returns whether the database is
+  // open. |should_create| indicates whether the database should be created if
+  // it is not already.
+  [[nodiscard]] bool LazyInit(DbCreationPolicy creation_policy);
+
+  // Deletes all sources that have expired and have no pending
+  // reports. Returns false on failure.
+  [[nodiscard]] bool DeleteExpiredSources();
+
+  bool HasCapacityForStoringSource(
+      const attribution_reporting::SuitableOrigin& origin,
+      base::Time now);
+
+  [[nodiscard]] bool DeactivateSourcesForDestinationLimit(
+      const std::vector<StoredSource::Id>&,
+      base::Time now);
+
+  [[nodiscard]] bool StoreAttributionReport(AttributionReport& report,
+                                            const StoredSource* source);
+
+  int64_t StorageFileSizeKB();
+
+  // Returns the number of sources in storage.
+  std::optional<int64_t> NumberOfSources();
+
  private:
   using ReportCorruptionStatusSet =
       base::EnumSet<ReportCorruptionStatus,
@@ -227,13 +298,6 @@ class CONTENT_EXPORT AttributionStorageSql {
     kClosedDueToCatastrophicError,
   };
 
-  enum class DbCreationPolicy {
-    // Create the db if it does not exist.
-    kCreateIfAbsent,
-    // Do not create the db if it does not exist.
-    kIgnoreIfAbsent,
-  };
-
   // Deactivates the given sources. Returns false on error.
   [[nodiscard]] bool DeactivateSources(
       const std::vector<StoredSource::Id>& sources)
@@ -242,19 +306,6 @@ class CONTENT_EXPORT AttributionStorageSql {
   // Returns false on failure.
   [[nodiscard]] bool DeleteSources(
       const std::vector<StoredSource::Id>& source_ids)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Deletes all sources that have expired and have no pending
-  // reports. Returns false on failure.
-  [[nodiscard]] bool DeleteExpiredSources()
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  bool HasCapacityForStoringSource(const std::string& serialized_origin,
-                                   base::Time now)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Returns the number of sources in storage.
-  std::optional<int64_t> NumberOfSources()
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void RecordSourcesPerSourceOrigin() VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -341,11 +392,6 @@ class CONTENT_EXPORT AttributionStorageSql {
       std::optional<int64_t>& rate_limits_max_attributions)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Initializes the database if necessary, and returns whether the database is
-  // open. |should_create| indicates whether the database should be created if
-  // it is not already.
-  [[nodiscard]] bool LazyInit(DbCreationPolicy creation_policy)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
   // Returns false on failure.
   [[nodiscard]] bool InitializeSchema(bool db_empty)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -380,10 +426,6 @@ class CONTENT_EXPORT AttributionStorageSql {
       int& num_event_reports_deleted,
       int& num_aggregatable_reports_deleted)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  [[nodiscard]] bool DeactivateSourcesForDestinationLimit(
-      const std::vector<StoredSource::Id>&,
-      base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Aggregate Attribution:
 
@@ -423,10 +465,6 @@ class CONTENT_EXPORT AttributionStorageSql {
       int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
       std::optional<int>& max_aggregatable_reports_per_source)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  [[nodiscard]] bool StoreAttributionReport(AttributionReport& report,
-                                            const StoredSource* source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Generates null aggregatable reports for the given trigger and stores all
@@ -469,11 +507,6 @@ class CONTENT_EXPORT AttributionStorageSql {
   // `aggregatable_rate_limit_table_` references `delegate_` So it must be
   // declared after it.
   AggregatableDebugRateLimitTable aggregatable_debug_rate_limit_table_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Time at which `DeleteExpiredSources()` was last called. Initialized to
-  // the NULL time.
-  base::Time last_deleted_expired_sources_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
