@@ -66,6 +66,7 @@ SDK_PLATFORM_DICT = {
     version_codes.S_V2: 'S',
     version_codes.TIRAMISU: 'T',
     version_codes.UPSIDE_DOWN_CAKE: 'U',
+    # TODO: b/353915320 - Update cts-release arg's choices once 'V' is added.
 }
 
 # The test apks are apparently compatible across all architectures, the
@@ -500,9 +501,8 @@ def main():
       '--cts-release',
       # TODO(aluo): --platform is deprecated (the meaning is unclear).
       '--platform',
-      # TODO: crbug.com/1454486 - Remove 'U' once added to SDK_PLATFORM_DICT,
-      # added Android U CTS to CIPD and configured webview_cts_gcs_path.json.
-      choices=sorted(set(SDK_PLATFORM_DICT.values()) | {'U'}),
+      # TODO: b/353915320 - Remove 'V' once added to SDK_PLATFORM_DICT.
+      choices=sorted(set(SDK_PLATFORM_DICT.values()) | {'V'}),
       required=False,
       default=None,
       help='Which CTS release to use for the run. This should generally be <= '
