@@ -266,9 +266,9 @@ public class NetworkChangeNotifier {
                     updateCurrentConnectionType(networkState.getConnectionType());
                     updateCurrentConnectionCost(networkState.getConnectionCost());
                     notifyObserversOfConnectionSubtypeChange(networkState.getConnectionSubtype());
-                } else {
-                    destroyAutoDetector();
                 }
+            } else {
+                destroyAutoDetector();
             }
         }
     }
