@@ -56,7 +56,9 @@ class NET_EXPORT TrustStoreAndroid : public PlatformTrustStore,
   // returns scoped_refptr<Impl>.
   scoped_refptr<Impl> MaybeInitializeAndGetImpl();
 
-  bool is_observing_certdb_changes_ = false;
+  bool is_observing_certdb_changes_
+      GUARDED_BY_CONTEXT(certdb_observer_sequence_checker_) = false;
+  SEQUENCE_CHECKER(certdb_observer_sequence_checker_);
 
   base::Lock init_lock_;
   scoped_refptr<Impl> impl_ GUARDED_BY(init_lock_);

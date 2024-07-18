@@ -63,9 +63,14 @@ class TrustStoreAndroid::Impl
   bssl::TrustStoreInMemory trust_store_;
 };
 
-TrustStoreAndroid::TrustStoreAndroid() = default;
+TrustStoreAndroid::TrustStoreAndroid() {
+  // It's okay for ObserveCertDBChanges to be called on a different sequence
+  // than the object was constructed on.
+  DETACH_FROM_SEQUENCE(certdb_observer_sequence_checker_);
+}
 
 TrustStoreAndroid::~TrustStoreAndroid() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(certdb_observer_sequence_checker_);
   if (is_observing_certdb_changes_) {
     CertDatabase::GetInstance()->RemoveObserver(this);
   }
@@ -79,6 +84,7 @@ void TrustStoreAndroid::Initialize() {
 // rather than in the constructor to avoid having to add a TaskEnvironment to
 // every unit test that uses TrustStoreAndroid.
 void TrustStoreAndroid::ObserveCertDBChanges() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(certdb_observer_sequence_checker_);
   if (!is_observing_certdb_changes_) {
     is_observing_certdb_changes_ = true;
     CertDatabase::GetInstance()->AddObserver(this);
