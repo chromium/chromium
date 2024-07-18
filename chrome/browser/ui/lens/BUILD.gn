@@ -47,6 +47,7 @@ source_set("lens") {
     "//base",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/lens/overlay:resources",
     "//chrome/browser/resources/lens/overlay:resources_grit",

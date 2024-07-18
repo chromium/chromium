@@ -22,6 +22,7 @@ source_set("app_service") {
   # TODO(crbug.com/40251079): Remove circular dependencies.
   allow_circular_includes_from = [ "//chrome/browser/apps/app_service" ]
 
+  public_deps = [ "//chrome/browser/media/webrtc" ]
   deps = [
     "//base",
     "//chrome/browser/apps/app_service",

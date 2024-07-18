@@ -402,6 +402,7 @@ static_library("test_support") {
     "//chrome:strings",
     "//chrome/browser:browser_process",
     "//chrome/browser:test_support",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/sharing/proto",
     "//chrome/browser/supervised_user:test_support",
@@ -1792,6 +1793,7 @@ if (!is_android) {
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/media/webrtc",
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/metrics/structured:test_support",
       "//chrome/browser/notifications/scheduler:factory",
@@ -6672,6 +6674,7 @@ test("unit_tests") {
   }
   defines = []
 
+  public_deps = [ "//chrome/browser/media/webrtc" ]
   deps = [
     ":test_support",
     ":test_support_unit",
@@ -8292,7 +8295,7 @@ test("unit_tests") {
       deps += [ "//ui/ozone" ]
     }
 
-    public_deps = [ "//chrome/browser/ui/views/side_panel" ]
+    public_deps += [ "//chrome/browser/ui/views/side_panel" ]
 
     # Non-android deps for "unit_tests" target.
     deps += [
@@ -11136,6 +11139,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/media/webrtc",
       "//chrome/browser/permissions",
       "//chrome/browser/permissions:interactive_ui_tests",
       "//chrome/browser/policy:test_support",

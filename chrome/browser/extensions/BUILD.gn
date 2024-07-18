@@ -786,6 +786,9 @@ source_set("extensions") {
 
     # TODO(crbug.com/345487716): Remove this circular dependency.
     "//chrome/browser/ui/views/side_panel",
+
+    # TODO(crbug.com/353284909): Remove this circular dependency.
+    "//chrome/browser/media/webrtc",
   ]
 
   # Since browser and browser_extensions actually depend on each other,
@@ -795,6 +798,7 @@ source_set("extensions") {
   # browser, then we can clean up these dependencies.
   public_deps = [
     "//chrome/browser/extensions/api:api_registration",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
     "//chrome/common",
     "//chrome/common/extensions/api",

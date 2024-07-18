@@ -57,6 +57,11 @@ source_set("permissions") {
     "system/system_permission_settings.h",
   ]
 
+  public_deps = [
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
+  ]
+
   deps = [
     ":permissions_proto",
     "//chrome/browser:browser_process",
@@ -96,9 +101,6 @@ source_set("permissions") {
     "//extensions/buildflags:buildflags",
     "//services/device/public/cpp/geolocation",
   ]
-
-  public_deps =
-      [ "//chrome/browser/resource_coordinator:tab_lifecycle_observer" ]
 
   if (is_android) {
     sources += [
@@ -232,6 +234,7 @@ if (!is_android) {
     ]
     deps = [
       ":permissions",
+      "//chrome/browser/media/webrtc",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/test:test_support",

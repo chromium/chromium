@@ -146,6 +146,7 @@ source_set("side_panel") {
     "//chrome/browser/companion/core",
     "//chrome/browser/favicon",
     "//chrome/browser/lens/region_search",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/resources:component_extension_resources_grit",

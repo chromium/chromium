@@ -253,6 +253,7 @@ source_set("chromeos") {
   allow_circular_includes_from = [
     "//chrome/browser/extensions",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/media/webrtc",
   ]
   public_deps = [
     "//base",
@@ -316,6 +317,7 @@ source_set("chromeos") {
     "//chrome/browser/chromeos/smart_reader",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/favicon",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/screen_ai:screen_ai_service_router_factory",
     "//chrome/common",
