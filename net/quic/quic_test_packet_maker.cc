@@ -223,16 +223,6 @@ QuicTestPacketMaker::MakeCombinedRetransmissionPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeStopSendingPacket(
-    uint64_t packet_number,
-    quic::QuicStreamId stream_id,
-    quic::QuicRstStreamErrorCode error_code) {
-  return Packet(packet_number)
-      .AddStopSendingFrame(stream_id, error_code)
-      .Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeAckAndConnectionClosePacket(
     uint64_t packet_number,
     uint64_t largest_received,

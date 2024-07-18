@@ -1713,8 +1713,9 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestAbortedByResetStream) {
 
   // The server uses a STOP_SENDING frame to notify the client that it does not
   // need any further data to fully process the request.
-  ProcessPacket(server_maker_.MakeStopSendingPacket(
-      4, stream_id_, quic::QUIC_STREAM_NO_ERROR));
+  ProcessPacket(server_maker_.Packet(4)
+                    .AddStopSendingFrame(stream_id_, quic::QUIC_STREAM_NO_ERROR)
+                    .Build());
 
   // Finish feeding request body to QuicHttpStream.  Data will be discarded.
   chunked_upload_stream->AppendData(kUploadData, chunk_size, true);
