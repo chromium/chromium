@@ -261,6 +261,10 @@ NSDate* getNSDateFromString(std::string date) {
   item.productURL =
       self.browser->GetWebStateList()->GetActiveWebState()->GetVisibleURL();
 
+  if (config->product_info->product_cluster_id.has_value()) {
+    item.clusterId = config->product_info->product_cluster_id.value();
+  }
+
   if (!config->price_insights_info.has_value()) {
     return item;
   }

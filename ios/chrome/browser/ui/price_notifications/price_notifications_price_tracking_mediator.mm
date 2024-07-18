@@ -207,6 +207,7 @@ using PriceNotificationItems =
 - (void)priceInsightsStopTrackingItem:(PriceInsightsItem*)item {
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
   [self stopTrackingForURL:item.productURL
+                  clusterId:item.clusterId
       withCompletionHandler:^(bool success) {
         if (!success) {
           [weakSelf.priceInsightsConsumer
@@ -532,6 +533,28 @@ using PriceNotificationItems =
       self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
 
   if (!bookmark) {
+    return;
+  }
+
+  commerce::SetPriceTrackingStateForBookmark(
+      self.shoppingService, self.bookmarkModel, bookmark, false,
+      base::BindOnce(completionHandler));
+}
+
+// Stops tracking a product's price by URL or cluster ID.
+- (void)stopTrackingForURL:(const GURL&)URL
+                 clusterId:(uint64_t)clusterId
+     withCompletionHandler:(void (^)(BOOL success))completionHandler {
+  // Retrieve the bookmark node for the given URL.
+  const bookmarks::BookmarkNode* bookmark =
+      self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
+
+  if (!bookmark) {
+    // If the URL isn't bookmarked, try to stop tracking for the given cluster
+    // ID.
+    commerce::SetPriceTrackingStateForClusterId(
+        self.shoppingService, self.bookmarkModel, clusterId, false,
+        base::BindOnce(completionHandler));
     return;
   }
 

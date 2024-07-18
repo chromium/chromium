@@ -46,6 +46,8 @@
 namespace {
 
 const char kTestUrl[] = "https://www.merchant.com/price_drop_product";
+const char kTestUrlVariant[] =
+    "https://www.merchant.com/price_drop_product?variant=1";
 const char kBookmarkTitle[] = "My product title";
 uint64_t kClusterId = 12345L;
 
@@ -344,5 +346,43 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
       base::test::ios::kWaitForActionTimeout, ^bool {
         base::RunLoop().RunUntilIdle();
         return price_insights_consumer_.didNavigateToWebpage;
+      }));
+}
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       SuccessfullyUntrackedProductFromPriceInsightsThroughVariantURL) {
+  commerce::ProductInfo product_info;
+  product_info.title = kBookmarkTitle;
+  product_info.product_cluster_id = std::make_optional(kClusterId);
+  std::optional<commerce::ProductInfo> optional_product_info;
+  optional_product_info.emplace(product_info);
+
+  const bookmarks::BookmarkNode* product = commerce::AddProductBookmark(
+      bookmark_model_, base::UTF8ToUTF16(product_info.title), GURL(kTestUrl),
+      kClusterId, true);
+  const bookmarks::BookmarkNode* default_folder =
+      bookmark_model_->account_mobile_node();
+  bookmark_model_->AddURL(default_folder, default_folder->children().size(),
+                          base::UTF8ToUTF16(product_info.title),
+                          GURL(kTestUrl));
+  shopping_service_->SetSubscribeCallbackValue(true);
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+  TrackBookmark(shopping_service_, bookmark_model_, product);
+
+  // Call to ensure backend calls to Unsubscribe are successful.
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+  shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);
+
+  price_insights_consumer_.didPriceUntrack = NO;
+  mediator_.priceInsightsConsumer = price_insights_consumer_;
+  PriceInsightsItem* price_insights = GetPriceInsightsItem();
+  price_insights.productURL = GURL(kTestUrlVariant);
+  price_insights.clusterId = kClusterId;
+  [mediator_ priceInsightsStopTrackingItem:price_insights];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        base::RunLoop().RunUntilIdle();
+        return price_insights_consumer_.didPriceUntrack;
       }));
 }

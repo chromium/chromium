@@ -39,6 +39,8 @@ class GURL;
 @property(nonatomic, assign) BOOL isPriceTracked;
 // The product URL.
 @property(nonatomic, assign) const GURL& productURL;
+// The product cluster id.
+@property(nonatomic, assign) uint64_t clusterId;
 
 @end
 
