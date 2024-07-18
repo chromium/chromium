@@ -35,12 +35,10 @@ constexpr CGFloat kContentSpacing = 16.;
 // Vertical insets of primary button.
 constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 // The coefficient to multiply the title view font with to get the logo size.
 constexpr CGFloat kLogoTitleFontMultiplier = 1.75;
 // The spacing between the logo and the title label in the title view.
 constexpr CGFloat kTitleLogoSpacing = 3.0;
-#endif
 
 // Returns font to use for the navigation bar title.
 UIFont* GetNavigationBarTitleFont() {
@@ -60,32 +58,32 @@ CGFloat GetPixelLength() {
   return 1.0 / [UIScreen mainScreen].scale;
 }
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 // Creates the google photos branded title view for the navigation.
-BrandedNavigationItemTitleView* CreateGooglePhotosImageView() {
+BrandedNavigationItemTitleView* CreateGooglePhotosImageView(
+    NSString* title,
+    NSString* brandedSymbolName) {
   BrandedNavigationItemTitleView* title_view =
       [[BrandedNavigationItemTitleView alloc] init];
-  title_view.title = l10n_util::GetNSString(
-      IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_GOOGLE_PHOTOS_TITLE);
+  title_view.title = title;
   title_view.imageLogo = MakeSymbolMulticolor(CustomSymbolWithPointSize(
-      kGoogleFullSymbol, UIFont.labelFontSize * kLogoTitleFontMultiplier));
+      brandedSymbolName, UIFont.labelFontSize * kLogoTitleFontMultiplier));
+  ;
   title_view.titleLogoSpacing = kTitleLogoSpacing;
   return title_view;
 }
-#else
+
 // Creates the google photos title label for the navigation.
-UILabel* CreateGooglePhotosTitleLabel() {
+UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.font = GetNavigationBarTitleFont();
-  titleLabel.text =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_DOWNLOADS_SAVE_TO_PHOTOS_HEADER);
+  titleLabel.text = title;
   titleLabel.textAlignment = NSTextAlignmentLeft;
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
   return titleLabel;
 }
-#endif
+
 }  // namespace
 
 @implementation AccountPickerConfirmationScreenViewController {
@@ -199,12 +197,15 @@ UILabel* CreateGooglePhotosTitleLabel() {
   [super viewDidLoad];
   // Set the navigation title in the left bar button item to have left
   // alignment.
-  if (IsSaveToPhotosTitleImprovementEnabled()) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-    self.navigationItem.titleView = CreateGooglePhotosImageView();
-#else
-    self.navigationItem.titleView = CreateGooglePhotosTitleLabel();
-#endif
+  if (IsSaveToPhotosTitleImprovementEnabled() &&
+      _configuration.useBrandedTitle) {
+    if (_configuration.brandedSymbolName) {
+      self.navigationItem.titleView = CreateGooglePhotosImageView(
+          _configuration.titleText, _configuration.brandedSymbolName);
+    } else {
+      self.navigationItem.titleView =
+          CreateGooglePhotosTitleLabel(_configuration.titleText);
+    }
   } else {
     // Set the navigation title in the left bar button item to have left
     // alignment.

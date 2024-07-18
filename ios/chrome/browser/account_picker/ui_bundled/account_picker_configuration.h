@@ -10,6 +10,12 @@
 // Configuration for the AccountPickerCoordinator.
 @interface AccountPickerConfiguration : NSObject
 
+// If yes, the title view will be display a branded title.
+@property(nonatomic, assign) BOOL useBrandedTitle;
+
+// The branded symbol name that will be displayed in the title view.
+@property(nonatomic, copy) NSString* brandedSymbolName;
+
 // Title of the account picker confirmation screen.
 @property(nonatomic, copy) NSString* titleText;
 

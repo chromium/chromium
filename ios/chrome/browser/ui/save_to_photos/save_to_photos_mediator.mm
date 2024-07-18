@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -298,8 +300,20 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   // If no default account can be used, present the account picker instead.
   AccountPickerConfiguration* configuration =
       [[AccountPickerConfiguration alloc] init];
-  configuration.titleText =
-      l10n_util::GetNSString(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_TITLE);
+  if (IsSaveToPhotosTitleImprovementEnabled()) {
+    configuration.useBrandedTitle = YES;
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    configuration.brandedSymbolName = kGoogleFullSymbol;
+    configuration.titleText = l10n_util::GetNSString(
+        IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_GOOGLE_PHOTOS_TITLE);
+#else
+    configuration.titleText = l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_DOWNLOADS_SAVE_TO_PHOTOS_HEADER);
+#endif
+  } else {
+    configuration.titleText =
+        l10n_util::GetNSString(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_TITLE);
+  }
   NSString* imageSize = GetSizeString(_imageData.length);
   configuration.bodyText =
       l10n_util::GetNSStringF(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_BODY,
