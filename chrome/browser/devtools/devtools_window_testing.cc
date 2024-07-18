@@ -41,7 +41,7 @@ DevToolsWindowTesting::~DevToolsWindowTesting() {
   DevToolsWindowTestings* instances =
       g_devtools_window_testing_instances.Pointer();
   auto it = base::ranges::find(*instances, this);
-  DCHECK(it != instances->end());
+  CHECK(it != instances->end());
   instances->erase(it);
   if (!close_callback_.is_null())
     std::move(close_callback_).Run();
