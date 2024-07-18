@@ -66,6 +66,12 @@ extern NSString* const kOmniboxPopoutOverlayColor;
 extern NSString* const kTabStripBackgroundColor;
 // Color of the symbol of the Tab Strip new tab button.
 extern NSString* const kTabStripNewTabButtonColor;
+// Colors for the TabGroup.
+extern NSString* const kTabGroupPinkColor;
+extern NSString* const kTabGroupCyanColor;
+extern NSString* const kTabGroupPurpleColor;
+extern NSString* const kTabGroupGreenColor;
+extern NSString* const kTabGroupGreyColor;
 
 // ***************
 // Standard Colors

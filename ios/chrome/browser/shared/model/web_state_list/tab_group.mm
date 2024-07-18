@@ -58,7 +58,7 @@ UIColor* TabGroup::ColorForTabGroupColorId(
     tab_groups::TabGroupColorId tab_group_color_id) {
   switch (tab_group_color_id) {
     case tab_groups::TabGroupColorId::kGrey:
-      return [UIColor colorNamed:kGrey700Color];
+      return [UIColor colorNamed:kTabGroupGreyColor];
     case tab_groups::TabGroupColorId::kBlue:
       return [UIColor colorNamed:kBlue600Color];
     case tab_groups::TabGroupColorId::kRed:
@@ -66,13 +66,13 @@ UIColor* TabGroup::ColorForTabGroupColorId(
     case tab_groups::TabGroupColorId::kYellow:
       return [UIColor colorNamed:kYellow600Color];
     case tab_groups::TabGroupColorId::kGreen:
-      return [UIColor colorNamed:kGreen700Color];
+      return [UIColor colorNamed:kTabGroupGreenColor];
     case tab_groups::TabGroupColorId::kPink:
-      return [UIColor colorNamed:kPink700Color];
+      return [UIColor colorNamed:kTabGroupPinkColor];
     case tab_groups::TabGroupColorId::kPurple:
-      return [UIColor colorNamed:kPurple600Color];
+      return [UIColor colorNamed:kTabGroupPurpleColor];
     case tab_groups::TabGroupColorId::kCyan:
-      return [UIColor colorNamed:kCyan700Color];
+      return [UIColor colorNamed:kTabGroupCyanColor];
     case tab_groups::TabGroupColorId::kOrange:
       return [UIColor colorNamed:kOrange600Color];
     case tab_groups::TabGroupColorId::kNumEntries:
