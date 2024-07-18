@@ -281,6 +281,7 @@ chromium-metrics-reviews@google.com.
   <int value="108" label="Tracking Protection"/>
   <int value="109" label="Display Media System Audio"/>
   <int value="110" label="Javascript Optimizer"/>
+  <int value="111" label="Storage Access Header Origin Trial"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/common/content_settings_types.mojom:ContentSettingsType) -->

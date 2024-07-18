@@ -441,5 +441,16 @@ enum ContentSettingsType {
   // Whether to use the higher-tier v8 optimizers for running JavaScript on the
   // page.
   JAVASCRIPT_OPTIMIZER,
+
+  // Content Setting for the Storage Access Headers persistent origin trial that
+  // allows origins to opt into the storage access header behavior. Should be
+  // scoped to `REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE` in order to
+  // correspond to the design of persistent origin trials. See also:
+  // https://github.com/cfredric/storage-access-headers
+  // ALLOW: storage access request headers will be attached to cross-site
+  //        requests, and url requests will look for response headers from
+  //        origins to retry a request or load with storage access.
+  // BLOCK (default): no effect.
+  STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SafetyHubPermissionType)
