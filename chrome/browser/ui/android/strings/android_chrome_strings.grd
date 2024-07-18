@@ -1717,13 +1717,13 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_ALLOW_NOTIFICATIONS_MENU_ITEM" desc="Menu item displayed when the user clicks the 3-dot menu icon, displayed to the right of a site that sends a lot of notifications. If clicked, it removes the site from the notifications review list.">
         Always allow notifications from this site
       </message>
-      <message name="IDS_SAFETY_HUB_SAFETY_MODULES_SECTION_HEADER" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFETY_MODULES_SECTION_HEADER" desc="Title for top level section of Safety Hub page. It includes a safety overview of several modules that Safety Hub periodically checks.">
         Safety at a glance
       </message>
       <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SECTION_HEADER" desc="Title for the user education section of Safety Hub. A series of entries that encourage the user to explore several safety related surfaces follows.">
         Learn how Chrome keeps you safe
       </message>
-      <message name="IDS_SAFETY_HUB_DESCRIPTION" translateable="false">
+      <message name="IDS_SAFETY_HUB_DESCRIPTION" desc="Description at the top of the Safey Check page. It informs the user that safety check will run checkups periodically for several modules and display the results on this page.">
         Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs review.
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_ALL_BUTTON" translateable="false">
@@ -1828,10 +1828,10 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_SAFETY_TIPS_SAFE_BROWSING_SUMMARY" desc="Subtitle for a entry in the Safety Hub user education section. The entry leads the user to a help center article about Safe Browsing.">
         Chrome warns you about unsafe sites and downloads
       </message>
-      <message name="IDS_SAFETY_HUB_SAFE_BROWSER_STATE_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSER_STATE_TITLE" desc="Title for the card at the very top of the Safety Check page, this card is only present if the browser is in an overall safe state.">
         Your browser looks good
       </message>
-      <message name="IDS_SAFETY_HUB_CHECKED_RECENTLY" translateable="false">
+      <message name="IDS_SAFETY_HUB_CHECKED_RECENTLY" desc="Subtitle for the card at the very top of the Safety Check page, this informs the user that Safety Check has ran checkups for modules recently.">
         Checked recently
       </message>
       <message name="IDS_SAFETY_HUB_NO_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user does not have any passwords saved to their Google account.">
