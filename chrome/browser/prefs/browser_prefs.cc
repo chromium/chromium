@@ -1733,7 +1733,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
                                 true);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kChromeForTestingAllowed, true);
 #endif
 

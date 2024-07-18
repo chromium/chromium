@@ -3,7 +3,8 @@
     "os": [
       "linux",
       "mac",
-      "win"
+      "win",
+      "android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "chrome_for_testing.allowed",
