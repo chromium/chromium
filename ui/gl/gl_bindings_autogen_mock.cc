@@ -167,12 +167,6 @@ MockGLInterface::Mock_glBindFramebuffer(GLenum target, GLuint framebuffer) {
   interface_->BindFramebufferEXT(target, framebuffer);
 }
 
-void GL_BINDING_CALL
-MockGLInterface::Mock_glBindFramebufferEXT(GLenum target, GLuint framebuffer) {
-  MakeGlMockFunctionUnique("glBindFramebufferEXT");
-  interface_->BindFramebufferEXT(target, framebuffer);
-}
-
 void GL_BINDING_CALL MockGLInterface::Mock_glBindImageTexture(GLuint index,
                                                               GLuint texture,
                                                               GLint level,
@@ -207,13 +201,6 @@ MockGLInterface::Mock_glBindProgramPipeline(GLuint pipeline) {
 void GL_BINDING_CALL
 MockGLInterface::Mock_glBindRenderbuffer(GLenum target, GLuint renderbuffer) {
   MakeGlMockFunctionUnique("glBindRenderbuffer");
-  interface_->BindRenderbufferEXT(target, renderbuffer);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glBindRenderbufferEXT(GLenum target,
-                                            GLuint renderbuffer) {
-  MakeGlMockFunctionUnique("glBindRenderbufferEXT");
   interface_->BindRenderbufferEXT(target, renderbuffer);
 }
 
@@ -449,12 +436,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glBufferSubData(GLenum target,
 GLenum GL_BINDING_CALL
 MockGLInterface::Mock_glCheckFramebufferStatus(GLenum target) {
   MakeGlMockFunctionUnique("glCheckFramebufferStatus");
-  return interface_->CheckFramebufferStatusEXT(target);
-}
-
-GLenum GL_BINDING_CALL
-MockGLInterface::Mock_glCheckFramebufferStatusEXT(GLenum target) {
-  MakeGlMockFunctionUnique("glCheckFramebufferStatusEXT");
   return interface_->CheckFramebufferStatusEXT(target);
 }
 
@@ -945,13 +926,6 @@ MockGLInterface::Mock_glDeleteFramebuffers(GLsizei n,
 }
 
 void GL_BINDING_CALL
-MockGLInterface::Mock_glDeleteFramebuffersEXT(GLsizei n,
-                                              const GLuint* framebuffers) {
-  MakeGlMockFunctionUnique("glDeleteFramebuffersEXT");
-  interface_->DeleteFramebuffersEXT(n, framebuffers);
-}
-
-void GL_BINDING_CALL
 MockGLInterface::Mock_glDeleteMemoryObjectsEXT(GLsizei n,
                                                const GLuint* memoryObjects) {
   MakeGlMockFunctionUnique("glDeleteMemoryObjectsEXT");
@@ -986,13 +960,6 @@ void GL_BINDING_CALL
 MockGLInterface::Mock_glDeleteRenderbuffers(GLsizei n,
                                             const GLuint* renderbuffers) {
   MakeGlMockFunctionUnique("glDeleteRenderbuffers");
-  interface_->DeleteRenderbuffersEXT(n, renderbuffers);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glDeleteRenderbuffersEXT(GLsizei n,
-                                               const GLuint* renderbuffers) {
-  MakeGlMockFunctionUnique("glDeleteRenderbuffersEXT");
   interface_->DeleteRenderbuffersEXT(n, renderbuffers);
 }
 
@@ -1474,33 +1441,12 @@ MockGLInterface::Mock_glFramebufferRenderbuffer(GLenum target,
 }
 
 void GL_BINDING_CALL
-MockGLInterface::Mock_glFramebufferRenderbufferEXT(GLenum target,
-                                                   GLenum attachment,
-                                                   GLenum renderbuffertarget,
-                                                   GLuint renderbuffer) {
-  MakeGlMockFunctionUnique("glFramebufferRenderbufferEXT");
-  interface_->FramebufferRenderbufferEXT(target, attachment, renderbuffertarget,
-                                         renderbuffer);
-}
-
-void GL_BINDING_CALL
 MockGLInterface::Mock_glFramebufferTexture2D(GLenum target,
                                              GLenum attachment,
                                              GLenum textarget,
                                              GLuint texture,
                                              GLint level) {
   MakeGlMockFunctionUnique("glFramebufferTexture2D");
-  interface_->FramebufferTexture2DEXT(target, attachment, textarget, texture,
-                                      level);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glFramebufferTexture2DEXT(GLenum target,
-                                                GLenum attachment,
-                                                GLenum textarget,
-                                                GLuint texture,
-                                                GLint level) {
-  MakeGlMockFunctionUnique("glFramebufferTexture2DEXT");
   interface_->FramebufferTexture2DEXT(target, attachment, textarget, texture,
                                       level);
 }
@@ -1586,12 +1532,6 @@ MockGLInterface::Mock_glGenFramebuffers(GLsizei n, GLuint* framebuffers) {
   interface_->GenFramebuffersEXT(n, framebuffers);
 }
 
-void GL_BINDING_CALL
-MockGLInterface::Mock_glGenFramebuffersEXT(GLsizei n, GLuint* framebuffers) {
-  MakeGlMockFunctionUnique("glGenFramebuffersEXT");
-  interface_->GenFramebuffersEXT(n, framebuffers);
-}
-
 GLuint GL_BINDING_CALL
 MockGLInterface::Mock_glGenProgramPipelines(GLsizei n, GLuint* pipelines) {
   MakeGlMockFunctionUnique("glGenProgramPipelines");
@@ -1613,12 +1553,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glGenQueriesEXT(GLsizei n,
 void GL_BINDING_CALL
 MockGLInterface::Mock_glGenRenderbuffers(GLsizei n, GLuint* renderbuffers) {
   MakeGlMockFunctionUnique("glGenRenderbuffers");
-  interface_->GenRenderbuffersEXT(n, renderbuffers);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glGenRenderbuffersEXT(GLsizei n, GLuint* renderbuffers) {
-  MakeGlMockFunctionUnique("glGenRenderbuffersEXT");
   interface_->GenRenderbuffersEXT(n, renderbuffers);
 }
 
@@ -1660,11 +1594,6 @@ MockGLInterface::Mock_glGenVertexArraysOES(GLsizei n, GLuint* arrays) {
 
 void GL_BINDING_CALL MockGLInterface::Mock_glGenerateMipmap(GLenum target) {
   MakeGlMockFunctionUnique("glGenerateMipmap");
-  interface_->GenerateMipmapEXT(target);
-}
-
-void GL_BINDING_CALL MockGLInterface::Mock_glGenerateMipmapEXT(GLenum target) {
-  MakeGlMockFunctionUnique("glGenerateMipmapEXT");
   interface_->GenerateMipmapEXT(target);
 }
 
@@ -1903,17 +1832,6 @@ MockGLInterface::Mock_glGetFramebufferAttachmentParameteriv(GLenum target,
                                                             GLenum pname,
                                                             GLint* params) {
   MakeGlMockFunctionUnique("glGetFramebufferAttachmentParameteriv");
-  interface_->GetFramebufferAttachmentParameterivEXT(target, attachment, pname,
-                                                     params);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glGetFramebufferAttachmentParameterivEXT(
-    GLenum target,
-    GLenum attachment,
-    GLenum pname,
-    GLint* params) {
-  MakeGlMockFunctionUnique("glGetFramebufferAttachmentParameterivEXT");
   interface_->GetFramebufferAttachmentParameterivEXT(target, attachment, pname,
                                                      params);
 }
@@ -2442,14 +2360,6 @@ MockGLInterface::Mock_glGetRenderbufferParameteriv(GLenum target,
                                                    GLenum pname,
                                                    GLint* params) {
   MakeGlMockFunctionUnique("glGetRenderbufferParameteriv");
-  interface_->GetRenderbufferParameterivEXT(target, pname, params);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glGetRenderbufferParameterivEXT(GLenum target,
-                                                      GLenum pname,
-                                                      GLint* params) {
-  MakeGlMockFunctionUnique("glGetRenderbufferParameterivEXT");
   interface_->GetRenderbufferParameterivEXT(target, pname, params);
 }
 
@@ -3052,12 +2962,6 @@ MockGLInterface::Mock_glIsFramebuffer(GLuint framebuffer) {
   return interface_->IsFramebufferEXT(framebuffer);
 }
 
-GLboolean GL_BINDING_CALL
-MockGLInterface::Mock_glIsFramebufferEXT(GLuint framebuffer) {
-  MakeGlMockFunctionUnique("glIsFramebufferEXT");
-  return interface_->IsFramebufferEXT(framebuffer);
-}
-
 GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsProgram(GLuint program) {
   MakeGlMockFunctionUnique("glIsProgram");
   return interface_->IsProgram(program);
@@ -3082,12 +2986,6 @@ GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsQueryEXT(GLuint query) {
 GLboolean GL_BINDING_CALL
 MockGLInterface::Mock_glIsRenderbuffer(GLuint renderbuffer) {
   MakeGlMockFunctionUnique("glIsRenderbuffer");
-  return interface_->IsRenderbufferEXT(renderbuffer);
-}
-
-GLboolean GL_BINDING_CALL
-MockGLInterface::Mock_glIsRenderbufferEXT(GLuint renderbuffer) {
-  MakeGlMockFunctionUnique("glIsRenderbufferEXT");
   return interface_->IsRenderbufferEXT(renderbuffer);
 }
 
@@ -3833,15 +3731,6 @@ MockGLInterface::Mock_glRenderbufferStorage(GLenum target,
                                             GLsizei width,
                                             GLsizei height) {
   MakeGlMockFunctionUnique("glRenderbufferStorage");
-  interface_->RenderbufferStorageEXT(target, internalformat, width, height);
-}
-
-void GL_BINDING_CALL
-MockGLInterface::Mock_glRenderbufferStorageEXT(GLenum target,
-                                               GLenum internalformat,
-                                               GLsizei width,
-                                               GLsizei height) {
-  MakeGlMockFunctionUnique("glRenderbufferStorageEXT");
   interface_->RenderbufferStorageEXT(target, internalformat, width, height);
 }
 
@@ -4984,8 +4873,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glBindFragDataLocationIndexedEXT);
   if (strcmp(name, "glBindFramebuffer") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBindFramebuffer);
-  if (strcmp(name, "glBindFramebufferEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glBindFramebufferEXT);
   if (strcmp(name, "glBindImageTexture") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBindImageTexture);
   if (strcmp(name, "glBindImageTextureEXT") == 0)
@@ -4994,8 +4881,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBindProgramPipeline);
   if (strcmp(name, "glBindRenderbuffer") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBindRenderbuffer);
-  if (strcmp(name, "glBindRenderbufferEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glBindRenderbufferEXT);
   if (strcmp(name, "glBindSampler") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBindSampler);
   if (strcmp(name, "glBindTexture") == 0)
@@ -5061,9 +4946,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glCheckFramebufferStatus") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glCheckFramebufferStatus);
-  if (strcmp(name, "glCheckFramebufferStatusEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glCheckFramebufferStatusEXT);
   if (strcmp(name, "glClear") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glClear);
   if (strcmp(name, "glClearBufferfi") == 0)
@@ -5169,9 +5051,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteFencesNV);
   if (strcmp(name, "glDeleteFramebuffers") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteFramebuffers);
-  if (strcmp(name, "glDeleteFramebuffersEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glDeleteFramebuffersEXT);
   if (strcmp(name, "glDeleteMemoryObjectsEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glDeleteMemoryObjectsEXT);
@@ -5186,9 +5065,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteQueriesEXT);
   if (strcmp(name, "glDeleteRenderbuffers") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteRenderbuffers);
-  if (strcmp(name, "glDeleteRenderbuffersEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glDeleteRenderbuffersEXT);
   if (strcmp(name, "glDeleteSamplers") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteSamplers);
   if (strcmp(name, "glDeleteSemaphoresEXT") == 0)
@@ -5352,14 +5228,8 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glFramebufferRenderbuffer") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glFramebufferRenderbuffer);
-  if (strcmp(name, "glFramebufferRenderbufferEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glFramebufferRenderbufferEXT);
   if (strcmp(name, "glFramebufferTexture2D") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glFramebufferTexture2D);
-  if (strcmp(name, "glFramebufferTexture2DEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glFramebufferTexture2DEXT);
   if (strcmp(name, "glFramebufferTexture2DMultisampleEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glFramebufferTexture2DMultisampleEXT);
@@ -5383,8 +5253,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenFencesNV);
   if (strcmp(name, "glGenFramebuffers") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenFramebuffers);
-  if (strcmp(name, "glGenFramebuffersEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glGenFramebuffersEXT);
   if (strcmp(name, "glGenProgramPipelines") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenProgramPipelines);
   if (strcmp(name, "glGenQueries") == 0)
@@ -5393,8 +5261,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenQueriesEXT);
   if (strcmp(name, "glGenRenderbuffers") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenRenderbuffers);
-  if (strcmp(name, "glGenRenderbuffersEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glGenRenderbuffersEXT);
   if (strcmp(name, "glGenSamplers") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenSamplers);
   if (strcmp(name, "glGenSemaphoresEXT") == 0)
@@ -5410,8 +5276,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenVertexArraysOES);
   if (strcmp(name, "glGenerateMipmap") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenerateMipmap);
-  if (strcmp(name, "glGenerateMipmapEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glGenerateMipmapEXT);
   if (strcmp(name, "glGetActiveAttrib") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGetActiveAttrib);
   if (strcmp(name, "glGetActiveUniform") == 0)
@@ -5474,9 +5338,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glGetFramebufferAttachmentParameteriv") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetFramebufferAttachmentParameteriv);
-  if (strcmp(name, "glGetFramebufferAttachmentParameterivEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glGetFramebufferAttachmentParameterivEXT);
   if (strcmp(name, "glGetFramebufferAttachmentParameterivRobustANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetFramebufferAttachmentParameterivRobustANGLE);
@@ -5630,9 +5491,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glGetRenderbufferParameteriv") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetRenderbufferParameteriv);
-  if (strcmp(name, "glGetRenderbufferParameterivEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glGetRenderbufferParameterivEXT);
   if (strcmp(name, "glGetRenderbufferParameterivRobustANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glGetRenderbufferParameterivRobustANGLE);
@@ -5808,8 +5666,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsFenceNV);
   if (strcmp(name, "glIsFramebuffer") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsFramebuffer);
-  if (strcmp(name, "glIsFramebufferEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glIsFramebufferEXT);
   if (strcmp(name, "glIsProgram") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsProgram);
   if (strcmp(name, "glIsProgramPipeline") == 0)
@@ -5820,8 +5676,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsQueryEXT);
   if (strcmp(name, "glIsRenderbuffer") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsRenderbuffer);
-  if (strcmp(name, "glIsRenderbufferEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glIsRenderbufferEXT);
   if (strcmp(name, "glIsSampler") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsSampler);
   if (strcmp(name, "glIsShader") == 0)
@@ -6031,9 +5885,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glReleaseTexturesANGLE);
   if (strcmp(name, "glRenderbufferStorage") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glRenderbufferStorage);
-  if (strcmp(name, "glRenderbufferStorageEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glRenderbufferStorageEXT);
   if (strcmp(name, "glRenderbufferStorageMultisample") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glRenderbufferStorageMultisample);

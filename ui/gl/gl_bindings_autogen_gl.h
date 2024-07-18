@@ -1931,7 +1931,6 @@ struct ExtensionsGL {
   bool b_GL_EXT_draw_buffers;
   bool b_GL_EXT_framebuffer_blit;
   bool b_GL_EXT_framebuffer_multisample;
-  bool b_GL_EXT_framebuffer_object;
   bool b_GL_EXT_gpu_shader4;
   bool b_GL_EXT_instanced_arrays;
   bool b_GL_EXT_map_buffer_range;

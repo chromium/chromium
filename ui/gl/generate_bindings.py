@@ -103,7 +103,8 @@ GL_FUNCTIONS = [
       'GLuint program, GLuint colorNumber, GLuint index, const char* name',
 },
 { 'return_type': 'void',
-  'names': ['glBindFramebufferEXT', 'glBindFramebuffer'],
+  'known_as': 'glBindFramebufferEXT',
+  'names': ['glBindFramebuffer'],
   'arguments': 'GLenum target, GLuint framebuffer', },
 { 'return_type': 'void',
   'known_as': 'glBindImageTextureEXT',
@@ -116,7 +117,8 @@ GL_FUNCTIONS = [
   'names': ['glBindProgramPipeline'],
   'arguments': 'GLuint pipeline', },
 { 'return_type': 'void',
-  'names': ['glBindRenderbufferEXT', 'glBindRenderbuffer'],
+  'known_as': 'glBindRenderbufferEXT',
+  'names': ['glBindRenderbuffer'],
   'arguments': 'GLenum target, GLuint renderbuffer', },
 { 'return_type': 'void',
   'names': ['glBindSampler'],
@@ -214,8 +216,8 @@ GL_FUNCTIONS = [
   'arguments':
       'GLenum target, GLintptr offset, GLsizeiptr size, const void* data', },
 { 'return_type': 'GLenum',
-  'names': ['glCheckFramebufferStatusEXT',
-            'glCheckFramebufferStatus'],
+  'known_as': 'glCheckFramebufferStatusEXT',
+  'names': ['glCheckFramebufferStatus'],
   'arguments': 'GLenum target',
   'logging_code': """
   GL_SERVICE_LOG("GL_RESULT: " << GLEnums::GetStringEnum(result));
@@ -418,7 +420,8 @@ GL_FUNCTIONS = [
   'names': ['glDeleteFencesNV'],
   'arguments': 'GLsizei n, const GLuint* fences', },
 { 'return_type': 'void',
-  'names': ['glDeleteFramebuffersEXT', 'glDeleteFramebuffers'],
+  'known_as': 'glDeleteFramebuffersEXT',
+  'names': ['glDeleteFramebuffers'],
   'arguments': 'GLsizei n, const GLuint* framebuffers', },
 { 'return_type': 'void',
   'names': [ 'glDeleteMemoryObjectsEXT' ],
@@ -437,7 +440,8 @@ GL_FUNCTIONS = [
                  'extensions': ['GL_EXT_occlusion_query_boolean'] }],
   'arguments': 'GLsizei n, const GLuint* ids', },
 { 'return_type': 'void',
-  'names': ['glDeleteRenderbuffersEXT', 'glDeleteRenderbuffers'],
+  'known_as': 'glDeleteRenderbuffersEXT',
+  'names': ['glDeleteRenderbuffers'],
   'arguments': 'GLsizei n, const GLuint* renderbuffers', },
 { 'return_type': 'void',
   'names': ['glDeleteSamplers'],
@@ -641,12 +645,14 @@ GL_FUNCTIONS = [
                 'extensions': ['GL_ANGLE_shader_pixel_local_storage']}],
   'arguments': '', },
 { 'return_type': 'void',
-  'names': ['glFramebufferRenderbufferEXT', 'glFramebufferRenderbuffer'],
+  'known_as': 'glFramebufferRenderbufferEXT',
+  'names': ['glFramebufferRenderbuffer'],
   'arguments':
       'GLenum target, GLenum attachment, GLenum renderbuffertarget, '
       'GLuint renderbuffer', },
 { 'return_type': 'void',
-  'names': ['glFramebufferTexture2DEXT', 'glFramebufferTexture2D'],
+  'known_as': 'glFramebufferTexture2DEXT',
+  'names': ['glFramebufferTexture2D'],
   'arguments':
       'GLenum target, GLenum attachment, GLenum textarget, GLuint texture, '
       'GLint level', },
@@ -678,13 +684,15 @@ GL_FUNCTIONS = [
   'known_as': 'glGenBuffersARB',
   'arguments': 'GLsizei n, GLuint* buffers', },
 { 'return_type': 'void',
-  'names': ['glGenerateMipmapEXT', 'glGenerateMipmap'],
+  'known_as': 'glGenerateMipmapEXT',
+  'names': ['glGenerateMipmap'],
   'arguments': 'GLenum target', },
 { 'return_type': 'void',
   'names': ['glGenFencesNV'],
   'arguments': 'GLsizei n, GLuint* fences', },
 { 'return_type': 'void',
-  'names': ['glGenFramebuffersEXT', 'glGenFramebuffers'],
+  'known_as': 'glGenFramebuffersEXT',
+  'names': ['glGenFramebuffers'],
   'arguments': 'GLsizei n, GLuint* framebuffers', },
 { 'return_type': 'GLuint',
   'names': ['glGenProgramPipelines'],
@@ -695,7 +703,8 @@ GL_FUNCTIONS = [
                  'extensions': ['GL_EXT_occlusion_query_boolean'] }],
   'arguments': 'GLsizei n, GLuint* ids', },
 { 'return_type': 'void',
-  'names': ['glGenRenderbuffersEXT', 'glGenRenderbuffers'],
+  'known_as': 'glGenRenderbuffersEXT',
+  'names': ['glGenRenderbuffers'],
   'arguments': 'GLsizei n, GLuint* renderbuffers', },
 { 'return_type': 'void',
   'names': ['glGenSamplers'],
@@ -820,8 +829,8 @@ GL_FUNCTIONS = [
   'versions': [{ 'name': 'glGetFragDataLocation' }],
   'arguments': 'GLuint program, const char* name', },
 { 'return_type': 'void',
-  'names': ['glGetFramebufferAttachmentParameterivEXT',
-            'glGetFramebufferAttachmentParameteriv'],
+  'known_as': 'glGetFramebufferAttachmentParameterivEXT',
+  'names': ['glGetFramebufferAttachmentParameteriv'],
   'arguments': 'GLenum target, '
                'GLenum attachment, GLenum pname, GLint* params', },
 { 'return_type': 'void',
@@ -1070,7 +1079,8 @@ GL_FUNCTIONS = [
       'GLuint id, GLenum pname, GLsizei bufSize, GLsizei* length, '
       'GLuint* params', },
 { 'return_type': 'void',
-  'names': ['glGetRenderbufferParameterivEXT', 'glGetRenderbufferParameteriv'],
+  'known_as': 'glGetRenderbufferParameterivEXT',
+  'names': ['glGetRenderbufferParameteriv'],
   'arguments': 'GLenum target, GLenum pname, GLint* params', },
 { 'return_type': 'void',
   'versions': [{'name': 'glGetRenderbufferParameterivRobustANGLE',
@@ -1338,7 +1348,8 @@ GL_FUNCTIONS = [
   'names': ['glIsFenceNV'],
   'arguments': 'GLuint fence', },
 { 'return_type': 'GLboolean',
-  'names': ['glIsFramebufferEXT', 'glIsFramebuffer'],
+  'known_as': 'glIsFramebufferEXT',
+  'names': ['glIsFramebuffer'],
   'arguments': 'GLuint framebuffer', },
 { 'return_type': 'GLboolean',
   'names': ['glIsProgram'],
@@ -1352,7 +1363,8 @@ GL_FUNCTIONS = [
                  'extensions': ['GL_EXT_occlusion_query_boolean'] }],
   'arguments': 'GLuint query', },
 { 'return_type': 'GLboolean',
-  'names': ['glIsRenderbufferEXT', 'glIsRenderbuffer'],
+  'known_as': 'glIsRenderbufferEXT',
+  'names': ['glIsRenderbuffer'],
   'arguments': 'GLuint renderbuffer', },
 { 'return_type': 'GLboolean',
   'names': ['glIsSampler'],
@@ -1680,7 +1692,8 @@ GL_FUNCTIONS = [
                  'extensions': ['GL_ANGLE_vulkan_image'] }],
   'arguments': 'GLuint numTextures, const GLuint* textures, GLenum* layouts', },
 { 'return_type': 'void',
-  'names': ['glRenderbufferStorageEXT', 'glRenderbufferStorage'],
+  'known_as': 'glRenderbufferStorageEXT',
+  'names': ['glRenderbufferStorage'],
   'arguments':
       'GLenum target, GLenum internalformat, GLsizei width, GLsizei height', },
 { 'return_type': 'void',
@@ -2718,7 +2731,7 @@ LICENSE_AND_HEADER = """\
 GLVersion = namedtuple('GLVersion', 'is_es major_version minor_version')
 
 def GLVersionBindAlways(version):
-  return version.major_version <= 2
+  return (version.is_es and version.major_version <= 2) or (not version.is_es)
 
 
 def GetStaticBinding(func):

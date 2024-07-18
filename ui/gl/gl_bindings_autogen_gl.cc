@@ -34,6 +34,10 @@ void DriverGL::InitializeStaticBindings() {
       GetGLProcAddress("glBindAttribLocation"));
   fn.glBindBufferFn =
       reinterpret_cast<glBindBufferProc>(GetGLProcAddress("glBindBuffer"));
+  fn.glBindFramebufferEXTFn = reinterpret_cast<glBindFramebufferEXTProc>(
+      GetGLProcAddress("glBindFramebuffer"));
+  fn.glBindRenderbufferEXTFn = reinterpret_cast<glBindRenderbufferEXTProc>(
+      GetGLProcAddress("glBindRenderbuffer"));
   fn.glBindTextureFn =
       reinterpret_cast<glBindTextureProc>(GetGLProcAddress("glBindTexture"));
   fn.glBlendColorFn =
@@ -50,11 +54,16 @@ void DriverGL::InitializeStaticBindings() {
       reinterpret_cast<glBufferDataProc>(GetGLProcAddress("glBufferData"));
   fn.glBufferSubDataFn = reinterpret_cast<glBufferSubDataProc>(
       GetGLProcAddress("glBufferSubData"));
+  fn.glCheckFramebufferStatusEXTFn =
+      reinterpret_cast<glCheckFramebufferStatusEXTProc>(
+          GetGLProcAddress("glCheckFramebufferStatus"));
   fn.glClearFn = reinterpret_cast<glClearProc>(GetGLProcAddress("glClear"));
   fn.glClearColorFn =
       reinterpret_cast<glClearColorProc>(GetGLProcAddress("glClearColor"));
   fn.glClearDepthFn =
       reinterpret_cast<glClearDepthProc>(GetGLProcAddress("glClearDepth"));
+  fn.glClearDepthfFn =
+      reinterpret_cast<glClearDepthfProc>(GetGLProcAddress("glClearDepthf"));
   fn.glClearStencilFn =
       reinterpret_cast<glClearStencilProc>(GetGLProcAddress("glClearStencil"));
   fn.glColorMaskFn =
@@ -78,8 +87,13 @@ void DriverGL::InitializeStaticBindings() {
       reinterpret_cast<glCullFaceProc>(GetGLProcAddress("glCullFace"));
   fn.glDeleteBuffersARBFn = reinterpret_cast<glDeleteBuffersARBProc>(
       GetGLProcAddress("glDeleteBuffers"));
+  fn.glDeleteFramebuffersEXTFn = reinterpret_cast<glDeleteFramebuffersEXTProc>(
+      GetGLProcAddress("glDeleteFramebuffers"));
   fn.glDeleteProgramFn = reinterpret_cast<glDeleteProgramProc>(
       GetGLProcAddress("glDeleteProgram"));
+  fn.glDeleteRenderbuffersEXTFn =
+      reinterpret_cast<glDeleteRenderbuffersEXTProc>(
+          GetGLProcAddress("glDeleteRenderbuffers"));
   fn.glDeleteShaderFn =
       reinterpret_cast<glDeleteShaderProc>(GetGLProcAddress("glDeleteShader"));
   fn.glDeleteTexturesFn = reinterpret_cast<glDeleteTexturesProc>(
@@ -90,6 +104,8 @@ void DriverGL::InitializeStaticBindings() {
       reinterpret_cast<glDepthMaskProc>(GetGLProcAddress("glDepthMask"));
   fn.glDepthRangeFn =
       reinterpret_cast<glDepthRangeProc>(GetGLProcAddress("glDepthRange"));
+  fn.glDepthRangefFn =
+      reinterpret_cast<glDepthRangefProc>(GetGLProcAddress("glDepthRangef"));
   fn.glDetachShaderFn =
       reinterpret_cast<glDetachShaderProc>(GetGLProcAddress("glDetachShader"));
   fn.glDisableFn =
@@ -107,10 +123,22 @@ void DriverGL::InitializeStaticBindings() {
           GetGLProcAddress("glEnableVertexAttribArray"));
   fn.glFinishFn = reinterpret_cast<glFinishProc>(GetGLProcAddress("glFinish"));
   fn.glFlushFn = reinterpret_cast<glFlushProc>(GetGLProcAddress("glFlush"));
+  fn.glFramebufferRenderbufferEXTFn =
+      reinterpret_cast<glFramebufferRenderbufferEXTProc>(
+          GetGLProcAddress("glFramebufferRenderbuffer"));
+  fn.glFramebufferTexture2DEXTFn =
+      reinterpret_cast<glFramebufferTexture2DEXTProc>(
+          GetGLProcAddress("glFramebufferTexture2D"));
   fn.glFrontFaceFn =
       reinterpret_cast<glFrontFaceProc>(GetGLProcAddress("glFrontFace"));
   fn.glGenBuffersARBFn =
       reinterpret_cast<glGenBuffersARBProc>(GetGLProcAddress("glGenBuffers"));
+  fn.glGenerateMipmapEXTFn = reinterpret_cast<glGenerateMipmapEXTProc>(
+      GetGLProcAddress("glGenerateMipmap"));
+  fn.glGenFramebuffersEXTFn = reinterpret_cast<glGenFramebuffersEXTProc>(
+      GetGLProcAddress("glGenFramebuffers"));
+  fn.glGenRenderbuffersEXTFn = reinterpret_cast<glGenRenderbuffersEXTProc>(
+      GetGLProcAddress("glGenRenderbuffers"));
   fn.glGenTexturesFn =
       reinterpret_cast<glGenTexturesProc>(GetGLProcAddress("glGenTextures"));
   fn.glGetActiveAttribFn = reinterpret_cast<glGetActiveAttribProc>(
@@ -129,16 +157,25 @@ void DriverGL::InitializeStaticBindings() {
       reinterpret_cast<glGetErrorProc>(GetGLProcAddress("glGetError"));
   fn.glGetFloatvFn =
       reinterpret_cast<glGetFloatvProc>(GetGLProcAddress("glGetFloatv"));
+  fn.glGetFramebufferAttachmentParameterivEXTFn =
+      reinterpret_cast<glGetFramebufferAttachmentParameterivEXTProc>(
+          GetGLProcAddress("glGetFramebufferAttachmentParameteriv"));
   fn.glGetIntegervFn =
       reinterpret_cast<glGetIntegervProc>(GetGLProcAddress("glGetIntegerv"));
   fn.glGetProgramInfoLogFn = reinterpret_cast<glGetProgramInfoLogProc>(
       GetGLProcAddress("glGetProgramInfoLog"));
   fn.glGetProgramivFn =
       reinterpret_cast<glGetProgramivProc>(GetGLProcAddress("glGetProgramiv"));
+  fn.glGetRenderbufferParameterivEXTFn =
+      reinterpret_cast<glGetRenderbufferParameterivEXTProc>(
+          GetGLProcAddress("glGetRenderbufferParameteriv"));
   fn.glGetShaderInfoLogFn = reinterpret_cast<glGetShaderInfoLogProc>(
       GetGLProcAddress("glGetShaderInfoLog"));
   fn.glGetShaderivFn =
       reinterpret_cast<glGetShaderivProc>(GetGLProcAddress("glGetShaderiv"));
+  fn.glGetShaderPrecisionFormatFn =
+      reinterpret_cast<glGetShaderPrecisionFormatProc>(
+          GetGLProcAddress("glGetShaderPrecisionFormat"));
   fn.glGetShaderSourceFn = reinterpret_cast<glGetShaderSourceProc>(
       GetGLProcAddress("glGetShaderSource"));
   fn.glGetStringFn =
@@ -167,8 +204,12 @@ void DriverGL::InitializeStaticBindings() {
       reinterpret_cast<glIsBufferProc>(GetGLProcAddress("glIsBuffer"));
   fn.glIsEnabledFn =
       reinterpret_cast<glIsEnabledProc>(GetGLProcAddress("glIsEnabled"));
+  fn.glIsFramebufferEXTFn = reinterpret_cast<glIsFramebufferEXTProc>(
+      GetGLProcAddress("glIsFramebuffer"));
   fn.glIsProgramFn =
       reinterpret_cast<glIsProgramProc>(GetGLProcAddress("glIsProgram"));
+  fn.glIsRenderbufferEXTFn = reinterpret_cast<glIsRenderbufferEXTProc>(
+      GetGLProcAddress("glIsRenderbuffer"));
   fn.glIsShaderFn =
       reinterpret_cast<glIsShaderProc>(GetGLProcAddress("glIsShader"));
   fn.glIsTextureFn =
@@ -183,10 +224,17 @@ void DriverGL::InitializeStaticBindings() {
       GetGLProcAddress("glPolygonOffset"));
   fn.glReadPixelsFn =
       reinterpret_cast<glReadPixelsProc>(GetGLProcAddress("glReadPixels"));
+  fn.glReleaseShaderCompilerFn = reinterpret_cast<glReleaseShaderCompilerProc>(
+      GetGLProcAddress("glReleaseShaderCompiler"));
+  fn.glRenderbufferStorageEXTFn =
+      reinterpret_cast<glRenderbufferStorageEXTProc>(
+          GetGLProcAddress("glRenderbufferStorage"));
   fn.glSampleCoverageFn = reinterpret_cast<glSampleCoverageProc>(
       GetGLProcAddress("glSampleCoverage"));
   fn.glScissorFn =
       reinterpret_cast<glScissorProc>(GetGLProcAddress("glScissor"));
+  fn.glShaderBinaryFn =
+      reinterpret_cast<glShaderBinaryProc>(GetGLProcAddress("glShaderBinary"));
   fn.glShaderSourceFn =
       reinterpret_cast<glShaderSourceProc>(GetGLProcAddress("glShaderSource"));
   fn.glStencilFuncFn =
@@ -349,8 +397,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_EXT_framebuffer_blit");
   ext.b_GL_EXT_framebuffer_multisample =
       gfx::HasExtension(extensions, "GL_EXT_framebuffer_multisample");
-  ext.b_GL_EXT_framebuffer_object =
-      gfx::HasExtension(extensions, "GL_EXT_framebuffer_object");
   ext.b_GL_EXT_gpu_shader4 =
       gfx::HasExtension(extensions, "GL_EXT_gpu_shader4");
   ext.b_GL_EXT_instanced_arrays =
@@ -491,11 +537,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glBindFragDataLocationIndexedEXT"));
   }
 
-  {
-    fn.glBindFramebufferEXTFn = reinterpret_cast<glBindFramebufferEXTProc>(
-        GetGLProcAddress("glBindFramebuffer"));
-  }
-
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glBindImageTextureEXTFn = reinterpret_cast<glBindImageTextureEXTProc>(
         GetGLProcAddress("glBindImageTexture"));
@@ -507,11 +548,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glBindProgramPipelineFn = reinterpret_cast<glBindProgramPipelineProc>(
         GetGLProcAddress("glBindProgramPipeline"));
-  }
-
-  {
-    fn.glBindRenderbufferEXTFn = reinterpret_cast<glBindRenderbufferEXTProc>(
-        GetGLProcAddress("glBindRenderbuffer"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
@@ -602,12 +638,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glBlitFramebufferEXT"));
   }
 
-  {
-    fn.glCheckFramebufferStatusEXTFn =
-        reinterpret_cast<glCheckFramebufferStatusEXTProc>(
-            GetGLProcAddress("glCheckFramebufferStatus"));
-  }
-
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glClearBufferfiFn = reinterpret_cast<glClearBufferfiProc>(
         GetGLProcAddress("glClearBufferfi"));
@@ -626,11 +656,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glClearBufferuivFn = reinterpret_cast<glClearBufferuivProc>(
         GetGLProcAddress("glClearBufferuiv"));
-  }
-
-  {
-    fn.glClearDepthfFn =
-        reinterpret_cast<glClearDepthfProc>(GetGLProcAddress("glClearDepthf"));
   }
 
   if (ext.b_GL_EXT_clear_texture) {
@@ -760,12 +785,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glDeleteFencesNV"));
   }
 
-  {
-    fn.glDeleteFramebuffersEXTFn =
-        reinterpret_cast<glDeleteFramebuffersEXTProc>(
-            GetGLProcAddress("glDeleteFramebuffers"));
-  }
-
   if (ext.b_GL_EXT_memory_object) {
     fn.glDeleteMemoryObjectsEXTFn =
         reinterpret_cast<glDeleteMemoryObjectsEXTProc>(
@@ -785,12 +804,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glDeleteQueriesFn = reinterpret_cast<glDeleteQueriesProc>(
         GetGLProcAddress("glDeleteQueriesEXT"));
-  }
-
-  {
-    fn.glDeleteRenderbuffersEXTFn =
-        reinterpret_cast<glDeleteRenderbuffersEXTProc>(
-            GetGLProcAddress("glDeleteRenderbuffers"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
@@ -822,11 +835,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glDeleteVertexArraysOESFn =
         reinterpret_cast<glDeleteVertexArraysOESProc>(
             GetGLProcAddress("glDeleteVertexArraysOES"));
-  }
-
-  {
-    fn.glDepthRangefFn =
-        reinterpret_cast<glDepthRangefProc>(GetGLProcAddress("glDepthRangef"));
   }
 
   if (ext.b_GL_ANGLE_request_extension) {
@@ -1037,18 +1045,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glFramebufferPixelLocalStorageRestoreANGLE"));
   }
 
-  {
-    fn.glFramebufferRenderbufferEXTFn =
-        reinterpret_cast<glFramebufferRenderbufferEXTProc>(
-            GetGLProcAddress("glFramebufferRenderbuffer"));
-  }
-
-  {
-    fn.glFramebufferTexture2DEXTFn =
-        reinterpret_cast<glFramebufferTexture2DEXTProc>(
-            GetGLProcAddress("glFramebufferTexture2D"));
-  }
-
   if (ext.b_GL_EXT_multisampled_render_to_texture) {
     fn.glFramebufferTexture2DMultisampleEXTFn =
         reinterpret_cast<glFramebufferTexture2DMultisampleEXTProc>(
@@ -1077,19 +1073,9 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glFramebufferTexturePixelLocalStorageANGLE"));
   }
 
-  {
-    fn.glGenerateMipmapEXTFn = reinterpret_cast<glGenerateMipmapEXTProc>(
-        GetGLProcAddress("glGenerateMipmap"));
-  }
-
   if (ext.b_GL_NV_fence) {
     fn.glGenFencesNVFn =
         reinterpret_cast<glGenFencesNVProc>(GetGLProcAddress("glGenFencesNV"));
-  }
-
-  {
-    fn.glGenFramebuffersEXTFn = reinterpret_cast<glGenFramebuffersEXTProc>(
-        GetGLProcAddress("glGenFramebuffers"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
@@ -1104,11 +1090,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glGenQueriesFn =
         reinterpret_cast<glGenQueriesProc>(GetGLProcAddress("glGenQueriesEXT"));
-  }
-
-  {
-    fn.glGenRenderbuffersEXTFn = reinterpret_cast<glGenRenderbuffersEXTProc>(
-        GetGLProcAddress("glGenRenderbuffers"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
@@ -1219,12 +1200,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetFragDataLocationFn = reinterpret_cast<glGetFragDataLocationProc>(
         GetGLProcAddress("glGetFragDataLocation"));
-  }
-
-  {
-    fn.glGetFramebufferAttachmentParameterivEXTFn =
-        reinterpret_cast<glGetFramebufferAttachmentParameterivEXTProc>(
-            GetGLProcAddress("glGetFramebufferAttachmentParameteriv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
@@ -1530,12 +1505,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glGetQueryObjectuivRobustANGLE"));
   }
 
-  {
-    fn.glGetRenderbufferParameterivEXTFn =
-        reinterpret_cast<glGetRenderbufferParameterivEXTProc>(
-            GetGLProcAddress("glGetRenderbufferParameteriv"));
-  }
-
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetRenderbufferParameterivRobustANGLEFn =
         reinterpret_cast<glGetRenderbufferParameterivRobustANGLEProc>(
@@ -1582,12 +1551,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glGetShaderivRobustANGLEFn =
         reinterpret_cast<glGetShaderivRobustANGLEProc>(
             GetGLProcAddress("glGetShaderivRobustANGLE"));
-  }
-
-  {
-    fn.glGetShaderPrecisionFormatFn =
-        reinterpret_cast<glGetShaderPrecisionFormatProc>(
-            GetGLProcAddress("glGetShaderPrecisionFormat"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
@@ -1800,11 +1763,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         reinterpret_cast<glIsFenceNVProc>(GetGLProcAddress("glIsFenceNV"));
   }
 
-  {
-    fn.glIsFramebufferEXTFn = reinterpret_cast<glIsFramebufferEXTProc>(
-        GetGLProcAddress("glIsFramebuffer"));
-  }
-
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glIsProgramPipelineFn = reinterpret_cast<glIsProgramPipelineProc>(
         GetGLProcAddress("glIsProgramPipeline"));
@@ -1817,11 +1775,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glIsQueryFn =
         reinterpret_cast<glIsQueryProc>(GetGLProcAddress("glIsQueryEXT"));
-  }
-
-  {
-    fn.glIsRenderbufferEXTFn = reinterpret_cast<glIsRenderbufferEXTProc>(
-        GetGLProcAddress("glIsRenderbuffer"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
@@ -2215,21 +2168,9 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glReadPixelsRobustANGLE"));
   }
 
-  {
-    fn.glReleaseShaderCompilerFn =
-        reinterpret_cast<glReleaseShaderCompilerProc>(
-            GetGLProcAddress("glReleaseShaderCompiler"));
-  }
-
   if (ext.b_GL_ANGLE_vulkan_image) {
     fn.glReleaseTexturesANGLEFn = reinterpret_cast<glReleaseTexturesANGLEProc>(
         GetGLProcAddress("glReleaseTexturesANGLE"));
-  }
-
-  {
-    fn.glRenderbufferStorageEXTFn =
-        reinterpret_cast<glRenderbufferStorageEXTProc>(
-            GetGLProcAddress("glRenderbufferStorage"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
@@ -2326,11 +2267,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (ext.b_GL_NV_fence) {
     fn.glSetFenceNVFn =
         reinterpret_cast<glSetFenceNVProc>(GetGLProcAddress("glSetFenceNV"));
-  }
-
-  {
-    fn.glShaderBinaryFn = reinterpret_cast<glShaderBinaryProc>(
-        GetGLProcAddress("glShaderBinary"));
   }
 
   if (ext.b_GL_EXT_semaphore) {
