@@ -50,7 +50,7 @@ interface PageLoadedMetric {
 
 interface ModuleImpressionMetric {
   event: EventType.MODULE_IMPRESSION;
-  module_name: string;
+  module_name?: string;
 }
 
 interface ExploreMoreOpenMetric {
@@ -78,7 +78,7 @@ interface GeneralLinkClickMetric {
   link_text: string;
   link_type: string;
   link_url: string;
-  module_name: string;
+  module_name?: string;
 }
 
 type BrowserCommand = LegacyBrowserCommandData|BrowserCommandData;
@@ -267,7 +267,9 @@ export class WhatsNewAppElement extends CrLitElement {
         handlePageLoadMetric(data, this.isAutoOpen_);
         break;
       case EventType.MODULE_IMPRESSION:
-        handler.recordModuleImpression(data.module_name);
+        if (data.module_name) {
+          handler.recordModuleImpression(data.module_name);
+        }
         break;
       case EventType.EXPLORE_MORE_OPEN:
         handler.recordExploreMoreToggled(true);
@@ -282,7 +284,9 @@ export class WhatsNewAppElement extends CrLitElement {
         handleTimeOnPageMetric(data);
         break;
       case EventType.GENERAL_LINK_CLICK:
-        handler.recordModuleLinkClicked(data.module_name);
+        if (data.module_name) {
+          handler.recordModuleLinkClicked(data.module_name);
+        }
         break;
       default:
         console.warn('Unrecognized message.', data);
