@@ -27,8 +27,6 @@ external/wpt/WebCryptoAPI/idlharness.https.any.worker.html
 external/wpt/accelerometer/idlharness.https.window.html
 external/wpt/added_idlharness.html
 external/wpt/ambient-light/idlharness.https.window.html
-external/wpt/animation-worklet/idlharness.any.html
-external/wpt/animation-worklet/idlharness.any.worker.html
 external/wpt/audio-output/idlharness.https.window.html
 external/wpt/autoplay-policy-detection/idlharness.window.html
 external/wpt/background-fetch/idlharness.https.any.html

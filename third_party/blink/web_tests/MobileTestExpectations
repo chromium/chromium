@@ -9,7 +9,7 @@
 # pointerevents tests
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?mouse [ Pass Timeout ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?pen [ Pass Timeout ]
-crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?touch [ Pass Timeout ]
+crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?touch [ Pass Timeout Failure ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/compat/pointerevent_touch-action_two-finger_interaction.html [ Failure Pass ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_after_target_appended.html?pen [ Failure Pass ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_attributes.html?mouse-right-nonstandard [ Failure Pass ]
@@ -91,8 +91,6 @@ crbug.com/421921 [ Webview ] external/wpt/push-api/idlharness.https.any.servicew
 
 
 # Other failing/timeout tests
-[ Android ] external/wpt/animation-worklet/idlharness.any.html [ Failure ]
-[ Android ] external/wpt/animation-worklet/idlharness.any.worker.html [ Failure ]
 [ Android ] external/wpt/css/cssom-view/idlharness.html [ Failure ]
 [ Android ] external/wpt/visual-viewport/resize-event-order.html [ Timeout ]
 [ Android ] external/wpt/visual-viewport/viewport-resize-event-on-load-overflowing-page.html [ Failure ]
@@ -103,6 +101,7 @@ crbug.com/421921 [ Webview ] external/wpt/push-api/idlharness.https.any.servicew
 [ Webview ] external/wpt/html/dom/idlharness.https.html?include=(Document|Window) [ Failure ]
 [ Webview ] external/wpt/media-capabilities/idlharness.any.html [ Pass Timeout ]
 [ Webview ] external/wpt/navigation-timing/idlharness.window.html [ Failure Pass ]
+[ Webview ] external/wpt/selection/idlharness.window.html [ Failure ]
 [ Webview ] external/wpt/shape-detection/idlharness.https.any.html [ Failure ]
 [ Webview ] external/wpt/shape-detection/idlharness.https.any.serviceworker.html [ Failure ]
 [ Webview ] external/wpt/shape-detection/idlharness.https.any.worker.html [ Failure ]
