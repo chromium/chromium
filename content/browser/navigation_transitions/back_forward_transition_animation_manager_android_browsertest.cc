@@ -10,6 +10,7 @@
 #include "base/numerics/ranges.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_impl.h"
@@ -47,6 +48,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
+#include "ui/android/progress_bar_config.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -366,9 +368,16 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
     const auto& layers = GetChildrenLayersOfWebContentsView();
     ASSERT_EQ(layers.size(), navigating_from_a_crashed_page_ ? 2U : 3U);
-    ASSERT_EQ(layers.at(0)->children().size(), 1U);
+
+    const bool has_progress_bar = wcva_->GetNativeView()
+                                      ->GetWindowAndroid()
+                                      ->GetProgressBarConfig()
+                                      .ShouldDisplay();
+
+    const auto& screenshot_layer = layers.at(0);
+    ASSERT_EQ(screenshot_layer->children().size(), has_progress_bar ? 2u : 1u);
     // Scrim should be at the end of the first timeline.
-    EXPECT_EQ(layers.at(0)->children().at(0)->background_color().fA, 0.3f);
+    EXPECT_EQ(screenshot_layer->children().at(0)->background_color().fA, 0.3f);
 
     BackForwardTransitionAnimator::OnInvokeAnimationDisplayed();
 
@@ -760,19 +769,24 @@ class BackForwardTransitionAnimationManagerBrowserTest
   void ExpectLayerTransformsAndScrimForGestureProgress(GestureType gesture) {
     ExpectedLayerTransforms(web_contents(),
                             GetLayerTransformsForGestureProgress(gesture));
+    const auto& screenshot_layer = GetScreenshotLayer();
+    // The screenshot must have the scrim layer as a child.
+    ASSERT_EQ(screenshot_layer->children().size(), 1U);
+    SkColor4f actual =
+        screenshot_layer->children().at(0).get()->background_color();
+    SkColor4f expected = GetScrimForGestureProgress(gesture);
+    EXPECT_TRUE(TwoSkColorApproximatelyEqual(actual, expected))
+        << "actual " << actual.fA << " expected " << expected.fA;
+  }
+
+  scoped_refptr<cc::slim::Layer> GetScreenshotLayer() {
     const auto& layers =
         static_cast<WebContentsViewAndroid*>(web_contents()->GetView())
             ->GetNativeView()
             ->GetLayer()
             ->children();
-    // Screenshot + active page.
-    ASSERT_EQ(layers.size(), 2U);
-    // The screenshot must have the scrim layer as a child.
-    ASSERT_EQ(layers[0]->children().size(), 1U);
-    SkColor4f actual = layers[0]->children().at(0).get()->background_color();
-    SkColor4f expected = GetScrimForGestureProgress(gesture);
-    EXPECT_TRUE(TwoSkColorApproximatelyEqual(actual, expected))
-        << "actual " << actual.fA << " expected " << expected.fA;
+    // The first layer is the screenshot.
+    return layers[0];
   }
 
   AnimatorForTesting* GetAnimatorForTesting() {
@@ -2337,6 +2351,92 @@ INSTANTIATE_TEST_SUITE_P(All,
                          BackForwardTransitionAnimationManagerBrowserTest,
                          ::testing::ValuesIn(kGestureNavTypes),
                          &DescribeGestureNavType);
+
+class BackForwardTransitionAnimationManagerBrowserTestWithProgressBar
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    BackForwardTransitionAnimationManagerBrowserTest::SetUpOnMainThread();
+    web_contents()
+        ->GetNativeView()
+        ->GetWindowAndroid()
+        ->set_progress_bar_config_for_testing(kConfig);
+  }
+
+  void ValidateNoProgressBar() {
+    const auto& screenshot_layer = GetScreenshotLayer();
+    EXPECT_EQ(screenshot_layer->children().size(), 1u);
+  }
+
+  const scoped_refptr<cc::slim::Layer> GetProgressBar() {
+    const auto& screenshot_layer = GetScreenshotLayer();
+    EXPECT_EQ(screenshot_layer->children().size(), 2u);
+    return screenshot_layer->children().at(1);
+  }
+
+ protected:
+  static constexpr ui::ProgressBarConfig kConfig = {
+      .background_color = SkColors::kWhite,
+      .height_physical = 10,
+      .color = SkColors::kBlue,
+      .hairline_color = SkColors::kWhite};
+};
+
+// Tests that the progress bar is drawn at the correct position during the
+// invoke phase.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardTransitionAnimationManagerBrowserTestWithProgressBar,
+    ProgressBar) {
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k30ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+  ValidateNoProgressBar();
+
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  {
+    // Progress bar should be displayed when invoke animation starts.
+    base::test::TestFuture<void> on_animate;
+    GetAnimatorForTesting()->set_next_on_animate_callback(
+        on_animate.GetCallback());
+    ASSERT_TRUE(on_animate.Wait())
+        << "Timed out waiting for invoke animation to start";
+    GetAnimatorForTesting()->ExpectDisplayingInvokeAnimation();
+    const auto& progress_layer = GetProgressBar();
+    const int viewport_width = GetViewportSize().width();
+    EXPECT_EQ(progress_layer->bounds(),
+              gfx::Size(viewport_width, kConfig.height_physical));
+  }
+
+  {
+    base::test::TestFuture<void> invoke_played;
+    GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+        invoke_played.GetCallback());
+    ASSERT_TRUE(invoke_played.Wait())
+        << "Timed out waiting for invoke animation to finish";
+
+    base::test::TestFuture<void> on_animate;
+    GetAnimatorForTesting()->set_next_on_animate_callback(
+        on_animate.GetCallback());
+    ASSERT_TRUE(on_animate.Wait())
+        << "Timed out waiting for animation after invoke to start";
+
+    // Progress bar should be removed.
+    ValidateNoProgressBar();
+  }
+
+  base::test::TestFuture<void> on_destroyed;
+  GetAnimatorForTesting()->set_next_on_animate_callback(
+      on_destroyed.GetCallback());
+  ASSERT_TRUE(on_destroyed.Wait())
+      << "Timed out waiting for animator to be destroyed";
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardTransitionAnimationManagerBrowserTestWithProgressBar,
+    ::testing::ValuesIn(kGestureNavTypes),
+    &DescribeGestureNavType);
 
 class BackForwardTransitionAnimationManagerBrowserTestWithNavigationQueueing
     : public BackForwardTransitionAnimationManagerBrowserTest {

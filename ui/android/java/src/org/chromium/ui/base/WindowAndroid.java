@@ -57,6 +57,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -118,6 +119,27 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     private float mRefreshRate;
     private boolean mHasFocus = true;
     private OverlayTransformApiHelper mOverlayTransformApiHelper;
+
+    // The information required to draw a replica of the progress bar drawn in
+    // java UI in composited UI.
+    public static class ProgressBarConfig {
+        // The background color of the progress bar.
+        public int backgroundColor;
+        // The height of both the progress indicator and the background.
+        public int heightPhysical;
+        // The color of the progress indicator.
+        public int color;
+        // The hairline drawn underneath the bottom edge of the progress bar.
+        public int hairlineHeightPhysical;
+        // The color of the hairline.
+        public int hairlineColor;
+
+        public static interface Provider {
+            ProgressBarConfig getProgressBarConfig();
+        }
+    }
+
+    private ProgressBarConfig.Provider mProgressBarConfigProvider;
 
     /** An interface to notify listeners that a context menu is closed. */
     public interface OnCloseContextMenuListener {
@@ -248,12 +270,18 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         return mIntentRequestTracker;
     }
 
+    /** Set the provider to pull the progress bar config from */
+    public final void setProgressBarConfigProvider(ProgressBarConfig.Provider provider) {
+        mProgressBarConfigProvider = provider;
+    }
+
     /**
      * Shows an intent and returns the results to the callback object.
-     * @param intent   The PendingIntent that needs to be shown.
+     *
+     * @param intent The PendingIntent that needs to be shown.
      * @param callback The object that will receive the results for the intent.
-     * @param errorId  The ID of error string to be shown if activity is paused before intent
-     *                 results, or null if no message is required.
+     * @param errorId The ID of error string to be shown if activity is paused before intent
+     *     results, or null if no message is required.
      * @return Whether the intent was shown.
      */
     public boolean showIntent(PendingIntent intent, IntentCallback callback, Integer errorId) {
@@ -571,9 +599,27 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         }
     }
 
+    @CalledByNative
+    private int[] getProgressBarConfig() {
+        int[] result = new int[5];
+
+        if (mProgressBarConfigProvider == null) {
+            Arrays.fill(result, 0);
+            return result;
+        }
+
+        ProgressBarConfig config = mProgressBarConfigProvider.getProgressBarConfig();
+        result[0] = config.backgroundColor;
+        result[1] = config.heightPhysical;
+        result[2] = config.color;
+        result[3] = config.hairlineHeightPhysical;
+        result[4] = config.hairlineColor;
+        return result;
+    }
+
     /**
-     * @return Current state of the associated {@link Activity}. Can be overridden
-     *         to return the correct state. {@code ActivityState.DESTROYED} by default.
+     * @return Current state of the associated {@link Activity}. Can be overridden to return the
+     *     correct state. {@code ActivityState.DESTROYED} by default.
      */
     @ActivityState
     public int getActivityState() {

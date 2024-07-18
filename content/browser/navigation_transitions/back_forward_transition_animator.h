@@ -30,6 +30,7 @@ class NavigationControllerImpl;
 class NavigationEntryScreenshot;
 class WebContentsViewAndroid;
 class BackForwardTransitionAnimationManagerAndroid;
+class ProgressBar;
 class RenderWidgetHostImpl;
 class RenderFrameHostImpl;
 
@@ -245,6 +246,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // Initializes the `ui_resource_layer_` and sets up the layer tree.
   void SetupForScreenshotPreview();
 
+  // Sets the progress bar shown during the invoke phase of the animation.
+  void SetupProgressBar();
+
   // Start the session history navigation, and start tracking the created
   // `NavigationRequests` by their IDs. Returns true if the requests are
   // successfully created and false otherwise. The caller should play the invoke
@@ -267,6 +271,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void SubscribeToNewRenderWidgetHost(NavigationRequest* navigation_request);
 
   void UnregisterNewFrameActivationObserver();
+
+  int GetViewportWidthPx() const;
 
   const BackForwardTransitionAnimationManager::NavigationDirection
       nav_direction_;
@@ -367,6 +373,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // Set by the latest `OnGestureProgressed()`.
   ui::BackGestureEvent latest_progress_gesture_;
+
+  // The indeterminate progress bar shown during the invoke animation.
+  std::unique_ptr<ProgressBar> progress_bar_;
 
   State state_;
 };

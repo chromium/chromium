@@ -13,6 +13,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/observer_list.h"
+#include "ui/android/color_utils_android.h"
 #include "ui/android/display_android_manager.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/android/window_android_observer.h"
@@ -244,6 +245,28 @@ void WindowAndroid::SendUnfoldLatencyBeginTimestamp(JNIEnv* env,
   for (WindowAndroidObserver& observer : observer_list_) {
     observer.OnUnfoldStarted(begin_timestamp);
   }
+}
+
+ProgressBarConfig WindowAndroid::GetProgressBarConfig() {
+  if (progress_bar_config_for_testing_) {
+    return *progress_bar_config_for_testing_;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  std::vector<int> values;
+  base::android::JavaIntArrayToIntVector(
+      env, Java_WindowAndroid_getProgressBarConfig(env, GetJavaObject()),
+      &values);
+
+  ProgressBarConfig config;
+  config.background_color =
+      SkColor4f::FromColor(*JavaColorToOptionalSkColor(values[0]));
+  config.height_physical = values[1];
+  config.color = SkColor4f::FromColor(*JavaColorToOptionalSkColor(values[2]));
+  config.hairline_height_physical = values[3];
+  config.hairline_color =
+      SkColor4f::FromColor(*JavaColorToOptionalSkColor(values[4]));
+  return config;
 }
 
 void WindowAndroid::SetWideColorEnabled(bool enabled) {

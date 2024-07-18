@@ -32,6 +32,7 @@ component("android") {
     "overscroll_refresh.h",
     "overscroll_refresh_handler.cc",
     "overscroll_refresh_handler.h",
+    "progress_bar_config.h",
     "resources/nine_patch_resource.cc",
     "resources/nine_patch_resource.h",
     "resources/resource.cc",

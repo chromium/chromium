@@ -10,6 +10,7 @@
 #include "cc/slim/surface_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
+#include "content/browser/navigation_transitions/progress_bar.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -211,9 +212,7 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
                                  .main_frame_background_color())),
       use_fallback_screenshot_(!destination_entry->GetUserData(
           NavigationEntryScreenshot::kUserDataKey)),
-      physics_model_(web_contents_view_android->GetNativeView()
-                         ->GetPhysicalBackingSize()
-                         .width(),
+      physics_model_(GetViewportWidthPx(),
                      web_contents_view_android->GetNativeView()->GetDipScale()),
       latest_progress_gesture_(gesture) {
   state_ = State::kStarted;
@@ -232,11 +231,7 @@ void BackForwardTransitionAnimator::OnGestureProgressed(
 
   float progress_delta =
       gesture.progress() - latest_progress_gesture_.progress();
-  const int width = animation_manager_->web_contents_view_android()
-                        ->GetNativeView()
-                        ->GetPhysicalBackingSize()
-                        .width();
-  const float movement = progress_delta * width;
+  const float movement = progress_delta * GetViewportWidthPx();
   latest_progress_gesture_ = gesture;
 
   const PhysicsModel::Result result =
@@ -338,6 +333,10 @@ void BackForwardTransitionAnimator::OnAnimate(
     case State::kDisplayingInvokeAnimation: {
       PhysicsModel::Result result = physics_model_.OnAnimate(frame_begin_time);
       animation_finished = SetLayerTransformationAndTickEffect(result);
+
+      if (progress_bar_) {
+        progress_bar_->Animate(frame_begin_time);
+      }
       break;
     }
     case State::kDisplayingCrossFadeAnimation: {
@@ -760,6 +759,11 @@ void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
     old_surface_clone_.reset();
   }
 
+  if (progress_bar_) {
+    progress_bar_->GetLayer()->RemoveFromParent();
+    progress_bar_.reset();
+  }
+
   // The first scrim timeline is a function of the top layer's position. At the
   // end of the invoke animation, the top layer is completely out of the
   // viewport, so the `KeyFrameModel` for the scrim should also be exhausted and
@@ -952,6 +956,7 @@ void BackForwardTransitionAnimator::ProcessState() {
       }
       CHECK(animation_manager_->web_contents_view_android()
                 ->GetTopLevelNativeWindow());
+      SetupProgressBar();
       animation_manager_->web_contents_view_android()
           ->GetTopLevelNativeWindow()
           ->SetNeedsAnimate();
@@ -1086,6 +1091,23 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
   OnGestureProgressed(latest_progress_gesture_);
 }
 
+void BackForwardTransitionAnimator::SetupProgressBar() {
+  const auto& progress_bar_config =
+      animation_manager_->web_contents_view_android()
+          ->GetNativeView()
+          ->GetWindowAndroid()
+          ->GetProgressBarConfig();
+  if (!progress_bar_config.ShouldDisplay()) {
+    return;
+  }
+
+  progress_bar_ =
+      std::make_unique<ProgressBar>(GetViewportWidthPx(), progress_bar_config);
+
+  // The progress bar should draw on top of the scrim (if any).
+  screenshot_layer_->AddChild(progress_bar_->GetLayer());
+}
+
 bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
   CHECK(use_fallback_screenshot_ || screenshot_);
   CHECK(!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value());
@@ -1192,11 +1214,7 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
   }
 
   float screenshot_layer_progress =
-      result.foreground_offset_physical /
-      animation_manager_->web_contents_view_android()
-          ->GetNativeView()
-          ->GetPhysicalBackingSize()
-          .width();
+      result.foreground_offset_physical / GetViewportWidthPx();
   CHECK_GE(screenshot_layer_progress, 0.f);
   CHECK_LE(screenshot_layer_progress, 1.f);
   effect_.Tick(
@@ -1284,6 +1302,13 @@ void BackForwardTransitionAnimator::UnregisterNewFrameActivationObserver() {
       animation_manager_);
   new_render_widget_host_->RemoveObserver(animation_manager_);
   new_render_widget_host_ = nullptr;
+}
+
+int BackForwardTransitionAnimator::GetViewportWidthPx() const {
+  return animation_manager_->web_contents_view_android()
+      ->GetNativeView()
+      ->GetPhysicalBackingSize()
+      .width();
 }
 
 }  // namespace content

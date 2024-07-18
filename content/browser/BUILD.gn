@@ -3203,6 +3203,8 @@ source_set("browser") {
       "navigation_transitions/back_forward_transition_animator.h",
       "navigation_transitions/physics_model.cc",
       "navigation_transitions/physics_model.h",
+      "navigation_transitions/progress_bar.cc",
+      "navigation_transitions/progress_bar.h",
       "renderer_host/compositor_dependencies_android.cc",
       "renderer_host/compositor_dependencies_android.h",
       "renderer_host/compositor_impl_android.cc",

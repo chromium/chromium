@@ -6,6 +6,7 @@
 #define UI_ANDROID_WINDOW_ANDROID_H_
 
 #include <jni.h>
+
 #include <memory>
 #include <string>
 
@@ -16,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
+#include "ui/android/progress_bar_config.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -107,6 +109,11 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   // Return whether the specified Android permission can be requested by Chrome.
   bool CanRequestPermission(const std::string& permission);
 
+  void set_progress_bar_config_for_testing(ProgressBarConfig config) {
+    progress_bar_config_for_testing_ = config;
+  }
+  ProgressBarConfig GetProgressBarConfig();
+
   float mouse_wheel_scroll_factor() const { return mouse_wheel_scroll_factor_; }
 
   static std::unique_ptr<ScopedWindowAndroidForTesting> CreateForTesting();
@@ -154,6 +161,8 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   const int display_id_;
   const bool window_is_wide_color_gamut_;
   raw_ptr<WindowAndroidCompositor> compositor_;
+
+  std::optional<ProgressBarConfig> progress_bar_config_for_testing_;
 
   base::ObserverList<WindowAndroidObserver>::Unchecked observer_list_;
   blink::ContentToVisibleTimeReporter content_to_visible_time_recorder_;
