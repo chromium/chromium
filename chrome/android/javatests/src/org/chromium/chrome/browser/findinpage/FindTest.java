@@ -412,6 +412,7 @@ public class FindTest {
     @MediumTest
     @Feature({"FindInPage"})
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    @DisabledTest(message = "crbug.com/353950491")
     public void testBackKeyDoesNotDismissFindWhenImeIsPresent() {
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
         findInPageFromMenu();
@@ -458,6 +459,7 @@ public class FindTest {
     @MediumTest
     @Feature({"FindInPage"})
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    @DisabledTest(message = "crbug.com/353950491")
     public void testBackKeyDismissesFind() {
         loadTestAndVerifyFindInPage("pitts", "1/7");
         waitForIME(true);
