@@ -49,6 +49,11 @@ syncer::EntityData MakeEntityData(
   return entity_data;
 }
 
+bool IsMultiSpecSetsEnabled() {
+  return base::FeatureList::IsEnabled(
+      commerce::kProductSpecificationsMultiSpecifics);
+}
+
 }  // namespace
 
 namespace commerce {
@@ -88,15 +93,44 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
-  std::vector<sync_pb::ProductComparisonSpecifics> added;
+
+  std::map<std::string, sync_pb::ProductComparisonSpecifics> prev_entries;
+  if (IsMultiSpecSetsEnabled()) {
+    for (const auto& [uuid, specific] : entries_) {
+      prev_entries.emplace(uuid, specific);
+    }
+  }
+  std::vector<sync_pb::ProductComparisonSpecifics> multi_specifics_changed;
+
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
-    const sync_pb::ProductComparisonSpecifics& specifics =
+    sync_pb::ProductComparisonSpecifics specifics =
         change->data().specifics.product_comparison();
+
+    if (IsMultiSpecSetsEnabled()) {
+      if (specifics.has_product_comparison() ||
+          specifics.has_product_comparison_item()) {
+        multi_specifics_changed.push_back(specifics);
+      }
+
+      // A delete only passes the Uuid, not the specifics itself which is
+      // required for OnMultiSpecificsChanged to correctly detect deleted
+      // ProductSpecificationsSets. Acquire specifics from local representation
+      // so the specifics can be passed to OnMultiSpecificsChanged.
+      // TODO(crbug.com/353982776) investigate OnMultiSpecificsChanged using
+      // uuids instead to avoid special handling of this case.
+      if (change->type() == syncer::EntityChange::ACTION_DELETE &&
+          entries_.find(change->storage_key()) != entries_.end()) {
+        multi_specifics_changed.push_back(
+            entries_.find(change->storage_key())->second);
+      }
+    }
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
         entries_.emplace(change->storage_key(), specifics);
         batch->WriteData(change->storage_key(), specifics.SerializeAsString());
-        added.push_back(specifics);
+        if (!IsMultiSpecSetsEnabled()) {
+          delegate_->OnSpecificsAdded({specifics});
+        }
         break;
       case syncer::EntityChange::ACTION_UPDATE: {
         auto local_specifics = entries_.find(change->storage_key());
@@ -108,7 +142,9 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
             entries_[change->storage_key()] = specifics;
             batch->WriteData(change->storage_key(),
                              specifics.SerializeAsString());
-            delegate_->OnSpecificsUpdated({{before, specifics}});
+            if (!IsMultiSpecSetsEnabled()) {
+              delegate_->OnSpecificsUpdated({{before, specifics}});
+            }
           }
         }
         break;
@@ -122,11 +158,16 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
 
         entries_.erase(change->storage_key());
         batch->DeleteData(change->storage_key());
-        delegate_->OnSpecificsRemoved({deleted_specifics});
+        if (!IsMultiSpecSetsEnabled()) {
+          delegate_->OnSpecificsRemoved({deleted_specifics});
+        }
         break;
     }
   }
-  delegate_->OnSpecificsAdded(added);
+  if (IsMultiSpecSetsEnabled()) {
+    delegate_->OnMultiSpecificsChanged(multi_specifics_changed, prev_entries);
+  }
+
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
   return {};
@@ -362,14 +403,22 @@ ProductSpecificationsSyncBridge::CreateEntityData(
 }
 
 void ProductSpecificationsSyncBridge::ApplyIncrementalSyncChangesForTesting(
-    const std::vector<sync_pb::ProductComparisonSpecifics>& specifics_to_add,
-    const syncer::EntityChange::ChangeType change_type) {
-  syncer::EntityChangeList add_changes;
-  for (const auto& specifics : specifics_to_add) {
+    const std::vector<std::pair<sync_pb::ProductComparisonSpecifics,
+                                syncer::EntityChange::ChangeType>>&
+        specifics_to_change) {
+  syncer::EntityChangeList changes;
+  for (const auto& [specifics, change_type] : specifics_to_change) {
     switch (change_type) {
       case syncer::EntityChange::ACTION_ADD:
-        add_changes.push_back(syncer::EntityChange::CreateAdd(
+        changes.push_back(syncer::EntityChange::CreateAdd(
             specifics.uuid(), MakeEntityData(specifics)));
+        break;
+      case syncer::EntityChange::ACTION_UPDATE:
+        changes.push_back(syncer::EntityChange::CreateUpdate(
+            specifics.uuid(), MakeEntityData(specifics)));
+        break;
+      case syncer::EntityChange::ACTION_DELETE:
+        changes.push_back(syncer::EntityChange::CreateDelete(specifics.uuid()));
         break;
       default:
         DCHECK(0) << "EntityChange " << change_type << "not supported\n";
@@ -379,7 +428,7 @@ void ProductSpecificationsSyncBridge::ApplyIncrementalSyncChangesForTesting(
   auto metadata_change_list =
       std::make_unique<syncer::InMemoryMetadataChangeList>();
   ApplyIncrementalSyncChanges(std::move(metadata_change_list),
-                              std::move(add_changes));
+                              std::move(changes));
 }
 
 }  // namespace commerce

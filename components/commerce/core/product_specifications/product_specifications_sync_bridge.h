@@ -47,6 +47,15 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
     // Specifics were removed
     virtual void OnSpecificsRemoved(
         const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {}
+
+    // Specifics for the multi specifics representation (where a
+    // ProductSpecificationsSet is stored across multiple specifics)
+    // changed.
+    virtual void OnMultiSpecificsChanged(
+        const std::vector<sync_pb::ProductComparisonSpecifics>
+            changed_specifics,
+        const std::map<std::string, sync_pb::ProductComparisonSpecifics>
+            prev_entries) {}
   };
 
   ProductSpecificationsSyncBridge(
@@ -123,8 +132,9 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
       const sync_pb::ProductComparisonSpecifics& specifics);
 
   void ApplyIncrementalSyncChangesForTesting(
-      const std::vector<sync_pb::ProductComparisonSpecifics>& specifics,
-      const syncer::EntityChange::ChangeType change_type);
+      const std::vector<std::pair<sync_pb::ProductComparisonSpecifics,
+                                  syncer::EntityChange::ChangeType>>&
+          specifics_to_change);
 
   std::map<std::string, sync_pb::ProductComparisonSpecifics> entries_;
 
