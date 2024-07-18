@@ -39,8 +39,6 @@ class UserRemovalManagerTest : public testing::Test {
     fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user1", "1"));
     fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user2", "2"));
     fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user3", "3"));
-    fake_user_manager()->AddPublicAccountUser(
-        AccountId::FromUserEmailGaiaId("public1", "4"));
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
