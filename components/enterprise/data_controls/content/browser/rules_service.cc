@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/data_controls/content/rules_service.h"
+#include "components/enterprise/data_controls/content/browser/rules_service.h"
 
 #include "components/enterprise/data_controls/core/features.h"
 #include "components/enterprise/data_controls/core/prefs.h"

@@ -23,7 +23,7 @@ source_set("data_controls") {
   ]
 
   public_deps = [
-    "//components/enterprise/data_controls/content",
+    "//components/enterprise/data_controls/content/browser",
     "//components/enterprise/data_controls/core",
     "//components/enterprise/data_controls/core:features",
   ]

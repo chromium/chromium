@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CHROME_RULES_SERVICE_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/enterprise/data_controls/content/rules_service.h"
-#include "components/enterprise/data_controls/content/rules_service_factory.h"
+#include "components/enterprise/data_controls/content/browser/rules_service.h"
+#include "components/enterprise/data_controls/content/browser/rules_service_factory.h"
 #include "components/enterprise/data_controls/core/verdict.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"

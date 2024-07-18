@@ -7,7 +7,7 @@ import("//components/enterprise/buildflags/buildflags.gni")
 
 assert(enterprise_data_controls)
 
-source_set("content") {
+source_set("browser") {
   sources = [
     "rules_service.cc",
     "rules_service.h",
