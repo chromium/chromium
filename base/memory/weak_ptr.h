@@ -104,12 +104,6 @@ namespace media_router {
 class MediaRoutesObserver;
 }  // namespace media_router
 
-namespace ppapi {
-namespace proxy {
-class PluginDispatcher;
-}  // namespace proxy
-}  // namespace ppapi
-
 namespace storage {
 class CopyOrMoveHookDelegate;
 }  // namespace storage
@@ -531,7 +525,6 @@ class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
   friend class gl::GLContext;
   friend class gl::GLSurface;
   friend class media_router::MediaRoutesObserver;
-  friend class ppapi::proxy::PluginDispatcher;
   friend class storage::CopyOrMoveHookDelegate;
   friend class ui::MenuModel;
   friend class ui::TextInputClient;

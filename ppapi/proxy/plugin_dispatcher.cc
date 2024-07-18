@@ -123,10 +123,11 @@ PluginDispatcher::PluginDispatcher(PP_GetInterface_Func get_interface,
       plugin_delegate_(NULL),
       received_preferences_(false),
       plugin_dispatcher_id_(0),
-      incognito_(incognito),
-      sender_(
-          new Sender(AsWeakPtr(), scoped_refptr<IPC::SyncMessageFilter>())) {
-  SetSerializationRules(new PluginVarSerializationRules(AsWeakPtr()));
+      incognito_(incognito) {
+  sender_ = new Sender(weak_ptr_factory_.GetWeakPtr(),
+                       scoped_refptr<IPC::SyncMessageFilter>());
+  SetSerializationRules(
+      new PluginVarSerializationRules(weak_ptr_factory_.GetWeakPtr()));
 
   if (!g_live_dispatchers)
     g_live_dispatchers = new DispatcherSet;
@@ -219,7 +220,8 @@ bool PluginDispatcher::InitPluginWithChannel(
   plugin_delegate_ = delegate;
   plugin_dispatcher_id_ = plugin_delegate_->Register(this);
 
-  sender_ = new Sender(AsWeakPtr(), channel()->CreateSyncMessageFilter());
+  sender_ = new Sender(weak_ptr_factory_.GetWeakPtr(),
+                       channel()->CreateSyncMessageFilter());
 
   // The message filter will intercept and process certain messages directly
   // on the I/O thread.
