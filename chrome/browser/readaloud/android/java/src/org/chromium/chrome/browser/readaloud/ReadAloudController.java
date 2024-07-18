@@ -132,6 +132,7 @@ public class ReadAloudController
     //  with mActivePlaybackTabSupplier's value and mGlobalRenderFrameId
     @Nullable private Playback mPlayback;
     private ObservableSupplierImpl<Tab> mActivePlaybackTabSupplier;
+    @Nullable private GURL mCurrentlyPlayingGurl;
     @Nullable private GlobalRenderFrameHostId mGlobalRenderFrameId;
     // Current tab playback data, or null if there is no playback.
     @Nullable private PlaybackData mCurrentPlaybackData;
@@ -529,6 +530,19 @@ public class ReadAloudController
                         }
 
                         @Override
+                        public void onUrlUpdated(Tab tab) {
+                            Tab currentlyPlayingTab = mActivePlaybackTabSupplier.get();
+                            if (currentlyPlayingTab != null
+                                    && currentlyPlayingTab.getId() == tab.getId()
+                                    && mCurrentlyPlayingGurl != null
+                                    && !mCurrentlyPlayingGurl.equals(tab.getUrl())) {
+                                maybeStopPlayback(
+                                        tab,
+                                        ReasonForStoppingPlayback.NAVIGATION_WITHIN_PLAYING_TAB);
+                            }
+                        }
+
+                        @Override
                         public void onActivityAttachmentChanged(
                                 Tab tab, @Nullable WindowAndroid window) {
                             super.onActivityAttachmentChanged(tab, window);
@@ -894,6 +908,7 @@ public class ReadAloudController
         resetCurrentPlayback(ReasonForStoppingPlayback.NEW_PLAYBACK_REQUEST);
         mActivePlaybackTabSupplier.set(tab);
         mPlayingTabTranslationObserver.observeTab(mActivePlaybackTabSupplier.get());
+        mCurrentlyPlayingGurl = tab.getUrl();
 
         if (!mPlaybackHooks.voicesInitialized()) {
             mPlaybackHooks.initVoices();
@@ -986,6 +1001,7 @@ public class ReadAloudController
         }
         mPlayingTabTranslationObserver.stopObservingTab(null);
         mActivePlaybackTabSupplier.set(null);
+        mCurrentlyPlayingGurl = null;
         mGlobalRenderFrameId = null;
         mCurrentPlaybackData = null;
         mPausedForIncognito = false;

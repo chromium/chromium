@@ -1111,6 +1111,37 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testStopPlaybackWhenBackPressingToNewTab() {
+        // Play tab
+        requestAndStartPlayback();
+
+        // now simulate back press to a new tab page (doesn't trigger new url load)
+        when(mTab.getUrl()).thenReturn(new GURL("chrome-native://newtab/"));
+        mController.getTabModelTabObserverforTests().onUrlUpdated(mTab);
+
+        verify(mPlayback).release();
+    }
+
+    @Test
+    public void testDontStopPlayback() {
+        // Play tab
+        requestAndStartPlayback();
+
+        // now simulate a situation updateUrl was called with the same url as the one playing -
+        // nothing should happen
+        mController.getTabModelTabObserverforTests().onUrlUpdated(mTab);
+        verify(mPlayback, never()).release();
+
+        // now update url from a different, non playing tab. The active playback should be
+        // unaffected.
+        MockTab tab = mTabModelSelector.addMockTab();
+        tab.setWebContentsOverrideForTesting(mWebContents);
+        tab.setUrl(new GURL(""));
+        mController.getTabModelTabObserverforTests().onUrlUpdated(tab);
+        verify(mPlayback, never()).release();
+    }
+
+    @Test
     public void highlightsRequested() {
         // set up the highlighter
         mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
