@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
 #include "ui/views/animation/ink_drop.h"
@@ -282,6 +283,12 @@ void PageActionIconController::Init(const PageActionIconParams& params,
   if (params.browser) {
     zoom_observation_.Observe(zoom::ZoomEventManager::GetForBrowserContext(
         params.browser->profile()));
+
+    pref_change_registrar_.Init(params.browser->profile()->GetPrefs());
+    pref_change_registrar_.Add(
+        omnibox::kShowGoogleLensShortcut,
+        base::BindRepeating(&PageActionIconController::UpdateAll,
+                            base::Unretained(this)));
   }
 }
 

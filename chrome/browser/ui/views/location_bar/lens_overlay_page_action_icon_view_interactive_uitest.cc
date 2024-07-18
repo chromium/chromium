@@ -143,4 +143,39 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(nullptr, icon_view);
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
+                       RespectsShowShortcutPreference) {
+  // Ensure the shortcut pref starts enabled.
+  browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
+                                               true);
+
+  // Navigate to a non-NTP page.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  LensOverlayPageActionIconView* icon_view = lens_overlay_icon_view();
+  views::FocusManager* focus_manager = icon_view->GetFocusManager();
+  focus_manager->ClearFocus();
+  EXPECT_FALSE(focus_manager->GetFocusedView());
+  EXPECT_FALSE(icon_view->GetVisible());
+
+  // Focus in the location bar should show the icon.
+  base::RunLoop run_loop;
+  icon_view->set_update_callback_for_testing(run_loop.QuitClosure());
+  location_bar()->FocusLocation(false);
+  EXPECT_TRUE(focus_manager->GetFocusedView());
+  run_loop.Run();
+  EXPECT_TRUE(icon_view->GetVisible());
+
+  // Disable the preference, the entrypoint should immediately disappear.
+  browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
+                                               false);
+  EXPECT_FALSE(icon_view->GetVisible());
+
+  // Re-enable the preference, the entrypoint should immediately become visible.
+  browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
+                                               true);
+  EXPECT_TRUE(icon_view->GetVisible());
+}
+
 }  // namespace
