@@ -604,14 +604,6 @@ static_library("browser") {
     "history_clusters/history_clusters_service_factory.h",
     "history_clusters/history_clusters_tab_helper.cc",
     "history_clusters/history_clusters_tab_helper.h",
-    "history_embeddings/chrome_history_embeddings_service.cc",
-    "history_embeddings/chrome_history_embeddings_service.h",
-    "history_embeddings/chrome_passage_embeddings_service_controller.cc",
-    "history_embeddings/chrome_passage_embeddings_service_controller.h",
-    "history_embeddings/history_embeddings_service_factory.cc",
-    "history_embeddings/history_embeddings_service_factory.h",
-    "history_embeddings/history_embeddings_tab_helper.cc",
-    "history_embeddings/history_embeddings_tab_helper.h",
     "icon_loader.cc",
     "icon_loader.h",
     "icon_manager.cc",
@@ -1958,6 +1950,19 @@ static_library("browser") {
       "webapps/webapps_client_desktop.h",
       "webid/digital_identity_provider_desktop.cc",
       "webid/digital_identity_provider_desktop.h",
+    ]
+  }
+
+  if (!is_fuchsia) {
+    sources += [
+      "history_embeddings/chrome_history_embeddings_service.cc",
+      "history_embeddings/chrome_history_embeddings_service.h",
+      "history_embeddings/chrome_passage_embeddings_service_controller.cc",
+      "history_embeddings/chrome_passage_embeddings_service_controller.h",
+      "history_embeddings/history_embeddings_service_factory.cc",
+      "history_embeddings/history_embeddings_service_factory.h",
+      "history_embeddings/history_embeddings_tab_helper.cc",
+      "history_embeddings/history_embeddings_tab_helper.h",
     ]
   }
 

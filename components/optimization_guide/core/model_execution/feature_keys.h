@@ -29,7 +29,7 @@ enum class ModelBasedCapabilityKey {
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH,
 };
 
-inline constexpr std::array<ModelBasedCapabilityKey, 6>
+inline constexpr std::array<ModelBasedCapabilityKey, 7>
     kAllModelBasedCapabilityKeys = {
         ModelBasedCapabilityKey::kCompose,
         ModelBasedCapabilityKey::kTabOrganization,
@@ -37,6 +37,7 @@ inline constexpr std::array<ModelBasedCapabilityKey, 6>
         ModelBasedCapabilityKey::kTest,
         ModelBasedCapabilityKey::kTextSafety,
         ModelBasedCapabilityKey::kPromptApi,
+        ModelBasedCapabilityKey::kHistorySearch,
 };
 
 // A "real" feature implemented by a model-based capability.

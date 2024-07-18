@@ -12,6 +12,7 @@ MockHistoryEmbeddingsService::MockHistoryEmbeddingsService()
                                nullptr,
                                nullptr,
                                nullptr,
+                               nullptr,
                                nullptr) {}
 
 MockHistoryEmbeddingsService::~MockHistoryEmbeddingsService() = default;

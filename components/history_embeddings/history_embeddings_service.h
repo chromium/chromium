@@ -37,6 +37,7 @@
 class HistoryEmbeddingsInteractiveTest;
 
 namespace optimization_guide {
+class OptimizationGuideModelExecutor;
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
@@ -132,7 +133,9 @@ class HistoryEmbeddingsService : public KeyedService,
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       PassageEmbeddingsServiceController* service_controller,
-      os_crypt_async::OSCryptAsync* os_crypt_async);
+      os_crypt_async::OSCryptAsync* os_crypt_async,
+      optimization_guide::OptimizationGuideModelExecutor*
+          optimization_guide_model_executor);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
   HistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) = delete;
   ~HistoryEmbeddingsService() override;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "components/optimization_guide/proto/features/history_answer.pb.h"
 
 namespace history_embeddings {
 
@@ -22,6 +23,9 @@ enum class ComputeAnswerStatus {
 
   // Failure occurred during model execution.
   EXECUTION_FAILURE,
+
+  // Model execution cancelled.
+  EXECUTION_CANCELLED,
 };
 
 // Holds potentially multiple answers with scores from the model and
@@ -29,7 +33,7 @@ enum class ComputeAnswerStatus {
 struct AnswererResult {
   ComputeAnswerStatus status;
   std::string query;
-  std::string answer;
+  optimization_guide::proto::Answer answer;
 };
 
 using ComputeAnswerCallback = base::OnceCallback<void(AnswererResult result)>;
@@ -38,9 +42,16 @@ using ComputeAnswerCallback = base::OnceCallback<void(AnswererResult result)>;
 class Answerer {
  public:
   // This type specifies the query context that can be used to inform
-  // generated answers. It may include top search result passages and
-  // potentially other data, so this may eventually become a struct.
-  using Context = std::vector<std::string>;
+  // generated answers. It includes top search result passages and
+  // potentially other data.
+  struct Context {
+    Context();
+    Context(const Context& other);
+    ~Context();
+
+    // URL to passages.
+    std::unordered_map<std::string, std::vector<std::string>> url_passages_map;
+  };
 
   virtual ~Answerer() = default;
 

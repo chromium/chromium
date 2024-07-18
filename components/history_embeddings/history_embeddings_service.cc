@@ -30,6 +30,7 @@
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -209,7 +210,9 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
         optimization_guide_model_provider,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     PassageEmbeddingsServiceController* service_controller,
-    os_crypt_async::OSCryptAsync* os_crypt_async)
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    optimization_guide::OptimizationGuideModelExecutor*
+        optimization_guide_model_executor)
     : os_crypt_async_(os_crypt_async),
       history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
@@ -245,7 +248,10 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       std::move(embedder_), kScheduledEmbeddingsMax.Get());
 
   if (kUseMlAnswerer.Get()) {
-    answerer_ = std::make_unique<MlAnswerer>();
+    answerer_ =
+        optimization_guide_model_executor
+            ? std::make_unique<MlAnswerer>(optimization_guide_model_executor)
+            : nullptr;
   } else {
     answerer_ = std::make_unique<MockAnswerer>();
   }

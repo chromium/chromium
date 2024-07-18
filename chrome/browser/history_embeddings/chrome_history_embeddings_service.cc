@@ -29,7 +29,8 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
                                optimization_guide_service,
                                optimization_guide_service,
                                service_controller,
-                               g_browser_process->os_crypt_async()),
+                               g_browser_process->os_crypt_async(),
+                               optimization_guide_service),
       optimization_guide_service_(optimization_guide_service) {}
 
 ChromeHistoryEmbeddingsService::~ChromeHistoryEmbeddingsService() = default;

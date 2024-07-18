@@ -46,7 +46,8 @@ std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
   return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
       history_service, page_content_annotations_service,
       optimization_guide_keyed_service, optimization_guide_keyed_service,
-      nullptr, TestingBrowserProcess::GetGlobal()->os_crypt_async());
+      nullptr, TestingBrowserProcess::GetGlobal()->os_crypt_async(),
+      optimization_guide_keyed_service);
 }
 
 std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(

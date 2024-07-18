@@ -37,6 +37,8 @@
 
 namespace history_embeddings {
 
+using optimization_guide::OptimizationGuideModelExecutor;
+
 class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
  public:
   HistoryEmbeddingsServicePublic(
@@ -47,13 +49,15 @@ class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
           optimization_guide_model_provider,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       PassageEmbeddingsServiceController* service_controller,
-      os_crypt_async::OSCryptAsync* os_crypt_async)
+      os_crypt_async::OSCryptAsync* os_crypt_async,
+      OptimizationGuideModelExecutor* optimization_guide_model_executor)
       : HistoryEmbeddingsService(history_service,
                                  page_content_annotations_service,
                                  optimization_guide_model_provider,
                                  optimization_guide_decider,
                                  service_controller,
-                                 os_crypt_async) {}
+                                 os_crypt_async,
+                                 optimization_guide_model_executor) {}
 
   using HistoryEmbeddingsService::Storage;
 
@@ -97,7 +101,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
         history_service_.get(), page_content_annotations_service_.get(),
         optimization_guide_model_provider_.get(),
         optimization_guide_decider_.get(),
-        /*service_controller=*/nullptr, os_crypt_.get());
+        /*service_controller=*/nullptr, os_crypt_.get(),
+        /*optimization_guide_model_executor=*/nullptr);
   }
 
   void TearDown() override {
@@ -374,7 +379,7 @@ TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {
 
   EXPECT_EQ(result.status, ComputeAnswerStatus::SUCCESS);
   EXPECT_EQ(result.query, "test query");
-  EXPECT_EQ(result.answer, "This is the answer to query 'test query'.");
+  EXPECT_EQ(result.answer.text(), "This is the answer to query 'test query'.");
 }
 
 }  // namespace history_embeddings
