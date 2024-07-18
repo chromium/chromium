@@ -50,13 +50,17 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
 @synthesize screenshotView = _screenshotView;
 
 - (instancetype)initWithWebView:(WKWebView*)webView
-                       webState:(web::WebState*)webState {
+                       webState:(web::WebState*)webState
+                  containerView:(UIView*)containerView {
   self = [super init];
   if (self) {
     _contextMenu = [[UIContextMenuInteraction alloc] initWithDelegate:self];
 
     _webView = webView;
-    [webView addInteraction:_contextMenu];
+
+    // Do not add the interaction to the WKWebView itself as this may interfer
+    // with the JS touch event. see crbug/351696381.
+    [containerView addInteraction:_contextMenu];
 
     _webState = webState;
 

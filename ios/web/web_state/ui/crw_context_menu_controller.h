@@ -18,7 +18,8 @@ class WebState;
 @interface CRWContextMenuController : NSObject
 
 - (instancetype)initWithWebView:(WKWebView*)webView
-                       webState:(web::WebState*)webState;
+                       webState:(web::WebState*)webState
+                  containerView:(UIView*)containerView;
 
 @end
 

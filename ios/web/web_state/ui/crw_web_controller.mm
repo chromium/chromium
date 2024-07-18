@@ -1445,11 +1445,6 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     [self.webView setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
                                       UIViewAutoresizingFlexibleHeight];
 
-    if (web::GetWebClient()->EnableLongPressUIContextMenu()) {
-      self.contextMenuController =
-          [[CRWContextMenuController alloc] initWithWebView:self.webView
-                                                   webState:self.webStateImpl];
-    }
 
     // WKWebViews with invalid or empty frames have exhibited rendering bugs, so
     // resize the view to match the container view upon creation.
@@ -1490,22 +1485,24 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   if (!self.webView || [_containerView webViewContentView])
     return;
 
+  CrFullscreenState fullScreenState = CrFullscreenState::kNotInFullScreen;
 #if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
-    CRWWebViewContentView* webViewContentView = [[CRWWebViewContentView alloc]
-        initWithWebView:self.webView
-             scrollView:self.webScrollView
-        fullscreenState:CrFullscreenStateFromWKFullscreenState(
-                            self.webView.fullscreenState)];
-    [_containerView displayWebViewContentView:webViewContentView];
-    return;
+    fullScreenState =
+        CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
   }
-#endif  // defined(__IPHONE_16_0)
+#endif
+  CRWWebViewContentView* webViewContentView =
+      [[CRWWebViewContentView alloc] initWithWebView:self.webView
+                                          scrollView:self.webScrollView
+                                     fullscreenState:fullScreenState];
 
-  CRWWebViewContentView* webViewContentView = [[CRWWebViewContentView alloc]
-      initWithWebView:self.webView
-           scrollView:self.webScrollView
-      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  if (web::GetWebClient()->EnableLongPressUIContextMenu()) {
+    self.contextMenuController =
+        [[CRWContextMenuController alloc] initWithWebView:self.webView
+                                                 webState:self.webStateImpl
+                                            containerView:webViewContentView];
+  }
 
   [_containerView displayWebViewContentView:webViewContentView];
 }
