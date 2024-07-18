@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "pdf/document_metadata.h"
-#include "pdf/pdf_engine.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/gfx/geometry/size_f.h"
 

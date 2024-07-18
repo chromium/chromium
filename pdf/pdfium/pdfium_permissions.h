@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "pdf/pdf_engine.h"
+#include "pdf/pdfium/pdfium_engine.h"
 #include "third_party/pdfium/public/fpdfview.h"
 
 namespace chrome_pdf {

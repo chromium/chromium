@@ -104,7 +104,6 @@ if (enable_pdf) {
       "paint_ready_rect.h",
       "parsed_params.cc",
       "parsed_params.h",
-      "pdf_engine.h",
       "pdf_init.cc",
       "pdf_init.h",
       "pdf_transform.cc",

@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
-#include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 

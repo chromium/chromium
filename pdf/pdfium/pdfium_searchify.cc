@@ -20,7 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "pdf/pdf_engine.h"
+#include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_ocr.h"
 #include "pdf/pdfium/pdfium_searchify_font.h"

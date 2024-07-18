@@ -65,7 +65,6 @@
 #include "pdf/paint_ready_rect.h"
 #include "pdf/parsed_params.h"
 #include "pdf/pdf_accessibility_data_handler.h"
-#include "pdf/pdf_engine.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -425,8 +424,8 @@ void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
 
 void PdfViewWebPlugin::Destroy() {
   if (initialized_) {
-    // Explicitly destroy the PDFEngine during destruction as it may call back
-    // into this object.
+    // Explicitly destroy the PDFiumEngine during destruction as it may call
+    // back into this object.
     preview_engine_.reset();
     engine_.reset();
     PerProcessInitializer::GetInstance().Release();
@@ -1392,7 +1391,7 @@ void PdfViewWebPlugin::HandleDisplayAnnotationsMessage(
 
 void PdfViewWebPlugin::HandleGetNamedDestinationMessage(
     const base::Value::Dict& message) {
-  std::optional<PDFEngine::NamedDestination> named_destination =
+  std::optional<PDFiumEngine::NamedDestination> named_destination =
       engine_->GetNamedDestination(*message.FindString("namedDestination"));
 
   const int page_number = named_destination.has_value()

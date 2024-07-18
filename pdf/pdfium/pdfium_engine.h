@@ -16,22 +16,25 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/loader/document_loader.h"
-#include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_print.h"
 #include "pdf/pdfium/pdfium_range.h"
+#include "printing/mojom/print.mojom-forward.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdf_progressive.h"
@@ -40,39 +43,120 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "pdf/flatten_pdf_result.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
+#endif
+
 namespace blink {
+class WebInputEvent;
 class WebKeyboardEvent;
 class WebMouseEvent;
 class WebTouchEvent;
+struct WebPrintParams;
 }  // namespace blink
 
 namespace chrome_pdf {
 
-enum class AccessibilityScrollAlignment;
 class PDFiumDocument;
 class PDFiumPermissions;
+class Thumbnail;
+enum class AccessibilityScrollAlignment;
 struct AccessibilityActionData;
+struct AccessibilityFocusInfo;
+struct AccessibilityHighlightInfo;
+struct AccessibilityImageInfo;
+struct AccessibilityLinkInfo;
+struct AccessibilityTextFieldInfo;
 struct AccessibilityTextRunInfo;
+struct DocumentAttachmentInfo;
+struct DocumentMetadata;
 struct PageCharacterIndex;
 
 namespace draw_utils {
 class ShadowMatrix;
 }  // namespace draw_utils
 
-class PDFiumEngine : public PDFEngine,
-                     public DocumentLoader::Client,
-                     public IFSDK_PAUSE {
+enum class FontMappingMode {
+  // Do not perform font mapping.
+  kNoMapping,
+  // Perform font mapping in renderer processes using Blink/content APIs.
+  kBlink,
+};
+
+enum class DocumentPermission {
+  kCopy,
+  kCopyAccessible,
+  kPrintLowQuality,
+  kPrintHighQuality,
+};
+
+// Do one time initialization of the SDK.
+// If `enable_v8` is false, then PDFiumEngine will not be able to run
+// JavaScript.
+// When `use_skia` is true, the PDFiumEngine will use Skia renderer. Otherwise,
+// it will use AGG renderer.
+void InitializeSDK(bool enable_v8,
+                   bool use_skia,
+                   FontMappingMode font_mapping_mode);
+// Tells the SDK that we're shutting down.
+void ShutdownSDK();
+
+using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
+
+// This class implements a PDF rendering engine using the PDFium library.
+//
+// Many methods in this class are virtual to facilitate testing.
+class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
  public:
+  // Maximum number of parameters a nameddest view can contain.
+  static constexpr size_t kMaxViewParams = 4;
+
   // State transition when tabbing forward:
   // None -> Document -> Page -> None (when focusable annotations on all pages
   // are done).
   // Exposed for testing.
   enum class FocusElementType { kNone, kDocument, kPage };
+
+  // Named destination in a document.
+  struct NamedDestination {
+    // 0-based page number.
+    unsigned long page;
+
+    // View fit type (see table 8.2 "Destination syntax" on page 582 of PDF
+    // Reference 1.7). Empty string if not present.
+    std::string view;
+
+    // Number of parameters for the view.
+    unsigned long num_params;
+
+    // Parameters for the view. Their meaning depends on the `view` and their
+    // number is defined by `num_params` but is at most `kMaxViewParams`. Note:
+    // If a parameter stands for the x/y coordinates, it should be transformed
+    // into the corresponding in-screen coordinates before it's sent to the
+    // viewport.
+    float params[kMaxViewParams];
+
+    // A string of parameters for view fit type XYZ in the format of "x,y,zoom",
+    // where x and y parameters are the in-screen coordinates and zoom is the
+    // zoom level. If a parameter is "null", then current value of that
+    // parameter in the viewport should be retained. Note: This string is empty
+    // if the view's fit type is not XYZ.
+    std::string xyz_params;
+  };
 
   // NOTE: `script_option` is ignored when PDF_ENABLE_V8 is not defined.
   PDFiumEngine(PDFiumEngineClient* client,
@@ -93,107 +177,228 @@ class PDFiumEngine : public PDFEngine,
   bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader,
                           const std::string& original_url);
 
-  // PDFEngine:
-  void PageOffsetUpdated(const gfx::Vector2d& page_offset) override;
-  void PluginSizeUpdated(const gfx::Size& size) override;
-  void ScrolledToXPosition(int position) override;
-  void ScrolledToYPosition(int position) override;
-  void PrePaint() override;
-  void Paint(const gfx::Rect& rect,
-             SkBitmap& image_data,
-             std::vector<gfx::Rect>& ready,
-             std::vector<gfx::Rect>& pending) override;
-  void PostPaint() override;
-  bool HandleInputEvent(const blink::WebInputEvent& event) override;
-  void PrintBegin() override;
-  std::vector<uint8_t> PrintPages(
+  // Most of these functions are similar to the Pepper functions of the same
+  // name, so not repeating the description here unless it's different.
+  virtual void PageOffsetUpdated(const gfx::Vector2d& page_offset);
+  virtual void PluginSizeUpdated(const gfx::Size& size);
+  virtual void ScrolledToXPosition(int position);
+  virtual void ScrolledToYPosition(int position);
+  // Paint is called a series of times. Before these n calls are made, PrePaint
+  // is called once. After Paint is called n times, PostPaint is called once.
+  void PrePaint();
+  virtual void Paint(const gfx::Rect& rect,
+                     SkBitmap& image_data,
+                     std::vector<gfx::Rect>& ready,
+                     std::vector<gfx::Rect>& pending);
+  void PostPaint();
+  virtual bool HandleInputEvent(const blink::WebInputEvent& event);
+  void PrintBegin();
+  virtual std::vector<uint8_t> PrintPages(
       const std::vector<int>& page_numbers,
-      const blink::WebPrintParams& print_params) override;
-  void PrintEnd() override;
-  void StartFind(const std::u16string& text, bool case_sensitive) override;
-  bool SelectFindResult(bool forward) override;
-  void StopFind() override;
-  void ZoomUpdated(double new_zoom_level) override;
-  void RotateClockwise() override;
-  void RotateCounterclockwise() override;
-  bool IsReadOnly() const override;
-  void SetReadOnly(bool enable) override;
-  void SetDocumentLayout(DocumentLayout::PageSpread page_spread) override;
-  void DisplayAnnotations(bool display) override;
-  gfx::Size ApplyDocumentLayout(
-      const DocumentLayout::Options& options) override;
-  std::string GetSelectedText() override;
-  bool CanEditText() const override;
-  bool HasEditableText() const override;
-  void ReplaceSelection(const std::string& text) override;
-  bool CanUndo() const override;
-  bool CanRedo() const override;
-  void Undo() override;
-  void Redo() override;
-  void HandleAccessibilityAction(
-      const AccessibilityActionData& action_data) override;
-  std::string GetLinkAtPosition(const gfx::Point& point) override;
-  bool HasPermission(DocumentPermission permission) const override;
-  void SelectAll() override;
-  const std::vector<DocumentAttachmentInfo>& GetDocumentAttachmentInfoList()
-      const override;
-  std::vector<uint8_t> GetAttachmentData(size_t index) override;
-  const DocumentMetadata& GetDocumentMetadata() const override;
-  int GetNumberOfPages() const override;
-  base::Value::List GetBookmarks() override;
-  std::optional<PDFEngine::NamedDestination> GetNamedDestination(
-      const std::string& destination) override;
-  int GetMostVisiblePage() override;
-  bool IsPageVisible(int index) const override;
-  PageOrientation GetCurrentOrientation() const override;
-  gfx::Rect GetPageBoundsRect(int index) override;
-  gfx::Rect GetPageContentsRect(int index) override;
-  gfx::Rect GetPageScreenRect(int page_index) const override;
-  gfx::RectF GetPageBoundingBox(int page_index) override;
-  void SetGrayscale(bool grayscale) override;
-  int GetCharCount(int page_index) override;
-  gfx::RectF GetCharBounds(int page_index, int char_index) override;
-  uint32_t GetCharUnicode(int page_index, int char_index) override;
-  std::optional<AccessibilityTextRunInfo> GetTextRunInfo(
-      int page_index,
-      int start_char_index) override;
+      const blink::WebPrintParams& print_params);
+  void PrintEnd();
+  void StartFind(const std::u16string& text, bool case_sensitive);
+  bool SelectFindResult(bool forward);
+  void StopFind();
+  virtual void ZoomUpdated(double new_zoom_level);
+  void RotateClockwise();
+  void RotateCounterclockwise();
+  bool IsReadOnly() const;
+  void SetReadOnly(bool enable);
+  void SetDocumentLayout(DocumentLayout::PageSpread page_spread);
+  void DisplayAnnotations(bool display);
+
+  // Applies the document layout options proposed by a call to
+  // PDFiumEngineClient::ProposeDocumentLayout(), returning the overall size of
+  // the new effective layout.
+  virtual gfx::Size ApplyDocumentLayout(const DocumentLayout::Options& options);
+
+  std::string GetSelectedText();
+  // Returns true if focus is within an editable form text area.
+  virtual bool CanEditText() const;
+
+  // Returns true if focus is within an editable form text area and the text
+  // area has text.
+  bool HasEditableText() const;
+
+  // Replace selected text within an editable form text area with another
+  // string. If there is no selected text, append the replacement text after the
+  // current caret position.
+  void ReplaceSelection(const std::string& text);
+
+  // Methods to check if undo/redo is possible, and to perform them.
+  bool CanUndo() const;
+  bool CanRedo() const;
+  void Undo();
+  void Redo();
+
+  // Handles actions invoked by Accessibility clients.
+  void HandleAccessibilityAction(const AccessibilityActionData& action_data);
+
+  std::string GetLinkAtPosition(const gfx::Point& point);
+
+  // Checks the permissions associated with this document.
+  virtual bool HasPermission(DocumentPermission permission) const;
+
+  virtual void SelectAll();
+
+  // Gets the list of DocumentAttachmentInfo from the document.
+  virtual const std::vector<DocumentAttachmentInfo>&
+  GetDocumentAttachmentInfoList() const;
+
+  // Gets the content of an attachment by the attachment's `index`. `index`
+  // must be in the range of [0, attachment_count-1), where `attachment_count`
+  // is the number of attachments embedded in the document.
+  // The caller of this method is responsible for checking whether the
+  // attachment is readable, attachment size is not 0 byte, and the return
+  // value's size matches the corresponding DocumentAttachmentInfo's
+  // `size_bytes`.
+  std::vector<uint8_t> GetAttachmentData(size_t index);
+
+  // Gets metadata about the document.
+  virtual const DocumentMetadata& GetDocumentMetadata() const;
+
+  // Gets the number of pages in the document.
+  virtual int GetNumberOfPages() const;
+
+  // Returns a list of Values of Bookmarks. Each Bookmark is a dictionary Value
+  // which contains the following key/values:
+  // - "title" - a string Value.
+  // - "page" - an int Value.
+  // - "children" - a list of Values, with each entry containing
+  //   a dictionary Value of the same structure.
+  virtual base::Value::List GetBookmarks();
+
+  // Gets the named destination by name.
+  std::optional<NamedDestination> GetNamedDestination(
+      const std::string& destination);
+
+  // Gets the index of the most visible page, or -1 if none are visible.
+  int GetMostVisiblePage();
+
+  // Returns whether the page at `index` is visible or not.
+  virtual bool IsPageVisible(int index) const;
+
+  // Gets the current layout orientation.
+  PageOrientation GetCurrentOrientation() const;
+
+  // Gets the rectangle of the page not including the shadow.
+  gfx::Rect GetPageBoundsRect(int index);
+
+  // Gets the rectangle of the page excluding any additional areas.
+  virtual gfx::Rect GetPageContentsRect(int index);
+
+  // Returns a page's rect in screen coordinates, as well as its surrounding
+  // border areas and bottom separator.
+  virtual gfx::Rect GetPageScreenRect(int page_index) const;
+
+  // Return a page's bounding box rectangle, or an empty rectangle if
+  // `page_index` is invalid.
+  gfx::RectF GetPageBoundingBox(int page_index);
+
+  // Set color / grayscale rendering modes.
+  virtual void SetGrayscale(bool grayscale);
+
+  // Get the number of characters on a given page.
+  int GetCharCount(int page_index);
+
+  // Get the bounds in page pixels of a character on a given page.
+  gfx::RectF GetCharBounds(int page_index, int char_index);
+
+  // Get a given unicode character on a given page.
+  uint32_t GetCharUnicode(int page_index, int char_index);
+
+  // Given a start char index, find the longest continuous run of text that's
+  // in a single direction and with the same text style. Return a filled out
+  // AccessibilityTextRunInfo on success or std::nullopt on failure. e.g. When
+  // `start_char_index` is out of bounds.
+  std::optional<AccessibilityTextRunInfo> GetTextRunInfo(int page_index,
+                                                         int start_char_index);
+
+  // For all the links on page `page_index`, get their urls, underlying text
+  // ranges and bounding boxes.
   std::vector<AccessibilityLinkInfo> GetLinkInfo(
       int page_index,
-      const std::vector<AccessibilityTextRunInfo>& text_runs) override;
-  std::vector<AccessibilityImageInfo> GetImageInfo(
-      int page_index,
-      uint32_t text_run_count) override;
-  SkBitmap GetImageForOcr(int page_index, int image_index) override;
+      const std::vector<AccessibilityTextRunInfo>& text_runs);
+
+  // For all the images in page `page_index`, get their alt texts and bounding
+  // boxes. If the alt text is empty or unavailable, and if the user has
+  // requested that the OCR service tag the PDF so that it is made accessible,
+  // transfer the raw image pixels in the `image_data` field. Otherwise do not
+  // populate the `image_data` field.
+  std::vector<AccessibilityImageInfo> GetImageInfo(int page_index,
+                                                   uint32_t text_run_count);
+
+  // Returns the image as a 32-bit bitmap format for OCR.
+  SkBitmap GetImageForOcr(int page_index, int image_index);
+
+  // For all the highlights in page `page_index`, get their underlying text
+  // ranges and bounding boxes.
   std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
       int page_index,
-      const std::vector<AccessibilityTextRunInfo>& text_runs) override;
+      const std::vector<AccessibilityTextRunInfo>& text_runs);
+
+  // For all the text fields in page `page_index`, get their properties like
+  // name, value, bounding boxes etc.
   std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
       int page_index,
-      uint32_t text_run_count) override;
-  bool GetPrintScaling() override;
-  int GetCopiesToPrint() override;
-  printing::mojom::DuplexMode GetDuplexMode() override;
-  std::optional<gfx::Size> GetUniformPageSizePoints() override;
-  void AppendBlankPages(size_t num_pages) override;
-  void AppendPage(PDFEngine* engine, int index) override;
-  std::vector<uint8_t> GetSaveData() override;
-  void SetCaretPosition(const gfx::Point& position) override;
-  void MoveRangeSelectionExtent(const gfx::Point& extent) override;
-  void SetSelectionBounds(const gfx::Point& base,
-                          const gfx::Point& extent) override;
+      uint32_t text_run_count);
+
+  // Gets the PDF document's print scaling preference. True if the document can
+  // be scaled to fit.
+  bool GetPrintScaling();
+
+  // Returns number of copies to be printed.
+  int GetCopiesToPrint();
+
+  // Returns the duplex setting.
+  printing::mojom::DuplexMode GetDuplexMode();
+
+  // Returns the uniform page size of the document in points. Returns
+  // `std::nullopt` if the document has more than one page size.
+  virtual std::optional<gfx::Size> GetUniformPageSizePoints();
+
+  // Append blank pages to make a 1-page document to a `num_pages` document.
+  // Always retain the first page data.
+  void AppendBlankPages(size_t num_pages);
+
+  // Append the first page of the document loaded with the `engine` to this
+  // document at page `index`.
+  void AppendPage(PDFiumEngine* engine, int index);
+
+  virtual std::vector<uint8_t> GetSaveData();
+
+  virtual void SetCaretPosition(const gfx::Point& position);
+
+  void MoveRangeSelectionExtent(const gfx::Point& extent);
+
+  void SetSelectionBounds(const gfx::Point& base, const gfx::Point& extent);
+
   void GetSelection(uint32_t* selection_start_page_index,
                     uint32_t* selection_start_char_index,
                     uint32_t* selection_end_page_index,
-                    uint32_t* selection_end_char_index) override;
-  void KillFormFocus() override;
-  void UpdateFocus(bool has_focus) override;
-  AccessibilityFocusInfo GetFocusInfo() override;
-  bool IsPDFDocTagged() override;
-  uint32_t GetLoadedByteSize() override;
-  bool ReadLoadedBytes(uint32_t length, void* buffer) override;
+                    uint32_t* selection_end_char_index);
+
+  // Remove focus from form widgets, consolidating the user input.
+  void KillFormFocus();
+
+  // Notify whether the PDF currently has the focus or not.
+  void UpdateFocus(bool has_focus);
+
+  // Returns the focus info of current focus item.
+  AccessibilityFocusInfo GetFocusInfo();
+
+  bool IsPDFDocTagged();
+
+  virtual uint32_t GetLoadedByteSize();
+
+  virtual bool ReadLoadedBytes(uint32_t length, void* buffer);
+
+  // Requests for a thumbnail to be sent using a callback when the page is ready
+  // to be rendered. `send_callback` is run with the thumbnail data when ready.
   void RequestThumbnail(int page_index,
                         float device_pixel_ratio,
-                        SendThumbnailCallback send_callback) override;
+                        SendThumbnailCallback send_callback);
 
   // DocumentLoader::Client:
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override;

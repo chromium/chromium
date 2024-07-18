@@ -29,7 +29,6 @@
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_accessibility_image_fetcher.h"
-#include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"

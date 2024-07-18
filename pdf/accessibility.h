@@ -11,7 +11,7 @@
 
 namespace chrome_pdf {
 
-class PDFEngine;
+class PDFiumEngine;
 struct AccessibilityCharInfo;
 struct AccessibilityPageInfo;
 struct AccessibilityPageObjects;
@@ -21,7 +21,7 @@ struct AccessibilityTextRunInfo;
 // `engine` for the page at 0-indexed `page_index`. Returns true on success with
 // all out parameters filled, or false on failure with all out parameters
 // untouched.
-bool GetAccessibilityInfo(PDFEngine* engine,
+bool GetAccessibilityInfo(PDFiumEngine* engine,
                           int32_t page_index,
                           AccessibilityPageInfo& page_info,
                           std::vector<AccessibilityTextRunInfo>& text_runs,

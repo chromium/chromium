@@ -43,7 +43,7 @@ class PDFiumEngineClient {
   virtual ~PDFiumEngineClient() = default;
 
   // Proposes a document layout to the client. For the proposed layout to
-  // become effective, the client must call PDFEngine::ApplyDocumentLayout()
+  // become effective, the client must call PDFiumEngine::ApplyDocumentLayout()
   // with the new layout options (although this call can be asynchronous).
   virtual void ProposeDocumentLayout(const DocumentLayout& layout) = 0;
 

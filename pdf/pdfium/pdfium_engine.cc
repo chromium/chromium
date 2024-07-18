@@ -765,7 +765,7 @@ std::unique_ptr<URLLoaderWrapper> PDFiumEngine::CreateURLLoader() {
   return std::make_unique<URLLoaderWrapperImpl>(client_->CreateUrlLoader());
 }
 
-void PDFiumEngine::AppendPage(PDFEngine* engine, int index) {
+void PDFiumEngine::AppendPage(PDFiumEngine* engine, int index) {
   CHECK(engine);
   CHECK(PageIndexInBounds(index));
 
@@ -2522,7 +2522,7 @@ void PDFiumEngine::ScrollToGlobalPoint(const gfx::Rect& target_rect,
   client_->ScrollBy(scroll_offset - global_point);
 }
 
-std::optional<PDFEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
+std::optional<PDFiumEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
     const std::string& destination) {
   // Look for the destination.
   FPDF_DEST dest = FPDF_GetNamedDestByName(doc(), destination.c_str());
@@ -2543,7 +2543,7 @@ std::optional<PDFEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
   if (!PageIndexInBounds(page))
     return {};
 
-  PDFEngine::NamedDestination result;
+  NamedDestination result;
   result.page = page;
   unsigned long view_int =
       FPDFDest_GetView(dest, &result.num_params, result.params);

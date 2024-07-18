@@ -16,7 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "pdf/page_orientation.h"
-#include "pdf/pdf_engine.h"
 #include "pdf/ui/thumbnail.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_doc.h"
@@ -70,7 +69,7 @@ class PDFiumPage {
   // Returns FPDF_TEXTPAGE for the page, loading and parsing it if necessary.
   FPDF_TEXTPAGE GetTextPage();
 
-  // See definition of PDFEngine::GetTextRunInfo().
+  // See definition of PDFiumEngine::GetTextRunInfo().
   std::optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
 
   // Get a unicode character from the page.

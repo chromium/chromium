@@ -11,7 +11,7 @@
 #include "base/path_service.h"
 #include "base/test/mock_callback.h"
 #include "pdf/pdf.h"
-#include "pdf/pdf_engine.h"
+#include "pdf/pdfium/pdfium_engine.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"

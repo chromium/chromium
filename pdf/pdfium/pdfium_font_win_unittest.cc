@@ -9,8 +9,8 @@
 #include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "pdf/pdf_engine.h"
 #include "pdf/pdf_features.h"
+#include "pdf/pdfium/pdfium_engine.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/pdfium/public/fpdf_sysfontinfo.h"
 

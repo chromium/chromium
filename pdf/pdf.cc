@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
+#include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
