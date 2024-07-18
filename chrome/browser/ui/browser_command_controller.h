@@ -36,8 +36,7 @@ namespace chrome {
 // exposed).
 class BrowserCommandController : public CommandUpdater,
                                  public TabStripModelObserver,
-                                 public sessions::TabRestoreServiceObserver,
-                                 public content::WebContentsObserver {
+                                 public sessions::TabRestoreServiceObserver {
  public:
   explicit BrowserCommandController(Browser* browser);
 
@@ -114,10 +113,6 @@ class BrowserCommandController : public CommandUpdater,
   void TabRestoreServiceDestroyed(
       sessions::TabRestoreService* service) override;
   void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override;
-
-  // Overridden from WebContentsObserver:
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
 
   // Returns true if the regular Chrome UI (not the fullscreen one and
   // not the single-tab one) is shown. Used for updating window command states
@@ -222,6 +217,11 @@ class BrowserCommandController : public CommandUpdater,
   void UpdateCommandAndActionEnabled(int command_id,
                                      actions::ActionId action_id,
                                      bool enabled);
+
+  // Helper method to show the customize chrome sidepanel and optionally scroll
+  // to a specific section.
+  void ShowCustomizeChromeSidePanel(
+      std::optional<CustomizeChromeSection> section = std::nullopt);
 
   inline BrowserWindow* window();
   inline Profile* profile();

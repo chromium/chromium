@@ -30,7 +30,8 @@ enum class SidePanelOpenTrigger {
   kReadAnythingNavigationThrottle = 16,
   kOverflowMenu = 17,
   kExtension = 18,
-  kMaxValue = kExtension,
+  kNewTabPage = 19,
+  kMaxValue = kNewTabPage,
 };
 
 enum class SidePanelContentState {

@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -266,7 +267,6 @@ BrowserCommandController::~BrowserCommandController() {
       TabRestoreServiceFactory::GetForProfileIfExisting(profile());
   if (tab_restore_service)
     tab_restore_service->RemoveObserver(this);
-  content::WebContentsObserver::Observe(nullptr);
   profile_pref_registrar_.RemoveAll();
   local_pref_registrar_.RemoveAll();
   browser_->tab_strip_model()->RemoveObserver(this);
@@ -1072,19 +1072,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     }
 
     case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL: {
-      auto& web_contents = chrome::NewTab(browser_);
-      // Wait to show the side panel until the new tab has finished loading.
-      // See BrowserCommandController::DidFinishLoad.
-      content::WebContentsObserver::Observe(&web_contents);
+      ShowCustomizeChromeSidePanel();
       break;
     }
 
     case IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR: {
-      customize_chrome_section_ = CustomizeChromeSection::kToolbar;
-      auto& web_contents = chrome::NewTab(browser_);
-      // Wait to show the side panel until the new tab has finished loading.
-      // See BrowserCommandController::DidFinishLoad.
-      content::WebContentsObserver::Observe(&web_contents);
+      ShowCustomizeChromeSidePanel(CustomizeChromeSection::kToolbar);
       break;
     }
 
@@ -1218,29 +1211,6 @@ void BrowserCommandController::TabRestoreServiceDestroyed(
 void BrowserCommandController::TabRestoreServiceLoaded(
     sessions::TabRestoreService* service) {
   UpdateTabRestoreCommandState();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// BrowserCommandController, WebContentsObserver implementation:
-
-void BrowserCommandController::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  // TODO(b/338060778): Include 3P NTP/DSE here
-  if (validated_url == GURL(chrome::kChromeUINewTabPageURL)) {
-    auto* customize_chrome_controller =
-        browser_->GetActiveTabInterface()
-            ->GetTabFeatures()
-            ->customize_chrome_side_panel_controller();
-    customize_chrome_controller->SetCustomizeChromeSidePanelVisible(
-        true, customize_chrome_section_);
-
-    // WebContentsObserver is only used for asynchronously showing the
-    // Customize Chrome side panel, and only observes during the lifecycle of
-    // that command.
-    content::WebContentsObserver::Observe(nullptr);
-    customize_chrome_section_ = CustomizeChromeSection::kUnspecified;
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2039,6 +2009,24 @@ BrowserWindow* BrowserCommandController::window() {
 
 Profile* BrowserCommandController::profile() {
   return browser_->profile();
+}
+
+void BrowserCommandController::ShowCustomizeChromeSidePanel(
+    std::optional<CustomizeChromeSection> section) {
+  tabs::TabModel* tab = browser_->tab_strip_model()->GetActiveTab();
+  if (!tab || !tab->tab_features() ||
+      !tab->tab_features()->customize_chrome_side_panel_controller()) {
+    return;
+  }
+
+  customize_chrome::SidePanelController* side_panel_controller =
+      tab->tab_features()->customize_chrome_side_panel_controller();
+
+  if (!side_panel_controller) {
+    return;
+  }
+
+  side_panel_controller->OpenSidePanel(SidePanelOpenTrigger::kAppMenu, section);
 }
 
 }  // namespace chrome

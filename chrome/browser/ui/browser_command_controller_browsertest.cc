@@ -382,12 +382,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteShowCustomizeChrome) {
-  EXPECT_TRUE(
-      chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  if (!features::IsToolbarPinningEnabled()) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page/")));
+  }
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
+  EXPECT_TRUE(
+      chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL));
   const std::optional<SidePanelEntryId> current_entry =
       browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
   EXPECT_TRUE(current_entry.has_value());
@@ -396,12 +398,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
                        ExecuteShowCustomizeChromeToolbar) {
-  EXPECT_TRUE(
-      chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  if (!features::IsToolbarPinningEnabled()) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page/")));
+  }
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
+  EXPECT_TRUE(
+      chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR));
   const std::optional<SidePanelEntryId> current_entry =
       browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
   EXPECT_TRUE(current_entry.has_value());
