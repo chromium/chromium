@@ -1,133 +1,34 @@
-<style>
-  :host {
-    background-color: var(--color-new-tab-page-module-background);
-    border-radius: var(--ntp-module-border-radius);
-  }
-
-  @media (forced-colors: active) {
-    /* Set outline since background isn't visible in hcm */
-    ntp-module-header-v2,
-    a {
-      border-radius: var(--ntp-module-item-border-radius);
-      outline: var(--cr-border-hcm);
-     }
-
-    .file {
-      overflow: visible;
-    }
-  }
-
-  ntp-module-header-v2 {
-    background-color: var(--color-new-tab-page-module-background);
-    margin: 8px;
-  }
-
-  :host-context(.focus-outline-visible) a:focus,
-  a:focus-visible {
-    box-shadow: var(--ntp-focus-shadow);
-    outline: none;
-  }
-
-  #files {
-    background-color: var(--color-new-tab-page-module-item-background);
-    border-radius: var(--ntp-module-item-border-radius);
-    margin: 8px;
-  }
-
-  .file {
-    align-items: center;
-    display: flex;
-    height: 52px;
-    padding-bottom: 2px;
-    padding-top: 2px;
-    position: relative;
-    text-decoration: none;
-    overflow: hidden;
-  }
-
-  .file:hover #hover-layer {
-    background: var(--color-new-tab-page-module-item-background-hovered);
-    display: block;
-    inset: 0;
-    pointer-events: none;
-    position: absolute;
-  }
-
-  #hover-layer {
-    display: none;
-  }
-
-  .file:first-of-type {
-    border-radius: var(--ntp-module-item-border-radius)
-        var(--ntp-module-item-border-radius) 0 0;
-  }
-
-  .file:last-of-type {
-    border-radius: 0 0 var(--ntp-module-item-border-radius)
-        var(--ntp-module-item-border-radius);
-  }
-
-  .file-icon {
-    height: 18px;
-    margin-inline-end: 17px;
-    margin-inline-start: 17px;
-    width: 18px;
-  }
-
-  .file-info {
-    min-width: 0;
-    padding-inline-end: 16px;
-  }
-
-  .file-title,
-  .file-description {
-    color: var(--color-new-tab-page-primary-foreground);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .file-title {
-    font-size: var(--ntp-module-text-size);
-    line-height: var(--ntp-module-line-height);
-  }
-
-  .file-description {
-    font-size: var(--ntp-module-secondary-text-size);
-    line-height: var(--ntp-module-secondary-line-height);
-  }
-</style>
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
-    header-text="[[i18n('modulesDriveTitleV2')]]"
-    menu-item-groups="[[getMenuItemGroups_()]]"
-    more-actions-text="[[i18nRecursive('',
+    header-text="$i18n{modulesDriveTitleV2}"
+    .menuItemGroups="${this.getMenuItemGroups_()}"
+    more-actions-text="${this.i18nRecursive('',
                                   'modulesMoreActions',
-                                  'modulesDriveSentence')]]"
-    on-disable-button-click="onDisableButtonClick_"
-    on-dismiss-button-click="onDismissButtonClick_"
-    on-info-button-click="onInfoButtonClick_"
-    on-menu-button-click="onMenuButtonClick_">
+                                  'modulesDriveSentence')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}"
+    @menu-button-click="${this.onMenuButtonClick_}">
 </ntp-module-header-v2>
 <div id="files">
-  <template id="fileRepeat" is="dom-repeat" items="[[files]]">
-    <a class="file" href="[[item.itemUrl.url]]" on-click="onFileClick_">
+  ${this.files.map((item, index) => html`
+    <a class="file" href="${item.itemUrl.url}" data-index="${index}"
+        @click="${this.onFileClick_}">
       <div id="hover-layer"></div>
       <img is="cr-auto-img"
           class="file-icon"
           draggable="false"
-          auto-src="[[getImageSrc_(item)]]">
-      </img>
+          .autoSrc="${this.getImageSrc_(item)}">
       <div class="file-info">
-        <div class="file-title">[[item.title]]</div>
-        <div class="file-description">[[item.justificationText]]</div>
+        <div class="file-title">${item.title}</div>
+        <div class="file-description">${item.justificationText}</div>
       </div>
     </a>
-  </template>
+  `)}
 </div>
-<cr-lazy-render id="infoDialogRender">
-  <template>
-    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesDriveInfo')]]">
-    </ntp-info-dialog>
-  </template>
-</cr-lazy-render>
+${this.showInfoDialog_ ? html`
+  <ntp-info-dialog show-on-attach
+      .innerHTML="${this.i18nAdvanced('modulesDriveInfo')}"
+      @close="${this.onInfoDialogClose_}">
+  </ntp-info-dialog>
+` : ''}

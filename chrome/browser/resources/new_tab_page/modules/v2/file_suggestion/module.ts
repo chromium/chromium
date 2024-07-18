@@ -2,59 +2,62 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../../info_dialog.js';
 import '../../module_header.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import type {DomRepeat, DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {File} from '../../../file_suggestion.mojom-webui.js';
-import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
+import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {FileProxy} from '../../drive/file_module_proxy.js';
-import type {InfoDialogElement} from '../../info_dialog.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
-import {getTemplate} from './module.html.js';
+import {getCss} from './module.css.js';
+import {getHtml} from './module.html.js';
 
-export interface FileSuggestionModuleElement {
+export interface ModuleElement {
   $: {
-    fileRepeat: DomRepeat,
     files: HTMLElement,
-    infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
     moduleHeaderElementV2: ModuleHeaderElementV2,
   };
 }
+
+const ModuleElementBase = I18nMixinLit(CrLitElement);
 
 /**
  * The File module, which serves as an inside look in to recent activity within
  * a user's Google Drive or Microsoft Sharepoint.
  */
-export class FileSuggestionModuleElement extends I18nMixin
-(PolymerElement) {
+export class ModuleElement extends ModuleElementBase {
   static get is() {
     return 'ntp-file-module-redesigned';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      files: Array,
+      files: {type: Array},
+      showInfoDialog_: {type: Boolean},
     };
   }
 
-  files: File[];
+  files: File[] = [];
+  protected showInfoDialog_: boolean = false;
 
-  private getImageSrc_(file: File): string {
+  protected getImageSrc_(file: File): string {
     return 'https://drive-thirdparty.googleusercontent.com/32/type/' +
         file.mimeType;
   }
 
-  private getMenuItemGroups_(): MenuItem[][] {
+  protected getMenuItemGroups_(): MenuItem[][] {
     return [
       [
         {
@@ -83,7 +86,7 @@ export class FileSuggestionModuleElement extends I18nMixin
     ];
   }
 
-  private onDisableButtonClick_() {
+  protected onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
       detail: {
@@ -95,7 +98,7 @@ export class FileSuggestionModuleElement extends I18nMixin
     this.dispatchEvent(disableEvent);
   }
 
-  private onDismissButtonClick_() {
+  protected onDismissButtonClick_() {
     FileProxy.getHandler().dismissModule();
     this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
       bubbles: true,
@@ -109,30 +112,35 @@ export class FileSuggestionModuleElement extends I18nMixin
     }));
   }
 
-  private onFileClick_(e: DomRepeatEvent<File>) {
+  protected onFileClick_(e: Event) {
     const clickFileEvent = new Event('usage', {composed: true});
     this.dispatchEvent(clickFileEvent);
-    chrome.metricsPrivate.recordSmallCount(
-        'NewTabPage.Drive.FileClick', e.model.index);
+    const currentTarget = e.currentTarget as HTMLElement;
+    const index = Number(currentTarget.dataset['index']);
+    chrome.metricsPrivate.recordSmallCount('NewTabPage.Drive.FileClick', index);
   }
 
-  private onInfoButtonClick_() {
-    this.$.infoDialogRender.get().showModal();
+  protected onInfoButtonClick_() {
+    this.showInfoDialog_ = true;
   }
 
-  private onMenuButtonClick_(e: Event) {
+  protected onInfoDialogClose_() {
+    this.showInfoDialog_ = false;
+  }
+
+  protected onMenuButtonClick_(e: Event) {
     this.$.moduleHeaderElementV2.showAt(e);
   }
 }
 
-customElements.define(FileSuggestionModuleElement.is, FileSuggestionModuleElement);
+customElements.define(ModuleElement.is, ModuleElement);
 
-async function createFileElement(): Promise<FileSuggestionModuleElement|null> {
+async function createFileElement(): Promise<ModuleElement|null> {
   const {files} = await FileProxy.getHandler().getFiles();
   if (files.length === 0) {
     return null;
   }
-  const element = new FileSuggestionModuleElement();
+  const element = new ModuleElement();
   element.files = files;
   return element;
 }

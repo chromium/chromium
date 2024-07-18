@@ -1,4 +1,5 @@
-<cr-dialog id="dialog" consume-keydown-event>
+<cr-dialog id="dialog" consume-keydown-event
+    ?show-on-attach="${this.showOnAttach}">
   <div slot="title">$i18n{modulesTasksInfoTitle}</div>
   <div slot="body">
     <slot></slot>

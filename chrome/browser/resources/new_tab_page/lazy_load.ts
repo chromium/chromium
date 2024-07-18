@@ -39,7 +39,7 @@ export {outlookCalendarDescriptor, OutlookCalendarModuleElement} from './modules
 export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
 export {dummyV2Descriptor, ModuleElement as DummyModuleElement} from './modules/v2/dummy/module.js';
 // </if>
-export {fileSuggestionDescriptor, FileSuggestionModuleElement} from './modules/v2/file_suggestion/module.js';
+export {fileSuggestionDescriptor, ModuleElement as FileSuggestionModuleElement} from './modules/v2/file_suggestion/module.js';
 export {ModuleHeaderElementV2} from './modules/v2/module_header.js';
 export {DismissModuleElementEvent, DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {mostRelevantTabResumptionDescriptor, MostRelevantTabResumptionModuleElement} from './modules/v2/most_relevant_tab_resumption/module.js';

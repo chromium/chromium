@@ -9,7 +9,7 @@ import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';
 
@@ -75,7 +75,7 @@ suite('FileSuggestionV2Module', () => {
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    module.$.fileRepeat.render();
+    await microtasksFinished();
     const items = Array.from(module.shadowRoot!.querySelectorAll('.file'));
 
     assertTrue(isVisible(module.$.files));
@@ -108,7 +108,7 @@ suite('FileSuggestionV2Module', () => {
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    module.$.fileRepeat.render();
+    await microtasksFinished();
     const items = Array.from(module.shadowRoot!.querySelectorAll('.file'));
     const urls =
         module.shadowRoot!.querySelectorAll<HTMLAnchorElement>('.file');
@@ -157,10 +157,14 @@ suite('FileSuggestionV2Module', () => {
         await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
     assertTrue(!!driveModule);
     document.body.append(driveModule);
+    await microtasksFinished();
 
     // Act.
-    ($$(driveModule, 'ntp-module-header-v2')!
-     ).dispatchEvent(new Event('info-button-click'));
+    const infoButton = driveModule.$.moduleHeaderElementV2.shadowRoot!
+                           .querySelector<HTMLElement>('#info');
+    assertTrue(!!infoButton);
+    infoButton.click();
+    await microtasksFinished();
 
     // Assert.
     assertTrue(!!$$(driveModule, 'ntp-info-dialog'));
@@ -185,11 +189,14 @@ suite('FileSuggestionV2Module', () => {
         const driveModule =
             await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
         document.body.append(driveModule);
+        await microtasksFinished();
 
         // Act.
         const whenFired = eventToPromise('disable-module', driveModule);
-        ($$(driveModule, 'ntp-module-header-v2')!
-         ).dispatchEvent(new Event('disable-button-click'));
+        const disableButton = driveModule.$.moduleHeaderElementV2.shadowRoot!
+                                  .querySelector<HTMLElement>('#disable');
+        assertTrue(!!disableButton);
+        disableButton.click();
 
         // Assert.
         const event: DisableModuleEvent = await whenFired;
@@ -216,11 +223,14 @@ suite('FileSuggestionV2Module', () => {
         await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
     assertTrue(!!moduleElement);
     document.body.append(moduleElement);
+    await microtasksFinished();
 
     // Act.
     const whenFired = eventToPromise('dismiss-module-instance', moduleElement);
-    ($$(moduleElement, 'ntp-module-header-v2')!
-     ).dispatchEvent(new Event('dismiss-button-click'));
+    const dismissButton = moduleElement.$.moduleHeaderElementV2.shadowRoot!
+                              .querySelector<HTMLElement>('#dismiss');
+    assertTrue(!!dismissButton);
+    dismissButton.click();
 
     // Assert.
     const event: DismissModuleEvent = await whenFired;

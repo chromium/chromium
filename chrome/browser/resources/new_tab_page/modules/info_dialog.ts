@@ -32,6 +32,14 @@ export class InfoDialogElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      showOnAttach: {type: Boolean},
+    };
+  }
+
+  showOnAttach: boolean = false;
+
   showModal() {
     this.$.dialog.showModal();
   }

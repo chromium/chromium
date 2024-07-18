@@ -3,4 +3,7 @@
 # found in the LICENSE file.
 
 # List of files that should be passed to html_to_wrapper().
-file_suggestion_v2_web_component_files = [ "modules/v2/file_suggestion/module.ts" ]
+file_suggestion_v2_web_component_files =
+    [ "modules/v2/file_suggestion/module.ts" ]
+
+file_suggestion_v2_css_files = [ "modules/v2/file_suggestion/module.css" ]

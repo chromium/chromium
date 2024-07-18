@@ -41,7 +41,8 @@ modules_web_component_files =
     tab_resumption_v2_web_component_files +
     most_relevant_tab_resumption_v2_web_component_files
 
-modules_css_files = [ "modules/info_dialog.css" ] + calendar_css_files
+modules_css_files = [ "modules/info_dialog.css" ] + calendar_css_files +
+                    file_suggestion_v2_css_files
 
 if (!is_official_build) {
   modules_web_component_files += dummy_v2_web_component_files
