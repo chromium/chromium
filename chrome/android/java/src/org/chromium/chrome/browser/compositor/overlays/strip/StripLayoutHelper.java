@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.MathUtils;
@@ -2092,7 +2093,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // Do nothing if hovering into a drawn tab that is for example, hidden behind the model
         // selector button.
-        if (isTabCompletelyHidden(hoveredTab)) return;
+        if (isViewCompletelyHidden(hoveredTab)) return;
 
         mLastHoveredTab = hoveredTab;
         if (!mAnimationsDisabledForTesting) {
@@ -2216,6 +2217,16 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // 3. Animate the tabs sliding to their idealX.
         for (int i = 0; i < mStripViews.length; ++i) {
             final StripLayoutView view = mStripViews[i];
+            if (view.getDrawX() == view.getIdealX()) {
+                // Don't animate views that won't change location.
+                continue;
+            } else if (isViewCompletelyHidden(view) && willViewBeCompletelyHidden(view)) {
+                // Don't animate views that won't be seen by the user (i.e. not currently visible
+                // and won't be visible after moving) - just set the draw X immediately.
+                view.setDrawX(view.getIdealX());
+                continue;
+            }
+
             CompositorAnimator drawXAnimator =
                     CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),
@@ -2344,7 +2355,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mRunningAnimator = null;
     }
 
-    private void startAnimationList(List<Animator> animationList, AnimatorListener listener) {
+    @VisibleForTesting
+    void startAnimationList(@Nullable List<Animator> animationList, AnimatorListener listener) {
         AnimatorSet set = new AnimatorSet();
         set.playTogether(animationList);
         if (listener != null) set.addListener(listener);
@@ -3045,7 +3057,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         //  to invalid a11y node. Replace with official strings when available.
         String description = "Placeholder Tab";
         String title = "Placeholder";
-        tab.setAccessibilityDescription(description, title);
+        tab.setAccessibilityDescription(description, title, ResourcesCompat.ID_NULL);
 
         pushPropertiesToTab(tab);
 
@@ -3178,6 +3190,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             if (tab.isClosed()) tab.setWidth(mTabOverlapWidth);
             if (tab.isDying() || tab.isCollapsed()) continue;
             if (resizeAnimationList != null) {
+                if (mCachedTabWidth > 0f && tab.getWidth() == mCachedTabWidth) {
+                    // No need to create an animator to animate to the width we're already at.
+                    continue;
+                }
                 CompositorAnimator animator =
                         CompositorAnimator.ofFloatProperty(
                                 mUpdateHost.getAnimationHandler(),
@@ -3220,6 +3236,12 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             } else {
                 bottomIndicatorEndWidth =
                         calculateBottomIndicatorWidth(groupTitle, getNumOfTabsInGroup(groupTitle));
+            }
+
+            if (bottomIndicatorEndWidth > 0f
+                    && bottomIndicatorStartWidth == bottomIndicatorEndWidth) {
+                // No need to create an animator to animate to the width we're already at.
+                continue;
             }
 
             resizeAnimationList.add(
@@ -3594,7 +3616,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     @VisibleForTesting
     void updateTabAttachState(
-            StripLayoutTab tab, boolean attached, ArrayList<Animator> animationList) {
+            StripLayoutTab tab, boolean attached, @Nullable ArrayList<Animator> animationList) {
         float startValue =
                 attached ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
         float intermediateValue = FOLIO_ANIM_INTERMEDIATE_MARGIN_DP;
@@ -3821,7 +3843,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      * @return Whether or not the trailing margin for the given tab actually changed.
      */
     private boolean setTrailingMarginForTab(
-            StripLayoutTab tab, float trailingMargin, List<Animator> animationList) {
+            StripLayoutTab tab, float trailingMargin, @Nullable List<Animator> animationList) {
         if (tab.getTrailingMargin() != trailingMargin) {
             StripLayoutGroupTitle groupTitle = findGroupTitle(getStripTabRootId(tab));
 
@@ -4003,7 +4025,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
     }
 
-    private void resetTabGroupMargins(ArrayList<Animator> animationList) {
+    private void resetTabGroupMargins(@Nullable ArrayList<Animator> animationList) {
         assert !mInReorderMode;
 
         // 1. Update the trailing margins for each tab.
@@ -5106,6 +5128,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         updateStrip();
     }
 
+    float getMinTabWidthForTesting() {
+        return mMinTabWidth;
+    }
+
     /**
      * Displays the tab menu below the anchor tab.
      *
@@ -5188,21 +5214,39 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     /**
-     * Determines whether a drawn tab is hidden completely out of view.
-     * @param tab The {@link StripLayoutTab} whose visibility is determined.
-     * @return {@code true} if the tab is completely hidden, {@code false} otherwise.
+     * Determines whether a drawn view is completely outside of the visible area of the tab strip.
+     *
+     * @param view The {@link StripLayoutView} whose visibility is determined.
+     * @return {@code true} if the view is completely hidden, {@code false} otherwise.
      */
     @VisibleForTesting
-    boolean isTabCompletelyHidden(StripLayoutTab tab) {
-        return !tab.isVisible()
-                || tab.getDrawX() + tab.getWidth() <= getVisibleLeftBound() + mLeftFadeWidth
-                || tab.getDrawX() >= getVisibleRightBound() - mRightFadeWidth;
+    boolean isViewCompletelyHidden(StripLayoutView view) {
+        return !view.isVisible() || isViewCompletelyHiddenAt(view.getDrawX(), view.getWidth());
+    }
+
+    /**
+     * Determines whether a view will be completely outside of the visible area of the tab strip
+     * once it reaches its ideal position.
+     *
+     * @param view The {@link StripLayoutView} whose visibility will be determined.
+     * @return {@code true} if the view will be completely hidden, {@code false} otherwise.
+     */
+    private boolean willViewBeCompletelyHidden(StripLayoutView view) {
+        return isViewCompletelyHiddenAt(view.getIdealX(), view.getWidth());
+    }
+
+    private boolean isViewCompletelyHiddenAt(float viewX, float viewWidth) {
+        // Check if the tab is outside the visible bounds to the left...
+        return viewX + viewWidth <= getVisibleLeftBound() + mLeftFadeWidth
+                // ... or to the right.
+                || viewX >= getVisibleRightBound() - mRightFadeWidth;
     }
 
     /**
      * To prevent accidental tab closures, when the close button of a tab is very close to the edge
      * of the tab strip, we hide the close button. The threshold for hiding is different based on
      * the length of the fade at the end of the strip.
+     *
      * @param start Whether its the start of the tab strip.
      * @return The distance threshold from the edge of the tab strip to hide the close button.
      */
@@ -5341,22 +5385,13 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     /**
      * Set the accessibility description of a {@link StripLayoutTab}.
      *
-     * @param stripTab  The StripLayoutTab to set the accessibility description.
-     * @param title     The title of the tab.
-     * @param isHidden  Current visibility state of the Tab.
+     * @param stripTab The StripLayoutTab to set the accessibility description.
+     * @param title The title of the tab.
+     * @param isHidden Current visibility state of the Tab.
      */
     private void setAccessibilityDescription(
-            StripLayoutTab stripTab, String title, boolean isHidden) {
+            StripLayoutTab stripTab, @Nullable String title, boolean isHidden) {
         if (stripTab == null) return;
-
-        // Separator used to separate the different parts of the content description.
-        // Not for sentence construction and hence not localized.
-        final String contentDescriptionSeparator = ", ";
-        final StringBuilder builder = new StringBuilder();
-        if (!TextUtils.isEmpty(title)) {
-            builder.append(title);
-            builder.append(contentDescriptionSeparator);
-        }
 
         @StringRes int resId;
         if (mIncognito) {
@@ -5370,9 +5405,23 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                             ? R.string.accessibility_tabstrip_identifier
                             : R.string.accessibility_tabstrip_identifier_selected;
         }
-        builder.append(mContext.getResources().getString(resId));
 
-        stripTab.setAccessibilityDescription(builder.toString(), title);
+        if (!stripTab.needsAccessibilityDescriptionUpdate(title, resId)) {
+            // The resulting accessibility description would be the same as the current description,
+            // so skip updating it to avoid having to read resources unnecessarily.
+            return;
+        }
+
+        // Separator used to separate the different parts of the content description.
+        // Not for sentence construction and hence not localized.
+        final String contentDescriptionSeparator = ", ";
+        final StringBuilder builder = new StringBuilder();
+        if (!TextUtils.isEmpty(title)) {
+            builder.append(title);
+            builder.append(contentDescriptionSeparator);
+        }
+        builder.append(mContext.getResources().getString(resId));
+        stripTab.setAccessibilityDescription(builder.toString(), title, resId);
     }
 
     private void performHapticFeedback(Tab tab) {

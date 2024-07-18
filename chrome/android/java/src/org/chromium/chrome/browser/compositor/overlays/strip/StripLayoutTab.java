@@ -13,6 +13,8 @@ import android.util.FloatProperty;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -34,6 +36,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * {@link StripLayoutTab} is used to keep track of the strip position and rendering information for
@@ -182,6 +185,10 @@ public class StripLayoutTab extends StripLayoutView {
     private float mRightInset;
     private String mAccessibilityDescription = "";
 
+    // For avoiding unnecessary accessibility description updates.
+    private Optional<String> mCachedA11yDescriptionTitle = Optional.empty();
+    private @StringRes int mCachedA11yTabstripIdentifierResId;
+
     // Ideal intermediate parameters
     private float mTabOffsetY;
     private float mTrailingMargin;
@@ -310,21 +317,55 @@ public class StripLayoutTab extends StripLayoutView {
 
     /**
      * Set strip tab and close button accessibility description.
-     * @param description   A description for accessibility events.
+     *
+     * @param description A description for accessibility events.
      * @param title The title of the tab.
      */
-    public void setAccessibilityDescription(String description, String title) {
+    public void setAccessibilityDescription(
+            String description,
+            @Nullable String title,
+            @StringRes int newA11yTabstripIdentifierResId) {
         mAccessibilityDescription = description;
         String closeButtonDescription =
                 ContextUtils.getApplicationContext()
                         .getString(R.string.accessibility_tabstrip_btn_close_tab, title);
         mCloseButton.setAccessibilityDescription(closeButtonDescription, closeButtonDescription);
+
+        // Cache the title + resource ID used to create this description so we can avoid unnecessary
+        // updates.
+        mCachedA11yDescriptionTitle = Optional.ofNullable(title);
+        mCachedA11yTabstripIdentifierResId = newA11yTabstripIdentifierResId;
     }
 
     /** {@link org.chromium.chrome.browser.layouts.components.VirtualView} Implementation */
     @Override
     public String getAccessibilityDescription() {
         return mAccessibilityDescription;
+    }
+
+    /**
+     * @param newTitle The title that would be used in the new accessibility description.
+     * @param resId The String resource ID the description would use.
+     * @return True if the accessibility description should be updated, false if the resulting
+     *     description would match the current description.
+     */
+    public boolean needsAccessibilityDescriptionUpdate(
+            @Nullable String newTitle, @StringRes int newA11yTabstripIdentifierResId) {
+        if (mCachedA11yTabstripIdentifierResId != newA11yTabstripIdentifierResId) {
+            // A different resource ID was used to create the description.
+            return true;
+        }
+        if (mCachedA11yDescriptionTitle.isPresent() && newTitle == null) {
+            // Going from non-null title to null title.
+            return true;
+        }
+        if (newTitle != null && !newTitle.equals(mCachedA11yDescriptionTitle.orElse(null))) {
+            // Going from non-null title to some other title (may even be null).
+            return true;
+        }
+        // The page title is the same as before and the resource ID we'd use to construct the
+        // a11y description is the same, so no need to update it.
+        return false;
     }
 
     @Override

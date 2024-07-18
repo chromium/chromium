@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -49,6 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -98,6 +100,7 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /** Tests for {@link StripLayoutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -308,6 +311,211 @@ public class StripLayoutHelperTest {
                 "A11y description for group title was wrong.",
                 expectedDescription,
                 views[0].getAccessibilityDescription());
+    }
+
+    @Test
+    public void testResizeStripOnTabClose_DoNotAnimateIfNotMoving() {
+        final int numTabs = 10;
+        initializeTest(false, false, false, 0, numTabs);
+        // Trigger a size change so the strip layout tab heights and widths get set.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        // Set the initial scroll offset to trigger an update to draw X positions.
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        // Somewhat arbitrary, just pick a tab with an index in (0, numTabs).
+        final int closeTabIndex = 8;
+
+        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
+        stripLayoutHelperSpy.handleCloseButtonClick(tabs[closeTabIndex], TIMESTAMP);
+
+        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
+        // Initial animation is the tab removal animation, and after that ends the
+        // resizeStripOnTabClose animations begin.
+        runningAnimator.end();
+
+        final ArgumentCaptor<List<Animator>> animationListCaptor =
+                ArgumentCaptor.forClass(List.class);
+        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
+        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimationList(any(), any());
+        stripLayoutOrder
+                .verify(stripLayoutHelperSpy)
+                .startAnimationList(animationListCaptor.capture(), any());
+        final List<Animator> animationList = animationListCaptor.getValue();
+        // Only the tabs that come after the closed tab should have to move and get animations
+        // created, plus the new tab button offset animation.
+        final int expectedAnimationCount = numTabs - closeTabIndex;
+        assertEquals(expectedAnimationCount, animationList.size());
+    }
+
+    @Test
+    public void
+            testResizeStripOnTabClose_DoNotAnimateIfNotVisible_OutsideVisibleBounds_ToTheRight() {
+        final int numTabs = 50;
+        initializeTest(false, false, false, 0, numTabs);
+        // Trigger a size change so the strip layout tab heights and widths get set.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        // Simplify the visible bounds by removing the right fade.
+        mStripLayoutHelper.setRightFadeWidth(0);
+        // Set the initial scroll offset to trigger an update to draw X positions.
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        // Pick a tab that will be well outside of the visible bounds to the right.
+        final int closeTabIndex = 40;
+        assertTrue(
+                "Tab getting closed should be outside of the visible bounds",
+                tabs[closeTabIndex].getDrawX() > mStripLayoutHelper.getVisibleRightBound());
+
+        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
+        stripLayoutHelperSpy.handleCloseButtonClick(tabs[closeTabIndex], TIMESTAMP);
+
+        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
+        // Initial animation is the tab removal animation, and after that ends the
+        // resizeStripOnTabClose animations begin.
+        runningAnimator.end();
+
+        final ArgumentCaptor<List<Animator>> animationListCaptor =
+                ArgumentCaptor.forClass(List.class);
+        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
+        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimationList(any(), any());
+        stripLayoutOrder
+                .verify(stripLayoutHelperSpy)
+                .startAnimationList(animationListCaptor.capture(), any());
+        final List<Animator> animationList = animationListCaptor.getValue();
+        assertEquals(
+                "The only animation should be for the new tab button offset",
+                1,
+                animationList.size());
+    }
+
+    @Test
+    public void
+            testResizeStripOnTabClose_DoNotAnimateIfNotVisible_OutsideVisibleBounds_ToTheLeft() {
+        final int numTabs = 50;
+        initializeTest(false, false, false, 0, numTabs);
+        // Trigger a size change so the strip layout tab heights and widths get set.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        // Simplify the visible bounds by removing the left fade.
+        mStripLayoutHelper.setLeftFadeWidth(0);
+        // Set the initial scroll offset to trigger an update to draw X positions.
+        mStripLayoutHelper.setScrollOffsetForTesting(-1000);
+
+        final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Pick a tab that will be outside the visible bounds to the left.
+        final int closeTabIndex = 5;
+
+        assertTrue(
+                "Tab getting closed should be outside of the visible bounds",
+                tabs[closeTabIndex].getDrawX() + tabs[closeTabIndex].getWidth()
+                        < mStripLayoutHelper.getVisibleLeftBound());
+
+        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
+        stripLayoutHelperSpy.handleCloseButtonClick(tabs[closeTabIndex], TIMESTAMP);
+
+        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
+        // Initial animation is the tab removal animation, and after that ends the
+        // resizeStripOnTabClose animations begin.
+        runningAnimator.end();
+
+        final ArgumentCaptor<List<Animator>> animationListCaptor =
+                ArgumentCaptor.forClass(List.class);
+        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
+        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimationList(any(), any());
+        stripLayoutOrder
+                .verify(stripLayoutHelperSpy)
+                .startAnimationList(animationListCaptor.capture(), any());
+        final List<Animator> animationList = animationListCaptor.getValue();
+        assertEquals(
+                "There should be 11 animations for the visible tabs, "
+                        + "plus the new tab button offset animation",
+                12,
+                animationList.size());
+    }
+
+    @Test
+    public void testResizeStripOnTabClose_AnimateTab_MovingIntoVisibleBounds() {
+        final int numTabs = 50;
+        initializeTest(false, false, false, 0, numTabs);
+        // Trigger a size change so the strip layout tab heights and widths get set.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        // Set the initial scroll offset to trigger an update to draw X positions.
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        // Simplify the visible bounds by removing the right fade.
+        mStripLayoutHelper.setRightFadeWidth(0);
+
+        final int firstNotVisibleIndex =
+                IntStream.range(0, tabs.length)
+                        .filter(i -> tabs[i].getDrawX() > mStripLayoutHelper.getVisibleRightBound())
+                        .findFirst()
+                        .getAsInt();
+
+        final int closeTabIndex = firstNotVisibleIndex - 1;
+        assertTrue(
+                "Tab getting closed should be inside of the visible bounds",
+                tabs[closeTabIndex].getDrawX() <= mStripLayoutHelper.getVisibleRightBound());
+
+        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
+        stripLayoutHelperSpy.handleCloseButtonClick(tabs[closeTabIndex], TIMESTAMP);
+
+        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
+        // Initial animation is the tab removal animation, and after that ends the
+        // resizeStripOnTabClose animations begin.
+        runningAnimator.end();
+
+        final ArgumentCaptor<List<Animator>> animationListCaptor =
+                ArgumentCaptor.forClass(List.class);
+        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
+        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimationList(any(), any());
+        stripLayoutOrder
+                .verify(stripLayoutHelperSpy)
+                .startAnimationList(animationListCaptor.capture(), any());
+        final List<Animator> animationList = animationListCaptor.getValue();
+        assertEquals(
+                "There should be one animation for the tab moving into the visible bounds, "
+                        + "plus the new tab button offset animation",
+                2,
+                animationList.size());
+    }
+
+    @Test
+    public void testComputeAndUpdateTabWidth_DontAnimateIfSizeNotChanging() {
+        // Create a high number of tabs to ensure they're already at the minimum size
+        final int numTabs = 50;
+        initializeTest(false, false, false, 0, numTabs);
+        // Trigger a size change so the strip layout tab heights and widths get set.
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        // Set the initial scroll offset to trigger an update to draw X positions.
+        mStripLayoutHelper.setScrollOffsetForTesting(0);
+
+        assertEquals(
+                "Tabs should be at minimum width for this test to be valid",
+                mStripLayoutHelper.getMinTabWidthForTesting(),
+                mStripLayoutHelper.getCachedTabWidthForTesting(),
+                EPSILON);
+
+        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
+        mModel.addTab("New tab");
+        stripLayoutHelperSpy.tabCreated(
+                TIMESTAMP, mModel.getTabAt(mModel.getCount() - 1).getId(), 0, true, false, false);
+
+        final ArgumentCaptor<List<Animator>> animationListCaptor =
+                ArgumentCaptor.forClass(List.class);
+        verify(stripLayoutHelperSpy).startAnimationList(animationListCaptor.capture(), any());
+        final List<Animator> animationList = animationListCaptor.getValue();
+        assertEquals(
+                "There should be one animation for the newly created tab width, "
+                        + "plus one more animation for the new tab y offset",
+                2,
+                animationList.size());
     }
 
     @Test
@@ -3735,11 +3943,13 @@ public class StripLayoutHelperTest {
         return expectedAccessibilityDescriptions;
     }
 
-    private StripLayoutTab[] getMockedStripLayoutTabs(float tabWidth, float mDrawX, int numTabs) {
+    private StripLayoutTab[] getMockedStripLayoutTabs(float tabWidth, float drawX, int numTabs) {
         StripLayoutTab[] tabs = new StripLayoutTab[mModel.getCount()];
 
+        final float delta = tabWidth - mStripLayoutHelper.getTabOverlapWidthForTesting();
         for (int i = 0; i < numTabs; i++) {
-            tabs[i] = mockStripTab(i, tabWidth, mDrawX);
+            final StripLayoutTab tab = mockStripTab(i, tabWidth, drawX + i * delta);
+            tabs[i] = tab;
         }
 
         return tabs;
@@ -3749,11 +3959,11 @@ public class StripLayoutHelperTest {
         return getMockedStripLayoutTabs(tabWidth, 0.f, 5);
     }
 
-    private StripLayoutTab mockStripTab(int id, float tabWidth, float mDrawX) {
+    private StripLayoutTab mockStripTab(int id, float tabWidth, float drawX) {
         StripLayoutTab tab = mock(StripLayoutTab.class);
         when(tab.getWidth()).thenReturn(tabWidth);
         when(tab.getId()).thenReturn(id);
-        when(tab.getDrawX()).thenReturn(mDrawX);
+        when(tab.getDrawX()).thenReturn(drawX);
         return tab;
     }
 
@@ -4656,7 +4866,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testIsTabCompletelyHidden() {
+    public void testIsViewCompletelyHidden() {
         initializeTabHoverTest();
         var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
 
@@ -4667,13 +4877,13 @@ public class StripLayoutHelperTest {
                 StripLayoutHelperManager.FADE_SHORT_WIDTH_DP - 1 - hoveredTab.getDrawX());
         assertTrue(
                 "Tab should be considered hidden for hover state.",
-                mStripLayoutHelper.isTabCompletelyHidden(hoveredTab));
+                mStripLayoutHelper.isViewCompletelyHidden(hoveredTab));
 
         // Set simulated hovered StripLayoutTab drawX to assume a position beyond the right fade.
         hoveredTab.setDrawX(SCREEN_WIDTH - StripLayoutHelperManager.FADE_MEDIUM_WIDTH_DP + 1);
         assertTrue(
                 "Tab should be considered hidden for hover state.",
-                mStripLayoutHelper.isTabCompletelyHidden(hoveredTab));
+                mStripLayoutHelper.isViewCompletelyHidden(hoveredTab));
     }
 
     private void initializeTabHoverTest() {

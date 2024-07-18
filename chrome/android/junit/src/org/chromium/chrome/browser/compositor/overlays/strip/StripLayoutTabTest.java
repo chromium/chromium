@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -162,6 +164,60 @@ public class StripLayoutTabTest {
                 "Incognito dividers use the baseline color.",
                 expectedColor,
                 mIncognitoTab.getDividerTint());
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_TitleChanged() {
+        final int resId = 1;
+        mNormalTab.setAccessibilityDescription("", "Foo", resId);
+        assertTrue(
+                "New titles should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate("Bar", resId));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_ResourceIdChanged() {
+        final String title = "Tab 1";
+        mNormalTab.setAccessibilityDescription("", title, 1);
+        assertTrue(
+                "New resource IDs should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate(title, 2));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_TitleAndResourceIdChanged() {
+        mNormalTab.setAccessibilityDescription("", "Tab 1", 1);
+        assertTrue(
+                "A new title and resource ID should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate("Foo", 2));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_TitleAndResourceIdUnchanged() {
+        final String title = "Tab 1";
+        final int resId = 1;
+        mNormalTab.setAccessibilityDescription("", title, resId);
+        assertFalse(
+                "An identical title and resource ID should not result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate(title, resId));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_NullInitialTitle() {
+        final int resId = 1;
+        mNormalTab.setAccessibilityDescription("", null, resId);
+        assertTrue(
+                "Going from a null to non-null title should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate("Bar", resId));
+    }
+
+    @Test
+    public void testNeedsA11yUpdate_NullNewTitle() {
+        final int resId = 1;
+        mNormalTab.setAccessibilityDescription("", "Foo", resId);
+        assertTrue(
+                "Going from a non-null to null title should result in a description update",
+                mNormalTab.needsAccessibilityDescriptionUpdate(null, resId));
     }
 
     private StripLayoutTab createStripLayoutTab(boolean incognito) {
