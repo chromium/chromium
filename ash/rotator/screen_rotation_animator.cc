@@ -196,8 +196,21 @@ void ScreenRotationAnimator::StartRotationAnimation(
 void ScreenRotationAnimator::StartSlowAnimation(
     std::unique_ptr<ScreenRotationRequest> rotation_request) {
   CreateOldLayerTreeForSlowAnimation();
+
+  auto weak_ptr = weak_factory_.GetWeakPtr();
+
   SetRotation(rotation_request->display_id, rotation_request->old_rotation,
               rotation_request->new_rotation, rotation_request->source);
+
+  if (!weak_ptr) {
+    // The above call to `SetRotation()` will end up calling
+    // `DisplayManager::UpdateDisplaysWith()`, which may lead to display
+    // removals while we're in the middle of rotation. In this case, `this` will
+    // be destroyed in `RootWindowController::Shutdown()`, and we should early
+    // exit here. See http://b/293667233.
+    return;
+  }
+
   AnimateRotation(std::move(rotation_request));
 }
 
