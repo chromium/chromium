@@ -282,7 +282,7 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
             std::move(fetcher));
     token_binding_helper_->GenerateBindingKeyAssertion(
         account_id, token_binding_challenge,
-        GaiaUrls::GetInstance()->oauth2_issue_token_url(),
+        GURL("https://accounts.google.com/accountmanager"),
         base::BindOnce(
             &TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion,
             fetcher_wrapper->GetWeakPtr()));

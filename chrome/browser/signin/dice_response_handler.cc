@@ -296,7 +296,7 @@ void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
   // `registration_token_helper_`.
   registration_token_helper_ = registration_token_helper_factory.Run(
       GaiaUrls::GetInstance()->oauth2_chrome_client_id(), authorization_code_,
-      GaiaUrls::GetInstance()->oauth2_token_url(),
+      GURL("https://accounts.google.com/accountmanager"),
       base::BindOnce(&DiceTokenFetcher::OnRegistrationTokenGenerated,
                      base::Unretained(this)));
   registration_token_helper_->Start();
