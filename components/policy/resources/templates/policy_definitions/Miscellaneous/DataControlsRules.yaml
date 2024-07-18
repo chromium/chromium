@@ -187,8 +187,8 @@ schema:
         type: object
     type: object
   type: array
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:128-
+- chrome_os:128-
 tags: []
 type: dict
