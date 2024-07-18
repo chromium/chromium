@@ -313,8 +313,12 @@ IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickWithPresentation) {
   ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
 }
 
+// Timeout of the PageLoadMetricsTestWaiter can happen though rarely, due to
+// fast shutdown process. For example, the browser side observer could be
+// destroyed before the UKM IPC is received.
+// TODO(crbug.com/353730407): investigate and re-enable the test.
 IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest,
-                       INP_ReportBeforeNavigatingAway) {
+                       DISABLED_INP_ReportBeforeNavigatingAway) {
   // Add waiter to wait for the interaction is arrived in browser.
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
