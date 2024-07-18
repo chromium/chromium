@@ -93,7 +93,7 @@ void CheckPdfRendering(const std::vector<uint8_t>& pdf_data,
       SkImageInfo::Make(gfx::SizeToSkISize(page_rect.size()),
                         kBGRA_8888_SkColorType, kPremul_SkAlphaType));
 
-  PDFEngineExports::RenderingSettings settings(
+  PDFiumEngineExports::RenderingSettings settings(
       gfx::Size(printing::kDefaultPdfDpi, printing::kDefaultPdfDpi), page_rect,
       /*fit_to_bounds=*/true,
       /*stretch_to_bounds=*/false,

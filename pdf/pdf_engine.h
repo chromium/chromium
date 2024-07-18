@@ -24,14 +24,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "pdf/flatten_pdf_result.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
 #endif
@@ -46,7 +38,6 @@ struct WebPrintParams;
 namespace gfx {
 class Point;
 class Size;
-class SizeF;
 class Vector2d;
 }  // namespace gfx
 
@@ -78,10 +69,6 @@ enum class DocumentPermission {
   kPrintLowQuality,
   kPrintHighQuality,
 };
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-class PdfProgressiveSearchifier;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 // Do one time initialization of the SDK.
 // If `enable_v8` is false, then the PDFEngine will not be able to run
@@ -319,118 +306,6 @@ class PDFEngine {
   virtual void RequestThumbnail(int page_index,
                                 float device_pixel_ratio,
                                 SendThumbnailCallback send_callback) = 0;
-};
-
-// Interface for exports that wrap the PDF engine.
-class PDFEngineExports {
- public:
-  struct RenderingSettings {
-    RenderingSettings(const gfx::Size& dpi,
-                      const gfx::Rect& bounds,
-                      bool fit_to_bounds,
-                      bool stretch_to_bounds,
-                      bool keep_aspect_ratio,
-                      bool center_in_bounds,
-                      bool autorotate,
-                      bool use_color,
-                      bool render_for_printing);
-    RenderingSettings(const RenderingSettings& that);
-
-    gfx::Size dpi;
-    gfx::Rect bounds;
-    bool fit_to_bounds;
-    bool stretch_to_bounds;
-    bool keep_aspect_ratio;
-    bool center_in_bounds;
-    bool autorotate;
-    bool use_color;
-    bool render_for_printing;
-  };
-
-  PDFEngineExports() {}
-  virtual ~PDFEngineExports() {}
-
-  static PDFEngineExports* Get();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // See the definition of CreateFlattenedPdf in pdf.cc for details.
-  virtual std::optional<FlattenPdfResult> CreateFlattenedPdf(
-      base::span<const uint8_t> input_buffer) = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-  // See the definition of RenderPDFPageToDC in pdf.cc for details.
-  virtual bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
-                                 int page_index,
-                                 const RenderingSettings& settings,
-                                 HDC dc) = 0;
-
-  virtual void SetPDFUsePrintMode(int mode) = 0;
-#endif  // BUILDFLAG(IS_WIN)
-
-  // See the definition of RenderPDFPageToBitmap in pdf.cc for details.
-  virtual bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
-                                     int page_index,
-                                     const RenderingSettings& settings,
-                                     void* bitmap_buffer) = 0;
-
-  // See the definition of ConvertPdfPagesToNupPdf in pdf.cc for details.
-  virtual std::vector<uint8_t> ConvertPdfPagesToNupPdf(
-      std::vector<base::span<const uint8_t>> input_buffers,
-      size_t pages_per_sheet,
-      const gfx::Size& page_size,
-      const gfx::Rect& printable_area) = 0;
-
-  // See the definition of ConvertPdfDocumentToNupPdf in pdf.cc for details.
-  virtual std::vector<uint8_t> ConvertPdfDocumentToNupPdf(
-      base::span<const uint8_t> input_buffer,
-      size_t pages_per_sheet,
-      const gfx::Size& page_size,
-      const gfx::Rect& printable_area) = 0;
-
-  virtual bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
-                             int* page_count,
-                             float* max_page_width) = 0;
-
-  // Gets the PDF document metadata (see section 14.3.3 "Document Information
-  // Dictionary" of the ISO 32000-1:2008 spec).
-  virtual std::optional<DocumentMetadata> GetPDFDocMetadata(
-      base::span<const uint8_t> pdf_buffer) = 0;
-
-  // Whether the PDF is Tagged (see ISO 32000-1:2008 14.8 "Tagged PDF").
-  // Returns true if it's a tagged (accessible) PDF, false if it's a valid
-  // PDF but untagged, and nullopt if the PDF can't be parsed.
-  virtual std::optional<bool> IsPDFDocTagged(
-      base::span<const uint8_t> pdf_buffer) = 0;
-
-  // Given a tagged PDF (see IsPDFDocTagged, above), return the portion of
-  // the structure tree for a given page as a hierarchical tree of base::Values.
-  virtual base::Value GetPDFStructTreeForPage(
-      base::span<const uint8_t> pdf_buffer,
-      int page_index) = 0;
-  // Whether the PDF has a Document Outline (see ISO 32000-1:2008 12.3.3
-  // "Document Outline"). Returns true if the PDF has an outline, false if it's
-  // a valid PDF without an outline, and nullopt if the PDF can't be parsed.
-  virtual std::optional<bool> PDFDocHasOutline(
-      base::span<const uint8_t> pdf_buffer) = 0;
-
-  // See the definition of GetPDFPageSizeByIndex in pdf.cc for details.
-  virtual std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
-      base::span<const uint8_t> pdf_buffer,
-      int page_index) = 0;
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Converts an inaccessible PDF to a searchable PDF. See `Searchify` in pdf.h
-  // for more details.
-  virtual std::vector<uint8_t> Searchify(
-      base::span<const uint8_t> pdf_buffer,
-      base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
-          const SkBitmap& bitmap)> perform_ocr_callback) = 0;
-  // Creates a PDF searchifier for future operations, such as adding and
-  // deleting pages, and saving PDFs.
-  virtual std::unique_ptr<PdfProgressiveSearchifier>
-  CreateProgressiveSearchifier() = 0;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
 
 }  // namespace chrome_pdf
