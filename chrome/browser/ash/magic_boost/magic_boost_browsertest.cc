@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -81,7 +82,15 @@ class MagicBoostBrowserTest : public InProcessBrowserTest {
  protected:
   ui::test::EventGenerator& event_generator() { return *event_generator_; }
 
-  void RightClickOnWebContent() {
+  // Navigates to the read only content test website and right click on it.
+  void NavigateAndRightClickReadOnlyWeb() {
+    // Waits until the page is ready.
+    content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL("/mahi/test_article.html"));
+    ASSERT_TRUE(render_frame_host);
+    content::MainThreadFrameObserver(render_frame_host->GetRenderWidgetHost())
+        .Wait();
+
     event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
                                       ->GetViewBounds()
                                       .CenterPoint());
@@ -125,22 +134,22 @@ class MagicBoostBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kUseFakeMahiManager);
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         Shell::GetPrimaryRootWindow());
+
+    // Configure `https_server_` so that the test page is accessible.
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
   }
 
   base::test::ScopedFeatureList feature_list_;
   base::AutoReset<bool> ignore_mahi_secret_key_ =
       switches::SetIgnoreMahiSecretKeyForTest();
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  net::EmbeddedTestServer https_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, AcceptOptInHmrOnly) {
@@ -156,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, AcceptOptInHmrOnly) {
             base::to_underlying(chromeos::HMRConsentStatus::kUnset));
 
   // Right click on the web content to show the opt in card.
-  RightClickOnWebContent();
+  NavigateAndRightClickReadOnlyWeb();
 
   // Finds the opt in card and still cannot find the disclaimer view.
   views::Widget* opt_in_card_widget = GetOptInCardWidget();
@@ -187,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, AcceptOptInHmrOnly) {
             base::to_underlying(chromeos::HMRConsentStatus::kApproved));
 
   // Right click on the web content again.
-  RightClickOnWebContent();
+  NavigateAndRightClickReadOnlyWeb();
 
   // Cannot find the opt in card any more.
   EXPECT_FALSE(FindWidgetWithName(
@@ -208,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, DeclineThroughOptInCardHmrOnly) {
             base::to_underlying(chromeos::HMRConsentStatus::kUnset));
 
   // Right click on the web content to show the opt in card.
-  RightClickOnWebContent();
+  NavigateAndRightClickReadOnlyWeb();
 
   // Finds the opt in card and still cannot find the disclaimer view.
   views::Widget* opt_in_card_widget = GetOptInCardWidget();
@@ -231,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, DeclineThroughOptInCardHmrOnly) {
             base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
 
   // Right click on the web content again.
-  RightClickOnWebContent();
+  NavigateAndRightClickReadOnlyWeb();
 
   // Cannot find the opt in card any more.
   EXPECT_FALSE(FindWidgetWithName(
@@ -253,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest,
             base::to_underlying(chromeos::HMRConsentStatus::kUnset));
 
   // Right click on the web content to show the opt in card.
-  RightClickOnWebContent();
+  NavigateAndRightClickReadOnlyWeb();
 
   // Finds the opt in card and still cannot find the disclaimer view.
   views::Widget* opt_in_card_widget = GetOptInCardWidget();
@@ -284,12 +293,29 @@ IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest,
             base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
 
   // Right click on the web content again.
-  RightClickOnWebContent();
+  NavigateAndRightClickReadOnlyWeb();
 
   // Cannot find the opt in card any more.
   EXPECT_FALSE(FindWidgetWithName(
       chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+}
+
+IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, FindNothingOnBlankWebPage) {
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+
+  // Right click on a blank web page.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+
+  // Cannot find the opt in card and the disclaimer view.
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
 }
 
 }  // namespace ash
