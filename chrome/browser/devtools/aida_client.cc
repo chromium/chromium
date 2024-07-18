@@ -25,6 +25,10 @@
 #include "components/variations/service/variations_service_utils.h"
 #include "net/base/load_flags.h"
 
+const char kAidaEndpointUrl[] =
+    "https://aida.googleapis.com/v1/aida:doConversation";
+const char kAidaScopeUrl[] = "https://www.googleapis.com/auth/aida";
+
 constexpr auto kLoggingDisallowedCountries =
     base::MakeFixedFlatSet<std::string_view>(
         {"at", "be", "bg", "ch", "cy", "cz", "de", "dk", "ee", "es", "fi",
@@ -54,8 +58,8 @@ constexpr auto kAidaSupportedCountries =
 
 AidaClient::AidaClient(Profile* profile)
     : profile_(*profile),
-      aida_endpoint_(features::kDevToolsConsoleInsightsAidaEndpoint.Get()),
-      aida_scope_(features::kDevToolsConsoleInsightsAidaScope.Get()) {}
+      aida_endpoint_(kAidaEndpointUrl),
+      aida_scope_(kAidaScopeUrl) {}
 
 AidaClient::~AidaClient() = default;
 
@@ -158,10 +162,6 @@ void AidaClient::OverrideAidaEndpointAndScopeForTesting(
 void AidaClient::PrepareRequestOrFail(
     base::OnceCallback<
         void(absl::variant<network::ResourceRequest, std::string>)> callback) {
-  if (aida_scope_.empty()) {
-    std::move(callback).Run(R"({"error": "AIDA scope is not configured"})");
-    return;
-  }
   if (!access_token_.empty() && base::Time::Now() < access_token_expiration_) {
     PrepareAidaRequest(std::move(callback));
     return;
@@ -201,11 +201,6 @@ void AidaClient::PrepareAidaRequest(
     base::OnceCallback<
         void(absl::variant<network::ResourceRequest, std::string>)> callback) {
   CHECK(!access_token_.empty());
-
-  if (aida_endpoint_.empty()) {
-    std::move(callback).Run(R"({"error": "AIDA endpoint is not configured"})");
-    return;
-  }
 
   network::ResourceRequest aida_request;
   aida_request.url = GURL(aida_endpoint_);

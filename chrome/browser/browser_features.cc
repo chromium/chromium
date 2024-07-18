@@ -86,12 +86,6 @@ BASE_FEATURE(kDestroySystemProfiles,
 BASE_FEATURE(kDevToolsConsoleInsights,
              "DevToolsConsoleInsights",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope{
-    &kDevToolsConsoleInsights, "aida_scope",
-    /*default_value=*/"https://www.googleapis.com/auth/aida"};
-const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaEndpoint{
-    &kDevToolsConsoleInsights, "aida_endpoint",
-    /*default_value=*/"https://aida.googleapis.com/v1/aida:doConversation"};
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
     &kDevToolsConsoleInsights, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{

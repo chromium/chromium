@@ -102,17 +102,6 @@ class Delegate {
 
 constexpr char kOAuthToken[] = "5678";
 
-TEST_F(AidaClientTest, DoesNothingIfNoScope) {
-  Delegate delegate;
-
-  AidaClient aida_client(profile_.get());
-  aida_client.OverrideAidaEndpointAndScopeForTesting("", "");
-  aida_client.PrepareRequestOrFail(base::BindOnce(
-      &Delegate::FinishCallback, base::Unretained(&delegate), nullptr));
-  EXPECT_EQ(R"({"error": "AIDA scope is not configured"})",
-            absl::get<std::string>(delegate.response_));
-}
-
 TEST_F(AidaClientTest, FailsIfNotAuthorized) {
   base::RunLoop run_loop;
   Delegate delegate;
