@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -46,7 +47,8 @@
 namespace ash {
 namespace {
 
-// Use consumer.example.com to keep policy code out of the tests.
+// Note that consumer.example.com is registered as a "known consumer domain"
+// below; this is to keep policy code out of these tests.
 constexpr char kUserId1[] = "user1@consumer.example.com";
 constexpr char kUserId2[] = "user2@consumer.example.com";
 constexpr char kUserId3[] = "user3@consumer.example.com";
@@ -55,9 +57,16 @@ constexpr char kUserId3[] = "user3@consumer.example.com";
 
 class CrashRestoreSimpleTest : public InProcessBrowserTest {
  protected:
-  CrashRestoreSimpleTest() {}
+  CrashRestoreSimpleTest() {
+    // Recognize consumer.example.com as a known non-enterprise domain.
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        "consumer.example.com");
+  }
 
-  ~CrashRestoreSimpleTest() override {}
+  ~CrashRestoreSimpleTest() override {
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        nullptr);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kLoginUser,

@@ -19,9 +19,9 @@ TEST(AccountManagedStatusFinderStaticTest, IsEnterpriseUserBasedOnEmail) {
   // clang-format off
   static const char* kNonEnterpriseUsers[] = {
       "fizz@aol.com",       "foo@gmail.com",         "bar@googlemail.com",
-      "baz@hotmail.it",     "baz@hotmail.co.uk",     "baz@hotmail.com.tw",
+      "baz@hotmail.it",     "baz@hotmail.co.uk",     "baz@hotmail.fr",
       "user@msn.com",       "another_user@live.com", "foo@qq.com",
-      "i_love@yahoo.com",   "i_love@yahoo.com.tw",   "i_love@yahoo.jp",
+      "i_love@yahoo.com",   "i_love@yahoo.com.tw",   "i_love@yahoo.fr",
       "i_love@yahoo.co.uk", "user@yandex.ru",        "test",
       "test@"};
   // clang-format on

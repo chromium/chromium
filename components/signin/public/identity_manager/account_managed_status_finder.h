@@ -27,8 +27,13 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
     kKnownNonEnterprise,
   };
 
-  // Check whether the given account is known to be non-enterprise. Domains such
-  // as gmail.com and googlemail.com are known to not be managed.
+  // Returns whether the given domain is known to be a consumer (i.e.
+  // non-enterprise) domain. Domains such as gmail.com and googlemail.com (and
+  // many others) are known to not be managed.
+  static bool IsKnownConsumerDomain(const std::string& email_domain);
+
+  // Returns whether the given account is known to be non-enterprise, i.e. it
+  // has a domain for which `IsKnownConsumerDomain` is true.
   static EmailEnterpriseStatus IsEnterpriseUserBasedOnEmail(
       const std::string& email);
 
