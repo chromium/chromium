@@ -13,38 +13,11 @@
 
 namespace blink {
 
-// extern
-const V8PrivateProperty::SymbolKey kPrivatePropertyDOMExceptionError;
-
 // static
 void V8ThrowDOMException::Init() {
   ExceptionState::SetCreateDOMExceptionFunction(
       V8ThrowDOMException::CreateOrEmpty);
 }
-
-namespace {
-
-void DomExceptionStackGetter(v8::Local<v8::Name> name,
-                             const v8::PropertyCallbackInfo<v8::Value>& info) {
-  v8::Isolate* isolate = info.GetIsolate();
-  v8::Local<v8::Value> value;
-  if (info.Data()
-          .As<v8::Object>()
-          ->Get(isolate->GetCurrentContext(), V8AtomicString(isolate, "stack"))
-          .ToLocal(&value)) {
-    bindings::V8SetReturnValue(info, value);
-  }
-}
-
-void DomExceptionStackSetter(v8::Local<v8::Name> name,
-                             v8::Local<v8::Value> value,
-                             const v8::PropertyCallbackInfo<void>& info) {
-  [[maybe_unused]] v8::Maybe<bool> unused = info.Data().As<v8::Object>()->Set(
-      info.GetIsolate()->GetCurrentContext(),
-      V8AtomicString(info.GetIsolate(), "stack"), value);
-}
-
-}  // namespace
 
 v8::Local<v8::Value> V8ThrowDOMException::CreateOrEmpty(
     v8::Isolate* isolate,
@@ -80,32 +53,13 @@ v8::Local<v8::Value> V8ThrowDOMException::AttachStackProperty(
   if (isolate->IsExecutionTerminating())
     return v8::Local<v8::Value>();
 
-  auto current_context = isolate->GetCurrentContext();
-
   // We use the isolate's current context here because we are creating an
   // exception object.
+  auto current_context = isolate->GetCurrentContext();
   v8::Local<v8::Object> exception_obj =
-      ToV8Traits<DOMException>::ToV8(
-          ScriptState::From(isolate, current_context), dom_exception)
+      dom_exception->ToV8(ScriptState::From(isolate, current_context))
           .As<v8::Object>();
-
-  // Attach an Error object to the DOMException. This is then lazily used to get
-  // the stack value.
-  v8::Local<v8::Value> error =
-      v8::Exception::Error(V8String(isolate, dom_exception->message()));
-
-  // The context passed to SetNativeDataProperty is used to create an error
-  // object if needed, and so should be the isolate's current context.
-  exception_obj
-      ->SetNativeDataProperty(current_context, V8AtomicString(isolate, "stack"),
-                              DomExceptionStackGetter, DomExceptionStackSetter,
-                              error)
-      .ToChecked();
-
-  auto private_error =
-      V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyDOMExceptionError);
-  private_error.Set(exception_obj, error);
-
+  v8::Exception::CaptureStackTrace(current_context, exception_obj);
   return exception_obj;
 }
 

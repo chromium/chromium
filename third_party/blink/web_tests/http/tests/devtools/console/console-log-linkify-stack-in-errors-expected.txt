@@ -7,7 +7,7 @@ console-log-linkify-…ack-in-errors.js:17 Error: line
 break
     at forStack (console-log-linkify-…-in-errors.js:17:23)
     at console-log-linkify-…k-in-errors.js:20:7
-console-log-linkify-…ack-in-errors.js:36 Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+console-log-linkify-…ack-in-errors.js:36 NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
     at domError (console-log-linkify-…-in-errors.js:34:29)
     at console-log-linkify-…k-in-errors.js:40:7
 console-log-linkify-…ack-in-errors.js:47 Error: some error

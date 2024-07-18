@@ -50,8 +50,6 @@ class CORE_EXPORT V8ThrowDOMException {
   static v8::Local<v8::Value> AttachStackProperty(v8::Isolate*, DOMException*);
 };
 
-extern const V8PrivateProperty::SymbolKey kPrivatePropertyDOMExceptionError;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_THROW_DOM_EXCEPTION_H_
