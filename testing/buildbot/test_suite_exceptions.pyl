@@ -1895,6 +1895,11 @@
           'shards': 40,
         },
       },
+      'android-14-arm64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter',
+        ],
+      },
       'android-14-x64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.content_browsertests.filter',
