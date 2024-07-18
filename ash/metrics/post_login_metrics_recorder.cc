@@ -99,9 +99,6 @@ void PostLoginMetricsRecorder::AddLoginTimeMarker(
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Jank.TabletMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration2.ClamshellMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration2.TabletMode");
-    REPORT_LOGIN_THROUGHPUT_EVENT("BootTime.Login2");
-    REPORT_LOGIN_THROUGHPUT_EVENT("BootTime.Login3");
-    REPORT_LOGIN_THROUGHPUT_EVENT("BootTime.Login4");
     REPORT_LOGIN_THROUGHPUT_EVENT(
         "Ash.UnlockAnimation.Smoothness.ClamshellMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.UnlockAnimation.Smoothness.TabletMode");
@@ -280,7 +277,6 @@ void PostLoginMetricsRecorder::OnShelfIconsLoadedAndSessionRestoreDone(
   // TODO(b/328339021, b/323098858): This is the mitigation against a bug
   // that animation observation has race condition.
   // Can be in a part of better architecture.
-  AddLoginTimeMarker("BootTime.Login4");
   base::UmaHistogramCustomTimes(
       "BootTime.Login4", ts - timestamp_origin_.value(),
       base::Milliseconds(100), base::Seconds(100), 100);
@@ -293,7 +289,6 @@ void PostLoginMetricsRecorder::OnShelfAnimationAndCompositorAnimationDone(
                                                 /*send_to_uma=*/false,
                                                 /*write_to_file=*/false);
 
-  AddLoginTimeMarker("BootTime.Login3");
   base::UmaHistogramCustomTimes(
       "BootTime.Login3", ts - timestamp_origin_.value(),
       base::Milliseconds(100), base::Seconds(100), 100);
