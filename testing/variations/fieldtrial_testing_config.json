@@ -24923,6 +24923,21 @@
             ]
         }
     ],
+    "WebPermissionsApi": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebPermissionsApi"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebProtectCustomRuleMessageDialog": [
         {
             "platforms": [

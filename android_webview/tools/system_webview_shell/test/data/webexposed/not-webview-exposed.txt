@@ -10,10 +10,6 @@ interface SpeechSynthesisEvent : Event
 interface SpeechSynthesisUtterance : EventTarget
 interface SpeechSynthesisVoice
 
-# permissions api not enabled in webview, crbug.com/490120
-interface PermissionStatus : EventTarget
-interface Permissions
-
 # notifications api not enabled in webview, crbug.com/434712
 interface Notification : EventTarget
 
@@ -67,7 +63,7 @@ interface HTMLMediaElement : HTMLElement
     getter disableRemotePlayback       # crbug.com/521319
     getter remote                      # crbug.com/521319
 
-# permissions API (crbug.com/490120), presentation API (crbug.com/521319),
+# presentation API (crbug.com/521319),
 # share API (crbug.com/765923), custom scheme handlers (crbug.com/589502),
 # media session API (crbug.com/925997), Web Serial API (crbug.com/1164036),
 # WebXr API (crbug.com/1012899), WebHID API (crbug.com/1164125), Web
@@ -78,7 +74,6 @@ interface Navigator
     getter hid                         # crbug.com/1164125
     getter login                       # crbug.com/1340252
     getter mediaSession                # crbug.com/925997
-    getter permissions                 # crbug.com/490120
     getter presentation                # crbug.com/521319
     getter serial                      # crbug.com/1164036
     getter usb                         # crbug.com/1012899
