@@ -299,11 +299,14 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         throw new ProcessInitException(LoaderErrors.NATIVE_STARTUP_FAILED, failureCause);
     }
 
+    @Override
+    public void onTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {}
+
     /**
      * Extending classes should override {@link AsyncInitializationActivity#preInflationStartup()},
-     * {@link AsyncInitializationActivity#triggerLayoutInflation()} and
-     * {@link AsyncInitializationActivity#postInflationStartup()} instead of this call which will
-     * be called on that order.
+     * {@link AsyncInitializationActivity#triggerLayoutInflation()} and {@link
+     * AsyncInitializationActivity#postInflationStartup()} instead of this call which will be called
+     * on that order.
      */
     @Override
     @SuppressLint("MissingSuperCall") // Called in onCreateInternal.
@@ -764,6 +767,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         super.onTopResumedActivityChanged(isTopResumedActivity);
 
         mLifecycleDispatcher.dispatchOnTopResumedActivityChanged(isTopResumedActivity);
+        mNativeInitializationController.onTopResumedActivityChanged(isTopResumedActivity);
     }
 
     /**

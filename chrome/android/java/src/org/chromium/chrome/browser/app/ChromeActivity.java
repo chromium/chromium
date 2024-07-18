@@ -1205,11 +1205,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         getManualFillingComponent().onResume();
         checkForDeviceLockOnAutomotive();
-        setViewForInputHint(inMultiWindowMode);
     }
 
-    private void setViewForInputHint(boolean inMultiWindowMode) {
-        View view = inMultiWindowMode ? null : getWindow().getDecorView();
+    @Override
+    public void onTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {
+        View view = isTopResumedActivity ? getWindow().getDecorView() : null;
         InputHintChecker.setView(view);
     }
 
