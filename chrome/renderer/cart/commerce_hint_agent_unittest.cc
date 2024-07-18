@@ -1258,6 +1258,9 @@ float BenchmarkShouldSkipAddToCart(const GURL& url) {
     BUILDFLAG(CFI_ICALL_CHECK) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || \
     BUILDFLAG(CFI_ENFORCEMENT_TRAP)
 #define MAYBE_RegexBenchmark DISABLED_RegexBenchmark
+#elif BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/349553904):  Enable once cause of general slowdown is fixed.
+#define MAYBE_RegexBenchmark DISABLED_RegexBenchmark
 #else
 #define MAYBE_RegexBenchmark RegexBenchmark
 #endif
