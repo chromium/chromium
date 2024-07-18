@@ -15,6 +15,10 @@
 
 struct SkImageInfo;
 
+namespace gpu {
+class ClientSharedImage;
+}  // namespace gpu
+
 namespace blink {
 class MailboxTextureBacking;
 class WebGraphicsContext3DProviderWrapper;
@@ -56,6 +60,23 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // operations, no writes are allowed.
   static scoped_refptr<AcceleratedStaticBitmapImage> CreateFromCanvasMailbox(
       const gpu::Mailbox&,
+      const gpu::SyncToken&,
+      GLuint shared_image_texture_id,
+      const SkImageInfo& sk_image_info,
+      GLenum texture_target,
+      bool is_origin_top_left,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      base::PlatformThreadRef context_thread_ref,
+      scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
+      viz::ReleaseCallback release_callback,
+      bool supports_display_compositing,
+      bool is_overlay_candidate);
+
+  // Same as CreateFromCanvasMailbox() except that this function accepts
+  // a ClientSharedImage instead of a mailbox.
+  static scoped_refptr<AcceleratedStaticBitmapImage>
+  CreateFromCanvasSharedImage(
+      scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
       const SkImageInfo& sk_image_info,
@@ -166,9 +187,25 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
       viz::ReleaseCallback release_callback);
 
+  AcceleratedStaticBitmapImage(
+      scoped_refptr<gpu::ClientSharedImage>,
+      const gpu::SyncToken&,
+      GLuint shared_image_texture_id,
+      const SkImageInfo& sk_image_info,
+      GLenum texture_target,
+      bool is_origin_top_left,
+      bool supports_display_compositing,
+      bool is_overlay_candidate,
+      const ImageOrientation& orientation,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      base::PlatformThreadRef context_thread_ref,
+      scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
+      viz::ReleaseCallback release_callback);
+
   void CreateImageFromMailboxIfNeeded();
   void InitializeTextureBacking(GLuint shared_image_texture_id);
 
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   const gpu::Mailbox mailbox_;
   const SkImageInfo sk_image_info_;
   const GLenum texture_target_;
