@@ -22,11 +22,13 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getFallbackTheme} from './color_utils.js';
 import type {CursorTooltipData, CursorTooltipElement} from './cursor_tooltip.js';
+import {CursorTooltipType} from './cursor_tooltip.js';
 import type {InitialGradientElement} from './initial_gradient.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
+import type {SelectionOverlayElement} from './selection_overlay.js';
 
 export let INVOCATION_SOURCE: string = 'Unknown';
 
@@ -35,9 +37,11 @@ export interface LensOverlayAppElement {
     backgroundScrim: HTMLElement,
     closeButton: CrIconButtonElement,
     copyToast: CrToastElement,
-    moreOptionsButton: CrIconButtonElement,
-    initialGradient: InitialGradientElement,
     cursorTooltip: CursorTooltipElement,
+    initialGradient: InitialGradientElement,
+    moreOptionsButton: CrIconButtonElement,
+    moreOptionsMenu: HTMLElement,
+    selectionOverlay: SelectionOverlayElement,
   };
 }
 
@@ -147,12 +151,21 @@ export class LensOverlayAppElement extends PolymerElement {
     this.$.cursorTooltip.markPointerLeftContentArea();
   }
 
-  private handlePointerEnterActionButton() {
+  private handlePointerEnterBackgroundScrim() {
+    this.$.cursorTooltip.setTooltip(CursorTooltipType.LIVE_PAGE);
+    this.$.cursorTooltip.unhideTooltip();
+  }
+
+  private handlePointerLeaveBackgroundScrim() {
     this.$.cursorTooltip.hideTooltip();
   }
 
-  private handlePointerLeaveActionButton() {
+  private handlePointerEnterSelectionOverlay() {
     this.$.cursorTooltip.unhideTooltip();
+  }
+
+  private handlePointerLeaveSelectionOverlay() {
+    this.$.cursorTooltip.hideTooltip();
   }
 
   private onBackgroundScrimClicked() {
