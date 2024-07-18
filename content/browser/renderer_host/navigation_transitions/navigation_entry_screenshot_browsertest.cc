@@ -46,6 +46,10 @@
 #include "ui/android/view_android.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -386,6 +390,12 @@ class NavigationEntryScreenshotBrowserTest
 // navigation and history navigation.
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
                        PrimaryMainFrameNav) {
+// TODO(crbug.com/353908058): Re-enable this test for automotive.
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test is flaky on automotive. crbug.com/353908058";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetScaledViewportSizeInBytes();
   const size_t memory_budget = 3 * page_size;
