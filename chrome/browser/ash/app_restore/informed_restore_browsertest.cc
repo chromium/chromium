@@ -49,19 +49,19 @@ const InformedRestoreContentsView* GetInformedRestoreContentsView() {
     return nullptr;
   }
 
-  views::Widget* pine_widget =
+  views::Widget* informed_restore_widget =
       OverviewGridTestApi(overview_grid).informed_restore_widget();
-  if (!pine_widget) {
+  if (!informed_restore_widget) {
     return nullptr;
   }
 
   return views::AsViewClass<InformedRestoreContentsView>(
-      pine_widget->GetContentsView());
+      informed_restore_widget->GetContentsView());
 }
 
 // Retrieve the "Restore" button from the informed restore dialog, if we are in
-// a overview pine session.
-const PillButton* GetPineDialogRestoreButton() {
+// an informed restore session.
+const PillButton* GetInformedRestoreDialogRestoreButton() {
   const auto* contents_view =
       GetInformedRestoreContentsView();
   return contents_view
@@ -70,7 +70,7 @@ const PillButton* GetPineDialogRestoreButton() {
              : nullptr;
 }
 
-const PillButton* GetPineDialogCancelButton() {
+const PillButton* GetInformedRestoreDialogCancelButton() {
   const auto* contents_view =
       GetInformedRestoreContentsView();
   return contents_view
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchBrowsers) {
   // Verify we have entered overview. The restore button will be null if we
   // failed to enter overview.
   WaitForOverviewEnterAnimation();
-  const PillButton* restore_button = GetPineDialogRestoreButton();
+  const PillButton* restore_button = GetInformedRestoreDialogRestoreButton();
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 2 browsers.
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchSWA) {
   // Verify we have entered overview. The restore button will be null if we
   // failed to enter overview.
   WaitForOverviewEnterAnimation();
-  const PillButton* restore_button = GetPineDialogRestoreButton();
+  const PillButton* restore_button = GetInformedRestoreDialogRestoreButton();
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button.
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchBrowsersToDesks) {
   // Verify we have entered overview. The restore button will be null if we
   // failed to enter overview.
   WaitForOverviewEnterAnimation();
-  const PillButton* restore_button = GetPineDialogRestoreButton();
+  const PillButton* restore_button = GetInformedRestoreDialogRestoreButton();
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 3 browsers.
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_WindowStates) {
   // Verify we have entered overview. The restore button will be null if we
   // failed to enter overview.
   WaitForOverviewEnterAnimation();
-  const PillButton* restore_button = GetPineDialogRestoreButton();
+  const PillButton* restore_button = GetInformedRestoreDialogRestoreButton();
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 5 browsers.
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ClickCancelButton) {
   // Verify we have entered overview. The cancel button will be null if we
   // failed to enter overview.
   WaitForOverviewEnterAnimation();
-  const PillButton* cancel_button = GetPineDialogCancelButton();
+  const PillButton* cancel_button = GetInformedRestoreDialogCancelButton();
   ASSERT_TRUE(cancel_button);
 
   // Click the cancel button. We spin the run loop because launching browsers is
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Update) {
             contents_data->dialog_type);
 }
 
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ReenterOverviewPineSession) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ReenterInformedRestoreSession) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
   CreateBrowser(ProfileManager::GetActiveUserProfile());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
@@ -595,13 +595,13 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ReenterOverviewPineSession) {
 
 // Test that if we exit overview and reenter without opening a new window, we
 // see the informed restore dialog again.
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterOverviewPineSession) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterInformedRestoreSession) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview with the informed restore dialog.
   WaitForOverviewEnterAnimation();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-  EXPECT_TRUE(GetPineDialogRestoreButton());
+  EXPECT_TRUE(GetInformedRestoreDialogRestoreButton());
   EXPECT_TRUE(Shell::Get()->informed_restore_controller()->contents_data());
 
   // Exit overview without clicking restore or cancel.
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterOverviewPineSession) {
   // Reenter overview. Test that the dialog is still visible.
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  EXPECT_TRUE(GetPineDialogRestoreButton());
+  EXPECT_TRUE(GetInformedRestoreDialogRestoreButton());
 
   // Open a new window using the accelerator. This should delete the informed
   // restore dialog data and the next overview enter will not show the dialog.
@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterOverviewPineSession) {
   // Reentering overview this time should not show the dialog.
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  EXPECT_FALSE(GetPineDialogRestoreButton());
+  EXPECT_FALSE(GetInformedRestoreDialogRestoreButton());
 }
 
 class InformedRestoreOnboardingTest : public InformedRestoreTest {
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Onboarding) {
   // Verify we have entered overview. The restore button will be null if
   // we failed to enter overview.
   WaitForOverviewEnterAnimation();
-  const PillButton* restore_button = GetPineDialogRestoreButton();
+  const PillButton* restore_button = GetInformedRestoreDialogRestoreButton();
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 1 browser.

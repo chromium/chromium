@@ -9049,8 +9049,8 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowAnimationObserverTest) {
 // overview window grid's postion.
 TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
   const gfx::Rect bounds(400, 400);
-  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
-  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window1(CreateAppWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateAppWindow(bounds));
 
   ToggleOverview();
   auto* overview_item1 = GetOverviewItemForWindow(window1.get());
@@ -9062,24 +9062,24 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
   // Test that the grid bounds are approximately equal to the bounds of a
   // snapped window (minus hotseat insets on the grid).
-  EXPECT_TRUE(GetGridBounds().ApproximatelyEqual(
+  EXPECT_EQ(
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SnapPosition::kSecondary,
           /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
           /*account_for_divider_width=*/true),
-      20));
+      GetGridBounds());
 
   split_view_controller()->SwapWindows();
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kSecondarySnapped);
   EXPECT_EQ(split_view_controller()->default_snap_position(),
             SnapPosition::kSecondary);
-  EXPECT_TRUE(GetGridBounds().ApproximatelyEqual(
+  EXPECT_EQ(
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SnapPosition::kPrimary,
           /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
           /*account_for_divider_width=*/true),
-      20));
+      GetGridBounds());
 }
 
 // Test that in tablet mode, pressing tab key in overview should not crash.

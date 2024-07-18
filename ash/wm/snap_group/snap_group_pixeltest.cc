@@ -35,7 +35,10 @@ namespace ash {
 // established benchmarks.
 class SnapGroupPixelTest : public AshTestBase {
  public:
-  SnapGroupPixelTest() = default;
+  SnapGroupPixelTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSnapGroup, features::kForestFeature}, {});
+  }
   SnapGroupPixelTest(const SnapGroupPixelTest&) = delete;
   SnapGroupPixelTest& operator=(const SnapGroupPixelTest&) = delete;
   ~SnapGroupPixelTest() override = default;
@@ -47,7 +50,7 @@ class SnapGroupPixelTest : public AshTestBase {
     return pixel_test::InitParams();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // -----------------------------------------------------------------------------
@@ -114,6 +117,8 @@ TEST_F(SnapGroupPixelTest, PartialSplit) {
 
 // Visual regression test for `OverviewGroupItem`.
 TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
+  base::test::ScopedFeatureList scoped_feature_list{features::kForestFeature};
+
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);
 
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -135,7 +140,7 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
   // Verify the `OverviewGroupItem` visuals.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overviewgroupitem",
-      /*revision_number=*/0, group_item_widget));
+      /*revision_number=*/1, group_item_widget));
 
   // Verify the visuals after one of the windows in the group got destroyed.
   w2.reset();
@@ -145,7 +150,7 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
   ASSERT_TRUE(item_after_destruction);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "remaining_item_widget",
-      /*revision_number=*/0, remaining_item_widget));
+      /*revision_number=*/1, remaining_item_widget));
 }
 
 // Visual regression test for Snap Group in window cycle view.
@@ -250,6 +255,8 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasicInPortrait) {
 
 // Visual regression test for `OverviewGroupItem` in portrait mode.
 TEST_F(SnapGroupPixelTest, OverviewGroupItemInPortrait) {
+  base::test::ScopedFeatureList scoped_feature_list{features::kForestFeature};
+
   UpdateDisplay("900x1200");
 
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);
@@ -273,7 +280,7 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItemInPortrait) {
   // Verify the `OverviewGroupItem` visuals in portrait.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overviewgroupitem_in_portrait",
-      /*revision_number=*/0, group_item_widget));
+      /*revision_number=*/1, group_item_widget));
 }
 
 // Portrait mode visual regression test for Snap Group visuals in window cycle
