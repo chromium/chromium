@@ -58,7 +58,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
     return {
       pageList: {type: Array},
       currentPath: {
-        type: PagePath,
+        type: String,
         observer: 'currentPathChanged',
       },
       selectedIndex: {
@@ -80,12 +80,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
     });
   }
 
-  private updateSelectedIndex(newPath: string) {
-    const pageIndex =
-        Math.max(0, this.pageList.findIndex((page) => page.path === newPath));
-    this.selectedIndex = pageIndex;
-  }
-
+  // The content pages for chrome://healthd-internals. It is also used for
+  // rendering the tabs in the sidebar menu.
   private pageList: Page[] = [
     {
       name: 'Telemetry',
@@ -104,14 +100,16 @@ export class HealthdInternalsAppElement extends PolymerElement {
       path: PagePath.THERMAL,
     },
   ];
-  private currentPath: PagePath;
+  // This current path updated by `iron-location`.
+  private currentPath: string;
+  // The selected index updated by `cr-menu-selector`.
   private selectedIndex: number;
 
   // The interval ID used for cancelling the running intervals.
   private fetchDataInternalId: number|undefined = undefined;
 
   // Handle path changes caused by popstate events (back/forward navigation).
-  private currentPathChanged(newPath: PagePath, oldPath: PagePath) {
+  private currentPathChanged(newPath: string, oldPath: string) {
     this.updateSelectedIndex(newPath);
     this.handleVisibilityChanged(newPath, true);
     this.handleVisibilityChanged(oldPath, false);
@@ -122,7 +120,16 @@ export class HealthdInternalsAppElement extends PolymerElement {
     this.currentPath = this.pageList[this.selectedIndex]!.path;
   }
 
-  private handleVisibilityChanged(pagePath: PagePath, isVisible: boolean) {
+  // Update the selected index when `pageList` is not empty. Redirect to
+  // telemtry page when the path is not in `pageList`.
+  private updateSelectedIndex(newPath: string) {
+    const pageIndex = Math.max(
+        0, this.pageList.findIndex((page: Page) => page.path === newPath));
+    this.selectedIndex = pageIndex;
+  }
+
+  // Update the visibility of line chart pages to render the visible page only.
+  private handleVisibilityChanged(pagePath: string, isVisible: boolean) {
     if (pagePath === PagePath.BATTERY) {
       this.$.batteryChart.updateVisibility(isVisible);
     } else if (pagePath === PagePath.CPU_FREQUENCY) {
