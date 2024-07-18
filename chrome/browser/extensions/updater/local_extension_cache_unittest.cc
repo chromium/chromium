@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -294,7 +295,7 @@ static void PutExtensionAndWait(LocalExtensionCache* cache,
                                 const std::string& version) {
   base::RunLoop run_loop;
   cache->PutExtension(
-      id, expected_hash, path, version,
+      id, expected_hash, path, base::Version(version),
       base::BindRepeating([](base::RunLoop* run_loop, const base::FilePath&,
                              bool) { run_loop->Quit(); },
                           &run_loop));

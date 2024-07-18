@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/version.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
@@ -74,7 +75,7 @@ void ExtensionCacheImpl::PutExtension(const std::string& id,
                                       const std::string& version,
                                       PutExtensionCallback callback) {
   if (cache_ && CachingAllowed(id)) {
-    cache_->PutExtension(id, expected_hash, file_path, version,
+    cache_->PutExtension(id, expected_hash, file_path, base::Version(version),
                          std::move(callback));
   } else {
     std::move(callback).Run(file_path, true);

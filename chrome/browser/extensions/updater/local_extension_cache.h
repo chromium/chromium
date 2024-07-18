@@ -17,6 +17,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/version.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -90,7 +91,7 @@ class LocalExtensionCache {
   void PutExtension(const std::string& id,
                     const std::string& expected_hash,
                     const base::FilePath& file_path,
-                    const std::string& version,
+                    const base::Version& version,
                     PutExtensionCallback callback);
 
   // Remove extension with |id| and |expected_hash| from local cache,
@@ -121,15 +122,13 @@ class LocalExtensionCache {
 
  private:
   struct CacheItemInfo {
-    // TODO(crbug.com/40688190): Change |version| from std::string to
-    // base::Version.
-    std::string version;
+    base::Version version;
     std::string expected_hash;
     base::Time last_used;
     uint64_t size;
     base::FilePath file_path;
 
-    CacheItemInfo(const std::string& version,
+    CacheItemInfo(const base::Version& version,
                   const std::string& expected_hash,
                   const base::Time& last_used,
                   uint64_t size,
@@ -164,7 +163,7 @@ class LocalExtensionCache {
   // value of |compare| is set to the version number comparison result (as
   // returned by Version::CompareTo).
   static bool NewerOrSame(const CacheMap::iterator& entry,
-                          const std::string& version,
+                          const base::Version& version,
                           const std::string& expected_hash,
                           int* compare);
 
@@ -241,7 +240,7 @@ class LocalExtensionCache {
       const std::string& id,
       const std::string& expected_hash,
       const base::FilePath& file_path,
-      const std::string& version,
+      const base::Version& version,
       PutExtensionCallback callback);
 
   // Invoked on the UI thread when a new entry has been installed in the cache.

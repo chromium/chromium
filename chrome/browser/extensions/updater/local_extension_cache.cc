@@ -119,7 +119,7 @@ bool LocalExtensionCache::GetExtension(const std::string& id,
   }
 
   if (version)
-    *version = it->second.version;
+    *version = it->second.version.GetString();
 
   return true;
 }
@@ -142,12 +142,11 @@ bool LocalExtensionCache::ShouldRetryDownload(
 
 // static
 bool LocalExtensionCache::NewerOrSame(const CacheMap::iterator& entry,
-                                      const std::string& version,
+                                      const base::Version& version,
                                       const std::string& expected_hash,
                                       int* compare) {
-  base::Version new_version(version);
-  base::Version prev_version(entry->second.version);
-  int cmp = new_version.CompareTo(prev_version);
+  const base::Version& prev_version = entry->second.version;
+  int cmp = version.CompareTo(prev_version);
 
   if (compare)
     *compare = cmp;
@@ -162,15 +161,14 @@ bool LocalExtensionCache::NewerOrSame(const CacheMap::iterator& entry,
 void LocalExtensionCache::PutExtension(const std::string& id,
                                        const std::string& expected_hash,
                                        const base::FilePath& file_path,
-                                       const std::string& version,
+                                       const base::Version& version,
                                        PutExtensionCallback callback) {
   if (state_ != kReady) {
     std::move(callback).Run(file_path, true);
     return;
   }
 
-  base::Version version_validator(version);
-  if (!version_validator.IsValid()) {
+  if (!version.IsValid()) {
     LOG(ERROR) << "Extension " << id << " has bad version " << version;
     std::move(callback).Run(file_path, true);
     return;
@@ -498,8 +496,8 @@ void LocalExtensionCache::BackendCheckCacheContentsInternal(
 
     InsertCacheEntry(
         *cache_content, id,
-        CacheItemInfo(version, expected_hash, info.GetLastModifiedTime(),
-                      info.GetSize(), path),
+        CacheItemInfo(base::Version(version), expected_hash,
+                      info.GetLastModifiedTime(), info.GetSize(), path),
         true);
   }
 
@@ -545,9 +543,10 @@ void LocalExtensionCache::BackendInstallCacheEntry(
     const std::string& id,
     const std::string& expected_hash,
     const base::FilePath& file_path,
-    const std::string& version,
+    const base::Version& version,
     PutExtensionCallback callback) {
-  std::string basename = ExtensionFileName(id, version, expected_hash);
+  std::string basename =
+      ExtensionFileName(id, version.GetString(), expected_hash);
   base::FilePath cached_crx_path = cache_dir.AppendASCII(basename);
 
   bool was_error = false;
@@ -705,7 +704,7 @@ void LocalExtensionCache::CleanUp() {
 }
 
 LocalExtensionCache::CacheItemInfo::CacheItemInfo(
-    const std::string& version,
+    const base::Version& version,
     const std::string& expected_hash,
     const base::Time& last_used,
     uint64_t size,
