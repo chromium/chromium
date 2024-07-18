@@ -306,6 +306,8 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
           {kActionShowAddressesBubbleOrPage,
            "PinnedShowAddressesBubbleOrPageButton"},
           {kActionShowChromeLabs, "PinnedShowChromeLabsButton"},
+          {kActionShowPasswordsBubbleOrPage,
+           "PinnedShowPasswordsBubbleOrPageButton"},
           {kActionShowPaymentsBubbleOrPage,
            "PinnedShowPaymentsBubbleOrPageButton"},
           {kActionShowTranslate, "PinnedShowTranslateButton"},

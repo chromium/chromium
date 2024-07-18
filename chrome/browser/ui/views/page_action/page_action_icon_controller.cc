@@ -164,7 +164,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         add_page_action_icon(
             type, std::make_unique<ManagePasswordsIconViews>(
                       params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
+                      params.page_action_icon_delegate, params.browser));
         break;
       case PageActionIconType::kMandatoryReauth:
         add_page_action_icon(

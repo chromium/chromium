@@ -70,6 +70,7 @@ PageActionIconView::PageActionIconView(
     PageActionIconView::Delegate* delegate,
     const char* name_for_histograms,
     std::optional<actions::ActionId> action_id,
+    Browser* browser,
     bool ephemeral,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),
@@ -78,7 +79,8 @@ PageActionIconView::PageActionIconView(
       command_id_(command_id),
       action_id_(action_id),
       name_for_histograms_(name_for_histograms),
-      ephemeral_(ephemeral) {
+      ephemeral_(ephemeral),
+      browser_(browser) {
   DCHECK(delegate_);
 
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -408,6 +410,25 @@ void BrowserActions::InitializeBrowserActions() {
             .SetEnabled(IsChromeLabsEnabled())
             .Build());
   }
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                if (PasswordsModelDelegateFromWebContents(
+                        browser->tab_strip_model()->GetActiveWebContents())
+                        ->GetState() == password_manager::ui::INACTIVE_STATE) {
+                  chrome::ShowPasswordManager(browser);
+                } else {
+                  chrome::ManagePasswordsForPage(browser);
+                }
+              },
+              base::Unretained(browser)),
+          kActionShowPasswordsBubbleOrPage, IDS_VIEW_PASSWORDS,
+          IDS_VIEW_PASSWORDS, vector_icons::kPasswordManagerIcon)
+          .SetEnabled(!is_guest_session)
+          .Build());
 
   AddListeners();
 }

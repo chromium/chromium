@@ -6,8 +6,12 @@
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -22,17 +26,33 @@
 ManagePasswordsIconViews::ManagePasswordsIconViews(
     CommandUpdater* updater,
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
-    PageActionIconView::Delegate* page_action_icon_delegate)
+    PageActionIconView::Delegate* page_action_icon_delegate,
+    Browser* browser)
     : PageActionIconView(updater,
                          IDC_MANAGE_PASSWORDS_FOR_PAGE,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "ManagePasswords") {
+                         "ManagePasswords",
+                         kActionShowPasswordsBubbleOrPage,
+                         browser) {
   // Password icon should not be mirrored in RTL.
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kPasswordsOmniboxKeyIconElementId);
+
+  const std::u16string tooltip_and_accessible_name_text =
+      GetTextForTooltipAndAccessibleName();
   GetViewAccessibility().SetProperties(/*role*/ std::nullopt,
-                                       GetTextForTooltipAndAccessibleName());
+                                       tooltip_and_accessible_name_text);
+
+  // TODO(b/353777476): Strip out pinned toolbar button code into a shared
+  // controller for page action and pinned button.
+  if (features::IsToolbarPinningEnabled()) {
+    BrowserActions* browser_actions = browser->browser_actions();
+    actions::ActionManager::Get()
+        .FindAction(kActionShowPasswordsBubbleOrPage,
+                    browser_actions->root_action_item())
+        ->SetTooltipText(tooltip_and_accessible_name_text);
+  }
 }
 
 ManagePasswordsIconViews::~ManagePasswordsIconViews() = default;
@@ -45,11 +65,25 @@ void ManagePasswordsIconViews::SetState(password_manager::ui::State state) {
   PasswordBubbleViewBase::CloseCurrentBubble();
   state_ = state;
   UpdateUiForState();
-  GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  const std::u16string tooltip_and_accessible_name_text =
+      GetTextForTooltipAndAccessibleName();
+  GetViewAccessibility().SetName(tooltip_and_accessible_name_text);
+
+  // TODO(b/353777476): Strip out pinned toolbar button code into a shared
+  // controller for page action and pinned button.
+  if (features::IsToolbarPinningEnabled()) {
+    BrowserActions* browser_actions = browser()->browser_actions();
+    actions::ActionManager::Get()
+        .FindAction(kActionShowPasswordsBubbleOrPage,
+                    browser_actions->root_action_item())
+        ->SetTooltipText(tooltip_and_accessible_name_text);
+  }
 }
 
 void ManagePasswordsIconViews::UpdateUiForState() {
-  if (state_ == password_manager::ui::INACTIVE_STATE) {
+  // Hides the page action icon if the associated toolbar icon is pinned.
+  if (state_ == password_manager::ui::INACTIVE_STATE ||
+      delegate()->ShouldHidePageActionIcon(this)) {
     SetVisible(false);
     return;
   }

@@ -67,7 +67,6 @@
   E(kActionSavePage, IDC_SAVE_PAGE) \
   E(kActionEmailPageLocation, IDC_EMAIL_PAGE_LOCATION) \
   E(kActionBasicPrint, IDC_BASIC_PRINT) \
-  E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
   E(kActionWindowMuteSite, IDC_WINDOW_MUTE_SITE) \
   E(kActionWindowPinTab, IDC_WINDOW_PIN_TAB) \
   E(kActionWindowGroupTab, IDC_WINDOW_GROUP_TAB) \
@@ -575,6 +574,8 @@
   E(kActionSaveCreditCardForPage, IDC_SAVE_CREDIT_CARD_FOR_PAGE) \
   E(kActionSaveIbanForPage, IDC_SAVE_IBAN_FOR_PAGE) \
   E(kActionShowPaymentsBubbleOrPage) \
+  E(kActionShowPasswordsBubbleOrPage) \
+  E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

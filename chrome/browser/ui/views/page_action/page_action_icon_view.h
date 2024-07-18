@@ -18,6 +18,7 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/image_view.h"
 
+class Browser;
 class CommandUpdater;
 class OmniboxView;
 class PageActionIconLoadingIndicatorView;
@@ -141,6 +142,7 @@ class PageActionIconView : public IconLabelBubbleView {
                      Delegate* delegate,
                      const char* name_for_histograms,
                      std::optional<actions::ActionId> action_id = std::nullopt,
+                     Browser* browser = nullptr,
                      bool ephemeral = true,
                      const gfx::FontList& = gfx::FontList());
 
@@ -205,6 +207,8 @@ class PageActionIconView : public IconLabelBubbleView {
   // state.
   virtual void UpdateImpl() = 0;
 
+  Browser* browser() { return browser_; }
+
  private:
   void InstallLoadingIndicator();
 
@@ -234,6 +238,8 @@ class PageActionIconView : public IconLabelBubbleView {
   // subclass, but generally indicates that the associated feature is acting on
   // the web page.
   bool active_ = false;
+
+  raw_ptr<Browser> browser_;
 
   // The loading indicator, showing a throbber animation on top of the icon.
   raw_ptr<PageActionIconLoadingIndicatorView> loading_indicator_ = nullptr;
