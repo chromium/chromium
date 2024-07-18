@@ -19,7 +19,6 @@ import org.junit.runners.MethodSorters;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -70,14 +69,12 @@ public class MostVisitedTilesPTTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/351148669")
     public void test010_ClickFirstMVT() {
         doClickMVTTest(0);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/351148669")
     public void test020_ClickLastMVT() {
         doClickMVTTest(7);
     }
