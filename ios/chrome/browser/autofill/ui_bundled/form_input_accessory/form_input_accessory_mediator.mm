@@ -690,6 +690,10 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 - (void)updateWithProvider:(id<FormInputSuggestionsProvider>)provider
                suggestions:(NSArray<FormSuggestion*>*)suggestions {
   if (!self.suggestionsEnabled) {
+    if (self.formInputInteractionDelegate) {
+      [self.formInputInteractionDelegate
+          focusDidChangedWithFillingProduct:provider.mainFillingProduct];
+    }
     return;
   }
 

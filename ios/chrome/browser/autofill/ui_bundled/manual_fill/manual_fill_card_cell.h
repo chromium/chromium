@@ -25,6 +25,7 @@
                 navigationDelegate:(id<CardListDelegate>)navigationDelegate
                        menuActions:(NSArray<UIAction*>*)menuActions
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+            showAutofillFormButton:(BOOL)showAutofillFormButton
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -45,7 +46,8 @@
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
              navigationDelegate:(id<CardListDelegate>)navigationDelegate
                     menuActions:(NSArray<UIAction*>*)menuActions
-    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel;
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+         showAutofillFormButton:(BOOL)showAutofillFormButton;
 
 @end
 

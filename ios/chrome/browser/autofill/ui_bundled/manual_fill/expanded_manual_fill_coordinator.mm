@@ -27,8 +27,11 @@ using manual_fill::ManualFillDataType;
 @end
 
 @implementation ExpandedManualFillCoordinator {
-  // Initial data type to present in the expanded manual fill view.
-  ManualFillDataType _initialDataType;
+  // Focused field data type to present in the expanded manual fill view.
+  ManualFillDataType _focusedFieldDataType;
+
+  // Stores the selected segment's data type.
+  ManualFillDataType _selectedSegmentDataType;
 
   // Reauthentication Module used for re-authentication.
   ReauthenticationModule* _reauthenticationModule;
@@ -41,7 +44,8 @@ using manual_fill::ManualFillDataType;
                         (ReauthenticationModule*)reauthenticationModule {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _initialDataType = dataType;
+    _focusedFieldDataType = dataType;
+    _selectedSegmentDataType = dataType;
     _reauthenticationModule = reauthenticationModule;
   }
   return self;
@@ -51,9 +55,9 @@ using manual_fill::ManualFillDataType;
   self.expandedManualFillViewController =
       [[ExpandedManualFillViewController alloc]
           initWithDelegate:self
-               forDataType:_initialDataType];
+               forDataType:_focusedFieldDataType];
 
-  [self showManualFillingOptionsForDataType:_initialDataType];
+  [self showManualFillingOptionsForDataType:_focusedFieldDataType];
 }
 
 - (void)stop {
@@ -76,7 +80,8 @@ using manual_fill::ManualFillDataType;
 - (void)expandedManualFillViewController:
             (ExpandedManualFillViewController*)expandedManualFillViewController
                   didSelectSegmentOfType:(ManualFillDataType)dataType {
-  [self showManualFillingOptionsForDataType:dataType];
+  _selectedSegmentDataType = dataType;
+  [self showManualFillingOptionsForDataType:_selectedSegmentDataType];
 }
 
 #pragma mark - FallbackCoordinatorDelegate
@@ -126,7 +131,9 @@ using manual_fill::ManualFillDataType;
                              browser:self.browser
                                  URL:URL
                     injectionHandler:self.injectionHandler
-            invokedOnObfuscatedField:self.invokedOnObfuscatedField];
+            invokedOnObfuscatedField:self.invokedOnObfuscatedField
+              showAutofillFormButton:(_focusedFieldDataType ==
+                                      ManualFillDataType::kPassword)];
   passwordCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =
@@ -143,7 +150,9 @@ using manual_fill::ManualFillDataType;
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                 injectionHandler:self.injectionHandler
-          reauthenticationModule:_reauthenticationModule];
+          reauthenticationModule:_reauthenticationModule
+          showAutofillFormButton:(_focusedFieldDataType ==
+                                  ManualFillDataType::kPaymentMethod)];
   cardCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =
@@ -159,13 +168,35 @@ using manual_fill::ManualFillDataType;
   AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                injectionHandler:self.injectionHandler];
+                injectionHandler:self.injectionHandler
+          showAutofillFormButton:(_focusedFieldDataType ==
+                                  ManualFillDataType::kAddress)];
   addressCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =
       addressCoordinator.viewController;
 
   [self.childCoordinators addObject:addressCoordinator];
+}
+
+#pragma mark - FormInputInteractionDelegate
+
+- (void)focusDidChangedWithFillingProduct:
+    (autofill::FillingProduct)fillingProduct {
+  ManualFillDataType previousFocusedFieldDataType = _focusedFieldDataType;
+  _focusedFieldDataType =
+      [ManualFillUtil manualFillDataTypeFromFillingProduct:fillingProduct];
+  if (previousFocusedFieldDataType == _focusedFieldDataType) {
+    return;
+  }
+
+  BOOL autofillFormButtonCurrentlyVisible =
+      previousFocusedFieldDataType == _selectedSegmentDataType;
+  BOOL shouldAutofillFormButtonBeVisible =
+      _focusedFieldDataType == _selectedSegmentDataType;
+  if (autofillFormButtonCurrentlyVisible != shouldAutofillFormButtonBeVisible) {
+    [self showManualFillingOptionsForDataType:_selectedSegmentDataType];
+  }
 }
 
 @end

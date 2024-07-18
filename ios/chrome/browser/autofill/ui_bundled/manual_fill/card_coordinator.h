@@ -45,6 +45,7 @@ class CreditCard;
                        browser:(Browser*)browser
               injectionHandler:(ManualFillInjectionHandler*)injectionHandler
         reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+        showAutofillFormButton:(BOOL)showAutofillFormButton
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

@@ -65,7 +65,10 @@ CGFloat GetFaviconSize() {
 
 @end
 
-@implementation ManualFillCredentialItem
+@implementation ManualFillCredentialItem {
+  // If `YES`, autofill button is shown for the item.
+  BOOL _showAutofillFormButton;
+}
 
 - (instancetype)initWithCredential:(ManualFillCredential*)credential
          isConnectedToPreviousItem:(BOOL)isConnectedToPreviousItem
@@ -73,7 +76,8 @@ CGFloat GetFaviconSize() {
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                        menuActions:(NSArray<UIAction*>*)menuActions
-       cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
+       cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+            showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _credential = credential;
@@ -82,6 +86,7 @@ CGFloat GetFaviconSize() {
     _contentInjector = contentInjector;
     _menuActions = menuActions;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillPasswordCell class];
   }
   return self;
@@ -95,7 +100,8 @@ CGFloat GetFaviconSize() {
             isConnectedToNextCell:self.isConnectedToNextItem
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
-      cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel];
+      cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel
+           showAutofillFormButton:_showAutofillFormButton];
 }
 
 - (const GURL&)faviconURL {
@@ -164,7 +170,10 @@ static const CGFloat kOffsetForConnectedCell = 16;
 
 @end
 
-@implementation ManualFillPasswordCell
+@implementation ManualFillPasswordCell {
+  // If `YES`, autofill button is shown for the cell.
+  BOOL _showAutofillFormButton;
+}
 
 #pragma mark - Public
 
@@ -198,7 +207,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
           isConnectedToNextCell:(BOOL)isConnectedToNextCell
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
-    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+         showAutofillFormButton:(BOOL)showAutofillFormButton {
+  _showAutofillFormButton = showAutofillFormButton;
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
@@ -285,7 +296,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
     self.grayLine.hidden = YES;
   }
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
+  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);
@@ -364,7 +375,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
+  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     self.autofillFormButton = CreateAutofillFormButton();
     [self.contentView addSubview:self.autofillFormButton];
     AppendHorizontalConstraintsForViews(

@@ -88,7 +88,8 @@
                                                             URL:GURL()
                                        invokedOnObfuscatedField:NO
                                            profilePasswordStore:nil
-                                           accountPasswordStore:nil];
+                                           accountPasswordStore:nil
+                                         showAutofillFormButton:YES];
   [self.passwordMediator
       setSavedPasswordsPresenter:_savedPasswordsPresenter.get()];
   [self.passwordMediator fetchAllPasswords];

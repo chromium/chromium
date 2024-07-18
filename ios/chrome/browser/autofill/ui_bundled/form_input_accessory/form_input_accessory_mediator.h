@@ -9,6 +9,7 @@
 
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_input_interaction_delegate.h"
 
 @protocol FormInputAccessoryConsumer;
 @protocol FormInputAccessoryMediatorHandler;
@@ -61,6 +62,10 @@ class WebStateList;
 
 // Whether suggestions updates are enabled. The setter updates the consumer.
 @property(nonatomic, assign) BOOL suggestionsEnabled;
+
+// Informs via the delegate about form interactions by the user.
+@property(nonatomic, weak) id<FormInputInteractionDelegate>
+    formInputInteractionDelegate;
 
 // Stops observing all objects.
 - (void)disconnect;

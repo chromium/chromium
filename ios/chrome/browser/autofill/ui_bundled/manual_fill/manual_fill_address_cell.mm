@@ -35,18 +35,23 @@
 
 @end
 
-@implementation ManualFillAddressItem
+@implementation ManualFillAddressItem {
+  // If `YES`, autofill button is shown for the item.
+  BOOL _showAutofillFormButton;
+}
 
 - (instancetype)initWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
-    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+         showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _contentInjector = contentInjector;
     _address = address;
     _menuActions = menuActions;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillAddressCell class];
   }
   return self;
@@ -58,7 +63,8 @@
   [cell setUpWithAddress:self.address
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
-      cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel];
+      cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel
+           showAutofillFormButton:_showAutofillFormButton];
 }
 
 @end
@@ -135,7 +141,10 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
 }  // namespace
 
-@implementation ManualFillAddressCell
+@implementation ManualFillAddressCell {
+  // If `YES`, autofill button is shown for the cell.
+  BOOL _showAutofillFormButton;
+}
 
 #pragma mark - Public
 
@@ -159,12 +168,15 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.emailAddressButton setTitle:@"" forState:UIControlStateNormal];
   self.contentInjector = nil;
   self.address = nil;
+  _showAutofillFormButton = NO;
 }
 
 - (void)setUpWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
-    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+         showAutofillFormButton:(BOOL)showAutofillFormButton {
+  _showAutofillFormButton = showAutofillFormButton;
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
@@ -285,7 +297,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
+  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     self.autofillFormButton = CreateAutofillFormButton();
     [self.contentView addSubview:self.autofillFormButton];
     [self.autofillFormButton addTarget:self
@@ -609,7 +621,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
       ],
       verticalLeadViews);
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
+  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);

@@ -78,12 +78,16 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
 
   // Reauthentication Module used for re-authentication.
   ReauthenticationModule* _reauthenticationModule;
+
+  // Indicates whether to show the autofill button for the items.
+  BOOL _showAutofillFormButton;
 }
 
 - (instancetype)initWithPersonalDataManager:
                     (autofill::PersonalDataManager*)personalDataManager
                      reauthenticationModule:
-                         (ReauthenticationModule*)reauthenticationModule {
+                         (ReauthenticationModule*)reauthenticationModule
+                     showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super init];
   if (self) {
     _personalDataManager = personalDataManager;
@@ -92,6 +96,7 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
     _personalDataManager->AddObserver(_personalDataManagerObserver.get());
     _cards = _personalDataManager->payments_data_manager().GetCreditCards();
     _reauthenticationModule = reauthenticationModule;
+    _showAutofillFormButton = showAutofillFormButton;
   }
   return self;
 }
@@ -183,12 +188,13 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
           ? [self createMenuActionsForCard:card]
           : @[];
 
-  return [[ManualFillCardItem alloc]
-               initWithCreditCard:manualFillCreditCard
-                  contentInjector:self.contentInjector
-               navigationDelegate:self.navigationDelegate
-                      menuActions:menuActions
-      cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
+  return
+      [[ManualFillCardItem alloc] initWithCreditCard:manualFillCreditCard
+                                     contentInjector:self.contentInjector
+                                  navigationDelegate:self.navigationDelegate
+                                         menuActions:menuActions
+                         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
+                              showAutofillFormButton:_showAutofillFormButton];
 }
 
 - (void)postActionsToConsumer {

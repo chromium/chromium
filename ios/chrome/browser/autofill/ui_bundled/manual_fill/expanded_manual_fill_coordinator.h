@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_EXPANDED_MANUAL_FILL_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_EXPANDED_MANUAL_FILL_COORDINATOR_H_
 
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_input_interaction_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace manual_fill {
@@ -29,7 +30,8 @@ enum class ManualFillDataType;
 @end
 
 // The coordinator responsible for presenting the expanded manual fill view.
-@interface ExpandedManualFillCoordinator : ChromeCoordinator
+@interface ExpandedManualFillCoordinator
+    : ChromeCoordinator <FormInputInteractionDelegate>
 
 // The object in charge of interacting with the web view. Used to fill the data
 // in the forms.

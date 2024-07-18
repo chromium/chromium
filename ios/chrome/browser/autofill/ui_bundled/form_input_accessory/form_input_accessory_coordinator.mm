@@ -249,6 +249,7 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 - (void)stopChildren {
+  self.formInputAccessoryMediator.formInputInteractionDelegate = nil;
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
     [coordinator stop];
   }
@@ -271,7 +272,8 @@ const CGFloat kIPHVerticalOffset = -5;
                              browser:self.browser
                                  URL:URL
                     injectionHandler:self.injectionHandler
-            invokedOnObfuscatedField:invokedOnObfuscatedField];
+            invokedOnObfuscatedField:invokedOnObfuscatedField
+              showAutofillFormButton:NO];
 
   passwordCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -290,7 +292,8 @@ const CGFloat kIPHVerticalOffset = -5;
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                 injectionHandler:self.injectionHandler
-          reauthenticationModule:self.reauthenticationModule];
+          reauthenticationModule:self.reauthenticationModule
+          showAutofillFormButton:NO];
   cardCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [cardCoordinator presentFromButton:button];
@@ -307,7 +310,8 @@ const CGFloat kIPHVerticalOffset = -5;
   AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                injectionHandler:self.injectionHandler];
+                injectionHandler:self.injectionHandler
+          showAutofillFormButton:NO];
   addressCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [addressCoordinator presentFromButton:button];
@@ -333,6 +337,8 @@ const CGFloat kIPHVerticalOffset = -5;
   expandedManualFillCoordinator.invokedOnObfuscatedField =
       invokedOnObfuscatedField;
   expandedManualFillCoordinator.delegate = self;
+  self.formInputAccessoryMediator.formInputInteractionDelegate =
+      expandedManualFillCoordinator;
   [expandedManualFillCoordinator start];
 
   self.formInputViewController = expandedManualFillCoordinator.viewController;

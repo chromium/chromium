@@ -45,6 +45,7 @@ extern NSString* const kAddPaymentMethodAccessibilityIdentifier;
                     (autofill::PersonalDataManager*)personalDataManager
                      reauthenticationModule:
                          (ReauthenticationModule*)reauthenticationModule
+                     showAutofillFormButton:(BOOL)showAutofillFormButton
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use `initWithCards:`.

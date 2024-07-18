@@ -140,6 +140,9 @@ BOOL AreCredentialsAtIndicesConnected(
 
   // Whether or not the user has passwords saved in the password stores.
   BOOL _hasSavedPasswords;
+
+  // Indicates whether to show the autofill button for the items.
+  BOOL _showAutofillFormButton;
 }
 
 - (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
@@ -152,7 +155,8 @@ BOOL AreCredentialsAtIndicesConnected(
                          profilePasswordStore
                  accountPasswordStore:
                      (scoped_refptr<password_manager::PasswordStoreInterface>)
-                         accountPasswordStore {
+                         accountPasswordStore
+               showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super init];
   if (self) {
     _credentials = @[];
@@ -167,6 +171,7 @@ BOOL AreCredentialsAtIndicesConnected(
     _webState->AddObserver(_webStateObserverBridge.get());
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(_webState, self);
+    _showAutofillFormButton = showAutofillFormButton;
 
     // A valid `profilePasswordStore` is needed to observe PasswordCounter.
     if (IsKeyboardAccessoryUpgradeEnabled() && profilePasswordStore) {
@@ -306,7 +311,8 @@ BOOL AreCredentialsAtIndicesConnected(
               isConnectedToNextItem:isConnectedToNextItem
                     contentInjector:self
                         menuActions:menuActions
-        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
+        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
+             showAutofillFormButton:_showAutofillFormButton];
     [items addObject:item];
   }
   return items;

@@ -43,7 +43,8 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                           injectionHandler:
-                              (ManualFillInjectionHandler*)injectionHandler {
+                              (ManualFillInjectionHandler*)injectionHandler
+                    showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                           injectionHandler:injectionHandler];
@@ -65,6 +66,7 @@
 
     _addressMediator = [[ManualFillAddressMediator alloc]
         initWithPersonalDataManager:personalDataManager
+             showAutofillFormButton:showAutofillFormButton
               authenticationService:authenticationService];
     _addressMediator.navigationDelegate = self;
     _addressMediator.contentInjector = super.injectionHandler;

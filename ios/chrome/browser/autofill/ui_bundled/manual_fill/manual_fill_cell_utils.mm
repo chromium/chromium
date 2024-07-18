@@ -533,6 +533,10 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
   return gray_line;
 }
 
+BOOL ShouldCreateAutofillFormButton(BOOL show_button) {
+  return IsKeyboardAccessoryUpgradeEnabled() && show_button;
+}
+
 UIButton* CreateAutofillFormButton() {
   UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
   UIButtonConfiguration* buttonConfiguration = button.configuration;

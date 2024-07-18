@@ -93,7 +93,8 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
                              URL:GURL("http://www.example.com/")
         invokedOnObfuscatedField:NO
             profilePasswordStore:store_
-            accountPasswordStore:nil];
+            accountPasswordStore:nil
+          showAutofillFormButton:NO];
 
     consumer_ = OCMProtocolMock(@protocol(ManualFillPasswordConsumer));
     mediator_.consumer = consumer_;

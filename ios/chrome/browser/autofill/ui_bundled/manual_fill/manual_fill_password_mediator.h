@@ -86,7 +86,9 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
                          profilePasswordStore
                  accountPasswordStore:
                      (scoped_refptr<password_manager::PasswordStoreInterface>)
-                         accountPasswordStore NS_DESIGNATED_INITIALIZER;
+                         accountPasswordStore
+               showAutofillFormButton:(BOOL)showAutofillFormButton
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

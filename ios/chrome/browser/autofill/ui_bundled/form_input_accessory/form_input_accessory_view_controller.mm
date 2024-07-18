@@ -199,8 +199,9 @@ using manual_fill::ManualFillDataType;
 
 - (void)manualFillButtonPressed:(UIButton*)button {
   [self manualFillButtonPressed:button
-                    forDataType:[self manualFillDataTypeFromFillingProduct:
-                                          _mainFillingProduct]];
+                    forDataType:[ManualFillUtil
+                                    manualFillDataTypeFromFillingProduct:
+                                        _mainFillingProduct]];
 }
 
 - (void)passwordManualFillButtonPressed:(UIButton*)button {
@@ -478,30 +479,6 @@ using manual_fill::ManualFillDataType;
                 self.traitCollection.preferredContentSizeCategory)
           : 0.0;
   [self.formInputAccessoryView setOmniboxTypingShieldHeight:typingShieldHeight];
-}
-
-// Returns a ManualFillDataType based on the provided FillingProduct.
-- (ManualFillDataType)manualFillDataTypeFromFillingProduct:
-    (FillingProduct)fillingProduct {
-  switch (fillingProduct) {
-    case FillingProduct::kAddress:
-    case FillingProduct::kPlusAddresses:
-      return ManualFillDataType::kAddress;
-    case FillingProduct::kCreditCard:
-    case FillingProduct::kIban:
-    case FillingProduct::kStandaloneCvc:
-      return ManualFillDataType::kPaymentMethod;
-    case FillingProduct::kPassword:
-    case FillingProduct::kAutocomplete:
-    case FillingProduct::kNone:
-      // `kPassword` acts as the default value when the FillingProduct
-      // doesn't point towards a specific data type.
-      return ManualFillDataType::kPassword;
-    case FillingProduct::kCompose:
-    case FillingProduct::kMerchantPromoCode:
-      // These cases are currently not available on iOS.
-      NOTREACHED_NORETURN();
-  }
 }
 
 // Moves the main view down by a certain offset (negative offsets move the view

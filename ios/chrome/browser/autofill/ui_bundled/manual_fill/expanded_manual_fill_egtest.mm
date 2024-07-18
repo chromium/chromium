@@ -201,6 +201,13 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cc_chip];
 }
 
+// Matcher for the "Autofill Form" button shown in the cells.
+id<GREYMatcher> AutofillFormButton() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE),
+                    grey_interactable(), nullptr);
+}
+
 }  // namespace
 
 // Test case for the expanded manual fill view.
@@ -439,6 +446,93 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
   // Confirm that the password option is visible.
   [[EarlGrey selectElementWithMatcher:UsernameChipButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the "Autofill Form" button does not exist for the other data types
+// than payments if a payments field is in focus.
+- (void)testNoAutofillFormButtonForNonPaymentTypes {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  // Open the expanded manual fill view for a payment field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPaymentMethod
+                                  fieldToFill:kCardNameFieldID];
+
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
+      performAction:grey_tap()];
+
+  // Check that the "Autofill Form" button does not exist.
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SegmentedControlAddressTab()]
+      performAction:grey_tap()];
+
+  // Check that the "Autofill Form" button does not exist.
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the "Autofill Form" button does not exist for the other data types
+// than addresses if an address field is in focus.
+- (void)testNoAutofillFormButtonForNonAddressTypes {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  // Open the expanded manual fill view for an address field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
+      performAction:grey_tap()];
+
+  // Check that the "Autofill Form" button does not exist.
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPaymentMethodTab()]
+      performAction:grey_tap()];
+
+  // Check that the "Autofill Form" button does not exist.
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the "Autofill Form" button does not exist for the other data types
+// than passwords if a password field is in focus.
+- (void)testNoAutofillFormButtonForNonPasswordTypes {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  // Open the expanded manual fill view for a password field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
+                                  fieldToFill:kPasswordFieldID];
+
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SegmentedControlAddressTab()]
+      performAction:grey_tap()];
+
+  // Check that the "Autofill Form" button does not exist.
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPaymentMethodTab()]
+      performAction:grey_tap()];
+
+  // Check that the "Autofill Form" button does not exist.
+  [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

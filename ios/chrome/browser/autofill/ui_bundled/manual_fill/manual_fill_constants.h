@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/core/browser/filling_product.h"
+
 namespace manual_fill {
 
 // Accessibility identifier for the expanded manual fill view.
@@ -44,5 +46,13 @@ enum class PaymentFieldType {
 };
 
 }  // namespace manual_fill
+
+@interface ManualFillUtil : NSObject
+
+// Returns a ManualFillDataType based on the provided FillingProduct.
++ (manual_fill::ManualFillDataType)manualFillDataTypeFromFillingProduct:
+    (autofill::FillingProduct)fillingProduct;
+
+@end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CONSTANTS_H_

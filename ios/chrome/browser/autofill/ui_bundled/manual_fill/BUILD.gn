@@ -14,6 +14,7 @@ source_set("manual_fill") {
     "fallback_coordinator.mm",
     "form_fetcher_consumer_bridge.h",
     "form_fetcher_consumer_bridge.mm",
+    "form_input_interaction_delegate.h",
     "form_observer_helper.h",
     "form_observer_helper.mm",
     "manual_fill_address+AutofillProfile.h",
@@ -169,6 +170,7 @@ source_set("manual_fill_constants") {
     "manual_fill_constants.h",
     "manual_fill_constants.mm",
   ]
+  deps = [ "//components/autofill/core/browser" ]
 }
 
 source_set("unit_tests") {

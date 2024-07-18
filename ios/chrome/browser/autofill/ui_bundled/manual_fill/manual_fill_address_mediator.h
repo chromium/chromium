@@ -38,6 +38,7 @@ extern NSString* const ManageAddressAccessibilityIdentifier;
 // must not be nil.
 - (instancetype)initWithPersonalDataManager:
                     (autofill::PersonalDataManager*)personalDataManager
+                     showAutofillFormButton:(BOOL)showAutofillFormButton
                       authenticationService:
                           (AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;

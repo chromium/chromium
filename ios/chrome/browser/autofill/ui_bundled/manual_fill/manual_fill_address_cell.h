@@ -25,6 +25,7 @@
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+         showAutofillFormButton:(BOOL)showAutofillFormButton
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -43,7 +44,8 @@
 - (void)setUpWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
-    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel;
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+         showAutofillFormButton:(BOOL)showAutofillFormButton;
 
 @end
 

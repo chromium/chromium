@@ -46,12 +46,13 @@ struct CredentialUIEntry;
 // Creates a coordinator that uses a `viewController`, `browser`,
 // `URL`, an `injectionHandler` and relevant information related to the current
 // form.
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                           URL:(const GURL&)URL
-              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
-      invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                       URL:(const GURL&)URL
+                          injectionHandler:
+                              (ManualFillInjectionHandler*)injectionHandler
+                  invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
+                    showAutofillFormButton:(BOOL)showAutofillFormButton
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable, use

@@ -31,6 +31,19 @@ class AutofillProfile;
 // web state.
 @interface AddressCoordinator : FallbackCoordinator
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                          injectionHandler:
+                              (ManualFillInjectionHandler*)injectionHandler
+                    showAutofillFormButton:(BOOL)showAutofillFormButton
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                          injectionHandler:
+                              (ManualFillInjectionHandler*)injectionHandler
+    NS_UNAVAILABLE;
+
 // The delegate for this coordinator. Delegate class extends
 // FallbackCoordinatorDelegate, and replaces super class delegate.
 @property(nonatomic, weak) id<AddressCoordinatorDelegate> delegate;

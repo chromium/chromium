@@ -48,7 +48,8 @@
                                        URL:(const GURL&)URL
                           injectionHandler:
                               (ManualFillInjectionHandler*)injectionHandler
-                  invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
+                  invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
+                    showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                           injectionHandler:injectionHandler];
@@ -75,7 +76,8 @@
                              URL:URL
         invokedOnObfuscatedField:invokedOnObfuscatedField
             profilePasswordStore:profilePasswordStore
-            accountPasswordStore:accountPasswordStore];
+            accountPasswordStore:accountPasswordStore
+          showAutofillFormButton:showAutofillFormButton];
     [_passwordMediator fetchPasswordsForOrigin];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;

@@ -59,14 +59,18 @@ using base::SysNSStringToUTF8;
 
 @end
 
-@implementation ManualFillCardItem
+@implementation ManualFillCardItem {
+  // If `YES`, autofill button is shown for the item.
+  BOOL _showAutofillFormButton;
+}
 
 - (instancetype)initWithCreditCard:(ManualFillCreditCard*)card
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                 navigationDelegate:(id<CardListDelegate>)navigationDelegate
                        menuActions:(NSArray<UIAction*>*)menuActions
-       cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
+       cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+            showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _contentInjector = contentInjector;
@@ -74,6 +78,7 @@ using base::SysNSStringToUTF8;
     _card = card;
     _menuActions = menuActions;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillCardCell class];
   }
   return self;
@@ -86,7 +91,8 @@ using base::SysNSStringToUTF8;
                   contentInjector:self.contentInjector
                navigationDelegate:self.navigationDelegate
                       menuActions:self.menuActions
-      cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel];
+      cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel
+           showAutofillFormButton:_showAutofillFormButton];
 }
 
 @end
@@ -217,7 +223,10 @@ CGFloat GPayIconTopAnchorOffset() {
 
 @end
 
-@implementation ManualFillCardCell
+@implementation ManualFillCardCell {
+  // If `YES`, autofill button is shown for the cell.
+  BOOL _showAutofillFormButton;
+}
 
 #pragma mark - Public
 
@@ -254,16 +263,20 @@ CGFloat GPayIconTopAnchorOffset() {
   self.navigationDelegate = nil;
   self.cardIcon.image = nil;
   self.card = nil;
+  _showAutofillFormButton = NO;
 }
 
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
              navigationDelegate:(id<CardListDelegate>)navigationDelegate
                     menuActions:(NSArray<UIAction*>*)menuActions
-    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+         showAutofillFormButton:(BOOL)showAutofillFormButton {
   if (!self.dynamicConstraints) {
     self.dynamicConstraints = [[NSMutableArray alloc] init];
   }
+
+  _showAutofillFormButton = showAutofillFormButton;
 
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
@@ -360,7 +373,7 @@ CGFloat GPayIconTopAnchorOffset() {
     [self.contentView addSubview:self.cardholderButton];
   }
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
+  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     self.autofillFormButton = CreateAutofillFormButton();
     [self.contentView addSubview:self.autofillFormButton];
     [self.autofillFormButton addTarget:self
@@ -434,7 +447,7 @@ CGFloat GPayIconTopAnchorOffset() {
                                      constant:GPayIconTopAnchorOffset()]];
   }
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
+  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
   }
@@ -645,7 +658,7 @@ CGFloat GPayIconTopAnchorOffset() {
   AddChipGroupsToVerticalLeadViews(@[ cardInfoGroupVerticalLeadChips ],
                                    verticalLeadViews);
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
+  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);

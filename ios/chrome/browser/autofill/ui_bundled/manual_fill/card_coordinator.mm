@@ -67,7 +67,8 @@
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
               injectionHandler:(ManualFillInjectionHandler*)injectionHandler
-        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
+        reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+        showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                           injectionHandler:injectionHandler];
@@ -84,7 +85,8 @@
 
     _cardMediator = [[ManualFillCardMediator alloc]
         initWithPersonalDataManager:_personalDataManager
-             reauthenticationModule:_reauthenticationModule];
+             reauthenticationModule:_reauthenticationModule
+             showAutofillFormButton:showAutofillFormButton];
     _cardMediator.navigationDelegate = self;
     _cardMediator.contentInjector = super.injectionHandler;
     _cardMediator.consumer = _cardViewController;

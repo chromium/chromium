@@ -51,12 +51,16 @@ NSString* const ManageAddressAccessibilityIdentifier =
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
       _personalDataManagerObserver;
 
+  // Indicates whether to show the autofill button for the items.
+  BOOL _showAutofillFormButton;
+
   // Service used to get the user's identity email address.
   raw_ptr<AuthenticationService> _authenticationService;
 }
 
 - (instancetype)initWithPersonalDataManager:
                     (autofill::PersonalDataManager*)personalDataManager
+                     showAutofillFormButton:(BOOL)showAutofillFormButton
                       authenticationService:
                           (AuthenticationService*)authenticationService {
   self = [super init];
@@ -68,6 +72,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
     _authenticationService = authenticationService;
     _addresses =
         _personalDataManager->address_data_manager().GetProfilesToSuggest();
+    _showAutofillFormButton = showAutofillFormButton;
   }
   return self;
 }
@@ -131,7 +136,8 @@ NSString* const ManageAddressAccessibilityIdentifier =
                     initWithAddress:manualFillAddress
                     contentInjector:self.contentInjector
                         menuActions:menuActions
-        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
+        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
+             showAutofillFormButton:_showAutofillFormButton];
     [items addObject:item];
   }
 
