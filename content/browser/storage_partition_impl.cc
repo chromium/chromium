@@ -1394,7 +1394,7 @@ void StoragePartitionImpl::Initialize(
       GetWeakPtr()));
 
   url_loader_factory_getter_ = base::MakeRefCounted<
-      URLLoaderFactoryGetter>(base::BindRepeating(
+      ReconnectableURLLoaderFactoryForIOThread>(base::BindRepeating(
       &StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal,
       GetWeakPtr()));
   url_loader_factory_getter_->Initialize();
@@ -1587,7 +1587,7 @@ StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcess() {
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcessIOThread() {
   DCHECK(initialized_);
-  return url_loader_factory_getter_->GetPendingNetworkFactory();
+  return url_loader_factory_getter_->CloneForIOThread();
 }
 
 network::mojom::CookieManager*
@@ -3112,8 +3112,7 @@ void StoragePartitionImpl::FlushNetworkInterfaceForTesting() {
 void StoragePartitionImpl::FlushNetworkInterfaceOnIOThreadForTesting() {
   CHECK(initialized_);
   CHECK(url_loader_factory_getter_);
-  url_loader_factory_getter_
-      ->FlushNetworkInterfaceOnIOThreadForTesting();  // IN-TEST
+  url_loader_factory_getter_->FlushForTesting();  // IN-TEST
 }
 
 void StoragePartitionImpl::FlushCertVerifierInterfaceForTesting() {

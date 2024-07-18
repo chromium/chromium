@@ -94,11 +94,12 @@ void ReconnectableURLLoaderFactory::FlushForTesting() {
 
 // -----------------------------------------------------------------------------
 
-class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
+class ReconnectableURLLoaderFactoryForIOThread::
+    PendingURLLoaderFactoryForIOThread final
     : public network::PendingSharedURLLoaderFactory {
  public:
   explicit PendingURLLoaderFactoryForIOThread(
-      scoped_refptr<URLLoaderFactoryGetter> factory_getter)
+      scoped_refptr<ReconnectableURLLoaderFactoryForIOThread> factory_getter)
       : factory_getter_(std::move(factory_getter)) {
     CHECK(factory_getter_);
   }
@@ -114,14 +115,14 @@ class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
   // PendingSharedURLLoaderFactory implementation.
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override;
 
-  scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
+  const scoped_refptr<ReconnectableURLLoaderFactoryForIOThread> factory_getter_;
 };
 
-class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
-    : public network::SharedURLLoaderFactory {
+class ReconnectableURLLoaderFactoryForIOThread::URLLoaderFactoryForIOThread
+    final : public network::SharedURLLoaderFactory {
  public:
   explicit URLLoaderFactoryForIOThread(
-      scoped_refptr<URLLoaderFactoryGetter> factory_getter)
+      scoped_refptr<ReconnectableURLLoaderFactoryForIOThread> factory_getter)
       : factory_getter_(std::move(factory_getter)) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     CHECK(factory_getter_);
@@ -163,24 +164,25 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
   friend class base::RefCounted<URLLoaderFactoryForIOThread>;
   ~URLLoaderFactoryForIOThread() override = default;
 
-  const scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
+  const scoped_refptr<ReconnectableURLLoaderFactoryForIOThread> factory_getter_;
 };
 
 scoped_refptr<network::SharedURLLoaderFactory>
-URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread::CreateFactory() {
+ReconnectableURLLoaderFactoryForIOThread::PendingURLLoaderFactoryForIOThread::
+    CreateFactory() {
   return base::MakeRefCounted<URLLoaderFactoryForIOThread>(
       std::move(factory_getter_));
 }
 
 // -----------------------------------------------------------------------------
 
-URLLoaderFactoryGetter::URLLoaderFactoryGetter(
-    ReconnectableURLLoaderFactory::CreateCallback
-        create_url_loader_factory_callback)
+ReconnectableURLLoaderFactoryForIOThread::
+    ReconnectableURLLoaderFactoryForIOThread(
+        CreateCallback create_url_loader_factory_callback)
     : create_url_loader_factory_callback_(
           std::move(create_url_loader_factory_callback)) {}
 
-void URLLoaderFactoryGetter::Initialize() {
+void ReconnectableURLLoaderFactoryForIOThread::Initialize() {
   // Create a mojo::PendingRemote<URLLoaderFactory> synchronously and push it to
   // the IO thread. If the pipe errors out later due to a network service crash,
   // the pipe is created on the IO thread, and the request send back to the UI
@@ -192,18 +194,20 @@ void URLLoaderFactoryGetter::Initialize() {
       network_factory.InitWithNewPipeAndPassReceiver());
 
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&URLLoaderFactoryGetter::InitializeOnIOThread,
-                                this, std::move(network_factory)));
+      FROM_HERE,
+      base::BindOnce(
+          &ReconnectableURLLoaderFactoryForIOThread::InitializeOnIOThread, this,
+          std::move(network_factory)));
 }
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
-URLLoaderFactoryGetter::GetPendingNetworkFactory() {
+ReconnectableURLLoaderFactoryForIOThread::CloneForIOThread() {
   return std::make_unique<PendingURLLoaderFactoryForIOThread>(
       base::WrapRefCounted(this));
 }
 
 network::mojom::URLLoaderFactory*
-URLLoaderFactoryGetter::GetURLLoaderFactory() {
+ReconnectableURLLoaderFactoryForIOThread::GetURLLoaderFactory() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (url_loader_factory_ && url_loader_factory_.is_connected() &&
@@ -217,24 +221,25 @@ URLLoaderFactoryGetter::GetURLLoaderFactory() {
   mojo::Remote<network::mojom::URLLoaderFactory> network_factory;
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &URLLoaderFactoryGetter::HandleNetworkFactoryRequestOnUIThread, this,
-          network_factory.BindNewPipeAndPassReceiver()));
+      base::BindOnce(&ReconnectableURLLoaderFactoryForIOThread::
+                         HandleNetworkFactoryRequestOnUIThread,
+                     this, network_factory.BindNewPipeAndPassReceiver()));
   ReinitializeOnIOThread(std::move(network_factory));
   return url_loader_factory_.get();
 }
 
-void URLLoaderFactoryGetter::FlushNetworkInterfaceOnIOThreadForTesting() {
+void ReconnectableURLLoaderFactoryForIOThread::FlushForTesting() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::RunLoop run_loop;
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&URLLoaderFactoryGetter::FlushNetworkInterfaceForTesting,
-                     this, run_loop.QuitClosure()));
+      base::BindOnce(
+          &ReconnectableURLLoaderFactoryForIOThread::FlushOnIOThreadForTesting,
+          this, run_loop.QuitClosure()));
   run_loop.Run();
 }
 
-void URLLoaderFactoryGetter::FlushNetworkInterfaceForTesting(
+void ReconnectableURLLoaderFactoryForIOThread::FlushOnIOThreadForTesting(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (url_loader_factory_) {
@@ -242,15 +247,16 @@ void URLLoaderFactoryGetter::FlushNetworkInterfaceForTesting(
   }
 }
 
-URLLoaderFactoryGetter::~URLLoaderFactoryGetter() {}
+ReconnectableURLLoaderFactoryForIOThread::
+    ~ReconnectableURLLoaderFactoryForIOThread() = default;
 
-void URLLoaderFactoryGetter::InitializeOnIOThread(
+void ReconnectableURLLoaderFactoryForIOThread::InitializeOnIOThread(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory) {
   ReinitializeOnIOThread(mojo::Remote<network::mojom::URLLoaderFactory>(
       std::move(network_factory)));
 }
 
-void URLLoaderFactoryGetter::ReinitializeOnIOThread(
+void ReconnectableURLLoaderFactoryForIOThread::ReinitializeOnIOThread(
     mojo::Remote<network::mojom::URLLoaderFactory> network_factory) {
   DCHECK(network_factory.is_bound());
   // Set a disconnect handler so that connection errors on the pipes are
@@ -264,17 +270,18 @@ void URLLoaderFactoryGetter::ReinitializeOnIOThread(
   url_loader_factory_ = std::move(network_factory);
 }
 
-void URLLoaderFactoryGetter::HandleNetworkFactoryRequestOnUIThread(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>
-        network_factory_receiver) {
+void ReconnectableURLLoaderFactoryForIOThread::
+    HandleNetworkFactoryRequestOnUIThread(
+        mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+            network_factory_receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   create_url_loader_factory_callback_.Run(&factory_remote);
 
   if (!factory_remote) {
-    // |StoragePartitionImpl| may have went away while |URLLoaderFactoryGetter|
-    // is still held by consumers.
+    // The underlying URLLoaderFactory has went away while
+    // `ReconnectableURLLoaderFactoryForIOThread` is still held by consumers.
     return;
   }
 

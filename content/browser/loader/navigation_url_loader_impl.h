@@ -93,7 +93,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   // Creates a URLLoaderFactory for a navigation. The factory uses
   // `header_client`. This should have the same settings as the factory from
-  // the URLLoaderFactoryGetter. Called on the UI thread.
+  // the ReconnectableURLLoaderFactoryForIOThread. Called on the UI thread.
   static mojo::PendingRemote<network::mojom::URLLoaderFactory>
   CreateURLLoaderFactoryWithHeaderClient(
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>

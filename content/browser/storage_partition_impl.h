@@ -391,7 +391,8 @@ class CONTENT_EXPORT StoragePartitionImpl
     return shared_storage_header_observer_.get();
   }
 
-  scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter() {
+  scoped_refptr<ReconnectableURLLoaderFactoryForIOThread>
+  url_loader_factory_getter() {
     return url_loader_factory_getter_;
   }
 
@@ -719,7 +720,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   bool initialized_ = false;
 
   mojo::Remote<storage::mojom::Partition> remote_partition_;
-  scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
+  scoped_refptr<ReconnectableURLLoaderFactoryForIOThread>
+      url_loader_factory_getter_;
   scoped_refptr<QuotaContext> quota_context_;
   scoped_refptr<storage::QuotaManager> quota_manager_;
   scoped_refptr<storage::FileSystemContext> filesystem_context_;

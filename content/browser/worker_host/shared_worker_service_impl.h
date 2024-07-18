@@ -67,7 +67,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   void Shutdown() override;
 
   // Uses |url_loader_factory| to load workers' scripts instead of
-  // StoragePartition's URLLoaderFactoryGetter.
+  // StoragePartition's ReconnectableURLLoaderFactoryForIOThread.
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 

@@ -24,8 +24,9 @@ namespace content {
 // remote is disconnected.
 // All methods (including the `CreateCallback` and the destructor) must be/are
 // called on the original sequence.
-// TODO(crbug.com/40947547): Merge `URLLoaderFactoryGetter` and rename the file.
-class CONTENT_EXPORT ReconnectableURLLoaderFactory
+// TODO(crbug.com/40947547): Merge `ReconnectableURLLoaderFactoryForIOThread`
+// and rename the file.
+class CONTENT_EXPORT ReconnectableURLLoaderFactory final
     : public network::SharedURLLoaderFactory {
  public:
   // On success:
@@ -82,43 +83,47 @@ class CONTENT_EXPORT ReconnectableURLLoaderFactory
 // Holds on to URLLoaderFactory for a given StoragePartition and allows code
 // running on the IO thread to access them. Note these are the factories used by
 // the browser process for frame requests.
-class URLLoaderFactoryGetter final
-    : public base::RefCountedThreadSafe<URLLoaderFactoryGetter,
-                                        BrowserThread::DeleteOnIOThread> {
+class CONTENT_EXPORT ReconnectableURLLoaderFactoryForIOThread final
+    : public base::RefCountedThreadSafe<
+          ReconnectableURLLoaderFactoryForIOThread,
+          BrowserThread::DeleteOnIOThread> {
  public:
+  using CreateCallback = ReconnectableURLLoaderFactory::CreateCallback;
+
   // Initializes this object on the UI thread. Similar to
   // `ReconnectableURLLoaderFactory`, this caches and reuses a URLLoaderFactory
   // remote created by its `CreateCallback`, and re-create and reconnect if the
   // cached remote is disconnected. The callback is called on the UI thread.
-  explicit CONTENT_EXPORT URLLoaderFactoryGetter(
-      ReconnectableURLLoaderFactory::CreateCallback
-          create_url_loader_factory_callback);
+  explicit ReconnectableURLLoaderFactoryForIOThread(
+      CreateCallback create_url_loader_factory_callback);
 
-  URLLoaderFactoryGetter(const URLLoaderFactoryGetter&) = delete;
-  URLLoaderFactoryGetter& operator=(const URLLoaderFactoryGetter&) = delete;
+  ReconnectableURLLoaderFactoryForIOThread(
+      const ReconnectableURLLoaderFactoryForIOThread&) = delete;
+  ReconnectableURLLoaderFactoryForIOThread& operator=(
+      const ReconnectableURLLoaderFactoryForIOThread&) = delete;
 
   void Initialize();
 
   // Called on the UI thread to create a PendingSharedURLLoaderFactory that
-  // holds a reference to this URLLoaderFactoryGetter, which can be used on IO
-  // thread to construct a SharedURLLoaderFactory that can be used to access the
-  // URLLoaderFactory to the network service and supports auto-reconnect after
-  // crash.
-  CONTENT_EXPORT std::unique_ptr<network::PendingSharedURLLoaderFactory>
-  GetPendingNetworkFactory();
+  // holds a reference to this ReconnectableURLLoaderFactoryForIOThread, which
+  // can be used on IO thread to construct a SharedURLLoaderFactory that can be
+  // used to access the URLLoaderFactory to the network service and supports
+  // auto-reconnect after crash.
+  std::unique_ptr<network::PendingSharedURLLoaderFactory> CloneForIOThread();
 
   // Call |url_loader_factory_.FlushForTesting()| on IO thread. For test use
   // only.
-  CONTENT_EXPORT void FlushNetworkInterfaceOnIOThreadForTesting();
+  void FlushForTesting();
 
  private:
   class PendingURLLoaderFactoryForIOThread;
   class URLLoaderFactoryForIOThread;
 
-  friend class base::DeleteHelper<URLLoaderFactoryGetter>;
+  friend class base::DeleteHelper<ReconnectableURLLoaderFactoryForIOThread>;
   friend struct BrowserThread::DeleteOnThread<BrowserThread::IO>;
 
-  CONTENT_EXPORT ~URLLoaderFactoryGetter();
+  ~ReconnectableURLLoaderFactoryForIOThread();
+
   void InitializeOnIOThread(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory);
 
@@ -138,15 +143,14 @@ class URLLoaderFactoryGetter final
 
   // Call |url_loader_factory_.FlushForTesting()|. For test use only. When the
   // flush is complete, |callback| will be called.
-  void FlushNetworkInterfaceForTesting(base::OnceClosure callback);
+  void FlushOnIOThreadForTesting(base::OnceClosure callback);
 
   // Only accessed on IO thread.
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   bool is_test_url_loader_factory_ = false;
 
   // Only accessed on UI thread.
-  const ReconnectableURLLoaderFactory::CreateCallback
-      create_url_loader_factory_callback_;
+  const CreateCallback create_url_loader_factory_callback_;
 };
 
 }  // namespace content
