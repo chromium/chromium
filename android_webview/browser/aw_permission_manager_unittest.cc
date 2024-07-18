@@ -168,7 +168,7 @@ class AwPermissionManagerForTesting : public AwPermissionManager {
     return kRenderFrameIDForTesting;
   }
 
-  GURL LastCommittedOrigin(
+  GURL LastCommittedMainOrigin(
       content::RenderFrameHost* render_frame_host) override {
     return GURL(kEmbeddingOrigin);
   }

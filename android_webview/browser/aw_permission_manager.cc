@@ -273,7 +273,7 @@ void AwPermissionManager::RequestPermissions(
     return;
   }
 
-  const GURL& embedding_origin = LastCommittedOrigin(render_frame_host);
+  const GURL& embedding_origin = LastCommittedMainOrigin(render_frame_host);
   const GURL& requesting_origin = request_description.requesting_origin;
 
   auto pending_request = std::make_unique<PendingRequest>(
@@ -833,10 +833,10 @@ int AwPermissionManager::GetRenderFrameID(
   return render_frame_host->GetRoutingID();
 }
 
-GURL AwPermissionManager::LastCommittedOrigin(
+GURL AwPermissionManager::LastCommittedMainOrigin(
     content::RenderFrameHost* render_frame_host) {
   return permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-      render_frame_host);
+      render_frame_host->GetMainFrame());
 }
 
 AwBrowserPermissionRequestDelegate* AwPermissionManager::GetDelegate(

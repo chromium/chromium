@@ -101,7 +101,8 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
 
   virtual int GetRenderProcessID(content::RenderFrameHost* render_frame_host);
   virtual int GetRenderFrameID(content::RenderFrameHost* render_frame_host);
-  virtual GURL LastCommittedOrigin(content::RenderFrameHost* render_frame_host);
+  virtual GURL LastCommittedMainOrigin(
+      content::RenderFrameHost* render_frame_host);
   virtual AwBrowserPermissionRequestDelegate* GetDelegate(int render_process_id,
                                                           int render_frame_id);
 
