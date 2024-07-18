@@ -93,6 +93,7 @@ export let AuthCompletedCredentials;
  *   service: string,
  *   dontResizeNonEmbeddedPages: boolean,
  *   clientId: string,
+ *   clientVersion: (string|undefined),
  *   gaiaPath: string,
  *   emailDomain: string,
  *   showTos: string,

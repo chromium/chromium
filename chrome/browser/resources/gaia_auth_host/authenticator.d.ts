@@ -43,6 +43,7 @@ export interface AuthCompletedCredentials {
 export interface AuthParams {
   authMode: AuthMode;
   clientId: string;
+  clientVersion?: string;
   constrained: string;
   dontResizeNonEmbeddedPages: boolean;
   emailDomain: string;
