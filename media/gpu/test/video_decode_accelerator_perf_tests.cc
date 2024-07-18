@@ -533,7 +533,6 @@ int main(int argc, char** argv) {
     enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
   }
   if (feature_list->IsFeatureOverridden("V4L2FlatVideoDecoder")) {
-    enabled_features.push_back(media::kV4L2FlatVideoDecoder);
     enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
   }
 #endif
