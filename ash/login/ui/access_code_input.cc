@@ -284,6 +284,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     layout->SetFlexForView(field, 1);
   }
   text_value_for_a11y_ = std::u16string(length, ' ');
+  GetViewAccessibility().SetIsProtected(is_obscure_pin_);
 }
 
 FixedLengthCodeInput::~FixedLengthCodeInput() = default;
@@ -400,9 +401,7 @@ void FixedLengthCodeInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   const gfx::Range& range = GetSelectedRangeOfTextValueForA11y();
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
                              range.start());
-  if (is_obscure_pin_) {
-    node_data->AddState(ax::mojom::State::kProtected);
-  }
+
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, range.end());
 }
 

@@ -11,7 +11,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -40,6 +42,15 @@ class FixedLengthCodeInputTest : public AshTestBase {
         base::BindRepeating(&FixedLengthCodeInputTest::OnEscape,
                             base::Unretained(this)),
         /*obscure_pin=*/false);
+    obscure_input_view_ = std::make_unique<FixedLengthCodeInput>(
+        fixed_pin_length,
+        base::BindRepeating(&FixedLengthCodeInputTest::OnInputChange,
+                            base::Unretained(this)),
+        base::BindRepeating(&FixedLengthCodeInputTest::OnEnter,
+                            base::Unretained(this)),
+        base::BindRepeating(&FixedLengthCodeInputTest::OnEscape,
+                            base::Unretained(this)),
+        /*obscure_pin=*/true);
   }
 
   void TearDown() override { AshTestBase::TearDown(); }
@@ -56,6 +67,7 @@ class FixedLengthCodeInputTest : public AshTestBase {
   void OnEscape() { ++on_escape_count; }
 
   std::unique_ptr<FixedLengthCodeInput> input_view_;
+  std::unique_ptr<FixedLengthCodeInput> obscure_input_view_;
 
   int on_input_change_count = 0;
   int on_input_change_complete_count = 0;
@@ -83,6 +95,17 @@ TEST_F(FixedLengthCodeInputTest, ContentsChangedWithDigits) {
   EXPECT_EQ(code.value(), "123456");
   EXPECT_EQ(on_enter_count, 0);
   EXPECT_EQ(on_escape_count, 0);
+}
+
+TEST_F(FixedLengthCodeInputTest, AccessibilityStateIsProtected) {
+  ui::AXNodeData data;
+
+  input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kProtected));
+
+  data = ui::AXNodeData();
+  obscure_input_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kProtected));
 }
 
 // Validates that the FixedLengthCodeInput::ContentsChanged() method handles
