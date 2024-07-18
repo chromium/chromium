@@ -758,6 +758,7 @@ public final class ChildProcessLauncherHelperImpl {
             long frameDepth,
             boolean intersectsViewport,
             boolean boostForPendingViews,
+            boolean boostForLoading,
             @ChildProcessImportance int importance) {
         assert LauncherThread.runningOnLauncherThread();
         assert mLauncher.getPid() == pid
@@ -785,7 +786,8 @@ public final class ChildProcessLauncherHelperImpl {
         } else if ((visible && frameDepth > 0 && intersectsViewport)
                 || boostForPendingViews
                 || importance == ChildProcessImportance.MODERATE
-                || hasForegroundServiceWorker) {
+                || hasForegroundServiceWorker
+                || boostForLoading) {
             newEffectiveImportance = ChildProcessImportance.MODERATE;
         } else {
             newEffectiveImportance = ChildProcessImportance.NORMAL;

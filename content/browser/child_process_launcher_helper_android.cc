@@ -293,7 +293,8 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
       env, java_peer_, process.Handle(), priority.visible,
       priority.has_media_stream, priority.has_foreground_service_worker,
       priority.frame_depth, priority.intersects_viewport,
-      priority.boost_for_pending_views, static_cast<jint>(priority.importance));
+      priority.boost_for_pending_views, priority.boost_for_loading,
+      static_cast<jint>(priority.importance));
 }
 
 // Called from ChildProcessLauncher.java when the ChildProcess was started.
