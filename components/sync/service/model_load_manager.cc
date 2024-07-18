@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -168,7 +169,7 @@ void ModelLoadManager::LoadDesiredTypes() {
 
   for (ModelType type : types) {
     auto dtc_iter = controllers_->find(type);
-    DCHECK(dtc_iter != controllers_->end());
+    CHECK(dtc_iter != controllers_->end(), base::NotFatalUntil::M130);
     ModelTypeController* dtc = dtc_iter->second.get();
     if (dtc->state() == ModelTypeController::NOT_RUNNING) {
       LoadModelsForType(dtc);
