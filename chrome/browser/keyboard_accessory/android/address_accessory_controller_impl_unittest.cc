@@ -259,6 +259,10 @@ TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesActions) {
               l10n_util::GetStringUTF16(
                   IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
               AccessoryAction::CREATE_PLUS_ADDRESS)
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
+              AccessoryAction::SELECT_PLUS_ADDRESS)
           .Build());
 }
 

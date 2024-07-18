@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ADDRESS_ACCESSORY_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_ADDRESS_ACCESSORY_CONTROLLER_IMPL_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/keyboard_accessory/android/address_accessory_controller.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -16,6 +18,10 @@
 #include "url/gurl.h"
 
 class ManualFillingController;
+
+namespace plus_addresses {
+class AllPlusAddressesBottomSheetController;
+}  // namespace plus_addresses
 
 namespace autofill {
 class PersonalDataManager;
@@ -76,6 +82,11 @@ class AddressAccessoryControllerImpl
   void OnPlusAddressCreated(FieldGlobalId focused_field_id,
                             const std::string& plus_address);
 
+  // Triggers the filling `plus_address` into the field with `focused_field_id`.
+  void OnPlusAddressSelected(
+      FieldGlobalId focused_field_id,
+      base::optional_ref<const std::string> plus_address);
+
   // Given that `RenderFrameHost` and `ContentAutofillDriver` exist, enters the
   // `value` into the field identified by the `focused_field_id`.
   void FillValueIntoField(FieldGlobalId focused_field_id,
@@ -93,6 +104,9 @@ class AddressAccessoryControllerImpl
 
   // The data manager used to retrieve the profiles.
   raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  std::unique_ptr<plus_addresses::AllPlusAddressesBottomSheetController>
+      all_plus_addresses_bottom_sheet_controller_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

@@ -1447,6 +1447,7 @@ if (is_android) {
       "../browser/trusted_vault/trusted_vault_encryption_keys_tab_helper_browsertest.cc",
       "../browser/ui/android/autofill/save_update_address_profile_flow_manager_browsertest.cc",
       "../browser/ui/android/hats/survey_client_android_browsertest.cc",
+      "../browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_view_browsertest.cc",
       "../browser/ui/android/plus_addresses/plus_address_creation_view_android_browsertest.cc",
       "../browser/ui/autofill/payments/offer_notification_controller_android_browsertest.cc",
       "../browser/ui/webui/policy/policy_test_ui_browsertest.cc",

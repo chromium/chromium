@@ -15,6 +15,8 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -81,6 +83,10 @@ std::vector<FooterCommand> CreateManageAddressesFooter() {
         l10n_util::GetStringUTF16(
             IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
         AccessoryAction::CREATE_PLUS_ADDRESS));
+    commands.emplace_back(
+        FooterCommand(l10n_util::GetStringUTF16(
+                          IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
+                      AccessoryAction::SELECT_PLUS_ADDRESS));
   }
   return commands;
 }
@@ -140,8 +146,7 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
       autofill::ShowAutofillProfileSettings(&GetWebContents());
       return;
     case AccessoryAction::CREATE_PLUS_ADDRESS: {
-      ContentAutofillClient* client =
-          ContentAutofillClient::FromWebContents(&GetWebContents());
+      auto* client = ContentAutofillClient::FromWebContents(&GetWebContents());
       client->OfferPlusAddressCreation(
           client->GetLastCommittedPrimaryMainFrameOrigin(),
           base::BindOnce(
@@ -151,6 +156,18 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
       // TODO: crbug.com/327838324 - Confirm with the UX that the manual filling
       // sheet should be closed after the bottom sheet is closed.
       GetManualFillingController()->Hide();
+      return;
+    }
+    case AccessoryAction::SELECT_PLUS_ADDRESS: {
+      if (!all_plus_addresses_bottom_sheet_controller_) {
+        all_plus_addresses_bottom_sheet_controller_ = std::make_unique<
+            plus_addresses::AllPlusAddressesBottomSheetController>(
+            &GetWebContents());
+        all_plus_addresses_bottom_sheet_controller_->Show(base::BindOnce(
+            &AddressAccessoryControllerImpl::OnPlusAddressSelected,
+            weak_ptr_factory_.GetWeakPtr(),
+            GetManualFillingController()->GetLastFocusedFieldId()));
+      }
       return;
     }
     default:
@@ -222,6 +239,16 @@ void AddressAccessoryControllerImpl::OnPlusAddressCreated(
     FieldGlobalId focused_field_id,
     const std::string& plus_address) {
   FillValueIntoField(focused_field_id, base::UTF8ToUTF16(plus_address));
+}
+
+void AddressAccessoryControllerImpl::OnPlusAddressSelected(
+    FieldGlobalId focused_field_id,
+    base::optional_ref<const std::string> plus_address) {
+  if (plus_address) {
+    FillValueIntoField(focused_field_id,
+                       base::UTF8ToUTF16(plus_address.value()));
+  }
+  all_plus_addresses_bottom_sheet_controller_.reset();
 }
 
 void AddressAccessoryControllerImpl::FillValueIntoField(

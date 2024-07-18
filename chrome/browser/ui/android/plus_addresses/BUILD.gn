@@ -8,11 +8,13 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediator.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
   ]
   deps = [
     ":java_resources",
@@ -47,7 +49,11 @@ android_resources("java_resources") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
+  ]
 }
 
 robolectric_library("junit") {

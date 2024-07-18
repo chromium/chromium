@@ -1,0 +1,66 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_view.h"
+
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "base/check_deref.h"
+#include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
+#include "components/plus_addresses/plus_address_types.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/plus_addresses/jni_headers/AllPlusAddressesBottomSheetBridge_jni.h"
+#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusProfile_jni.h"
+
+namespace plus_addresses {
+
+namespace {
+std::string GetOriginFromPlusProfile(const PlusProfile& profile) {
+  if (absl::holds_alternative<std::string>(profile.facet)) {
+    return absl::get<std::string>(profile.facet);
+  } else {
+    return absl::get<affiliations::FacetURI>(profile.facet).canonical_spec();
+  }
+}
+}  // namespace
+
+AllPlusAddressesBottomSheetView::AllPlusAddressesBottomSheetView(
+    AllPlusAddressesBottomSheetController* controller)
+    : controller_(CHECK_DEREF(controller)) {}
+
+AllPlusAddressesBottomSheetView::~AllPlusAddressesBottomSheetView() {
+  if (java_object_internal_) {
+    Java_AllPlusAddressesBottomSheetBridge_destroy(
+        jni_zero::AttachCurrentThread(), java_object_internal_);
+  }
+}
+
+void AllPlusAddressesBottomSheetView::Show(
+    base::span<const PlusProfile> profiles) {
+  base::android::ScopedJavaGlobalRef<jobject> java_object =
+      GetOrCreateJavaObject();
+  CHECK(java_object);
+
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_profiles;
+  for (const PlusProfile& profile : profiles) {
+    java_profiles.emplace_back(Java_PlusProfile_Constructor(
+        env, profile.plus_address, GetOriginFromPlusProfile(profile)));
+  }
+
+  Java_AllPlusAddressesBottomSheetBridge_showPlusAddresses(env, java_object,
+                                                           java_profiles);
+}
+
+base::android::ScopedJavaGlobalRef<jobject>
+AllPlusAddressesBottomSheetView::GetOrCreateJavaObject() {
+  if (java_object_internal_) {
+    return java_object_internal_;
+  }
+  return java_object_internal_ = Java_AllPlusAddressesBottomSheetBridge_create(
+             jni_zero::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
+}
+
+}  // namespace plus_addresses

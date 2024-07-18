@@ -399,6 +399,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
       return pwd_controller_.get();
     case AccessoryAction::MANAGE_ADDRESSES:
     case AccessoryAction::CREATE_PLUS_ADDRESS:
+    case AccessoryAction::SELECT_PLUS_ADDRESS:
       return address_controller_.get();
     case AccessoryAction::MANAGE_CREDIT_CARDS:
       return payment_method_controller_.get();
