@@ -54,7 +54,7 @@ ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level) {
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
-      /*conv2d_input_layout=*/InputOperandLayout::kNchw,
+      /*input_operand_layout=*/InputOperandLayout::kNchw,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
 

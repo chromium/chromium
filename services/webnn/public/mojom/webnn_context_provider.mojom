@@ -87,7 +87,7 @@ struct DataTypeLimits {
 // Represents properties of the `WebNNContext` implementation that has been
 // provided.
 struct ContextProperties {
-  InputOperandLayout conv2d_input_layout;
+  InputOperandLayout input_operand_layout;
   DataTypeLimits data_type_limits;
 };
 

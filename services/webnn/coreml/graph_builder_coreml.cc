@@ -2067,11 +2067,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
     }
   }
 
-  if (operation.layout != mojom::InputOperandLayout::kChannelsFirst) {
-    // TODO: crbug.com/334914466 - Support channels-last by adding transposes.
-    return NewNotSupportedError("Unsupported input layout.");
-  }
-
   if (operation.dilations->height != 1 || operation.dilations->width != 1) {
     // TODO: crbug.com/334914466 - Support dilations.
     return NewNotSupportedError("Unsupported dilations.");

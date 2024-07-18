@@ -376,44 +376,44 @@ webnn::InputOperandLayout BlinkInputOperandLayoutToNative(
 constexpr std::array<uint32_t, 4> kNchwToNhwcPermutation = {0u, 2u, 3u, 1u};
 constexpr std::array<uint32_t, 4> kNhwcToNchwPermutation = {0u, 3u, 1u, 2u};
 
-std::optional<base::span<const uint32_t>> GetConv2DInputPermutation(
+std::optional<base::span<const uint32_t>> GetInputOperandPermutation(
     blink::V8MLInputOperandLayout input_layout,
     const webnn::ContextProperties& context_properties) {
   if (BlinkInputOperandLayoutToNative(input_layout.AsEnum()) ==
-      context_properties.conv2d_input_layout) {
+      context_properties.input_operand_layout) {
     return std::nullopt;
   }
 
   switch (input_layout.AsEnum()) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
-      CHECK_EQ(context_properties.conv2d_input_layout,
+      CHECK_EQ(context_properties.input_operand_layout,
                webnn::InputOperandLayout::kNhwc);
       return kNchwToNhwcPermutation;
     case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      CHECK_EQ(context_properties.conv2d_input_layout,
+      CHECK_EQ(context_properties.input_operand_layout,
                webnn::InputOperandLayout::kNchw);
       return kNhwcToNchwPermutation;
   }
 }
 
-std::optional<base::span<const uint32_t>> GetConv2DOutputPermutation(
+std::optional<base::span<const uint32_t>> GetOutputOperandPermutation(
     blink::V8MLInputOperandLayout input_layout,
     const webnn::ContextProperties& context_properties) {
   if (BlinkInputOperandLayoutToNative(input_layout.AsEnum()) ==
-      context_properties.conv2d_input_layout) {
+      context_properties.input_operand_layout) {
     return std::nullopt;
   }
 
   // The output layout is the same as the input layout and so the output
   // needs to have the inverse of the permutation returned by
-  // `GetConv2DInputPermutation()` applied.
+  // `GetInputOperandPermutation()` applied.
   switch (input_layout.AsEnum()) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
-      CHECK_EQ(context_properties.conv2d_input_layout,
+      CHECK_EQ(context_properties.input_operand_layout,
                webnn::InputOperandLayout::kNhwc);
       return kNhwcToNchwPermutation;
     case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      CHECK_EQ(context_properties.conv2d_input_layout,
+      CHECK_EQ(context_properties.input_operand_layout,
                webnn::InputOperandLayout::kNchw);
       return kNchwToNhwcPermutation;
   }
@@ -661,7 +661,7 @@ std::optional<String> SerializeConv2dOperation(
   uint64_t output_operand_id = operand_to_id_map.at(output_operand);
 
   const std::optional<base::span<const uint32_t>> input_permutation =
-      GetConv2DInputPermutation(options->inputLayout(), context_properties);
+      GetInputOperandPermutation(options->inputLayout(), context_properties);
   if (input_permutation.has_value()) {
     conv2d_mojo->input_operand_id = InsertInputTranspose(
         operand_to_id_map, input_operand, *input_permutation, graph_info);
@@ -685,14 +685,14 @@ std::optional<String> SerializeConv2dOperation(
 
     bool depthwise = IsDepthwiseConv2d(conv2d);
     filter_permutation =
-        GetConv2DFilterPermutation(context_properties.conv2d_input_layout,
+        GetConv2DFilterPermutation(context_properties.input_operand_layout,
                                    depthwise, options->filterLayout());
   } else if constexpr (std::is_same<MLConv2dOptionsType,
                                     MLConvTranspose2dOptions>::value) {
     conv2d_mojo->kind = blink_mojom::Conv2d::Kind::kTransposed;
 
     filter_permutation = GetConvTranspose2DFilterPermutation(
-        context_properties.conv2d_input_layout, options->filterLayout());
+        context_properties.input_operand_layout, options->filterLayout());
   } else {
     NOTREACHED_NORETURN();
   }
@@ -719,7 +719,7 @@ std::optional<String> SerializeConv2dOperation(
       blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo)));
 
   const std::optional<base::span<const uint32_t>> output_permutation =
-      GetConv2DOutputPermutation(options->inputLayout(), context_properties);
+      GetOutputOperandPermutation(options->inputLayout(), context_properties);
   if (output_permutation) {
     auto output_transpose = blink_mojom::Transpose::New();
     output_transpose->input_operand_id = output_operand_id;
@@ -1170,18 +1170,37 @@ OperationPtr CreatePadOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewPad(std::move(pad_mojo));
 }
 
-OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
-                                   const MLOperator* pool2d,
-                                   const blink_mojom::Pool2d::Kind& kind) {
+void SerializePool2dOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const webnn::ContextProperties& context_properties,
+    const MLOperator* pool2d,
+    const blink_mojom::Pool2d::Kind& kind,
+    blink_mojom::GraphInfo* graph_info) {
   auto pool2d_mojo = blink_mojom::Pool2d::New();
   pool2d_mojo->kind = kind;
-  pool2d_mojo->input_operand_id = GetOperatorInputId(pool2d, operand_to_id_map);
-  pool2d_mojo->output_operand_id =
-      GetOperatorOutputId(pool2d, operand_to_id_map);
-
+  const MLOperand* input_operand = pool2d->Inputs()[0];
+  const MLOperand* output_operand = pool2d->Outputs()[0];
+  uint64_t output_operand_id = operand_to_id_map.at(output_operand);
   const auto* options =
       static_cast<const blink::MLPool2dOptions*>(pool2d->Options());
   CHECK(options);
+  const std::optional<base::span<const uint32_t>> input_permutation =
+      GetInputOperandPermutation(options->layout(), context_properties);
+  if (input_permutation.has_value()) {
+    pool2d_mojo->input_operand_id = InsertInputTranspose(
+        operand_to_id_map, input_operand, *input_permutation, graph_info);
+
+    output_operand_id = InsertTemporaryOperand(
+        operand_to_id_map,
+        *webnn::OperandDescriptor::Create(
+            output_operand->DataType(),
+            PermuteShape(output_operand->Shape(), *input_permutation)),
+        graph_info);
+  } else {
+    pool2d_mojo->input_operand_id = operand_to_id_map.at(input_operand);
+  }
+  pool2d_mojo->output_operand_id = output_operand_id;
+
   // If strides is not present, the values are assumed to be [1,1].
   auto strides = options->getStridesOr({1, 1});
   CHECK_EQ(strides.size(), 2u);
@@ -1191,8 +1210,6 @@ OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
   auto dilations = options->getDilationsOr({1, 1});
   CHECK_EQ(dilations.size(), 2u);
   pool2d_mojo->dilations = Size2d::New(dilations[0], dilations[1]);
-  pool2d_mojo->layout =
-      BlinkInputOperandLayoutToMojo(options->layout().AsEnum());
 
   // Get height and width of input for calculating padding.
   auto input_size = mojo::GetInputOperandSize2d(pool2d->Inputs()[0].Get(),
@@ -1218,7 +1235,20 @@ OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
       /*beginning padding*/ Size2d::New(ml_padding[0], ml_padding[2]),
       /*ending padding*/ Size2d::New(ml_padding[1], ml_padding[3]));
 
-  return blink_mojom::Operation::NewPool2d(std::move(pool2d_mojo));
+  graph_info->operations.push_back(
+      blink_mojom::Operation::NewPool2d(std::move(pool2d_mojo)));
+
+  const std::optional<base::span<const uint32_t>> output_permutation =
+      GetOutputOperandPermutation(options->layout(), context_properties);
+  if (output_permutation) {
+    auto output_transpose = blink_mojom::Transpose::New();
+    output_transpose->input_operand_id = output_operand_id;
+    output_transpose->output_operand_id = operand_to_id_map.at(output_operand);
+    output_transpose->permutation = Vector<uint32_t>(*output_permutation);
+
+    graph_info->operations.push_back(
+        blink_mojom::Operation::NewTranspose(std::move(output_transpose)));
+  }
 }
 
 OperationPtr CreatePreluOperation(const OperandToIdMap& operand_to_id_map,
@@ -1563,8 +1593,9 @@ std::optional<String> SerializeMojoOperation(
           CreatePadOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kPool2d:
-      graph_info->operations.push_back(CreatePool2dOperation(
-          operand_to_id_map, op, op->SubKind<blink_mojom::Pool2d::Kind>()));
+      SerializePool2dOperation(operand_to_id_map, context_properties, op,
+                               op->SubKind<blink_mojom::Pool2d::Kind>(),
+                               graph_info);
       break;
     case blink_mojom::Operation::Tag::kPrelu:
       graph_info->operations.push_back(

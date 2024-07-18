@@ -210,7 +210,7 @@ Conv2dAttributesType ConvertToConv2dAttributes(
 
   // Convert groups, input layout and bias.
   attributes_base.groups = conv2d.groups;
-  attributes_base.input_layout = context_properties.conv2d_input_layout;
+  attributes_base.input_layout = context_properties.input_operand_layout;
   attributes_base.bias_operand = std::move(bias_operand);
 
   attributes_base.label = conv2d.label;
@@ -227,7 +227,7 @@ webnn::Conv2dAttributes ConvertToConv2dAttributes(
       ConvertToConv2dAttributes<webnn::Conv2dAttributes>(
           context_properties, id_to_operand_map, conv2d,
           std::move(bias_operand));
-  switch (context_properties.conv2d_input_layout) {
+  switch (context_properties.input_operand_layout) {
     case webnn::InputOperandLayout::kNchw:
       // "channelsFirst": [batches, input_channels, height, width]
       component_attributes.filter_layout = Conv2dFilterOperandLayout::kOihw;
@@ -335,7 +335,7 @@ webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
   auto* output = GetMojoOperand(id_to_operand_map, conv2d.output_operand_id);
   CHECK_EQ(output->descriptor.Rank(), 4u);
   webnn::Size2d<uint32_t> output_sizes;
-  switch (context_properties.conv2d_input_layout) {
+  switch (context_properties.input_operand_layout) {
     case webnn::InputOperandLayout::kNchw:
       // "channelsFirst": [batches, input_channels, height, width]
       output_sizes.height = output->descriptor.shape()[2];
@@ -378,6 +378,7 @@ webnn::LayerNormalizationAttributes ConvertToLayerNormalizationAttributes(
 }
 
 webnn::Pool2dAttributes ConvertToPool2dAttributes(
+    const webnn::ContextProperties& context_properties,
     const webnn::mojom::Pool2d& pool2d,
     const mojom::Operand* output) {
   webnn::Pool2dAttributes component_attributes;
@@ -395,8 +396,7 @@ webnn::Pool2dAttributes ConvertToPool2dAttributes(
       .height = pool2d.strides->height, .width = pool2d.strides->width};
   component_attributes.dilations = webnn::Size2d<uint32_t>{
       .height = pool2d.dilations->height, .width = pool2d.dilations->width};
-  component_attributes.layout =
-      MojoInputOperandLayoutToComponent(pool2d.layout);
+  component_attributes.layout = context_properties.input_operand_layout;
   CHECK_EQ(output->descriptor.Rank(), 4u);
   switch (component_attributes.layout) {
     case webnn::InputOperandLayout::kNchw:
@@ -1518,7 +1518,8 @@ bool ValidatePad(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
+bool ValidatePool2d(const ContextProperties& context_properties,
+                    const IdToOperandMap& id_to_operand_map,
                     const mojom::Pool2d& pool2d,
                     base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(pool2d.input_operand_id)) {
@@ -1545,7 +1546,8 @@ bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   auto validated_output = ValidatePool2dAndInferOutput(
-      input->descriptor, ConvertToPool2dAttributes(pool2d, output));
+      input->descriptor,
+      ConvertToPool2dAttributes(context_properties, pool2d, output));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1967,8 +1969,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidatePad(id_to_operand_map, *operation.get_pad(),
                          processed_operands);
     case mojom::Operation::Tag::kPool2d:
-      return ValidatePool2d(id_to_operand_map, *operation.get_pool2d(),
-                            processed_operands);
+      return ValidatePool2d(context_properties, id_to_operand_map,
+                            *operation.get_pool2d(), processed_operands);
     case mojom::Operation::Tag::kPrelu:
       return ValidatePrelu(id_to_operand_map, *operation.get_prelu(),
                            processed_operands);

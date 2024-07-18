@@ -17,7 +17,7 @@ enum class InputOperandLayout { kNchw, kNhwc };
 struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ContextProperties {
   explicit ContextProperties(mojo::DefaultConstruct::Tag);
 
-  ContextProperties(InputOperandLayout conv2d_input_layout,
+  ContextProperties(InputOperandLayout input_operand_layout,
                     DataTypeLimits data_type_limits);
 
   // Copyable and movable.
@@ -27,13 +27,13 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ContextProperties {
   ContextProperties& operator=(ContextProperties&&) noexcept;
   ~ContextProperties();
 
-  InputOperandLayout conv2d_input_layout;
+  InputOperandLayout input_operand_layout;
   DataTypeLimits data_type_limits;
 };
 
 inline bool operator==(const ContextProperties& lhs,
                        const ContextProperties& rhs) {
-  return lhs.conv2d_input_layout == rhs.conv2d_input_layout &&
+  return lhs.input_operand_layout == rhs.input_operand_layout &&
          lhs.data_type_limits == rhs.data_type_limits;
 }
 

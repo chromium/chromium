@@ -9,9 +9,9 @@ namespace webnn {
 ContextProperties::ContextProperties(mojo::DefaultConstruct::Tag tag)
     : data_type_limits(tag) {}
 
-ContextProperties::ContextProperties(InputOperandLayout conv2d_input_layout,
+ContextProperties::ContextProperties(InputOperandLayout input_operand_layout,
                                      DataTypeLimits data_type_limits)
-    : conv2d_input_layout(std::move(conv2d_input_layout)),
+    : input_operand_layout(std::move(input_operand_layout)),
       data_type_limits(std::move(data_type_limits)) {}
 
 ContextProperties::ContextProperties(const ContextProperties&) = default;

@@ -178,7 +178,7 @@ struct Conv2d {
   Kind kind;
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`. The input must be in the layout defined
-  // by ContextProperties.preferred_conv2d_input_layout.
+  // by ContextProperties.input_operand_layout.
   uint64 input_operand_id;
   // The id of filter operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`. The filter must be in OIHW order if the
@@ -404,7 +404,8 @@ struct Pool2d {
 
   Kind kind;
   // The id of input operand is used to get the `Operand` description from
-  // `GraphInfo.id_to_operand_map`.
+  // `GraphInfo.id_to_operand_map`. The input must be in the layout defined
+  // by ContextProperties.input_operand_layout.
   uint64 input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
@@ -420,8 +421,6 @@ struct Pool2d {
   Size2d strides;
   // The dilation factor for each spatial dimension of input.
   Size2d dilations;
-  // The layout format of the input.
-  InputOperandLayout layout;
 };
 
 struct StartAndSize {

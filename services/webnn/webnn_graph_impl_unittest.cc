@@ -1187,7 +1187,7 @@ struct Conv2dTester {
   void Test() {
     auto context_properties = GetContextPropertiesForTesting();
     // Override the default input layout to exercise all the validation cases.
-    context_properties.conv2d_input_layout = attributes.input_layout;
+    context_properties.input_operand_layout = attributes.input_layout;
 
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
@@ -4600,7 +4600,7 @@ struct Pool2dTester {
     std::vector<uint32_t> padding = {0, 0, 0, 0};
     std::vector<uint32_t> strides = {1, 1};
     std::vector<uint32_t> dilations = {1, 1};
-    mojom::InputOperandLayout layout;
+    InputOperandLayout layout = InputOperandLayout::kNchw;
   };
   Pool2dAttributes attributes;
   OperandInfo output;
@@ -4614,6 +4614,7 @@ struct Pool2dTester {
 
   void Test(mojom::Pool2d::Kind kind) {
     auto context_properties = GetContextPropertiesForTesting();
+    context_properties.input_operand_layout = attributes.layout;
 
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
@@ -4676,15 +4677,14 @@ TEST_F(WebNNGraphImplTest, Pool2dTest) {
   }
   {
     // Test pool2d with layout="nhwc".
-    Pool2dTester{
-        .input = {.type = OperandDataType::kFloat16,
-                  .dimensions = {1, 5, 5, 2}},
-        .attributes = {.window_dimensions = {3, 3},
-                       .strides = {1, 1},
-                       .layout = mojom::InputOperandLayout::kChannelsLast},
-        .output = {.type = OperandDataType::kFloat16,
-                   .dimensions = {1, 3, 3, 2}},
-        .expected = true}
+    Pool2dTester{.input = {.type = OperandDataType::kFloat16,
+                           .dimensions = {1, 5, 5, 2}},
+                 .attributes = {.window_dimensions = {3, 3},
+                                .strides = {1, 1},
+                                .layout = InputOperandLayout::kNhwc},
+                 .output = {.type = OperandDataType::kFloat16,
+                            .dimensions = {1, 3, 3, 2}},
+                 .expected = true}
         .Test();
   }
   {

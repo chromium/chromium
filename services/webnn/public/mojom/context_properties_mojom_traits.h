@@ -15,9 +15,9 @@ namespace mojo {
 template <>
 struct StructTraits<webnn::mojom::ContextPropertiesDataView,
                     webnn::ContextProperties> {
-  static webnn::mojom::InputOperandLayout conv2d_input_layout(
+  static webnn::mojom::InputOperandLayout input_operand_layout(
       const webnn::ContextProperties& context_properties) {
-    switch (context_properties.conv2d_input_layout) {
+    switch (context_properties.input_operand_layout) {
       case webnn::InputOperandLayout::kNchw:
         return webnn::mojom::InputOperandLayout::kChannelsFirst;
       case webnn::InputOperandLayout::kNhwc:
@@ -31,12 +31,12 @@ struct StructTraits<webnn::mojom::ContextPropertiesDataView,
 
   static bool Read(webnn::mojom::ContextPropertiesDataView data,
                    webnn::ContextProperties* out) {
-    switch (data.conv2d_input_layout()) {
+    switch (data.input_operand_layout()) {
       case webnn::mojom::InputOperandLayout::kChannelsFirst:
-        out->conv2d_input_layout = webnn::InputOperandLayout::kNchw;
+        out->input_operand_layout = webnn::InputOperandLayout::kNchw;
         break;
       case webnn::mojom::InputOperandLayout::kChannelsLast:
-        out->conv2d_input_layout = webnn::InputOperandLayout::kNhwc;
+        out->input_operand_layout = webnn::InputOperandLayout::kNhwc;
         break;
     }
     return data.ReadDataTypeLimits(&out->data_type_limits);

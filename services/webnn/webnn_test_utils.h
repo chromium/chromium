@@ -475,7 +475,6 @@ class GraphInfoBuilder final {
   //   std::vector<uint32_t> padding;
   //   std::vector<uint32_t> strides;
   //   std::vector<uint32_t> dilations;
-  //   mojom::InputOperandLayout layout;
   // };
   template <typename Pool2dAttributes>
   void BuildPool2d(mojom::Pool2d::Kind kind,
@@ -503,7 +502,6 @@ class GraphInfoBuilder final {
     CHECK_EQ(attributes.dilations.size(), 2u);
     pool2d->dilations =
         mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
-    pool2d->layout = attributes.layout;
 
     graph_info_->operations.push_back(
         mojom::Operation::NewPool2d(std::move(pool2d)));

@@ -86,9 +86,6 @@ static constexpr auto kDml64BitIntegerDataTypes =
     base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
         {DML_TENSOR_DATA_TYPE_INT64, DML_TENSOR_DATA_TYPE_UINT64});
 
-constexpr const uint32_t kNhwcToNchwPermutation[] = {0, 3, 1, 2};
-constexpr const uint32_t kNchwToNhwcPermutation[] = {0, 2, 3, 1};
-
 DML_TENSOR_DATA_TYPE GetTensorDataType(OperandDataType type) {
   switch (type) {
     case OperandDataType::kFloat32:
@@ -1979,32 +1976,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
 
-  switch (pool2d->layout) {
-    case mojom::InputOperandLayout::kChannelsFirst: {
-      break;
-    }
-    // DML pooling operators only support nchw layout according to
-    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_average_pooling_operator_desc
-    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_max_pooling2_operator_desc.
-    //
-    // To support other layouts, we can transpose the input and output tensors
-    // to nchw without changing the physical arrangement by modifying the
-    // descriptions of dimensions, and strides which determines the number of
-    // elements to traverse to reach the next element in each dimension. E.g.,
-    // for a tensor with nhwc layout, dimensions [1, 2, 3, 4] and strides [24,
-    // 12, 4, 1], the new tensor with nchw layout should be with dimensions [1,
-    // 4, 2, 3] and strides [24, 1, 12, 4]. See details in
-    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_buffer_tensor_desc.
-    case mojom::InputOperandLayout::kChannelsLast: {
-      input_tensor_desc.Transpose(kNhwcToNchwPermutation);
-
-      // TODO(crbug.com/40280069): Figure out the optimal physical layout for
-      // output tensor.
-      output_tensor_desc.Transpose(kNhwcToNchwPermutation);
-      break;
-    }
-  }
-
   std::array<uint32_t, 2> strides = {pool2d->strides->height,
                                      pool2d->strides->width};
   std::array<uint32_t, 2> dilations = {pool2d->dilations->height,
@@ -2110,10 +2081,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   if (!pool2d_node) {
     return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
                                         "Failed to create pooling operator."));
-  }
-  if (pool2d->layout == mojom::InputOperandLayout::kChannelsLast) {
-    // Transpose the output tensor from nchw to nhwc layout.
-    output_tensor_desc.Transpose(kNchwToNhwcPermutation);
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(

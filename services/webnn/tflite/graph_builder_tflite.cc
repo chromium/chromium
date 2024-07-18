@@ -1918,12 +1918,6 @@ auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
 
 auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
     -> base::expected<OperatorOffset, std::string> {
-  // TODO(crbug.com/40206287): Transpose input operand to support other layouts
-  // because tflite only support nhwc layout.
-  if (pool2d.layout != mojom::InputOperandLayout::kChannelsLast) {
-    return base::unexpected("The channel first input layout is not supported.");
-  }
-
   // The dilations are not supported in tflite schema.
   if (pool2d.dilations->height != 1 || pool2d.dilations->width != 1) {
     return base::unexpected("Pool2d in tflite doesn't support dilations.");
