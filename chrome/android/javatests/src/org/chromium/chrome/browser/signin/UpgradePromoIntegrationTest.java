@@ -50,7 +50,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -291,7 +290,6 @@ public class UpgradePromoIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "b/333908211")
     public void testAddAccount() {
         mSigninTestRule.setResultForNextAddAccountFlow(
                 Activity.RESULT_OK, AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
