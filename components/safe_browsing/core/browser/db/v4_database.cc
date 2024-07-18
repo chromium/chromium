@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -301,7 +302,7 @@ void V4Database::GetStoresMatchingFullHash(
       continue;
     }
     const auto& store_pair = store_map_->find(identifier);
-    DCHECK(store_pair != store_map_->end());
+    CHECK(store_pair != store_map_->end(), base::NotFatalUntil::M130);
     stores.emplace_back(identifier, store_pair->second.get());
   }
 
