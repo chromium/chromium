@@ -24,6 +24,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_scope.h"
@@ -49,6 +50,26 @@ std::string StringFromValue(const base::Value& value) {
 
 std::string BoolToString(const bool value) {
   return value ? "true" : "false";
+}
+
+std::string RegistrationRequestToString(
+    const RegistrationRequest& registration) {
+  base::Value::Dict value;
+  value.Set("app_id", registration.app_id);
+  value.Set("brand_code", registration.brand_code);
+  value.Set("brand_path", registration.brand_path.MaybeAsASCII());
+  value.Set("ap", registration.ap);
+  value.Set("ap_path", registration.ap_path.MaybeAsASCII());
+  value.Set("ap_key", registration.ap_key);
+  value.Set("version", registration.version.GetString());
+  value.Set("version_path", registration.version_path.MaybeAsASCII());
+  value.Set("version_key", registration.version_key);
+  value.Set("existence_checker_path",
+            registration.existence_checker_path.MaybeAsASCII());
+  value.Set("cohort", registration.cohort);
+  value.Set("cohort_name", registration.cohort_name);
+  value.Set("cohort_hint", registration.cohort_hint);
+  return StringFromValue(base::Value(value.Clone()));
 }
 
 }  // namespace
@@ -309,6 +330,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("run_server",
                {Param("internal", BoolToString(internal)),
                 Param("exit_code", base::NumberToString(expected_exit_code))});
+  }
+
+  void RegisterApp(const RegistrationRequest& registration) const override {
+    RunCommand(
+        "register_app",
+        {Param("registration", RegistrationRequestToString(registration))});
   }
 
   void CheckForUpdate(const std::string& app_id) const override {

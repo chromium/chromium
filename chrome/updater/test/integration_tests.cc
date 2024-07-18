@@ -2305,6 +2305,34 @@ TEST_F(IntegrationTest, OfflineInstallOemMode) {
 }
 #endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD)
 
+TEST_F(IntegrationTest, RegisterApp) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  RegistrationRequest registration;
+  registration.app_id = "e595682b-02d5-46d1-b7ab-90034bd6be0f";
+  registration.brand_code = "TSBD";
+  registration.brand_path = base::FilePath::FromASCII("/bp");
+  registration.ap = "TestAp";
+  registration.version = base::Version("11.22.33.44");
+  registration.existence_checker_path = base::FilePath::FromASCII("/");
+  test_commands_->RegisterApp(registration);
+
+  base::Value::Dict expected_app_state;
+  expected_app_state.Set("app_id", "e595682b-02d5-46d1-b7ab-90034bd6be0f");
+  expected_app_state.Set("brand_code", "TSBD");
+  expected_app_state.Set("brand_path", "/bp");
+  expected_app_state.Set("ap", "TestAp");
+  expected_app_state.Set("version", "11.22.33.44");
+  expected_app_state.Set("ecp", "/");
+  base::Value::Dict expected_app_states;
+  expected_app_states.Set("e595682b-02d5-46d1-b7ab-90034bd6be0f",
+                          std::move(expected_app_state));
+  ASSERT_NO_FATAL_FAILURE(GetAppStates(expected_app_states));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
   GTEST_SKIP() << "Crash tests disabled for Win ASAN.";

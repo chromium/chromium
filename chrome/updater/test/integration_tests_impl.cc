@@ -388,13 +388,8 @@ int CountDirectoryFiles(const base::FilePath& dir) {
   return res;
 }
 
-void RegisterApp(UpdaterScope scope,
-                 const std::string& app_id,
-                 const base::Version& version) {
+void RegisterApp(UpdaterScope scope, const RegistrationRequest& registration) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
-  RegistrationRequest registration;
-  registration.app_id = app_id;
-  registration.version = version;
   base::RunLoop loop;
   update_service->RegisterApp(registration,
                               base::BindLambdaForTesting([&loop](int result) {
@@ -402,6 +397,28 @@ void RegisterApp(UpdaterScope scope,
                                 loop.Quit();
                               }));
   loop.Run();
+}
+
+void RegisterAppByValue(UpdaterScope scope, const base::Value::Dict& value) {
+  RegistrationRequest registration;
+  registration.app_id = *value.FindString("app_id");
+  registration.brand_code = *value.FindString("brand_code");
+  registration.brand_path =
+      base::FilePath::FromASCII(*value.FindString("brand_path"));
+  registration.ap = *value.FindString("ap");
+  registration.ap_path =
+      base::FilePath::FromASCII(*value.FindString("ap_path"));
+  registration.ap_key = *value.FindString("ap_key");
+  registration.version = base::Version(*value.FindString("version"));
+  registration.version_path =
+      base::FilePath::FromASCII(*value.FindString("version_path"));
+  registration.version_key = *value.FindString("version_key");
+  registration.existence_checker_path =
+      base::FilePath::FromASCII(*value.FindString("existence_checker_path"));
+  registration.cohort = *value.FindString("cohort");
+  registration.cohort_name = *value.FindString("cohort_name");
+  registration.cohort_hint = *value.FindString("cohort_hint");
+  return RegisterApp(scope, registration);
 }
 
 void SetGroupPolicies(const base::Value::Dict& values) {

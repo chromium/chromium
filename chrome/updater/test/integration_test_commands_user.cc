@@ -262,6 +262,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunServer(updater_scope_, exit_code, internal);
   }
 
+  void RegisterApp(const RegistrationRequest& registration) const override {
+    updater::test::RegisterApp(updater_scope_, registration);
+  }
+
   void CheckForUpdate(const std::string& app_id) const override {
     updater::test::CheckForUpdate(updater_scope_, app_id);
   }

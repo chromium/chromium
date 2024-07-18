@@ -36,6 +36,7 @@ class Version;
 
 namespace updater {
 enum class UpdaterScope;
+struct RegistrationRequest;
 }  // namespace updater
 
 namespace wireless_android_enterprise_devicemanagement {
@@ -289,9 +290,9 @@ void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,
                       const base::Version& version);
 
-void RegisterApp(UpdaterScope scope,
-                 const std::string& app_id,
-                 const base::Version& version);
+void RegisterApp(UpdaterScope scope, const RegistrationRequest& registration);
+void RegisterAppByValue(UpdaterScope scope,
+                        const base::Value::Dict& registration_data);
 
 [[nodiscard]] bool WaitForUpdaterExit(UpdaterScope scope);
 
