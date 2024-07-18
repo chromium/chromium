@@ -175,8 +175,7 @@ PresentationConnection::~PresentationConnection() {
 void PresentationConnection::OnMessage(
     mojom::blink::PresentationConnectionMessagePtr message) {
   if (message->is_data()) {
-    const auto& data = message->get_data();
-    DidReceiveBinaryMessage(&data.front(), data.size());
+    DidReceiveBinaryMessage(message->get_data());
   } else {
     DidReceiveTextMessage(message->get_message());
   }
@@ -578,22 +577,22 @@ void PresentationConnection::DidReceiveTextMessage(const WebString& message) {
   DispatchEvent(*MessageEvent::Create(message));
 }
 
-void PresentationConnection::DidReceiveBinaryMessage(const uint8_t* data,
-                                                     uint32_t length) {
+void PresentationConnection::DidReceiveBinaryMessage(
+    base::span<const uint8_t> data) {
   if (state_ != mojom::blink::PresentationConnectionState::CONNECTED)
     return;
 
   switch (binary_type_) {
     case kBinaryTypeBlob: {
       auto blob_data = std::make_unique<BlobData>();
-      blob_data->AppendBytes(data, length);
+      blob_data->AppendBytes(data);
       auto* blob = MakeGarbageCollected<Blob>(
-          BlobDataHandle::Create(std::move(blob_data), length));
+          BlobDataHandle::Create(std::move(blob_data), data.size()));
       DispatchEvent(*MessageEvent::Create(blob));
       return;
     }
     case kBinaryTypeArrayBuffer:
-      DOMArrayBuffer* buffer = DOMArrayBuffer::Create(data, length);
+      DOMArrayBuffer* buffer = DOMArrayBuffer::Create(data);
       DispatchEvent(*MessageEvent::Create(buffer));
       return;
   }

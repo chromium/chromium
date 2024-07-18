@@ -144,7 +144,7 @@ class MODULES_EXPORT PresentationConnection
   void SendMessageToTargetConnection(
       mojom::blink::PresentationConnectionMessagePtr);
   void DidReceiveTextMessage(const WebString&);
-  void DidReceiveBinaryMessage(const uint8_t*, uint32_t length);
+  void DidReceiveBinaryMessage(base::span<const uint8_t>);
 
   // Closes the PresentationConnection with the given reason and notifies the
   // target connection.
