@@ -58,12 +58,14 @@ public class SafetyHubModuleProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_CONTROLLED_BY_POLICY =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener>
-            PRIMARY_BUTTON_LISTENER = new PropertyModel.ReadableObjectPropertyKey<>();
-    public static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener>
-            SECONDARY_BUTTON_LISTENER = new PropertyModel.ReadableObjectPropertyKey<>();
-    public static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener>
-            SAFE_STATE_BUTTON_LISTENER = new PropertyModel.ReadableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_SIGNED_IN =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            PRIMARY_BUTTON_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            SECONDARY_BUTTON_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            SAFE_STATE_BUTTON_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableIntPropertyKey COMPROMISED_PASSWORDS_COUNT =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey TOTAL_PASSWORDS_COUNT =
@@ -82,6 +84,7 @@ public class SafetyHubModuleProperties {
     public static final PropertyKey[] COMMON_SAFETY_HUB_MODULE_KEYS = {
         IS_VISIBLE,
         IS_CONTROLLED_BY_POLICY,
+        IS_SIGNED_IN,
         PRIMARY_BUTTON_LISTENER,
         SECONDARY_BUTTON_LISTENER,
         SAFE_STATE_BUTTON_LISTENER

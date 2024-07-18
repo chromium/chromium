@@ -14,14 +14,24 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -32,6 +42,8 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     private static final int INVALID_PASSWORD_COUNT = -1;
     private final @NonNull Profile mProfile;
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final @NonNull SigninAndHistorySyncActivityLauncher mSigninLauncher;
+    private final @NonNull SyncConsentActivityLauncher mSyncLauncher;
 
     /**
      * @param profile A supplier for {@link Profile} that owns the data being deleted.
@@ -40,27 +52,26 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
      */
     public SafetyHubModuleDelegateImpl(
             @NonNull Profile profile,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull SigninAndHistorySyncActivityLauncher signinLauncher,
+            @NonNull SyncConsentActivityLauncher syncLauncher) {
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-    }
-
-    @Override
-    public boolean shouldShowPasswordCheckModule() {
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
-        return PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                && passwordManagerHelper.canUseUpm();
+        mSigninLauncher = signinLauncher;
+        mSyncLauncher = syncLauncher;
     }
 
     @Override
     public void showPasswordCheckUI(Context context) {
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
-        assert PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                : "The password module should be hidden if the user is not syncing.";
-        String account = CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());
+        assert isSignedIn() : "The password module should be hidden if the user is not signed in.";
+        String account =
+                CoreAccountInfo.getEmailFrom(
+                        signinManager
+                                .getIdentityManager()
+                                .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
 
         passwordManagerHelper.showPasswordCheckup(
                 context, PasswordCheckReferrer.SAFETY_CHECK, mModalDialogManagerSupplier, account);
@@ -108,5 +119,38 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
         }
         // If using split stores is disabled, all passwords reside in the profile store.
         return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
+    }
+
+    @Override
+    public void launchSyncOrSigninPromo(Context context) {
+        assert !isSignedIn();
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            AccountPickerBottomSheetStrings strings =
+                    new AccountPickerBottomSheetStrings.Builder(
+                                    R.string.signin_account_picker_bottom_sheet_title)
+                            .setSubtitleStringId(R.string.safety_check_passwords_error_signed_out)
+                            .build();
+            // Open the sign-in page.
+            mSigninLauncher.launchActivityIfAllowed(
+                    context,
+                    mProfile,
+                    strings,
+                    SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                    SigninAccessPoint.SAFETY_CHECK);
+        } else {
+            // Open the sync page.
+            mSyncLauncher.launchActivityIfAllowed(context, SigninAccessPoint.SAFETY_CHECK);
+        }
+    }
+
+    @Override
+    public boolean isSignedIn() {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 }

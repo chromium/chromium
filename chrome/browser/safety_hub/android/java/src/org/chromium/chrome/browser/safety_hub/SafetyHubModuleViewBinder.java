@@ -41,7 +41,10 @@ public class SafetyHubModuleViewBinder {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
                 || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey
-                || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey) {
+                || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey
+                || SafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
+                || SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER == propertyKey
+                || SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER == propertyKey) {
             updatePasswordCheckModule(preference, model);
         }
     }
@@ -211,6 +214,7 @@ public class SafetyHubModuleViewBinder {
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
         int totalPasswordsCount = model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
         boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
+        boolean isSignedIn = model.get(SafetyHubModuleProperties.IS_SIGNED_IN);
         @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
         String summary;
@@ -219,16 +223,25 @@ public class SafetyHubModuleViewBinder {
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
 
-        if (compromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
+        if (!isSignedIn || compromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
             title =
                     preference
                             .getContext()
                             .getString(R.string.safety_hub_password_check_unavailable_title);
-            summary = preference.getContext().getString(R.string.safety_hub_unavailable_summary);
-            secondaryButtonText =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_passwords_navigation_button);
+            if (isSignedIn) {
+                summary =
+                        preference.getContext().getString(R.string.safety_hub_unavailable_summary);
+                secondaryButtonText =
+                        preference
+                                .getContext()
+                                .getString(R.string.safety_hub_passwords_navigation_button);
+            } else {
+                summary =
+                        preference
+                                .getContext()
+                                .getString(R.string.safety_hub_password_check_signed_out_summary);
+                secondaryButtonText = preference.getContext().getString(R.string.sign_in_to_chrome);
+            }
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         } else if (totalPasswordsCount == 0) {

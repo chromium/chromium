@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.CardPreference;
@@ -42,7 +44,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         implements UnusedSitePermissionsBridge.Observer,
                 NotificationPermissionReviewBridge.Observer,
                 SafetyHubFetchService.Observer,
-                PasswordStoreBridge.PasswordStoreObserver {
+                PasswordStoreBridge.PasswordStoreObserver,
+                SigninManager.SignInStateObserver {
     /**
      * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
      * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
@@ -91,6 +94,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private PropertyModel mBrowserStateModule;
     private CustomTabIntentHelper mCustomTabIntentHelper;
     private PasswordStoreBridge mPasswordStoreBridge;
+    private SigninManager mSigninManager;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -101,9 +105,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mNotificationPermissionReviewBridge =
                 NotificationPermissionReviewBridge.getForProfile(getProfile());
         mSafetyHubFetchService = SafetyHubFetchServiceFactory.getForProfile(getProfile());
-        mSafetyHubFetchService.addObserver(this);
         mPasswordStoreBridge = new PasswordStoreBridge(getProfile());
-        mPasswordStoreBridge.addObserver(this, true);
+        mSigninManager = IdentityServicesProvider.get().getSigninManager(getProfile());
 
         setUpAccountPasswordCheckModule();
         setUpUpdateCheckModule();
@@ -155,21 +158,16 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mPasswordCheckPropertyModel =
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
-                        .with(
-                                SafetyHubModuleProperties.IS_VISIBLE,
-                                mDelegate.shouldShowPasswordCheckModule())
-                        .with(
-                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
-                                v -> mDelegate.showPasswordCheckUI(getContext()))
-                        .with(
-                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
-                                v -> mDelegate.showPasswordCheckUI(getContext()))
+                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .build();
 
         PropertyModelChangeProcessor.create(
                 mPasswordCheckPropertyModel,
                 passwordCheckPreference,
                 SafetyHubModuleViewBinder::bindPasswordCheckProperties);
+        mSafetyHubFetchService.addObserver(this);
+        mSigninManager.addSignInStateObserver(this);
+        mPasswordStoreBridge.addObserver(this, true);
     }
 
     private void setUpUpdateCheckModule() {
@@ -179,9 +177,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
-                        .with(
-                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
-                                v -> mDelegate.openGooglePlayStore(getContext()))
                         .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                                 v -> mDelegate.openGooglePlayStore(getContext()))
@@ -395,6 +390,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mNotificationPermissionReviewBridge.removeObserver(this);
         mUnusedSitePermissionsBridge.removeObserver(this);
         mSafetyHubFetchService.removeObserver(this);
+        mSigninManager.removeSignInStateObserver(this);
+        mPasswordStoreBridge.removeObserver(this);
     }
 
     @Override
@@ -424,6 +421,16 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     @Override
     public void onEdit(PasswordStoreCredential credential) {}
+
+    @Override
+    public void onSignedIn() {
+        updatePasswordCheckPreference();
+    }
+
+    @Override
+    public void onSignedOut() {
+        updatePasswordCheckPreference();
+    }
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
         mDelegate = safetyHubModuleDelegate;
@@ -473,6 +480,21 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, disabledByPolicy);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.IS_SIGNED_IN, mDelegate.isSignedIn());
+        if (mDelegate.isSignedIn()) {
+            mPasswordCheckPropertyModel.set(
+                    SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                    v -> mDelegate.showPasswordCheckUI(getContext()));
+            mPasswordCheckPropertyModel.set(
+                    SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                    v -> mDelegate.showPasswordCheckUI(getContext()));
+        } else {
+            mPasswordCheckPropertyModel.set(
+                    SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                    v -> mDelegate.launchSyncOrSigninPromo(getContext()));
+        }
+
         mBrowserStateModule.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mBrowserStateModule.set(

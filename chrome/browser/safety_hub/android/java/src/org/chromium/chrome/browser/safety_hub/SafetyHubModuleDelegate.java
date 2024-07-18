@@ -16,12 +16,6 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 public interface SafetyHubModuleDelegate {
 
     /**
-     * @return A boolean indicating whether to show the account-level password check module in
-     *     Safety Hub based on the Sync and UPM status.
-     */
-    boolean shouldShowPasswordCheckModule();
-
-    /**
      * Launches the Password Checkup UI from GMSCore.
      *
      * @param context used to show the dialog.
@@ -57,4 +51,17 @@ public interface SafetyHubModuleDelegate {
      * @return the total passwords count for Account-level passwords.
      */
     int getAccountPasswordsCount(PasswordStoreBridge passwordStoreBridge);
+
+    /**
+     * Open the sign-in bottomsheet or sync promo page based on {@link
+     * ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS} state.
+     *
+     * @param context used to launch the promo in.
+     */
+    void launchSyncOrSigninPromo(Context context);
+
+    /**
+     * @return Whether the primary account is signed in.
+     */
+    boolean isSignedIn();
 }

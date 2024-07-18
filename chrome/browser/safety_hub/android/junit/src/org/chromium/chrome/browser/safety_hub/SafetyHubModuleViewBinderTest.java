@@ -132,6 +132,7 @@ public class SafetyHubModuleViewBinderTest {
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_passwords_safe);
         String expectedSummary = mActivity.getString(R.string.safety_hub_checked_recently);
@@ -167,6 +168,7 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
 
         String expectedTitle =
                 mActivity
@@ -205,6 +207,7 @@ public class SafetyHubModuleViewBinderTest {
     @Test
     public void testPasswordCheckModule_NoPasswordsSaved() {
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_no_passwords_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_no_passwords_summary);
@@ -241,6 +244,7 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_password_check_unavailable_title);
@@ -250,6 +254,20 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
         assertEquals(expectedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+        assertFalse(mPasswordCheckPreference.isExpanded());
+
+        // Verify the signed out state.
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, false);
+        String expectedSignedOutSummary =
+                mActivity.getString(R.string.safety_hub_password_check_signed_out_summary);
+        expectedSecondaryButtonText = mActivity.getString(R.string.sign_in_to_chrome);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedSignedOutSummary, mPasswordCheckPreference.getSummary().toString());
         assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mPasswordCheckPreference.getPrimaryButtonText());
         assertEquals(
