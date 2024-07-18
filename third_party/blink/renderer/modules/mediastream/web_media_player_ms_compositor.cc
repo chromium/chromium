@@ -418,26 +418,33 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     return;
   }
 
-  // If we detect a bad frame without |reference_time|, we switch off algorithm,
-  // because without |reference_time|, algorithm cannot work.
+  const bool is_out_of_order =
+      pending_frames_info_.empty()
+          ? false
+          : frame->timestamp() < pending_frames_info_.back().timestamp;
+
+  // If we detect a bad frame (out of order or without |reference_time|), we
+  // switch off algorithm. Without |reference_time|, algorithm cannot work and
+  // if frames are out of order the frame source is unusual.
+  //
   // |reference_time| is not set for low-latency video streams and are therefore
   // rendered without algorithm, unless |maximum_composition_delay_in_frames| is
   // set in which case a dedicated low-latency algorithm is switched on. Please
   // note that this is an experimental feature that is only active if certain
   // experimental parameters are specified in WebRTC. See crbug.com/1138888 for
   // more information.
-  if (!frame->metadata().reference_time.has_value() &&
+  if ((!frame->metadata().reference_time.has_value() || is_out_of_order) &&
       !frame->metadata().maximum_composition_delay_in_frames) {
     DLOG(WARNING)
-        << "Incoming VideoFrames have no reference_time, switching off super "
-           "sophisticated rendering algorithm";
+        << "Incoming VideoFrames have no reference_time or are out of order, "
+           "switching off super sophisticated rendering algorithm";
     rendering_frame_buffer_.reset();
+    pending_frames_info_.clear();
     RenderWithoutAlgorithm(std::move(frame), is_copy);
     return;
   }
-  base::TimeTicks render_time = frame->metadata().reference_time
-                                    ? *frame->metadata().reference_time
-                                    : base::TimeTicks();
+  base::TimeTicks render_time =
+      frame->metadata().reference_time.value_or(base::TimeTicks());
 
   // The code below handles the case where UpdateCurrentFrame() callbacks stop.
   // These callbacks can stop when the tab is hidden or the page area containing
@@ -446,12 +453,14 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   // we must aggressively release frames in this case.
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta vsync_delay = now - last_deadline_max_;
-  base::TimeDelta maximum_vsync_delay_for_renderer_reset;
-  if (frame->metadata().maximum_composition_delay_in_frames) {
-    maximum_vsync_delay_for_renderer_reset =
-        kMaximumVsyncDelayForLowLatencyRenderer;
-  }
-  if (vsync_delay > maximum_vsync_delay_for_renderer_reset) {
+
+  // TODO(crbug.com/353554171): This is incorrect. It's using a delay value of
+  // zero which means the algorithm is always overridden.
+  auto max_delay = maximum_vsync_delay_for_renderer_reset_.value_or(
+      frame->metadata().maximum_composition_delay_in_frames
+          ? kMaximumVsyncDelayForLowLatencyRenderer
+          : base::TimeDelta());
+  if (vsync_delay > max_delay) {
     // Note: the frame in |rendering_frame_buffer_| with lowest index is the
     // same as |current_frame_|. Function SetCurrentFrame() handles whether
     // to increase |dropped_frame_count_| for that frame, so here we should
@@ -462,9 +471,18 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     RenderWithoutAlgorithm(frame, is_copy);
   }
 
-  pending_frames_info_.push_back(PendingFrameInfo{
-      frame->unique_id(), frame->timestamp(), render_time, is_copy});
+  pending_frames_info_.emplace_back(frame->unique_id(), frame->timestamp(),
+                                    render_time, is_copy);
   rendering_frame_buffer_->EnqueueFrame(std::move(frame));
+
+  // Note 2: `EnqueueFrame` may drop the frame instead of enqueuing it for many
+  // reasons, so if this happens drop our info entry. These dropped frames will
+  // be accounted for during the next Render() call.
+  if (pending_frames_info_.size() != rendering_frame_buffer_->frames_queued()) {
+    pending_frames_info_.pop_back();
+    DCHECK_EQ(pending_frames_info_.size(),
+              rendering_frame_buffer_->frames_queued());
+  }
 }
 
 bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
@@ -615,11 +633,37 @@ bool WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks(
          thread_checker_.CalledOnValidThread() ||
          video_task_runner_->RunsTasksInCurrentSequence());
 #endif
+  // Note: The mapping code below is not ideal, but WebRTC doesn't expose the
+  // audio clock in a way we can map timestamps continuously.
   for (const base::TimeDelta& timestamp : timestamps) {
-    auto* it = base::ranges::find(pending_frames_info_, timestamp,
-                                  &PendingFrameInfo::timestamp);
-    CHECK(it != pending_frames_info_.end(), base::NotFatalUntil::M130);
-    wall_clock_times->push_back(it->reference_time);
+    base::TimeTicks reference_time;
+    base::TimeDelta min_delta = base::TimeDelta::Max();
+    for (const auto& pf : pending_frames_info_) {
+      if (pf.timestamp == timestamp) {
+        reference_time = pf.reference_time;
+        min_delta = base::TimeDelta();
+        break;
+      }
+      auto delta = timestamp - pf.timestamp;
+      if (delta.is_positive() && delta < min_delta) {
+        min_delta = delta;
+        reference_time = pf.reference_time;
+      }
+    }
+
+    // If we don't have a reference time a different algorithm should have been
+    // used by this point.
+    DCHECK(!reference_time.is_null());
+
+    // No exact reference time was found, so calculate an estimated one using
+    // the nearest known timestamp.
+    if (min_delta.is_positive()) {
+      reference_time =
+          reference_time + (min_delta / (timestamp + min_delta)) *
+                               (reference_time - base::TimeTicks());
+    }
+
+    wall_clock_times->push_back(reference_time);
   }
   return true;
 }
@@ -644,20 +688,20 @@ void WebMediaPlayerMSCompositor::RenderUsingAlgorithm(
   if (!frame || frame == current_frame_)
     return;
 
-  // Walk |pending_frames_info_| to find |is_copy| value for the frame, while
-  // also erasing old elements.
+  // Walk |pending_frames_info_| to find |is_copy| value for the frame.
   bool is_copy = false;
-  for (auto* it = pending_frames_info_.begin();
-       it != pending_frames_info_.end();) {
-    if (it->unique_id == frame->unique_id())
-      is_copy = it->is_copy;
-
-    // Erase info for the older frames.
-    if (it->timestamp < frame->timestamp()) {
-      it = pending_frames_info_.erase(it);
-    } else {
-      ++it;
+  for (const auto& pf : pending_frames_info_) {
+    if (pf.unique_id == frame->unique_id()) {
+      is_copy = pf.is_copy;
+      break;
     }
+  }
+
+  // Erase frames no longer held by the rendering buffer. Note: The algorithm
+  // will continue to hold the current rendered frame until the next Render().
+  while (pending_frames_info_.size() !=
+         rendering_frame_buffer_->frames_queued()) {
+    pending_frames_info_.pop_front();
   }
 
   SetCurrentFrame(std::move(frame), is_copy, deadline_min);
