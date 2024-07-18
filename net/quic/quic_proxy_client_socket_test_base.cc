@@ -306,8 +306,9 @@ QuicProxyClientSocketTestBase::ConstructConnectAuthRequestPacket(
 std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructDataPacket(uint64_t packet_number,
                                                    std::string_view data) {
-  return client_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
-                                      !kFin, data);
+  return client_maker_.Packet(packet_number)
+      .AddStreamFrame(client_data_stream_id1_, !kFin, data)
+      .Build();
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
@@ -362,8 +363,9 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructServerDataPacket(
     uint64_t packet_number,
     std::string_view data) {
-  return server_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
-                                      !kFin, data);
+  return server_maker_.Packet(packet_number)
+      .AddStreamFrame(client_data_stream_id1_, !kFin, data)
+      .Build();
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
@@ -377,8 +379,9 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructServerDataFinPacket(
     uint64_t packet_number,
     std::string_view data) {
-  return server_maker_.MakeDataPacket(packet_number, client_data_stream_id1_,
-                                      kFin, data);
+  return server_maker_.Packet(packet_number)
+      .AddStreamFrame(client_data_stream_id1_, kFin, data)
+      .Build();
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>

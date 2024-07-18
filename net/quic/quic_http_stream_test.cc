@@ -471,14 +471,18 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
       uint64_t packet_number,
       bool fin,
       std::string_view data) {
-    return client_maker_.MakeDataPacket(packet_number, stream_id_, fin, data);
+    return client_maker_.Packet(packet_number)
+        .AddStreamFrame(stream_id_, fin, data)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataPacket(
       uint64_t packet_number,
       bool fin,
       std::string_view data) {
-    return server_maker_.MakeDataPacket(packet_number, stream_id_, fin, data);
+    return server_maker_.Packet(packet_number)
+        .AddStreamFrame(stream_id_, fin, data)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> InnerConstructRequestHeadersPacket(

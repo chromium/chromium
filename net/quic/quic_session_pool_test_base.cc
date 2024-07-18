@@ -483,7 +483,9 @@ QuicSessionPoolTestBase::ConstructServerDataPacket(uint64_t packet_number,
                                                    quic::QuicStreamId stream_id,
                                                    bool fin,
                                                    std::string_view data) {
-  return server_maker_.MakeDataPacket(packet_number, stream_id, fin, data);
+  return server_maker_.Packet(packet_number)
+      .AddStreamFrame(stream_id, fin, data)
+      .Build();
 }
 
 std::string QuicSessionPoolTestBase::ConstructH3Datagram(

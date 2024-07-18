@@ -97,12 +97,6 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::QuicReceivedPacket> MakeDummyCHLOPacket(
       uint64_t packet_number);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeDataPacket(
-      uint64_t packet_number,
-      quic::QuicStreamId stream_id,
-      bool fin,
-      std::string_view data);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeDatagramPacket(
       uint64_t packet_number,
       std::string_view datagram);

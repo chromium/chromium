@@ -1203,9 +1203,12 @@ class WebSocketQuicStreamAdapterTest
       std::string_view data) {
     quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
         data.size(), quiche::SimpleBufferAllocator::Get());
-    return server_maker_.MakeDataPacket(
-        packet_number, client_data_stream_id1_, /*fin=*/false,
-        base::StrCat({std::string_view(buffer.data(), buffer.size()), data}));
+    return server_maker_.Packet(packet_number)
+        .AddStreamFrame(
+            client_data_stream_id1_, /*fin=*/false,
+            base::StrCat(
+                {std::string_view(buffer.data(), buffer.size()), data}))
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructRstPacket(

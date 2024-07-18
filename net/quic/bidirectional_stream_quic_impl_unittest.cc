@@ -596,7 +596,9 @@ class BidirectionalStreamQuicImplTest
       bool fin,
       std::string_view data) {
     std::unique_ptr<quic::QuicReceivedPacket> packet(
-        server_maker_.MakeDataPacket(packet_number, stream_id_, fin, data));
+        server_maker_.Packet(packet_number)
+            .AddStreamFrame(stream_id_, fin, data)
+            .Build());
     DVLOG(2) << "packet(" << packet_number << "): " << std::endl
              << quiche::QuicheTextUtils::HexDump(packet->AsStringPiece());
     return packet;
@@ -605,8 +607,9 @@ class BidirectionalStreamQuicImplTest
   std::unique_ptr<quic::QuicReceivedPacket> ConstructClientDataPacket(
       bool fin,
       std::string_view data) {
-    return client_maker_.MakeDataPacket(++packet_number_, stream_id_, fin,
-                                        data);
+    return client_maker_.Packet(++packet_number_)
+        .AddStreamFrame(stream_id_, fin, data)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructRequestHeadersPacket(

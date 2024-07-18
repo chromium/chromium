@@ -1600,9 +1600,10 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
                           .Build());
   quic_data2.AddWrite(
       SYNCHRONOUS,
-      client_maker_.MakeDataPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), false,
-          std::string_view(data)));
+      client_maker_.Packet(packet_num++)
+          .AddStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0), false,
+                          std::string_view(data))
+          .Build());
   quic_data2.AddSocketDataToFactory(&socket_factory_);
   // Create connected socket.
   std::unique_ptr<DatagramClientSocket> new_socket =

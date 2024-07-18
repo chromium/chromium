@@ -222,14 +222,6 @@ QuicTestPacketMaker::MakeCombinedRetransmissionPacket(
   return builder.Build();
 }
 
-std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakeDataPacket(
-    uint64_t packet_number,
-    quic::QuicStreamId stream_id,
-    bool fin,
-    std::string_view data) {
-  return Packet(packet_number).AddStreamFrame(stream_id, fin, data).Build();
-}
-
 std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeDatagramPacket(uint64_t packet_number,
                                         std::string_view datagram) {
