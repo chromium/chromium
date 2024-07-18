@@ -24,8 +24,6 @@ Mock_glBeginPixelLocalStorageANGLE(GLsizei n, const GLenum* loadops);
 static void GL_BINDING_CALL Mock_glBeginQuery(GLenum target, GLuint id);
 static void GL_BINDING_CALL Mock_glBeginQueryEXT(GLenum target, GLuint id);
 static void GL_BINDING_CALL Mock_glBeginTransformFeedback(GLenum primitiveMode);
-static void GL_BINDING_CALL
-Mock_glBeginTransformFeedbackEXT(GLenum primitiveMode);
 static void GL_BINDING_CALL Mock_glBindAttribLocation(GLuint program,
                                                       GLuint index,
                                                       const char* name);
@@ -33,30 +31,14 @@ static void GL_BINDING_CALL Mock_glBindBuffer(GLenum target, GLuint buffer);
 static void GL_BINDING_CALL Mock_glBindBufferBase(GLenum target,
                                                   GLuint index,
                                                   GLuint buffer);
-static void GL_BINDING_CALL Mock_glBindBufferBaseEXT(GLenum target,
-                                                     GLuint index,
-                                                     GLuint buffer);
 static void GL_BINDING_CALL Mock_glBindBufferRange(GLenum target,
                                                    GLuint index,
                                                    GLuint buffer,
                                                    GLintptr offset,
                                                    GLsizeiptr size);
-static void GL_BINDING_CALL Mock_glBindBufferRangeEXT(GLenum target,
-                                                      GLuint index,
-                                                      GLuint buffer,
-                                                      GLintptr offset,
-                                                      GLsizeiptr size);
-static void GL_BINDING_CALL Mock_glBindFragDataLocation(GLuint program,
-                                                        GLuint colorNumber,
-                                                        const char* name);
 static void GL_BINDING_CALL Mock_glBindFragDataLocationEXT(GLuint program,
                                                            GLuint colorNumber,
                                                            const char* name);
-static void GL_BINDING_CALL
-Mock_glBindFragDataLocationIndexed(GLuint program,
-                                   GLuint colorNumber,
-                                   GLuint index,
-                                   const char* name);
 static void GL_BINDING_CALL
 Mock_glBindFragDataLocationIndexedEXT(GLuint program,
                                       GLuint colorNumber,
@@ -203,11 +185,6 @@ static void GL_BINDING_CALL Mock_glClearColor(GLclampf red,
 static void GL_BINDING_CALL Mock_glClearDepth(GLclampd depth);
 static void GL_BINDING_CALL Mock_glClearDepthf(GLclampf depth);
 static void GL_BINDING_CALL Mock_glClearStencil(GLint s);
-static void GL_BINDING_CALL Mock_glClearTexImage(GLuint texture,
-                                                 GLint level,
-                                                 GLenum format,
-                                                 GLenum type,
-                                                 const GLvoid* data);
 static void GL_BINDING_CALL Mock_glClearTexImageEXT(GLuint texture,
                                                     GLint level,
                                                     GLenum format,
@@ -491,12 +468,6 @@ static void GL_BINDING_CALL Mock_glDrawArraysInstancedANGLE(GLenum mode,
                                                             GLsizei count,
                                                             GLsizei primcount);
 static void GL_BINDING_CALL
-Mock_glDrawArraysInstancedBaseInstance(GLenum mode,
-                                       GLint first,
-                                       GLsizei count,
-                                       GLsizei primcount,
-                                       GLuint baseinstance);
-static void GL_BINDING_CALL
 Mock_glDrawArraysInstancedBaseInstanceANGLE(GLenum mode,
                                             GLint first,
                                             GLsizei count,
@@ -530,14 +501,6 @@ Mock_glDrawElementsInstancedANGLE(GLenum mode,
                                   GLenum type,
                                   const void* indices,
                                   GLsizei primcount);
-static void GL_BINDING_CALL
-Mock_glDrawElementsInstancedBaseVertexBaseInstance(GLenum mode,
-                                                   GLsizei count,
-                                                   GLenum type,
-                                                   const void* indices,
-                                                   GLsizei primcount,
-                                                   GLint baseVertex,
-                                                   GLuint baseInstance);
 static void GL_BINDING_CALL
 Mock_glDrawElementsInstancedBaseVertexBaseInstanceANGLE(GLenum mode,
                                                         GLsizei count,
@@ -574,7 +537,6 @@ static void GL_BINDING_CALL Mock_glEndQuery(GLenum target);
 static void GL_BINDING_CALL Mock_glEndQueryEXT(GLenum target);
 static void GL_BINDING_CALL Mock_glEndTilingQCOM(GLbitfield preserveMask);
 static void GL_BINDING_CALL Mock_glEndTransformFeedback(void);
-static void GL_BINDING_CALL Mock_glEndTransformFeedbackEXT(void);
 static GLsync GL_BINDING_CALL Mock_glFenceSync(GLenum condition,
                                                GLbitfield flags);
 static void GL_BINDING_CALL Mock_glFinish(void);
@@ -769,8 +731,6 @@ static void GL_BINDING_CALL Mock_glGetFloatvRobustANGLE(GLenum pname,
                                                         GLsizei bufSize,
                                                         GLsizei* length,
                                                         GLfloat* data);
-static GLint GL_BINDING_CALL Mock_glGetFragDataIndex(GLuint program,
-                                                     const char* name);
 static GLint GL_BINDING_CALL Mock_glGetFragDataIndexEXT(GLuint program,
                                                         const char* name);
 static GLint GL_BINDING_CALL Mock_glGetFragDataLocation(GLuint program,
@@ -961,9 +921,6 @@ static void GL_BINDING_CALL Mock_glGetProgramivRobustANGLE(GLuint program,
                                                            GLsizei bufSize,
                                                            GLsizei* length,
                                                            GLint* params);
-static void GL_BINDING_CALL Mock_glGetQueryObjecti64v(GLuint id,
-                                                      GLenum pname,
-                                                      GLint64* params);
 static void GL_BINDING_CALL Mock_glGetQueryObjecti64vEXT(GLuint id,
                                                          GLenum pname,
                                                          GLint64* params);
@@ -973,9 +930,6 @@ Mock_glGetQueryObjecti64vRobustANGLE(GLuint id,
                                      GLsizei bufSize,
                                      GLsizei* length,
                                      GLint64* params);
-static void GL_BINDING_CALL Mock_glGetQueryObjectiv(GLuint id,
-                                                    GLenum pname,
-                                                    GLint* params);
 static void GL_BINDING_CALL Mock_glGetQueryObjectivEXT(GLuint id,
                                                        GLenum pname,
                                                        GLint* params);
@@ -984,9 +938,6 @@ static void GL_BINDING_CALL Mock_glGetQueryObjectivRobustANGLE(GLuint id,
                                                                GLsizei bufSize,
                                                                GLsizei* length,
                                                                GLint* params);
-static void GL_BINDING_CALL Mock_glGetQueryObjectui64v(GLuint id,
-                                                       GLenum pname,
-                                                       GLuint64* params);
 static void GL_BINDING_CALL Mock_glGetQueryObjectui64vEXT(GLuint id,
                                                           GLenum pname,
                                                           GLuint64* params);
@@ -1153,14 +1104,6 @@ static void GL_BINDING_CALL Mock_glGetTransformFeedbackVarying(GLuint program,
                                                                GLenum* type,
                                                                char* name);
 static void GL_BINDING_CALL
-Mock_glGetTransformFeedbackVaryingEXT(GLuint program,
-                                      GLuint index,
-                                      GLsizei bufSize,
-                                      GLsizei* length,
-                                      GLsizei* size,
-                                      GLenum* type,
-                                      char* name);
-static void GL_BINDING_CALL
 Mock_glGetTranslatedShaderSourceANGLE(GLuint shader,
                                       GLsizei bufsize,
                                       GLsizei* length,
@@ -1312,7 +1255,6 @@ static GLboolean GL_BINDING_CALL Mock_glIsVertexArray(GLuint array);
 static GLboolean GL_BINDING_CALL Mock_glIsVertexArrayOES(GLuint array);
 static void GL_BINDING_CALL Mock_glLineWidth(GLfloat width);
 static void GL_BINDING_CALL Mock_glLinkProgram(GLuint program);
-static void* GL_BINDING_CALL Mock_glMapBuffer(GLenum target, GLenum access);
 static void* GL_BINDING_CALL Mock_glMapBufferOES(GLenum target, GLenum access);
 static void* GL_BINDING_CALL Mock_glMapBufferRange(GLenum target,
                                                    GLintptr offset,
@@ -1580,7 +1522,6 @@ static void GL_BINDING_CALL Mock_glPushDebugGroupKHR(GLenum source,
                                                      const char* message);
 static void GL_BINDING_CALL Mock_glPushGroupMarkerEXT(GLsizei length,
                                                       const char* marker);
-static void GL_BINDING_CALL Mock_glQueryCounter(GLuint id, GLenum target);
 static void GL_BINDING_CALL Mock_glQueryCounterEXT(GLuint id, GLenum target);
 static void GL_BINDING_CALL Mock_glReadBuffer(GLenum src);
 static void GL_BINDING_CALL Mock_glReadPixels(GLint x,
@@ -1924,11 +1865,6 @@ Mock_glTransformFeedbackVaryings(GLuint program,
                                  GLsizei count,
                                  const char* const* varyings,
                                  GLenum bufferMode);
-static void GL_BINDING_CALL
-Mock_glTransformFeedbackVaryingsEXT(GLuint program,
-                                    GLsizei count,
-                                    const char* const* varyings,
-                                    GLenum bufferMode);
 static void GL_BINDING_CALL Mock_glUniform1f(GLint location, GLfloat x);
 static void GL_BINDING_CALL Mock_glUniform1fv(GLint location,
                                               GLsizei count,

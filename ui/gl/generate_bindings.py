@@ -69,9 +69,7 @@ GL_FUNCTIONS = [
                  'extensions': ['GL_EXT_occlusion_query_boolean'] }],
   'arguments': 'GLenum target, GLuint id', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glBeginTransformFeedback' },
-               { 'name': 'glBeginTransformFeedbackEXT',
-                 'extension': ['GL_EXT_transform_feedback'] }],
+  'names': ['glBeginTransformFeedback'],
   'arguments': 'GLenum primitiveMode', },
 { 'return_type': 'void',
   'names': ['glBindAttribLocation'],
@@ -80,24 +78,20 @@ GL_FUNCTIONS = [
   'names': ['glBindBuffer'],
   'arguments': 'GLenum target, GLuint buffer', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glBindBufferBase' },
-               { 'name': 'glBindBufferBaseEXT',
-                 'extension': ['GL_EXT_transform_feedback'] }],
+  'names': ['glBindBufferBase'],
   'arguments': 'GLenum target, GLuint index, GLuint buffer', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glBindBufferRange' },
-               { 'name': 'glBindBufferRangeEXT',
-                 'extension': ['GL_EXT_transform_feedback'] }],
+  'names': ['glBindBufferRange'],
   'arguments': 'GLenum target, GLuint index, GLuint buffer, GLintptr offset, '
                'GLsizeiptr size', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glBindFragDataLocation' },
-               { 'name': 'glBindFragDataLocationEXT',
+  'known_as': 'glBindFragDataLocation',
+  'versions': [{ 'name': 'glBindFragDataLocationEXT',
                  'extensions': ['GL_EXT_blend_func_extended'] }],
   'arguments': 'GLuint program, GLuint colorNumber, const char* name', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glBindFragDataLocationIndexed' },
-               { 'name': 'glBindFragDataLocationIndexedEXT',
+  'known_as': 'glBindFragDataLocationIndexed',
+  'versions': [{ 'name': 'glBindFragDataLocationIndexedEXT',
                  'extensions': ['GL_EXT_blend_func_extended'] }],
   'arguments':
       'GLuint program, GLuint colorNumber, GLuint index, const char* name',
@@ -252,8 +246,8 @@ GL_FUNCTIONS = [
   'names': ['glClearStencil'],
   'arguments': 'GLint s', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glClearTexImage' },
-               { 'name': 'glClearTexImageEXT',
+  'known_as': 'glClearTexImage',
+  'versions': [{ 'name': 'glClearTexImageEXT',
                  'extensions': ['GL_EXT_clear_texture'] }],
   'arguments':
       'GLuint texture, GLint level, GLenum format, GLenum type, '
@@ -523,8 +517,7 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'known_as': 'glDrawArraysInstancedBaseInstanceANGLE',
   #TODO(shrekshao): workaround when native support not available for cmd decoder
-  'versions' : [{ 'name': 'glDrawArraysInstancedBaseInstance'},
-                { 'name': 'glDrawArraysInstancedBaseInstanceEXT' },
+  'versions' : [{ 'name': 'glDrawArraysInstancedBaseInstanceEXT' },
                 { 'name': 'glDrawArraysInstancedBaseInstanceANGLE',
                  'extensions': ['GL_ANGLE_base_vertex_base_instance'] }],
   'arguments': 'GLenum mode, GLint first, GLsizei count, GLsizei primcount, '
@@ -552,8 +545,7 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'known_as': 'glDrawElementsInstancedBaseVertexBaseInstanceANGLE',
   #TODO(shrekshao): workaround when native support not available for cmd decoder
-  'versions' : [{ 'name': 'glDrawElementsInstancedBaseVertexBaseInstance'},
-                { 'name': 'glDrawElementsInstancedBaseVertexBaseInstanceEXT' },
+  'versions' : [{ 'name': 'glDrawElementsInstancedBaseVertexBaseInstanceEXT' },
                 { 'name': 'glDrawElementsInstancedBaseVertexBaseInstanceANGLE',
                  'extensions': ['GL_ANGLE_base_vertex_base_instance'] }],
   'arguments':
@@ -596,9 +588,7 @@ GL_FUNCTIONS = [
                  'extension': ['GL_QCOM_tiled_rendering'] }],
   'arguments': 'GLbitfield preserveMask', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glEndTransformFeedback' },
-               { 'name': 'glEndTransformFeedbackEXT',
-                 'extension': ['GL_EXT_transform_feedback'] }],
+  'names': ['glEndTransformFeedback'],
   'arguments': 'void', },
 { 'return_type': 'GLsync',
   'names': ['glFenceSync'],
@@ -821,8 +811,8 @@ GL_FUNCTIONS = [
   'arguments':
       'GLenum pname, GLsizei bufSize, GLsizei* length, GLfloat* data', },
 { 'return_type': 'GLint',
-  'versions': [{'name': 'glGetFragDataIndex' },
-               {'name': 'glGetFragDataIndexEXT',
+  'known_as': 'glGetFragDataIndex',
+  'versions': [{'name': 'glGetFragDataIndexEXT',
                 'extensions': ['GL_EXT_blend_func_extended']}],
   'arguments': 'GLuint program, const char* name', },
 { 'return_type': 'GLint',
@@ -1040,7 +1030,8 @@ GL_FUNCTIONS = [
       'GLenum target, GLenum pname, GLsizei bufSize, GLsizei* length, '
       'GLint* params', },
 { 'return_type': 'void',
-  'names': ['glGetQueryObjecti64v', 'glGetQueryObjecti64vEXT'],
+  'known_as': 'glGetQueryObjecti64v',
+  'names': ['glGetQueryObjecti64vEXT'],
   'arguments': 'GLuint id, GLenum pname, GLint64* params', },
 { 'return_type': 'void',
   'versions': [{'name': 'glGetQueryObjecti64vRobustANGLE',
@@ -1049,8 +1040,8 @@ GL_FUNCTIONS = [
       'GLuint id, GLenum pname, GLsizei bufSize, GLsizei* length, '
       'GLint64* params', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glGetQueryObjectiv' },
-               { 'name': 'glGetQueryObjectivEXT' }],
+  'known_as': 'glGetQueryObjectiv',
+  'names': ['glGetQueryObjectivEXT'],
   'arguments': 'GLuint id, GLenum pname, GLint* params', },
 { 'return_type': 'void',
   'versions': [{'name': 'glGetQueryObjectivRobustANGLE',
@@ -1059,7 +1050,8 @@ GL_FUNCTIONS = [
       'GLuint id, GLenum pname, GLsizei bufSize, GLsizei* length, '
       'GLint* params', },
 { 'return_type': 'void',
-  'names': ['glGetQueryObjectui64v', 'glGetQueryObjectui64vEXT'],
+  'known_as': 'glGetQueryObjectui64v',
+  'names': ['glGetQueryObjectui64vEXT'],
   'arguments': 'GLuint id, GLenum pname, GLuint64* params', },
 { 'return_type': 'void',
   'versions': [{'name': 'glGetQueryObjectui64vRobustANGLE',
@@ -1206,9 +1198,7 @@ GL_FUNCTIONS = [
       'GLenum target, GLenum pname, GLsizei bufSize, GLsizei* length, '
       'GLint* params', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glGetTransformFeedbackVarying' },
-               { 'name': 'glGetTransformFeedbackVaryingEXT',
-                 'extension': ['GL_EXT_transform_feedback'] }],
+  'names': ['glGetTransformFeedbackVarying'],
   'arguments': 'GLuint program, GLuint index, GLsizei bufSize, '
                'GLsizei* length, GLsizei* size, GLenum* type, char* name', },
 { 'return_type': 'void',
@@ -1394,7 +1384,7 @@ GL_FUNCTIONS = [
   'arguments': 'GLuint program', },
 { 'return_type': 'void*',
   'known_as': 'glMapBuffer',
-  'names': ['glMapBufferOES', 'glMapBuffer'],
+  'names': ['glMapBufferOES'],
   'arguments': 'GLenum target, GLenum access', },
 { 'return_type': 'void*',
   'known_as': 'glMapBufferRange',
@@ -1660,7 +1650,8 @@ GL_FUNCTIONS = [
   'names': ['glPushGroupMarkerEXT'],
   'arguments': 'GLsizei length, const char* marker', },
 { 'return_type': 'void',
-  'names': ['glQueryCounter', 'glQueryCounterEXT'],
+  'known_as': 'glQueryCounter',
+  'names': ['glQueryCounterEXT'],
   'arguments': 'GLuint id, GLenum target', },
 { 'return_type': 'void',
   'names': ['glReadBuffer'],
@@ -1952,9 +1943,7 @@ GL_FUNCTIONS = [
       'GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, '
       'GLenum format, GLenum type, GLsizei bufSize, const void* pixels', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glTransformFeedbackVaryings' },
-               { 'name': 'glTransformFeedbackVaryingsEXT',
-                 'extension': ['GL_EXT_transform_feedback'] }],
+  'names': ['glTransformFeedbackVaryings'],
   'arguments': 'GLuint program, GLsizei count, const char* const* varyings, '
                'GLenum bufferMode', },
 { 'return_type': 'void',
@@ -2675,8 +2664,6 @@ EGL_EXTENSIONS_EXTRA = [
 
 FUNCTION_SETS = [
   [GL_FUNCTIONS, 'gl', [
-      'GL/gl.h',
-      'noninclude/GL/glext.h',
       'GLES2/gl2ext.h',
       'GLES3/gl3.h',
       'GLES3/gl31.h',
@@ -2731,7 +2718,8 @@ LICENSE_AND_HEADER = """\
 GLVersion = namedtuple('GLVersion', 'is_es major_version minor_version')
 
 def GLVersionBindAlways(version):
-  return (version.is_es and version.major_version <= 2) or (not version.is_es)
+  assert version.is_es
+  return version.major_version <= 2
 
 
 def GetStaticBinding(func):
@@ -2755,9 +2743,7 @@ def GetStaticBinding(func):
         static_bindings.add(version['name'])
     elif 'gl_versions' in version:
       versions = [v for v in version['gl_versions'] if GLVersionBindAlways(v)]
-      # It's only unconditional if it exists in GL and GLES
-      if len(versions) == 2:
-        assert versions[0].is_es != versions[1].is_es
+      if len(versions) == 1:
         static_bindings.add(version['name'])
     else:
         static_bindings.add(version['name'])
@@ -3060,16 +3046,12 @@ namespace gl {
       WriteFuncBinding(file, func['known_as'], version['name'])
 
   def GetGLVersionCondition(gl_version):
+    assert gl_version.is_es
     if GLVersionBindAlways(gl_version):
-      if gl_version.is_es:
-        return 'True'
-      else:
-        return 'False'
-    elif gl_version.is_es:
+      return 'True'
+    else:
       return 'ver->IsAtLeastGLES(%du, %du)' % (
           gl_version.major_version, gl_version.minor_version)
-    else:
-      return 'False'
 
   def GetBindingCondition(version):
     conditions = []
@@ -3079,8 +3061,6 @@ namespace gl {
     if 'extensions' in version and version['extensions']:
       conditions.extend(
           sorted(['ext.b_%s' % e for e in version['extensions']]))
-    if 'False' in conditions:
-      conditions.remove('False')
     return ' || '.join(conditions)
 
   def WriteConditionalFuncBinding(file, func):

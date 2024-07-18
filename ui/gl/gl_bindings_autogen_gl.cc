@@ -115,6 +115,8 @@ void DriverGL::InitializeStaticBindings() {
           GetGLProcAddress("glDisableVertexAttribArray"));
   fn.glDrawArraysFn =
       reinterpret_cast<glDrawArraysProc>(GetGLProcAddress("glDrawArrays"));
+  fn.glDrawBufferFn =
+      reinterpret_cast<glDrawBufferProc>(GetGLProcAddress("glDrawBuffer"));
   fn.glDrawElementsFn =
       reinterpret_cast<glDrawElementsProc>(GetGLProcAddress("glDrawElements"));
   fn.glEnableFn = reinterpret_cast<glEnableProc>(GetGLProcAddress("glEnable"));
@@ -220,8 +222,14 @@ void DriverGL::InitializeStaticBindings() {
       reinterpret_cast<glLinkProgramProc>(GetGLProcAddress("glLinkProgram"));
   fn.glPixelStoreiFn =
       reinterpret_cast<glPixelStoreiProc>(GetGLProcAddress("glPixelStorei"));
+  fn.glPointParameteriFn = reinterpret_cast<glPointParameteriProc>(
+      GetGLProcAddress("glPointParameteri"));
+  fn.glPolygonModeFn =
+      reinterpret_cast<glPolygonModeProc>(GetGLProcAddress("glPolygonMode"));
   fn.glPolygonOffsetFn = reinterpret_cast<glPolygonOffsetProc>(
       GetGLProcAddress("glPolygonOffset"));
+  fn.glPrimitiveRestartIndexFn = reinterpret_cast<glPrimitiveRestartIndexProc>(
+      GetGLProcAddress("glPrimitiveRestartIndex"));
   fn.glReadPixelsFn =
       reinterpret_cast<glReadPixelsProc>(GetGLProcAddress("glReadPixels"));
   fn.glReleaseShaderCompilerFn = reinterpret_cast<glReleaseShaderCompilerProc>(
@@ -397,8 +405,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_EXT_framebuffer_blit");
   ext.b_GL_EXT_framebuffer_multisample =
       gfx::HasExtension(extensions, "GL_EXT_framebuffer_multisample");
-  ext.b_GL_EXT_gpu_shader4 =
-      gfx::HasExtension(extensions, "GL_EXT_gpu_shader4");
   ext.b_GL_EXT_instanced_arrays =
       gfx::HasExtension(extensions, "GL_EXT_instanced_arrays");
   ext.b_GL_EXT_map_buffer_range =
@@ -425,18 +431,12 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_EXT_shader_image_load_store");
   ext.b_GL_EXT_texture_buffer =
       gfx::HasExtension(extensions, "GL_EXT_texture_buffer");
-  ext.b_GL_EXT_texture_buffer_object =
-      gfx::HasExtension(extensions, "GL_EXT_texture_buffer_object");
   ext.b_GL_EXT_texture_format_BGRA8888 =
       gfx::HasExtension(extensions, "GL_EXT_texture_format_BGRA8888");
   ext.b_GL_EXT_texture_storage =
       gfx::HasExtension(extensions, "GL_EXT_texture_storage");
   ext.b_GL_EXT_texture_swizzle =
       gfx::HasExtension(extensions, "GL_EXT_texture_swizzle");
-  ext.b_GL_EXT_timer_query =
-      gfx::HasExtension(extensions, "GL_EXT_timer_query");
-  ext.b_GL_EXT_transform_feedback =
-      gfx::HasExtension(extensions, "GL_EXT_transform_feedback");
   ext.b_GL_EXT_unpack_subimage =
       gfx::HasExtension(extensions, "GL_EXT_unpack_subimage");
   ext.b_GL_EXT_window_rectangles =
@@ -504,29 +504,19 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glBeginTransformFeedbackFn =
         reinterpret_cast<glBeginTransformFeedbackProc>(
             GetGLProcAddress("glBeginTransformFeedback"));
-  } else if (ext.b_GL_EXT_transform_feedback) {
-    fn.glBeginTransformFeedbackFn =
-        reinterpret_cast<glBeginTransformFeedbackProc>(
-            GetGLProcAddress("glBeginTransformFeedbackEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBindBufferBaseFn = reinterpret_cast<glBindBufferBaseProc>(
         GetGLProcAddress("glBindBufferBase"));
-  } else if (ext.b_GL_EXT_transform_feedback) {
-    fn.glBindBufferBaseFn = reinterpret_cast<glBindBufferBaseProc>(
-        GetGLProcAddress("glBindBufferBaseEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBindBufferRangeFn = reinterpret_cast<glBindBufferRangeProc>(
         GetGLProcAddress("glBindBufferRange"));
-  } else if (ext.b_GL_EXT_transform_feedback) {
-    fn.glBindBufferRangeFn = reinterpret_cast<glBindBufferRangeProc>(
-        GetGLProcAddress("glBindBufferRangeEXT"));
   }
 
-  if (ext.b_GL_EXT_blend_func_extended || ext.b_GL_EXT_gpu_shader4) {
+  if (ext.b_GL_EXT_blend_func_extended) {
     fn.glBindFragDataLocationFn = reinterpret_cast<glBindFragDataLocationProc>(
         GetGLProcAddress("glBindFragDataLocationEXT"));
   }
@@ -974,9 +964,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glEndTransformFeedbackFn = reinterpret_cast<glEndTransformFeedbackProc>(
         GetGLProcAddress("glEndTransformFeedback"));
-  } else if (ext.b_GL_EXT_transform_feedback) {
-    fn.glEndTransformFeedbackFn = reinterpret_cast<glEndTransformFeedbackProc>(
-        GetGLProcAddress("glEndTransformFeedbackEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
@@ -1457,7 +1444,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glGetQueryivRobustANGLE"));
   }
 
-  if (ext.b_GL_EXT_disjoint_timer_query || ext.b_GL_EXT_timer_query) {
+  if (ext.b_GL_EXT_disjoint_timer_query) {
     fn.glGetQueryObjecti64vFn = reinterpret_cast<glGetQueryObjecti64vProc>(
         GetGLProcAddress("glGetQueryObjecti64vEXT"));
   }
@@ -1479,7 +1466,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glGetQueryObjectivRobustANGLE"));
   }
 
-  if (ext.b_GL_EXT_disjoint_timer_query || ext.b_GL_EXT_timer_query) {
+  if (ext.b_GL_EXT_disjoint_timer_query) {
     fn.glGetQueryObjectui64vFn = reinterpret_cast<glGetQueryObjectui64vProc>(
         GetGLProcAddress("glGetQueryObjectui64vEXT"));
   }
@@ -1618,10 +1605,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glGetTransformFeedbackVaryingFn =
         reinterpret_cast<glGetTransformFeedbackVaryingProc>(
             GetGLProcAddress("glGetTransformFeedbackVarying"));
-  } else if (ext.b_GL_EXT_transform_feedback) {
-    fn.glGetTransformFeedbackVaryingFn =
-        reinterpret_cast<glGetTransformFeedbackVaryingProc>(
-            GetGLProcAddress("glGetTransformFeedbackVaryingEXT"));
   }
 
   if (ext.b_GL_ANGLE_translated_shader_source) {
@@ -2290,8 +2273,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   } else if (ext.b_GL_OES_texture_buffer) {
     fn.glTexBufferFn =
         reinterpret_cast<glTexBufferProc>(GetGLProcAddress("glTexBufferOES"));
-  } else if (ext.b_GL_EXT_texture_buffer ||
-             ext.b_GL_EXT_texture_buffer_object) {
+  } else if (ext.b_GL_EXT_texture_buffer) {
     fn.glTexBufferFn =
         reinterpret_cast<glTexBufferProc>(GetGLProcAddress("glTexBufferEXT"));
   }
@@ -2405,10 +2387,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glTransformFeedbackVaryingsFn =
         reinterpret_cast<glTransformFeedbackVaryingsProc>(
             GetGLProcAddress("glTransformFeedbackVaryings"));
-  } else if (ext.b_GL_EXT_transform_feedback) {
-    fn.glTransformFeedbackVaryingsFn =
-        reinterpret_cast<glTransformFeedbackVaryingsProc>(
-            GetGLProcAddress("glTransformFeedbackVaryingsEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {

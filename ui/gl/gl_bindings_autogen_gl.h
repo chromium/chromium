@@ -1931,7 +1931,6 @@ struct ExtensionsGL {
   bool b_GL_EXT_draw_buffers;
   bool b_GL_EXT_framebuffer_blit;
   bool b_GL_EXT_framebuffer_multisample;
-  bool b_GL_EXT_gpu_shader4;
   bool b_GL_EXT_instanced_arrays;
   bool b_GL_EXT_map_buffer_range;
   bool b_GL_EXT_memory_object;
@@ -1946,12 +1945,9 @@ struct ExtensionsGL {
   bool b_GL_EXT_semaphore_win32;
   bool b_GL_EXT_shader_image_load_store;
   bool b_GL_EXT_texture_buffer;
-  bool b_GL_EXT_texture_buffer_object;
   bool b_GL_EXT_texture_format_BGRA8888;
   bool b_GL_EXT_texture_storage;
   bool b_GL_EXT_texture_swizzle;
-  bool b_GL_EXT_timer_query;
-  bool b_GL_EXT_transform_feedback;
   bool b_GL_EXT_unpack_subimage;
   bool b_GL_EXT_window_rectangles;
   bool b_GL_IMG_multisampled_render_to_texture;
