@@ -49,6 +49,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
@@ -292,6 +293,9 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     std::optional<base::TimeDelta> prompt_display_duration,
     bool is_post_prompt,
     const GURL& gurl,
+    std::optional<permissions::feature_params::PermissionElementPromptPosition>
+        pepc_prompt_position,
+    ContentSetting initial_permission_status,
     base::OnceCallback<void()> hats_shown_callback) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -311,7 +315,7 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
           prompt_display_duration,
           permissions::PermissionHatsTriggerHelper::
               GetOneTimePromptsDecidedBucket(profile->GetPrefs()),
-          recorded_gurl);
+          recorded_gurl, pepc_prompt_position, initial_permission_status);
 
   if (!permissions::PermissionHatsTriggerHelper::
           ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
@@ -384,6 +388,9 @@ void ChromePermissionsClient::OnPromptResolved(
     permissions::PermissionRequestGestureType gesture_type,
     std::optional<QuietUiReason> quiet_ui_reason,
     base::TimeDelta prompt_display_duration,
+    std::optional<permissions::feature_params::PermissionElementPromptPosition>
+        pepc_prompt_position,
+    ContentSetting initial_permission_status,
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -426,8 +433,9 @@ void ChromePermissionsClient::OnPromptResolved(
   TriggerPromptHatsSurveyIfEnabled(
       web_contents, request_type, std::make_optional(action),
       prompt_disposition, prompt_disposition_reason, gesture_type,
-      std::make_optional(prompt_display_duration), true,
-      web_contents->GetLastCommittedURL(), base::DoNothing());
+      std::make_optional(prompt_display_duration), /*is_post_prompt=*/true,
+      web_contents->GetLastCommittedURL(), pepc_prompt_position,
+      initial_permission_status, base::DoNothing());
 }
 
 std::optional<bool>

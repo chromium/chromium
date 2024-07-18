@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -174,6 +175,9 @@ class PermissionPrompt {
   // Permission Element.
   virtual std::vector<permissions::ElementAnchoredBubbleVariant>
   GetPromptVariants() const = 0;
+
+  virtual std::optional<feature_params::PermissionElementPromptPosition>
+  GetPromptPosition() const = 0;
 };
 }  // namespace permissions
 

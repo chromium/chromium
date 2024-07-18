@@ -75,6 +75,11 @@ PermissionPromptNotificationsMac::GetPromptVariants() const {
   return {};
 }
 
+std::optional<permissions::feature_params::PermissionElementPromptPosition>
+PermissionPromptNotificationsMac::GetPromptPosition() const {
+  return std::nullopt;
+}
+
 void PermissionPromptNotificationsMac::ShowPrompt() {
   apps::AppShimManager::Get()->ShowNotificationPermissionRequest(
       app_id_,

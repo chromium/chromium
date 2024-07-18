@@ -60,6 +60,11 @@ PermissionPromptDesktop::GetPromptVariants() const {
   return {};
 }
 
+std::optional<permissions::feature_params::PermissionElementPromptPosition>
+PermissionPromptDesktop::GetPromptPosition() const {
+  return std::nullopt;
+}
+
 bool PermissionPromptDesktop::IsAskPrompt() const {
   return true;
 }

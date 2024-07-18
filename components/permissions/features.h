@@ -176,6 +176,14 @@ extern const base::FeatureParam<std::string>
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>
+    kPermissionPromptSurveyPepcPromptPositionFilter;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<std::string>
+    kPermissionPromptSurveyInitialPermissionStatusFilter;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<std::string>
     kWebKioskBrowserPermissionsAllowlist;
 
 }  // namespace feature_params

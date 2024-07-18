@@ -57,6 +57,12 @@ const char kPermissionsPromptSurveyHadGestureKey[] = "HadGesture";
 // restriction to specific channels (typically to stable).
 const char kPermissionsPromptSurveyReleaseChannelKey[] = "ReleaseChannel";
 
+const char kPermissionPromptSurveyPepcPromptPositionKey[] =
+    "PepcPromptPosition";
+
+const char kPermissionPromptSurveyInitialPermissionStatusKey[] =
+    "InitialPermissionStatus";
+
 // TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.
 

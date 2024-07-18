@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/permissions/features.h"
+
 #include "base/feature_list.h"
 #include "base/time/time.h"
 
@@ -332,6 +333,28 @@ const base::FeatureParam<std::string>
     kPermissionPromptSurveyOneTimePromptsDecidedBucket{
         &permissions::features::kPermissionsPromptSurvey,
         "one_time_prompts_decided_bucket", ""};
+
+// This parameter specifies which prompt position should have been used for a
+// HaTS survery to be allowed to trigger. It only applies to permission element
+// prompts (PEPC). Valid values are the values in the
+// |kPromptPositioningOptions| array. Multiple values can be configured by
+// providing a comma separated list and an empty value means no filtering (all
+// allowed).
+const base::FeatureParam<std::string>
+    kPermissionPromptSurveyPepcPromptPositionFilter{
+        &permissions::features::kPermissionsPromptSurvey,
+        "pepc_prompt_position_filter", ""};
+
+// This parameter specifies what the initial permission status was before a
+// permission prompt was displayed. It's only relevant to permission element
+// prompts (PEPC), since other prompts will always report "ask". Valid values
+// are the values returned by |content_settings::ContentSettingToString| util
+// function. Multiple values can be configured by providing a comma separated
+// list and an empty value means no filtering (all allowed).
+const base::FeatureParam<std::string>
+    kPermissionPromptSurveyInitialPermissionStatusFilter{
+        &permissions::features::kPermissionsPromptSurvey,
+        "initial_permission_status_filter", ""};
 
 // Comma separated url patterns which should be allowed for accessing web kiosk
 // browser permissions and device attributes API. If left empty no URL patterns

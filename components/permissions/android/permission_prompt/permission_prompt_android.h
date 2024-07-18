@@ -44,6 +44,8 @@ class PermissionPromptAndroid : public PermissionPrompt {
   std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
       const override;
   bool IsAskPrompt() const override;
+  std::optional<permissions::feature_params::PermissionElementPromptPosition>
+  GetPromptPosition() const override;
 
   void Closing();
   void Accept();

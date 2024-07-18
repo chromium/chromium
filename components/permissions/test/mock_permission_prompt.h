@@ -27,6 +27,8 @@ class MockPermissionPrompt : public PermissionPrompt {
   bool ShouldFinalizeRequestAfterDecided() const override;
   std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
       const override;
+  std::optional<feature_params::PermissionElementPromptPosition>
+  GetPromptPosition() const override;
   bool IsAskPrompt() const override;
 
   bool IsVisible();

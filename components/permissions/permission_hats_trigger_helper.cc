@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/messages/android/message_enums.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
@@ -87,7 +88,18 @@ GetKeyToValueFilterPairMap(
             prompt_parameters.one_time_prompts_decided_bucket),
         feature_params::kPermissionPromptSurveyOneTimePromptsDecidedBucket
             .Get()}},
-      {kPermissionPromptSurveyUrlKey, {prompt_parameters.url, ""}}};
+      {kPermissionPromptSurveyUrlKey, {prompt_parameters.url, ""}},
+      {kPermissionPromptSurveyPepcPromptPositionKey,
+       {prompt_parameters.pepc_prompt_position.has_value()
+            ? feature_params::kPermissionElementPromptPositioningParam.GetName(
+                  prompt_parameters.pepc_prompt_position.value())
+            : "",
+        feature_params::kPermissionPromptSurveyPepcPromptPositionFilter.Get()}},
+      {kPermissionPromptSurveyInitialPermissionStatusKey,
+       {content_settings::ContentSettingToString(
+            prompt_parameters.initial_permission_status),
+        feature_params::kPermissionPromptSurveyInitialPermissionStatusFilter
+            .Get()}}};
 }
 
 // Typos in the gcl configuration cannot be verified and may be missed by
@@ -172,7 +184,10 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
     const std::string& survey_display_time,
     std::optional<base::TimeDelta> prompt_display_duration,
     OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
-    std::optional<GURL> gurl)
+    std::optional<GURL> gurl,
+    std::optional<permissions::feature_params::PermissionElementPromptPosition>
+        pepc_prompt_position,
+    ContentSetting initial_permission_status)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
@@ -182,7 +197,9 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
       survey_display_time(survey_display_time),
       prompt_display_duration(prompt_display_duration),
       one_time_prompts_decided_bucket(one_time_prompts_decided_bucket),
-      url(gurl.has_value() ? gurl->spec() : "") {}
+      url(gurl.has_value() ? gurl->spec() : ""),
+      pepc_prompt_position(pepc_prompt_position),
+      initial_permission_status(initial_permission_status) {}
 
 PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
     double trigger_probability,
@@ -227,6 +244,8 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
       kPermissionsPromptSurveyReleaseChannelKey,
       kPermissionsPromptSurveyDisplayTimeKey,
       kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
+      kPermissionPromptSurveyPepcPromptPositionKey,
+      kPermissionPromptSurveyInitialPermissionStatusKey,
       kPermissionPromptSurveyUrlKey};
 
   auto key_to_value_filter_pair = GetKeyToValueFilterPairMap(prompt_parameters);

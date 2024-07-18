@@ -80,6 +80,8 @@ class EmbeddedPermissionPrompt
   std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
       const override;
   bool IsAskPrompt() const override;
+  std::optional<permissions::feature_params::PermissionElementPromptPosition>
+  GetPromptPosition() const override;
 
   // EmbeddedPermissionPromptViewDelegate:
   void Allow() override;

@@ -68,6 +68,8 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   void UpdateAnchor(views::Widget* widget);
   void ClosingPermission();
   void PrepareToClose();
+  permissions::feature_params::PermissionElementPromptPosition
+  GetPromptPosition() const;
 
   // views::BubbleDialogDelegateView:
   bool ShouldShowCloseButton() const override;
@@ -125,8 +127,6 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
                  const ButtonConfiguration& button);
   std::unique_ptr<views::FlexLayoutView> CreateLoadingIcon();
   gfx::Rect GetBubbleBounds() override;
-  permissions::feature_params::PermissionElementPromptPosition
-  GetPromptPosition() const;
   gfx::Rect element_rect_;
   base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate_;
 };

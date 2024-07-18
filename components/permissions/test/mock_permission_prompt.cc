@@ -58,6 +58,11 @@ MockPermissionPrompt::GetPromptVariants() const {
   return {};
 }
 
+std::optional<feature_params::PermissionElementPromptPosition>
+MockPermissionPrompt::GetPromptPosition() const {
+  return std::nullopt;
+}
+
 bool MockPermissionPrompt::IsAskPrompt() const {
   return true;
 }

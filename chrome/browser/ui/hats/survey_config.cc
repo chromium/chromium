@@ -170,7 +170,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           permissions::kPermissionsPromptSurveyReleaseChannelKey,
           permissions::kPermissionsPromptSurveyDisplayTimeKey,
           permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
-          permissions::kPermissionPromptSurveyUrlKey});
+          permissions::kPermissionPromptSurveyUrlKey,
+          permissions::kPermissionPromptSurveyPepcPromptPositionKey,
+          permissions::kPermissionPromptSurveyInitialPermissionStatusKey});
 
 #if !BUILDFLAG(IS_ANDROID)
   // Dev tools surveys.

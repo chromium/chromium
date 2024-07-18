@@ -421,6 +421,15 @@ bool EmbeddedPermissionPrompt::IsAskPrompt() const {
   return (embedded_prompt_variant_ == Variant::kAsk);
 }
 
+std::optional<permissions::feature_params::PermissionElementPromptPosition>
+EmbeddedPermissionPrompt::GetPromptPosition() const {
+  if (auto* prompt_view = static_cast<const EmbeddedPermissionPromptBaseView*>(
+          prompt_view_tracker_.view())) {
+    return prompt_view->GetPromptPosition();
+  }
+  return std::nullopt;
+}
+
 void EmbeddedPermissionPrompt::Allow() {
   PrecalculateVariantsForMetrics();
   RecordPermissionActionUKM(permissions::ElementAnchoredBubbleAction::kGranted);

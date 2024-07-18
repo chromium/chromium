@@ -188,6 +188,24 @@ void EmbeddedPermissionPromptBaseView::PrepareToClose() {
   DialogDelegate::SetCloseCallback(base::DoNothing());
 }
 
+PermissionElementPromptPosition
+EmbeddedPermissionPromptBaseView::GetPromptPosition() const {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPermissionElement));
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kPermissionElementPromptPositioning)) {
+    return PermissionElementPromptPosition::kNearElement;
+  }
+
+  if (permissions::feature_params::kPermissionElementPromptPositioningParam
+              .Get() == PermissionElementPromptPosition::kNearElement &&
+      element_rect_.IsEmpty()) {
+    return PermissionElementPromptPosition::kWindowMiddle;
+  }
+
+  return permissions::feature_params::kPermissionElementPromptPositioningParam
+      .Get();
+}
+
 void EmbeddedPermissionPromptBaseView::ShowWidget() {
   GetWidget()->Show();
 }
@@ -356,24 +374,6 @@ gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
   }
 
   return prompt_bounds;
-}
-
-PermissionElementPromptPosition
-EmbeddedPermissionPromptBaseView::GetPromptPosition() const {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPermissionElement));
-  if (!base::FeatureList::IsEnabled(
-          permissions::features::kPermissionElementPromptPositioning)) {
-    return PermissionElementPromptPosition::kWindowMiddle;
-  }
-
-  if (permissions::feature_params::kPermissionElementPromptPositioningParam
-              .Get() == PermissionElementPromptPosition::kNearElement &&
-      element_rect_.IsEmpty()) {
-    return PermissionElementPromptPosition::kWindowMiddle;
-  }
-
-  return permissions::feature_params::kPermissionElementPromptPositioningParam
-      .Get();
 }
 
 BEGIN_METADATA(EmbeddedPermissionPromptBaseView)

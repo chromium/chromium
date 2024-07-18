@@ -73,6 +73,19 @@ extern const char kPermissionsPromptSurveyHadGestureKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionsPromptSurveyReleaseChannelKey[];
 
+// The key in `Product Specific Bits Data` under which the prompt position is
+// recorded if relevant. The prompt position is only recorded for PEPC
+// permission prompts.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyPepcPromptPositionKey[];
+
+// The key in `Product Specific Bits Data` under which the initial permission
+// status is recorded. The initial permission status refers to the permission
+// status before the prompt has been shown. For prompts other than PEPC
+// permission prompts, this will always be "ask".
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyInitialPermissionStatusKey[];
+
 // TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.
 

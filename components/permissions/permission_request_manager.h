@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -18,6 +19,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_queue.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -419,6 +422,14 @@ class PermissionRequestManager
       PermissionRequest* request,
       PermissionAction permission_action);
 
+  // Take a snapshot of the content setting status for the current requests,
+  // which can change based on the user's decision. Used in HaTS as a filter.
+  // This defaults to "DEFAULT" if there's no ContentSettingsType associated
+  // with the PermissionType.
+  void SetCurrentRequestsInitialStatuses();
+
+  ContentSetting GetRequestInitialStatus(PermissionRequest* request);
+
   // Factory to be used to create views when needed.
   PermissionPrompt::Factory view_factory_;
 
@@ -539,6 +550,16 @@ class PermissionRequestManager
   base::OneShotTimer preignore_timer_;
 
   std::optional<base::OnceCallback<void()>> hats_shown_callback_;
+
+  // Holds the position of the current prompt, only relevant for permission
+  // element prompts.
+  std::optional<feature_params::PermissionElementPromptPosition>
+      current_request_pepc_prompt_position_;
+
+  // Holds the initial statuses of the current requests, one for each request in
+  // |requests_|.
+  std::map<PermissionRequest*, ContentSetting>
+      current_requests_initial_statuses_;
 
   base::WeakPtrFactory<PermissionRequestManager> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
