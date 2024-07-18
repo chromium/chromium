@@ -19,6 +19,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './power_bookmark_row.css.js';
 import {getHtml} from './power_bookmark_row.html.js';
+import type {PowerBookmarksService} from './power_bookmarks_service.js';
 
 export interface PowerBookmarkRowElement {
   $: {
@@ -65,6 +66,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       trailingIconAriaLabel: {type: String},
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
+      bookmarksService: {type: Object},
     };
   }
 
@@ -88,6 +90,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   imageUrls: string[] = [];
 
   listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
+  bookmarksService: PowerBookmarksService;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -291,6 +294,76 @@ export class PowerBookmarkRowElement extends CrLitElement {
     event.preventDefault();
     event.stopPropagation();
     this.dispatchEvent(this.createInputChangeEvent_(null));
+  }
+
+  protected isPriceTracked_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    return !!this.bookmarksService?.getPriceTrackedInfo(bookmark);
+  }
+
+  /**
+   * Whether the given price-tracked bookmark should display as if discounted.
+   */
+  protected showDiscountedPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    const bookmarkProductInfo =
+        this.bookmarksService?.getPriceTrackedInfo(bookmark);
+    if (bookmarkProductInfo) {
+      return bookmarkProductInfo.info.previousPrice.length > 0;
+    }
+    return false;
+  }
+
+  protected getCurrentPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string {
+    const bookmarkProductInfo =
+        this.bookmarksService?.getPriceTrackedInfo(bookmark);
+    if (bookmarkProductInfo) {
+      return bookmarkProductInfo.info.currentPrice;
+    } else {
+      return '';
+    }
+  }
+
+  protected getPreviousPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string {
+    const bookmarkProductInfo =
+        this.bookmarksService?.getPriceTrackedInfo(bookmark);
+    if (bookmarkProductInfo) {
+      return bookmarkProductInfo.info.previousPrice;
+    } else {
+      return '';
+    }
+  }
+
+  protected getBookmarkA11yDescription_(
+      bookmark: chrome.bookmarks.BookmarkTreeNode): string {
+    let description = '';
+    if (this.bookmarksService?.getPriceTrackedInfo(bookmark)) {
+      description += loadTimeData.getStringF(
+          'a11yDescriptionPriceTracking', this.getCurrentPrice_(bookmark));
+      const previousPrice = this.getPreviousPrice_(bookmark);
+      if (previousPrice) {
+        description += ' ' + loadTimeData.getStringF(
+            'a11yDescriptionPriceChange', previousPrice);
+      }
+    }
+    return description;
+  }
+
+  protected getBookmarkDescriptionMeta_(bookmark:
+                                            chrome.bookmarks.BookmarkTreeNode) {
+    // If there is a price available for the product and it isn't being
+    // tracked, return the current price which will be added to the description
+    // meta section.
+    const productInfo =
+        this.bookmarksService?.getAvailableProductInfo(bookmark);
+    if (productInfo && productInfo.info.currentPrice &&
+        !this.isPriceTracked_(bookmark)) {
+      return productInfo.info.currentPrice;
+    }
+
+    return '';
   }
 }
 

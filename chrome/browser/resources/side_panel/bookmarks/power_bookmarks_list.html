@@ -341,8 +341,6 @@
               <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
                   description="[[getBookmarkDescription_(
                                   item, compact_, searchQuery_, item.*)]]"
-                  description-meta="[[getBookmarkDescriptionMeta_(
-                                      item, trackedProductInfos_.*)]]"
                   compact="[[compact_]]" trailing-icon="cr:more-vert"
                   trailing-icon-aria-label="[[getBookmarkMenuA11yLabel_(
                                               item.url, item.title)]]"
@@ -360,7 +358,6 @@
                   row-aria-label="[[getBookmarkA11yLabel_(
                                     item.id, item.url, item.title, editing_,
                                     selectedBookmarks_.*)]]"
-                  row-aria-description="[[getBookmarkA11yDescription_(item)]]"
                   tabindex$="[[tabIndex]]"
                   image-urls="[[getBookmarkImageUrls_(
                                 item, item.*, imageUrls_.*,
@@ -369,23 +366,8 @@
                                 shoppingCollectionFolderId_)]]"
                   force-hover="[[getBookmarkForceHover_(
                                 item, contextMenuBookmark_)]]"
-                  draggable="[[canDrag_]]">
-                <template is="dom-if" restamp
-                    if="[[isPriceTracked(item, trackedProductInfos_.*)]]">
-                  <sp-list-item-badge slot="badges"
-                      updated="[[showDiscountedPrice_(
-                          item, trackedProductInfos_.*)]]">
-                    <iron-icon icon="bookmarks:price-tracking"></iron-icon>
-                    <div>
-                      [[getCurrentPrice_(item, trackedProductInfos_.*)]]
-                    </div>
-                    <div slot="previous-badge"
-                        hidden$="[[!showDiscountedPrice_(
-                                    item, trackedProductInfos_.*)]]">
-                      [[getPreviousPrice_(item, trackedProductInfos_.*)]]
-                    </div>
-                  </sp-list-item-badge>
-                </template>
+                  draggable="[[canDrag_]]"
+                  bookmarks-service="[[bookmarksService_]]">
               </power-bookmark-row>
             </template>
           </iron-list>

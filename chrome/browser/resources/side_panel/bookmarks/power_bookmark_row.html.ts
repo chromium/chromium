@@ -16,9 +16,9 @@ export function getHtml(this: PowerBookmarkRowElement) {
     .count="${this.bookmark?.children?.length}"
     .title="${this.bookmark?.title}"
     .description="${this.description}"
-    .descriptionMeta="${this.descriptionMeta}"
+    .descriptionMeta="${this.getBookmarkDescriptionMeta_(this.bookmark)}"
     .itemAriaLabel="${this.rowAriaLabel}"
-    .itemAriaDescription="${this.rowAriaDescription}"
+    .itemAriaDescription="${this.getBookmarkA11yDescription_(this.bookmark)}"
     @click="${this.onRowClicked_}"
     @auxclick="${this.onRowClicked_}"
     @contextmenu="${this.onContextMenu_}"
@@ -38,11 +38,23 @@ export function getHtml(this: PowerBookmarkRowElement) {
         @change="${this.onInputChange_}" @blur="${this.onInputBlur_}"
         @keydown="${this.onInputKeyDown_}"
         .ariaLabel="${this.rowAriaLabel}"
-        .ariaDescription="${this.rowAriaDescription}">
+        .ariaDescription="${this.getBookmarkA11yDescription_(this.bookmark)}">
     </cr-input>` : ''}
 
   ${this.showTrailingIcon_() ? html`
-    <slot slot="badges" id="badges" name="badges"></slot>
+    ${this.isPriceTracked_(this.bookmark) ? html`
+    <sp-list-item-badge slot="badges"
+        .updated="${this.showDiscountedPrice_(this.bookmark)}">
+      <iron-icon icon="bookmarks:price-tracking"></iron-icon>
+      <div>
+        ${this.getCurrentPrice_(this.bookmark)}
+      </div>
+      <div slot="previous-badge"
+          ?hidden="${!this.showDiscountedPrice_(this.bookmark)}">
+        ${this.getPreviousPrice_(this.bookmark)}
+      </div>
+    </sp-list-item-badge>
+  ` : ''}
     <cr-icon-button slot="suffix" .ironIcon="${this.trailingIcon}"
         ?hidden="${!this.trailingIcon}" @click="${this.onTrailingIconClicked_}"
         .title="${this.trailingIconTooltip}"
