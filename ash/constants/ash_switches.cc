@@ -519,9 +519,6 @@ const char kEnableBirchWeatherApiForTestingOverride[] =
 // Enables the Cast Receiver.
 const char kEnableCastReceiver[] = "enable-cast-receiver";
 
-// Enables consumer kiosk mode for Chrome OS.
-const char kEnableConsumerKiosk[] = "enable-consumer-kiosk";
-
 // Enables Shelf Dimming for ChromeOS.
 const char kEnableDimShelf[] = "enable-dim-shelf";
 

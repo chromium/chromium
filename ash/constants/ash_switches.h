@@ -160,7 +160,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableAshDebugBrowser[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableBirchWeatherApiForTestingOverride[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableCastReceiver[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableConsumerKiosk[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableDimShelf[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableExtensionAssetsSharing[];
