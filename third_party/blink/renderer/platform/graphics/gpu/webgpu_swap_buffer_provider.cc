@@ -437,6 +437,11 @@ WebGPUSwapBufferProvider::GetSharedImageUsagesForDisplay() {
 #endif
 }
 
+scoped_refptr<gpu::ClientSharedImage>
+WebGPUSwapBufferProvider::GetCurrentSharedImage() {
+  return current_swap_buffer_ ? current_swap_buffer_->shared_image : nullptr;
+}
+
 gpu::Mailbox WebGPUSwapBufferProvider::GetCurrentMailboxForTesting() const {
   DCHECK(current_swap_buffer_);
   DCHECK(current_swap_buffer_->shared_image);

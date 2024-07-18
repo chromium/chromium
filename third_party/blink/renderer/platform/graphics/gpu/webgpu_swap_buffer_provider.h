@@ -104,6 +104,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   // be used with WebGPU will additionally be sent to the display.
   gpu::SharedImageUsageSet GetSharedImageUsagesForDisplay();
 
+  scoped_refptr<gpu::ClientSharedImage> GetCurrentSharedImage();
+
   gpu::Mailbox GetCurrentMailboxForTesting() const;
 
  private:

@@ -226,6 +226,13 @@ bool GPUCanvasContext::PushFrame() {
   if (!swap_buffers_)
     return false;
 
+  // NOTE: It is necessary to call this before calling
+  // PrepareTransferableResource(), as the latter moves the current swapbuffer
+  // into `release_callback`.
+  // TODO(crbug.com/353744937): Eliminate this code needing to prepare the
+  // TransferableResource altogether in favor of it happening further down the
+  // line via the ClientSI.
+  auto client_si = swap_buffers_->GetCurrentSharedImage();
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
   if (!swap_buffers_->PrepareTransferableResource(
@@ -233,8 +240,11 @@ bool GPUCanvasContext::PushFrame() {
     return false;
   }
 
+  // If it was possible to prepare the transferable resource, the
+  // ClientSharedImage must also be valid.
+  CHECK(client_si);
   auto canvas_resource = ExternalCanvasResource::Create(
-      transferable_resource, std::move(release_callback),
+      std::move(client_si), transferable_resource, std::move(release_callback),
       GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
       filter_quality_,
       /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin);

@@ -806,7 +806,25 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     bool is_origin_top_left) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
   auto resource = AdoptRef(new ExternalCanvasResource(
-      transferable_resource, std::move(release_callback),
+      /*client_si=*/nullptr, transferable_resource, std::move(release_callback),
+      std::move(context_provider_wrapper), std::move(provider), filter_quality,
+      is_origin_top_left));
+  return resource->IsValid() ? resource : nullptr;
+}
+
+scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
+    scoped_refptr<gpu::ClientSharedImage> client_si,
+    const viz::TransferableResource& transferable_resource,
+    viz::ReleaseCallback release_callback,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    base::WeakPtr<CanvasResourceProvider> provider,
+    cc::PaintFlags::FilterQuality filter_quality,
+    bool is_origin_top_left) {
+  TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
+  CHECK(client_si);
+  CHECK(client_si->mailbox() == transferable_resource.mailbox());
+  auto resource = AdoptRef(new ExternalCanvasResource(
+      std::move(client_si), transferable_resource, std::move(release_callback),
       std::move(context_provider_wrapper), std::move(provider), filter_quality,
       is_origin_top_left));
   return resource->IsValid() ? resource : nullptr;
@@ -919,6 +937,7 @@ bool ExternalCanvasResource::
 }
 
 ExternalCanvasResource::ExternalCanvasResource(
+    scoped_refptr<gpu::ClientSharedImage> client_si,
     const viz::TransferableResource& transferable_resource,
     viz::ReleaseCallback out_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
@@ -932,10 +951,14 @@ ExternalCanvasResource::ExternalCanvasResource(
                                                 transferable_resource.format),
                       kPremul_SkAlphaType,
                       transferable_resource.color_space.ToSkColorSpace())),
+      client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       transferable_resource_(transferable_resource),
       release_callback_(std::move(out_callback)),
       is_origin_top_left_(is_origin_top_left) {
+  if (client_si_) {
+    CHECK(client_si_->mailbox() == transferable_resource_.mailbox());
+  }
   DCHECK(!release_callback_ || transferable_resource_.sync_token().HasData());
 }
 
