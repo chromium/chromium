@@ -141,15 +141,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // See: intrinsic_size_.
   PhysicalSize IntrinsicSize() const {
     NOT_DESTROYED();
-
-    if (RuntimeEnabledFeatures::NoIntrinsicSizeOverrideEnabled()) {
-      return intrinsic_size_;
-    }
-
-    auto width_override = IntrinsicWidthOverride();
-    auto height_override = IntrinsicHeightOverride();
-    return PhysicalSize(width_override.value_or(intrinsic_size_.width),
-                        height_override.value_or(intrinsic_size_.height));
+    return intrinsic_size_;
   }
 
   // This function calculates the placement of the replaced contents. It takes
@@ -197,25 +189,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   PhysicalRect ComputeObjectFitAndPositionRect(
       const PhysicalRect& base_content_rect,
       const PhysicalSize* overridden_intrinsic_size) const;
-
-  // TODO(crbug.com/335003884): remove IntrinsicWidthOverride and
-  // IntrinsicHeightOverride when removing the NoIntrinsicSizeOverride flag.
-  std::optional<LayoutUnit> IntrinsicWidthOverride() const {
-    NOT_DESTROYED();
-    if (HasOverrideIntrinsicContentWidth())
-      return OverrideIntrinsicContentWidth();
-    else if (ShouldApplySizeContainment())
-      return LayoutUnit();
-    return std::nullopt;
-  }
-  std::optional<LayoutUnit> IntrinsicHeightOverride() const {
-    NOT_DESTROYED();
-    if (HasOverrideIntrinsicContentHeight())
-      return OverrideIntrinsicContentHeight();
-    else if (ShouldApplySizeContainment())
-      return LayoutUnit();
-    return std::nullopt;
-  }
 
   // The natural/intrinsic size for this replaced element based on the natural
   // size for the element's contents.

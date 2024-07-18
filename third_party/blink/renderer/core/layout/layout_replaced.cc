@@ -178,14 +178,6 @@ void LayoutReplaced::RecalcVisualOverflow() {
 
 std::optional<gfx::SizeF>
 LayoutReplaced::ComputeObjectViewBoxSizeForIntrinsicSizing() const {
-  // TODO(crbug.com/335003884): Investigate if this first branch is
-  // actually doing anything and maybe clean that up too
-  if (!RuntimeEnabledFeatures::NoIntrinsicSizeOverrideEnabled()) {
-    if (IntrinsicWidthOverride() || IntrinsicHeightOverride()) {
-      return std::nullopt;
-    }
-  }
-
   if (auto view_box = ComputeObjectViewBoxRect())
     return static_cast<gfx::SizeF>(view_box->size);
 
