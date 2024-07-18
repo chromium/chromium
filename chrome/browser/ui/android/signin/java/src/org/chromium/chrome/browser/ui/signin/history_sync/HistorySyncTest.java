@@ -45,7 +45,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -63,7 +62,6 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
 /** Tests for the standalone history sync consent dialog */
@@ -395,7 +393,6 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testButtonsEquallyWeightedWithMinorAccount_CapabilityArrivesBeforeDeadline() {
         MinorModeHelper.disableTimeoutForTesting();
         Activity historySyncActivity = mActivityTestRule.getActivity();
@@ -444,7 +441,6 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testButtonsEquallyWeightedWithMinorAccountOnDeadline() throws Exception {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -481,7 +477,6 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     /**
      * This tests ensure that onClickListeners are attached to the accept/decline buttons when the
      * HistorySyncCoordinator is created without a view and the MinorModeHelper resolves before a
