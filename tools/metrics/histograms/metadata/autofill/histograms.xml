@@ -1965,6 +1965,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.DOMContentLoadedInOutermostMainFrame" enum="Boolean"
+    expires_after="2025-12-12">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Records whether the AutofillAgent receives a DOMContentLoaded event in an
+    outermost main frame. This is useful as a denominator for timing metrics to
+    see how much time is spent in a certain function per page load (where page
+    includes the subframes).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission2.Aggregate"
     enum="AutofilledFieldUserEditingStatus" expires_after="2024-12-12">
   <owner>koerber@google.com</owner>

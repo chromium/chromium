@@ -547,6 +547,9 @@ void AutofillAgent::Reset() {
 }
 
 void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
+  base::UmaHistogramBoolean("Autofill.DOMContentLoadedInOutermostMainFrame",
+                            unsafe_render_frame()->IsMainFrame() &&
+                                !unsafe_render_frame()->IsInFencedFrameTree());
   is_dom_content_loaded_ = true;
   timing_.last_dom_content_loaded = base::TimeTicks::Now();
   ExtractFormsUnthrottled(/*callback=*/{});

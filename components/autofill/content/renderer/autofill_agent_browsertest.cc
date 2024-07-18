@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -1543,6 +1544,17 @@ TEST_P(AutofillAgentTestClick, MAYBE_AskForValuesToFillOnClick) {
   Click("other");
   checkpoint.Call("right click on field");
   RightClick("f");
+}
+
+// Tests that DOMContentLoaded() emits a metric.
+TEST_F(AutofillAgentTest, DOMContentLoadedEmitsMetric) {
+  base::HistogramTester histogram_tester;
+  LoadHTML(R"(
+    <p>Hello world</p>
+  )");
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.DOMContentLoadedInOutermostMainFrame"),
+              base::BucketsAre(base::Bucket(true, 1), base::Bucket(false, 0)));
 }
 
 }  // namespace
