@@ -97,7 +97,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(ANA, BOB),
+                            Arrays.asList(RETURNING_ANA, NEW_BOB),
                             IDP_METADATA,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
@@ -120,7 +120,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(ANA, BOB),
+                            Arrays.asList(RETURNING_ANA, NEW_BOB),
                             IDP_METADATA,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
@@ -143,7 +143,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(BOB),
+                            Arrays.asList(NEW_BOB),
                             IDP_METADATA,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
@@ -216,7 +216,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(ANA, BOB),
+                            Arrays.asList(RETURNING_ANA, NEW_BOB),
                             IDP_METADATA,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,

@@ -53,6 +53,12 @@ found in the LICENSE file.
             tools:listitem="@layout/account_selection_button_mode_account_item"/>
       </FrameLayout>
 
+    <include layout="@layout/account_selection_button_mode_account_chip"
+        android:id="@+id/account_chip"
+        android:visibility="gone"/>
+    <include layout="@layout/account_selection_button_mode_data_sharing_consent_item"
+        android:id="@+id/user_data_sharing_consent"
+        android:visibility="gone"/>
     <include layout="@layout/idp_signin_text_item"
         android:id="@+id/idp_signin"
         android:visibility="gone"/>
@@ -75,8 +81,5 @@ found in the LICENSE file.
         android:visibility="gone"/>
     <include layout="@layout/account_selection_add_account_button"
         android:id="@+id/account_selection_add_account_btn"
-        android:visibility="gone"/>
-    <include layout="@layout/account_selection_data_sharing_consent_item"
-        android:id="@+id/user_data_sharing_consent"
         android:visibility="gone"/>
 </LinearLayout>

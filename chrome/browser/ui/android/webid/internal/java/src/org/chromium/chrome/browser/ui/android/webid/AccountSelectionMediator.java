@@ -271,9 +271,10 @@ class AccountSelectionMediator {
     private void updateBackPressBehavior() {
         mBottomSheetContent.setCustomBackPressBehavior(
                 !mWasDismissed
-                                && mSelectedAccount != null
-                                && mAccounts.size() != 1
-                                && mHeaderType != HeaderType.VERIFY
+                                && ((mSelectedAccount != null
+                                                && mAccounts.size() != 1
+                                                && mHeaderType != HeaderType.VERIFY)
+                                        || mHeaderType == HeaderType.REQUEST_PERMISSION)
                         ? this::handleBackPress
                         : null);
     }
@@ -323,6 +324,7 @@ class AccountSelectionMediator {
     private int getSheetType() {
         switch (mHeaderType) {
             case SIGN_IN:
+            case REQUEST_PERMISSION:
                 return SheetType.ACCOUNT_SELECTION;
             case VERIFY:
                 return SheetType.VERIFYING;
@@ -346,12 +348,14 @@ class AccountSelectionMediator {
             boolean showAddAccountRow) {
         mSheetAccountItems.clear();
         if (accounts == null) return;
+        // In the request permission dialog, account is shown as an account chip instead of in the
+        // accounts list.
+        if (mHeaderType == HeaderType.REQUEST_PERMISSION) return;
 
         for (Account account : accounts) {
             final PropertyModel model = createAccountItem(account, areAccountsClickable);
             mSheetAccountItems.add(
                     new ListItem(AccountSelectionProperties.ITEM_TYPE_ACCOUNT, model));
-            requestAvatarImage(model);
         }
 
         if (showAddAccountRow) {
@@ -406,21 +410,21 @@ class AccountSelectionMediator {
     }
 
     void showVerifySheet(Account account) {
-        if (mHeaderType == HeaderType.SIGN_IN) {
+        if (mHeaderType == HeaderType.SIGN_IN || mHeaderType == HeaderType.REQUEST_PERMISSION) {
             mHeaderType = HeaderType.VERIFY;
             updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false);
-        } else if (mHeaderType == HeaderType.VERIFY) {
-            // Currently, we show the verify sheet after the single account chooser for button mode
-            // as a result of the previous if block. However, in some cases we need to show the
-            // request permission sheet instead.
-            // TODO(crbug.com/327273595): Implement request permission sheet for button mode
-            // Android.
-            assert mRpMode == RpMode.BUTTON;
+            updateBackPressBehavior();
         } else {
             // We call showVerifySheet() from updateSheet()->onAccountSelected() in this case, so do
             // not invoke updateSheet() as that would cause a loop and isn't needed.
             assert mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN;
         }
+    }
+
+    void showRequestPermissionSheet(Account account) {
+        mHeaderType = HeaderType.REQUEST_PERMISSION;
+        updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false);
+        updateBackPressBehavior();
     }
 
     // Dismisses content without notifying the delegate. Should only be invoked during destruction.
@@ -528,6 +532,11 @@ class AccountSelectionMediator {
         return mTabObserver;
     }
 
+    @VisibleForTesting
+    HeaderType getHeaderType() {
+        return mHeaderType;
+    }
+
     private void showAccountsInternal(
             String rpForDisplay,
             String idpForDisplay,
@@ -603,6 +612,15 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onClickGotItButton;
         }
 
+        if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
+            assert mSelectedAccount != null;
+            // TODO(crbug.com/353770052): Currently on button mode, request permission dialogs will
+            // always have data sharing consent visible. This can be optimized when we support new
+            // account IDP on Android.
+            isDataSharingConsentVisible = true;
+            continueButtonCallback = this::onClickAccountSelected;
+        }
+
         mModel.set(
                 ItemProperties.CONTINUE_BUTTON,
                 (continueButtonCallback != null)
@@ -628,6 +646,11 @@ class AccountSelectionMediator {
         mModel.set(
                 ItemProperties.ADD_ACCOUNT_BUTTON,
                 supportsAddAccount && isSingleAccountChooser ? createAddAccountBtnItem() : null);
+        mModel.set(
+                ItemProperties.ACCOUNT_CHIP,
+                mHeaderType == HeaderType.REQUEST_PERMISSION
+                        ? createAccountItem(mSelectedAccount, /* isAccountClickable= */ false)
+                        : null);
         mModel.set(ItemProperties.SPINNER_ENABLED, mHeaderType == HeaderType.LOADING);
 
         mBottomSheetContent.computeAndUpdateAccountListHeight();
@@ -738,24 +761,42 @@ class AccountSelectionMediator {
     void onAccountSelected(Account selectedAccount) {
         if (mWasDismissed) return;
 
+        // There is an old selected account if an account was already selected from an account
+        // chooser and it implies that this `onAccountSelected` call comes from a dialog containing
+        // disclosure text.
         Account oldSelectedAccount = mSelectedAccount;
         mSelectedAccount = selectedAccount;
-        if (oldSelectedAccount == null && !mSelectedAccount.isSignIn() && mRequestPermission) {
-            showAccountsInternal(
-                    mRpForDisplay,
-                    mIdpForDisplay,
-                    mAccounts,
-                    mIdpMetadata,
-                    mClientMetadata,
-                    /* isAutoReauthn= */ false,
-                    mRpContext,
-                    mRequestPermission);
+
+        // If the account is a returning user or if the account is selected from UI which shows the
+        // disclosure text or if the browser doesn't need to request permission because the IDP
+        // prefers asking for permission by themselves, skip the disclosure UI and proceed to the
+        // verifying sheet.
+        if ((mRpMode == RpMode.WIDGET && oldSelectedAccount != null)
+                || selectedAccount.isSignIn()
+                || mHeaderType == HeaderType.REQUEST_PERMISSION
+                || !mRequestPermission) {
+            mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), selectedAccount);
+            showVerifySheet(selectedAccount);
             return;
         }
 
-        mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), selectedAccount);
-        showVerifySheet(selectedAccount);
-        updateBackPressBehavior();
+        // At this point, the account is a non-returning user. If RP mode is button,
+        // we'd request permission through the request permission dialog.
+        if (mRpMode == RpMode.BUTTON) {
+            showRequestPermissionSheet(selectedAccount);
+            return;
+        }
+
+        // At this point, the account is a non-returning user and RP mode is widget.
+        showAccountsInternal(
+                mRpForDisplay,
+                mIdpForDisplay,
+                mAccounts,
+                mIdpMetadata,
+                mClientMetadata,
+                /* isAutoReauthn= */ false,
+                mRpContext,
+                mRequestPermission);
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
@@ -764,12 +805,15 @@ class AccountSelectionMediator {
     }
 
     private PropertyModel createAccountItem(Account account, boolean isAccountClickable) {
-        return new PropertyModel.Builder(AccountProperties.ALL_KEYS)
-                .with(AccountProperties.ACCOUNT, account)
-                .with(
-                        AccountProperties.ON_CLICK_LISTENER,
-                        isAccountClickable ? this::onClickAccountSelected : null)
-                .build();
+        PropertyModel model =
+                new PropertyModel.Builder(AccountProperties.ALL_KEYS)
+                        .with(AccountProperties.ACCOUNT, account)
+                        .with(
+                                AccountProperties.ON_CLICK_LISTENER,
+                                isAccountClickable ? this::onClickAccountSelected : null)
+                        .build();
+        requestAvatarImage(model);
+        return model;
     }
 
     private PropertyModel createContinueBtnItem(

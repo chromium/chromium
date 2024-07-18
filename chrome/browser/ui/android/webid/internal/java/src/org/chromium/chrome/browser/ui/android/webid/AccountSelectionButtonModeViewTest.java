@@ -23,6 +23,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
@@ -70,12 +71,36 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
     }
 
     @Test
-    public void testRpContextTitleDisplayed() {
+    public void testAccountChooserRpContextDisplayed() {
         for (RpContextEntry rpContext : mRpContexts) {
             mModel.set(
                     ItemProperties.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
+                            .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                            .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                            .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
+                            .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                            .build());
+            assertEquals(View.VISIBLE, mContentView.getVisibility());
+            TextView title = mContentView.findViewById(R.id.header_title);
+            TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+
+            assertEquals(
+                    "Incorrect title",
+                    mResources.getString(rpContext.mTitleId, "idp.org"),
+                    title.getText().toString());
+            assertEquals("Incorrect subtitle", "example.org", subtitle.getText());
+        }
+    }
+
+    @Test
+    public void testRequestPermissionRpContextDisplayed() {
+        for (RpContextEntry rpContext : mRpContexts) {
+            mModel.set(
+                    ItemProperties.HEADER,
+                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                            .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION)
                             .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
@@ -147,6 +172,22 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         assertEquals(View.VISIBLE, mContentView.getVisibility());
         View spinner = mContentView.findViewById(R.id.spinner);
         assertFalse(spinner.isShown());
+    }
+
+    @Test
+    public void testAccountChipDisplayed() {
+        mModel.set(
+                ItemProperties.ACCOUNT_CHIP,
+                new PropertyModel.Builder(AccountProperties.ALL_KEYS)
+                        .with(AccountProperties.ACCOUNT, mAnaAccount)
+                        .with(AccountProperties.ON_CLICK_LISTENER, null)
+                        .build());
+
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        View accountChip = mContentView.findViewById(R.id.account_chip);
+        assertTrue(accountChip.isShown());
+        TextView email = accountChip.findViewById(R.id.description);
+        assertEquals(mAnaAccount.getEmail(), email.getText());
     }
 
     private PropertyModel buildAddAccountButton() {

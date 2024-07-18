@@ -391,7 +391,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
         assertFalse(mMediator.wasDismissed());
         assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
-        assertEquals(1, mSheetAccountItems.size());
 
         verify(mMockDelegate, never()).onAccountSelected(mTestConfigUrl, mNewUserAccount);
     }
@@ -856,6 +855,32 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals(3, countAllItems());
         assertTrue(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
         assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
+    }
+
+    @Test
+    public void testShowRequestPermissionDialog() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mNewUserAccount),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true);
+        mMediator.showRequestPermissionSheet(mNewUserAccount);
+
+        // For request permission dialog, we expect header + account chip + disclosure text +
+        // continue button.
+        assertEquals(4, countAllItems());
+
+        // There is no sheet account items because the account is shown in an account chip instead.
+        assertEquals(0, mSheetAccountItems.size());
+        assertEquals(HeaderType.REQUEST_PERMISSION, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertTrue(containsItemOfType(mModel, ItemProperties.ACCOUNT_CHIP));
+        assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+        assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
     }
 
     private void pressBack() {

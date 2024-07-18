@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -43,6 +42,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -74,7 +74,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(BOB),
+                            Arrays.asList(NEW_BOB),
                             IDP_METADATA_WITH_ADD_ACCOUNT,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
@@ -97,7 +97,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                                 mAccountSelection.showAccounts(
                                         EXAMPLE_ETLD_PLUS_ONE,
                                         TEST_ETLD_PLUS_ONE_2,
-                                        Arrays.asList(ANA),
+                                        Arrays.asList(RETURNING_ANA),
                                         IDP_METADATA_WITH_ADD_ACCOUNT,
                                         mClientIdMetadata,
                                         /* isAutoReauthn= */ false,
@@ -120,13 +120,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         // Make sure that the Ana account is now displayed.
         onView(withText("Ana Doe")).check(matches(isDisplayed()));
 
-        // Click the account.
-        runOnUiThreadBlocking(
-                () -> {
-                    ((RecyclerView) contentView.findViewById(R.id.sheet_item_list))
-                            .getChildAt(0)
-                            .performClick();
-                });
+        clickFirstAccountInAccountsList();
 
         // Because this is a returning account, we should immediately sign in now.
         verify(mMockBridge, never()).onDismissed(anyInt());
@@ -141,7 +135,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(BOB),
+                            Arrays.asList(NEW_BOB),
                             IDP_METADATA_WITH_ADD_ACCOUNT,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
@@ -159,13 +153,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         onView(withId(R.id.account_selection_add_account_btn))
                 .check(matches(withText("Use a different account")));
 
-        // Click the first account.
-        runOnUiThreadBlocking(
-                () -> {
-                    ((RecyclerView) contentView.findViewById(R.id.sheet_item_list))
-                            .getChildAt(0)
-                            .performClick();
-                });
+        clickFirstAccountInAccountsList();
 
         // Sheet should still be open.
         assertNotEquals(BottomSheetController.SheetState.HIDDEN, getBottomSheetState());
@@ -181,15 +169,10 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     .build();
         }
 
-        runOnUiThreadBlocking(
-                () -> {
-                    contentView.findViewById(R.id.account_selection_continue_btn).performClick();
-                });
+        clickContinueButton();
 
         verify(mMockBridge, never()).onDismissed(anyInt());
-        // First time is from clicking the accounts list, second time is from clicking the continue
-        // button.
-        verify(mMockBridge, times(2)).onAccountSelected(any(), any());
+        verify(mMockBridge).onAccountSelected(any(), any());
     }
 
     @Test
@@ -200,7 +183,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(ANA),
+                            Arrays.asList(RETURNING_ANA),
                             IDP_METADATA_WITH_ADD_ACCOUNT,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
@@ -216,13 +199,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         onView(withId(R.id.account_selection_add_account_btn))
                 .check(matches(withText("Use a different account")));
 
-        // Click the first account.
-        runOnUiThreadBlocking(
-                () -> {
-                    ((RecyclerView) contentView.findViewById(R.id.sheet_item_list))
-                            .getChildAt(0)
-                            .performClick();
-                });
+        clickFirstAccountInAccountsList();
 
         // Because this is a returning account, we should immediately sign in now.
         verify(mMockBridge, never()).onDismissed(anyInt());
@@ -237,7 +214,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(BOB),
+                            Arrays.asList(NEW_BOB),
                             IDP_METADATA_WITH_ADD_ACCOUNT,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
@@ -270,7 +247,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
                             TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(BOB, ANA),
+                            Arrays.asList(NEW_BOB, RETURNING_ANA),
                             IDP_METADATA_WITH_ADD_ACCOUNT,
                             mClientIdMetadata,
                             /* isAutoReauthn= */ false,
@@ -333,5 +310,191 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testNewUserFlow() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(NEW_BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        // Click the first account in the account chooser.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+        clickFirstAccountInAccountsList();
+
+        // Click continue in the request permission dialog.
+        assertEquals(
+                mAccountSelection.getMediator().getHeaderType(), HeaderType.REQUEST_PERMISSION);
+        clickContinueButton();
+
+        verify(mMockBridge, never()).onDismissed(anyInt());
+        verify(mMockBridge).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testReturningUserFlow() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(RETURNING_ANA),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        // Click the first account account in the account chooser.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+        clickFirstAccountInAccountsList();
+
+        // Because this is a returning account, we should immediately sign in now.
+        verify(mMockBridge, never()).onDismissed(anyInt());
+        verify(mMockBridge).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testRpInApprovedClientsFlow() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(NEW_BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ false);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        // Click the first account account in the account chooser.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+        clickFirstAccountInAccountsList();
+
+        // Because requestPermission is false, we should immediately sign in now.
+        verify(mMockBridge, never()).onDismissed(anyInt());
+        verify(mMockBridge).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testRequestPermissionDialogBackShowsAccountChooser() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(NEW_BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        // Dialog is initially an account chooser.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+
+        // Clicking an account should show the request permission dialog.
+        clickFirstAccountInAccountsList();
+        assertEquals(
+                mAccountSelection.getMediator().getHeaderType(), HeaderType.REQUEST_PERMISSION);
+
+        // Press back from the request permission dialog, returning to the account chooser.
+        Espresso.pressBack();
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+    }
+
+    @Test
+    @MediumTest
+    public void testRequestPermissionDialogSwipeDismissesAndCallsCallback() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(NEW_BOB),
+                            IDP_METADATA_WITH_ADD_ACCOUNT,
+                            mClientIdMetadata,
+                            /* isAutoReauthn= */ false,
+                            RpContext.SIGN_IN,
+                            /* requestPermission= */ true);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        // Dialog is initially an account chooser.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+
+        // Clicking an account should show the request permission dialog.
+        clickFirstAccountInAccountsList();
+        assertEquals(
+                mAccountSelection.getMediator().getHeaderType(), HeaderType.REQUEST_PERMISSION);
+
+        // Swipe to dismiss on request permission dialog.
+        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
+                });
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
+    private void clickFirstAccountInAccountsList() {
+        runOnUiThreadBlocking(
+                () -> {
+                    ((RecyclerView)
+                                    mBottomSheetController
+                                            .getCurrentSheetContent()
+                                            .getContentView()
+                                            .findViewById(R.id.sheet_item_list))
+                            .getChildAt(0)
+                            .performClick();
+                });
+    }
+
+    private void clickContinueButton() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController
+                            .getCurrentSheetContent()
+                            .getContentView()
+                            .findViewById(R.id.account_selection_continue_btn)
+                            .performClick();
+                });
     }
 }

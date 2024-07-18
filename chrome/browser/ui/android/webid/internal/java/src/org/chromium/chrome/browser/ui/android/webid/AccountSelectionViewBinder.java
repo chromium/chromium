@@ -168,8 +168,12 @@ class AccountSelectionViewBinder {
                         });
             }
         } else if (key == AccountProperties.ACCOUNT) {
-            TextView subject = view.findViewById(R.id.title);
-            subject.setText(account.getName());
+            TextView name = view.findViewById(R.id.title);
+            // Name is not shown in the account chip of the request permission dialog. The name is
+            // shown in the Continue button instead.
+            if (name != null) {
+                name.setText(account.getName());
+            }
             TextView email = view.findViewById(R.id.description);
             email.setText(account.getEmail());
         } else {
@@ -591,6 +595,9 @@ class AccountSelectionViewBinder {
         } else if (key == ItemProperties.ADD_ACCOUNT_BUTTON) {
             itemView = view.findViewById(R.id.account_selection_add_account_btn);
             itemBinder = AccountSelectionViewBinder::bindAddAccountView;
+        } else if (key == ItemProperties.ACCOUNT_CHIP) {
+            itemView = view.findViewById(R.id.account_chip);
+            itemBinder = AccountSelectionViewBinder::bindAccountView;
         } else {
             assert false : "Unhandled update to property:" + key;
             return;
@@ -631,7 +638,10 @@ class AccountSelectionViewBinder {
 
             String subtitle =
                     computeHeaderSubtitle(
+                            resources,
+                            headerType,
                             model.get(HeaderProperties.RP_FOR_DISPLAY),
+                            model.get(HeaderProperties.IDP_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_MODE));
             if (!subtitle.isEmpty()) {
                 headerTitleText.setPadding(
@@ -733,6 +743,7 @@ class AccountSelectionViewBinder {
         if (type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
             return resources.getString(getVerifyHeaderAutoReauthnStringId());
         }
+
         @StringRes int titleStringId;
         if (rpMode == RpMode.BUTTON) {
             switch (rpContext) {
@@ -770,7 +781,12 @@ class AccountSelectionViewBinder {
         return String.format(resources.getString(titleStringId), rpUrl, idpUrl);
     }
 
-    private static String computeHeaderSubtitle(String rpUrl, @RpMode.EnumType int rpMode) {
+    private static String computeHeaderSubtitle(
+            Resources resources,
+            HeaderProperties.HeaderType type,
+            String rpUrl,
+            String idpUrl,
+            @RpMode.EnumType int rpMode) {
         if (rpMode == RpMode.BUTTON) {
             return rpUrl;
         } else {

@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
-import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.graphics.Color;
 
@@ -36,9 +36,9 @@ public class AccountSelectionIntegrationTestBase {
     protected static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.URL_1_WITH_PATH;
     protected static final GURL TEST_URL = JUnitTestGURLs.URL_1;
 
-    protected static final Account ANA =
+    protected static final Account RETURNING_ANA =
             new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, null, true);
-    protected static final Account BOB =
+    protected static final Account NEW_BOB =
             new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, null, false);
 
     protected static final IdentityProviderMetadata IDP_METADATA =
