@@ -84,11 +84,6 @@ luci.bucket(
         ),
         luci.binding(
             roles = "role/buildbucket.triggerer",
-            groups = [
-                "mdb/chrome-build-access-sphinx",
-                "mdb/chrome-troopers",
-                "chromium-led-users",
-            ],
             users = [
                 ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
                 ci.gpu.SHADOW_SERVICE_ACCOUNT,
