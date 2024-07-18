@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -23,6 +25,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.autofill.save_card.AutofillSaveCardBottomSheetMediator.SaveCardPromptResult;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -36,12 +40,13 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
     @Mock private AutofillSaveCardBottomSheetContent mBottomSheetContent;
     @Mock private AutofillSaveCardBottomSheetLifecycle mLifeCycle;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private PropertyModel mModel;
+    private PropertyModel mModel;
     @Mock private AutofillSaveCardBottomSheetBridge mDelegate;
     private AutofillSaveCardBottomSheetMediator mMediator;
 
     @Before
     public void setUp() {
+        mModel = new PropertyModel.Builder(AutofillSaveCardBottomSheetProperties.ALL_KEYS).build();
         mMediator =
                 new AutofillSaveCardBottomSheetMediator(
                         mBottomSheetContent,
@@ -84,8 +89,8 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
 
         verifyNoInteractions(mLifeCycle);
         verifyNoInteractions(mBottomSheetController);
-        verify(mModel).set(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, true);
         verify(mDelegate).onUiAccepted();
+        assertTrue(mModel.get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE));
     }
 
     @Test
@@ -123,6 +128,7 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
                         /* animate= */ eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
         verify(mDelegate).onUiAccepted();
+        assertFalse(mModel.get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE));
     }
 
     @Test
@@ -161,5 +167,71 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
                         any(AutofillSaveCardBottomSheetContent.class),
                         /* animate= */ eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testMetrics_hideAfterOnAccepted_withLoadingConfirmation() {
+        HistogramWatcher loadingShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillSaveCardBottomSheetMediator.LOADING_SHOWN_HISTOGRAM, true);
+        HistogramWatcher loadingResultHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillSaveCardBottomSheetMediator.LOADING_RESULT_HISTOGRAM,
+                        SaveCardPromptResult.ACCEPTED);
+
+        mMediator.onAccepted();
+        mMediator.hide(StateChangeReason.INTERACTION_COMPLETE);
+
+        loadingShownHistogram.assertExpected();
+        loadingResultHistogram.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testMetrics_hideAfterOnAccepted_withoutLoadingConfirmation() {
+        HistogramWatcher loadingShownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                AutofillSaveCardBottomSheetMediator.LOADING_SHOWN_HISTOGRAM)
+                        .build();
+        HistogramWatcher loadingResultHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                AutofillSaveCardBottomSheetMediator.LOADING_RESULT_HISTOGRAM)
+                        .build();
+
+        mMediator.onAccepted();
+        mMediator.hide(StateChangeReason.INTERACTION_COMPLETE);
+
+        loadingShownHistogram.assertExpected();
+        loadingResultHistogram.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testMetrics_onCanceledAfterOnAccepted_withLoadingConfirmation() {
+        HistogramWatcher loadingResultHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillSaveCardBottomSheetMediator.LOADING_RESULT_HISTOGRAM,
+                        SaveCardPromptResult.CLOSED);
+
+        mMediator.onAccepted();
+        mMediator.onCanceled();
+
+        loadingResultHistogram.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_hideWithoutCallbacks() {
+        HistogramWatcher loadingResultHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                AutofillSaveCardBottomSheetMediator.LOADING_RESULT_HISTOGRAM)
+                        .build();
+
+        mMediator.hide(StateChangeReason.INTERACTION_COMPLETE);
+
+        loadingResultHistogram.assertExpected();
     }
 }
