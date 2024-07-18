@@ -401,8 +401,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_EXT_disjoint_timer_query");
   ext.b_GL_EXT_draw_buffers =
       gfx::HasExtension(extensions, "GL_EXT_draw_buffers");
-  ext.b_GL_EXT_framebuffer_blit =
-      gfx::HasExtension(extensions, "GL_EXT_framebuffer_blit");
   ext.b_GL_EXT_framebuffer_multisample =
       gfx::HasExtension(extensions, "GL_EXT_framebuffer_multisample");
   ext.b_GL_EXT_instanced_arrays =
@@ -623,9 +621,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   } else if (ext.b_GL_ANGLE_framebuffer_blit) {
     fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
         GetGLProcAddress("glBlitFramebufferANGLE"));
-  } else if (ext.b_GL_EXT_framebuffer_blit) {
-    fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
-        GetGLProcAddress("glBlitFramebufferEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {

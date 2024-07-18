@@ -15,8 +15,7 @@ from subprocess import call
 from collections import namedtuple
 
 HEADER_PATHS = [
-  '../../third_party/khronos',
-  '../../third_party/mesa_headers',
+  '../../third_party/angle/include',
   '.',
   '../../gpu',
 ]
@@ -196,8 +195,7 @@ GL_FUNCTIONS = [
   'versions' : [{'name': 'glBlitFramebuffer'},
                 {'name': 'glBlitFramebufferNV',
                  'extensions': ['GL_NV_framebuffer_blit']},
-                {'name': 'glBlitFramebufferANGLE'},
-                {'name': 'glBlitFramebufferEXT'}],
+                {'name': 'glBlitFramebufferANGLE'}],
   'arguments': 'GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, '
                'GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, '
                'GLbitfield mask, GLenum filter', },
@@ -2668,10 +2666,6 @@ FUNCTION_SETS = [
       'GLES3/gl3.h',
       'GLES3/gl31.h',
       'GLES3/gl32.h',
-      # Files below are Chromium-specific and shipped with Chromium sources.
-      'GL/glextchromium.h',
-      'GLES2/gl2chromium.h',
-      'GLES2/gl2extchromium.h'
     ], [
       "GL_ANGLE_renderability_validation",
       "GL_ANGLE_robust_resource_initialization",
