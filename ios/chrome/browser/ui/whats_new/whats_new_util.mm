@@ -83,6 +83,8 @@ const char* WhatsNewTypeToString(WhatsNewType type) {
       return "PackageTracking";
     case WhatsNewType::kPasswordSharing:
       return "PasswordSharing";
+    case WhatsNewType::kCustomizableOverflowMenu:
+      return "CustomizableOverflowMenu";
     case WhatsNewType::kError:
       return nil;
   };
