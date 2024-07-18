@@ -194,10 +194,10 @@ void TerminalSource::StartDataRequest(
       int tab_index;
       extensions::ExtensionTabUtil::GetTabStripModel(contents, &tab_strip,
                                                      &tab_index);
-      content::WebContents* opener =
-          tab_strip->GetOpenerOfWebContentsAt(tab_index);
-      if (opener) {
-        opener_background_color = opener->GetBackgroundColor();
+      tabs::TabModel* opener_tab = tab_strip->GetOpenerOfTabAt(tab_index);
+      if (opener_tab) {
+        CHECK(opener_tab->contents());
+        opener_background_color = opener_tab->contents()->GetBackgroundColor();
       }
     }
     replacements_["themeColor"] =

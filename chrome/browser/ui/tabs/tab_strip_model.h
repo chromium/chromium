@@ -345,7 +345,7 @@ class TabStripModel : public TabGroupController {
 
   // Returns the WebContents that opened the WebContents at |index|, or NULL if
   // there is no opener on record.
-  content::WebContents* GetOpenerOfWebContentsAt(const int index) const;
+  tabs::TabModel* GetOpenerOfTabAt(const int index) const;
 
   // Changes the |opener| of the WebContents at |index|.
   // Note: |opener| must be in this tab strip. Also a tab must not be its own

@@ -854,8 +854,10 @@ TEST_P(TabStripModelTest, TestBasicOpenerAPI) {
                                AddTabTypes::ADD_INHERIT_OPENER);
 
   // All the tabs should have the same opener.
-  for (int i = 1; i < tabstrip.count(); ++i)
-    EXPECT_EQ(raw_opener, tabstrip.GetOpenerOfWebContentsAt(i));
+  for (int i = 1; i < tabstrip.count(); ++i) {
+    const tabs::TabModel* tab_opener = tabstrip.GetOpenerOfTabAt(i);
+    EXPECT_EQ(raw_opener, tab_opener ? tab_opener->contents() : nullptr);
+  }
 
   // If there is a next adjacent item, then the index should be of that item.
   EXPECT_EQ(2, tabstrip.GetIndexOfNextWebContentsOpenedBy(raw_opener, 1));
@@ -880,11 +882,14 @@ TEST_P(TabStripModelTest, TestBasicOpenerAPI) {
   EXPECT_EQ(-1, tabstrip.GetIndexOfLastWebContentsOpenedBy(raw_opener, 1));
 
   // Specify the last tab as the opener of the others.
-  for (int i = 0; i < tabstrip.count() - 1; ++i)
+  for (int i = 0; i < tabstrip.count() - 1; ++i) {
     tabstrip.SetOpenerOfWebContentsAt(i, raw_contents5);
+  }
 
-  for (int i = 0; i < tabstrip.count() - 1; ++i)
-    EXPECT_EQ(raw_contents5, tabstrip.GetOpenerOfWebContentsAt(i));
+  for (int i = 0; i < tabstrip.count() - 1; ++i) {
+    const tabs::TabModel* tab_opener = tabstrip.GetOpenerOfTabAt(i);
+    EXPECT_EQ(raw_contents5, tab_opener ? tab_opener->contents() : nullptr);
+  }
 
   // If there is a next adjacent item, then the index should be of that item.
   EXPECT_EQ(2, tabstrip.GetIndexOfNextWebContentsOpenedBy(raw_contents5, 1));
@@ -1073,7 +1078,9 @@ TEST_P(TabStripModelTest, TestInsertionIndexDeterminationAfterDragged) {
   // since there is a tab in between, even though its opener is unchanged.
   // TODO(johnme): Maybe its opener should be reset when it's dragged away.
   EXPECT_EQ(-1, tabstrip.GetIndexOfLastWebContentsOpenedBy(raw_opener1, 0));
-  EXPECT_EQ(raw_opener1, tabstrip.GetOpenerOfWebContentsAt(2));
+
+  tabs::TabModel* tab_opener = tabstrip.GetOpenerOfTabAt(2);
+  EXPECT_EQ(raw_opener1, tab_opener ? tab_opener->contents() : nullptr);
 
   // Activate the parent tab again.
   tabstrip.ActivateTabAt(0,
@@ -1162,7 +1169,8 @@ TEST_P(TabStripModelTest, TestInsertionIndexDeterminationNestedOpener) {
   EXPECT_EQ("1 111 12 2", GetTabStripStateString(tabstrip));
   EXPECT_EQ(1, GetID(tabstrip.GetActiveWebContents()));
   // opener1 is now the opener of 111, so has two adjacent descendants (111, 12)
-  EXPECT_EQ(raw_opener1, tabstrip.GetOpenerOfWebContentsAt(1));
+  tabs::TabModel* tab_opener = tabstrip.GetOpenerOfTabAt(1);
+  EXPECT_EQ(raw_opener1, tab_opener ? tab_opener->contents() : nullptr);
   EXPECT_EQ(2, tabstrip.GetIndexOfLastWebContentsOpenedBy(raw_opener1, 0));
 
   tabstrip.CloseAllTabs();
@@ -4358,11 +4366,11 @@ TEST_P(TabStripModelTest, DanglingOpener) {
   EXPECT_EQ(contents_2, replaced_contents.get());
   replaced_contents.reset();
   EXPECT_EQ("5 0", GetTabStripStateString(strip));
+  ASSERT_TRUE(contents_2);
 
   // Ensure the opener for the tab at index 0 isn't dangling. It should be null
   // instead.
-  WebContents* opener = strip.GetOpenerOfWebContentsAt(0);
-  ASSERT_NE(contents_2, opener);
+  tabs::TabModel* opener = strip.GetOpenerOfTabAt(0);
   EXPECT_FALSE(opener);
 
   strip.CloseAllTabs();

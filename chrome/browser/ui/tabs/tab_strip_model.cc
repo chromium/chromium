@@ -709,11 +709,11 @@ bool TabStripModel::TabsAreLoading() const {
   return false;
 }
 
-WebContents* TabStripModel::GetOpenerOfWebContentsAt(const int index) const {
+tabs::TabModel* TabStripModel::GetOpenerOfTabAt(const int index) const {
   CHECK(ContainsIndex(index));
   tabs::TabModel* tab = GetTabAtIndex(index);
 
-  return tab->opener() ? tab->opener()->contents() : nullptr;
+  return tab->opener();
 }
 
 void TabStripModel::SetOpenerOfWebContentsAt(int index, WebContents* opener) {
@@ -3034,12 +3034,13 @@ int TabStripModel::GetTabIndexAfterClosing(int index,
 
 void TabStripModel::OnActiveTabChanged(
     const TabStripSelectionChange& selection) {
-  if (!selection.active_tab_changed() || empty())
+  if (!selection.active_tab_changed() || empty()) {
     return;
+  }
 
   content::WebContents* old_contents = selection.old_contents;
   content::WebContents* new_contents = selection.new_contents;
-  content::WebContents* old_opener = nullptr;
+  tabs::TabModel* old_opener = nullptr;
   int reason = selection.reason;
 
   if (old_contents) {
@@ -3058,7 +3059,7 @@ void TabStripModel::OnActiveTabChanged(
         thumbnail_helper->CaptureThumbnailOnTabBackgrounded();
       }
 
-      old_opener = GetOpenerOfWebContentsAt(index);
+      old_opener = GetOpenerOfTabAt(index);
 
       // Forget the opener relationship if it needs to be reset whenever the
       // active tab changes (see comment in TabStripModel::AddWebContents, where
@@ -3069,15 +3070,19 @@ void TabStripModel::OnActiveTabChanged(
     }
   }
   DCHECK(selection.new_model.active().has_value());
-  content::WebContents* new_opener =
-      GetOpenerOfWebContentsAt(selection.new_model.active().value());
+  tabs::TabModel* new_opener =
+      GetOpenerOfTabAt(selection.new_model.active().value());
 
+  content::WebContents* old_opener_wc =
+      old_opener ? old_opener->contents() : nullptr;
+  content::WebContents* new_opener_wc =
+      new_opener ? new_opener->contents() : nullptr;
   if ((reason & TabStripModelObserver::CHANGE_REASON_USER_GESTURE) &&
-      new_opener != old_opener &&
-      ((old_contents == nullptr && new_opener == nullptr) ||
-       new_opener != old_contents) &&
-      ((new_contents == nullptr && old_opener == nullptr) ||
-       old_opener != new_contents)) {
+      new_opener_wc != old_opener_wc &&
+      ((old_contents == nullptr && new_opener_wc == nullptr) ||
+       new_opener_wc != old_contents) &&
+      ((new_contents == nullptr && old_opener_wc == nullptr) ||
+       old_opener_wc != new_contents)) {
     ForgetAllOpeners();
   }
 }
@@ -3160,29 +3165,29 @@ std::optional<int> TabStripModel::DetermineNewSelectedIndex(
   if (selection_model().size() > 1)
     return std::nullopt;
 
-  content::WebContents* parent_opener =
-      GetOpenerOfWebContentsAt(removing_index);
+  tabs::TabModel* tab_to_remove_opener = GetOpenerOfTabAt(removing_index);
   // First see if the index being removed has any "child" tabs. If it does, we
   // want to select the first that child opened, not the next tab opened by the
   // removed tab.
-  content::WebContents* removed_contents = GetWebContentsAt(removing_index);
+  tabs::TabModel* removed_tab = GetTabAtIndex(removing_index);
   // The parent opener should never be the same as the controller being removed.
-  DCHECK(parent_opener != removed_contents);
-  int index =
-      GetIndexOfNextWebContentsOpenedBy(removed_contents, removing_index);
+  DCHECK(tab_to_remove_opener != removed_tab);
+  int index = GetIndexOfNextWebContentsOpenedBy(removed_tab->contents(),
+                                                removing_index);
   if (index != TabStripModel::kNoTab && !IsTabCollapsed(index))
     return GetTabIndexAfterClosing(index, removing_index);
 
-  if (parent_opener) {
+  if (tab_to_remove_opener && tab_to_remove_opener->contents()) {
     // If the tab has an opener, shift selection to the next tab with the same
     // opener.
-    index = GetIndexOfNextWebContentsOpenedBy(parent_opener, removing_index);
+    index = GetIndexOfNextWebContentsOpenedBy(tab_to_remove_opener->contents(),
+                                              removing_index);
     if (index != TabStripModel::kNoTab && !IsTabCollapsed(index))
       return GetTabIndexAfterClosing(index, removing_index);
 
     // If we can't find another tab with the same opener, fall back to the
     // opener itself.
-    index = GetIndexOfWebContents(parent_opener);
+    index = GetIndexOfTab(tab_to_remove_opener->GetHandle());
     if (index != TabStripModel::kNoTab && !IsTabCollapsed(index))
       return GetTabIndexAfterClosing(index, removing_index);
   }
