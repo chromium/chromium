@@ -97,13 +97,7 @@ constexpr CGFloat kChevronLeadingOffset = 5;
                                    constant:
                                        -kTableViewOneLabelCellVerticalSpacing],
 
-      // Make sure that the cell is always bigger than any of its contents.
-      [self.heightAnchor
-          constraintGreaterThanOrEqualToAnchor:_titleLabel.heightAnchor
-                                      constant:kChromeTableViewCellHeight],
-      [self.heightAnchor
-          constraintGreaterThanOrEqualToAnchor:_subtitleLabel.heightAnchor
-                                      constant:kChromeTableViewCellHeight],
+      // Make sure the cell has a minimum height.
       [self.heightAnchor
           constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight],
     ]];
