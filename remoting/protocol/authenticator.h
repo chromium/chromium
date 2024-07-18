@@ -94,6 +94,10 @@ class Authenticator {
     // Reauthorization failed because of a policy defined by the third party
     // auth service no longer permits the connection.
     REAUTHZ_POLICY_CHECK_FAILED,
+
+    // Failed to find an authentication method that is supported by both the
+    // host and the client.
+    NO_COMMON_AUTH_METHOD,
   };
 
   // Callback used for layered Authenticator implementations, particularly

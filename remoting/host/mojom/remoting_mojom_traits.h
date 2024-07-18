@@ -1520,6 +1520,8 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return remoting::mojom::ProtocolErrorCode::kUnauthorizedAccount;
       case ::remoting::protocol::ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
         return remoting::mojom::ProtocolErrorCode::kReauthzPolicyCheckFailed;
+      case ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD:
+        return remoting::mojom::ProtocolErrorCode::kNoCommonAuthMethod;
     }
 
     NOTREACHED_IN_MIGRATION();
@@ -1595,6 +1597,9 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return true;
       case remoting::mojom::ProtocolErrorCode::kReauthzPolicyCheckFailed:
         *out = ::remoting::protocol::ErrorCode::REAUTHZ_POLICY_CHECK_FAILED;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kNoCommonAuthMethod:
+        *out = ::remoting::protocol::ErrorCode::NO_COMMON_AUTH_METHOD;
         return true;
     }
 

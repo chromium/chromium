@@ -207,7 +207,7 @@ TEST_F(NegotiatingAuthenticatorTest, InvalidSharedSecret) {
   VerifyRejected(Authenticator::RejectionReason::INVALID_CREDENTIALS);
 }
 
-TEST_F(NegotiatingAuthenticatorTest, IncompatibleMethods) {
+TEST_F(NegotiatingAuthenticatorTest, NoCommonAuthMethod) {
   ASSERT_NO_FATAL_FAILURE(
       InitAuthenticators(kNoClientId, kNoPairedSecret, kTestPin, kTestPinBad));
   DisableMethodOnClient(
@@ -217,7 +217,7 @@ TEST_F(NegotiatingAuthenticatorTest, IncompatibleMethods) {
 
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
 
-  VerifyRejected(Authenticator::RejectionReason::PROTOCOL_ERROR);
+  VerifyRejected(Authenticator::RejectionReason::NO_COMMON_AUTH_METHOD);
 }
 
 TEST_F(NegotiatingAuthenticatorTest, PairingNotSupported) {

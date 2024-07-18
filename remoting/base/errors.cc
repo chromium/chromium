@@ -35,6 +35,7 @@ const NameMapElement<ErrorCode> kErrorCodeNames[] = {
      "LOCATION_AUTHZ_POLICY_CHECK_FAILED"},
     {ErrorCode::UNAUTHORIZED_ACCOUNT, "UNAUTHORIZED_ACCOUNT"},
     {ErrorCode::REAUTHZ_POLICY_CHECK_FAILED, "REAUTHZ_POLICY_CHECK_FAILED"},
+    {ErrorCode::NO_COMMON_AUTH_METHOD, "NO_COMMON_AUTH_METHOD"},
 };
 
 }  // namespace
@@ -93,6 +94,8 @@ proto::ErrorCode ErrorCodeToProtoEnum(ErrorCode error) {
       return proto::ErrorCode::UNAUTHORIZED_ACCOUNT;
     case ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
       return proto::ErrorCode::REAUTHORIZATION_FAILED;
+    case ErrorCode::NO_COMMON_AUTH_METHOD:
+      return proto::ErrorCode::NO_COMMON_AUTH_METHOD;
   }
 }
 

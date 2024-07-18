@@ -142,7 +142,11 @@ enum class ExtendedStartCrdSessionResultCode {
   // permits the connection.
   kFailureReauthzPolicyCheckFailed = 30,
 
-  kMaxValue = kFailureReauthzPolicyCheckFailed
+  // Failed to find an authentication method that is supported by both the host
+  // and the client.
+  kFailureNoCommonAuthMethod = 31,
+
+  kMaxValue = kFailureNoCommonAuthMethod
 };
 
 // Translates the error code.

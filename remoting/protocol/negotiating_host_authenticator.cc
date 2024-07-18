@@ -98,7 +98,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     if (method == Method::INVALID) {
       // Failed to find a common auth method.
       state_ = REJECTED;
-      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::NO_COMMON_AUTH_METHOD;
       std::move(resume_callback).Run();
       return;
     }

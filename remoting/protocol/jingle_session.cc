@@ -21,6 +21,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/content_description.h"
+#include "remoting/protocol/errors.h"
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/session_config.h"
@@ -84,6 +85,8 @@ ErrorCode AuthRejectionReasonToErrorCode(
       return ErrorCode::LOCATION_AUTHZ_POLICY_CHECK_FAILED;
     case Authenticator::RejectionReason::UNAUTHORIZED_ACCOUNT:
       return ErrorCode::UNAUTHORIZED_ACCOUNT;
+    case Authenticator::RejectionReason::NO_COMMON_AUTH_METHOD:
+      return ErrorCode::NO_COMMON_AUTH_METHOD;
   }
 }
 

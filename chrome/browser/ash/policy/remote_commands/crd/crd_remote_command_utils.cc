@@ -160,6 +160,8 @@ ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
     case ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
       return ExtendedStartCrdSessionResultCode::
           kFailureReauthzPolicyCheckFailed;
+    case ErrorCode::NO_COMMON_AUTH_METHOD:
+      return ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod;
   }
   NOTREACHED_NORETURN();
 }
@@ -206,6 +208,7 @@ StartCrdSessionResultCode ToStartCrdSessionResultCode(
     case ExtendedStartCrdSessionResultCode::kFailureHostInvalidDomainError:
     case ExtendedStartCrdSessionResultCode::kHostSessionDisconnected:
     case ExtendedStartCrdSessionResultCode::kFailureReauthzPolicyCheckFailed:
+    case ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod:
       // The server side is not interested in a lot of the different CRD host
       // failures, which is why most of them are simply mapped to
       // 'FAILURE_CRD_HOST_ERROR`.
