@@ -657,7 +657,8 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
 
       CHECK(navigation_state_ == NavigationState::kNotStarted ||
             navigation_state_ == NavigationState::kCancelled ||
-            navigation_state_ == NavigationState::kCancelledBeforeStart);
+            navigation_state_ == NavigationState::kCancelledBeforeStart)
+          << ToString(navigation_state_);
 
       // A navigation finished while we are displaying the cancel animation.
       // For simplicity, destroy `this` and reset everything.
