@@ -498,6 +498,10 @@ source_set("unit_tests") {
       "model_execution/substitution_unittest.cc",
       "model_execution/test/feature_config_builder.cc",
       "model_execution/test/feature_config_builder.h",
+      "model_execution/test/request_builder.cc",
+      "model_execution/test/request_builder.h",
+      "model_execution/test/response_holder.cc",
+      "model_execution/test/response_holder.h",
       "model_execution/test_on_device_model_component.cc",
       "model_execution/test_on_device_model_component.h",
     ]

@@ -29,6 +29,8 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_test_utils.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
+#include "components/optimization_guide/core/model_execution/test/request_builder.h"
+#include "components/optimization_guide/core/model_execution/test/response_holder.h"
 #include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -276,47 +278,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     WriteExecutionConfig(execution_config);
   }
 
-  void AddContext(OptimizationGuideModelExecutor::Session& session,
-                  std::string_view input) {
-    proto::ComposeRequest request;
-    request.mutable_generate_params()->set_user_input(std::string(input));
-    session.AddContext(request);
-  }
-
-  // Calls Execute() after setting `input` as the page-url.
-  void ExecuteModel(OptimizationGuideModelExecutor::Session& session,
-                    std::string_view input) {
-    proto::ComposeRequest request;
-    request.mutable_page_metadata()->set_page_url(std::string(input));
-    session.ExecuteModel(
-        request,
-        base::BindRepeating(&OnDeviceModelServiceControllerTest::OnResponse,
-                            base::Unretained(this)));
-  }
-
-  // Calls Execute() after setting `input` as the user_input.
-  void ExecuteModelUsingInput(OptimizationGuideModelExecutor::Session& session,
-                              std::string_view input) {
-    proto::ComposeRequest request;
-    request.mutable_generate_params()->set_user_input(std::string(input));
-    session.ExecuteModel(
-        request,
-        base::BindRepeating(&OnDeviceModelServiceControllerTest::OnResponse,
-                            base::Unretained(this)));
-  }
-
-  void ExecuteModelWithRewrite(
-      OptimizationGuideModelExecutor::Session& session) {
-    proto::ComposeRequest request;
-    auto& rewrite_params = *request.mutable_rewrite_params();
-    rewrite_params.set_previous_response("bar");
-    rewrite_params.set_tone(proto::COMPOSE_FORMAL);
-    session.ExecuteModel(
-        request,
-        base::BindRepeating(&OnDeviceModelServiceControllerTest::OnResponse,
-                            base::Unretained(this)));
-  }
-
   std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationController>&
   GetModelAdaptationControllers() const {
     return test_controller_->model_adaptation_controllers_;
@@ -325,34 +286,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
 
  protected:
-  void OnResponse(OptimizationGuideModelStreamingExecutionResult result) {
-    log_entry_received_ = std::move(result.log_entry);
-    if (log_entry_received_) {
-      // Make sure that an execution ID is always generated if we return a log
-      // entry.
-      ASSERT_FALSE(log_entry_received_->log_ai_data_request()
-                       ->model_execution_info()
-                       .execution_id()
-                       .empty());
-      EXPECT_TRUE(base::StartsWith(log_entry_received_->log_ai_data_request()
-                                       ->model_execution_info()
-                                       .execution_id(),
-                                   "on-device"));
-    }
-    if (!result.response.has_value()) {
-      response_error_ = result.response.error().error();
-      return;
-    }
-    provided_by_on_device_ = result.provided_by_on_device;
-    auto response =
-        ParsedAnyMetadata<proto::ComposeResponse>(result.response->response);
-    if (result.response->is_complete) {
-      response_received_ = response->output();
-    } else {
-      streamed_responses_.push_back(response->output());
-    }
-  }
-
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
@@ -363,12 +296,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   scoped_refptr<FakeOnDeviceModelServiceController> test_controller_;
   // Owned by FakeOnDeviceModelServiceController.
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
-  std::vector<std::string> streamed_responses_;
-  std::optional<std::string> response_received_;
-  std::optional<bool> provided_by_on_device_;
-  std::unique_ptr<ModelQualityLogEntry> log_entry_received_;
-  std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
-      response_error_;
+  ResponseHolder response_;
   base::test::ScopedFeatureList feature_list_;
   bool remote_execute_called_ = false;
   std::unique_ptr<google::protobuf::MessageLite> last_remote_message_;
@@ -400,7 +328,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  AddContext(*session, "foo");
+  session->AddContext(UserInputRequest("foo"));
 
   base::test::TestFuture<std::optional<float>> score_future;
   session->Score("token", score_future.GetCallback());
@@ -416,8 +344,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ScoreNullAfterExecute) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  AddContext(*session, "foo");
-  ExecuteModel(*session, "bar");
+  session->AddContext(UserInputRequest("foo"));
+  session->ExecuteModel(PageUrlRequest("bar"), response_.callback());
 
   base::test::TestFuture<std::optional<float>> score_future;
   session->Score("token", score_future.GetCallback());
@@ -432,16 +360,17 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
+  EXPECT_TRUE(response_.value());
   const std::string expected_response = "Input: execute:foo\n";
-  EXPECT_EQ(*response_received_, expected_response);
-  EXPECT_TRUE(*provided_by_on_device_);
-  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
-  EXPECT_TRUE(log_entry_received_);
+  EXPECT_EQ(*response_.value(), expected_response);
+  EXPECT_TRUE(*response_.provided_by_on_device());
+  EXPECT_THAT(response_.streamed(), ElementsAre(expected_response));
+  EXPECT_TRUE(response_.log_entry());
   const auto logged_on_device_model_execution_info =
-      log_entry_received_->log_ai_data_request()
+      response_.log_entry()
+          ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
   const auto& model_version =
@@ -518,21 +447,22 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   EXPECT_EQ(2u, GetModelAdaptationControllers().size());
 
-  ExecuteModel(*session_compose, "foo");
+  session_compose->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_EQ(*response_received_, "Adaptation model: 1\nInput: execute:foo\n");
-  EXPECT_TRUE(*provided_by_on_device_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_EQ(*response_.value(), "Adaptation model: 1\nInput: execute:foo\n");
+  EXPECT_TRUE(*response_.provided_by_on_device());
 
-  ExecuteModel(*session_test, "bar");
+  session_test->ExecuteModel(PageUrlRequest("bar"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_EQ(*response_received_, "Adaptation model: 2\nInput: execute:bar\n");
-  EXPECT_TRUE(*provided_by_on_device_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_EQ(*response_.value(), "Adaptation model: 2\nInput: execute:bar\n");
+  EXPECT_TRUE(*response_.provided_by_on_device());
 
-  EXPECT_TRUE(log_entry_received_);
+  EXPECT_TRUE(response_.log_entry());
   const auto logged_on_device_model_execution_info =
-      log_entry_received_->log_ai_data_request()
+      response_.log_entry()
+          ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
   const auto& model_version =
@@ -598,17 +528,17 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
 
   EXPECT_EQ(1u, GetModelAdaptationControllers().size());
 
-  ExecuteModel(*session_compose, "foo");
+  session_compose->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_EQ(*response_received_, "Adaptation model: 1\nInput: execute:foo\n");
-  EXPECT_TRUE(*provided_by_on_device_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_EQ(*response_.value(), "Adaptation model: 1\nInput: execute:foo\n");
+  EXPECT_TRUE(*response_.provided_by_on_device());
 
-  ExecuteModel(*session_test, "bar");
+  session_test->ExecuteModel(PageUrlRequest("bar"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_EQ(*response_received_, "Input: execute:bar\n");
-  EXPECT_TRUE(*provided_by_on_device_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_EQ(*response_.value(), "Input: execute:bar\n");
+  EXPECT_TRUE(*response_.provided_by_on_device());
 
   session_compose.reset();
   session_test.reset();
@@ -662,11 +592,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   EXPECT_TRUE(GetModelAdaptationControllers().empty());
 
-  ExecuteModel(*session_compose, "foo");
+  session_compose->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_EQ(*response_received_, "Input: execute:foo\n");
-  EXPECT_TRUE(*provided_by_on_device_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_EQ(*response_.value(), "Input: execute:foo\n");
+  EXPECT_TRUE(*response_.provided_by_on_device());
 
   session_compose.reset();
 
@@ -704,23 +634,23 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
   EXPECT_TRUE(session);
   {
     base::HistogramTester histogram_tester;
-    AddContext(*session, "foo");
+    session->AddContext(UserInputRequest("foo"));
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Compose",
         SessionImpl::AddContextResult::kUsingOnDevice, 1);
   }
   task_environment_.RunUntilIdle();
 
-  AddContext(*session, "bar");
-  ExecuteModel(*session, "baz");
+  session->AddContext(UserInputRequest("bar"));
+  session->ExecuteModel(PageUrlRequest("baz"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
+  EXPECT_TRUE(response_.value());
   const std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:bar off:0 max:10\n",
       "Input: execute:barbaz\n",
   });
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -731,19 +661,19 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  AddContext(*session, "context");
+  session->AddContext(UserInputRequest("context"));
   task_environment_.RunUntilIdle();
 
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
+  EXPECT_TRUE(response_.value());
   std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:contex off:0 max:10\n",
       "Context: t off:10 max:4\n",
       "Input: execute:contextfoo\n",
   });
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -754,12 +684,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  AddContext(*session, "this is long context");
+  session->AddContext(UserInputRequest("this is long context"));
   task_environment_.RunUntilIdle();
 
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
+  EXPECT_TRUE(response_.value());
   std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:this i off:0 max:10\n",
       "Context: s lo off:10 max:4\n",
@@ -767,8 +697,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       "Context: onte off:18 max:4\n",
       "Input: execute:this is long contextfoo\n",
   });
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -780,22 +710,22 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  AddContext(*session, "this is long context");
+  session->AddContext(UserInputRequest("this is long context"));
   // ExecuteModel() directly after AddContext() should only load first chunk.
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
 
   // Give time to make sure we don't process the optional context.
   task_environment_.RunUntilIdle();
   task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(response_received_);
+  EXPECT_TRUE(response_.value());
   std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:this i off:0 max:10\n",
       "Input: execute:this is long contextfoo\n",
   });
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionModelToBeInstalled) {
@@ -849,13 +779,13 @@ TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   task_environment_.RunUntilIdle();
 
   // Verify the existing session still works.
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
 
-  ASSERT_TRUE(response_received_);
+  ASSERT_TRUE(response_.value());
   const std::string expected_response = "Input: execute:foo\n";
-  EXPECT_EQ(*response_received_, expected_response);
-  EXPECT_TRUE(*provided_by_on_device_);
+  EXPECT_EQ(*response_.value(), expected_response);
+  EXPECT_TRUE(*response_.provided_by_on_device());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
@@ -864,7 +794,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
-  AddContext(*session, "context");
+  session->AddContext(UserInputRequest("context"));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
 
@@ -1254,17 +1184,18 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyPasses) {
 
   // Should fail the default raw output check.
   fake_settings_.set_execute_result({"unsafe_output"});
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  ASSERT_TRUE(response_error_);
+  EXPECT_FALSE(response_.value());
+  ASSERT_TRUE(response_.error());
   EXPECT_EQ(
-      *response_error_,
+      *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
   // Make sure T&S logged.
-  ASSERT_TRUE(log_entry_received_);
+  ASSERT_TRUE(response_.log_entry());
   const auto logged_on_device_model_execution_info =
-      log_entry_received_->log_ai_data_request()
+      response_.log_entry()
+          ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
   const auto num_execution_infos =
@@ -1306,13 +1237,14 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyFails) {
   EXPECT_TRUE(session);
 
   fake_settings_.set_execute_result({"reasonable_output"});
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
+  EXPECT_TRUE(response_.value());
   // Make sure T&S logged.
-  ASSERT_TRUE(log_entry_received_);
+  ASSERT_TRUE(response_.log_entry());
   const auto logged_on_device_model_execution_info =
-      log_entry_received_->log_ai_data_request()
+      response_.log_entry()
+          ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
   const auto num_execution_infos =
@@ -1356,15 +1288,16 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
   // Should fail the configured checks, but not not be retracted.
   fake_settings_.set_execute_result({"unsafe_output"});
 
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_FALSE(response_error_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
 
   // Make sure T&S logged.
-  ASSERT_TRUE(log_entry_received_);
+  ASSERT_TRUE(response_.log_entry());
   const auto logged_on_device_model_execution_info =
-      log_entry_received_->log_ai_data_request()
+      response_.log_entry()
+          ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
   EXPECT_GE(logged_on_device_model_execution_info.execution_infos_size(), 2);
@@ -1408,18 +1341,18 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "safe_url");
+  session->ExecuteModel(PageUrlRequest("safe_url"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_FALSE(response_error_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
 
   // Make sure check was logged.
-  ASSERT_TRUE(log_entry_received_);
-  const auto& logged_execution_infos =
-      log_entry_received_->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info()
-          .execution_infos();
+  ASSERT_TRUE(response_.log_entry());
+  const auto& logged_execution_infos = response_.log_entry()
+                                           ->log_ai_data_request()
+                                           ->model_execution_info()
+                                           .on_device_model_execution_info()
+                                           .execution_infos();
   ASSERT_GE(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
@@ -1463,18 +1396,18 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "unsafe_url");
+  session->ExecuteModel(PageUrlRequest("unsafe_url"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  EXPECT_TRUE(response_error_);
+  EXPECT_FALSE(response_.value());
+  EXPECT_TRUE(response_.error());
 
   // Make sure check was logged.
-  ASSERT_TRUE(log_entry_received_);
-  const auto& logged_execution_infos =
-      log_entry_received_->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info()
-          .execution_infos();
+  ASSERT_TRUE(response_.log_entry());
+  const auto& logged_execution_infos = response_.log_entry()
+                                           ->log_ai_data_request()
+                                           ->model_execution_info()
+                                           .on_device_model_execution_info()
+                                           .execution_infos();
   ASSERT_EQ(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
@@ -1514,19 +1447,19 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckIgnoredInDarkMode) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "unsafe_url");
+  session->ExecuteModel(PageUrlRequest("unsafe_url"), response_.callback());
   task_environment_.RunUntilIdle();
   // Should still succeed, because on_device_retract_unsafe_content is false.
-  EXPECT_TRUE(response_received_);
-  EXPECT_FALSE(response_error_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
 
   // Make sure check was logged.
-  ASSERT_TRUE(log_entry_received_);
-  const auto& logged_execution_infos =
-      log_entry_received_->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info()
-          .execution_infos();
+  ASSERT_TRUE(response_.log_entry());
+  const auto& logged_execution_infos = response_.log_entry()
+                                           ->log_ai_data_request()
+                                           ->model_execution_info()
+                                           .on_device_model_execution_info()
+                                           .execution_infos();
   ASSERT_GE(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
@@ -1571,18 +1504,18 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "safe_url");
+  session->ExecuteModel(PageUrlRequest("safe_url"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  EXPECT_TRUE(response_error_);
+  EXPECT_FALSE(response_.value());
+  EXPECT_TRUE(response_.error());
 
   // Make sure check was logged.
-  ASSERT_TRUE(log_entry_received_);
-  const auto& logged_execution_infos =
-      log_entry_received_->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info()
-          .execution_infos();
+  ASSERT_TRUE(response_.log_entry());
+  const auto& logged_execution_infos = response_.log_entry()
+                                           ->log_ai_data_request()
+                                           ->model_execution_info()
+                                           .on_device_model_execution_info()
+                                           .execution_infos();
   ASSERT_EQ(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
@@ -1629,10 +1562,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "safe_url");
+  session->ExecuteModel(PageUrlRequest("safe_url"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  EXPECT_TRUE(response_error_);
+  EXPECT_FALSE(response_.value());
+  EXPECT_TRUE(response_.error());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1670,10 +1603,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "safe_url");
+  session->ExecuteModel(PageUrlRequest("safe_url"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_FALSE(response_error_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1706,10 +1639,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "safe_url in esperanto");
+  session->ExecuteModel(PageUrlRequest("safe_url in esperanto"),
+                        response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_FALSE(response_error_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1743,10 +1677,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "unsafe_url in esperanto");
+  session->ExecuteModel(PageUrlRequest("unsafe_url in esperanto"),
+                        response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_FALSE(response_error_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1787,18 +1722,19 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "safe_url in english");
+  session->ExecuteModel(PageUrlRequest("safe_url in english"),
+                        response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  EXPECT_TRUE(response_error_);
+  EXPECT_FALSE(response_.value());
+  EXPECT_TRUE(response_.error());
 
   // Make sure check was logged.
-  ASSERT_TRUE(log_entry_received_);
-  const auto& logged_execution_infos =
-      log_entry_received_->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info()
-          .execution_infos();
+  ASSERT_TRUE(response_.log_entry());
+  const auto& logged_execution_infos = response_.log_entry()
+                                           ->log_ai_data_request()
+                                           ->model_execution_info()
+                                           .on_device_model_execution_info()
+                                           .execution_infos();
   ASSERT_EQ(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
@@ -1847,18 +1783,18 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "some_url");
+  session->ExecuteModel(PageUrlRequest("some_url"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_FALSE(response_error_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
 
   // Make sure check was logged.
-  ASSERT_TRUE(log_entry_received_);
-  const auto& logged_execution_infos =
-      log_entry_received_->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info()
-          .execution_infos();
+  ASSERT_TRUE(response_.log_entry());
+  const auto& logged_execution_infos = response_.log_entry()
+                                           ->log_ai_data_request()
+                                           ->model_execution_info()
+                                           .on_device_model_execution_info()
+                                           .execution_infos();
   ASSERT_EQ(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
@@ -1907,18 +1843,18 @@ TEST_F(OnDeviceModelServiceControllerTest, RawOutputCheckFailsWithUnsafeText) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "some_url");
+  session->ExecuteModel(PageUrlRequest("some_url"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  EXPECT_TRUE(response_error_);
+  EXPECT_FALSE(response_.value());
+  EXPECT_TRUE(response_.error());
 
   // Make sure check was logged.
-  ASSERT_TRUE(log_entry_received_);
-  const auto& logged_execution_infos =
-      log_entry_received_->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info()
-          .execution_infos();
+  ASSERT_TRUE(response_.log_entry());
+  const auto& logged_execution_infos = response_.log_entry()
+                                           ->log_ai_data_request()
+                                           ->model_execution_info()
+                                           .on_device_model_execution_info()
+                                           .execution_infos();
   ASSERT_EQ(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
@@ -1966,18 +1902,18 @@ TEST_F(OnDeviceModelServiceControllerTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  ExecuteModel(*session, "some_url");
+  session->ExecuteModel(PageUrlRequest("some_url"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  EXPECT_TRUE(response_error_);
+  EXPECT_FALSE(response_.value());
+  EXPECT_TRUE(response_.error());
 
   // Make sure check was logged.
-  ASSERT_TRUE(log_entry_received_);
-  const auto& logged_execution_infos =
-      log_entry_received_->log_ai_data_request()
-          ->model_execution_info()
-          .on_device_model_execution_info()
-          .execution_infos();
+  ASSERT_TRUE(response_.log_entry());
+  const auto& logged_execution_infos = response_.log_entry()
+                                           ->log_ai_data_request()
+                                           ->model_execution_info()
+                                           .on_device_model_execution_info()
+                                           .execution_infos();
   ASSERT_EQ(logged_execution_infos.size(), 2);
   const auto& check_log = logged_execution_infos[1];
   EXPECT_EQ(check_log.request().text_safety_model_request().text(),
@@ -2020,15 +1956,16 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
 
   // Should fail raw output, but not retract.
   fake_settings_.set_execute_result({"unsafe_output"});
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_FALSE(response_error_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
 
   // Make sure T&S logged.
-  ASSERT_TRUE(log_entry_received_);
+  ASSERT_TRUE(response_.log_entry());
   const auto logged_on_device_model_execution_info =
-      log_entry_received_->log_ai_data_request()
+      response_.log_entry()
+          ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
   EXPECT_GE(logged_on_device_model_execution_info.execution_infos_size(), 2);
@@ -2080,15 +2017,16 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkModeNoFeatureConfig) {
   // Would fail other feature's raw output check, but it shouldn't run.
   fake_settings_.set_execute_result({"unsafe_output"});
 
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
-  EXPECT_FALSE(response_error_);
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
 
   // T&S should not be passed through or logged.
-  ASSERT_TRUE(log_entry_received_);
+  ASSERT_TRUE(response_.log_entry());
   const auto logged_on_device_model_execution_info =
-      log_entry_received_->log_ai_data_request()
+      response_.log_entry()
+          ->log_ai_data_request()
           ->model_execution_info()
           .on_device_model_execution_info();
   for (const auto& execution_info :
@@ -2113,20 +2051,20 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  AddContext(*session, "context");
+  session->AddContext(UserInputRequest("context"));
   task_environment_.RunUntilIdle();
 
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
+  EXPECT_TRUE(response_.value());
   std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx: off:0 max:4\n",
       "Context: cont off:4 max:4\n",
       "Context: ext off:8 max:4\n",
       "Input: execute:contextfoo\n",
   });
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
@@ -2142,16 +2080,16 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
   task_environment_.RunUntilIdle();
 
   test_controller_->CrashService();
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kDisconnectAndCancel, 1);
 
-  ASSERT_TRUE(response_error_);
+  ASSERT_TRUE(response_.error());
   EXPECT_EQ(
-      *response_error_,
+      *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
 }
 
@@ -2163,19 +2101,19 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   base::HistogramTester histogram_tester;
-  AddContext(*session, "bar");
+  session->AddContext(UserInputRequest("bar"));
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kCancelled, 1);
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(response_error_);
+  EXPECT_TRUE(response_.error());
   EXPECT_EQ(
-      *response_error_,
+      *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
-  ASSERT_FALSE(log_entry_received_);
+  ASSERT_FALSE(response_.log_entry());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
@@ -2186,16 +2124,16 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
-  ExecuteModel(*session, "foo");
-  ExecuteModel(*session, "bar");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
+  session->ExecuteModel(PageUrlRequest("bar"), response_.callback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(response_error_);
+  EXPECT_TRUE(response_.error());
   EXPECT_EQ(
-      *response_error_,
+      *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
-  EXPECT_TRUE(response_received_);
-  EXPECT_EQ(*response_received_, "Input: execute:bar\n");
+  EXPECT_TRUE(response_.value());
+  EXPECT_EQ(*response_.value(), "Input: execute:bar\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
@@ -2238,7 +2176,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
   test_controller_->clear_did_launch_service();
 
   // Adding context should not trigger launching the service again.
-  AddContext(*session, "baz");
+  session->AddContext(UserInputRequest("baz"));
   EXPECT_FALSE(test_controller_->did_launch_service());
 }
 
@@ -2322,7 +2260,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
-  AddContext(*session, "foo");
+  session->AddContext(UserInputRequest("foo"));
   task_environment_.RunUntilIdle();
 
   // Launch the service again, which triggers disconnect.
@@ -2330,28 +2268,32 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
   task_environment_.RunUntilIdle();
 
   // Send some text, ensuring the context is received.
-  ExecuteModel(*session, "baz");
+  session->ExecuteModel(PageUrlRequest("baz"), response_.callback());
   base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kUsedOnDevice, 1);
-  ASSERT_TRUE(response_received_);
+  ASSERT_TRUE(response_.value());
   const std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:foo off:0 max:10\n",
       "Input: execute:foobaz\n",
   });
-  EXPECT_EQ(*response_received_, expected_responses[1]);
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+  EXPECT_EQ(*response_.value(), expected_responses[1]);
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
+  EXPECT_EQ(response_.log_entry()
+                ->log_ai_data_request()
                 ->compose()
                 .request()
                 .page_metadata()
                 .page_url(),
             "baz");
-  EXPECT_EQ(
-      log_entry_received_->log_ai_data_request()->compose().response().output(),
-      "Context: ctx:foo off:0 max:10\nInput: execute:foobaz\n");
+  EXPECT_EQ(response_.log_entry()
+                ->log_ai_data_request()
+                ->compose()
+                .response()
+                .output(),
+            "Context: ctx:foo off:0 max:10\nInput: execute:foobaz\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
@@ -2360,15 +2302,15 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
-  AddContext(*session, "foo");
+  session->AddContext(UserInputRequest("foo"));
   task_environment_.RunUntilIdle();
   // Send the text, this won't make it because the service is immediately
   // killed.
-  ExecuteModel(*session, "bar");
+  session->ExecuteModel(PageUrlRequest("bar"), response_.callback());
   test_controller_->CrashService();
   task_environment_.RunUntilIdle();
-  ASSERT_FALSE(response_received_);
-  ASSERT_FALSE(log_entry_received_);
+  ASSERT_FALSE(response_.value());
+  ASSERT_FALSE(response_.log_entry());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
@@ -2377,7 +2319,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session1);
-  AddContext(*session1, "foo");
+  session1->AddContext(UserInputRequest("foo"));
   task_environment_.RunUntilIdle();
 
   // Start another session.
@@ -2385,49 +2327,55 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session2);
-  AddContext(*session2, "bar");
+  session2->AddContext(UserInputRequest("bar"));
   task_environment_.RunUntilIdle();
 
-  ExecuteModel(*session2, "2");
+  session2->ExecuteModel(PageUrlRequest("2"), response_.callback());
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(response_received_);
+  ASSERT_TRUE(response_.value());
   const std::vector<std::string> expected_responses1 = {
       "Context: ctx:bar off:0 max:10\n",
       "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n",
   };
-  EXPECT_EQ(*response_received_, expected_responses1[1]);
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses1));
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+  EXPECT_EQ(*response_.value(), expected_responses1[1]);
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses1));
+  EXPECT_EQ(response_.log_entry()
+                ->log_ai_data_request()
                 ->compose()
                 .request()
                 .page_metadata()
                 .page_url(),
             "2");
-  EXPECT_EQ(
-      log_entry_received_->log_ai_data_request()->compose().response().output(),
-      "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n");
-  response_received_.reset();
-  streamed_responses_.clear();
-  log_entry_received_.reset();
+  EXPECT_EQ(response_.log_entry()
+                ->log_ai_data_request()
+                ->compose()
+                .response()
+                .output(),
+            "Context: ctx:bar off:0 max:10\nInput: execute:bar2\n");
 
-  ExecuteModel(*session1, "1");
+  ResponseHolder response2;
+  session1->ExecuteModel(PageUrlRequest("1"), response2.callback());
   task_environment_.RunUntilIdle();
-  ASSERT_TRUE(response_received_);
+  ASSERT_TRUE(response2.value());
   const std::vector<std::string> expected_responses2 = {
       "Context: ctx:foo off:0 max:10\n",
       "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n",
   };
-  EXPECT_EQ(*response_received_, expected_responses2[1]);
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses2));
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+  EXPECT_EQ(*response2.value(), expected_responses2[1]);
+  EXPECT_THAT(response2.streamed(), ElementsAreArray(expected_responses2));
+  EXPECT_EQ(response2.log_entry()
+                ->log_ai_data_request()
                 ->compose()
                 .request()
                 .page_metadata()
                 .page_url(),
             "1");
-  EXPECT_EQ(
-      log_entry_received_->log_ai_data_request()->compose().response().output(),
-      "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n");
+  EXPECT_EQ(response2.log_entry()
+                ->log_ai_data_request()
+                ->compose()
+                .response()
+                .output(),
+            "Context: ctx:foo off:0 max:10\nInput: execute:foo1\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
@@ -2445,12 +2393,12 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   // Adding context should not trigger launching the service again.
   {
     base::HistogramTester histogram_tester;
-    AddContext(*session, "baz");
+    session->AddContext(UserInputRequest("baz"));
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Compose",
         SessionImpl::AddContextResult::kUsingServer, 1);
   }
-  ExecuteModel(*session, "2");
+  session->ExecuteModel(PageUrlRequest("2"), response_.callback());
   EXPECT_TRUE(remote_execute_called_);
   EXPECT_FALSE(test_controller_->did_launch_service());
   // Did not start with on-device, so there should not have been a log entry
@@ -2470,7 +2418,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   ASSERT_TRUE(session);
   {
     base::HistogramTester histogram_tester;
-    AddContext(*session, "foo");
+    session->AddContext(UserInputRequest("foo"));
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Compose",
         SessionImpl::AddContextResult::kFailedConstructingInput, 1);
@@ -2478,7 +2426,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   task_environment_.RunUntilIdle();
   {
     base::HistogramTester histogram_tester;
-    ExecuteModel(*session, "2");
+    session->ExecuteModel(PageUrlRequest("2"), response_.callback());
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
         ExecuteModelResult::kOnDeviceNotUsed, 1);
@@ -2500,7 +2448,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   base::HistogramTester histogram_tester;
-  ExecuteModel(*session, "2");
+  session->ExecuteModel(PageUrlRequest("2"), response_.callback());
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kFailedConstructingMessage, 1);
@@ -2519,7 +2467,7 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModel(*session, "2z");
+  session->ExecuteModel(PageUrlRequest("2z"), response_.callback());
   base::HistogramTester histogram_tester;
   task_environment_.FastForwardBy(
       features::GetOnDeviceModelTimeForInitialResponse() +
@@ -2527,8 +2475,8 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kTimedOut, 1);
-  EXPECT_TRUE(streamed_responses_.empty());
-  EXPECT_FALSE(response_received_);
+  EXPECT_TRUE(response_.streamed().empty());
+  EXPECT_FALSE(response_.value());
   EXPECT_TRUE(remote_execute_called_);
   ASSERT_TRUE(last_remote_message_);
   auto& compose_request =
@@ -2542,7 +2490,7 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
                 .page_url(),
             "2z");
   EXPECT_FALSE(log_ai_data_request_passed_to_remote_->compose().has_response());
-  EXPECT_FALSE(provided_by_on_device_.has_value());
+  EXPECT_FALSE(response_.provided_by_on_device().has_value());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -2554,7 +2502,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
   test_controller_->CrashService();
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
@@ -2577,7 +2525,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   base::HistogramTester histogram_tester;
   const auto total_time = base::Seconds(11);
   task_environment_.AdvanceClock(total_time);
@@ -2602,7 +2550,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   session.reset();
   EXPECT_TRUE(test_controller_->IsConnectedForTesting());
 
@@ -2644,12 +2592,12 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
         kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
         /*config_params=*/std::nullopt);
     ASSERT_TRUE(session);
-    ExecuteModel(*session, "2z");
+    session->ExecuteModel(PageUrlRequest("2z"), response_.callback());
     task_environment_.FastForwardBy(
         features::GetOnDeviceModelTimeForInitialResponse() +
         base::Milliseconds(1));
-    EXPECT_TRUE(streamed_responses_.empty());
-    EXPECT_FALSE(response_received_);
+    EXPECT_TRUE(response_.streamed().empty());
+    EXPECT_FALSE(response_.value());
     EXPECT_TRUE(remote_execute_called_);
     remote_execute_called_ = false;
   }
@@ -2673,38 +2621,36 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session1);
-  ExecuteModelUsingInput(*session1, "foo");
+  session1->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   const std::string expected_response1 = "Input: execute:foo\n";
-  EXPECT_EQ(*response_received_, expected_response1);
-  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response1));
+  EXPECT_EQ(*response_.value(), expected_response1);
+  EXPECT_THAT(response_.streamed(), ElementsAre(expected_response1));
 
   // Input and output contain text matching redact, so should not be redacted.
-  response_received_.reset();
-  streamed_responses_.clear();
   auto session2 = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session2);
-  ExecuteModelUsingInput(*session2, "abarx");
+  ResponseHolder response2;
+  session2->ExecuteModel(UserInputRequest("abarx"), response2.callback());
   task_environment_.RunUntilIdle();
   const std::string expected_response2 = "Input: execute:abarx\n";
-  EXPECT_EQ(*response_received_, expected_response2);
-  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response2));
+  EXPECT_EQ(*response2.value(), expected_response2);
+  EXPECT_THAT(response2.streamed(), ElementsAre(expected_response2));
 
   // Output contains redacted text (and  input doesn't), so redact.
   fake_settings_.set_execute_result({"Input: abarx\n"});
-  response_received_.reset();
-  streamed_responses_.clear();
   auto session3 = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session3);
-  ExecuteModelUsingInput(*session3, "foo");
+  ResponseHolder response3;
+  session3->ExecuteModel(UserInputRequest("foo"), response3.callback());
   task_environment_.RunUntilIdle();
   const std::string expected_response3 = "Input: a[###]x\n";
-  EXPECT_EQ(*response_received_, expected_response3);
-  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response3));
+  EXPECT_EQ(*response3.value(), expected_response3);
+  EXPECT_THAT(response3.streamed(), ElementsAre(expected_response3));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
@@ -2718,22 +2664,24 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session1);
-  ExecuteModelUsingInput(*session1, "bar");
+  session1->ExecuteModel(UserInputRequest("bar"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(response_received_);
-  ASSERT_TRUE(response_error_);
+  EXPECT_FALSE(response_.value());
+  ASSERT_TRUE(response_.error());
   EXPECT_EQ(
-      *response_error_,
+      *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
   // Although we send an error, we should be sending a log entry back so the
   // filtering can be logged.
-  ASSERT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_GT(response_.log_entry()
+                ->log_ai_data_request()
                 ->model_execution_info()
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             0);
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+  EXPECT_EQ(response_.log_entry()
+                ->log_ai_data_request()
                 ->model_execution_info()
                 .on_device_model_execution_info()
                 .execution_infos(0)
@@ -2760,12 +2708,13 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelWithRewrite(*session);
+
+  session->ExecuteModel(RewriteRequest("bar"), response_.callback());
   task_environment_.RunUntilIdle();
   // `bar` shouldn't be rewritten as it's in the input.
   const std::string expected_response = "Input: bar\n";
-  EXPECT_EQ(*response_received_, expected_response);
-  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
+  EXPECT_EQ(*response_.value(), expected_response);
+  EXPECT_THAT(response_.streamed(), ElementsAre(expected_response));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
@@ -2781,11 +2730,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   const std::string expected_response = "Input: a[redacted]x\n";
-  EXPECT_EQ(*response_received_, expected_response);
-  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
+  EXPECT_EQ(*response_.value(), expected_response);
+  EXPECT_THAT(response_.streamed(), ElementsAre(expected_response));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
@@ -2808,23 +2757,25 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
       " some more repeating text",
       " some more repeating text",
   });
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 
-  ASSERT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_GT(response_.log_entry()
+                ->log_ai_data_request()
                 ->model_execution_info()
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             0);
-  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+  EXPECT_TRUE(response_.log_entry()
+                  ->log_ai_data_request()
                   ->model_execution_info()
                   .on_device_model_execution_info()
                   .execution_infos(0)
@@ -2856,22 +2807,24 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_FALSE(response_received_);
-  ASSERT_TRUE(response_error_);
+  EXPECT_FALSE(response_.value());
+  ASSERT_TRUE(response_.error());
   EXPECT_EQ(
-      *response_error_,
+      *response_.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
 
-  ASSERT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_GT(response_.log_entry()
+                ->log_ai_data_request()
                 ->model_execution_info()
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             0);
-  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+  EXPECT_TRUE(response_.log_entry()
+                  ->log_ai_data_request()
                   ->model_execution_info()
                   .on_device_model_execution_info()
                   .execution_infos(0)
@@ -2905,7 +2858,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -2914,16 +2867,18 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
       " some more ",
       "repeating text",
   });
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 
-  ASSERT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_GT(response_.log_entry()
+                ->log_ai_data_request()
                 ->model_execution_info()
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             0);
-  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+  EXPECT_TRUE(response_.log_entry()
+                  ->log_ai_data_request()
                   ->model_execution_info()
                   .on_device_model_execution_info()
                   .execution_infos(0)
@@ -2956,7 +2911,7 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -2964,16 +2919,18 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
       " some more non repeating text",
       " more stuff",
   });
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 
-  ASSERT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_GT(response_.log_entry()
+                ->log_ai_data_request()
                 ->model_execution_info()
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             0);
-  EXPECT_FALSE(log_entry_received_->log_ai_data_request()
+  EXPECT_FALSE(response_.log_entry()
+                   ->log_ai_data_request()
                    ->model_execution_info()
                    .on_device_model_execution_info()
                    .execution_infos(0)
@@ -3006,14 +2963,14 @@ TEST_F(OnDeviceModelServiceControllerTest,
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(streamed_responses_.empty());
-  EXPECT_FALSE(response_received_);
-  ASSERT_TRUE(response_error_);
-  EXPECT_EQ(*response_error_, OptimizationGuideModelExecutionError::
-                                  ModelExecutionError::kGenericFailure);
+  EXPECT_TRUE(response_.streamed().empty());
+  EXPECT_FALSE(response_.value());
+  ASSERT_TRUE(response_.error());
+  EXPECT_EQ(*response_.error(), OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kFailedConstructingRemoteTextSafetyRequest, 1);
@@ -3041,7 +2998,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -3070,21 +3027,23 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
   std::move(last_remote_ts_callback_)
       .Run(base::ok(ts_any), std::move(remote_log_entry));
 
-  EXPECT_TRUE(streamed_responses_.empty());
-  EXPECT_EQ(*response_received_, expected_responses.back());
+  EXPECT_TRUE(response_.streamed().empty());
+  EXPECT_EQ(*response_.value(), expected_responses.back());
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kUsedOnDevice, 1);
 
   // Verify log entry.
-  ASSERT_TRUE(log_entry_received_);
+  ASSERT_TRUE(response_.log_entry());
   // Should have 2 infos: one for text generation, one for safety fallback.
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+  EXPECT_EQ(response_.log_entry()
+                ->log_ai_data_request()
                 ->model_execution_info()
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             2);
-  auto& ts_exec_info = log_entry_received_->log_ai_data_request()
+  auto& ts_exec_info = response_.log_entry()
+                           ->log_ai_data_request()
                            ->model_execution_info()
                            .on_device_model_execution_info()
                            .execution_infos(1);
@@ -3120,7 +3079,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -3151,21 +3110,23 @@ TEST_F(OnDeviceModelServiceControllerTest,
                        kFiltered)),
            std::move(remote_log_entry));
 
-  EXPECT_TRUE(streamed_responses_.empty());
-  EXPECT_FALSE(response_received_);
+  EXPECT_TRUE(response_.streamed().empty());
+  EXPECT_FALSE(response_.value());
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kUsedOnDeviceOutputUnsafe, 1);
 
   // Verify log entry.
-  ASSERT_TRUE(log_entry_received_);
+  ASSERT_TRUE(response_.log_entry());
   // Should have 2 infos: one for text generation, one for safety fallback.
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+  EXPECT_EQ(response_.log_entry()
+                ->log_ai_data_request()
                 ->model_execution_info()
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             2);
-  auto& ts_exec_info = log_entry_received_->log_ai_data_request()
+  auto& ts_exec_info = response_.log_entry()
+                           ->log_ai_data_request()
                            ->model_execution_info()
                            .on_device_model_execution_info()
                            .execution_infos(1);
@@ -3200,7 +3161,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -3225,9 +3186,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
                        kRequestThrottled)),
            nullptr);
 
-  ASSERT_TRUE(response_error_);
-  EXPECT_EQ(*response_error_, OptimizationGuideModelExecutionError::
-                                  ModelExecutionError::kGenericFailure);
+  ASSERT_TRUE(response_.error());
+  EXPECT_EQ(*response_.error(), OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kTextSafetyRemoteRequestFailed, 1);
@@ -3256,7 +3217,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
   const std::vector<std::string> expected_responses = ConcatResponses({
       "some text",
@@ -3276,11 +3237,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
   {
     base::HistogramTester histogram_tester;
 
-    ExecuteModelUsingInput(*session, "newquery");
+    session->ExecuteModel(UserInputRequest("newquery"), response_.callback());
 
-    ASSERT_TRUE(response_error_);
+    ASSERT_TRUE(response_.error());
     EXPECT_EQ(
-        *response_error_,
+        *response_.error(),
         OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
@@ -3333,13 +3294,13 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
                                                  logger_.GetWeakPtr(), nullptr,
                                                  SessionConfigParams{});
   EXPECT_TRUE(session);
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
+  EXPECT_TRUE(response_.value());
   const std::string expected_response =
       "Input: execute:foo\nTopK: 4, Temp: 1.5\n";
-  EXPECT_EQ(*response_received_, expected_response);
-  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
+  EXPECT_EQ(*response_.value(), expected_response);
+  EXPECT_THAT(response_.streamed(), ElementsAre(expected_response));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
@@ -3358,13 +3319,13 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
                               .temperature = 2,
                           }});
   EXPECT_TRUE(session);
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_received_);
+  EXPECT_TRUE(response_.value());
   const std::string expected_response =
       "Input: execute:foo\nTopK: 3, Temp: 2\n";
-  EXPECT_EQ(*response_received_, expected_response);
-  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
+  EXPECT_EQ(*response_.value(), expected_response);
+  EXPECT_THAT(response_.streamed(), ElementsAre(expected_response));
 }
 
 // Validate that token interval 0 suppresses partial output.
@@ -3396,13 +3357,13 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
 
   fake_settings_.set_execute_result(
       {"token1", " token2", " token3", " token4"});
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
 
   const std::vector<std::string> expected_responses = {
       "token1 token2 token3 token4"};
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
 // Validate that token interval 1 evaluates all partial output.
@@ -3430,7 +3391,7 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval1) {
 
   fake_settings_.set_execute_result(
       {"token1", " token2", " token3", " token4"});
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
 
   const std::vector<std::string> expected_responses = {
@@ -3439,8 +3400,8 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval1) {
       "token1 token2 token3",
       "token1 token2 token3 token4",
   };
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
 // Validate that token interval 3 only evaluates every third and final chunk.
@@ -3472,7 +3433,7 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
 
   fake_settings_.set_execute_result({"token1", " token2", " token3", " token4",
                                      " token5", " token6", " token7"});
-  ExecuteModel(*session, "foo");
+  session->ExecuteModel(PageUrlRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
 
   const std::vector<std::string> expected_responses = {
@@ -3480,8 +3441,8 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
       "token1 token2 token3 token4 token5 token6",
       "token1 token2 token3 token4 token5 token6 token7",
   };
-  EXPECT_EQ(*response_received_, expected_responses.back());
-  EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
+  EXPECT_EQ(*response_.value(), expected_responses.back());
+  EXPECT_THAT(response_.streamed(), ElementsAreArray(expected_responses));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -3592,20 +3553,22 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
       " some more repeating text",
       " unsafe stuff not processed",
   });
-  ExecuteModelUsingInput(*session, "foo");
+  session->ExecuteModel(UserInputRequest("foo"), response_.callback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(response_received_);
-  EXPECT_EQ(*response_received_,
+  EXPECT_TRUE(response_.value());
+  EXPECT_EQ(*response_.value(),
             "some text some more repeating text some more repeating text");
 
-  ASSERT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_GT(response_.log_entry()
+                ->log_ai_data_request()
                 ->model_execution_info()
                 .on_device_model_execution_info()
                 .execution_infos_size(),
             0);
-  EXPECT_TRUE(log_entry_received_->log_ai_data_request()
+  EXPECT_TRUE(response_.log_entry()
+                  ->log_ai_data_request()
                   ->model_execution_info()
                   .on_device_model_execution_info()
                   .execution_infos(0)
