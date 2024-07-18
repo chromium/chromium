@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_button/cr_button.js';
 import './toolbar.js';
-import './list_item.js';
 import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import './sidebar.js';
+import './container.js';
 
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -14,8 +13,6 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {PrivateStateTokensSidebarElement} from './sidebar.js';
-import {dummyListItemData} from './test_data.js';
-import type {ListItem} from './test_data.js';
 import type {PrivateStateTokensToolbarElement} from './toolbar.js';
 
 
@@ -45,7 +42,6 @@ export class PrivateStateTokensAppElement extends CrLitElement {
       pageTitle_: {type: String},
       narrow_: {type: Boolean},
       narrowThreshold_: {type: Number},
-      data_: {type: Array},
       isDrawerOpen_: {type: Boolean},
     };
   }
@@ -74,7 +70,6 @@ export class PrivateStateTokensAppElement extends CrLitElement {
   protected narrowThreshold_: number = 1096;
   protected narrow_: boolean;
   protected pageTitle_: string = 'Private State Tokens';
-  protected data_: ListItem[] = dummyListItemData;
   protected isDrawerOpen_: boolean = false;
 
   protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {

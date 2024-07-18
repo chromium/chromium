@@ -47,3 +47,10 @@ IN_PROC_BROWSER_TEST_F(PrivateStateTokensTest, Sidebar) {
       "sidebar_test.js",
       "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(PrivateStateTokensTest, Container) {
+  RunTest(
+      "privacy_sandbox/internals/private_state_tokens/"
+      "container_test.js",
+      "mocha.run()");
+}

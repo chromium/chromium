@@ -14,6 +14,8 @@ build_webui("build") {
   non_web_component_files = [
     "app.ts",
     "app.html.ts",
+    "container.ts",
+    "container.html.ts",
     "list_item.ts",
     "list_item.html.ts",
     "private_state_tokens.ts",
@@ -26,6 +28,7 @@ build_webui("build") {
 
   css_files = [
     "app.css",
+    "container.css",
     "list_item.css",
     "shared_vars.css",
     "sidebar.css",

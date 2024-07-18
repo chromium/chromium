@@ -7,20 +7,11 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons_lit.html.js';
 
-import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
-import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './list_item.css.js';
 import {getHtml} from './list_item.html.js';
 import type {Redemption} from './test_data.js';
-
-export interface PrivateStateTokensListItemElement {
-  $: {
-    expandButton: CrExpandButtonElement,
-    expandedContent: CrCollapseElement,
-  };
-}
 
 export class PrivateStateTokensListItemElement extends CrLitElement {
   static get is() {
@@ -37,20 +28,25 @@ export class PrivateStateTokensListItemElement extends CrLitElement {
 
   static override get properties() {
     return {
-      expanded_: {type: Boolean},
+      expanded: {type: Boolean},
       issuerOrigin: {type: String},
       numTokens: {type: Number},
       redemptions: {type: Array},
+      index: {type: Number},
     };
   }
 
-  protected expanded_: boolean = false;
-  protected issuerOrigin: string = '';
-  protected numTokens: number = 0;
+  expanded: boolean = false;
+  issuerOrigin: string = '';
+  numTokens: number = 0;
   redemptions: Redemption[] = [];
+  index: number = -1;
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.expanded_ = e.detail.value;
+    this.expanded = e.detail.value;
+    this.dispatchEvent(new CustomEvent(
+        'expanded-toggled',
+        {detail: {id: this.issuerOrigin, expanded: this.expanded}}));
   }
 
   protected getNumTokensString_() {

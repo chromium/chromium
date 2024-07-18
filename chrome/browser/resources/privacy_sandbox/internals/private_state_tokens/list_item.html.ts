@@ -9,7 +9,7 @@ import type {PrivateStateTokensListItemElement} from './list_item.js';
 function getHtmlWithoutTokens(this: PrivateStateTokensListItemElement) {
   // clang-format off
   return html`
-  <div class="cr-row first" id="row-content">
+  <div class="cr-row ${this.index === 0 ? 'first' : ''}" id="row-content">
     <div class="cr-padded-text">
       <span>${this.issuerOrigin}</span>
       <span></span>
@@ -22,15 +22,16 @@ function getHtmlWithoutTokens(this: PrivateStateTokensListItemElement) {
 function getHtmlWithTokens(this: PrivateStateTokensListItemElement) {
   // clang-format off
   return html`
-    <cr-expand-button id="expandButton" class="cr-row first"
-        ?expanded="${this.expanded_}"
+    <cr-expand-button id="expandButton"
+        class="cr-row ${this.index === 0 ? 'first' : ''}"
+        ?expanded="${this.expanded}"
         @expanded-changed="${this.onExpandedChanged_}">
       <span>${this.issuerOrigin}</span>
       <span>${this.getNumTokensString_()}</span>
       <span>${this.getRedemptionsString_()}</span>
       <cr-icon icon="cr:info-outline" class="spacing"></cr-icon>
     </cr-expand-button>
-    <cr-collapse id="expandedContent" ?opened="${this.expanded_}">
+    <cr-collapse id="expandedContent" ?opened="${this.expanded}">
       ${this.redemptions.map(redemption => html`
         <div class="cr-padded-text hr">
           <span>${redemption.origin}</span>

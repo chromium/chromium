@@ -4,9 +4,9 @@
 
 import 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
 
-import type {PrivateStateTokensListItemElement, Redemption} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
+import type {CrCollapseElement, CrExpandButtonElement, PrivateStateTokensListItemElement, Redemption} from 'chrome://privacy-sandbox-internals/private_state_tokens/private_state_tokens.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 const testRedemptionsDummyData: Redemption[] = [
   {origin: 'https://a.test', formattedTimestamp: 'test A'},
@@ -26,14 +26,21 @@ suite('ListItemTest', () => {
 
   test('check layout', () => {
     assertTrue(isVisible(listItem));
-    assertFalse(listItem.$.expandedContent.opened);
+    const expandButton = $$<CrExpandButtonElement>(listItem, '#expandButton');
+    assertTrue(!!expandButton);
+    const expandedContent = $$<CrCollapseElement>(listItem, '#expandedContent');
+    assertFalse(isVisible(expandedContent));
   });
 
   test('check expanded row content', async () => {
-    listItem.$.expandButton.click();
+    const expandButton = $$<CrExpandButtonElement>(listItem, '#expandButton');
+    assertTrue(!!expandButton);
+    expandButton.click();
     await microtasksFinished();
-    assertTrue(listItem.$.expandedContent.opened);
-    const redemptions = Array.from(listItem.$.expandedContent.children);
+    const expandedContent = $$<CrCollapseElement>(listItem, '#expandedContent');
+    assertTrue(!!expandedContent);
+    assertTrue(expandedContent.opened);
+    const redemptions = Array.from(expandedContent.children);
     assertEquals(testRedemptionsDummyData.length, redemptions.length);
     for (const redemption of redemptions) {
       assertTrue(isVisible(redemption));
