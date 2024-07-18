@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -57,7 +58,7 @@
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_observer.h"
@@ -112,9 +113,13 @@ class BrowserCoordinatorTest : public PlatformTest {
               return std::make_unique<commerce::MockShoppingService>();
             }));
 
-    chrome_browser_state_ = test_cbs_builder.Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             scene_state_);
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        test_cbs_builder.Build());
+
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        browser_state_manager_.get());
+
+    browser_ = std::make_unique<TestBrowser>(GetBrowserState(), scene_state_);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
     LensBrowserAgent::CreateForBrowser(browser_.get());
@@ -131,7 +136,7 @@ class BrowserCoordinatorTest : public PlatformTest {
     enabler->SetWebUsageEnabled(true);
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
+        GetBrowserState(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
@@ -161,9 +166,13 @@ class BrowserCoordinatorTest : public PlatformTest {
                            browser:browser_.get()];
   }
 
+  ChromeBrowserState* GetBrowserState() {
+    return browser_state_manager_->GetLastUsedBrowserStateForTesting();
+  }
+
   // Creates and inserts a new WebState.
   int InsertWebState() {
-    web::WebState::CreateParams params(chrome_browser_state_.get());
+    web::WebState::CreateParams params(GetBrowserState());
     std::unique_ptr<web::WebState> web_state = web::WebState::Create(params);
     AttachTabHelpers(web_state.get());
 
@@ -198,10 +207,9 @@ class BrowserCoordinatorTest : public PlatformTest {
     ntpHelper->PageLoaded(web_state, web::PageLoadCompletionStatus::SUCCESS);
   }
 
-  IOSChromeScopedTestingLocalState local_state_;
   web::WebTaskEnvironment task_environment_;
   UIViewController* base_view_controller_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<TestBrowser> browser_;
   SceneState* scene_state_;
 };

@@ -104,6 +104,10 @@ IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
 }
 
 IOSChromePasswordCheckManager::~IOSChromePasswordCheckManager() {
+  for (auto& observer : observers_) {
+    observer.ManagerWillShutdown(this);
+  }
+
   DCHECK(observers_.empty());
 }
 

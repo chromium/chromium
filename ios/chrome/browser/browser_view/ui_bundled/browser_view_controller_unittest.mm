@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
@@ -76,6 +77,7 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -128,13 +130,17 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
 
-    chrome_browser_state_ = test_cbs_builder.Build();
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        test_cbs_builder.Build());
+
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        browser_state_manager_.get());
+
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
+        GetBrowserState(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                             scene_state_);
+    browser_ = std::make_unique<TestBrowser>(GetBrowserState(), scene_state_);
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     LensBrowserAgent::CreateForBrowser(browser_.get());
@@ -198,7 +204,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     // Create three web states.
     for (int i = 0; i < 3; i++) {
-      web::WebState::CreateParams params(chrome_browser_state_.get());
+      web::WebState::CreateParams params(GetBrowserState());
       std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
       AttachTabHelpers(webState.get());
       browser_->GetWebStateList()->InsertWebState(std::move(webState));
@@ -207,8 +213,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     // Load TemplateURLService.
     TemplateURLService* template_url_service =
-        ios::TemplateURLServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        ios::TemplateURLServiceFactory::GetForBrowserState(GetBrowserState());
     template_url_service->Load();
 
     ClipboardRecentContent::SetInstance(
@@ -226,10 +231,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+            GetBrowserState());
     HostContentSettingsMap* settings_map =
         ios::HostContentSettingsMapFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+            GetBrowserState());
 
     bubble_presenter_ = [[BubblePresenter alloc]
         initWithDeviceSwitcherResultDispatcher:nullptr
@@ -303,7 +308,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     tab_events_mediator_ = [[TabEventsMediator alloc]
         initWithWebStateList:browser_.get()->GetWebStateList()
               ntpCoordinator:NTPCoordinator_
-                browserState:chrome_browser_state_.get()
+                browserState:GetBrowserState()
              loadingNotifier:url_loading_notifier];
     tab_events_mediator_.consumer = bvc_;
 
@@ -330,6 +335,18 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     BlockCleanupTest::TearDown();
   }
 
+  ChromeBrowserState* GetBrowserState() {
+    return browser_state_manager_->GetLastUsedBrowserStateForTesting();
+  }
+
+  TestChromeBrowserState* GetTestBrowserState() {
+    TestChromeBrowserState* test_chrome_browser_state =
+        static_cast<TestChromeBrowserState*>(GetBrowserState());
+    EXPECT_NE(test_chrome_browser_state, nullptr);
+
+    return test_chrome_browser_state;
+  }
+
   web::WebState* ActiveWebState() {
     return browser_->GetWebStateList()->GetActiveWebState();
   }
@@ -342,7 +359,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   }
 
   std::unique_ptr<web::WebState> CreateWebState() {
-    web::WebState::CreateParams params(chrome_browser_state_.get());
+    web::WebState::CreateParams params(GetBrowserState());
     auto web_state = web::WebState::Create(params);
     AttachTabHelpers(web_state.get());
     return web_state;
@@ -350,7 +367,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   std::unique_ptr<web::WebState> CreateOffTheRecordWebState() {
     web::WebState::CreateParams params(
-        chrome_browser_state_
+        GetTestBrowserState()
             ->CreateOffTheRecordBrowserStateWithTestingFactories());
     auto web_state = web::WebState::Create(params);
     AttachTabHelpers(web_state.get());
@@ -397,8 +414,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   MOCK_METHOD0(OnCompletionCalled, void());
 
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<Browser> browser_;
   KeyCommandsProvider* key_commands_provider_;
   BubblePresenter* bubble_presenter_;

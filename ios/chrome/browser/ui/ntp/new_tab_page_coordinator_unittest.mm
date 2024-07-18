@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -146,9 +147,7 @@ class ScopedVariationsService {
 class NewTabPageCoordinatorTest : public PlatformTest {
  protected:
   NewTabPageCoordinatorTest()
-      : scoped_browser_state_manager_(
-            std::make_unique<TestChromeBrowserStateManager>(base::FilePath())),
-        base_view_controller_([[UIViewController alloc] init]) {
+      : base_view_controller_([[UIViewController alloc] init]) {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
@@ -170,9 +169,18 @@ class NewTabPageCoordinatorTest : public PlatformTest {
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
-    browser_state_ = test_cbs_builder.Build();
+    test_cbs_builder.AddTestingFactory(
+        IOSChromeSafetyCheckManagerFactory::GetInstance(),
+        IOSChromeSafetyCheckManagerFactory::GetDefaultFactory());
+
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        test_cbs_builder.Build());
+
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        browser_state_manager_.get());
+
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
+        GetBrowserState(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
     toolbar_delegate_ =
         OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
@@ -184,9 +192,13 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
+  ChromeBrowserState* GetBrowserState() {
+    return browser_state_manager_->GetLastUsedBrowserStateForTesting();
+  }
+
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
-    test_web_state->SetBrowserState(browser_state_.get());
+    test_web_state->SetBrowserState(GetBrowserState());
     NewTabPageTabHelper::CreateForWebState(test_web_state.get());
     test_web_state->SetCurrentURL(GURL(url));
     test_web_state->SetNavigationManager(
@@ -197,10 +209,10 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   void CreateCoordinator(bool off_the_record) {
     if (off_the_record) {
       ChromeBrowserState* otr_state =
-          browser_state_->GetOffTheRecordChromeBrowserState();
+          GetBrowserState()->GetOffTheRecordChromeBrowserState();
       browser_ = std::make_unique<TestBrowser>(otr_state);
     } else {
-      browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+      browser_ = std::make_unique<TestBrowser>(GetBrowserState());
       StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
       // Create non-NTP WebState
       browser_.get()->GetWebStateList()->InsertWebState(
@@ -263,7 +275,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   std::unique_ptr<web::WebState> CreateWebStateWithURL(const GURL& url) {
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(GetBrowserState());
     NewTabPageTabHelper::CreateForWebState(web_state.get());
     web_state->SetVisibleURL(url);
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
@@ -349,7 +361,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity);
-    AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+    AuthenticationServiceFactory::GetForBrowserState(GetBrowserState())
         ->SignIn(fake_identity,
                  signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
@@ -358,8 +370,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   raw_ptr<web::WebState> web_state_;
   id toolbar_delegate_;
   id delegate_;
-  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<Browser> browser_;
   UIViewController* fake_feed_view_controller_;
   NewTabPageCoordinator* coordinator_;

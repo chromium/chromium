@@ -9,8 +9,6 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
@@ -30,7 +28,6 @@ std::unique_ptr<KeyedService> BuildServiceInstance(web::BrowserState* context) {
 
   return std::make_unique<IOSChromeSafetyCheckManager>(
       browser_state->GetPrefs(), GetApplicationContext()->GetLocalState(),
-      IOSChromePasswordCheckManagerFactory::GetForBrowserState(browser_state),
       task_runner);
 }
 
@@ -61,7 +58,6 @@ IOSChromeSafetyCheckManagerFactory::IOSChromeSafetyCheckManagerFactory()
     : BrowserStateKeyedServiceFactory(
           "SafetyCheckManager",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(IOSChromePasswordCheckManagerFactory::GetInstance());
 }
 
 IOSChromeSafetyCheckManagerFactory::~IOSChromeSafetyCheckManagerFactory() =

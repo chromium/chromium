@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_consumer.h"
@@ -39,40 +40,6 @@
 class SafetyCheckMagicStackMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    PrefRegistrySimple* registry = pref_service_->registry();
-
-    registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, false);
-    registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
-    registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerPasswordCheckResult,
-        NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
-    registry->RegisterDictionaryPref(
-        prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
-        PrefRegistry::LOSSY_PREF);
-
-    local_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    PrefRegistrySimple* local_registry = local_pref_service_->registry();
-
-    local_registry->RegisterTimePref(prefs::kIosSafetyCheckManagerLastRunTime,
-                                     base::Time(), PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerUpdateCheckResult,
-        NameForSafetyCheckState(UpdateChromeSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
-        NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterIntegerPref(
-        prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
-        -1);
-    local_registry->RegisterBooleanPref(
-        safety_check_prefs::kSafetyCheckInMagicStackDisabledPref, false);
-    local_registry->RegisterTimePref(prefs::kIosSettingsSafetyCheckLastRunTime,
-                                     base::Time());
-
     TestChromeBrowserState::Builder builder;
 
     builder.AddTestingFactory(
@@ -81,17 +48,22 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    browser_state_ = builder.Build();
+    browser_state_manager_ =
+        std::make_unique<TestChromeBrowserStateManager>(builder.Build());
 
-    TestingApplicationContext::GetGlobal()->SetLocalState(
-        local_pref_service_.get());
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        browser_state_manager_.get());
 
-    password_check_manager_ =
-        IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-            browser_state_.get());
+    ChromeBrowserState* browser_state =
+        browser_state_manager_->GetLastUsedBrowserStateForTesting();
+
+    pref_service_ = browser_state->GetPrefs();
+
+    local_pref_service_ =
+        TestingApplicationContext::GetGlobal()->GetLocalState();
 
     safety_check_manager_ = std::make_unique<IOSChromeSafetyCheckManager>(
-        pref_service_.get(), local_pref_service_.get(), password_check_manager_,
+        pref_service_.get(), local_pref_service_.get(),
         base::SequencedTaskRunner::GetCurrentDefault());
 
     mock_app_state_ = OCMClassMock([AppState class]);
@@ -109,19 +81,17 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
   void TearDown() override {
     safety_check_manager_->StopSafetyCheck();
     safety_check_manager_->Shutdown();
-    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
   }
 
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   id mock_app_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<TestingPrefServiceSimple> local_pref_service_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService> local_pref_service_;
   SafetyCheckMagicStackMediator* mediator_;
   id safety_check_magic_stack_consumer_;
-  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
   std::unique_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
 };
 
@@ -131,7 +101,7 @@ TEST_F(SafetyCheckMagicStackMediatorTest, CallsConsumerWithRunningState) {
   SafetyCheckState* expected = [[SafetyCheckState alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kRunning
                   passwordState:PasswordSafetyCheckState::kDefault
-              safeBrowsingState:SafeBrowsingSafetyCheckState::kUnsafe
+              safeBrowsingState:SafeBrowsingSafetyCheckState::kSafe
                    runningState:RunningSafetyCheckState::kRunning];
 
   OCMExpect([safety_check_magic_stack_consumer_

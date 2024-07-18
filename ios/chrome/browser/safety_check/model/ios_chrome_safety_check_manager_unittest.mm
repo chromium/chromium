@@ -18,12 +18,12 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
@@ -37,36 +37,6 @@ namespace {
 class IOSChromeSafetyCheckManagerTest : public PlatformTest {
  public:
   void SetUp() override {
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    PrefRegistrySimple* registry = pref_service_->registry();
-
-    registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, false);
-    registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
-    registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerPasswordCheckResult,
-        NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
-    registry->RegisterDictionaryPref(
-        prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
-        PrefRegistry::LOSSY_PREF);
-
-    local_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    PrefRegistrySimple* local_registry = local_pref_service_->registry();
-
-    local_registry->RegisterTimePref(prefs::kIosSafetyCheckManagerLastRunTime,
-                                     base::Time(), PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerUpdateCheckResult,
-        NameForSafetyCheckState(UpdateChromeSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
-        NameForSafetyCheckState(SafeBrowsingSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterIntegerPref(
-        prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
-        -1);
-
     TestChromeBrowserState::Builder builder;
 
     builder.AddTestingFactory(
@@ -75,34 +45,38 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    browser_state_ = builder.Build();
-    TestingApplicationContext::GetGlobal()->SetLocalState(
-        local_pref_service_.get());
+    browser_state_manager_ =
+        std::make_unique<TestChromeBrowserStateManager>(builder.Build());
 
-    password_check_manager_ =
-        IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-            browser_state_.get());
+    TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
+        browser_state_manager_.get());
+
+    ChromeBrowserState* browser_state =
+        browser_state_manager_->GetLastUsedBrowserStateForTesting();
+
+    pref_service_ = browser_state->GetPrefs();
+
+    local_pref_service_ =
+        TestingApplicationContext::GetGlobal()->GetLocalState();
 
     safety_check_manager_ = std::make_unique<IOSChromeSafetyCheckManager>(
-        pref_service_.get(), local_pref_service_.get(), password_check_manager_,
+        pref_service_.get(), local_pref_service_.get(),
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override {
     safety_check_manager_->StopSafetyCheck();
     safety_check_manager_->Shutdown();
-    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
   }
 
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
   std::unique_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
-  scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<TestingPrefServiceSimple> local_pref_service_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService> local_pref_service_;
 };
 
 std::vector<password_manager::CredentialUIEntry>
@@ -189,27 +163,6 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 
   EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
             SafeBrowsingSafetyCheckState::kUnsafe);
-}
-
-// Tests the Safe Browsing Check state is `kManaged` when Safe Browsing is
-// enabled, and managed.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       SafeBrowsingManagedAndEnabledReturnsManagedState) {
-  pref_service_->SetManagedPref(prefs::kSafeBrowsingEnabled, base::Value(true));
-
-  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
-            SafeBrowsingSafetyCheckState::kManaged);
-}
-
-// Tests the Safe Browsing Check state is `kManaged` when Safe Browsing is
-// disabled, and managed.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       SafeBrowsingManagedAndDisabledReturnsManagedState) {
-  pref_service_->SetManagedPref(prefs::kSafeBrowsingEnabled,
-                                base::Value(false));
-
-  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
-            SafeBrowsingSafetyCheckState::kManaged);
 }
 
 // Tests `CalculatePasswordSafetyCheckState()` correctly converts
@@ -494,7 +447,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kDefault);
   EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
-            PasswordSafetyCheckState::kDisabled);
+            PasswordSafetyCheckState::kDefault);
   EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
             SafeBrowsingSafetyCheckState::kSafe);
   EXPECT_EQ(safety_check_manager_->GetRunningCheckStateForTesting(),

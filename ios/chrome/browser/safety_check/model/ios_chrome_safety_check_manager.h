@@ -9,7 +9,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "base/observer_list_types.h"
-#import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -68,7 +67,6 @@ class IOSChromeSafetyCheckManager
   explicit IOSChromeSafetyCheckManager(
       PrefService* pref_service,
       PrefService* local_pref_service,
-      scoped_refptr<IOSChromePasswordCheckManager> password_check_manager,
       const scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   IOSChromeSafetyCheckManager(const IOSChromeSafetyCheckManager&) = delete;
@@ -345,14 +343,6 @@ class IOSChromeSafetyCheckManager
 
   // Registrar for pref changes notifications.
   PrefChangeRegistrar pref_change_registrar_;
-
-  // Owning, smart pointer to the Password Check Manager, which checks the
-  // user's Passwords (e.g. insecure credentials) state.
-  const scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
-
-  base::ScopedObservation<IOSChromePasswordCheckManager,
-                          IOSChromePasswordCheckManager::Observer>
-      password_check_manager_observation_{this};
 
   // Validates IOSChromeSafetyCheckManager::Observer events are evaluated on the
   // same sequence that IOSChromeSafetyCheckManager was created on.
