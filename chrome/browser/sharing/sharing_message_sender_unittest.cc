@@ -8,12 +8,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/sharing/fake_device_info.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -62,7 +62,7 @@ class MockSharingFCMSender : public SharingFCMSender {
   ~MockSharingFCMSender() override = default;
 
   MOCK_METHOD4(SendMessageToFcmTarget,
-               void(const chrome_browser_sharing::FCMChannelConfiguration&
+               void(const components_sharing_message::FCMChannelConfiguration&
                         fcm_configuration,
                     base::TimeDelta time_to_live,
                     SharingMessage message,
@@ -80,7 +80,7 @@ class MockSendMessageDelegate
   MOCK_METHOD4(DoSendMessageToDevice,
                void(const SharingTargetDeviceInfo& device,
                     base::TimeDelta time_to_live,
-                    chrome_browser_sharing::SharingMessage message,
+                    components_sharing_message::SharingMessage message,
                     SendMessageCallback callback));
 };
 
@@ -182,10 +182,10 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckTimedout) {
                   testing::Eq(nullptr)));
 
   auto simulate_timeout =
-      [&](const chrome_browser_sharing::FCMChannelConfiguration&
+      [&](const components_sharing_message::FCMChannelConfiguration&
               fcm_configuration,
           base::TimeDelta time_to_live,
-          chrome_browser_sharing::SharingMessage message,
+          components_sharing_message::SharingMessage message,
           SharingFCMSender::SendMessageCallback callback) {
         // FCM message sent successfully.
         std::move(callback).Run(SharingSendMessageResult::kSuccessful,
@@ -204,7 +204,7 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckTimedout) {
       .WillOnce(testing::Invoke(simulate_timeout));
 
   sharing_message_sender_.SendMessageToDevice(
-      device_info, kTimeToLive, chrome_browser_sharing::SharingMessage(),
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
       SharingMessageSender::DelegateType::kFCM, mock_callback.Get());
 }
 
@@ -217,10 +217,10 @@ TEST_F(SharingMessageSenderTest, SendMessageToDevice_InternalError) {
                   testing::Eq(nullptr)));
 
   auto simulate_internal_error =
-      [&](const chrome_browser_sharing::FCMChannelConfiguration&
+      [&](const components_sharing_message::FCMChannelConfiguration&
               fcm_configuration,
           base::TimeDelta time_to_live,
-          chrome_browser_sharing::SharingMessage message,
+          components_sharing_message::SharingMessage message,
           SharingFCMSender::SendMessageCallback callback) {
         // FCM message not sent successfully.
         std::move(callback).Run(SharingSendMessageResult::kInternalError,
@@ -238,27 +238,27 @@ TEST_F(SharingMessageSenderTest, SendMessageToDevice_InternalError) {
       .WillOnce(testing::Invoke(simulate_internal_error));
 
   sharing_message_sender_.SendMessageToDevice(
-      device_info, kTimeToLive, chrome_browser_sharing::SharingMessage(),
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
       SharingMessageSender::DelegateType::kFCM, mock_callback.Get());
 }
 
 TEST_F(SharingMessageSenderTest, MessageSent_AckReceived) {
   SharingTargetDeviceInfo device_info = SetupReceiverDevice();
 
-  chrome_browser_sharing::SharingMessage sent_message;
+  components_sharing_message::SharingMessage sent_message;
   sent_message.mutable_click_to_call_message()->set_phone_number("999999");
 
-  chrome_browser_sharing::ResponseMessage expected_response_message;
+  components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
   EXPECT_CALL(mock_callback,
               Run(testing::Eq(SharingSendMessageResult::kSuccessful),
                   ProtoEquals(expected_response_message)));
 
   auto simulate_expected_ack_message_received =
-      [&](const chrome_browser_sharing::FCMChannelConfiguration&
+      [&](const components_sharing_message::FCMChannelConfiguration&
               fcm_configuration,
           base::TimeDelta time_to_live,
-          chrome_browser_sharing::SharingMessage message,
+          components_sharing_message::SharingMessage message,
           SharingFCMSender::SendMessageCallback callback) {
         // FCM message sent successfully.
         std::move(callback).Run(SharingSendMessageResult::kSuccessful,
@@ -287,9 +287,9 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceived) {
                   fcm_ack_configuration.sender_id_auth_secret());
 
         // Simulate ack message received.
-        std::unique_ptr<chrome_browser_sharing::ResponseMessage>
+        std::unique_ptr<components_sharing_message::ResponseMessage>
             response_message =
-                std::make_unique<chrome_browser_sharing::ResponseMessage>();
+                std::make_unique<components_sharing_message::ResponseMessage>();
         response_message->CopyFrom(expected_response_message);
 
         sharing_message_sender_.OnAckReceived(kSenderMessageID,
@@ -309,25 +309,25 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceived) {
 TEST_F(SharingMessageSenderTest, MessageSent_AckReceivedBeforeMessageId) {
   SharingTargetDeviceInfo device_info = SetupReceiverDevice();
 
-  chrome_browser_sharing::SharingMessage sent_message;
+  components_sharing_message::SharingMessage sent_message;
   sent_message.mutable_click_to_call_message()->set_phone_number("999999");
 
-  chrome_browser_sharing::ResponseMessage expected_response_message;
+  components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
   EXPECT_CALL(mock_callback,
               Run(testing::Eq(SharingSendMessageResult::kSuccessful),
                   ProtoEquals(expected_response_message)));
 
   auto simulate_expected_ack_message_received =
-      [&](const chrome_browser_sharing::FCMChannelConfiguration&
+      [&](const components_sharing_message::FCMChannelConfiguration&
               fcm_configuration,
           base::TimeDelta time_to_live,
-          chrome_browser_sharing::SharingMessage message,
+          components_sharing_message::SharingMessage message,
           SharingFCMSender::SendMessageCallback callback) {
         // Simulate ack message received.
-        std::unique_ptr<chrome_browser_sharing::ResponseMessage>
+        std::unique_ptr<components_sharing_message::ResponseMessage>
             response_message =
-                std::make_unique<chrome_browser_sharing::ResponseMessage>();
+                std::make_unique<components_sharing_message::ResponseMessage>();
         response_message->CopyFrom(expected_response_message);
 
         sharing_message_sender_.OnAckReceived(kSenderMessageID,
@@ -362,17 +362,17 @@ TEST_F(SharingMessageSenderTest, NonExistingDelegate) {
                   testing::Eq(nullptr)));
 
   sharing_message_sender.SendMessageToDevice(
-      device_info, kTimeToLive, chrome_browser_sharing::SharingMessage(),
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
       SharingMessageSender::DelegateType::kFCM, mock_callback.Get());
 }
 
 TEST_F(SharingMessageSenderTest, RequestCancelled) {
   SharingTargetDeviceInfo device_info = SetupReceiverDevice();
 
-  chrome_browser_sharing::SharingMessage sent_message;
+  components_sharing_message::SharingMessage sent_message;
   sent_message.mutable_sms_fetch_request()->add_origins("https://a.com");
 
-  chrome_browser_sharing::ResponseMessage expected_response_message;
+  components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
   EXPECT_CALL(mock_callback,
               Run(testing::Eq(SharingSendMessageResult::kCancelled),

@@ -91,6 +91,7 @@ include_rules = [
   "+components/services/quarantine",
   "+components/services/storage/shared_storage",
   "+components/sessions",
+  "+components/sharing_message",
   "+components/signin/public",
   "+components/site_engagement/content",
   "+components/spellcheck",

@@ -15,11 +15,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_device_registration.h"
 #include "chrome/browser/sharing/sharing_message_sender.h"
 #include "chrome/browser/sharing/sharing_send_message_result.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "net/base/backoff_entry.h"
@@ -90,17 +90,17 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
   virtual base::OnceClosure SendMessageToDevice(
       const SharingTargetDeviceInfo& device,
       base::TimeDelta response_timeout,
-      chrome_browser_sharing::SharingMessage message,
+      components_sharing_message::SharingMessage message,
       SharingMessageSender::ResponseCallback callback);
 
   // Register SharingMessageHandler for |payload_cases|.
   void RegisterSharingHandler(
       std::unique_ptr<SharingMessageHandler> handler,
-      chrome_browser_sharing::SharingMessage::PayloadCase payload_case);
+      components_sharing_message::SharingMessage::PayloadCase payload_case);
 
   // Unregister SharingMessageHandler for |payload_case|.
   void UnregisterSharingHandler(
-      chrome_browser_sharing::SharingMessage::PayloadCase payload_case);
+      components_sharing_message::SharingMessage::PayloadCase payload_case);
 
   // Sets a notification action handler for |notification_id|. Replaces any
   // previously set handlers for |notification_id|. |callback| may be a null
@@ -135,7 +135,8 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
 
   // Returns the message handler registered for |payload_case| for testing.
   SharingMessageHandler* GetSharingHandlerForTesting(
-      chrome_browser_sharing::SharingMessage::PayloadCase payload_case) const;
+      components_sharing_message::SharingMessage::PayloadCase payload_case)
+      const;
 
  private:
   // Overrides for syncer::SyncServiceObserver.

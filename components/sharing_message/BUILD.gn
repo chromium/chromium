@@ -13,6 +13,7 @@ source_set("sharing_message") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/sharing_message/proto",
     "//components/sync/model",
     "//components/sync/protocol",
     "//net",

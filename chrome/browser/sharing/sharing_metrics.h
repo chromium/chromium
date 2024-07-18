@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_SHARING_SHARING_METRICS_H_
 
 #include "base/time/time.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_handle_message_result.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_send_message_result.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 
 enum class SharingDeviceRegistrationResult;
 
@@ -36,13 +36,13 @@ const char kSharingUiDialog[] = "Dialog";
 std::string SharingSendMessageResultToString(SharingSendMessageResult result);
 
 // Maps PayloadCase enums to MessageType enums.
-chrome_browser_sharing::MessageType SharingPayloadCaseToMessageType(
-    chrome_browser_sharing::SharingMessage::PayloadCase payload_case);
+components_sharing_message::MessageType SharingPayloadCaseToMessageType(
+    components_sharing_message::SharingMessage::PayloadCase payload_case);
 
 // Maps MessageType enums to strings used as histogram suffixes. Keep in sync
 // with "SharingMessage" in histograms.xml.
 const std::string& SharingMessageTypeToString(
-    chrome_browser_sharing::MessageType message_type);
+    components_sharing_message::MessageType message_type);
 
 // Generates trace ids for async traces in the "sharing" category.
 int GenerateSharingTraceId();
@@ -50,7 +50,7 @@ int GenerateSharingTraceId();
 // Logs the |payload_case| to UMA. This should be called when a SharingMessage
 // is received.
 void LogSharingMessageReceived(
-    chrome_browser_sharing::SharingMessage::PayloadCase payload_case);
+    components_sharing_message::SharingMessage::PayloadCase payload_case);
 
 // Logs the |result| to UMA. This should be called after attempting register
 // Sharing.
@@ -97,7 +97,7 @@ void LogSharingSelectedIndex(
 // Logs to UMA the time from receiving a SharingMessage to sending
 // back an ack.
 void LogSharingMessageHandlerTime(
-    chrome_browser_sharing::MessageType message_type,
+    components_sharing_message::MessageType message_type,
     base::TimeDelta time_taken);
 
 // Logs to UMA the |type| of dialog shown for sharing feature.
@@ -106,7 +106,7 @@ void LogSharingDialogShown(SharingFeatureName feature, SharingDialogType type);
 // Logs to UMA result of sending a SharingMessage. This should not be called for
 // sending ack messages.
 void LogSendSharingMessageResult(
-    chrome_browser_sharing::MessageType message_type,
+    components_sharing_message::MessageType message_type,
     SharingDevicePlatform receiver_device_platform,
     SharingChannelType channel_type,
     base::TimeDelta receiver_pulse_interval,

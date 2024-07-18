@@ -7,9 +7,9 @@
 
 #include <optional>
 
-namespace chrome_browser_sharing {
+namespace components_sharing_message {
 class FCMChannelConfiguration;
-}  // namespace chrome_browser_sharing
+}  // namespace components_sharing_message
 
 namespace syncer {
 class DeviceInfo;
@@ -31,8 +31,8 @@ bool IsSyncEnabledForSharing(syncer::SyncService* sync_service);
 bool IsSyncDisabledForSharing(syncer::SyncService* sync_service);
 
 // Returns the FCMChannelConfiguration of device with specified |device_info|.
-std::optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
-    const syncer::DeviceInfo& device_info);
+std::optional<components_sharing_message::FCMChannelConfiguration>
+GetFCMChannel(const syncer::DeviceInfo& device_info);
 
 // Returns the SharingDevicePlatform of device with specified |device_info|.
 SharingDevicePlatform GetDevicePlatform(const syncer::DeviceInfo& device_info);

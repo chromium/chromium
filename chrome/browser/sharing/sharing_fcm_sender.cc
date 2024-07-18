@@ -81,7 +81,8 @@ void SharingFCMSender::DoSendMessageToDevice(
 }
 
 void SharingFCMSender::SendMessageToFcmTarget(
-    const chrome_browser_sharing::FCMChannelConfiguration& fcm_configuration,
+    const components_sharing_message::FCMChannelConfiguration&
+        fcm_configuration,
     base::TimeDelta time_to_live,
     SharingMessage message,
     SendMessageCallback callback) {
@@ -138,7 +139,8 @@ void SharingFCMSender::SendMessageToFcmTarget(
 }
 
 void SharingFCMSender::SendMessageToServerTarget(
-    const chrome_browser_sharing::ServerChannelConfiguration& server_channel,
+    const components_sharing_message::ServerChannelConfiguration&
+        server_channel,
     SharingMessage message,
     SendMessageCallback callback) {
   TRACE_EVENT0("sharing", "SharingFCMSender::SendMessageToServerTarget");

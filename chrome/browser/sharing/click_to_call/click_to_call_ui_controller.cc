@@ -24,7 +24,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 
-using SharingMessage = chrome_browser_sharing::SharingMessage;
+using SharingMessage = components_sharing_message::SharingMessage;
 
 // static
 ClickToCallUiController* ClickToCallUiController::GetOrCreateFromWebContents(

@@ -13,8 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "url/origin.h"
 
@@ -38,7 +38,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
   ~SmsFetchRequestHandler() override;
 
   // SharingMessageHandler
-  void OnMessage(chrome_browser_sharing::SharingMessage message,
+  void OnMessage(components_sharing_message::SharingMessage message,
                  SharingMessageHandler::DoneCallback done_callback) override;
   virtual void AskUserPermission(const content::OriginList&,
                                  const std::string& one_time_code,

@@ -12,9 +12,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/sharing/proto/sms_fetch_message_test_proto3_optional.pb.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
+#include "components/sharing_message/proto/sms_fetch_message_test_proto3_optional.pb.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -60,7 +60,7 @@ SmsFetchRequestHandler::~SmsFetchRequestHandler() {
 }
 
 void SmsFetchRequestHandler::OnMessage(
-    chrome_browser_sharing::SharingMessage message,
+    components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
   DCHECK(message.has_sms_fetch_request());
 
@@ -219,7 +219,8 @@ void SmsFetchRequestHandler::Request::OnReceive(
 }
 
 void SmsFetchRequestHandler::Request::SendSuccessMessage() {
-  auto response = std::make_unique<chrome_browser_sharing::ResponseMessage>();
+  auto response =
+      std::make_unique<components_sharing_message::ResponseMessage>();
   for (const auto& origin : origin_list_)
     response->mutable_sms_fetch_response()->add_origins(origin.Serialize());
   response->mutable_sms_fetch_response()->set_one_time_code(one_time_code_);
@@ -230,9 +231,10 @@ void SmsFetchRequestHandler::Request::SendSuccessMessage() {
 
 void SmsFetchRequestHandler::Request::SendFailureMessage(
     FailureType failure_type) {
-  auto response = std::make_unique<chrome_browser_sharing::ResponseMessage>();
+  auto response =
+      std::make_unique<components_sharing_message::ResponseMessage>();
   response->mutable_sms_fetch_response()->set_failure_type(
-      static_cast<chrome_browser_sharing::SmsFetchResponse::FailureType>(
+      static_cast<components_sharing_message::SmsFetchResponse::FailureType>(
           failure_type));
 
   std::move(respond_callback_).Run(std::move(response));

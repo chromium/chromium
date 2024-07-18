@@ -16,11 +16,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
 
-namespace chrome_browser_sharing {
+namespace components_sharing_message {
 enum MessageType : int;
 class ResponseMessage;
 class SharingMessage;
-}  // namespace chrome_browser_sharing
+}  // namespace components_sharing_message
 
 namespace syncer {
 class LocalDeviceInfoProvider;
@@ -35,7 +35,7 @@ class SharingMessageSender {
  public:
   using ResponseCallback = base::OnceCallback<void(
       SharingSendMessageResult,
-      std::unique_ptr<chrome_browser_sharing::ResponseMessage>)>;
+      std::unique_ptr<components_sharing_message::ResponseMessage>)>;
 
   // Delegate class used to swap the actual message sending implementation.
   class SendMessageDelegate {
@@ -49,7 +49,7 @@ class SharingMessageSender {
     virtual void DoSendMessageToDevice(
         const SharingTargetDeviceInfo& device,
         base::TimeDelta time_to_live,
-        chrome_browser_sharing::SharingMessage message,
+        components_sharing_message::SharingMessage message,
         SendMessageCallback callback) = 0;
   };
 
@@ -68,13 +68,13 @@ class SharingMessageSender {
   virtual base::OnceClosure SendMessageToDevice(
       const SharingTargetDeviceInfo& device,
       base::TimeDelta response_timeout,
-      chrome_browser_sharing::SharingMessage message,
+      components_sharing_message::SharingMessage message,
       DelegateType delegate_type,
       ResponseCallback callback);
 
   virtual void OnAckReceived(
       const std::string& message_id,
-      std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
+      std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
   // Registers the given |delegate| to send messages when SendMessageToDevice is
   // called with |type|.
@@ -88,7 +88,7 @@ class SharingMessageSender {
   struct SentMessageMetadata {
     SentMessageMetadata(ResponseCallback callback,
                         base::TimeTicks timestamp,
-                        chrome_browser_sharing::MessageType type,
+                        components_sharing_message::MessageType type,
                         SharingDevicePlatform receiver_device_platform,
                         int trace_id,
                         SharingChannelType channel_type,
@@ -99,7 +99,7 @@ class SharingMessageSender {
 
     ResponseCallback callback;
     base::TimeTicks timestamp;
-    chrome_browser_sharing::MessageType type;
+    components_sharing_message::MessageType type;
     SharingDevicePlatform receiver_device_platform;
     int trace_id;
     SharingChannelType channel_type;
@@ -114,7 +114,7 @@ class SharingMessageSender {
   void InvokeSendMessageCallback(
       const std::string& message_guid,
       SharingSendMessageResult result,
-      std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
+      std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
   raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
 
@@ -124,7 +124,7 @@ class SharingMessageSender {
   std::map<std::string, std::string> message_guids_;
   // Map of FCM message_id to received ACK response messages.
   std::map<std::string,
-           std::unique_ptr<chrome_browser_sharing::ResponseMessage>>
+           std::unique_ptr<components_sharing_message::ResponseMessage>>
       cached_ack_response_messages_;
 
   // Registered delegates to send messages.

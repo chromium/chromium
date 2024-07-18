@@ -87,7 +87,7 @@ TEST_F(ClickToCallUiControllerTest, OnDeviceChosen) {
       syncer::DeviceInfo::FormFactor::kUnknown,
       /*last_updated_timestamp=*/base::Time());
 
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_click_to_call_message()->set_phone_number(
       kPhoneNumber);
   EXPECT_CALL(

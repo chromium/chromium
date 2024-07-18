@@ -9,13 +9,13 @@
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/fake_sharing_handler_registry.h"
 #include "chrome/browser/sharing/mock_sharing_message_handler.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_fcm_handler.h"
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
 #include "chrome/browser/sharing/sharing_handler_registry.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/sharing_message/features.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -25,7 +25,7 @@
 
 using ::testing::_;
 using ::testing::Eq;
-using SharingMessage = chrome_browser_sharing::SharingMessage;
+using SharingMessage = components_sharing_message::SharingMessage;
 
 namespace {
 
@@ -47,7 +47,7 @@ const char kServerP256dh[] = "test_server_p256_dh";
 const char kServerAuthSecret[] = "test_server_auth_secret";
 
 void SetupFcmChannel(
-    chrome_browser_sharing::FCMChannelConfiguration* fcm_configuration) {
+    components_sharing_message::FCMChannelConfiguration* fcm_configuration) {
   fcm_configuration->set_vapid_fcm_token(kVapidFCMToken);
   fcm_configuration->set_vapid_p256dh(kVapidP256dh);
   fcm_configuration->set_vapid_auth_secret(kVapidAuthSecret);
@@ -71,17 +71,18 @@ class MockSharingFCMSender : public SharingFCMSender {
   ~MockSharingFCMSender() override = default;
 
   MOCK_METHOD4(SendMessageToFcmTarget,
-               void(const chrome_browser_sharing::FCMChannelConfiguration&
+               void(const components_sharing_message::FCMChannelConfiguration&
                         fcm_configuration,
                     base::TimeDelta time_to_live,
                     SharingMessage message,
                     SendMessageCallback callback));
 
-  MOCK_METHOD3(SendMessageToServerTarget,
-               void(const chrome_browser_sharing::ServerChannelConfiguration&
-                        server_channel,
-                    SharingMessage message,
-                    SendMessageCallback callback));
+  MOCK_METHOD3(
+      SendMessageToServerTarget,
+      void(const components_sharing_message::ServerChannelConfiguration&
+               server_channel,
+           SharingMessage message,
+           SendMessageCallback callback));
 };
 
 class SharingFCMHandlerTest : public testing::Test {
@@ -258,12 +259,13 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerWithResponse) {
   // Tests OnMessage flow in SharingFCMHandler after handler is added.
   ON_CALL(mock_sharing_message_handler_,
           OnMessage(ProtoEquals(sharing_message), _))
-      .WillByDefault(testing::Invoke([](const SharingMessage& message,
-                                        SharingMessageHandler::DoneCallback
-                                            done_callback) {
-        std::move(done_callback)
-            .Run(std::make_unique<chrome_browser_sharing::ResponseMessage>());
-      }));
+      .WillByDefault(testing::Invoke(
+          [](const SharingMessage& message,
+             SharingMessageHandler::DoneCallback done_callback) {
+            std::move(done_callback)
+                .Run(std::make_unique<
+                     components_sharing_message::ResponseMessage>());
+          }));
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
@@ -309,7 +311,7 @@ TEST_F(SharingFCMHandlerTest,
        PingMessageHandlerWithServerChannelConfiguration) {
   SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
-  chrome_browser_sharing::ServerChannelConfiguration* server_configuration =
+  components_sharing_message::ServerChannelConfiguration* server_configuration =
       sharing_message.mutable_server_channel_configuration();
   server_configuration->set_configuration(kServerConfiguration);
   server_configuration->set_p256dh(kServerP256dh);

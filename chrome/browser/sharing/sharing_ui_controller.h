@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_app.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "url/origin.h"
 
@@ -115,7 +115,7 @@ class SharingUiController {
   base::OnceClosure SendMessageToDevice(
       const SharingTargetDeviceInfo& device,
       std::optional<base::TimeDelta> response_timeout,
-      chrome_browser_sharing::SharingMessage sharing_message,
+      components_sharing_message::SharingMessage sharing_message,
       std::optional<SharingMessageSender::ResponseCallback> callback);
 
   // Updates the omnibox icon if available.
@@ -136,7 +136,7 @@ class SharingUiController {
       int dialog_id,
       std::optional<SharingMessageSender::ResponseCallback> custom_callback,
       SharingSendMessageResult result,
-      std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
+      std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
   void OnAppsReceived(int dialog_id,
                       const std::optional<url::Origin>& initiating_origin,

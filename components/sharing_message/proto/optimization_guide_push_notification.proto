@@ -5,9 +5,9 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "org.chromium.chrome.browser.sharing.proto";
+option java_package = "org.chromium.components.sharing_message.proto";
 
-package chrome_browser_sharing;
+package components_sharing_message;
 
 // Required in Chrome.
 option optimize_for = LITE_RUNTIME;

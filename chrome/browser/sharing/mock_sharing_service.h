@@ -7,10 +7,10 @@
 
 #include <optional>
 
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 #include "chrome/browser/sharing/sharing_message_sender.h"
 #include "chrome/browser/sharing/sharing_service.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockSharingService : public SharingService {
@@ -31,21 +31,21 @@ class MockSharingService : public SharingService {
       SendMessageToDevice,
       base::OnceClosure(const SharingTargetDeviceInfo& device,
                         base::TimeDelta response_timeout,
-                        chrome_browser_sharing::SharingMessage message,
+                        components_sharing_message::SharingMessage message,
                         SharingMessageSender::ResponseCallback callback));
 
   MOCK_CONST_METHOD1(
       GetDeviceByGuid,
       std::optional<SharingTargetDeviceInfo>(const std::string& guid));
 
-  MOCK_METHOD2(
-      RegisterSharingHandler,
-      void(std::unique_ptr<SharingMessageHandler> handler,
-           chrome_browser_sharing::SharingMessage::PayloadCase payload_case));
+  MOCK_METHOD2(RegisterSharingHandler,
+               void(std::unique_ptr<SharingMessageHandler> handler,
+                    components_sharing_message::SharingMessage::PayloadCase
+                        payload_case));
 
-  MOCK_METHOD1(
-      UnregisterSharingHandler,
-      void(chrome_browser_sharing::SharingMessage::PayloadCase payload_case));
+  MOCK_METHOD1(UnregisterSharingHandler,
+               void(components_sharing_message::SharingMessage::PayloadCase
+                        payload_case));
 };
 
 #endif  // CHROME_BROWSER_SHARING_MOCK_SHARING_SERVICE_H_

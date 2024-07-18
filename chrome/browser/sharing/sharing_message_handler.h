@@ -9,22 +9,22 @@
 
 #include "base/functional/callback.h"
 
-namespace chrome_browser_sharing {
+namespace components_sharing_message {
 class SharingMessage;
 class ResponseMessage;
-}  // namespace chrome_browser_sharing
+}  // namespace components_sharing_message
 
 // Interface for handling incoming SharingMessage.
 class SharingMessageHandler {
  public:
   using DoneCallback = base::OnceCallback<void(
-      std::unique_ptr<chrome_browser_sharing::ResponseMessage>)>;
+      std::unique_ptr<components_sharing_message::ResponseMessage>)>;
 
   virtual ~SharingMessageHandler() = default;
 
   // Called when a SharingMessage has been received. |done_callback| must be
   // invoked after work to determine response is done.
-  virtual void OnMessage(chrome_browser_sharing::SharingMessage message,
+  virtual void OnMessage(components_sharing_message::SharingMessage message,
                          DoneCallback done_callback) = 0;
 };
 

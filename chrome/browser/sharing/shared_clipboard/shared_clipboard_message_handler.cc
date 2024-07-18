@@ -9,10 +9,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/sharing/proto/shared_clipboard_message.pb.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
+#include "components/sharing_message/proto/shared_clipboard_message.pb.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
@@ -23,7 +23,7 @@ SharedClipboardMessageHandler::SharedClipboardMessageHandler(
 SharedClipboardMessageHandler::~SharedClipboardMessageHandler() = default;
 
 void SharedClipboardMessageHandler::OnMessage(
-    chrome_browser_sharing::SharingMessage message,
+    components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
   DCHECK(message.has_shared_clipboard_message());
   TRACE_EVENT0("sharing", "SharedClipboardMessageHandler::OnMessage");

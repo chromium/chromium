@@ -11,8 +11,6 @@
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/sharing/proto/optimization_guide_push_notification.pb.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -20,8 +18,10 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
+#include "components/sharing_message/proto/optimization_guide_push_notification.pb.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 
-using chrome_browser_sharing::OptimizationGuidePushNotification;
+using components_sharing_message::OptimizationGuidePushNotification;
 
 // static
 std::unique_ptr<OptimizationGuideMessageHandler>
@@ -54,7 +54,7 @@ OptimizationGuideMessageHandler::OptimizationGuideMessageHandler(
 OptimizationGuideMessageHandler::~OptimizationGuideMessageHandler() = default;
 
 void OptimizationGuideMessageHandler::OnMessage(
-    chrome_browser_sharing::SharingMessage message,
+    components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
   DCHECK(message.has_optimization_guide_push_notification());
 

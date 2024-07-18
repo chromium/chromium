@@ -14,13 +14,13 @@
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
-#include "chrome/browser/sharing/proto/remote_copy_message.pb.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_handle_message_result.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_test_base.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sharing_message/proto/remote_copy_message.pb.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -78,22 +78,22 @@ class RemoteCopyMessageHandlerTest : public SharedClipboardTestBase {
   }
 
  protected:
-  chrome_browser_sharing::SharingMessage CreateMessageWithText(
+  components_sharing_message::SharingMessage CreateMessageWithText(
       const std::string& guid,
       const std::string& device_name,
       const std::string& text) {
-    chrome_browser_sharing::SharingMessage message =
+    components_sharing_message::SharingMessage message =
         SharedClipboardTestBase::CreateMessage(guid, device_name);
     message.mutable_remote_copy_message()->set_text(text);
     return message;
   }
 
-  chrome_browser_sharing::SharingMessage CreateMessageWithImage(
+  components_sharing_message::SharingMessage CreateMessageWithImage(
       const std::string& image_url) {
     image_url_ = image_url;
     image_ = gfx::test::CreateBitmap(10, 20, SK_ColorRED);
 
-    chrome_browser_sharing::SharingMessage message =
+    components_sharing_message::SharingMessage message =
         SharedClipboardTestBase::CreateMessage(
             base::Uuid::GenerateRandomV4().AsLowercaseString(),
             kDeviceNameInMessage);

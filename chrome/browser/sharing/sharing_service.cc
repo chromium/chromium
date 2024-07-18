@@ -76,7 +76,7 @@ SharingService::SharingDeviceList SharingService::GetDeviceCandidates(
 base::OnceClosure SharingService::SendMessageToDevice(
     const SharingTargetDeviceInfo& device,
     base::TimeDelta response_timeout,
-    chrome_browser_sharing::SharingMessage message,
+    components_sharing_message::SharingMessage message,
     SharingMessageSender::ResponseCallback callback) {
   return message_sender_->SendMessageToDevice(
       device, response_timeout, std::move(message),
@@ -85,12 +85,12 @@ base::OnceClosure SharingService::SendMessageToDevice(
 
 void SharingService::RegisterSharingHandler(
     std::unique_ptr<SharingMessageHandler> handler,
-    chrome_browser_sharing::SharingMessage::PayloadCase payload_case) {
+    components_sharing_message::SharingMessage::PayloadCase payload_case) {
   handler_registry_->RegisterSharingHandler(std::move(handler), payload_case);
 }
 
 void SharingService::UnregisterSharingHandler(
-    chrome_browser_sharing::SharingMessage::PayloadCase payload_case) {
+    components_sharing_message::SharingMessage::PayloadCase payload_case) {
   handler_registry_->UnregisterSharingHandler(payload_case);
 }
 
@@ -133,7 +133,8 @@ SharingMessageSender* SharingService::GetMessageSenderForTesting() const {
 }
 
 SharingMessageHandler* SharingService::GetSharingHandlerForTesting(
-    chrome_browser_sharing::SharingMessage::PayloadCase payload_case) const {
+    components_sharing_message::SharingMessage::PayloadCase payload_case)
+    const {
   return handler_registry_->GetSharingHandler(payload_case);
 }
 

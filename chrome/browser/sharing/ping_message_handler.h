@@ -17,7 +17,7 @@ class PingMessageHandler : public SharingMessageHandler {
   ~PingMessageHandler() override;
 
   // SharingMessageHandler implementation:
-  void OnMessage(chrome_browser_sharing::SharingMessage message,
+  void OnMessage(components_sharing_message::SharingMessage message,
                  SharingMessageHandler::DoneCallback done_callback) override;
 };
 

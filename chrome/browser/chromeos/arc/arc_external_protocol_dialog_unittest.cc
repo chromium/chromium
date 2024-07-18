@@ -9,8 +9,6 @@
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
-#include "chrome/browser/sharing/proto/click_to_call_message.pb.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -19,6 +17,8 @@
 #include "components/arc/common/test/fake_arc_icon_cache.h"
 #include "components/arc/common/test/fake_arc_intent_helper_mojo.h"
 #include "components/sharing_message/features.h"
+#include "components/sharing_message/proto/click_to_call_message.pb.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1013,7 +1013,7 @@ TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
 
   GURL phone_number("tel:073%2099%209999%2099");
 
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_click_to_call_message()->set_phone_number(
       phone_number.GetContent());
   EXPECT_CALL(*sharing_service,

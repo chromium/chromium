@@ -19,22 +19,22 @@ class FakeSharingHandlerRegistry : public SharingHandlerRegistry {
 
   // SharingHandlerRegistry:
   SharingMessageHandler* GetSharingHandler(
-      chrome_browser_sharing::SharingMessage::PayloadCase payload_case)
+      components_sharing_message::SharingMessage::PayloadCase payload_case)
       override;
   void RegisterSharingHandler(
       std::unique_ptr<SharingMessageHandler> handler,
-      chrome_browser_sharing::SharingMessage::PayloadCase payload_case)
+      components_sharing_message::SharingMessage::PayloadCase payload_case)
       override;
   void UnregisterSharingHandler(
-      chrome_browser_sharing::SharingMessage::PayloadCase payload_case)
+      components_sharing_message::SharingMessage::PayloadCase payload_case)
       override;
 
   void SetSharingHandler(
-      chrome_browser_sharing::SharingMessage::PayloadCase payload_case,
+      components_sharing_message::SharingMessage::PayloadCase payload_case,
       SharingMessageHandler* handler);
 
  private:
-  std::map<chrome_browser_sharing::SharingMessage::PayloadCase,
+  std::map<components_sharing_message::SharingMessage::PayloadCase,
            SharingMessageHandler*>
       handler_map_;
 };

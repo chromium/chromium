@@ -33,7 +33,7 @@ class RemoteCopyMessageHandler : public SharingMessageHandler,
   ~RemoteCopyMessageHandler() override;
 
   // SharingMessageHandler implementation:
-  void OnMessage(chrome_browser_sharing::SharingMessage message,
+  void OnMessage(components_sharing_message::SharingMessage message,
                  DoneCallback done_callback) override;
 
   // ImageDecoder::ImageRequest implementation:

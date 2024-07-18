@@ -70,7 +70,7 @@ class ClickToCallBrowserTest : public SharingBrowserTest {
 
   void CheckLastSharingMessageSent(
       const std::string& expected_phone_number) const {
-    chrome_browser_sharing::SharingMessage sharing_message =
+    components_sharing_message::SharingMessage sharing_message =
         GetLastSharingMessageSent();
     ASSERT_TRUE(sharing_message.has_click_to_call_message());
     EXPECT_EQ(expected_phone_number,

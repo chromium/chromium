@@ -10,7 +10,6 @@
 #include "base/callback_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sharing/sharing_utils.h"
@@ -19,6 +18,7 @@
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/sharing_message/features.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
@@ -213,7 +213,7 @@ TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
   ON_CALL(vapid_key_manager_, GetOrCreateKey())
       .WillByDefault(testing::Return(vapid_key.get()));
 
-  chrome_browser_sharing::FCMChannelConfiguration fcm_channel;
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
   fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
   fcm_channel.set_vapid_p256dh(kVapidP256dh);
   fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
@@ -224,7 +224,7 @@ TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
   SharingSendMessageResult result;
   std::optional<std::string> message_id;
   SharingChannelType channel_type;
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
@@ -246,7 +246,7 @@ TEST_F(SharingFCMSenderTest, NoVapidKey) {
   ON_CALL(vapid_key_manager_, GetOrCreateKey())
       .WillByDefault(testing::Return(nullptr));
 
-  chrome_browser_sharing::FCMChannelConfiguration fcm_channel;
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
   fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
   fcm_channel.set_vapid_p256dh(kVapidP256dh);
   fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
@@ -257,7 +257,7 @@ TEST_F(SharingFCMSenderTest, NoVapidKey) {
   SharingSendMessageResult result;
   std::optional<std::string> message_id;
   SharingChannelType channel_type;
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
@@ -279,13 +279,13 @@ TEST_F(SharingFCMSenderTest, NoChannelsSpecified) {
   ON_CALL(vapid_key_manager_, GetOrCreateKey())
       .WillByDefault(testing::Return(vapid_key.get()));
 
-  chrome_browser_sharing::FCMChannelConfiguration fcm_channel;
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
   // Don't set any channels.
 
   SharingSendMessageResult result;
   std::optional<std::string> message_id;
   SharingChannelType channel_type;
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
@@ -311,7 +311,7 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
   ON_CALL(vapid_key_manager_, GetOrCreateKey())
       .WillByDefault(testing::Return(vapid_key.get()));
 
-  chrome_browser_sharing::FCMChannelConfiguration fcm_channel;
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
   // Set both VAPID and Sender ID channel.
   fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
   fcm_channel.set_vapid_p256dh(kVapidP256dh);
@@ -323,7 +323,7 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
   SharingSendMessageResult result;
   std::optional<std::string> message_id;
   SharingChannelType channel_type;
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
@@ -333,7 +333,7 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
 
   EXPECT_EQ(SharingSendMessageResult::kSuccessful, result);
   // Ensures that a Ping message is sent through SharingMessageBridge.
-  chrome_browser_sharing::SharingMessage message_sent;
+  components_sharing_message::SharingMessage message_sent;
   ASSERT_TRUE(fake_sharing_message_bridge_.specifics());
   ASSERT_TRUE(fake_sharing_message_bridge_.specifics()->has_payload());
   message_sent.ParseFromString(
@@ -381,7 +381,7 @@ TEST_P(SharingFCMSenderWebPushResultTest, ResultTest) {
   ON_CALL(vapid_key_manager_, GetOrCreateKey())
       .WillByDefault(testing::Return(vapid_key.get()));
 
-  chrome_browser_sharing::FCMChannelConfiguration fcm_channel;
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
   fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
   fcm_channel.set_vapid_p256dh(kVapidP256dh);
   fcm_channel.set_vapid_auth_secret(kVapidAuthSecret);
@@ -389,7 +389,7 @@ TEST_P(SharingFCMSenderWebPushResultTest, ResultTest) {
   SharingSendMessageResult result;
   std::optional<std::string> message_id;
   SharingChannelType channel_type;
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
@@ -407,7 +407,7 @@ TEST_P(SharingFCMSenderWebPushResultTest, ResultTest) {
   EXPECT_EQ(kTtlSeconds, fake_web_push_sender_->message()->time_to_live);
   EXPECT_EQ(WebPushMessage::Urgency::kHigh,
             fake_web_push_sender_->message()->urgency);
-  chrome_browser_sharing::SharingMessage message_sent;
+  components_sharing_message::SharingMessage message_sent;
   ASSERT_TRUE(fake_web_push_sender_->message());
   message_sent.ParseFromString(fake_web_push_sender_->message()->payload);
   EXPECT_TRUE(message_sent.has_ping_message());
@@ -457,7 +457,7 @@ class SharingFCMSenderCommitErrorCodeTest
 TEST_P(SharingFCMSenderCommitErrorCodeTest, ErrorCodeTest) {
   fake_sharing_message_bridge_.set_error_code(GetParam().commit_error_code);
 
-  chrome_browser_sharing::FCMChannelConfiguration fcm_channel;
+  components_sharing_message::FCMChannelConfiguration fcm_channel;
   fcm_channel.set_sender_id_fcm_token(kSenderIdFcmToken);
   fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
@@ -465,7 +465,7 @@ TEST_P(SharingFCMSenderCommitErrorCodeTest, ErrorCodeTest) {
   SharingSendMessageResult result;
   std::optional<std::string> message_id;
   SharingChannelType channel_type;
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
   sharing_fcm_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
@@ -487,7 +487,7 @@ TEST_P(SharingFCMSenderCommitErrorCodeTest, ErrorCodeTest) {
   EXPECT_EQ(kTtlSeconds, fcm.ttl());
   EXPECT_EQ(10, fcm.priority());
 
-  chrome_browser_sharing::SharingMessage message_sent;
+  components_sharing_message::SharingMessage message_sent;
   ASSERT_TRUE(specifics->has_payload());
   message_sent.ParseFromString(specifics->payload());
   EXPECT_TRUE(message_sent.has_ping_message());
@@ -505,7 +505,7 @@ TEST_F(SharingFCMSenderTest, ServerTarget) {
   fake_sharing_message_bridge_.set_error_code(
       sync_pb::SharingMessageCommitError::NONE);
 
-  chrome_browser_sharing::ServerChannelConfiguration server_channel;
+  components_sharing_message::ServerChannelConfiguration server_channel;
   server_channel.set_configuration(kServerConfiguration);
   server_channel.set_p256dh(kServerP256dh);
   server_channel.set_auth_secret(kServerAuthSecret);
@@ -513,7 +513,7 @@ TEST_F(SharingFCMSenderTest, ServerTarget) {
   SharingSendMessageResult result;
   std::optional<std::string> message_id;
   SharingChannelType channel_type;
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
   sharing_fcm_sender_.SendMessageToServerTarget(
       server_channel, std::move(sharing_message),
@@ -531,7 +531,7 @@ TEST_F(SharingFCMSenderTest, ServerTarget) {
   ASSERT_TRUE(specifics->has_channel_configuration());
   EXPECT_EQ(kServerConfiguration, specifics->channel_configuration().server());
 
-  chrome_browser_sharing::SharingMessage message_sent;
+  components_sharing_message::SharingMessage message_sent;
   ASSERT_TRUE(specifics->has_payload());
   message_sent.ParseFromString(specifics->payload());
   EXPECT_TRUE(message_sent.has_ping_message());

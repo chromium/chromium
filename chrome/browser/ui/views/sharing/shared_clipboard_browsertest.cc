@@ -42,7 +42,7 @@ class SharedClipboardBrowserTestBase : public SharingBrowserTest {
   }
 
   void CheckLastSharingMessageSent(const std::string& expected_text) const {
-    chrome_browser_sharing::SharingMessage sharing_message =
+    components_sharing_message::SharingMessage sharing_message =
         GetLastSharingMessageSent();
     ASSERT_TRUE(sharing_message.has_shared_clipboard_message());
     ASSERT_EQ(expected_text, sharing_message.shared_clipboard_message().text());

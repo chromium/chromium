@@ -14,7 +14,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/sharing/mock_sharing_device_source.h"
 #include "chrome/browser/sharing/mock_sharing_message_sender.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_device_registration.h"
 #include "chrome/browser/sharing/sharing_device_registration_result.h"
@@ -27,6 +26,7 @@
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/sharing_message/features.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -69,21 +69,21 @@ class MockSharingHandlerRegistry : public SharingHandlerRegistry {
   MockSharingHandlerRegistry() = default;
   ~MockSharingHandlerRegistry() override = default;
 
-  MOCK_METHOD1(
-      GetSharingHandler,
-      SharingMessageHandler*(
-          chrome_browser_sharing::SharingMessage::PayloadCase payload_case));
-  MOCK_METHOD2(
-      RegisterSharingHandler,
-      void(std::unique_ptr<SharingMessageHandler> handler,
-           chrome_browser_sharing::SharingMessage::PayloadCase payload_case));
-  MOCK_METHOD1(
-      UnregisterSharingHandler,
-      void(chrome_browser_sharing::SharingMessage::PayloadCase payload_case));
+  MOCK_METHOD1(GetSharingHandler,
+               SharingMessageHandler*(
+                   components_sharing_message::SharingMessage::PayloadCase
+                       payload_case));
+  MOCK_METHOD2(RegisterSharingHandler,
+               void(std::unique_ptr<SharingMessageHandler> handler,
+                    components_sharing_message::SharingMessage::PayloadCase
+                        payload_case));
+  MOCK_METHOD1(UnregisterSharingHandler,
+               void(components_sharing_message::SharingMessage::PayloadCase
+                        payload_case));
 };
 
 class MockSharingFCMHandler : public SharingFCMHandler {
-  using SharingMessage = chrome_browser_sharing::SharingMessage;
+  using SharingMessage = components_sharing_message::SharingMessage;
 
  public:
   MockSharingFCMHandler()
@@ -166,7 +166,7 @@ class SharingServiceTest : public testing::Test {
 
   void OnMessageSent(
       SharingSendMessageResult result,
-      std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
+      std::unique_ptr<components_sharing_message::ResponseMessage> response) {
     send_message_result_ = std::make_optional(result);
     send_message_response_ = std::move(response);
   }
@@ -175,7 +175,7 @@ class SharingServiceTest : public testing::Test {
     return send_message_result_;
   }
 
-  const chrome_browser_sharing::ResponseMessage* send_message_response() {
+  const components_sharing_message::ResponseMessage* send_message_response() {
     return send_message_response_.get();
   }
 
@@ -225,7 +225,7 @@ class SharingServiceTest : public testing::Test {
 
  private:
   std::optional<SharingSendMessageResult> send_message_result_;
-  std::unique_ptr<chrome_browser_sharing::ResponseMessage>
+  std::unique_ptr<components_sharing_message::ResponseMessage>
       send_message_response_;
 };
 
@@ -272,15 +272,16 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
   SharingTargetDeviceInfo device_info = CreateFakeSharingTargetDeviceInfo(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), kDeviceName);
 
-  chrome_browser_sharing::ResponseMessage expected_response_message;
+  components_sharing_message::ResponseMessage expected_response_message;
 
   auto run_callback = [&](const SharingTargetDeviceInfo& device_info,
                           base::TimeDelta response_timeout,
-                          chrome_browser_sharing::SharingMessage message,
+                          components_sharing_message::SharingMessage message,
                           SharingMessageSender::DelegateType delegate_type,
                           SharingMessageSender::ResponseCallback callback) {
-    std::unique_ptr<chrome_browser_sharing::ResponseMessage> response_message =
-        std::make_unique<chrome_browser_sharing::ResponseMessage>();
+    std::unique_ptr<components_sharing_message::ResponseMessage>
+        response_message =
+            std::make_unique<components_sharing_message::ResponseMessage>();
     response_message->CopyFrom(expected_response_message);
     std::move(callback).Run(SharingSendMessageResult::kSuccessful,
                             std::move(response_message));
@@ -293,7 +294,7 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
       .WillByDefault(testing::Invoke(run_callback));
 
   GetSharingService()->SendMessageToDevice(
-      device_info, kTimeout, chrome_browser_sharing::SharingMessage(),
+      device_info, kTimeout, components_sharing_message::SharingMessage(),
       base::BindOnce(&SharingServiceTest::OnMessageSent,
                      base::Unretained(this)));
 
@@ -518,12 +519,13 @@ TEST_F(SharingServiceTest, AddSharingHandler) {
               RegisterSharingHandler(testing::_, testing::_))
       .Times(1);
   GetSharingService()->RegisterSharingHandler(
-      nullptr, chrome_browser_sharing::SharingMessage::kSharedClipboardMessage);
+      nullptr,
+      components_sharing_message::SharingMessage::kSharedClipboardMessage);
 }
 
 TEST_F(SharingServiceTest, RemoveSharingHandler) {
   EXPECT_CALL(*handler_registry_, UnregisterSharingHandler(testing::_))
       .Times(1);
   GetSharingService()->UnregisterSharingHandler(
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage);
+      components_sharing_message::SharingMessage::kSharedClipboardMessage);
 }

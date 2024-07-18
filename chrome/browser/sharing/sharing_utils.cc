@@ -4,8 +4,8 @@
 
 #include "chrome/browser/sharing/sharing_utils.h"
 
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -85,12 +85,12 @@ bool IsSyncDisabledForSharing(syncer::SyncService* sync_service) {
   return false;
 }
 
-std::optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
-    const syncer::DeviceInfo& device_info) {
+std::optional<components_sharing_message::FCMChannelConfiguration>
+GetFCMChannel(const syncer::DeviceInfo& device_info) {
   if (!device_info.sharing_info())
     return std::nullopt;
 
-  chrome_browser_sharing::FCMChannelConfiguration fcm_configuration;
+  components_sharing_message::FCMChannelConfiguration fcm_configuration;
   auto& vapid_target_info = device_info.sharing_info()->vapid_target_info;
   auto& sender_id_target_info =
       device_info.sharing_info()->sender_id_target_info;

@@ -25,7 +25,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 
-using SharingMessage = chrome_browser_sharing::SharingMessage;
+using SharingMessage = components_sharing_message::SharingMessage;
 
 // static
 SmsRemoteFetcherUiController*
@@ -94,7 +94,7 @@ SharingFeatureName SmsRemoteFetcherUiController::GetFeatureMetricsPrefix()
 void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
     OnRemoteCallback callback,
     SharingSendMessageResult result,
-    std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
+    std::unique_ptr<components_sharing_message::ResponseMessage> response) {
   if (result != SharingSendMessageResult::kSuccessful) {
     std::move(callback).Run(std::nullopt, std::nullopt,
                             content::SmsFetchFailureType::kCrossDeviceFailure);
@@ -143,7 +143,7 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
   // select device because the site sends out the SMS asynchronously.
   const SharingTargetDeviceInfo& device = devices.front();
   last_device_name_ = device.client_name();
-  chrome_browser_sharing::SharingMessage request;
+  components_sharing_message::SharingMessage request;
 
   for (const url::Origin& origin : origin_list)
     request.mutable_sms_fetch_request()->add_origins(origin.Serialize());

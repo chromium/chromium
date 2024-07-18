@@ -13,9 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_send_message_result.h"
 #include "components/gcm_driver/gcm_app_handler.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace gcm {
@@ -71,30 +71,31 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
   void OnMessagesDeleted(const std::string& app_id) override;
 
  private:
-  std::optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
-      const chrome_browser_sharing::SharingMessage& original_message);
+  std::optional<components_sharing_message::FCMChannelConfiguration>
+  GetFCMChannel(
+      const components_sharing_message::SharingMessage& original_message);
 
-  std::optional<chrome_browser_sharing::ServerChannelConfiguration>
+  std::optional<components_sharing_message::ServerChannelConfiguration>
   GetServerChannel(
-      const chrome_browser_sharing::SharingMessage& original_message);
+      const components_sharing_message::SharingMessage& original_message);
 
   SharingDevicePlatform GetSenderPlatform(
-      const chrome_browser_sharing::SharingMessage& original_message);
+      const components_sharing_message::SharingMessage& original_message);
 
   // Ack message sent back to the original sender of message.
   void SendAckMessage(
       std::string original_message_id,
-      chrome_browser_sharing::MessageType original_message_type,
-      std::optional<chrome_browser_sharing::FCMChannelConfiguration>
+      components_sharing_message::MessageType original_message_type,
+      std::optional<components_sharing_message::FCMChannelConfiguration>
           fcm_channel,
-      std::optional<chrome_browser_sharing::ServerChannelConfiguration>
+      std::optional<components_sharing_message::ServerChannelConfiguration>
           server_channel,
       SharingDevicePlatform sender_device_type,
-      std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
+      std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
   void OnAckMessageSent(
       std::string original_message_id,
-      chrome_browser_sharing::MessageType original_message_type,
+      components_sharing_message::MessageType original_message_type,
       SharingDevicePlatform sender_device_type,
       int trace_id,
       SharingSendMessageResult result,

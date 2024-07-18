@@ -96,7 +96,7 @@ class SharingBrowserTest : public SyncTest {
 
   void CheckLastReceiver(const SharingTargetDeviceInfo& device) const;
 
-  chrome_browser_sharing::SharingMessage GetLastSharingMessageSent() const;
+  components_sharing_message::SharingMessage GetLastSharingMessageSent() const;
 
   SharingService* sharing_service() const;
 

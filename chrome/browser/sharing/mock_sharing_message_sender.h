@@ -10,9 +10,9 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_sender.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockSharingMessageSender : public SharingMessageSender {
@@ -25,14 +25,14 @@ class MockSharingMessageSender : public SharingMessageSender {
   MOCK_METHOD5(SendMessageToDevice,
                base::OnceClosure(const SharingTargetDeviceInfo&,
                                  base::TimeDelta,
-                                 chrome_browser_sharing::SharingMessage,
+                                 components_sharing_message::SharingMessage,
                                  DelegateType,
                                  ResponseCallback));
 
-  MOCK_METHOD2(
-      OnAckReceived,
-      void(const std::string& fcm_message_id,
-           std::unique_ptr<chrome_browser_sharing::ResponseMessage> response));
+  MOCK_METHOD2(OnAckReceived,
+               void(const std::string& fcm_message_id,
+                    std::unique_ptr<components_sharing_message::ResponseMessage>
+                        response));
 };
 
 #endif  // CHROME_BROWSER_SHARING_MOCK_SHARING_MESSAGE_SENDER_H_

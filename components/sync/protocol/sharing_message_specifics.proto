@@ -79,7 +79,7 @@ message SharingMessageSpecifics {
 
   // Payload encrypted using the target user keys according to WebPush
   // encryption scheme. The payload has to be a valid
-  // chrome/browser/sharing/proto/sharing_message.proto serialized using
+  // components/sharing_message/proto/sharing_message.proto serialized using
   // SerializeToString.
   optional bytes payload = 3;
 

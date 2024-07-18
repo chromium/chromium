@@ -18,10 +18,10 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/proto/remote_copy_message.pb.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/sharing_message/proto/remote_copy_message.pb.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -97,7 +97,7 @@ RemoteCopyMessageHandler::RemoteCopyMessageHandler(Profile* profile)
 RemoteCopyMessageHandler::~RemoteCopyMessageHandler() = default;
 
 void RemoteCopyMessageHandler::OnMessage(
-    chrome_browser_sharing::SharingMessage message,
+    components_sharing_message::SharingMessage message,
     DoneCallback done_callback) {
   DCHECK(message.has_remote_copy_message());
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::OnMessage");
@@ -109,13 +109,13 @@ void RemoteCopyMessageHandler::OnMessage(
   device_name_ = message.sender_device_name();
 
   switch (message.remote_copy_message().content_case()) {
-    case chrome_browser_sharing::RemoteCopyMessage::kText:
+    case components_sharing_message::RemoteCopyMessage::kText:
       HandleText(message.remote_copy_message().text());
       break;
-    case chrome_browser_sharing::RemoteCopyMessage::kImageUrl:
+    case components_sharing_message::RemoteCopyMessage::kImageUrl:
       HandleImage(message.remote_copy_message().image_url());
       break;
-    case chrome_browser_sharing::RemoteCopyMessage::CONTENT_NOT_SET:
+    case components_sharing_message::RemoteCopyMessage::CONTENT_NOT_SET:
       NOTREACHED_IN_MIGRATION();
       break;
   }

@@ -10,12 +10,12 @@
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/mock_sharing_device_source.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
-#include "chrome/browser/sharing/proto/shared_clipboard_message.pb.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_test_base.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sharing_message/proto/shared_clipboard_message.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,10 +48,9 @@ class SharedClipboardMessageHandlerTest : public SharedClipboardTestBase {
         &device_source_, &profile_);
   }
 
-  chrome_browser_sharing::SharingMessage CreateMessage(std::string guid,
-                                                       std::string device_name,
-                                                       std::string text) {
-    chrome_browser_sharing::SharingMessage message =
+  components_sharing_message::SharingMessage
+  CreateMessage(std::string guid, std::string device_name, std::string text) {
+    components_sharing_message::SharingMessage message =
         SharedClipboardTestBase::CreateMessage(guid, device_name);
     message.mutable_shared_clipboard_message()->set_text(text);
     return message;

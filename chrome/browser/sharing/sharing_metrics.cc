@@ -114,52 +114,53 @@ std::string SharingSendMessageResultToString(SharingSendMessageResult result) {
   }
 }
 
-chrome_browser_sharing::MessageType SharingPayloadCaseToMessageType(
-    chrome_browser_sharing::SharingMessage::PayloadCase payload_case) {
+components_sharing_message::MessageType SharingPayloadCaseToMessageType(
+    components_sharing_message::SharingMessage::PayloadCase payload_case) {
   switch (payload_case) {
-    case chrome_browser_sharing::SharingMessage::PAYLOAD_NOT_SET:
-      return chrome_browser_sharing::UNKNOWN_MESSAGE;
-    case chrome_browser_sharing::SharingMessage::kPingMessage:
-      return chrome_browser_sharing::PING_MESSAGE;
-    case chrome_browser_sharing::SharingMessage::kAckMessage:
-      return chrome_browser_sharing::ACK_MESSAGE;
-    case chrome_browser_sharing::SharingMessage::kClickToCallMessage:
-      return chrome_browser_sharing::CLICK_TO_CALL_MESSAGE;
-    case chrome_browser_sharing::SharingMessage::kSharedClipboardMessage:
-      return chrome_browser_sharing::SHARED_CLIPBOARD_MESSAGE;
-    case chrome_browser_sharing::SharingMessage::kSmsFetchRequest:
-      return chrome_browser_sharing::SMS_FETCH_REQUEST;
-    case chrome_browser_sharing::SharingMessage::kRemoteCopyMessage:
-      return chrome_browser_sharing::REMOTE_COPY_MESSAGE;
-    case chrome_browser_sharing::SharingMessage::kPeerConnectionOfferMessage:
-      return chrome_browser_sharing::PEER_CONNECTION_OFFER_MESSAGE;
-    case chrome_browser_sharing::SharingMessage::
+    case components_sharing_message::SharingMessage::PAYLOAD_NOT_SET:
+      return components_sharing_message::UNKNOWN_MESSAGE;
+    case components_sharing_message::SharingMessage::kPingMessage:
+      return components_sharing_message::PING_MESSAGE;
+    case components_sharing_message::SharingMessage::kAckMessage:
+      return components_sharing_message::ACK_MESSAGE;
+    case components_sharing_message::SharingMessage::kClickToCallMessage:
+      return components_sharing_message::CLICK_TO_CALL_MESSAGE;
+    case components_sharing_message::SharingMessage::kSharedClipboardMessage:
+      return components_sharing_message::SHARED_CLIPBOARD_MESSAGE;
+    case components_sharing_message::SharingMessage::kSmsFetchRequest:
+      return components_sharing_message::SMS_FETCH_REQUEST;
+    case components_sharing_message::SharingMessage::kRemoteCopyMessage:
+      return components_sharing_message::REMOTE_COPY_MESSAGE;
+    case components_sharing_message::SharingMessage::
+        kPeerConnectionOfferMessage:
+      return components_sharing_message::PEER_CONNECTION_OFFER_MESSAGE;
+    case components_sharing_message::SharingMessage::
         kPeerConnectionIceCandidatesMessage:
-      return chrome_browser_sharing::PEER_CONNECTION_ICE_CANDIDATES_MESSAGE;
-    case chrome_browser_sharing::SharingMessage::kDiscoveryRequest:
-      return chrome_browser_sharing::DISCOVERY_REQUEST;
-    case chrome_browser_sharing::SharingMessage::kWebRtcSignalingFrame:
-      return chrome_browser_sharing::WEB_RTC_SIGNALING_FRAME;
-    case chrome_browser_sharing::SharingMessage::
+      return components_sharing_message::PEER_CONNECTION_ICE_CANDIDATES_MESSAGE;
+    case components_sharing_message::SharingMessage::kDiscoveryRequest:
+      return components_sharing_message::DISCOVERY_REQUEST;
+    case components_sharing_message::SharingMessage::kWebRtcSignalingFrame:
+      return components_sharing_message::WEB_RTC_SIGNALING_FRAME;
+    case components_sharing_message::SharingMessage::
         kOptimizationGuidePushNotification:
-      return chrome_browser_sharing::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION;
+      return components_sharing_message::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION;
   }
   // For proto3 enums unrecognized enum values are kept when parsing, and a new
   // payload case received over the network would not default to
   // PAYLOAD_NOT_SET. Explicitly return UNKNOWN_MESSAGE here to handle this
   // case.
-  return chrome_browser_sharing::UNKNOWN_MESSAGE;
+  return components_sharing_message::UNKNOWN_MESSAGE;
 }
 
 const std::string& SharingMessageTypeToString(
-    chrome_browser_sharing::MessageType message_type) {
+    components_sharing_message::MessageType message_type) {
   // For proto3 enums unrecognized enum values are kept when parsing and their
   // name is an empty string. We don't want to use that as a histogram suffix.
-  if (!chrome_browser_sharing::MessageType_IsValid(message_type)) {
-    return chrome_browser_sharing::MessageType_Name(
-        chrome_browser_sharing::UNKNOWN_MESSAGE);
+  if (!components_sharing_message::MessageType_IsValid(message_type)) {
+    return components_sharing_message::MessageType_Name(
+        components_sharing_message::UNKNOWN_MESSAGE);
   }
-  return chrome_browser_sharing::MessageType_Name(message_type);
+  return components_sharing_message::MessageType_Name(message_type);
 }
 
 int GenerateSharingTraceId() {
@@ -169,10 +170,11 @@ int GenerateSharingTraceId() {
 }
 
 void LogSharingMessageReceived(
-    chrome_browser_sharing::SharingMessage::PayloadCase payload_case) {
-  base::UmaHistogramExactLinear("Sharing.MessageReceivedType",
-                                SharingPayloadCaseToMessageType(payload_case),
-                                chrome_browser_sharing::MessageType_ARRAYSIZE);
+    components_sharing_message::SharingMessage::PayloadCase payload_case) {
+  base::UmaHistogramExactLinear(
+      "Sharing.MessageReceivedType",
+      SharingPayloadCaseToMessageType(payload_case),
+      components_sharing_message::MessageType_ARRAYSIZE);
 }
 
 void LogSharingDevicesToShow(SharingFeatureName feature,
@@ -235,7 +237,7 @@ void LogSharingDialogShown(SharingFeatureName feature, SharingDialogType type) {
 }
 
 void LogSendSharingMessageResult(
-    chrome_browser_sharing::MessageType message_type,
+    components_sharing_message::MessageType message_type,
     SharingDevicePlatform receiving_device_platform,
     SharingChannelType channel_type,
     base::TimeDelta pulse_interval,

@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_metrics.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,8 +28,8 @@
 #include "url/origin.h"
 
 using base::BindLambdaForTesting;
-using chrome_browser_sharing::ResponseMessage;
-using chrome_browser_sharing::SharingMessage;
+using components_sharing_message::ResponseMessage;
+using components_sharing_message::SharingMessage;
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Invoke;
@@ -112,7 +112,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
       .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
-                           chrome_browser_sharing::SharingMessage message,
+                           components_sharing_message::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
         auto response = std::make_unique<ResponseMessage>();
         response->mutable_sms_fetch_response()->set_one_time_code("ABC");
@@ -157,7 +157,7 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
       .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
-                           chrome_browser_sharing::SharingMessage message,
+                           components_sharing_message::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
         std::move(callback).Run(SharingSendMessageResult::kAckTimeout,
                                 std::make_unique<ResponseMessage>());
@@ -197,7 +197,7 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
       .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
-                           chrome_browser_sharing::SharingMessage message,
+                           components_sharing_message::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
         std::move(callback).Run(SharingSendMessageResult::kCancelled,
                                 std::make_unique<ResponseMessage>());
@@ -297,7 +297,7 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
       .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
-                           chrome_browser_sharing::SharingMessage message,
+                           components_sharing_message::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
         std::move(callback).Run(SharingSendMessageResult::kAckTimeout,
                                 std::make_unique<ResponseMessage>());
@@ -342,12 +342,13 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
   EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
       .WillOnce(Invoke([&](const SharingTargetDeviceInfo& device_info,
                            base::TimeDelta response_timeout,
-                           chrome_browser_sharing::SharingMessage message,
+                           components_sharing_message::SharingMessage message,
                            SharingMessageSender::ResponseCallback callback) {
         auto response = std::make_unique<ResponseMessage>();
         response->mutable_sms_fetch_response()->set_one_time_code("ABC");
         response->mutable_sms_fetch_response()->set_failure_type(
-            static_cast<chrome_browser_sharing::SmsFetchResponse::FailureType>(
+            static_cast<
+                components_sharing_message::SmsFetchResponse::FailureType>(
                 content::SmsFetchFailureType::kPromptCancelled));
         std::move(callback).Run(SharingSendMessageResult::kSuccessful,
                                 std::move(response));

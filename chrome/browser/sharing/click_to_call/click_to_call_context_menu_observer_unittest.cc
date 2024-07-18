@@ -34,7 +34,7 @@ using ::testing::NiceMock;
 using ::testing::Property;
 using ::testing::Return;
 
-using SharingMessage = chrome_browser_sharing::SharingMessage;
+using SharingMessage = components_sharing_message::SharingMessage;
 
 namespace {
 

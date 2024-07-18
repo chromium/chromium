@@ -8,8 +8,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/sharing/mock_sharing_message_sender.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +38,7 @@ MATCHER_P(ProtoEquals, message, "") {
 }  // namespace
 
 TEST_F(AckMessageHandlerTest, OnMessageNoResponse) {
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message()->set_original_message_id(
       kTestMessageId);
 
@@ -53,12 +53,12 @@ TEST_F(AckMessageHandlerTest, OnMessageNoResponse) {
 }
 
 TEST_F(AckMessageHandlerTest, OnMessageWithResponse) {
-  chrome_browser_sharing::SharingMessage sharing_message;
+  components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message()->set_original_message_id(
       kTestMessageId);
   sharing_message.mutable_ack_message()->mutable_response_message();
 
-  chrome_browser_sharing::ResponseMessage response_message_copy =
+  components_sharing_message::ResponseMessage response_message_copy =
       sharing_message.ack_message().response_message();
 
   base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;

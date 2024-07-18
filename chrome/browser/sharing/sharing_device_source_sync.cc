@@ -12,7 +12,6 @@
 #include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/sharing/sharing_utils.h"

@@ -14,10 +14,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_sender.h"
 #include "chrome/browser/sharing/sharing_send_message_result.h"
 #include "chrome/browser/sharing/web_push/web_push_sender.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace gcm {
@@ -44,7 +44,7 @@ class VapidKeyManager;
 // Responsible for sending FCM messages within Sharing infrastructure.
 class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
  public:
-  using SharingMessage = chrome_browser_sharing::SharingMessage;
+  using SharingMessage = components_sharing_message::SharingMessage;
   using SendMessageCallback =
       base::OnceCallback<void(SharingSendMessageResult result,
                               std::optional<std::string> message_id,
@@ -68,7 +68,8 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
   // message_id if asynchronous operation succeeded, or std::nullopt if
   // operation failed.
   virtual void SendMessageToFcmTarget(
-      const chrome_browser_sharing::FCMChannelConfiguration& fcm_configuration,
+      const components_sharing_message::FCMChannelConfiguration&
+          fcm_configuration,
       base::TimeDelta time_to_live,
       SharingMessage message,
       SendMessageCallback callback);
@@ -77,7 +78,8 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
   // be invoked with message_id if asynchronous operation succeeded, or
   // std::nullopt if operation failed.
   virtual void SendMessageToServerTarget(
-      const chrome_browser_sharing::ServerChannelConfiguration& server_channel,
+      const components_sharing_message::ServerChannelConfiguration&
+          server_channel,
       SharingMessage message,
       SendMessageCallback callback);
 

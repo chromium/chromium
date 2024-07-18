@@ -10,8 +10,8 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
-#include "chrome/browser/sharing/proto/click_to_call_message.pb.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
+#include "components/sharing_message/proto/click_to_call_message.pb.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
@@ -23,7 +23,7 @@ ClickToCallMessageHandler::ClickToCallMessageHandler() = default;
 ClickToCallMessageHandler::~ClickToCallMessageHandler() = default;
 
 void ClickToCallMessageHandler::OnMessage(
-    chrome_browser_sharing::SharingMessage message,
+    components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
   DCHECK(message.has_click_to_call_message());
   TRACE_EVENT0("sharing", "ClickToCallMessageHandler::OnMessage");

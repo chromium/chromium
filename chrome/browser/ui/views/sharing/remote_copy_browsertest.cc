@@ -77,7 +77,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
         SharingServiceFactory::GetForBrowserContext(browser()->profile());
     auto* remote_copy_handler = static_cast<RemoteCopyMessageHandler*>(
         sharing_service_->GetSharingHandlerForTesting(
-            chrome_browser_sharing::SharingMessage::kRemoteCopyMessage));
+            components_sharing_message::SharingMessage::kRemoteCopyMessage));
     ASSERT_TRUE(remote_copy_handler);
     remote_copy_handler->set_allowed_origin_for_testing(server_->base_url());
   }
@@ -90,7 +90,7 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
   gcm::IncomingMessage CreateMessage(const std::string& device_name,
                                      std::optional<std::string> text,
                                      std::optional<GURL> image_url) {
-    chrome_browser_sharing::SharingMessage sharing_message;
+    components_sharing_message::SharingMessage sharing_message;
     sharing_message.set_sender_guid(
         base::Uuid::GenerateRandomV4().AsLowercaseString());
     sharing_message.set_sender_device_name(device_name);
