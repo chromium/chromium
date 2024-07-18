@@ -28,7 +28,7 @@ import {getTemplate} from './voice_selection_menu.html.js';
 export interface VoiceSelectionMenuElement {
   $: {
     voiceSelectionMenu: CrLazyRenderElement<CrActionMenuElement>,
-    languageMenu: CrLazyRenderElement<LanguageMenuElement>,
+    languageMenu: LanguageMenuElement,
   };
 }
 
@@ -62,6 +62,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   private readonly isSpeechActive: boolean;
   private voicePlayingWhenMenuOpened_: boolean = false;
   private enabledVoices_: SpeechSynthesisVoice[];
+  private showLanguageMenuDialog_: boolean = false;
 
   // Events emitted from the voice selection menu to the app
   private readonly spBodyPadding: string =
@@ -88,6 +89,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       paused: Boolean,
       localeToDisplayName: Object,
       lastDownloadedLang: String,
+      showLanguageMenuDialog_: Boolean,
       downloadingMessages_: {
         type: Boolean,
         computed: 'computeDownloadingMessages_(voicePackInstallStatus)',
@@ -204,12 +206,15 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
 
   private openLanguageMenu_() {
     this.$.voiceSelectionMenu.get().close();
-    this.$.languageMenu.get().showDialog();
-    this.$.languageMenu.get().addEventListener('close', () => {
-      // TODO(b/345266392): Ensure menu is more correctly positioned after
-      // a re-open.
-      openMenu(this.$.voiceSelectionMenu.get(), this.$.voiceSelectionMenu);
-    });
+    this.showLanguageMenuDialog_ = true;
+  }
+
+  private onLanguageMenuClose_(event: CustomEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.showLanguageMenuDialog_ = false;
+    openMenu(this.$.voiceSelectionMenu.get(), this.$.voiceSelectionMenu);
   }
 
   private onClose_() {

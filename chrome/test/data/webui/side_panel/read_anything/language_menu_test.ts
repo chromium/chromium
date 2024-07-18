@@ -36,11 +36,6 @@ suite('LanguageMenu', () => {
     flush();
   }
 
-  function reopenLanguageMenu() {
-    languageMenu.dispatchEvent(new CustomEvent('cr-dialog-open'));
-    flush();
-  }
-
   function getLanguageLineItems() {
     return languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
         '.language-line');
@@ -85,7 +80,6 @@ suite('LanguageMenu', () => {
           34 :
           availableVoices.length;
       setAvailableVoices();
-      languageMenu.showDialog();
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(expectedLanguages, getLanguageLineItems().length);
     });
@@ -101,7 +95,6 @@ suite('LanguageMenu', () => {
       availableVoices =
           [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
       setAvailableVoices();
-      languageMenu.showDialog();
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(1, getLanguageLineItems().length);
     });
@@ -115,7 +108,6 @@ suite('LanguageMenu', () => {
       availableVoices =
           [createSpeechSynthesisVoice({name: 'test voice 5', lang: 'en-es'})];
       setAvailableVoices();
-      languageMenu.showDialog();
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(expectedLanguages + 1, getLanguageLineItems().length);
     });
@@ -131,7 +123,6 @@ suite('LanguageMenu', () => {
         createSpeechSynthesisVoice({name: 'Dustin', lang: 'bn-bd'}),
       ];
       setAvailableVoices();
-      languageMenu.showDialog();
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(expectedLanguages + 2, getLanguageLineItems().length);
       assertLanguageLineWithTextAndSwitch('bn-bd', getLanguageLineItems()[0]!);
@@ -144,7 +135,6 @@ suite('LanguageMenu', () => {
       availableVoices =
           [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
       setAvailableVoices();
-      languageMenu.showDialog();
     });
 
     test(
@@ -224,7 +214,6 @@ suite('LanguageMenu', () => {
       setAvailableVoices();
       enabledLangs = ['Italian'];
       setEnabledLanguages();
-      languageMenu.showDialog();
     });
 
     test(
@@ -339,27 +328,6 @@ suite('LanguageMenu', () => {
         assertLanguageNotification('', getNotificationItems()[2]!);
       });
 
-      test('hides downloading notification after a reopen', async () => {
-        languageMenu.baseLanguages = new Set(['it-it']);
-        enabledLangs = ['it-it', 'English (United States)'];
-        setEnabledLanguages();
-        languagesToNotificationMap['it'] =
-            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
-        setNotificationForLanguage();
-
-        assertEquals(3, getNotificationItems().length);
-        assertLanguageNotification('', getNotificationItems()[0]!);
-        assertLanguageNotification('', getNotificationItems()[1]!);
-        assertLanguageNotification(
-            'Downloading voices…', getNotificationItems()[2]!);
-
-        reopenLanguageMenu();
-        assertEquals(3, getNotificationItems().length);
-        assertLanguageNotification('', getNotificationItems()[0]!);
-        assertLanguageNotification('', getNotificationItems()[1]!);
-        assertLanguageNotification(
-            'Downloading voices…', getNotificationItems()[2]!);
-      });
 
       test('non-Google language does not show downloading notification', () => {
         languageMenu.baseLanguages = new Set(['it', 'en-us']);
@@ -393,10 +361,57 @@ suite('LanguageMenu', () => {
             'Download failed', getNotificationItems()[2]!);
       });
 
+      test('does not show old error notifications', () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        const newMenu = document.createElement('language-menu');
+        newMenu.voicePackInstallStatus = {
+          'it': VoiceClientSideStatusCode.ERROR_INSTALLING,
+        };
+        newMenu.availableVoices = [
+          createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
+          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'it-IT'}),
+          createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
+        ];
+        document.body.appendChild(newMenu);
+        flush();
+
+        const notificationItems =
+            newMenu.$.languageMenu.querySelectorAll<HTMLElement>(
+                '#notificationText');
+
+        assertEquals(3, notificationItems.length);
+        assertLanguageNotification('', notificationItems[0]!);
+        assertLanguageNotification('', notificationItems[1]!);
+        assertLanguageNotification('', notificationItems[2]!);
+      });
+
+      test('shows old downloading notifications', () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        const newMenu = document.createElement('language-menu');
+        newMenu.voicePackInstallStatus = {
+          'it': VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+        };
+        newMenu.availableVoices = [
+          createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
+          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'it-IT'}),
+          createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
+        ];
+        document.body.appendChild(newMenu);
+        flush();
+
+        const notificationItems =
+            newMenu.$.languageMenu.querySelectorAll<HTMLElement>(
+                '#notificationText');
+
+        assertEquals(3, notificationItems.length);
+        assertLanguageNotification('', notificationItems[0]!);
+        assertLanguageNotification('', notificationItems[1]!);
+        assertLanguageNotification(
+            'Downloading voices…', notificationItems[2]!);
+      });
 
       test(
-          'with other voices it shows high quality allocation notification',
-          async () => {
+          'shows high quality allocation notification', () => {
             enabledLangs = ['Italian', 'English (United States)'];
             setEnabledLanguages();
             languagesToNotificationMap['it'] =
@@ -408,29 +423,6 @@ suite('LanguageMenu', () => {
             assertLanguageNotification(
                 'For higher quality voices, clear space on your device',
                 getNotificationItems()[2]!);
-          });
-
-      test(
-          'high quality allocation notification cleared after reopen',
-          async () => {
-            enabledLangs = ['Italian', 'English (United States)'];
-            setEnabledLanguages();
-            languagesToNotificationMap['it'] =
-                VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
-            setNotificationForLanguage();
-
-            assertEquals(3, getNotificationItems().length);
-            assertLanguageNotification('', getNotificationItems()[0]!);
-            assertLanguageNotification('', getNotificationItems()[1]!);
-            assertLanguageNotification(
-                'For higher quality voices, clear space on your device',
-                getNotificationItems()[2]!);
-
-            reopenLanguageMenu();
-            assertEquals(3, getNotificationItems().length);
-            assertLanguageNotification('', getNotificationItems()[0]!);
-            assertLanguageNotification('', getNotificationItems()[1]!);
-            assertLanguageNotification('', getNotificationItems()[2]!);
           });
 
       test('with no voices it shows allocation notification ', async () => {
@@ -468,49 +460,6 @@ suite('LanguageMenu', () => {
         }
       });
 
-      test('allocation notification cleared after reopen', async () => {
-        languageMenu.baseLanguages = new Set(['it', 'English (United States)']);
-
-        enabledLangs = ['it', 'English (United States)'];
-        setEnabledLanguages();
-
-        availableVoices =
-            [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
-        setAvailableVoices();
-
-        languagesToNotificationMap['it'] =
-            VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
-        setNotificationForLanguage();
-
-        // Languages without an already installed voice are not available
-        // when on another platform than ChromeOS Ash and when the language
-        // pack downloading flag is disabled. Therefore, it won't be possible
-        // to test the non-high quality voice allocation error message when
-        // languages for uninstalled languages are unavailable.
-        const areLanguagesWithUninstalledVoicesAvailable =
-            chrome.readingMode.isChromeOsAsh &&
-            chrome.readingMode.isLanguagePackDownloadingEnabled;
-        const notificationItemSize =
-            areLanguagesWithUninstalledVoicesAvailable ? 3 : 1;
-        assertEquals(notificationItemSize, getNotificationItems().length);
-        assertLanguageNotification('', getNotificationItems()[0]!);
-
-        if (notificationItemSize > 1) {
-          assertLanguageNotification('', getNotificationItems()[1]!);
-          assertLanguageNotification(
-              'To install this language, clear space on your device',
-              getNotificationItems()[2]!);
-        }
-
-        reopenLanguageMenu();
-
-        // Assert that the notification has cleared.
-        if (notificationItemSize > 1) {
-          assertLanguageNotification('', getNotificationItems()[1]!);
-          assertLanguageNotification('', getNotificationItems()[2]!);
-        }
-      });
-
       suite('with search input', () => {
         test('it displays no language without a match', async () => {
           getLanguageSearchField().value = 'test';
@@ -541,7 +490,6 @@ suite('LanguageMenu', () => {
         createSpeechSynthesisVoice({name: 'test voice 5', lang: 'zh-CN'}),
       ];
       setAvailableVoices();
-      languageMenu.showDialog();
     });
 
     test('only shows one line per unique language name', () => {

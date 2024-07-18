@@ -131,14 +131,14 @@
   </template>
 </cr-lazy-render>
 
-<cr-lazy-render id="languageMenu">
-  <template>
-    <language-menu enabled-langs="[[enabledLangs]]"
-        voice-pack-install-status="[[voicePackInstallStatus]]"
-        locale-to-display-name="[[localeToDisplayName]]"
-        last-downloaded-lang="[[lastDownloadedLang]]"
-        selected-lang="[[selectedVoice.lang]]"
-        available-voices="[[availableVoices]]">
-    </language-menu>
-  </template>
-</cr-lazy-render>
+
+<template is="dom-if" if="[[showLanguageMenuDialog_]]" restamp>
+  <language-menu id="languageMenu" enabled-langs="[[enabledLangs]]"
+      voice-pack-install-status="[[voicePackInstallStatus]]"
+      locale-to-display-name="[[localeToDisplayName]]"
+      last-downloaded-lang="[[lastDownloadedLang]]"
+      selected-lang="[[selectedVoice.lang]]"
+      available-voices="[[availableVoices]]"
+      on-close="onLanguageMenuClose_">
+  </language-menu>
+</template>

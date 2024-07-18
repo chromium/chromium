@@ -114,9 +114,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       this.$.languageMenu.querySelector<CrInputElement>('.search-field')
           ?.focus();
 
-      // Clear the list of current notifications each time we reopen the menu.
-      this.currentNotifications_ = {};
-
       // Since the downloading messages will be cleared fairly quickly as
       // we get voice pack updates, we should go ahead and show the message
       // when we're actively downloading a voice pack, even if it was
@@ -178,10 +175,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   }
   private closeLanguageMenu_() {
     this.$.languageMenu.close();
-  }
-
-  private onCloseDialog_() {
-    this.onClearSearchClick_();
   }
 
   private onClearSearchClick_() {
@@ -394,9 +387,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     return `${this.i18n(s)}`;
   }
 
-  showDialog() {
-    this.$.languageMenu.showModal();
-  }
 
   private searchHasLanguages(): boolean {
     // We should only show the "No results" string when there are no available

@@ -93,10 +93,13 @@ suite('VoiceSelectionMenu', () => {
           voiceSelectionMenu!.$.voiceSelectionMenu.get()
               .querySelector<HTMLButtonElement>('.language-menu-button');
       button!.click();
-      const languageMenuElement: LanguageMenuElement =
-          voiceSelectionMenu!.$.languageMenu.get();
-      assertTrue(isPositionedOnPage(languageMenuElement.$.languageMenu));
       flush();
+
+      const languageMenuElement =
+          voiceSelectionMenu!.shadowRoot!.querySelector<LanguageMenuElement>(
+              '#languageMenu');
+      assertTrue(!!languageMenuElement);
+      assertTrue(isPositionedOnPage(languageMenuElement));
     });
 
     suite('when availableVoices updates', () => {
