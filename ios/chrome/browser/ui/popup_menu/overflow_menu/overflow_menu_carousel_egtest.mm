@@ -80,9 +80,8 @@ void CleanupDestinationsHighlightFeaturesData() {
 // Resolves the passphrase error from the Overflow Menu.
 void ResolvePassphraseErrorFromOverflowMenu() {
   // Tap on the Settings destination that has an error badge.
-  [[EarlGrey
-      selectElementWithMatcher:GetSettingsDestinationWithErrorBadgeMatcher()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:GetSettingsDestinationWithErrorBadgeMatcher()];
 
   // Enter passphrase to resolve the identity error.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsAccountButton()]
