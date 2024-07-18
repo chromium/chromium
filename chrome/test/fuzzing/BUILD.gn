@@ -102,6 +102,7 @@ if (!is_android) {
     in_process_proto_fuzzer("atspi_in_process_fuzzer") {
       sources = [ "atspi_in_process_fuzzer.cc" ]
       proto_source = "atspi_in_process_fuzzer.proto"
+      deps = [ "//sql" ]
     }
   }
 }

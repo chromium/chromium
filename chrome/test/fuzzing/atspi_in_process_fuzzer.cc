@@ -3,13 +3,19 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <functional>
+#include <optional>
 #include <random>
 #include <string_view>
 
+#include "base/base_paths.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
+#include "base/memory/singleton.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -17,6 +23,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/atspi_in_process_fuzzer.pb.h"
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
+#include "sql/database.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
@@ -107,13 +114,6 @@ class AtspiInProcessFuzzer
                                                       std::minstd_rand& random);
   static bool AttemptMutateMessage(AtspiInProcessFuzzer::FuzzCase& message,
                                    std::minstd_rand& random);
-
-  // Control names we've encountered anywhere in the tree; used in custom
-  // mutator.
-  static std::set<std::string> known_names;
-  // Control roles we've encountered anywhere in the tree; used in custom
-  // mutator.
-  static std::set<std::string> known_roles;
 };
 
 // The following is the equivalent of
@@ -129,8 +129,36 @@ using FuzzerProtoType =
 DEFINE_CUSTOM_PROTO_CROSSOVER_IMPL(false, FuzzerProtoType)
 DEFINE_POST_PROCESS_PROTO_MUTATION_IMPL(FuzzerProtoType)
 
-std::set<std::string> AtspiInProcessFuzzer::known_names;
-std::set<std::string> AtspiInProcessFuzzer::known_roles;
+// An on-disk database of all known control names and roles we have
+// encountered. These are filled in by the fuzzer then consumed by the
+// mutator. We store these on disk because in centipede, the fuzzer
+// and mutator run in different invocations of this process.
+// For libfuzzer, this complexity wouldn't be needed and we could
+// just keep this list in RAM.
+class Database {
+ public:
+  static Database* GetInstance();
+
+  std::optional<std::string> GetRandomRole(std::minstd_rand& random);
+  std::optional<std::string> GetRandomName(std::minstd_rand& random);
+
+  void InsertName(const std::string& name);
+  void InsertRole(const std::string& role);
+
+ private:
+  Database();
+  friend struct base::DefaultSingletonTraits<Database>;
+
+  std::optional<std::string> GetRandomValue(const std::string& table_name,
+                                            const std::string& column_name,
+                                            std::minstd_rand& random,
+                                            sql::StatementID statement_id);
+  void DoInsert(const std::string& table_name,
+                const std::string& value,
+                sql::StatementID statement_id);
+
+  std::unique_ptr<sql::Database> db_;
+};
 
 AtspiInProcessFuzzer::AtspiInProcessFuzzer() {
   // For some reason when running as Chromium rather than an official build,
@@ -304,9 +332,10 @@ void AtspiInProcessFuzzer::RecordChildrenForUseByMutator(
   for (auto& child : children) {
     std::string name = GetNodeName(child);
     if (!name.empty() && !kBlockedControls.contains(name)) {
-      known_names.insert(name);
+      Database::GetInstance()->InsertName(name);
     }
-    known_roles.insert(GetNodeRole(child));
+    std::string role = GetNodeRole(child);
+    Database::GetInstance()->InsertRole(role);
   }
 }
 
@@ -517,16 +546,6 @@ std::optional<size_t> AtspiInProcessFuzzer::FindMatchingControl(
 
 namespace {
 
-std::string GetNth(const std::set<std::string>& set, size_t n) {
-  for (auto& item : set) {
-    if (n == 0) {
-      return item;
-    }
-    n--;
-  }
-  NOTREACHED();
-}
-
 // This stuff is inherited from libprotobuf-mutator and simplified a little.
 // It's not exposed as APIs from libprotobuf-mutator so we can't use
 // it without violating checkdeps rules, etc.
@@ -612,7 +631,7 @@ bool AtspiInProcessFuzzer::AttemptMutateMessage(
   }
 
   // About 50% of the time, choose the last path element to mutate
-  size_t chosen_path_element = std::uniform_int_distribution<size_t>(
+  size_t chosen_path_element = std::uniform_int_distribution<int64_t>(
       0, action->path_to_control_size() * 2)(random);
   test::fuzzing::atspi_fuzzing::PathElement* path_element =
       action->mutable_path_to_control(
@@ -621,27 +640,25 @@ bool AtspiInProcessFuzzer::AttemptMutateMessage(
   // Sometimes, switch anonymous elements to named
   if (path_element->has_named() ||
       std::uniform_int_distribution<size_t>(0, 2)(random) > 1) {
-    if (known_names.empty()) {
+    std::optional<std::string> name =
+        Database::GetInstance()->GetRandomName(random);
+    if (!name.has_value()) {
       return false;
     }
-    size_t replacement_name = std::uniform_int_distribution<size_t>(
-        0, known_names.size() - 1)(random);
-    std::string name = GetNth(known_names, replacement_name);
-    if (name == path_element->named().name()) {
+    if (*name == path_element->named().name()) {
       return false;
     }
-    *path_element->mutable_named()->mutable_name() = name;
+    *path_element->mutable_named()->mutable_name() = *name;
   } else {
-    if (known_roles.empty()) {
+    std::optional<std::string> role =
+        Database::GetInstance()->GetRandomRole(random);
+    if (!role.has_value()) {
       return false;
     }
-    size_t replacement_role = std::uniform_int_distribution<size_t>(
-        0, known_roles.size() - 1)(random);
-    std::string role = GetNth(known_roles, replacement_role);
-    if (role == path_element->anonymous().role()) {
+    if (*role == path_element->anonymous().role()) {
       return false;
     }
-    *path_element->mutable_anonymous()->mutable_role() = role;
+    *path_element->mutable_anonymous()->mutable_role() = *role;
   }
   return true;
 }
@@ -722,4 +739,72 @@ extern "C" size_t LLVMFuzzerCustomMutator(uint8_t* data,
                                           size_t max_size,
                                           unsigned int seed) {
   return AtspiInProcessFuzzer::CustomMutator(data, size, max_size, seed);
+}
+
+Database* Database::GetInstance() {
+  return base::Singleton<Database>::get();
+}
+
+Database::Database() {
+  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
+      .exclusive_locking = false,  // centipede may run several fuzzers at once
+      .page_size = sql::DatabaseOptions::kDefaultPageSize,
+      .cache_size = 0,
+  });
+  base::FilePath db_path;
+  CHECK(base::PathService::Get(base::DIR_TEMP, &db_path));
+  db_path = db_path.AppendASCII("atspi_in_process_fuzzer_controls.db");
+  CHECK(db_->Open(db_path));
+  if (!db_->DoesTableExist("roles")) {
+    CHECK(db_->Execute("create table roles (role TEXT NOT NULL UNIQUE)"));
+  }
+  if (!db_->DoesTableExist("names")) {
+    CHECK(db_->Execute("create table names (name TEXT NOT NULL UNIQUE)"));
+  }
+}
+
+void Database::InsertName(const std::string& name) {
+  DoInsert("names", name, SQL_FROM_HERE);
+}
+
+void Database::InsertRole(const std::string& role) {
+  DoInsert("roles", role, SQL_FROM_HERE);
+}
+
+void Database::DoInsert(const std::string& table_name,
+                        const std::string& value,
+                        sql::StatementID statement_id) {
+  std::string insert_sql = base::StringPrintf(
+      "INSERT OR IGNORE INTO %s VALUES (?)", table_name.c_str());
+  sql::Statement stmt(db_->GetCachedStatement(statement_id, insert_sql));
+  stmt.BindString(0, value);
+  base::IgnoreResult(stmt.Run());  // ignore result in case other instances
+                                   // of the fuzzer have the database locked
+}
+
+std::optional<std::string> Database::GetRandomRole(std::minstd_rand& random) {
+  return GetRandomValue("roles", "role", random, SQL_FROM_HERE);
+}
+
+std::optional<std::string> Database::GetRandomName(std::minstd_rand& random) {
+  return GetRandomValue("names", "name", random, SQL_FROM_HERE);
+}
+
+std::optional<std::string> Database::GetRandomValue(
+    const std::string& table_name,
+    const std::string& column_name,
+    std::minstd_rand& random,
+    sql::StatementID statement_id) {
+  size_t random_selector =
+      std::uniform_int_distribution<int64_t>(INT64_MIN, INT64_MAX)(random);
+  std::string get_query = base::StringPrintf(
+      "select %s from %s limit 1 offset (? %% (SELECT COUNT(*) FROM %s))",
+      column_name.c_str(), table_name.c_str(), table_name.c_str());
+  sql::Statement get_statement(
+      db_->GetCachedStatement(statement_id, get_query));
+  get_statement.BindInt64(0, random_selector);
+  if (!get_statement.Step()) {
+    return std::nullopt;
+  }
+  return get_statement.ColumnString(0);
 }
