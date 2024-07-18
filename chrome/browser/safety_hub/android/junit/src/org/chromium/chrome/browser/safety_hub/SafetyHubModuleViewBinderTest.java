@@ -41,6 +41,7 @@ public class SafetyHubModuleViewBinderTest {
     private static final @DrawableRes int SAFE_ICON = R.drawable.ic_checkmark_24dp;
     private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error;
     private static final @DrawableRes int INFO_ICON = R.drawable.btn_info;
+    private static final @DrawableRes int MANAGED_ICON = R.drawable.ic_business_small;
     private Activity mActivity;
     private PropertyModel mPasswordCheckPropertyModel;
     private SafetyHubExpandablePreference mPasswordCheckPreference;
@@ -194,7 +195,8 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
         assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
-        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                MANAGED_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPasswordCheckPreference.getPrimaryButtonText());
         assertNull(mPasswordCheckPreference.getSecondaryButtonText());
         assertFalse(mPasswordCheckPreference.isExpanded());
@@ -224,7 +226,8 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
         assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
-        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                MANAGED_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mPasswordCheckPreference.getPrimaryButtonText());
         assertNull(mPasswordCheckPreference.getSecondaryButtonText());
         assertFalse(mPasswordCheckPreference.isExpanded());
@@ -260,7 +263,8 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
         assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
-        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                MANAGED_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mPasswordCheckPreference.getPrimaryButtonText());
         assertNull(mPasswordCheckPreference.getSecondaryButtonText());
         assertFalse(mPasswordCheckPreference.isExpanded());
@@ -527,7 +531,8 @@ public class SafetyHubModuleViewBinderTest {
                 mActivity.getString(R.string.safety_hub_safe_browsing_off_summary_managed);
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(INFO_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                MANAGED_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
         assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
