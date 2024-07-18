@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.firstrun;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -265,16 +266,16 @@ public class FirstRunActivitySigninAndSyncTest {
     // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
-    @DisabledTest(message = "crbug.com/347291768")
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void dismissButtonNotShownOnResetForChildAccount() throws ExecutionException {
-        mAccountManagerTestRule.addAccount(CHILD_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
         onView((withId(R.id.signin_fre_dismiss_button))).check(matches(not(isDisplayed())));
 
         onView((withId(R.id.signin_fre_continue_button))).perform(scrollTo(), click());
         completeAutoDeviceLockIfNeeded();
-        ThreadUtils.runOnUiThreadBlocking(() -> mFirstRunActivity.handleBackPress());
+        pressBack();
 
         onView((withId(R.id.signin_fre_dismiss_button))).check(matches(not(isDisplayed())));
     }
