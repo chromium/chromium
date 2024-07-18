@@ -941,6 +941,11 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="VIRTUAL_CARD_PERMANENT_ERROR"/>
   <int value="2" label="VIRTUAL_CARD_NOT_ELIGIBLE_ERROR"/>
   <int value="3" label="UNKNOWN"/>
+  <int value="4"
+      label="MASKED_SERVER_CARD_RISK_BASED_UNMASKING_PERMANENT_ERROR"/>
+  <int value="5" label="MASKED_SERVER_CARD_RISK_BASED_UNMASKING_NETWORK_ERROR"/>
+  <int value="6" label="MASKED_SERVER_IBAN_UNMASKING_TEMPORARY_ERROR"/>
+  <int value="7" label="CREDIT_CARD_UPLOAD_ERROR"/>
 </enum>
 
 <enum name="AutofillExpirationDateFixFlowPromptEvent">

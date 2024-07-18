@@ -130,37 +130,6 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest, UpdateAndAccept_Upload) {
                            /*expiration_date_year=*/expiration_date_year));
 }
 
-// Tests that CreditCardUploadCompleted() does not run
-// credit_card_upload_completion_callback without loading and confirmation flag
-// enabled.
-TEST_F(AutofillSaveCardInfoBarDelegateTest,
-       CreditCardUploadCompleted_WithoutLoadingAndConfirmation) {
-  feature_list_.InitAndDisableFeature(
-      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
-  AutofillClient::UploadSaveCardPromptCallback callback = base::BindOnce(
-      &AutofillSaveCardInfoBarDelegateTest::UploadSaveCardPromptCallbackFn,
-      base::Unretained(this));
-  std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate =
-      CreateDelegate(std::move(callback));
-
-  base::OnceCallback<void(bool card_saved)>
-      credit_card_upload_completion_callback =
-          base::BindOnce(&AutofillSaveCardInfoBarDelegateTest::
-                             CreditCardUploadCompletionCallbackFn,
-                         base::Unretained(this));
-
-  delegate->UpdateAndAccept(
-      /*cardholder_name=*/u"",
-      /*expiration_date_month=*/u"",
-      /*expiration_date_year=*/u"",
-      /*credit_card_upload_completion_callback=*/
-      std::move(credit_card_upload_completion_callback));
-
-  delegate->CreditCardUploadCompleted(
-      /*card_saved=*/true, /*on_confirmation_closed_callback=*/std::nullopt);
-  EXPECT_FALSE(card_saved_.has_value());
-}
-
 // Tests that CreditCardUploadCompleted() runs
 // credit_card_upload_completion_callback with card successfully saved.
 TEST_F(AutofillSaveCardInfoBarDelegateTest,

@@ -130,7 +130,9 @@ void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
   if (!card_saved) {
     autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
         /*is_shown=*/true, /*is_card_uploaded=*/false);
-    // TODO(crbug.com/40287758): Show credit card upload failure confirmation.
+    AutofillErrorDialogContext error_context;
+    error_context.type = AutofillErrorDialogType::kCreditCardUploadError;
+    ShowAutofillErrorDialog(std::move(error_context));
   }
 }
 

@@ -1182,7 +1182,7 @@
     Card saved
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT" desc="Title text for confirmation shown after save card upload to the server was unsuccessful.">
-    Card saved only to device
+    Card saved to device only
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_TITLE_TEXT" desc="Title text for confirmation shown after virtual card enrollment is successful.">
     Virtual card turned on
@@ -1195,7 +1195,7 @@
     This card is saved in your Google Account so you can use it across Google services.
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card upload to the server was unsuccessful.">
-    This card could not be saved in your Google Account. It's been saved to Chrome on this device instead.
+    This card couldn't be saved in your Google Account. It's saved to Chrome on this device instead.
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after virtual card enrollment is successful.">
     You can now use a virtual card to check out more securely with autofill.

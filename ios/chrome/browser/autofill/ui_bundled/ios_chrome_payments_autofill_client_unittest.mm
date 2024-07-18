@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
+#import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -25,21 +26,30 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 @interface FakeAutofillCommands : NSObject <AutofillCommands>
 
 // Returns the model provided to showVirtualCardEnrollmentBottomSheet
 - (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)
     getVirtualCardEnrollUiModel;
+
+// Returns the error context provided to showAutofillErrorDialog.
+- (const autofill::AutofillErrorDialogContext&)autofillErrorDialogContext;
 @end
 
 @implementation FakeAutofillCommands {
   std::unique_ptr<autofill::VirtualCardEnrollUiModel> _virtualCardEnrollUiModel;
+  autofill::AutofillErrorDialogContext _errorContext;
 }
 
 - (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)
     getVirtualCardEnrollUiModel {
   return std::move(_virtualCardEnrollUiModel);
+}
+
+- (const autofill::AutofillErrorDialogContext&)autofillErrorDialogContext {
+  return _errorContext;
 }
 
 #pragma mark - AutofillCommands
@@ -64,9 +74,12 @@
 
 - (void)showEditAddressBottomSheet {
 }
+
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext {
+  _errorContext = std::move(errorContext);
 }
+
 - (void)dismissAutofillErrorDialog {
 }
 - (void)showAutofillProgressDialog {
@@ -98,6 +111,7 @@ class TestChromeAutofillClient : public ChromeAutofillClientIOS {
         CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(/*upload=*/true,
                                                                credit_card);
   }
+
   MockAutofillSaveCardInfoBarDelegateMobile*
   GetAutofillSaveCardInfoBarDelegateIOS() override {
     return save_card_delegate_.get();
@@ -127,14 +141,19 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
         browser_state_.get(), web_state_.get(), infobar_manager,
         autofill_agent_);
 
-    // Inject the autofill commands fake into the AutofillTabHelper
+    // Inject the autofill commands fake into the AutofillTabHelper and
+    // ChromeAutofillClient.
     autofill_commands_ = [[FakeAutofillCommands alloc] init];
     AutofillBottomSheetTabHelper::CreateForWebState(web_state_.get());
     AutofillBottomSheetTabHelper::FromWebState(web_state_.get())
         ->SetAutofillBottomSheetHandler(autofill_commands_);
+
+    autofill_client_->set_commands_handler(autofill_commands_);
   }
 
   TestChromeAutofillClient* client() { return autofill_client_.get(); }
+
+  FakeAutofillCommands* autofill_commands() { return autofill_commands_; }
 
   payments::IOSChromePaymentsAutofillClient* payments_client() {
     return client()->GetPaymentsAutofillClient();
@@ -161,13 +180,30 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
   std::unique_ptr<TestChromeAutofillClient> autofill_client_;
 };
 
-TEST_F(IOSChromePaymentsAutofillClientTest, CreditCardUploadCompleted) {
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       CreditCardUploadCompleted_CardSaved) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
+
+  EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
+              CreditCardUploadCompleted(/*card_saved=*/true, _));
+  payments_client()->CreditCardUploadCompleted(
+      /*card_saved=*/true, /*on_confirmation_closed_callback=*/std::nullopt);
+}
+
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       CreditCardUploadCompleted_CardNotSaved) {
   base::test::ScopedFeatureList scoped_feature_list(
       autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
   EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
-              CreditCardUploadCompleted(_, _));
+              CreditCardUploadCompleted(/*card_saved=*/false, _));
   payments_client()->CreditCardUploadCompleted(
-      /*card_saved=*/true, /*on_confirmation_closed_callback=*/std::nullopt);
+      /*card_saved=*/false, /*on_confirmation_closed_callback=*/std::nullopt);
+
+  const AutofillErrorDialogContext& error_context =
+      [autofill_commands() autofillErrorDialogContext];
+  EXPECT_EQ(error_context.type,
+            AutofillErrorDialogType::kCreditCardUploadError);
 }
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
