@@ -99,6 +99,9 @@ class ASH_EXPORT FocusModeSoundsController
     return enabled_sound_sections_;
   }
 
+  void reset_paused_event_count() { paused_event_count_ = 0; }
+  int paused_event_count() const { return paused_event_count_; }
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -170,6 +173,9 @@ class ASH_EXPORT FocusModeSoundsController
 
   // Records the time when we requested to play a selected playlist.
   base::Time sounds_started_time_;
+  // Records how many times the user paused `selected_playlist_` during a
+  // session.
+  int paused_event_count_ = 0;
 
   PrefChangeRegistrar pref_registrar_;
   base::flat_set<focus_mode_util::SoundType> enabled_sound_sections_;

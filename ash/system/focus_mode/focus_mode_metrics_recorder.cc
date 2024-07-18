@@ -223,6 +223,14 @@ void RecordExistingMediaPlayingOnStartHistogram() {
               media_session::mojom::MediaPlaybackState::kPlaying);
 }
 
+void RecordPausedEventCountHistogram() {
+  base::UmaHistogramCounts100(
+      /*name=*/focus_mode_histogram_names::kMusicPausedEventsCount,
+      /*sample=*/FocusModeController::Get()
+          ->focus_mode_sounds_controller()
+          ->paused_event_count());
+}
+
 }  // namespace
 
 FocusModeMetricsRecorder::FocusModeMetricsRecorder(
@@ -304,6 +312,7 @@ void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {
 
   RecordSoundsPlayedDuringSessionHistogram(has_selected_soundscapes_,
                                            has_selected_youtube_music_);
+  RecordPausedEventCountHistogram();
 }
 
 void FocusModeMetricsRecorder::RecordHistogramOnEndingMoment(

@@ -28,6 +28,8 @@ constexpr char kToggleEndButtonDuringSessionHistogramName[] =
     "Ash.FocusMode.DuringSession.ToggleEndSessionSource";
 constexpr char kSoundscapeLatencyInMillisecondsHistogramName[] =
     "Ash.FocusMode.SoundscapeLatency";
+constexpr char kYouTubeMusicLatencyInMillisecondsHistogramName[] =
+    "Ash.FocusMode.YouTubeMusicLatency";
 
 // Histograms recorded when a session ends.
 constexpr char kTasksSelectedHistogramName[] = "Ash.FocusMode.TasksSelected";
@@ -45,6 +47,8 @@ constexpr char kPlaylistTypesSelectedDuringSession[] =
     "Ash.FocusMode.PlaylistTypesSelectedDuringSession";
 constexpr char kCountPlaylistsPlayedDuringSession[] =
     "Ash.FocusMode.PlaylistsDuringSession";
+constexpr char kMusicPausedEventsCount[] =
+    "Ash.FocusMode.MusicPausedSessionCount";
 
 // This enum is used for metrics, so enum values should not be changed. New enum
 // values can be added, but existing enums must never be renumbered or deleted

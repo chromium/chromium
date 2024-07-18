@@ -51,9 +51,10 @@ AnchoredNudge* GetShownEndingMomentNudge() {
       focus_mode_util::kFocusModeEndingMomentNudgeId);
 }
 
-// Simulate a system media with the state of playing or paused based on
-// `is_playing`.
-void SimulatePlaybackState(bool is_playing) {
+// Simulate a media with the state of playing or paused based on `is_playing`.
+// If `is_focus_mode_media` is true, the media is provided by the focus mode;
+// otherwise, it will be a system media outside of the focus mode.
+void SimulatePlaybackState(bool is_playing, bool is_focus_mode_media) {
   media_session::mojom::MediaSessionInfoPtr session_info(
       media_session::mojom::MediaSessionInfo::New());
 
@@ -63,8 +64,14 @@ void SimulatePlaybackState(bool is_playing) {
       is_playing ? media_session::mojom::MediaPlaybackState::kPlaying
                  : media_session::mojom::MediaPlaybackState::kPaused;
 
-  FocusModeController::Get()->SetSystemMediaSessionInfoForTesting(
-      std::move(session_info));
+  if (is_focus_mode_media) {
+    FocusModeController::Get()
+        ->focus_mode_sounds_controller()
+        ->MediaSessionInfoChanged(std::move(session_info));
+  } else {
+    FocusModeController::Get()->SetSystemMediaSessionInfoForTesting(
+        std::move(session_info));
+  }
 }
 
 // If `focus_gained` is true, the media with `id_observed` will gain the audio
@@ -1001,7 +1008,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckMediaPlayingOnStartsHistogram) {
   EXPECT_FALSE(controller->in_focus_session());
 
   // 2. Start a focus session with a system media playing.
-  SimulatePlaybackState(/*is_playing=*/true);
+  SimulatePlaybackState(/*is_playing=*/true, /*is_focus_mode_media=*/false);
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());
   histogram_tester.ExpectBucketCount(
@@ -1014,7 +1021,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckMediaPlayingOnStartsHistogram) {
   EXPECT_FALSE(controller->in_focus_session());
 
   // 3. Start a focus session with a system media paused.
-  SimulatePlaybackState(/*is_playing=*/false);
+  SimulatePlaybackState(/*is_playing=*/false, /*is_focus_mode_media=*/false);
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());
   histogram_tester.ExpectBucketCount(
@@ -1023,14 +1030,16 @@ TEST_F(FocusModeControllerMultiUserTest, CheckMediaPlayingOnStartsHistogram) {
       /*sample=*/false, /*expected_count=*/2);
 }
 
+// Tests that the latency for playing a playlist will be recorded on session
+// starts and during an active session.
 TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistPlayedLatencyHistograms) {
   base::HistogramTester histogram_tester;
 
   auto* controller = FocusModeController::Get();
   auto* sounds_controller = controller->focus_mode_sounds_controller();
 
-  // Simulate that we have a selected playlist before starting a focus session,
-  // the histogram will record the latency.
+  // 1. Simulate that we have a selected playlist with the soundscape type
+  // before starting a focus session, the histogram will record the latency.
   focus_mode_util::SelectedPlaylist selected_playlist;
   selected_playlist.id = "id0";
   selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
@@ -1039,29 +1048,129 @@ TEST_F(FocusModeControllerMultiUserTest, CheckPlaylistPlayedLatencyHistograms) {
 
   controller->ToggleFocusMode();
   controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
-  const auto& playlist_request_id = controller->GetMediaSessionRequestId();
+  auto current_request_id = controller->GetMediaSessionRequestId();
   SimulateAudioFocusGainedForSelectedPlaylist(
-      /*focus_gained=*/true, /*id_observed=*/playlist_request_id);
+      /*focus_gained=*/true, /*id_observed=*/current_request_id);
   histogram_tester.ExpectTotalCount(
       focus_mode_histogram_names::kSoundscapeLatencyInMillisecondsHistogramName,
       1);
 
-  // Simulate that we select another playlist to play during the active session,
-  // the histogram will record the latency.
+  // 2. Simulate that we select another soundscape playlist to play during the
+  // active session, the histogram will record the latency.
   SimulateAudioFocusGainedForSelectedPlaylist(
-      /*focus_gained=*/false, /*id_observed=*/playlist_request_id);
+      /*focus_gained=*/false, /*id_observed=*/current_request_id);
   // Update the id for testing once we close the media widget.
   controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/false);
 
   selected_playlist.id = "id1";
   sounds_controller->TogglePlaylist(selected_playlist);
   controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
+  current_request_id = controller->GetMediaSessionRequestId();
   SimulateAudioFocusGainedForSelectedPlaylist(
       /*focus_gained=*/true,
-      /*id_observed=*/controller->GetMediaSessionRequestId());
+      /*id_observed=*/current_request_id);
   histogram_tester.ExpectTotalCount(
       focus_mode_histogram_names::kSoundscapeLatencyInMillisecondsHistogramName,
       2);
+
+  // Simulate we stop the selected playlist with the soundscape type.
+  SimulateAudioFocusGainedForSelectedPlaylist(
+      /*focus_gained=*/false, /*id_observed=*/current_request_id);
+  // Update the id for testing once we close the media widget.
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/false);
+
+  // 3. Simulate that we select a YouTube Music type of playlist to play during
+  // the active session.
+  selected_playlist.id = "id2";
+  selected_playlist.type = focus_mode_util::SoundType::kYouTubeMusic;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
+  current_request_id = controller->GetMediaSessionRequestId();
+  SimulateAudioFocusGainedForSelectedPlaylist(
+      /*focus_gained=*/true,
+      /*id_observed=*/current_request_id);
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::
+          kYouTubeMusicLatencyInMillisecondsHistogramName,
+      1);
+
+  // Simulate we stop the current selected playlist and end the current focus
+  // session.
+  SimulateAudioFocusGainedForSelectedPlaylist(
+      /*focus_gained=*/false, /*id_observed=*/current_request_id);
+  // Update the id for testing once we close the media widget.
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/false);
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 4. Simulate that we select a YouTube Music and then start a new focus
+  // session.
+  selected_playlist.id = "id3";
+  sounds_controller->TogglePlaylist(selected_playlist);
+
+  controller->ToggleFocusMode();
+  controller->SetMediaSessionRequestIdForTesting(/*create_media_widget=*/true);
+  current_request_id = controller->GetMediaSessionRequestId();
+  SimulateAudioFocusGainedForSelectedPlaylist(
+      /*focus_gained=*/true, /*id_observed=*/current_request_id);
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::
+          kYouTubeMusicLatencyInMillisecondsHistogramName,
+      2);
+}
+
+TEST_F(FocusModeControllerMultiUserTest,
+       CheckPlaylistPausedEventDuringSessionHitogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
+
+  // 1. Start a focus session and pause the playlist during the session.
+  int count_pause_event = 0;
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  // Select a playlist and pause it for once.
+  focus_mode_util::SelectedPlaylist selected_playlist;
+  selected_playlist.id = "id0";
+  selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
+  selected_playlist.state = focus_mode_util::SoundState::kNone;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  SimulatePlaybackState(/*is_playing=*/true, /*is_focus_mode_media=*/true);
+
+  SimulatePlaybackState(/*is_playing=*/false, /*is_focus_mode_media=*/true);
+  count_pause_event++;
+
+  // Select another playlist and pause it for twice.
+  selected_playlist.id = "id1";
+  sounds_controller->TogglePlaylist(selected_playlist);
+  SimulatePlaybackState(/*is_playing=*/true, /*is_focus_mode_media=*/true);
+
+  SimulatePlaybackState(/*is_playing=*/false, /*is_focus_mode_media=*/true);
+  count_pause_event++;
+  SimulatePlaybackState(/*is_playing=*/true, /*is_focus_mode_media=*/true);
+  SimulatePlaybackState(/*is_playing=*/false, /*is_focus_mode_media=*/true);
+  count_pause_event++;
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kMusicPausedEventsCount,
+      /*sample=*/count_pause_event, /*expected_count=*/1);
+
+  // 2. Start a new focus session, and we don't pause the playlist during the
+  // session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  SimulatePlaybackState(/*is_playing=*/true, /*is_focus_mode_media=*/true);
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kMusicPausedEventsCount,
+      /*sample=*/0, /*expected_count=*/1);
 }
 
 }  // namespace ash

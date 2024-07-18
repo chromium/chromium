@@ -3789,6 +3789,19 @@ chromium-metrics-reviews@google.com.
   <summary>Record the reason for the ending moment bubble closed.</summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.MusicPausedSessionCount" units="count"
+    expires_after="2025-07-01">
+  <owner>nupurjain@google.com</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>hongyulong@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    When a session ends, record how many times the user paused the playlists
+    which were played by the Focus Mode during the session.
+  </summary>
+</histogram>
+
 <histogram name="Ash.FocusMode.PercentOfSessionCompleted.{SessionDurationType}"
     units="%" expires_after="2025-05-01">
   <owner>nupurjain@google.com</owner>
@@ -3961,6 +3974,20 @@ chromium-metrics-reviews@google.com.
     <variant name="Medium"/>
     <variant name="Short"/>
   </token>
+</histogram>
+
+<histogram name="Ash.FocusMode.YouTubeMusicLatency" units="ms"
+    expires_after="2025-07-01">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Records how many milliseconds the user waited for a YouTube Music playlist
+    to be played from clicking on the playlist while in a focus session or
+    starting a session to play the current selected playlist.
+  </summary>
 </histogram>
 
 <histogram name="Ash.Frame.ColorChangeCount.{AppType}" units="count"

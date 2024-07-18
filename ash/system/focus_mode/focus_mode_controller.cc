@@ -523,6 +523,7 @@ FocusModeController::GetSystemMediaSessionInfo() {
 
 void FocusModeController::StartFocusSession(
     focus_mode_histogram_names::ToggleSource source) {
+  focus_mode_sounds_controller_->reset_paused_event_count();
   focus_mode_metrics_recorder_ =
       std::make_unique<FocusModeMetricsRecorder>(session_duration_);
   const FocusModeTask* selected_task = tasks_model_.selected_task();

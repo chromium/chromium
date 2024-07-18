@@ -206,6 +206,29 @@ bool HasAudioFocus(const base::UnguessableToken& focus_mode_request_id,
          focus_mode_request_id == session_request_id;
 }
 
+void RecordPlaylistPlayedLatency(focus_mode_util::SoundType playlist_type,
+                                 const base::Time& sounds_started_time) {
+  std::string histogram_name;
+  switch (playlist_type) {
+    case focus_mode_util::SoundType::kSoundscape:
+      histogram_name = focus_mode_histogram_names::
+          kSoundscapeLatencyInMillisecondsHistogramName;
+      break;
+    case focus_mode_util::SoundType::kYouTubeMusic:
+      histogram_name = focus_mode_histogram_names::
+          kYouTubeMusicLatencyInMillisecondsHistogramName;
+      break;
+    case focus_mode_util::SoundType::kNone:
+      // A selected playlist should always have a valid type.
+      NOTREACHED_NORETURN();
+  }
+
+  base::UmaHistogramCustomCounts(
+      /*name=*/histogram_name,
+      /*sample=*/(base::Time::Now() - sounds_started_time).InMilliseconds(),
+      /*min=*/0, /*exclusive_max=*/2000, /*buckets=*/50);
+}
+
 }  // namespace
 
 FocusModeSoundsController::FocusModeSoundsController()
@@ -306,13 +329,7 @@ void FocusModeSoundsController::OnFocusGained(
     return;
   }
 
-  if (selected_playlist_.type == focus_mode_util::SoundType::kSoundscape) {
-    base::UmaHistogramCustomCounts(
-        /*name=*/focus_mode_histogram_names::
-            kSoundscapeLatencyInMillisecondsHistogramName,
-        /*sample=*/(base::Time::Now() - sounds_started_time_).InMilliseconds(),
-        /*min=*/0, /*exclusive_max=*/2000, /*buckets=*/50);
-  }
+  RecordPlaylistPlayedLatency(selected_playlist_.type, sounds_started_time_);
 
   // Otherwise, we will bind the media controller observer with the specific
   // request id to observe our media state.
@@ -379,6 +396,9 @@ void FocusModeSoundsController::MediaSessionInfoChanged(
       break;
     case media_session::mojom::MediaPlaybackState::kPaused:
       selected_playlist_.state = focus_mode_util::SoundState::kPaused;
+      // TODO(b/343795949): Make sure to not count this when pause events are
+      // triggered by the ending moment in the future.
+      paused_event_count_++;
       break;
   };
 
