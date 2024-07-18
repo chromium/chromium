@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This small program is used to measure the performance of the various
 // resize algorithms offered by the ImageOperations::Resize function.
 // It will generate an empty source bitmap, and rescale it to specified
