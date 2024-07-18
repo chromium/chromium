@@ -12,7 +12,6 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import './icons.html.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -124,14 +123,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   // in notifications.
   private currentNotifications_:
       {[language: string]: VoiceClientSideStatusCode} = {};
-
-  constructor() {
-    super();
-    this.addEventListener('cr-dialog-open', () => {
-      this.$.languageMenu.querySelector<CrInputElement>('.search-field')
-          ?.focus();
-    });
-  }
 
   // Returns a copy of voicePackInstallStatus to use as a snapshot of the
   // current state. Before copying over the map, check the diff of
