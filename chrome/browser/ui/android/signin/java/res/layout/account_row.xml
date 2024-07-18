@@ -28,6 +28,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:gravity="top"
           android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+          android:textDirection="locale"
           tools:text="John Doe"/>
       <TextView
           android:id="@+id/account_text_secondary"
@@ -35,6 +36,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:gravity="top"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          android:textDirection="locale"
           tools:text="john.doe@example.com"/>
     </LinearLayout>
 

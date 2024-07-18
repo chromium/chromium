@@ -36,7 +36,8 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:gravity="top"
           android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-          tools:text="John Doe"/>
+          tools:text="John Doe"
+          android:textDirection="locale"/>
 
       <TextView
           android:id="@+id/account_text_secondary"
@@ -44,7 +45,8 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:gravity="top"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-          tools:text="john.doe@example.com"/>
+          tools:text="john.doe@example.com"
+          android:textDirection="locale"/>
     </LinearLayout>
 
 </LinearLayout>
