@@ -9,11 +9,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/mojom/test_autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -22,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -506,6 +509,19 @@ TEST_F(AutofillTypeTraitsTestImpl, PassPasswordSuggestionRequest) {
       input, base::BindOnce(&ExpectPasswordSuggestionRequest, input,
                             loop.QuitClosure()));
   loop.Run();
+}
+
+TEST(AutofillTypesMojomTraitsTest, AutocompleteParsingResult) {
+  // Simulate a parsed "name webauthn" attribute.
+  autofill::AutocompleteParsingResult original;
+  original.mode = HtmlFieldMode::kNone;
+  original.field_type = HtmlFieldType::kName;
+  original.webauthn = true;
+
+  autofill::AutocompleteParsingResult copy;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              autofill::mojom::AutocompleteParsingResult>(original, copy));
+  EXPECT_EQ(original, copy);
 }
 
 }  // namespace autofill

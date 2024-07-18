@@ -13,6 +13,7 @@
 
 #include "base/i18n/rtl.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
@@ -181,6 +182,10 @@ struct StructTraits<autofill::mojom::AutocompleteParsingResultDataView,
   static autofill::mojom::HtmlFieldType field_type(
       const autofill::AutocompleteParsingResult& r) {
     return r.field_type;
+  }
+
+  static bool webauthn(const autofill::AutocompleteParsingResult& r) {
+    return r.webauthn;
   }
 
   static bool Read(autofill::mojom::AutocompleteParsingResultDataView data,
