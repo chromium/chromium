@@ -3664,13 +3664,13 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         if (mInReorderMode) return;
         RecordUserAction.record("MobileToolbarStartReorderTab");
 
-        // 1. Check to see if we have a valid (non-null, non-dying, non-placeholder) tab
-        // to start
-        // dragging.
+        // 1. Only start reorder mode if we have a valid (non-null, non-dying, non-placeholder) tab
+        // and if the tab state is initialized.
         mInteractingTab = mActiveClickedTab == null ? getTabAtPosition(startX) : mActiveClickedTab;
         if (mInteractingTab == null
                 || mInteractingTab.isDying()
-                || mInteractingTab.getId() == Tab.INVALID_TAB_ID) {
+                || mInteractingTab.getId() == Tab.INVALID_TAB_ID
+                || !mTabStateInitialized) {
             return;
         }
         mInteractingTab.setIsReordering(true);
@@ -5410,7 +5410,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     @VisibleForTesting
     boolean startDragAndDropTab(
             @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
-        if (mTabDragSource == null) return false;
+        if (mTabDragSource == null || !mTabStateInitialized) return false;
         // In addition to reordering, one can drag and drop the tab beyond the strip layout view.
         Tab tabBeingDragged = getTabById(clickedTab.getId());
         boolean dragStarted = false;

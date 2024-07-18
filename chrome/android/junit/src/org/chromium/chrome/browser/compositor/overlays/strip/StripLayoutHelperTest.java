@@ -3522,6 +3522,36 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    public void testPlaceholderStripLayout_ReorderBeforeTabStateInitialized() {
+        // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
+        // tabs, where the third tab will be the active tab.
+        mStripLayoutHelper = createStripLayoutHelper(false, false);
+        mStripLayoutHelper.setTabModelStartupInfo(5, 2, false);
+
+        // Attempt to start a reorder and verify that we don't start it.
+        mStripLayoutHelper.startReorderTab(TIMESTAMP, 0, 100);
+        assertFalse(
+                "Should not start reorder mode before tab restore finishes.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    public void testPlaceholderStripLayout_DragBeforeTabStateInitialized() {
+        // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
+        // tabs, where the third tab will be the active tab.
+        mStripLayoutHelper = createStripLayoutHelper(false, false);
+        mStripLayoutHelper.setTabModelStartupInfo(5, 2, false);
+
+        // Attempt to start a drag and drop and verify that we don't start it.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.startDragAndDropTab(tabs[2], DRAG_START_POINT);
+        verify(mTabDragSource, never())
+                .startTabDragAction(any(), any(), any(), anyFloat(), anyFloat());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
     public void testPlaceholderStripLayout_ScrollOnStartup() {
         // Create StripLayoutHelper and mark that after tabs finish restoring, there will be 20
         // tabs, where the last tab will be the active tab.
