@@ -425,9 +425,10 @@ class QuicNetworkTransactionTest
       quic::QuicErrorCode quic_error,
       const std::string& quic_error_details,
       uint64_t frame_type) {
-    return client_maker_->MakeAckAndConnectionClosePacket(
-        num, largest_received, smallest_received, quic_error,
-        quic_error_details, frame_type);
+    return client_maker_->Packet(num)
+        .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
+        .AddConnectionCloseFrame(quic_error, quic_error_details, frame_type)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructServerRstPacket(
@@ -5942,8 +5943,12 @@ TEST_P(QuicNetworkTransactionTest, RetryAfterAsyncNoBufferSpace) {
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
   socket_data.AddWrite(
       SYNCHRONOUS,
-      client_maker_->MakeAckAndConnectionClosePacket(
-          packet_num++, 2, 1, quic::QUIC_CONNECTION_CANCELLED, "net error", 0));
+      client_maker_->Packet(packet_num++)
+          .AddAckFrame(/*first_received=*/1, /*largest_received=*/2,
+                       /*smallest_received=*/1)
+          .AddConnectionCloseFrame(quic::QUIC_CONNECTION_CANCELLED, "net error",
+                                   0)
+          .Build());
 
   socket_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -5980,8 +5985,12 @@ TEST_P(QuicNetworkTransactionTest, RetryAfterSynchronousNoBufferSpace) {
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
   socket_data.AddWrite(
       SYNCHRONOUS,
-      client_maker_->MakeAckAndConnectionClosePacket(
-          packet_num++, 2, 1, quic::QUIC_CONNECTION_CANCELLED, "net error", 0));
+      client_maker_->Packet(packet_num++)
+          .AddAckFrame(/*first_received=*/1, /*largest_received=*/2,
+                       /*smallest_received=*/1)
+          .AddConnectionCloseFrame(quic::QUIC_CONNECTION_CANCELLED, "net error",
+                                   0)
+          .Build());
 
   socket_data.AddSocketDataToFactory(&socket_factory_);
 
