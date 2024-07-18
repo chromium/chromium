@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_service.h"
 #include "ui/lottie/resource.h"
 
@@ -19,15 +20,34 @@ namespace ash {
 
 namespace {
 
-void SetMahiEnabledByUserPref(bool enabled) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      ash::prefs::kHmrEnabled, enabled);
-}
-
 bool IsMahiNudgeShown() {
   return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(
       mahi_constants::kMahiNudgeId);
 }
+
+// A class that mocks `MagicBoostState` to use in tests.
+class TestMagicBoostState : public chromeos::MagicBoostState {
+ public:
+  TestMagicBoostState() = default;
+
+  TestMagicBoostState(const TestMagicBoostState&) = delete;
+  TestMagicBoostState& operator=(const TestMagicBoostState&) = delete;
+
+  ~TestMagicBoostState() override = default;
+
+  // chromeos::MagicBoostState:
+  void AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus consent_status) override {
+    UpdateHMRConsentStatus(consent_status);
+  }
+
+  void AsyncWriteHMREnabled(bool enabled) override {
+    UpdateHMREnabled(enabled);
+  }
+
+  int32_t AsyncIncrementHMRConsentWindowDismissCount() override { return 0; }
+  void DisableOrcaFeature() override {}
+};
 
 }  // namespace
 
@@ -42,6 +62,9 @@ class MahiNudgeControllerTest : public AshTestBase {
     ui::ResourceBundle::SetLottieParsingFunctions(
         &lottie::ParseLottieAsStillImage,
         &lottie::ParseLottieAsThemedStillImage);
+
+    test_magic_boost_state_.AsyncWriteConsentStatus(
+        chromeos::HMRConsentStatus::kUnset);
   }
 
   MahiNudgeController* nudge_controller() {
@@ -55,6 +78,9 @@ class MahiNudgeControllerTest : public AshTestBase {
   static base::Time GetTestTime() { return test_time_; }
   static void SetTestTime(base::Time test_time) { test_time_ = test_time; }
 
+ protected:
+  TestMagicBoostState test_magic_boost_state_;
+
  private:
   std::unique_ptr<MahiNudgeController> mahi_nudge_controller_;
   static inline base::Time test_time_;
@@ -62,7 +88,7 @@ class MahiNudgeControllerTest : public AshTestBase {
 
 // Tests that the nudge can show when the user is not opted into Mahi.
 TEST_F(MahiNudgeControllerTest, NudgeShows_WhenUserPrefNotEnabled) {
-  SetMahiEnabledByUserPref(false);
+  test_magic_boost_state_.AsyncWriteHMREnabled(false);
 
   EXPECT_FALSE(IsMahiNudgeShown());
   nudge_controller()->MaybeShowNudge();
@@ -71,7 +97,44 @@ TEST_F(MahiNudgeControllerTest, NudgeShows_WhenUserPrefNotEnabled) {
 
 // Tests that the nudge won't show when the user has opted into Mahi.
 TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_WhenUserPrefEnabled) {
-  SetMahiEnabledByUserPref(true);
+  test_magic_boost_state_.AsyncWriteHMREnabled(true);
+
+  EXPECT_FALSE(IsMahiNudgeShown());
+  nudge_controller()->MaybeShowNudge();
+  EXPECT_FALSE(IsMahiNudgeShown());
+}
+
+// Tests that the nudge can show when the consent status is unset.
+TEST_F(MahiNudgeControllerTest, NudgeShows_WhenConsentStatusIsUnset) {
+  test_magic_boost_state_.AsyncWriteHMREnabled(false);
+  test_magic_boost_state_.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kUnset);
+
+  EXPECT_FALSE(IsMahiNudgeShown());
+  nudge_controller()->MaybeShowNudge();
+  EXPECT_TRUE(IsMahiNudgeShown());
+}
+
+// Tests that the nudge won't show when the consent status is set.
+TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_WhenConsentStatusSet) {
+  test_magic_boost_state_.AsyncWriteHMREnabled(false);
+
+  test_magic_boost_state_.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kPending);
+
+  EXPECT_FALSE(IsMahiNudgeShown());
+  nudge_controller()->MaybeShowNudge();
+  EXPECT_FALSE(IsMahiNudgeShown());
+
+  test_magic_boost_state_.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kApproved);
+
+  EXPECT_FALSE(IsMahiNudgeShown());
+  nudge_controller()->MaybeShowNudge();
+  EXPECT_FALSE(IsMahiNudgeShown());
+
+  test_magic_boost_state_.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kDeclined);
 
   EXPECT_FALSE(IsMahiNudgeShown());
   nudge_controller()->MaybeShowNudge();
@@ -81,7 +144,7 @@ TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_WhenUserPrefEnabled) {
 // Tests that the nudge won't show if the time between shown threshold hasn't
 // passed since it was last shown.
 TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_IfRecentlyShown) {
-  SetMahiEnabledByUserPref(false);
+  test_magic_boost_state_.AsyncWriteHMREnabled(false);
 
   SetTestTime(base::Time::Now());
   base::subtle::ScopedTimeClockOverrides clock_override(
@@ -115,7 +178,7 @@ TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_IfRecentlyShown) {
 
 // Tests that the nudge won't show if it has been shown its max number of times.
 TEST_F(MahiNudgeControllerTest, NudgeDoesNotShow_IfMaxTimesShown) {
-  SetMahiEnabledByUserPref(false);
+  test_magic_boost_state_.AsyncWriteHMREnabled(false);
 
   SetTestTime(base::Time::Now());
   base::subtle::ScopedTimeClockOverrides clock_override(

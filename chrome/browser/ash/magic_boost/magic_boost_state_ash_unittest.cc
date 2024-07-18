@@ -183,12 +183,14 @@ TEST_F(MagicBoostStateAshTest, UpdateHMRConsentStatusWhenEnableStateChanged) {
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_status(),
             HMRConsentStatus::kPending);
 
-  // Flipping back enable state from true to false should reset the consent
-  // status to `kUnset`.
+  // Flipping back enable state from true to false should retain the consent
+  // status value.
   MagicBoostState::Get()->AsyncWriteHMREnabled(false);
 
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_status(),
-            HMRConsentStatus::kUnset);
+            HMRConsentStatus::kPending);
+
+  MagicBoostState::Get()->AsyncWriteConsentStatus(HMRConsentStatus::kUnset);
 
   // When consent status is `kUnset` and enable state flip from false to
   // true (this can happen when flipping the toggle in Settings app), consent

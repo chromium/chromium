@@ -145,13 +145,6 @@ void MagicBoostStateAsh::OnHMREnabledUpdated() {
                   consent_status == chromeos::HMRConsentStatus::kDeclined)) {
     UpdateHMRConsentStatus(chromeos::HMRConsentStatus::kPending);
   }
-
-  // `kHmrEnabled` can be flip back to disabled when consent status is
-  // `kPending`, in this case we flip consent status to `kUnset` so that opt-in
-  // flow can be shown.
-  if (!enabled && consent_status == chromeos::HMRConsentStatus::kPending) {
-    UpdateHMRConsentStatus(chromeos::HMRConsentStatus::kUnset);
-  }
 }
 
 void MagicBoostStateAsh::OnHMRConsentStatusUpdated() {

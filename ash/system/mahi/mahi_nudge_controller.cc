@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -41,9 +42,19 @@ void MahiNudgeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void MahiNudgeController::MaybeShowNudge() {
   auto* pref_service = GetPrefService();
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
 
   // Don't show nudge if the feature has been enabled by the user.
-  if (pref_service->GetBoolean(prefs::kHmrEnabled)) {
+  if (magic_boost_state->hmr_enabled().has_value() &&
+      magic_boost_state->hmr_enabled().value()) {
+    return;
+  }
+
+  // Don't show nudge if users has explicitly interacted with the feature
+  // consent status (they have explicitly made a decision to not use the
+  // feature).
+  if (magic_boost_state->hmr_consent_status() !=
+      chromeos::HMRConsentStatus::kUnset) {
     return;
   }
 
