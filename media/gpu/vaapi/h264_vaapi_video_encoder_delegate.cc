@@ -38,12 +38,13 @@ constexpr uint32_t kIPeriod = 0;
 constexpr uint32_t kIPPeriod = 1;
 
 // The qp range is 0-51 in H264. Select 26 because of the center value.
+// WebRTC H264 encoder uses 1-51. We follow it and additionally sets the minimum
+// QP to 10 for screen content to mitigate the bitrate overshoot due to a scene
+// change.
 constexpr uint8_t kDefaultQP = 26;
-// Note: Webrtc default values are 24 and 37 respectively, see
-// h264_encoder_impl.cc.
-// These values are selected to make our VEA tests pass.
-constexpr uint8_t kMinQP = 24;
-constexpr uint8_t kMaxQP = 42;
+constexpr uint8_t kMinQP = 1;
+constexpr uint8_t kScreenMinQP = 10;
+constexpr uint8_t kMaxQP = 51;
 
 // Subjectively chosen bitrate window size for rate control, in ms.
 constexpr uint32_t kCPBWindowSizeMs = 1500;
@@ -267,6 +268,11 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
       return false;
     }
     level_ = *valid_level;
+  }
+
+  if (config.content_type ==
+      VideoEncodeAccelerator::Config::ContentType::kDisplay) {
+    curr_params_.min_qp = kScreenMinQP;
   }
 
   num_temporal_layers_ = 1;
