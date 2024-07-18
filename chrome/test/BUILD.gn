@@ -42,6 +42,7 @@ import("//net/features.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//remoting/remoting_enable.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -11762,7 +11763,7 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_linux) {
-      if (ozone_platform_x11) {
+      if (ozone_platform_x11 && enable_remoting) {
         sources += [ "//ui/display/linux/test/virtual_display_util_linux_interactive_uitest.cc" ]
       }
       deps += [ "//ui/linux:linux_ui" ]
