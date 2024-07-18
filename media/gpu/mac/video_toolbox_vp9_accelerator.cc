@@ -112,9 +112,8 @@ bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
   }
 
   // Append this picture to the current superframe.
-  AppendData(frame_data_.get(), pic->frame_hdr->data,
-             pic->frame_hdr->frame_size);
-  frame_sizes_.push_back(pic->frame_hdr->frame_size);
+  AppendData(frame_data_.get(), pic->frame_hdr->data);
+  frame_sizes_.push_back(pic->frame_hdr->data.size());
 
   // If this is an output picture, submit the current superframe for decoding.
   if (pic->frame_hdr->show_frame || pic->frame_hdr->show_existing_frame) {
@@ -257,7 +256,7 @@ bool VideoToolboxVP9Accelerator::SubmitFrames(
     trailer.push_back(header);
     DCHECK_EQ(trailer.size(), trailer_size);
 
-    AppendData(frame_data.get(), trailer.data(), trailer.size());
+    AppendData(frame_data.get(), trailer);
   }
 
   // Wrap the frame data in a sample.
@@ -287,8 +286,7 @@ bool VideoToolboxVP9Accelerator::SubmitFrames(
 }
 
 bool VideoToolboxVP9Accelerator::AppendData(CMBlockBufferRef dest,
-                                            const uint8_t* data,
-                                            size_t data_size) {
+                                            base::span<const uint8_t> data) {
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -298,11 +296,11 @@ bool VideoToolboxVP9Accelerator::AppendData(CMBlockBufferRef dest,
   OSStatus status = CMBlockBufferAppendMemoryBlock(
       /*theBuffer=*/dest,
       /*memoryBlock=*/nullptr,
-      /*blockLength=*/data_size,
+      /*blockLength=*/data.size(),
       /*blockAllocator=*/kCFAllocatorDefault,
       /*customBlockSource=*/nullptr,
       /*offsetToData=*/0,
-      /*dataLength=*/data_size,
+      /*dataLength=*/data.size(),
       /*flags=*/0);
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
@@ -319,7 +317,8 @@ bool VideoToolboxVP9Accelerator::AppendData(CMBlockBufferRef dest,
   }
 
   // Copy the data.
-  status = CMBlockBufferReplaceDataBytes(data, dest, offset, data_size);
+  status =
+      CMBlockBufferReplaceDataBytes(data.data(), dest, offset, data.size());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMBlockBufferReplaceDataBytes()";

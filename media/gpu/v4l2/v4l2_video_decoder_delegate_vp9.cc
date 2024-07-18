@@ -324,8 +324,8 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   // Copy the frame data into the V4L2 buffer.
   if (!surface_handler_->SubmitSlice(
           dec_surface.get(),
-          dec_surface->secure_handle() ? nullptr : frame_hdr->data,
-          frame_hdr->frame_size)) {
+          dec_surface->secure_handle() ? nullptr : frame_hdr->data.data(),
+          frame_hdr->data.size())) {
     return DecodeStatus::kFail;
   }
 

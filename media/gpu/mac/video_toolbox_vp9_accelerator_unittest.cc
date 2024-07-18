@@ -51,8 +51,7 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
   scoped_refptr<VP9Picture> pic = accelerator_->CreateVP9Picture();
   pic->frame_hdr = std::make_unique<Vp9FrameHeader>();
   pic->frame_hdr->show_frame = true;
-  pic->frame_hdr->data = frame_data;
-  pic->frame_hdr->frame_size = 1;
+  pic->frame_hdr->data = base::span(frame_data);
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
@@ -79,14 +78,12 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
 
   scoped_refptr<VP9Picture> pic1 = accelerator_->CreateVP9Picture();
   pic1->frame_hdr = std::make_unique<Vp9FrameHeader>();
-  pic1->frame_hdr->data = frame_data1;
-  pic1->frame_hdr->frame_size = sizeof(frame_data1);
+  pic1->frame_hdr->data = base::span(frame_data1);
 
   scoped_refptr<VP9Picture> pic2 = accelerator_->CreateVP9Picture();
   pic2->frame_hdr = std::make_unique<Vp9FrameHeader>();
   pic2->frame_hdr->show_existing_frame = true;
-  pic2->frame_hdr->data = frame_data2;
-  pic2->frame_hdr->frame_size = sizeof(frame_data2);
+  pic2->frame_hdr->data = base::span(frame_data2);
 
   // Save the resulting sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;

@@ -66,7 +66,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
   // Submit the current superframe for decoding.
   bool SubmitFrames(scoped_refptr<VP9Picture> output_pic);
   // Helper to append data to a CMBlockBuffer.
-  bool AppendData(CMBlockBufferRef dest, const uint8_t* data, size_t data_size);
+  bool AppendData(CMBlockBufferRef dest, base::span<const uint8_t> data);
 
   std::unique_ptr<MediaLog> media_log_;
   std::optional<gfx::HDRMetadata> hdr_metadata_;
