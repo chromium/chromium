@@ -245,10 +245,13 @@ class VideoPaintPreviewTest : public testing::Test,
 
   LocalFrame* GetFrame() { return GetLocalMainFrame().GetFrame(); }
 
+  TestWebFrameClientImpl web_frame_client_;
+
+  // This must be destroyed before `web_frame_client_`; when the WebViewHelper
+  // is deleted, it destroys child views that were created, but the list of
+  // child views is maintained on `web_frame_client_`.
   frame_test_helpers::WebViewHelper web_view_helper_;
   gfx::Rect bounds_ = {0, 0, 640, 480};
-
-  TestWebFrameClientImpl web_frame_client_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(VideoPaintPreviewTest);
