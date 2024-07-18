@@ -533,7 +533,7 @@ export class RecordPage extends ReactiveLitElement {
         );
         return html`
           <div id="transcription-consent">
-            <cra-image name="transcript"></cra-image>
+            <cra-image name="transcription_off"></cra-image>
             <div class="header">${i18n.recordTranscriptionOffHeader}</div>
             <div class="description">${description}</div>
           </div>
@@ -547,7 +547,7 @@ export class RecordPage extends ReactiveLitElement {
         }
         return html`
           <div id="transcription-consent">
-            <cra-image name="transcript"></cra-image>
+            <cra-image name="transcription_enable"></cra-image>
             <div class="header">
               ${i18n.recordTranscriptionEntryPointHeader}
             </div>

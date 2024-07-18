@@ -411,9 +411,6 @@ export class PlaybackPage extends ReactiveLitElement {
       return nothing;
     }
     if (textTokens.length === 0) {
-      // Note that the image is currently placeholders and don't use dynamic
-      // color tokens yet.
-      // TODO: b/344785475 - Change to final illustration when ready.
       return html`<div id="transcription-empty">
         <cra-image name="transcription_no_speech"></cra-image>
         ${i18n.transcriptionNoSpeechText}
