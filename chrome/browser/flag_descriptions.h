@@ -2794,6 +2794,9 @@ extern const char kSurfacePolishDescription[];
 extern const char kSurfacePolishForToolbarKillSwitchName[];
 extern const char kSurfacePolishForToolbarKillSwitchDescription[];
 
+extern const char kTabGroupCreationDialogAndroidName[];
+extern const char kTabGroupCreationDialogAndroidDescription[];
+
 extern const char kTabGroupPaneAndroidName[];
 extern const char kTabGroupPaneAndroidDescription[];
 

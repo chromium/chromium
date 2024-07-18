@@ -4731,6 +4731,13 @@ const char kTabletToolbarReorderingAndroidDescription[] =
     "placing the Home button from 1st to the 4th position after the Refresh"
     "button to match the Desktop toolbar";
 
+const char kTabGroupCreationDialogAndroidName[] =
+    "Tab Group Creation Dialog Android";
+const char kTabGroupCreationDialogAndroidDescription[] =
+    "Enables showing a dialog for adjusting tab group settings on new tab "
+    "group creations. The dialog will only show for groups created through "
+    "drag and drop or bulk selection merge.";
+
 const char kTabGroupPaneAndroidName[] = "Tab Group Pane Android";
 const char kTabGroupPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays and allows "

@@ -286,6 +286,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSuppressToolbarCaptures,
     &kSuppressToolbarCapturesAtGestureEnd,
     &kTabDragDropAndroid,
+    &kTabGroupCreationDialogAndroid,
     &kTabGroupParityAndroid,
     &kTabletTabSwitcherLongPressMenu,
     &kTabletToolbarReordering,
@@ -914,6 +915,10 @@ BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd,
 
 BASE_FEATURE(kTabDragDropAndroid,
              "TabDragDropAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabGroupCreationDialogAndroid,
+             "TabGroupCreationDialogAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupParityAndroid,

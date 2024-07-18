@@ -21926,6 +21926,7 @@ from previous Chrome versions.
   <int value="474743272" label="material-design-ink-drop"/>
   <int value="475858648"
       label="OverlayScrollbarFlashAfterAnyScrollUpdate:disabled"/>
+  <int value="476201267" label="TabGroupCreationDialogAndroid:disabled"/>
   <int value="476261104" label="SidePanelResizing:enabled"/>
   <int value="476685184" label="ResetShortcutCustomizations:enabled"/>
   <int value="476814335" label="AutoDisableAccessibilityV2:enabled"/>
@@ -22570,6 +22571,7 @@ from previous Chrome versions.
   <int value="746699704" label="ProcessPerSiteUpToMainFrameThreshold:disabled"/>
   <int value="746765012" label="AutofillEnableToolbarStatusChip:disabled"/>
   <int value="746944193" label="enable-automatic-password-saving:disabled"/>
+  <int value="747022163" label="TabGroupCreationDialogAndroid:enabled"/>
   <int value="747076955" label="MobileIdentityConsistency:enabled"/>
   <int value="747391377" label="DesktopPWAsRunOnOsLogin:disabled"/>
   <int value="747477721" label="EolIncentive:disabled"/>

@@ -21936,6 +21936,21 @@
             ]
         }
     ],
+    "TabGroupCreationDialogAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGroupCreationDialogAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabGroupParityAndroid": [
         {
             "platforms": [
