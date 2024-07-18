@@ -99,7 +99,7 @@ void FakeTrustedVaultClientBackend::GetDegradedRecoverabilityStatus(
 }
 
 FakeTrustedVaultClientBackend::CancelDialogCallback
-FakeTrustedVaultClientBackend::ReauthenticationWithCancelCallback(
+FakeTrustedVaultClientBackend::Reauthentication(
     id<SystemIdentity> identity,
     const std::string& security_domain_path,
     UIViewController* presenting_view_controller,
@@ -121,7 +121,7 @@ FakeTrustedVaultClientBackend::ReauthenticationWithCancelCallback(
 }
 
 FakeTrustedVaultClientBackend::CancelDialogCallback
-FakeTrustedVaultClientBackend::FixDegradedRecoverabilityWithCancelCallback(
+FakeTrustedVaultClientBackend::FixDegradedRecoverability(
     id<SystemIdentity> identity,
     const std::string& security_domain_path,
     UIViewController* presenting_view_controller,

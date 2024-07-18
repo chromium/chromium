@@ -25,26 +25,27 @@ class ChromiumTrustedVaultClientBackend final
   void SetDeviceRegistrationPublicKeyVerifierForUMA(
       VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
-                 NSString* security_domain,
+                 const std::string& security_domain_path,
                  KeyFetchedCallback completion) final;
   void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                            NSString* security_domain,
+                            const std::string& security_domain_path,
                             base::OnceClosure completion) final;
   void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      NSString* security_domain,
+      const std::string& security_domain_path,
       base::OnceCallback<void(bool)> completion) final;
-  void Reauthentication(id<SystemIdentity> identity,
-                        NSString* security_domain,
-                        UIViewController* presenting_view_controller,
-                        CompletionBlock completion) final;
-  void FixDegradedRecoverability(id<SystemIdentity> identity,
-                                 NSString* security_domain,
-                                 UIViewController* presenting_view_controller,
-                                 CompletionBlock completion) final;
-  void CancelDialog(BOOL animated, ProceduralBlock completion) final;
+  CancelDialogCallback Reauthentication(
+      id<SystemIdentity> identity,
+      const std::string& security_domain_path,
+      UIViewController* presenting_view_controller,
+      CompletionBlock completion) final;
+  CancelDialogCallback FixDegradedRecoverability(
+      id<SystemIdentity> identity,
+      const std::string& security_domain_path,
+      UIViewController* presenting_view_controller,
+      CompletionBlock completion) final;
   void ClearLocalData(id<SystemIdentity> identity,
-                      NSString* security_domain,
+                      const std::string& security_domain_path,
                       base::OnceCallback<void(bool)> completion) final;
   void GetPublicKeyForIdentity(id<SystemIdentity> identity,
                                GetPublicKeyCallback completion) final;
@@ -69,49 +70,46 @@ void ChromiumTrustedVaultClientBackend::
 
 void ChromiumTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     KeyFetchedCallback completion) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED_NORETURN();
 }
 
 void ChromiumTrustedVaultClientBackend::MarkLocalKeysAsStale(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     base::OnceClosure completion) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED_NORETURN();
 }
 
 void ChromiumTrustedVaultClientBackend::GetDegradedRecoverabilityStatus(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     base::OnceCallback<void(bool)> completion) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED_NORETURN();
 }
 
-void ChromiumTrustedVaultClientBackend::Reauthentication(
+TrustedVaultClientBackend::CancelDialogCallback
+ChromiumTrustedVaultClientBackend::Reauthentication(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     UIViewController* presenting_view_controller,
     CompletionBlock completion) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED_NORETURN();
 }
 
-void ChromiumTrustedVaultClientBackend::FixDegradedRecoverability(
+TrustedVaultClientBackend::CancelDialogCallback
+ChromiumTrustedVaultClientBackend::FixDegradedRecoverability(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     UIViewController* presenting_view_controller,
     CompletionBlock completion) {
-  NOTREACHED_IN_MIGRATION();
-}
-
-void ChromiumTrustedVaultClientBackend::CancelDialog(BOOL animated,
-                                                     ProceduralBlock callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED_NORETURN();
 }
 
 void ChromiumTrustedVaultClientBackend::ClearLocalData(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     base::OnceCallback<void(bool)> completion) {
   // Do nothing.
 }
@@ -119,7 +117,7 @@ void ChromiumTrustedVaultClientBackend::ClearLocalData(
 void ChromiumTrustedVaultClientBackend::GetPublicKeyForIdentity(
     id<SystemIdentity> identity,
     GetPublicKeyCallback completion) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED_NORETURN();
 }
 
 }  // anonymous namespace

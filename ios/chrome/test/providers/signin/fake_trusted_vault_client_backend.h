@@ -32,12 +32,12 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
       id<SystemIdentity> identity,
       const std::string& security_domain_path,
       base::OnceCallback<void(bool)> completion) final;
-  CancelDialogCallback ReauthenticationWithCancelCallback(
+  CancelDialogCallback Reauthentication(
       id<SystemIdentity> identity,
       const std::string& security_domain_path,
       UIViewController* presenting_view_controller,
       CompletionBlock completion) final;
-  CancelDialogCallback FixDegradedRecoverabilityWithCancelCallback(
+  CancelDialogCallback FixDegradedRecoverability(
       id<SystemIdentity> identity,
       const std::string& security_domain_path,
       UIViewController* presenting_view_controller,
