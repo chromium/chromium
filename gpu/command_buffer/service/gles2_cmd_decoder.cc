@@ -4000,7 +4000,6 @@ void GLES2DecoderImpl::DeleteSyncHelper(GLuint sync) {
 }
 
 bool GLES2DecoderImpl::MakeCurrent() {
-  DCHECK(surface_);
   if (!context_.get())
     return false;
 

@@ -1068,7 +1068,7 @@ void RasterDecoderImpl::Destroy(bool have_context) {
   if (!initialized())
     return;
 
-  DCHECK(!have_context || shared_context_state_->context()->IsCurrent(nullptr));
+  DCHECK(!have_context || shared_context_state_->IsCurrent(nullptr));
 
   // Client can call BeginRasterChromium and then channel can be closed and
   // decoder destroyed. Finish raster first.

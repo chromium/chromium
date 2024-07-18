@@ -321,13 +321,10 @@ void CommandBufferStub::Destroy() {
     sync_point_client_state_ = nullptr;
   }
 
-  bool have_context = false;
-  if (decoder_context_ && decoder_context_->GetGLContext()) {
-    // Try to make the context current regardless of whether it was lost, so we
-    // don't leak resources.
-    have_context =
-        decoder_context_->GetGLContext()->MakeCurrent(surface_.get());
-  }
+  // Try to make the context current regardless of whether it was lost, so we
+  // don't leak resources. Don't use GetGLContext()->MakeCurrent() since that
+  // will make |have_context| false when RasterDecoder doesn't use GL.
+  const bool have_context = decoder_context_ && decoder_context_->MakeCurrent();
 
   std::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (have_context)
