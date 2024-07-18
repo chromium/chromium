@@ -11,8 +11,17 @@
 #include <ostream>
 #include <string>
 
+enum class AccountType {
+  // Unspecified account (eg. other domains)
+  UNKNOWN,
 
-enum class AccountType { UNKNOWN, GOOGLE, ACTIVE_DIRECTORY };
+  // aka Gaia account
+  GOOGLE,
+
+  // Microsoft Active Directory accounts (Deprecated, pending removal:
+  // b/263367348).
+  ACTIVE_DIRECTORY
+};
 
 // Type that contains enough information to identify user.
 //
