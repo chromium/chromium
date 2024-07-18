@@ -180,6 +180,7 @@ source_set("sync") {
       "//chrome/browser/ash/floating_sso",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/login/session",
+      "//chrome/browser/ash/printing",
       "//chrome/browser/ash/printing/oauth2",
       "//chrome/browser/ash/profiles",
       "//chromeos/ash/components/network",

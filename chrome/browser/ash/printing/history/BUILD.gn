@@ -63,6 +63,8 @@ source_set("unit_tests") {
   deps = [
     ":history",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/printing:test_support",
     "//components/reporting/client:test_support",
   ]
 }

@@ -5461,6 +5461,7 @@ static_library("browser") {
       "//chrome/browser/ash/power/ml",
       "//chrome/browser/ash/power/ml/smart_dim",
       "//chrome/browser/ash/power/smart_charging",
+      "//chrome/browser/ash/printing",
       "//chrome/browser/ash/printing/enterprise",
       "//chrome/browser/ash/printing/history",
       "//chrome/browser/ash/printing/print_management",
@@ -5816,6 +5817,7 @@ static_library("browser") {
       "//chrome/browser/ash/power/auto_screen_brightness",
       "//chrome/browser/ash/power/ml",
       "//chrome/browser/ash/power/smart_charging",
+      "//chrome/browser/ash/printing",
       "//chrome/browser/ash/printing/enterprise",
       "//chrome/browser/ash/printing/history",
       "//chrome/browser/ash/printing/print_management",
@@ -8837,6 +8839,7 @@ static_library("test_support") {
   # Always include this via the main test support target.
   visibility = [
     "//chrome/browser/apps/link_capturing:test_support",
+    "//chrome/browser/ash/printing:unit_tests",
     "//chrome/browser/autofill:interactive_ui_tests",
     "//chrome/browser/autofill:test_support_ui",
     "//chrome/browser/extensions:test_support",
