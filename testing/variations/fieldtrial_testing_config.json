@@ -20493,6 +20493,21 @@
             ]
         }
     ],
+    "ScreencastServerBasedUSMRNNTLocales": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InternalServerSideSpeechRecognitionUSMModelFinch"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreenlockReauthPromoCard": [
         {
             "platforms": [
