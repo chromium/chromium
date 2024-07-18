@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -733,7 +734,36 @@ struct LanguageSegmentationCase {
 
 class EditorStateMetricsSegmentedByLanguage
     : public EditorMetricsRecorderTest,
-      public testing::WithParamInterface<LanguageSegmentationCase> {};
+      public testing::WithParamInterface<LanguageSegmentationCase> {
+ public:
+  void EnableInternationalFlags() {
+    feature_list_.InitWithFeatures(
+        {
+            features::kOrcaDanish,
+            features::kOrcaDutch,
+            features::kOrcaFinnish,
+            features::kOrcaFrench,
+            features::kOrcaGerman,
+            features::kOrcaItalian,
+            features::kOrcaJapanese,
+            features::kOrcaPortugese,
+            features::kOrcaSpanish,
+            features::kOrcaSwedish,
+        },
+        {});
+  }
+
+  void EnableEnglishFlagsOnly() {
+    feature_list_.InitWithFeatures({}, {
+                                           features::kOrcaFrench,
+                                           features::kOrcaGerman,
+                                           features::kOrcaJapanese,
+                                       });
+  }
+
+ protected:
+  ScopedFeatureList feature_list_;
+};
 
 INSTANTIATE_TEST_SUITE_P(
     EditorMetricsRecorderTest,
@@ -801,7 +831,7 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Write"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -827,7 +857,7 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -852,7 +882,7 @@ TEST_P(EditorStateMetricsSegmentedByLanguage, DoesntRecordIfFlagDisabled) {
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
-  ScopedFeatureList feature_list;
+  EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -869,7 +899,36 @@ TEST_P(EditorStateMetricsSegmentedByLanguage, DoesntRecordIfFlagDisabled) {
 
 class EditorAuxiliaryMetricsSegmentedByEnglishAndOther
     : public EditorMetricsRecorderTest,
-      public testing::WithParamInterface<LanguageSegmentationCase> {};
+      public testing::WithParamInterface<LanguageSegmentationCase> {
+ public:
+  void EnableInternationalFlags() {
+    feature_list_.InitWithFeatures(
+        {
+            features::kOrcaDanish,
+            features::kOrcaDutch,
+            features::kOrcaFinnish,
+            features::kOrcaFrench,
+            features::kOrcaGerman,
+            features::kOrcaItalian,
+            features::kOrcaJapanese,
+            features::kOrcaPortugese,
+            features::kOrcaSpanish,
+            features::kOrcaSwedish,
+        },
+        {});
+  }
+
+  void EnableEnglishFlagsOnly() {
+    feature_list_.InitWithFeatures({}, {
+                                           features::kOrcaFrench,
+                                           features::kOrcaGerman,
+                                           features::kOrcaJapanese,
+                                       });
+  }
+
+ protected:
+  ScopedFeatureList feature_list_;
+};
 
 // Note that auxiliary metrics are not segmented by each language enabled, but
 // by two high level buckets; kEnglish and kOther. This is to prevent an
@@ -941,7 +1000,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "CharactersInserted.Write"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -960,7 +1019,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "CharactersInserted.Rewrite"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -979,7 +1038,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "CharactersInserted.Rewrite"});
-  ScopedFeatureList feature_list;
+  EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -998,7 +1057,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix,
                     "CharactersSelectedForInsert.Write"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1018,7 +1077,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix,
                     "CharactersSelectedForInsert.Rewrite"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1038,7 +1097,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix,
                     "CharactersSelectedForInsert.Rewrite"});
-  ScopedFeatureList feature_list;
+  EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1056,7 +1115,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "NumResponses.Write"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1075,7 +1134,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "NumResponses.Rewrite"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1094,7 +1153,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "NumResponses.Rewrite"});
-  ScopedFeatureList feature_list;
+  EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1112,7 +1171,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Write"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1131,7 +1190,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Rewrite"});
-  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
+  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1150,7 +1209,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Rewrite"});
-  ScopedFeatureList feature_list;
+  EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);

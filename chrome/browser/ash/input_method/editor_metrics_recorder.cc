@@ -138,6 +138,20 @@ std::string_view AsEnglishOrOther(const LanguageCategory& category) {
   }
 }
 
+bool IsInternationalizedPathEnabled() {
+  return base::FeatureList::IsEnabled(features::kOrcaDanish) ||
+         base::FeatureList::IsEnabled(features::kOrcaDutch) ||
+         base::FeatureList::IsEnabled(features::kOrcaFinnish) ||
+         base::FeatureList::IsEnabled(features::kOrcaFrench) ||
+         base::FeatureList::IsEnabled(features::kOrcaGerman) ||
+         base::FeatureList::IsEnabled(features::kOrcaItalian) ||
+         base::FeatureList::IsEnabled(features::kOrcaJapanese) ||
+         base::FeatureList::IsEnabled(features::kOrcaNorwegian) ||
+         base::FeatureList::IsEnabled(features::kOrcaPortugese) ||
+         base::FeatureList::IsEnabled(features::kOrcaSpanish) ||
+         base::FeatureList::IsEnabled(features::kOrcaSwedish);
+}
+
 }  // namespace
 
 EditorStates ToEditorStatesMetric(EditorBlockedReason reason) {
@@ -264,7 +278,7 @@ void EditorMetricsRecorder::LogEditorState(EditorStates state) {
   base::UmaHistogramEnumeration(
       base::StrCat({"InputMethod.Manta.Orca.States.", AsString(mode_)}), state);
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
+  if (IsInternationalizedPathEnabled()) {
     base::UmaHistogramEnumeration(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsString(InputMethodToLanguageCategory(
@@ -300,7 +314,7 @@ void EditorMetricsRecorder::LogNumberOfCharactersInserted(
           {"InputMethod.Manta.Orca.CharactersInserted.", AsString(mode_)}),
       number_of_characters);
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
+  if (IsInternationalizedPathEnabled()) {
     base::UmaHistogramCounts100000(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsEnglishOrOther(InputMethodToLanguageCategory(
@@ -330,7 +344,7 @@ void EditorMetricsRecorder::LogNumberOfCharactersSelectedForInsert(
                     AsString(mode_)}),
       number_of_characters);
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
+  if (IsInternationalizedPathEnabled()) {
     base::UmaHistogramCounts100000(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsEnglishOrOther(InputMethodToLanguageCategory(
@@ -360,7 +374,7 @@ void EditorMetricsRecorder::LogNumberOfResponsesFromServer(
       base::StrCat({"InputMethod.Manta.Orca.NumResponses.", AsString(mode_)}),
       number_of_responses, kMaxNumResponsesFromServer);
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
+  if (IsInternationalizedPathEnabled()) {
     base::UmaHistogramExactLinear(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsEnglishOrOther(InputMethodToLanguageCategory(
@@ -391,7 +405,7 @@ void EditorMetricsRecorder::LogLengthOfLongestResponseFromServer(
           {"InputMethod.Manta.Orca.LengthOfLongestResponse.", AsString(mode_)}),
       number_of_characters);
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
+  if (IsInternationalizedPathEnabled()) {
     base::UmaHistogramCounts100000(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsEnglishOrOther(InputMethodToLanguageCategory(
