@@ -21,7 +21,8 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {PagePath} from './constants.js';
-import {HealthdApiTelemetryResult, HealthdInternalsFeatureFlagResult} from './externs.js';
+import {DataManager} from './data_manager.js';
+import type {HealthdInternalsFeatureFlagResult} from './externs.js';
 import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
 import type {HealthdInternalsCpuFrequencyChartElement} from './pages/cpu_frequency_chart.js';
 import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
@@ -70,6 +71,13 @@ export class HealthdInternalsAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
+    this.dataManager = new DataManager(
+        this.$.telemetryPage,
+        this.$.batteryChart,
+        this.$.cpuFrequencyChart,
+        this.$.thermalChart,
+    );
+
     this.$.settingsDialog.addEventListener('polling-cycle-updated', () => {
       this.setupFetchDataRequests();
     });
@@ -96,6 +104,9 @@ export class HealthdInternalsAppElement extends PolymerElement {
           this.setupFetchDataRequests();
         });
   }
+
+  // Init in `connectedCallback`.
+  private dataManager: DataManager;
 
   // The content pages for chrome://healthd-internals. It is also used for
   // rendering the tabs in the sidebar menu.
@@ -162,28 +173,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
       return;
     }
 
-    if (this.fetchDataInternalId !== undefined) {
-      clearInterval(this.fetchDataInternalId);
-      this.fetchDataInternalId = undefined;
-    }
-    const fetchData = () => {
-      sendWithPromise('getHealthdTelemetryInfo')
-          .then((data: HealthdApiTelemetryResult) => {
-            this.handleHealthdTelemetryInfo(data);
-          });
-    };
-    fetchData();
-    this.fetchDataInternalId = setInterval(
-        fetchData, this.$.settingsDialog.getHealthdDataPollingCycle() * 1000);
-  }
-
-  private handleHealthdTelemetryInfo(data: HealthdApiTelemetryResult) {
-    this.$.telemetryPage.updateTelemetryData(data);
-
-    const timestamp: number = Date.now();
-    this.$.batteryChart.updateBatteryData(data.battery, timestamp);
-    this.$.cpuFrequencyChart.updateCpuData(data.cpu, timestamp);
-    this.$.thermalChart.updateThermalData(data.thermals, timestamp);
+    this.dataManager.setupFetchDataRequests(
+        this.$.settingsDialog.getHealthdDataPollingCycle() * 1000);
   }
 
   private openSettingsDialog() {
