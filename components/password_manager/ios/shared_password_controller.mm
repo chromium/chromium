@@ -139,7 +139,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 // Tracks whether the potential generated password has been proactively shown
 // or through the keyboard accessory
-@property(nonatomic) BOOL isProactivePasswordGeneration;
+@property(nonatomic) BOOL proactivePasswordGeneration;
 
 @end
 
@@ -235,7 +235,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     _suggestionHelper.delegate = self;
     _passwordManager = passwordManager;
     _driverHelper = driverHelper;
-    _isProactivePasswordGeneration = NO;
+    _proactivePasswordGeneration = NO;
   }
   return self;
 }
@@ -257,17 +257,17 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   [self triggerPasswordGenerationForFormId:_lastFocusedFormIdentifier
                            fieldIdentifier:_lastFocusedFieldIdentifier
                                    inFrame:_lastFocusedFrame
-                               asProactive:NO];
+                                 proactive:NO];
 }
 
 - (void)triggerPasswordGenerationForFormId:(FormRendererId)formIdentifier
                            fieldIdentifier:(FieldRendererId)fieldIdentifier
                                    inFrame:(web::WebFrame*)frame
-                               asProactive:(BOOL)proactivePasswordGeneration {
+                                 proactive:(BOOL)proactivePasswordGeneration {
   if (!fieldIdentifier) {
     return;
   }
-  _isProactivePasswordGeneration = proactivePasswordGeneration;
+  _proactivePasswordGeneration = proactivePasswordGeneration;
 
   LogPasswordGenerationEvent(
       autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
@@ -634,7 +634,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     case autofill::SuggestionType::kGeneratePasswordEntry: {
       // Don't call completion because current suggestion state should remain
       // whether user injects a generated password or cancels.
-      _isProactivePasswordGeneration = NO;
+      _proactivePasswordGeneration = NO;
       [self generatePasswordForFormId:formRendererID
                       fieldIdentifier:fieldRendererID
                               inFrame:frame
@@ -896,7 +896,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     [self.delegate
               sharedPasswordController:self
         showGeneratedPotentialPassword:self.generatedPotentialPassword
-                             proactive:self.isProactivePasswordGeneration
+                             proactive:self.proactivePasswordGeneration
                        decisionHandler:^(BOOL accept) {
                          SharedPasswordController* strongSelf = weakSelf;
                          if (!strongSelf) {

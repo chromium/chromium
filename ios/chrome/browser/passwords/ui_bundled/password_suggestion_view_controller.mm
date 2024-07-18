@@ -32,18 +32,18 @@ constexpr CGFloat customSpacingAfterImage = 1;
 
 @implementation PasswordSuggestionViewController {
   // YES when the bottom sheet is proactive where it is triggered upon focus.
-  BOOL _asProactive;
+  BOOL _proactive;
 }
 
 #pragma mark - Public
 
 - (instancetype)initWithPasswordSuggestion:(NSString*)passwordSuggestion
                                  userEmail:(NSString*)userEmail
-                               asProactive:(BOOL)proactivePasswordGeneration {
+                                 proactive:(BOOL)proactivePasswordGeneration {
   if (self = [super init]) {
     _userEmail = userEmail;
     _passwordSuggestion = passwordSuggestion;
-    _asProactive = proactivePasswordGeneration;
+    _proactive = proactivePasswordGeneration;
   }
   return self;
 }
@@ -70,7 +70,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
       base::SysNSStringToUTF16(self.userEmail));
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
-  if (_asProactive) {
+  if (_proactive) {
     self.secondaryActionString =
         l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
     self.secondaryActionImage =

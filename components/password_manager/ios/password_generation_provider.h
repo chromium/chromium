@@ -24,7 +24,7 @@ class WebFrame;
                            fieldIdentifier:
                                (autofill::FieldRendererId)fieldIdentifier
                                    inFrame:(web::WebFrame*)frame
-                               asProactive:(BOOL)proactivePasswordGeneration;
+                                 proactive:(BOOL)proactivePasswordGeneration;
 
 @end
 

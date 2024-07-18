@@ -169,7 +169,7 @@ void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
       triggerPasswordGenerationForFormId:params.form_renderer_id
                          fieldIdentifier:params.field_renderer_id
                                  inFrame:frame
-                             asProactive:YES];
+                               proactive:YES];
 }
 
 void AutofillBottomSheetTabHelper::AttachPasswordListeners(

@@ -48,7 +48,7 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 @implementation PasswordSuggestionCoordinator {
   // YES when the bottom sheet is proactive where it is triggered upon focus.
-  BOOL _asProactive;
+  BOOL _proactive;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -56,13 +56,13 @@ constexpr CGFloat preferredCornerRadius = 20;
                         passwordSuggestion:(NSString*)passwordSuggestion
                            decisionHandler:
                                (void (^)(BOOL accept))decisionHandler
-                               asProactive:(BOOL)asProactive {
+                                 proactive:(BOOL)proactive {
   self = [super initWithBaseViewController:baseViewController browser:browser];
 
   if (self) {
     _passwordSuggestion = passwordSuggestion;
     _decisionHandler = decisionHandler;
-    _asProactive = asProactive;
+    _proactive = proactive;
   }
 
   return self;
@@ -72,7 +72,7 @@ constexpr CGFloat preferredCornerRadius = 20;
   self.viewController = [[PasswordSuggestionViewController alloc]
       initWithPasswordSuggestion:self.passwordSuggestion
                        userEmail:[self userEmail]
-                     asProactive:_asProactive];
+                       proactive:_proactive];
   self.viewController.presentationController.delegate = self;
   self.viewController.actionHandler = self;
 

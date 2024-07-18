@@ -2989,7 +2989,7 @@ enum class ToolbarKind {
                          browser:self.browser
               passwordSuggestion:passwordSuggestion
                  decisionHandler:decisionHandler
-                     asProactive:proactive];
+                       proactive:proactive];
   self.passwordSuggestionCoordinator.delegate = self;
   [self.passwordSuggestionCoordinator start];
 }

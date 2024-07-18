@@ -125,7 +125,7 @@ TEST_F(AutofillBottomSheetTabHelperTest,
       triggerPasswordGenerationForFormId:form_renderer_ID
                          fieldIdentifier:new_password_rendererID
                                  inFrame:frame
-                             asProactive:YES]);
+                               proactive:YES]);
   helper_->SetPasswordGenerationProvider(generation_provider_mock);
 
   id<AutofillCommands> commands_handler =
