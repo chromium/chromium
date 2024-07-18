@@ -297,7 +297,7 @@ void QuicHttp3Logger::OnDataFrameSent(quic::QuicStreamId stream_id,
 
 void QuicHttp3Logger::OnHeadersFrameSent(
     quic::QuicStreamId stream_id,
-    const spdy::Http2HeaderBlock& header_block) {
+    const quiche::HttpHeaderBlock& header_block) {
   if (!net_log_.IsCapturing()) {
     return;
   }
@@ -308,7 +308,7 @@ void QuicHttp3Logger::OnHeadersFrameSent(
             .Set("stream_id",
                  NetLogNumberValue(static_cast<uint64_t>(stream_id)))
             .Set("headers",
-                 ElideHttp2HeaderBlockForNetLog(header_block, capture_mode));
+                 ElideHttpHeaderBlockForNetLog(header_block, capture_mode));
       });
 }
 

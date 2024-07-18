@@ -74,6 +74,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/congestion_control/send_algorithm_interface.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
@@ -543,7 +544,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   std::unique_ptr<quic::QuicReceivedPacket> ConstructResponseTrailersPacket(
       uint64_t packet_number,
       bool fin,
-      spdy::Http2HeaderBlock trailers,
+      quiche::HttpHeaderBlock trailers,
       size_t* spdy_headers_frame_length) {
     return server_maker_.MakeResponseHeadersPacket(packet_number, stream_id_,
                                                    fin, std::move(trailers),
@@ -652,8 +653,8 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   HttpRequestHeaders headers_;
   HttpResponseInfo response_;
   scoped_refptr<IOBufferWithSize> read_buffer_;
-  spdy::Http2HeaderBlock request_headers_;
-  spdy::Http2HeaderBlock response_headers_;
+  quiche::HttpHeaderBlock request_headers_;
+  quiche::HttpHeaderBlock response_headers_;
   string request_data_;
   string response_data_;
 
@@ -900,7 +901,7 @@ TEST_P(QuicHttpStreamTest, GetRequestWithTrailers) {
   const char kResponseBody[] = "Hello world!";
   std::string header = ConstructDataHeader(strlen(kResponseBody));
   ProcessPacket(ConstructServerDataPacket(3, !kFin, header + kResponseBody));
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   size_t spdy_trailers_frame_length;
   trailers["foo"] = "bar";
   ProcessPacket(ConstructResponseTrailersPacket(4, kFin, std::move(trailers),

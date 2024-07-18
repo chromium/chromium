@@ -264,7 +264,7 @@ QuicProxyClientSocketTestBase::ConstructConnectRequestPacket(
     uint64_t packet_number,
     std::optional<const HttpRequestHeaders> extra_headers,
     RequestPriority request_priority) {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   PopulateConnectRequestIR(&block, extra_headers);
   return client_maker_.MakeRequestHeadersPacket(
       packet_number, client_data_stream_id1_, !kFin,
@@ -277,7 +277,7 @@ QuicProxyClientSocketTestBase::ConstructConnectRequestPacketWithExtraHeaders(
     uint64_t packet_number,
     std::vector<std::pair<std::string, std::string>> extra_headers,
     RequestPriority request_priority) {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   block[":method"] = "CONNECT";
   block[":authority"] =
       HostPortPair::FromSchemeHostPort(destination_endpoint_).ToString();
@@ -294,7 +294,7 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructConnectAuthRequestPacket(
     uint64_t packet_number) {
   RequestPriority request_priority = LOWEST;
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   PopulateConnectRequestIR(&block, /*extra_headers=*/std::nullopt);
   block["proxy-authorization"] = "Basic Zm9vOmJhcg==";
   return client_maker_.MakeRequestHeadersPacket(
@@ -386,7 +386,7 @@ QuicProxyClientSocketTestBase::ConstructServerConnectReplyPacket(
     bool fin,
     size_t* header_length,
     std::optional<const HttpRequestHeaders> extra_headers) {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   block[":status"] = "200";
 
   if (extra_headers) {
@@ -407,7 +407,7 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicProxyClientSocketTestBase::
         uint64_t packet_number,
         bool fin,
         std::vector<std::pair<std::string, std::string>> extra_headers) {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   block[":status"] = "200";
   for (const auto& header : extra_headers) {
     block[header.first] = header.second;
@@ -421,7 +421,7 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructServerConnectAuthReplyPacket(
     uint64_t packet_number,
     bool fin) {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   block[":status"] = "407";
   block["proxy-authenticate"] = "Basic realm=\"MyRealm1\"";
   return server_maker_.MakeResponseHeadersPacket(
@@ -432,7 +432,7 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructServerConnectRedirectReplyPacket(
     uint64_t packet_number,
     bool fin) {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   block[":status"] = "302";
   block["location"] = kRedirectUrl;
   block["set-cookie"] = "foo=bar";
@@ -444,7 +444,7 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructServerConnectErrorReplyPacket(
     uint64_t packet_number,
     bool fin) {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   block[":status"] = "500";
 
   return server_maker_.MakeResponseHeadersPacket(

@@ -25,7 +25,7 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/spdy_buffer.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -90,11 +90,11 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
     // Called when a 103 Early Hints response is received.
     virtual void OnEarlyHintsReceived(
-        const spdy::Http2HeaderBlock& headers) = 0;
+        const quiche::HttpHeaderBlock& headers) = 0;
 
     // Called when response headers have been received.
     virtual void OnHeadersReceived(
-        const spdy::Http2HeaderBlock& response_headers) = 0;
+        const quiche::HttpHeaderBlock& response_headers) = 0;
 
     // Called when data is received.  |buffer| may be NULL, which signals EOF.
     // May cause the stream to be closed.
@@ -104,7 +104,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
     virtual void OnDataSent() = 0;
 
     // Called when trailers are received.
-    virtual void OnTrailers(const spdy::Http2HeaderBlock& trailers) = 0;
+    virtual void OnTrailers(const quiche::HttpHeaderBlock& trailers) = 0;
 
     // Called when SpdyStream is closed. No other delegate functions
     // will be called after this is called, and the delegate must not
@@ -262,7 +262,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   // Called by SpdySession when headers are received for this stream.  May close
   // the stream.
-  void OnHeadersReceived(const spdy::Http2HeaderBlock& response_headers,
+  void OnHeadersReceived(const quiche::HttpHeaderBlock& response_headers,
                          base::Time response_time,
                          base::TimeTicks recv_first_byte_time);
 
@@ -329,7 +329,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // MORE_DATA_TO_SEND for bidirectional streams; for request/response streams,
   // it must be MORE_DATA_TO_SEND if the request has data to upload, or
   // NO_MORE_DATA_TO_SEND if not.
-  int SendRequestHeaders(spdy::Http2HeaderBlock request_headers,
+  int SendRequestHeaders(quiche::HttpHeaderBlock request_headers,
                          SpdySendStatus send_status);
 
   // Sends a DATA frame. The delegate will be notified via
@@ -385,10 +385,10 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
 
-  const spdy::Http2HeaderBlock& request_headers() const {
+  const quiche::HttpHeaderBlock& request_headers() const {
     return request_headers_;
   }
-  const spdy::Http2HeaderBlock& response_headers() const {
+  const quiche::HttpHeaderBlock& response_headers() const {
     return response_headers_;
   }
 
@@ -439,12 +439,12 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // |pending_send_data_| is set.
   void QueueNextDataFrame();
 
-  void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& response_headers,
+  void OnEarlyHintsReceived(const quiche::HttpHeaderBlock& response_headers,
                             base::TimeTicks recv_first_byte_time);
 
   // Saves the given headers into |response_headers_| and calls
   // OnHeadersReceived() on the delegate if attached.
-  void SaveResponseHeaders(const spdy::Http2HeaderBlock& response_headers,
+  void SaveResponseHeaders(const quiche::HttpHeaderBlock& response_headers,
                            int status);
 
   static std::string DescribeState(State state);
@@ -485,7 +485,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   // The headers for the request to send.
   bool request_headers_valid_ = false;
-  spdy::Http2HeaderBlock request_headers_;
+  quiche::HttpHeaderBlock request_headers_;
 
   // Data waiting to be sent, and the close state of the local endpoint
   // after the data is fully written.
@@ -502,7 +502,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // For cached responses, this time could be "far" in the past.
   base::Time request_time_;
 
-  spdy::Http2HeaderBlock response_headers_;
+  quiche::HttpHeaderBlock response_headers_;
   ResponseState response_state_ = READY_FOR_HEADERS;
   base::Time response_time_;
 

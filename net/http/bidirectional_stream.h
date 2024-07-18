@@ -21,7 +21,7 @@
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 
 namespace base {
 class OneShotTimer;
@@ -69,7 +69,7 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
     // call BidirectionalStream::SendData to send data,
     // or call BidirectionalStream::Cancel to cancel the stream.
     virtual void OnHeadersReceived(
-        const spdy::Http2HeaderBlock& response_headers) = 0;
+        const quiche::HttpHeaderBlock& response_headers) = 0;
 
     // Called when a pending read is completed asynchronously.
     // |bytes_read| specifies how much data is read.
@@ -89,7 +89,8 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
     // are received, which can happen before a read completes.
     // The delegate is able to continue reading if there is no pending read and
     // EOF has not been received, or to send data if there is no pending send.
-    virtual void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) = 0;
+    virtual void OnTrailersReceived(
+        const quiche::HttpHeaderBlock& trailers) = 0;
 
     // Called when an error occurred. Do not call into the stream after this
     // point. No other delegate functions will be called after this.
@@ -187,10 +188,10 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
   // BidirectionalStreamImpl::Delegate implementation:
   void OnStreamReady(bool request_headers_sent) override;
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override;
+      const quiche::HttpHeaderBlock& response_headers) override;
   void OnDataRead(int bytes_read) override;
   void OnDataSent() override;
-  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override;
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override;
   void OnFailed(int error) override;
 
   // HttpStreamRequest::Delegate implementation:

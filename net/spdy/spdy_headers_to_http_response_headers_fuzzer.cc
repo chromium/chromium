@@ -25,7 +25,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/spdy/spdy_http_utils.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 
 namespace net {
 
@@ -47,7 +47,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     }
     return first_line;
   };
-  spdy::Http2HeaderBlock input;
+  quiche::HttpHeaderBlock input;
 
   const std::string_view status = get_string();
   if (!HttpUtil::IsValidHeaderValue(status)) {

@@ -49,7 +49,7 @@
 #include "net/spdy/spdy_stream.h"
 #include "net/spdy/spdy_write_queue.h"
 #include "net/ssl/ssl_config_service.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_alt_svc_wire_format.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
@@ -441,7 +441,7 @@ class NET_EXPORT SpdySession
       spdy::SpdyStreamId stream_id,
       RequestPriority priority,
       spdy::SpdyControlFlags flags,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       NetLogSource source_dependency);
 
   // Creates and returns a SpdyBuffer holding a data frame with the given data.
@@ -889,14 +889,14 @@ class NET_EXPORT SpdySession
                       int delta_window_size) override;
   void OnPushPromise(spdy::SpdyStreamId stream_id,
                      spdy::SpdyStreamId promised_stream_id,
-                     spdy::Http2HeaderBlock headers) override;
+                     quiche::HttpHeaderBlock headers) override;
   void OnHeaders(spdy::SpdyStreamId stream_id,
                  bool has_priority,
                  int weight,
                  spdy::SpdyStreamId parent_stream_id,
                  bool exclusive,
                  bool fin,
-                 spdy::Http2HeaderBlock headers,
+                 quiche::HttpHeaderBlock headers,
                  base::TimeTicks recv_first_byte_time) override;
   void OnAltSvc(spdy::SpdyStreamId stream_id,
                 std::string_view origin,

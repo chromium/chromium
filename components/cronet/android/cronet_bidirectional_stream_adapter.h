@@ -17,7 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "net/base/network_handle.h"
 #include "net/http/bidirectional_stream.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 
 namespace net {
 struct BidirectionalStreamRequestInfo;
@@ -148,10 +148,10 @@ class CronetBidirectionalStreamAdapter
   // net::BidirectionalStream::Delegate implementations:
   void OnStreamReady(bool request_headers_sent) override;
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override;
+      const quiche::HttpHeaderBlock& response_headers) override;
   void OnDataRead(int bytes_read) override;
   void OnDataSent() override;
-  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override;
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override;
   void OnFailed(int error) override;
 
   void StartOnNetworkThread(
@@ -166,7 +166,7 @@ class CronetBidirectionalStreamAdapter
   // Gets headers as a Java array.
   base::android::ScopedJavaLocalRef<jobjectArray> GetHeadersArray(
       JNIEnv* env,
-      const spdy::Http2HeaderBlock& header_block);
+      const quiche::HttpHeaderBlock& header_block);
   // Reports metrics to the Java layer if the stream was ever started. Called on
   // the network thread immediately before the adapter destroys itself.
   void MaybeReportMetrics();

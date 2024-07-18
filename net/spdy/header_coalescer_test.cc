@@ -12,6 +12,7 @@
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
 #include "net/spdy/spdy_test_util_common.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,7 +55,7 @@ TEST_F(HeaderCoalescerTest, CorrectHeaders) {
   header_coalescer_.OnHeader("baz", "qux");
   EXPECT_FALSE(header_coalescer_.error_seen());
 
-  spdy::Http2HeaderBlock header_block = header_coalescer_.release_headers();
+  quiche::HttpHeaderBlock header_block = header_coalescer_.release_headers();
   EXPECT_THAT(header_block,
               ElementsAre(Pair(":foo", "bar"), Pair("baz", "qux")));
 }
@@ -93,7 +94,7 @@ TEST_F(HeaderCoalescerTest, Append) {
   header_coalescer_.OnHeader("cookie", "qux");
   EXPECT_FALSE(header_coalescer_.error_seen());
 
-  spdy::Http2HeaderBlock header_block = header_coalescer_.release_headers();
+  quiche::HttpHeaderBlock header_block = header_coalescer_.release_headers();
   EXPECT_THAT(header_block,
               ElementsAre(Pair("foo", std::string_view("bar\0quux", 8)),
                           Pair("cookie", "baz; qux")));
@@ -128,7 +129,7 @@ TEST_F(HeaderCoalescerTest, HeaderNameValid) {
       "^_`|~");
   header_coalescer_.OnHeader(header_name, "foo");
   EXPECT_FALSE(header_coalescer_.error_seen());
-  spdy::Http2HeaderBlock header_block = header_coalescer_.release_headers();
+  quiche::HttpHeaderBlock header_block = header_coalescer_.release_headers();
   EXPECT_THAT(header_block, ElementsAre(Pair(header_name, "foo")));
 }
 

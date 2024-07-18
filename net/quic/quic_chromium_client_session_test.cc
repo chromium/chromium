@@ -57,6 +57,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/http2/test_tools/spdy_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/aes_128_gcm_12_encrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
@@ -1946,7 +1947,7 @@ TEST_P(QuicChromiumClientSessionTest, ResetOnEmptyResponseHeaders) {
   // QuicSpdyStream::OnStreamHeaderList() calls
   // QuicChromiumClientStream::OnInitialHeadersComplete() with the empty
   // header list, and QuicChromiumClientStream signals an error.
-  spdy::Http2HeaderBlock header_block;
+  quiche::HttpHeaderBlock header_block;
   int rv = stream_handle->ReadInitialHeaders(&header_block,
                                              CompletionOnceCallback());
   EXPECT_THAT(rv, IsError(net::ERR_QUIC_PROTOCOL_ERROR));

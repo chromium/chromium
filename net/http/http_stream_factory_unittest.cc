@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -85,6 +86,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
@@ -95,8 +97,6 @@
 // This file can be included from net/http even though
 // it is in net/websockets because it doesn't
 // introduce any link dependency to net/websockets.
-#include <optional>
-
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -974,25 +974,25 @@ class TestBidirectionalDelegate : public BidirectionalStreamImpl::Delegate {
  public:
   void WaitUntilDone() { loop_.Run(); }
 
-  const spdy::Http2HeaderBlock& response_headers() const {
+  const quiche::HttpHeaderBlock& response_headers() const {
     return response_headers_;
   }
 
  private:
   void OnStreamReady(bool request_headers_sent) override {}
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override {
+      const quiche::HttpHeaderBlock& response_headers) override {
     response_headers_ = response_headers.Clone();
     loop_.Quit();
   }
   void OnDataRead(int bytes_read) override { NOTREACHED_IN_MIGRATION(); }
   void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
-  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override {
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
     NOTREACHED_IN_MIGRATION();
   }
   void OnFailed(int error) override { NOTREACHED_IN_MIGRATION(); }
   base::RunLoop loop_;
-  spdy::Http2HeaderBlock response_headers_;
+  quiche::HttpHeaderBlock response_headers_;
 };
 
 }  // namespace
@@ -2025,7 +2025,7 @@ class HttpStreamFactoryQuicTest
       std::string authority,
       std::string path,
       bool fin) {
-    spdy::Http2HeaderBlock headers;
+    quiche::HttpHeaderBlock headers;
     headers[":scheme"] = "https";
     headers[":path"] = path;
     headers[":protocol"] = "connect-udp";
@@ -2047,7 +2047,7 @@ class HttpStreamFactoryQuicTest
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
       bool fin) {
-    spdy::Http2HeaderBlock headers = packet_maker.GetResponseHeaders("200");
+    quiche::HttpHeaderBlock headers = packet_maker.GetResponseHeaders("200");
     size_t spdy_headers_frame_len;
     return packet_maker.MakeResponseHeadersPacket(packet_number, stream_id, fin,
                                                   std::move(headers),

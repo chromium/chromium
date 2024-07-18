@@ -21,6 +21,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 
 namespace content {
 
@@ -100,7 +101,7 @@ class QuicConnectionMigrationTest : public ContentBrowserTest {
     ASSERT_TRUE(net::QuicSimpleTestServer::Start());
 
     // Set up a test page that fetches a resource.
-    spdy::Http2HeaderBlock headers;
+    quiche::HttpHeaderBlock headers;
     headers[":status"] = "200";
     headers["content-type"] = "text/html";
     const std::string body = R"(

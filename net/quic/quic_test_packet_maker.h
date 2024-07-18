@@ -19,6 +19,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "net/base/request_priority.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_encoder.h"
 #include "net/third_party/quiche/src/quiche/quic/core/qpack/qpack_encoder.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
@@ -192,7 +193,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool fin,
       spdy::SpdyPriority spdy_priority,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       size_t* spdy_headers_frame_length,
       const std::vector<std::string>& data_writes);
 
@@ -203,7 +204,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool fin,
       spdy::SpdyPriority spdy_priority,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       size_t* spdy_headers_frame_length,
       bool should_include_priority_frame = true);
 
@@ -214,7 +215,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool fin,
       spdy::SpdyPriority spdy_priority,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       size_t* spdy_headers_frame_length);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRequestHeadersAndRstPacket(
@@ -222,7 +223,7 @@ class QuicTestPacketMaker {
       quic::QuicStreamId stream_id,
       bool fin,
       spdy::SpdyPriority spdy_priority,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       size_t* spdy_headers_frame_length,
       quic::QuicRstStreamErrorCode error_code);
 
@@ -232,7 +233,7 @@ class QuicTestPacketMaker {
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
       bool fin,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       size_t* spdy_headers_frame_length);
 
   // Creates a packet containing the initial SETTINGS frame, and saves the
@@ -260,17 +261,17 @@ class QuicTestPacketMaker {
 
   void SetEncryptionLevel(quic::EncryptionLevel level);
 
-  spdy::Http2HeaderBlock GetRequestHeaders(const std::string& method,
-                                           const std::string& scheme,
-                                           const std::string& path) const;
+  quiche::HttpHeaderBlock GetRequestHeaders(const std::string& method,
+                                            const std::string& scheme,
+                                            const std::string& path) const;
 
-  spdy::Http2HeaderBlock ConnectRequestHeaders(
+  quiche::HttpHeaderBlock ConnectRequestHeaders(
       const std::string& host_port) const;
 
-  spdy::Http2HeaderBlock GetResponseHeaders(const std::string& status) const;
+  quiche::HttpHeaderBlock GetResponseHeaders(const std::string& status) const;
 
-  spdy::Http2HeaderBlock GetResponseHeaders(const std::string& status,
-                                            const std::string& alt_svc) const;
+  quiche::HttpHeaderBlock GetResponseHeaders(const std::string& status,
+                                             const std::string& alt_svc) const;
 
   // Reset some of the state in the packet maker.
   // TODO(https://issues.chromium.org/u/1/issues/335279177): reset all state.
@@ -291,7 +292,7 @@ class QuicTestPacketMaker {
   }
 
   std::string QpackEncodeHeaders(quic::QuicStreamId stream_id,
-                                 spdy::Http2HeaderBlock headers,
+                                 quiche::HttpHeaderBlock headers,
                                  size_t* encoded_data_length);
 
   void set_ecn_codepoint(quic::QuicEcnCodepoint ecn) { ecn_codepoint_ = ecn; }
@@ -305,7 +306,7 @@ class QuicTestPacketMaker {
 
  private:
   void AddPriorityHeader(spdy::SpdyPriority spdy_priority,
-                         spdy::Http2HeaderBlock* headers);
+                         quiche::HttpHeaderBlock* headers);
 
   quic::QuicStreamId GetFirstBidirectionalStreamId() const;
 

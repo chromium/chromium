@@ -25,7 +25,6 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
@@ -149,12 +148,12 @@ HttpRequestHeaders WebSocketCommonTestHeaders() {
   return request_headers;
 }
 
-spdy::Http2HeaderBlock WebSocketHttp2Request(
+quiche::HttpHeaderBlock WebSocketHttp2Request(
     const std::string& path,
     const std::string& authority,
     const std::string& origin,
     const WebSocketExtraHeaders& extra_headers) {
-  spdy::Http2HeaderBlock request_headers;
+  quiche::HttpHeaderBlock request_headers;
   request_headers[spdy::kHttp2MethodHeader] = "CONNECT";
   request_headers[spdy::kHttp2AuthorityHeader] = authority;
   request_headers[spdy::kHttp2SchemeHeader] = "https";
@@ -175,9 +174,9 @@ spdy::Http2HeaderBlock WebSocketHttp2Request(
   return request_headers;
 }
 
-spdy::Http2HeaderBlock WebSocketHttp2Response(
+quiche::HttpHeaderBlock WebSocketHttp2Response(
     const WebSocketExtraHeaders& extra_headers) {
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   response_headers[spdy::kHttp2StatusHeader] = "200";
   for (const auto& header : extra_headers) {
     response_headers[base::ToLowerASCII(header.first)] = header.second;

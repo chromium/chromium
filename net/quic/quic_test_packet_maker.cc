@@ -369,7 +369,7 @@ QuicTestPacketMaker::MakeRequestHeadersAndMultipleDataFramesPacket(
     quic::QuicStreamId stream_id,
     bool fin,
     spdy::SpdyPriority spdy_priority,
-    spdy::Http2HeaderBlock headers,
+    quiche::HttpHeaderBlock headers,
     size_t* spdy_headers_frame_length,
     const std::vector<std::string>& data_writes) {
   auto& builder = Packet(packet_number);
@@ -397,7 +397,7 @@ QuicTestPacketMaker::MakeRequestHeadersPacket(
     quic::QuicStreamId stream_id,
     bool fin,
     spdy::SpdyPriority spdy_priority,
-    spdy::Http2HeaderBlock headers,
+    quiche::HttpHeaderBlock headers,
     size_t* spdy_headers_frame_length,
     bool should_include_priority_frame) {
   auto& builder = Packet(packet_number);
@@ -425,7 +425,7 @@ QuicTestPacketMaker::MakeRetransmissionAndRequestHeadersPacket(
     quic::QuicStreamId stream_id,
     bool fin,
     spdy::SpdyPriority spdy_priority,
-    spdy::Http2HeaderBlock headers,
+    quiche::HttpHeaderBlock headers,
     size_t* spdy_headers_frame_length) {
   DCHECK(connection_state_.save_packet_frames);
   auto& builder = Packet(packet_number);
@@ -454,7 +454,7 @@ QuicTestPacketMaker::MakeRequestHeadersAndRstPacket(
     quic::QuicStreamId stream_id,
     bool fin,
     spdy::SpdyPriority spdy_priority,
-    spdy::Http2HeaderBlock headers,
+    quiche::HttpHeaderBlock headers,
     size_t* spdy_headers_frame_length,
     quic::QuicRstStreamErrorCode error_code) {
   auto& builder = Packet(packet_number);
@@ -480,7 +480,7 @@ QuicTestPacketMaker::MakeResponseHeadersPacket(
     uint64_t packet_number,
     quic::QuicStreamId stream_id,
     bool fin,
-    spdy::Http2HeaderBlock headers,
+    quiche::HttpHeaderBlock headers,
     size_t* spdy_headers_frame_length) {
   std::string data = QpackEncodeHeaders(stream_id, std::move(headers),
                                         spdy_headers_frame_length);
@@ -554,11 +554,11 @@ void QuicTestPacketMaker::SetEncryptionLevel(quic::EncryptionLevel level) {
   }
 }
 
-spdy::Http2HeaderBlock QuicTestPacketMaker::GetRequestHeaders(
+quiche::HttpHeaderBlock QuicTestPacketMaker::GetRequestHeaders(
     const std::string& method,
     const std::string& scheme,
     const std::string& path) const {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[":method"] = method;
   headers[":authority"] = host_;
   headers[":scheme"] = scheme;
@@ -566,26 +566,26 @@ spdy::Http2HeaderBlock QuicTestPacketMaker::GetRequestHeaders(
   return headers;
 }
 
-spdy::Http2HeaderBlock QuicTestPacketMaker::ConnectRequestHeaders(
+quiche::HttpHeaderBlock QuicTestPacketMaker::ConnectRequestHeaders(
     const std::string& host_port) const {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[":method"] = "CONNECT";
   headers[":authority"] = host_port;
   return headers;
 }
 
-spdy::Http2HeaderBlock QuicTestPacketMaker::GetResponseHeaders(
+quiche::HttpHeaderBlock QuicTestPacketMaker::GetResponseHeaders(
     const std::string& status) const {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[":status"] = status;
   headers["content-type"] = "text/plain";
   return headers;
 }
 
-spdy::Http2HeaderBlock QuicTestPacketMaker::GetResponseHeaders(
+quiche::HttpHeaderBlock QuicTestPacketMaker::GetResponseHeaders(
     const std::string& status,
     const std::string& alt_svc) const {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[":status"] = status;
   headers["alt-svc"] = alt_svc;
   headers["content-type"] = "text/plain";
@@ -598,7 +598,7 @@ void QuicTestPacketMaker::Reset() {
 
 std::string QuicTestPacketMaker::QpackEncodeHeaders(
     quic::QuicStreamId stream_id,
-    spdy::Http2HeaderBlock headers,
+    quiche::HttpHeaderBlock headers,
     size_t* encoded_data_length) {
   std::string data;
 
@@ -720,7 +720,7 @@ std::string QuicTestPacketMaker::GenerateHttp3PriorityData(
 }
 
 void QuicTestPacketMaker::AddPriorityHeader(spdy::SpdyPriority spdy_priority,
-                                            spdy::Http2HeaderBlock* headers) {
+                                            quiche::HttpHeaderBlock* headers) {
   if (use_priority_header_ &&
       base::FeatureList::IsEnabled(net::features::kPriorityHeader)) {
     quic::HttpStreamPriority priority{

@@ -48,6 +48,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,7 +129,7 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
   }
 
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override {
+      const quiche::HttpHeaderBlock& response_headers) override {
     CHECK(!not_expect_callback_);
 
     response_headers_ = response_headers.Clone();
@@ -153,7 +154,7 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
     ++on_data_sent_count_;
   }
 
-  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override {
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
     CHECK(!not_expect_callback_);
 
     trailers_ = trailers.Clone();
@@ -264,10 +265,10 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
   // Const getters for internal states.
   const std::string& data_received() const { return data_received_; }
   int error() const { return error_; }
-  const spdy::Http2HeaderBlock& response_headers() const {
+  const quiche::HttpHeaderBlock& response_headers() const {
     return response_headers_;
   }
-  const spdy::Http2HeaderBlock& trailers() const { return trailers_; }
+  const quiche::HttpHeaderBlock& trailers() const { return trailers_; }
   int on_data_read_count() const { return on_data_read_count_; }
   int on_data_sent_count() const { return on_data_sent_count_; }
 
@@ -292,8 +293,8 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
   std::unique_ptr<base::OneShotTimer> timer_;
   std::string data_received_;
   std::unique_ptr<base::RunLoop> loop_;
-  spdy::Http2HeaderBlock response_headers_;
-  spdy::Http2HeaderBlock trailers_;
+  quiche::HttpHeaderBlock response_headers_;
+  quiche::HttpHeaderBlock trailers_;
   NextProto next_proto_;
   int64_t received_bytes_ = 0;
   int64_t sent_bytes_ = 0;
@@ -330,7 +331,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
   ~DeleteStreamDelegate() override = default;
 
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override {
+      const quiche::HttpHeaderBlock& response_headers) override {
     TestDelegateBase::OnHeadersReceived(response_headers);
     if (phase_ == ON_HEADERS_RECEIVED) {
       DeleteStream();
@@ -352,7 +353,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
     }
   }
 
-  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override {
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
     if (phase_ == ON_HEADERS_RECEIVED || phase_ == ON_DATA_READ) {
       NOTREACHED_IN_MIGRATION();
       return;
@@ -652,7 +653,8 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   ASSERT_FALSE(client_cert);
   ASSERT_FALSE(client_private_key);
 
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
@@ -731,7 +733,8 @@ TEST_F(BidirectionalStreamTest, TestReadDataAfterClose) {
   rv = delegate->ReadData();
   EXPECT_THAT(rv, IsOk());  // EOF.
 
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(1, delegate->on_data_read_count());
@@ -758,7 +761,7 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
   spdy::SpdySerializedFrame response_body_frame2(
       spdy_util_.ConstructSpdyDataFrame(1, false));
 
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["foo"] = "bar";
   spdy::SpdySerializedFrame response_trailers(
       spdy_util_.ConstructSpdyResponseHeaders(1, std::move(trailers), true));
@@ -1191,7 +1194,8 @@ TEST_F(BidirectionalStreamTest, TestBuffering) {
   EXPECT_EQ(kUploadDataSize * 3,
             static_cast<int>(delegate->data_received().size()));
 
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(0, delegate->on_data_sent_count());
@@ -1214,7 +1218,7 @@ TEST_F(BidirectionalStreamTest, TestBufferingWithTrailers) {
   spdy::SpdySerializedFrame body_frame(
       spdy_util_.ConstructSpdyDataFrame(1, false));
 
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["foo"] = "bar";
   spdy::SpdySerializedFrame response_trailers(
       spdy_util_.ConstructSpdyResponseHeaders(1, std::move(trailers), true));
@@ -1263,7 +1267,8 @@ TEST_F(BidirectionalStreamTest, TestBufferingWithTrailers) {
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(kUploadDataSize * 3,
             static_cast<int>(delegate->data_received().size()));
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ("bar", delegate->trailers().find("foo")->second);
@@ -1494,7 +1499,8 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnHeadersReceived) {
   delegate->Start(std::move(request_info), http_session_.get());
   // Makes sure delegate does not get called.
   base::RunLoop().RunUntilIdle();
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(0u, delegate->data_received().size());
@@ -1547,7 +1553,8 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnDataRead) {
   delegate->Start(std::move(request_info), http_session_.get());
   // Makes sure delegate does not get called.
   base::RunLoop().RunUntilIdle();
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(kUploadDataSize * 1,
@@ -1579,7 +1586,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnTrailersReceived) {
   spdy::SpdySerializedFrame response_body_frame(
       spdy_util_.ConstructSpdyDataFrame(1, false));
 
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["foo"] = "bar";
   spdy::SpdySerializedFrame response_trailers(
       spdy_util_.ConstructSpdyResponseHeaders(1, std::move(trailers), true));
@@ -1605,7 +1612,8 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnTrailersReceived) {
   delegate->Start(std::move(request_info), http_session_.get());
   // Makes sure delegate does not get called.
   base::RunLoop().RunUntilIdle();
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ("bar", delegate->trailers().find("foo")->second);
@@ -1707,7 +1715,8 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
   delegate->SetRunUntilCompletion(true);
   delegate->Start(std::move(request_info), http_session_.get());
 
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ(alt_svc_header_value, response_headers.find("alt-svc")->second);
   EXPECT_EQ(0, delegate->on_data_sent_count());

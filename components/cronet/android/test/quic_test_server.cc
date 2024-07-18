@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
@@ -21,13 +22,12 @@
 #include "net/base/ip_endpoint.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/test/test_data_directory.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_backend_response.h"
 #include "net/third_party/quiche/src/quiche/quic/tools/quic_memory_cache_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_test_apk_jni/QuicTestServer_jni.h"
-#include "net/third_party/quiche/src/quiche/quic/tools/quic_backend_response.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

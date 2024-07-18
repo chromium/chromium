@@ -28,7 +28,6 @@
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/url_request/url_request_context.h"
 #include "url/gurl.h"
 
@@ -274,7 +273,7 @@ void CronetBidirectionalStreamAdapter::OnStreamReady(
 }
 
 void CronetBidirectionalStreamAdapter::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   DCHECK(context_->IsOnNetworkThread());
   JNIEnv* env = base::android::AttachCurrentThread();
   // Get http status code from response headers.
@@ -331,7 +330,7 @@ void CronetBidirectionalStreamAdapter::OnDataSent() {
 }
 
 void CronetBidirectionalStreamAdapter::OnTrailersReceived(
-    const spdy::Http2HeaderBlock& response_trailers) {
+    const quiche::HttpHeaderBlock& response_trailers) {
   DCHECK(context_->IsOnNetworkThread());
   JNIEnv* env = base::android::AttachCurrentThread();
   cronet::Java_CronetBidirectionalStream_onResponseTrailersReceived(
@@ -447,7 +446,7 @@ void CronetBidirectionalStreamAdapter::DestroyOnNetworkThread(
 base::android::ScopedJavaLocalRef<jobjectArray>
 CronetBidirectionalStreamAdapter::GetHeadersArray(
     JNIEnv* env,
-    const spdy::Http2HeaderBlock& header_block) {
+    const quiche::HttpHeaderBlock& header_block) {
   DCHECK(context_->IsOnNetworkThread());
 
   std::vector<std::string> headers;

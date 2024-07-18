@@ -49,8 +49,8 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/http2/test_tools/spdy_test_utils.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
@@ -280,7 +280,7 @@ class WebSocketStreamCreateTest
     spdy_util_.UpdateWithStreamDestruction(1);
 
     // WebSocket request.
-    spdy::Http2HeaderBlock request_headers = WebSocketHttp2Request(
+    quiche::HttpHeaderBlock request_headers = WebSocketHttp2Request(
         socket_path, socket_host, kOrigin, extra_request_headers);
     frames_.push_back(spdy_util_.ConstructSpdyHeaders(
         3, std::move(request_headers), DEFAULT_PRIORITY, false));

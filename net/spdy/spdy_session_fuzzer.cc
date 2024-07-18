@@ -23,6 +23,7 @@
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_config.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
 namespace {
@@ -40,12 +41,12 @@ class FuzzerDelegate : public net::SpdyStream::Delegate {
   FuzzerDelegate& operator=(const FuzzerDelegate&) = delete;
 
   void OnHeadersSent() override {}
-  void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& headers) override {}
+  void OnEarlyHintsReceived(const quiche::HttpHeaderBlock& headers) override {}
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override {}
+      const quiche::HttpHeaderBlock& response_headers) override {}
   void OnDataReceived(std::unique_ptr<net::SpdyBuffer> buffer) override {}
   void OnDataSent() override {}
-  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override {}
+  void OnTrailers(const quiche::HttpHeaderBlock& trailers) override {}
   void OnClose(int status) override { std::move(done_closure_).Run(); }
   bool CanGreaseFrameType() const override { return false; }
 

@@ -22,7 +22,7 @@
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/websockets/websocket_basic_stream_adapters.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_stream.h"
@@ -112,7 +112,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // WebSocketSpdyStreamAdapter::Delegate methods.
   void OnHeadersSent() override;
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override;
+      const quiche::HttpHeaderBlock& response_headers) override;
   void OnClose(int status) override;
 
   // Called by |spdy_stream_request_| when requested stream is ready.
@@ -141,7 +141,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
 
   raw_ptr<HttpResponseInfo> http_response_info_ = nullptr;
 
-  spdy::Http2HeaderBlock http2_request_headers_;
+  quiche::HttpHeaderBlock http2_request_headers_;
 
   // The sub-protocols we requested.
   std::vector<std::string> requested_sub_protocols_;

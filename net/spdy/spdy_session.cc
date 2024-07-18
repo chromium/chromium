@@ -179,7 +179,7 @@ void LogSpdyAcceptChForOriginHistogram(bool value) {
 }
 
 base::Value::Dict NetLogSpdyHeadersSentParams(
-    const spdy::Http2HeaderBlock* headers,
+    const quiche::HttpHeaderBlock* headers,
     bool fin,
     spdy::SpdyStreamId stream_id,
     bool has_priority,
@@ -188,12 +188,12 @@ base::Value::Dict NetLogSpdyHeadersSentParams(
     bool exclusive,
     NetLogSource source_dependency,
     NetLogCaptureMode capture_mode) {
-  auto dict = base::Value::Dict()
-                  .Set("headers",
-                       ElideHttp2HeaderBlockForNetLog(*headers, capture_mode))
-                  .Set("fin", fin)
-                  .Set("stream_id", static_cast<int>(stream_id))
-                  .Set("has_priority", has_priority);
+  auto dict =
+      base::Value::Dict()
+          .Set("headers", ElideHttpHeaderBlockForNetLog(*headers, capture_mode))
+          .Set("fin", fin)
+          .Set("stream_id", static_cast<int>(stream_id))
+          .Set("has_priority", has_priority);
   if (has_priority) {
     dict.Set("parent_stream_id", static_cast<int>(parent_stream_id));
     dict.Set("weight", weight);
@@ -206,12 +206,12 @@ base::Value::Dict NetLogSpdyHeadersSentParams(
 }
 
 base::Value::Dict NetLogSpdyHeadersReceivedParams(
-    const spdy::Http2HeaderBlock* headers,
+    const quiche::HttpHeaderBlock* headers,
     bool fin,
     spdy::SpdyStreamId stream_id,
     NetLogCaptureMode capture_mode) {
   return base::Value::Dict()
-      .Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode))
+      .Set("headers", ElideHttpHeaderBlockForNetLog(*headers, capture_mode))
       .Set("fin", fin)
       .Set("stream_id", static_cast<int>(stream_id));
 }
@@ -1050,7 +1050,7 @@ std::unique_ptr<spdy::SpdySerializedFrame> SpdySession::CreateHeaders(
     spdy::SpdyStreamId stream_id,
     RequestPriority priority,
     spdy::SpdyControlFlags flags,
-    spdy::Http2HeaderBlock block,
+    quiche::HttpHeaderBlock block,
     NetLogSource source_dependency) {
   ActiveStreamMap::const_iterator it = active_streams_.find(stream_id);
   CHECK(it != active_streams_.end());
@@ -2958,7 +2958,7 @@ void SpdySession::OnWindowUpdate(spdy::SpdyStreamId stream_id,
 
 void SpdySession::OnPushPromise(spdy::SpdyStreamId /*stream_id*/,
                                 spdy::SpdyStreamId /*promised_stream_id*/,
-                                spdy::Http2HeaderBlock /*headers*/) {
+                                quiche::HttpHeaderBlock /*headers*/) {
   CHECK(in_io_loop_);
   DoDrainSession(ERR_HTTP2_PROTOCOL_ERROR, "PUSH_PROMISE received");
 }
@@ -2969,7 +2969,7 @@ void SpdySession::OnHeaders(spdy::SpdyStreamId stream_id,
                             spdy::SpdyStreamId parent_stream_id,
                             bool exclusive,
                             bool fin,
-                            spdy::Http2HeaderBlock headers,
+                            quiche::HttpHeaderBlock headers,
                             base::TimeTicks recv_first_byte_time) {
   CHECK(in_io_loop_);
 

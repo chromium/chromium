@@ -73,6 +73,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/http2/test_tools/spdy_test_utils.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -1666,7 +1667,7 @@ TEST_P(SpdyNetworkTransactionTest, Put) {
   // Setup the request.
   request_.method = "PUT";
 
-  spdy::Http2HeaderBlock put_headers(
+  quiche::HttpHeaderBlock put_headers(
       spdy_util_.ConstructPutHeaderBlock(kDefaultUrl, 0));
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyHeaders(1, std::move(put_headers), LOWEST, true));
@@ -1696,7 +1697,7 @@ TEST_P(SpdyNetworkTransactionTest, Head) {
   // Setup the request.
   request_.method = "HEAD";
 
-  spdy::Http2HeaderBlock head_headers(
+  quiche::HttpHeaderBlock head_headers(
       spdy_util_.ConstructHeadHeaderBlock(kDefaultUrl, 0));
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyHeaders(
       1, std::move(head_headers), LOWEST, true));
@@ -1906,7 +1907,7 @@ TEST_P(SpdyNetworkTransactionTest, NullPost) {
 
   // When request.upload_data_stream is NULL for post, content-length is
   // expected to be 0.
-  spdy::Http2HeaderBlock req_block(
+  quiche::HttpHeaderBlock req_block(
       spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, 0));
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyHeaders(1, std::move(req_block), LOWEST, true));
@@ -1944,7 +1945,7 @@ TEST_P(SpdyNetworkTransactionTest, EmptyPost) {
 
   const uint64_t kContentLength = 0;
 
-  spdy::Http2HeaderBlock req_block(
+  quiche::HttpHeaderBlock req_block(
       spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, kContentLength));
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyHeaders(1, std::move(req_block), LOWEST, true));
@@ -2348,7 +2349,7 @@ TEST_P(SpdyNetworkTransactionTest, RedirectGetRequest) {
   ssl_provider0.next_proto = kProtoHTTP2;
   socket_factory.AddSSLSocketDataProvider(&ssl_provider0);
 
-  spdy::Http2HeaderBlock headers0(
+  quiche::HttpHeaderBlock headers0(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   headers0["user-agent"] = "";
   headers0["accept-encoding"] = "gzip, deflate";
@@ -2372,7 +2373,7 @@ TEST_P(SpdyNetworkTransactionTest, RedirectGetRequest) {
   socket_factory.AddSSLSocketDataProvider(&ssl_provider1);
 
   SpdyTestUtil spdy_util1(/*use_priority_header=*/true);
-  spdy::Http2HeaderBlock headers1(
+  quiche::HttpHeaderBlock headers1(
       spdy_util1.ConstructGetHeaderBlock(kRedirectUrl));
   headers1["user-agent"] = "";
   headers1["accept-encoding"] = "gzip, deflate";
@@ -3328,10 +3329,11 @@ TEST_P(SpdyNetworkTransactionTest, ResponseHeaders) {
        2,
        {"hello", "bye", "cookie", "val1, val2"}},
       // Multiple headers are preserved: they are joined with \0 separator in
-      // spdy::Http2HeaderBlock.AppendValueOrAddHeader(), then split up in
+      // quiche::HttpHeaderBlock.AppendValueOrAddHeader(), then split up in
       // HpackEncoder, then joined with \0 separator when
       // spdy::HpackDecoderAdapter::ListenerAdapter::OnHeader() calls
-      // spdy::Http2HeaderBlock.AppendValueOrAddHeader(), then split up again in
+      // quiche::HttpHeaderBlock.AppendValueOrAddHeader(), then split up again
+      // in
       // HttpResponseHeaders.
       {2,
        {"content-encoding", "val1", "content-encoding", "val2"},
@@ -3412,7 +3414,7 @@ TEST_P(SpdyNetworkTransactionTest, InvalidResponseHeaders) {
     };
 
     // Construct the reply.
-    spdy::Http2HeaderBlock reply_headers;
+    quiche::HttpHeaderBlock reply_headers;
     AppendToHeaderBlock(test_cases[i].headers, test_cases[i].num_headers,
                         &reply_headers);
     spdy::SpdySerializedFrame resp(
@@ -3671,7 +3673,7 @@ TEST_P(SpdyNetworkTransactionTest, NetLogForResponseWithNoBody) {
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
   MockWrite writes[] = {CreateMockWrite(req, 0)};
 
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   response_headers[spdy::kHttp2StatusHeader] = "200";
   response_headers["hello"] = "bye";
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyResponseHeaders(
@@ -4342,7 +4344,7 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredRetry) {
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
 
   // First socket: HTTP/2 request rejected with HTTP_1_1_REQUIRED.
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyHeaders(1, std::move(headers), LOWEST, true));
@@ -4440,7 +4442,7 @@ TEST_P(SpdyNetworkTransactionTest,
 
     // First socket: HTTP/2 request rejected with HTTP_1_1_REQUIRED.
     SpdyTestUtil spdy_util(/*use_priority_header=*/true);
-    spdy::Http2HeaderBlock headers(
+    quiche::HttpHeaderBlock headers(
         spdy_util.ConstructGetHeaderBlock(kDefaultUrl));
     spdy::SpdySerializedFrame req(
         spdy_util.ConstructSpdyHeaders(1, std::move(headers), LOWEST, true));
@@ -5403,7 +5405,7 @@ TEST_P(SpdyNetworkTransactionTest, ResponseHeadersTwice) {
   spdy::SpdySerializedFrame stream1_reply(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
 
-  spdy::Http2HeaderBlock late_headers;
+  quiche::HttpHeaderBlock late_headers;
   late_headers["hello"] = "bye";
   spdy::SpdySerializedFrame stream1_headers(
       spdy_util_.ConstructSpdyResponseHeaders(1, std::move(late_headers),
@@ -5440,7 +5442,7 @@ TEST_P(SpdyNetworkTransactionTest, SyncReplyDataAfterTrailers) {
   spdy::SpdySerializedFrame stream1_body(
       spdy_util_.ConstructSpdyDataFrame(1, false));
 
-  spdy::Http2HeaderBlock late_headers;
+  quiche::HttpHeaderBlock late_headers;
   late_headers["hello"] = "bye";
   spdy::SpdySerializedFrame stream1_headers(
       spdy_util_.ConstructSpdyResponseHeaders(1, std::move(late_headers),
@@ -6469,7 +6471,7 @@ TEST_P(SpdyNetworkTransactionTest, FlowControlNegativeSendWindowSize) {
 }
 
 TEST_P(SpdyNetworkTransactionTest, ReceivingPushIsConnectionError) {
-  spdy::Http2HeaderBlock push_headers;
+  quiche::HttpHeaderBlock push_headers;
   spdy_util_.AddUrlToHeaderBlock("http://www.example.org/a.dat", &push_headers);
   spdy::SpdySerializedFrame push(
       spdy_util_.ConstructSpdyPushPromise(1, 2, std::move(push_headers)));
@@ -6495,7 +6497,7 @@ TEST_P(SpdyNetworkTransactionTest, ReceivingPushIsConnectionError) {
 // with odd ID is reset the same way as one with even ID.
 TEST_P(SpdyNetworkTransactionTest,
        ReceivingPushWithOddStreamIdIsConnectionError) {
-  spdy::Http2HeaderBlock push_headers;
+  quiche::HttpHeaderBlock push_headers;
   spdy_util_.AddUrlToHeaderBlock("http://www.example.org/a.dat", &push_headers);
   spdy::SpdySerializedFrame push(
       spdy_util_.ConstructSpdyPushPromise(1, 3, std::move(push_headers)));
@@ -6525,7 +6527,7 @@ TEST_P(SpdyNetworkTransactionTest, LargeRequest) {
 
   request_.extra_headers.SetHeader(kKey, kValue);
 
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   headers[kKey] = kValue;
   spdy::SpdySerializedFrame req(
@@ -6554,7 +6556,7 @@ TEST_P(SpdyNetworkTransactionTest, LargeRequest) {
 
 // Regression test for https://crbug.com/535629: response header exceeds 16 kB.
 TEST_P(SpdyNetworkTransactionTest, LargeResponseHeader) {
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyHeaders(1, std::move(headers), LOWEST, true));
@@ -6660,7 +6662,7 @@ TEST_P(SpdyNetworkTransactionTest, 100Continue) {
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
   MockWrite writes[] = {CreateMockWrite(req, 0)};
 
-  spdy::Http2HeaderBlock informational_headers;
+  quiche::HttpHeaderBlock informational_headers;
   informational_headers[spdy::kHttp2StatusHeader] = "100";
   spdy::SpdySerializedFrame informational_response(
       spdy_util_.ConstructSpdyReply(1, std::move(informational_headers)));
@@ -7130,7 +7132,7 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketOverHTTP2) {
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, HIGHEST));
   spdy::SpdySerializedFrame settings_ack(spdy_util_.ConstructSpdySettingsAck());
 
-  spdy::Http2HeaderBlock websocket_request_headers;
+  quiche::HttpHeaderBlock websocket_request_headers;
   websocket_request_headers[spdy::kHttp2MethodHeader] = "CONNECT";
   websocket_request_headers[spdy::kHttp2AuthorityHeader] = "www.example.org";
   websocket_request_headers[spdy::kHttp2SchemeHeader] = "https";
@@ -7409,7 +7411,7 @@ TEST_P(SpdyNetworkTransactionTest,
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, HIGHEST));
   spdy::SpdySerializedFrame settings_ack(spdy_util_.ConstructSpdySettingsAck());
 
-  spdy::Http2HeaderBlock websocket_request_headers;
+  quiche::HttpHeaderBlock websocket_request_headers;
   websocket_request_headers[spdy::kHttp2MethodHeader] = "CONNECT";
   websocket_request_headers[spdy::kHttp2AuthorityHeader] = "example.test";
   websocket_request_headers[spdy::kHttp2SchemeHeader] = "https";
@@ -7736,7 +7738,7 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketHttp11Required) {
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, HIGHEST));
   spdy::SpdySerializedFrame settings_ack(spdy_util_.ConstructSpdySettingsAck());
 
-  spdy::Http2HeaderBlock websocket_request_headers;
+  quiche::HttpHeaderBlock websocket_request_headers;
   websocket_request_headers[spdy::kHttp2MethodHeader] = "CONNECT";
   websocket_request_headers[spdy::kHttp2AuthorityHeader] = "www.example.org";
   websocket_request_headers[spdy::kHttp2SchemeHeader] = "https";
@@ -7935,7 +7937,7 @@ TEST_P(SpdyNetworkTransactionTest, SecureWebSocketOverH2OverH2Proxy) {
       proxy_spdy_util.ConstructSpdyDataFrame(1, settings_ack, false));
 
   // WebSocket Extended CONNECT using HTTP/2.
-  spdy::Http2HeaderBlock websocket_request_headers;
+  quiche::HttpHeaderBlock websocket_request_headers;
   websocket_request_headers[spdy::kHttp2MethodHeader] = "CONNECT";
   websocket_request_headers[spdy::kHttp2AuthorityHeader] = "www.example.org";
   websocket_request_headers[spdy::kHttp2SchemeHeader] = "https";
@@ -8306,11 +8308,11 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTNoConfirmMultipleStreams) {
 
 // Run multiple concurrent streams that require handshake confirmation.
 TEST_P(SpdyNetworkTransactionTest, ZeroRTTConfirmMultipleStreams) {
-  spdy::Http2HeaderBlock req_block1(
+  quiche::HttpHeaderBlock req_block1(
       spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, 0));
   spdy::SpdySerializedFrame req1(
       spdy_util_.ConstructSpdyHeaders(1, std::move(req_block1), LOWEST, true));
-  spdy::Http2HeaderBlock req_block2(
+  quiche::HttpHeaderBlock req_block2(
       spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, 0));
   spdy::SpdySerializedFrame req2(
       spdy_util_.ConstructSpdyHeaders(3, std::move(req_block2), LOWEST, true));
@@ -8394,11 +8396,11 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTConfirmMultipleStreams) {
 TEST_P(SpdyNetworkTransactionTest, ZeroRTTConfirmNoConfirmStreams) {
   // This test orders the writes such that the GET (no confirmation) is written
   // before the POST (confirmation required).
-  spdy::Http2HeaderBlock req_block1(
+  quiche::HttpHeaderBlock req_block1(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   spdy::SpdySerializedFrame req1(
       spdy_util_.ConstructSpdyHeaders(1, std::move(req_block1), LOWEST, true));
-  spdy::Http2HeaderBlock req_block2(
+  quiche::HttpHeaderBlock req_block2(
       spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, 0));
   spdy::SpdySerializedFrame req2(
       spdy_util_.ConstructSpdyHeaders(3, std::move(req_block2), LOWEST, true));
@@ -8485,11 +8487,11 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTConfirmNoConfirmStreams) {
 TEST_P(SpdyNetworkTransactionTest, ZeroRTTNoConfirmConfirmStreams) {
   // This test orders the writes such that the GET (no confirmation) is written
   // before the POST (confirmation required).
-  spdy::Http2HeaderBlock req_block1(
+  quiche::HttpHeaderBlock req_block1(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   spdy::SpdySerializedFrame req1(
       spdy_util_.ConstructSpdyHeaders(1, std::move(req_block1), LOWEST, true));
-  spdy::Http2HeaderBlock req_block2(
+  quiche::HttpHeaderBlock req_block2(
       spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, 0));
   spdy::SpdySerializedFrame req2(
       spdy_util_.ConstructSpdyHeaders(3, std::move(req_block2), LOWEST, true));
@@ -8903,7 +8905,7 @@ TEST_P(SpdyNetworkTransactionTest, GreaseFrameTypeWithGetRequest) {
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_,
                                      std::move(session_deps));
 
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyHeaders(1, std::move(headers), DEFAULT_PRIORITY,
@@ -9164,7 +9166,7 @@ TEST_P(SpdyNetworkTransactionTest, OnDataSentDoesNotCrashWithGreasedFrameType) {
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_,
                                      std::move(session_deps));
 
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyHeaders(1, std::move(headers), DEFAULT_PRIORITY,

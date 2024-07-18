@@ -50,6 +50,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -148,8 +149,8 @@ class SpdyProxyClientSocketTest : public PlatformTest,
  protected:
   void Initialize(base::span<const MockRead> reads,
                   base::span<const MockWrite> writes);
-  void PopulateConnectRequestIR(spdy::Http2HeaderBlock* syn_ir);
-  void PopulateConnectReplyIR(spdy::Http2HeaderBlock* block,
+  void PopulateConnectRequestIR(quiche::HttpHeaderBlock* syn_ir);
+  void PopulateConnectReplyIR(quiche::HttpHeaderBlock* block,
                               const char* status);
   spdy::SpdySerializedFrame ConstructConnectRequestFrame(
       RequestPriority priority = LOWEST);
@@ -429,14 +430,14 @@ void SpdyProxyClientSocketTest::AssertWriteLength(int len) {
 }
 
 void SpdyProxyClientSocketTest::PopulateConnectRequestIR(
-    spdy::Http2HeaderBlock* block) {
+    quiche::HttpHeaderBlock* block) {
   (*block)[spdy::kHttp2MethodHeader] = "CONNECT";
   (*block)[spdy::kHttp2AuthorityHeader] = kOriginHostPort;
   (*block)["user-agent"] = kUserAgent;
 }
 
 void SpdyProxyClientSocketTest::PopulateConnectReplyIR(
-    spdy::Http2HeaderBlock* block,
+    quiche::HttpHeaderBlock* block,
     const char* status) {
   (*block)[spdy::kHttp2StatusHeader] = status;
 }
@@ -445,7 +446,7 @@ void SpdyProxyClientSocketTest::PopulateConnectReplyIR(
 spdy::SpdySerializedFrame
 SpdyProxyClientSocketTest::ConstructConnectRequestFrame(
     RequestPriority priority) {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   PopulateConnectRequestIR(&block);
   return spdy_util_.ConstructSpdyHeaders(kStreamId, std::move(block), priority,
                                          false);
@@ -455,7 +456,7 @@ SpdyProxyClientSocketTest::ConstructConnectRequestFrame(
 // Proxy-Authorization headers.
 spdy::SpdySerializedFrame
 SpdyProxyClientSocketTest::ConstructConnectAuthRequestFrame() {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   PopulateConnectRequestIR(&block);
   block["proxy-authorization"] = "Basic Zm9vOmJhcg==";
   return spdy_util_.ConstructSpdyHeaders(kStreamId, std::move(block), LOWEST,
@@ -465,7 +466,7 @@ SpdyProxyClientSocketTest::ConstructConnectAuthRequestFrame() {
 // Constructs a standard SPDY HEADERS frame to match the SPDY CONNECT.
 spdy::SpdySerializedFrame
 SpdyProxyClientSocketTest::ConstructConnectReplyFrame() {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   PopulateConnectReplyIR(&block, "200");
   return spdy_util_.ConstructSpdyReply(kStreamId, std::move(block));
 }
@@ -474,7 +475,7 @@ SpdyProxyClientSocketTest::ConstructConnectReplyFrame() {
 // including Proxy-Authenticate headers.
 spdy::SpdySerializedFrame
 SpdyProxyClientSocketTest::ConstructConnectAuthReplyFrame() {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   PopulateConnectReplyIR(&block, "407");
   block["proxy-authenticate"] = "Basic realm=\"MyRealm1\"";
   return spdy_util_.ConstructSpdyReply(kStreamId, std::move(block));
@@ -483,7 +484,7 @@ SpdyProxyClientSocketTest::ConstructConnectAuthReplyFrame() {
 // Constructs a SPDY HEADERS frame with an HTTP 302 redirect.
 spdy::SpdySerializedFrame
 SpdyProxyClientSocketTest::ConstructConnectRedirectReplyFrame() {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   PopulateConnectReplyIR(&block, "302");
   block["location"] = kRedirectUrl;
   block["set-cookie"] = "foo=bar";
@@ -493,7 +494,7 @@ SpdyProxyClientSocketTest::ConstructConnectRedirectReplyFrame() {
 // Constructs a SPDY HEADERS frame with an HTTP 500 error.
 spdy::SpdySerializedFrame
 SpdyProxyClientSocketTest::ConstructConnectErrorReplyFrame() {
-  spdy::Http2HeaderBlock block;
+  quiche::HttpHeaderBlock block;
   PopulateConnectReplyIR(&block, "500");
   return spdy_util_.ConstructSpdyReply(kStreamId, std::move(block));
 }

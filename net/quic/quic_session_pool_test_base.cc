@@ -74,6 +74,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_data_writer.h"
 #include "net/third_party/quiche/src/quiche/http2/test_tools/spdy_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_handshake.h"
@@ -341,7 +342,7 @@ std::unique_ptr<quic::QuicEncryptedPacket>
 QuicSessionPoolTestBase::ConstructGetRequestPacket(uint64_t packet_number,
                                                    quic::QuicStreamId stream_id,
                                                    bool fin) {
-  spdy::Http2HeaderBlock headers =
+  quiche::HttpHeaderBlock headers =
       client_maker_.GetRequestHeaders("GET", "https", "/");
   spdy::SpdyPriority priority =
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
@@ -370,7 +371,7 @@ QuicSessionPoolTestBase::ConstructConnectUdpRequestPacket(
     std::string authority,
     std::string path,
     bool fin) {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[":scheme"] = "https";
   headers[":path"] = path;
   headers[":protocol"] = "connect-udp";
@@ -427,7 +428,7 @@ QuicSessionPoolTestBase::ConstructOkResponsePacket(
     uint64_t packet_number,
     quic::QuicStreamId stream_id,
     bool fin) {
-  spdy::Http2HeaderBlock headers = packet_maker.GetResponseHeaders("200");
+  quiche::HttpHeaderBlock headers = packet_maker.GetResponseHeaders("200");
   size_t spdy_headers_frame_len;
   return packet_maker.MakeResponseHeadersPacket(packet_number, stream_id, fin,
                                                 std::move(headers),

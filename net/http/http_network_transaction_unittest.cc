@@ -125,6 +125,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/static_http_user_agent_settings.h"
@@ -1873,7 +1874,7 @@ void HttpNetworkTransactionTestBase::Check100ResponseTiming(bool use_spdy) {
   spdy::SpdySerializedFrame spdy_req(
       spdy_util_.ConstructSpdyGet(request.url.spec().c_str(), 1, LOWEST));
 
-  spdy::Http2HeaderBlock spdy_resp1_headers;
+  quiche::HttpHeaderBlock spdy_resp1_headers;
   spdy_resp1_headers[spdy::kHttp2StatusHeader] = "100";
   spdy::SpdySerializedFrame spdy_resp1(
       spdy_util_.ConstructSpdyReply(1, spdy_resp1_headers.Clone()));
@@ -2135,7 +2136,7 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
 
   // SPDY versions of the request and response.
 
-  spdy::Http2HeaderBlock spdy_post_header_block;
+  quiche::HttpHeaderBlock spdy_post_header_block;
   spdy_post_header_block[spdy::kHttp2MethodHeader] = "POST";
   spdy_util.AddUrlToHeaderBlock(request.url.spec(), &spdy_post_header_block);
   spdy::SpdySerializedFrame spdy_request(
@@ -9914,7 +9915,7 @@ TEST_P(HttpNetworkTransactionTest,
       spdy_util_.ConstructSpdyDataFrame(1, "1", false));
 
   // CONNECT to mail.example.org:443 via SPDY.
-  spdy::Http2HeaderBlock connect2_block;
+  quiche::HttpHeaderBlock connect2_block;
   connect2_block[spdy::kHttp2MethodHeader] = "CONNECT";
   connect2_block[spdy::kHttp2AuthorityHeader] = "mail.example.org:443";
   connect2_block["user-agent"] = "test-ua";
@@ -10161,7 +10162,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyLoadTimingTwoHttpRequests) {
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // http://www.example.org/
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util_.ConstructGetHeaderBlockForProxy("http://www.example.org/"));
   spdy::SpdySerializedFrame get1(
       spdy_util_.ConstructSpdyHeaders(1, std::move(headers), LOWEST, true));
@@ -10172,7 +10173,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyLoadTimingTwoHttpRequests) {
   spdy_util_.UpdateWithStreamDestruction(1);
 
   // http://mail.example.org/
-  spdy::Http2HeaderBlock headers2(
+  quiche::HttpHeaderBlock headers2(
       spdy_util_.ConstructGetHeaderBlockForProxy("http://mail.example.org/"));
   spdy::SpdySerializedFrame get2(
       spdy_util_.ConstructSpdyHeaders(3, std::move(headers2), LOWEST, true));
@@ -11722,12 +11723,12 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // First request without credentials.
-  spdy::Http2HeaderBlock request_headers0(
+  quiche::HttpHeaderBlock request_headers0(
       spdy_util_.ConstructGetHeaderBlock(kUrl));
   spdy::SpdySerializedFrame request0(spdy_util_.ConstructSpdyHeaders(
       1, std::move(request_headers0), LOWEST, true));
 
-  spdy::Http2HeaderBlock response_headers0;
+  quiche::HttpHeaderBlock response_headers0;
   response_headers0[spdy::kHttp2StatusHeader] = "401";
   response_headers0["www-authenticate"] = "NTLM";
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyResponseHeaders(
@@ -11883,12 +11884,12 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithHostMapping) {
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // First request without credentials.
-  spdy::Http2HeaderBlock request_headers0(
+  quiche::HttpHeaderBlock request_headers0(
       spdy_util_.ConstructGetHeaderBlock(kUrl));
   spdy::SpdySerializedFrame request0(spdy_util_.ConstructSpdyHeaders(
       1, std::move(request_headers0), LOWEST, true));
 
-  spdy::Http2HeaderBlock response_headers0;
+  quiche::HttpHeaderBlock response_headers0;
   response_headers0[spdy::kHttp2StatusHeader] = "401";
   response_headers0["www-authenticate"] = "NTLM";
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyResponseHeaders(
@@ -12040,7 +12041,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   // Initial request establishes an H2 connection, which will then be reused for
   // WebSockets. This is needed since WebSockets will reuse H2 connections, but
   // it won't create a new one.
-  spdy::Http2HeaderBlock initial_request_headers(
+  quiche::HttpHeaderBlock initial_request_headers(
       spdy_util_.ConstructGetHeaderBlock(kInitialUrl.spec()));
   spdy::SpdySerializedFrame initial_request(spdy_util_.ConstructSpdyHeaders(
       1, std::move(initial_request_headers), DEFAULT_PRIORITY, true));
@@ -12058,7 +12059,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
 
   // First WebSocket request, which has no credentials.
-  spdy::Http2HeaderBlock websocket_request_headers;
+  quiche::HttpHeaderBlock websocket_request_headers;
   websocket_request_headers[spdy::kHttp2MethodHeader] = "CONNECT";
   websocket_request_headers[spdy::kHttp2AuthorityHeader] = "server";
   websocket_request_headers[spdy::kHttp2SchemeHeader] = "https";
@@ -12072,7 +12073,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
       3, std::move(websocket_request_headers), MEDIUM, false));
 
   // Auth challenge to WebSocket request.
-  spdy::Http2HeaderBlock auth_challenge_headers;
+  quiche::HttpHeaderBlock auth_challenge_headers;
   auth_challenge_headers[spdy::kHttp2StatusHeader] = "401";
   auth_challenge_headers["www-authenticate"] = "NTLM";
   spdy::SpdySerializedFrame websocket_auth_challenge(
@@ -20830,7 +20831,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
   spdy::SpdySerializedFrame resp1(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
   spdy::SpdySerializedFrame body1(spdy_util_.ConstructSpdyDataFrame(1, true));
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   response_headers[spdy::kHttp2StatusHeader] = "421";
   spdy::SpdySerializedFrame resp2(
       spdy_util_.ConstructSpdyReply(3, std::move(response_headers)));
@@ -20957,7 +20958,7 @@ TEST_P(HttpNetworkTransactionTest, ReturnHTTP421OnRetry) {
   spdy::SpdySerializedFrame resp1(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
   spdy::SpdySerializedFrame body1(spdy_util_.ConstructSpdyDataFrame(1, true));
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   response_headers[spdy::kHttp2StatusHeader] = "421";
   spdy::SpdySerializedFrame resp2(
       spdy_util_.ConstructSpdyReply(3, response_headers.Clone()));
@@ -21071,7 +21072,7 @@ TEST_P(HttpNetworkTransactionTest,
       CreateMockWrite(rst, 4),
   };
 
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   response_headers[spdy::kHttp2StatusHeader] = "421";
   spdy::SpdySerializedFrame resp1 =
       spdy_util_.ConstructSpdyReply(1, std::move(response_headers));
@@ -21092,7 +21093,7 @@ TEST_P(HttpNetworkTransactionTest,
       CreateMockWrite(req2_body, 1),
   };
 
-  spdy::Http2HeaderBlock resp2_headers;
+  quiche::HttpHeaderBlock resp2_headers;
   resp2_headers[spdy::kHttp2StatusHeader] = "200";
   spdy::SpdySerializedFrame resp2 =
       spdy_util2.ConstructSpdyReply(1, std::move(resp2_headers));
@@ -21160,7 +21161,7 @@ TEST_P(HttpNetworkTransactionTest, Response421WithStreamingBodyWithNullSource) {
       CreateMockWrite(rst, 5),
   };
 
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   response_headers[spdy::kHttp2StatusHeader] = "421";
   spdy::SpdySerializedFrame resp1 =
       spdy_util_.ConstructSpdyReply(1, std::move(response_headers));
@@ -21661,7 +21662,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionForHttpOverTunnel) {
       spdy_util_.ConstructWrappedSpdyFrame(req1, 1));
 
   // SPDY GET for HTTP URL (through the proxy, but not the tunnel).
-  spdy::Http2HeaderBlock req2_block;
+  quiche::HttpHeaderBlock req2_block;
   req2_block[spdy::kHttp2MethodHeader] = "GET";
   req2_block[spdy::kHttp2AuthorityHeader] = "www.example.org:8080";
   req2_block[spdy::kHttp2SchemeHeader] = "http";
@@ -21781,7 +21782,7 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionIfCertDoesNotMatch) {
   SpdyTestUtil spdy_util_secure(/*use_priority_header=*/true);
 
   // SPDY GET for HTTP URL (through SPDY proxy)
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util_.ConstructGetHeaderBlockForProxy("http://www.example.org/"));
   spdy::SpdySerializedFrame req1(
       spdy_util_.ConstructSpdyHeaders(1, std::move(headers), LOWEST, true));
@@ -24513,7 +24514,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
   spdy::SpdySerializedFrame resp1(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
   spdy::SpdySerializedFrame body1(spdy_util_.ConstructSpdyDataFrame(1, true));
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   response_headers[spdy::kHttp2StatusHeader] = "421";
   spdy::SpdySerializedFrame resp2(
       spdy_util_.ConstructSpdyReply(3, std::move(response_headers)));

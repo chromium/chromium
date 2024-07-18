@@ -29,7 +29,6 @@
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_log_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -37,10 +36,10 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogHeadersParams(const spdy::Http2HeaderBlock* headers,
+base::Value::Dict NetLogHeadersParams(const quiche::HttpHeaderBlock* headers,
                                       NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
-  dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
+  dict.Set("headers", ElideHttpHeaderBlockForNetLog(*headers, capture_mode));
   return dict;
 }
 
@@ -232,7 +231,7 @@ void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
 }
 
 void BidirectionalStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   HttpResponseInfo response_info;
   if (SpdyHeadersToHttpResponse(response_headers, &response_info) != OK) {
     DLOG(WARNING) << "Invalid headers";
@@ -305,7 +304,7 @@ void BidirectionalStream::OnDataSent() {
 }
 
 void BidirectionalStream::OnTrailersReceived(
-    const spdy::Http2HeaderBlock& trailers) {
+    const quiche::HttpHeaderBlock& trailers) {
   if (net_log_.IsCapturing()) {
     net_log_.AddEvent(NetLogEventType::BIDIRECTIONAL_STREAM_RECV_TRAILERS,
                       [&](NetLogCaptureMode capture_mode) {

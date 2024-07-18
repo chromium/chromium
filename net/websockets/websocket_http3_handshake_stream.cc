@@ -22,7 +22,6 @@
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
 #include "net/spdy/spdy_http_utils.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_basic_stream.h"
 #include "net/websockets/websocket_deflate_predictor_impl.h"
@@ -276,7 +275,7 @@ void WebSocketHttp3HandshakeStream::OnHeadersSent() {
 }
 
 void WebSocketHttp3HandshakeStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   DCHECK(!response_headers_complete_);
   DCHECK(http_response_info_);
 

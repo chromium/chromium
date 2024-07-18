@@ -141,13 +141,13 @@ void WebSocketSpdyStreamAdapter::OnHeadersSent() {
 }
 
 void WebSocketSpdyStreamAdapter::OnEarlyHintsReceived(
-    const spdy::Http2HeaderBlock& headers) {
+    const quiche::HttpHeaderBlock& headers) {
   // This callback should not be called for a WebSocket handshake.
   NOTREACHED_IN_MIGRATION();
 }
 
 void WebSocketSpdyStreamAdapter::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   if (delegate_)
     delegate_->OnHeadersReceived(response_headers);
 }
@@ -177,7 +177,7 @@ void WebSocketSpdyStreamAdapter::OnDataSent() {
 }
 
 void WebSocketSpdyStreamAdapter::OnTrailers(
-    const spdy::Http2HeaderBlock& trailers) {}
+    const quiche::HttpHeaderBlock& trailers) {}
 
 void WebSocketSpdyStreamAdapter::OnClose(int status) {
   DCHECK_NE(ERR_IO_PENDING, status);
@@ -261,7 +261,7 @@ WebSocketQuicStreamAdapter::~WebSocketQuicStreamAdapter() {
 }
 
 size_t WebSocketQuicStreamAdapter::WriteHeaders(
-    spdy::Http2HeaderBlock header_block,
+    quiche::HttpHeaderBlock header_block,
     bool fin) {
   return websocket_quic_spdy_stream_->WriteHeaders(std::move(header_block), fin,
                                                    nullptr);
@@ -311,7 +311,7 @@ void WebSocketQuicStreamAdapter::OnInitialHeadersComplete(
     bool fin,
     size_t frame_len,
     const quic::QuicHeaderList& quic_header_list) {
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   if (!quic::SpdyUtils::CopyAndValidateHeaders(quic_header_list, nullptr,
                                                &response_headers)) {
     DLOG(ERROR) << "Failed to parse header list: "

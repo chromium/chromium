@@ -9,7 +9,7 @@
 
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_headers_handler_interface.h"
 
 namespace net {
@@ -27,14 +27,14 @@ class NET_EXPORT_PRIVATE HeaderCoalescer
   void OnHeaderBlockEnd(size_t uncompressed_header_bytes,
                         size_t compressed_header_bytes) override {}
 
-  spdy::Http2HeaderBlock release_headers();
+  quiche::HttpHeaderBlock release_headers();
   bool error_seen() const { return error_seen_; }
 
  private:
   // Helper to add a header. Return true on success.
   bool AddHeader(std::string_view key, std::string_view value);
 
-  spdy::Http2HeaderBlock headers_;
+  quiche::HttpHeaderBlock headers_;
   bool headers_valid_ = true;
   size_t header_list_size_ = 0;
   bool error_seen_ = false;

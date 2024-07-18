@@ -24,7 +24,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_session_pool.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/websockets/websocket_basic_stream_adapters.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_stream.h"
@@ -109,7 +109,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
   // WebSocketQuicStreamAdapter::Delegate methods.
   void OnHeadersSent() override;
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override;
+      const quiche::HttpHeaderBlock& response_headers) override;
   void OnClose(int status) override;
 
  private:
@@ -151,7 +151,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
 
   raw_ptr<HttpResponseInfo> http_response_info_ = nullptr;
 
-  spdy::Http2HeaderBlock http3_request_headers_;
+  quiche::HttpHeaderBlock http3_request_headers_;
 
   // The sub-protocols we requested.
   std::vector<std::string> requested_sub_protocols_;

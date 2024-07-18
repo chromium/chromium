@@ -30,7 +30,7 @@
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/url_request/url_request_context.h"
 #include "url/gurl.h"
 
@@ -38,7 +38,7 @@ namespace {
 
 class HeadersArray : public bidirectional_stream_header_array {
  public:
-  explicit HeadersArray(const spdy::Http2HeaderBlock& header_block);
+  explicit HeadersArray(const quiche::HttpHeaderBlock& header_block);
 
   HeadersArray(const HeadersArray&) = delete;
   HeadersArray& operator=(const HeadersArray&) = delete;
@@ -49,7 +49,7 @@ class HeadersArray : public bidirectional_stream_header_array {
   base::StringPairs headers_strings_;
 };
 
-HeadersArray::HeadersArray(const spdy::Http2HeaderBlock& header_block)
+HeadersArray::HeadersArray(const quiche::HttpHeaderBlock& header_block)
     : headers_strings_(header_block.size()) {
   // Split coalesced headers by '\0' and copy them into |header_strings_|.
   for (const auto& it : header_block) {
@@ -96,7 +96,7 @@ class BidirectionalStreamAdapter
 
   void OnStreamReady() override;
 
-  void OnHeadersReceived(const spdy::Http2HeaderBlock& headers_block,
+  void OnHeadersReceived(const quiche::HttpHeaderBlock& headers_block,
                          const char* negotiated_protocol) override;
 
   void OnDataRead(char* data, int size) override;
@@ -104,7 +104,7 @@ class BidirectionalStreamAdapter
   void OnDataSent(const char* data) override;
 
   void OnTrailersReceived(
-      const spdy::Http2HeaderBlock& trailers_block) override;
+      const quiche::HttpHeaderBlock& trailers_block) override;
 
   void OnSucceeded() override;
 
@@ -154,7 +154,7 @@ void BidirectionalStreamAdapter::OnStreamReady() {
 }
 
 void BidirectionalStreamAdapter::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& headers_block,
+    const quiche::HttpHeaderBlock& headers_block,
     const char* negotiated_protocol) {
   DCHECK(c_callback_->on_response_headers_received);
   HeadersArray response_headers(headers_block);
@@ -173,7 +173,7 @@ void BidirectionalStreamAdapter::OnDataSent(const char* data) {
 }
 
 void BidirectionalStreamAdapter::OnTrailersReceived(
-    const spdy::Http2HeaderBlock& trailers_block) {
+    const quiche::HttpHeaderBlock& trailers_block) {
   DCHECK(c_callback_->on_response_trailers_received);
   HeadersArray response_trailers(trailers_block);
   c_callback_->on_response_trailers_received(c_stream(), &response_trailers);

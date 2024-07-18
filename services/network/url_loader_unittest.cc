@@ -80,6 +80,7 @@
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/url_request/url_request_failed_job.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -5942,11 +5943,11 @@ TEST_F(URLLoaderTest, EarlyHints) {
   const std::string kPreloadPath = "/hello.txt";
 
   // Prepare a response with an Early Hints response.
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   response_headers[":status"] = "200";
   response_headers[":path"] = kPath;
-  std::vector<spdy::Http2HeaderBlock> early_hints;
-  spdy::Http2HeaderBlock hints_headers;
+  std::vector<quiche::HttpHeaderBlock> early_hints;
+  quiche::HttpHeaderBlock hints_headers;
   std::string preload_link =
       base::StringPrintf("<%s>; rel=preload", kPreloadPath.c_str());
   hints_headers["link"] = preload_link;

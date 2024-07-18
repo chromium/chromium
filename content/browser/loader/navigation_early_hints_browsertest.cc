@@ -39,6 +39,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/link_header.mojom.h"
@@ -65,16 +66,16 @@ struct ResponseEntry {
   }
 
   void AddEarlyHints(const std::vector<HeaderField>& header_fields) {
-    spdy::Http2HeaderBlock hints_headers;
+    quiche::HttpHeaderBlock hints_headers;
     for (const auto& header : header_fields)
       hints_headers.AppendValueOrAddHeader(header.name, header.value);
     early_hints.push_back(std::move(hints_headers));
   }
 
   std::string path;
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   std::string body;
-  std::vector<spdy::Http2HeaderBlock> early_hints;
+  std::vector<quiche::HttpHeaderBlock> early_hints;
 };
 
 const char kPageWithHintedScriptPath[] = "/page_with_hinted_js.html";

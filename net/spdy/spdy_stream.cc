@@ -328,7 +328,7 @@ void SpdyStream::SetRequestTime(base::Time t) {
 }
 
 void SpdyStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers,
+    const quiche::HttpHeaderBlock& response_headers,
     base::Time response_time,
     base::TimeTicks recv_first_byte_time) {
   switch (response_state_) {
@@ -336,7 +336,7 @@ void SpdyStream::OnHeadersReceived(
       // No header block has been received yet.
       DCHECK(response_headers_.empty());
 
-      spdy::Http2HeaderBlock::const_iterator it =
+      quiche::HttpHeaderBlock::const_iterator it =
           response_headers.find(spdy::kHttp2StatusHeader);
       if (it == response_headers.end()) {
         const std::string error("Response headers do not include :status.");
@@ -617,12 +617,12 @@ base::WeakPtr<SpdyStream> SpdyStream::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-int SpdyStream::SendRequestHeaders(spdy::Http2HeaderBlock request_headers,
+int SpdyStream::SendRequestHeaders(quiche::HttpHeaderBlock request_headers,
                                    SpdySendStatus send_status) {
   net_log_.AddEvent(
       NetLogEventType::HTTP_TRANSACTION_HTTP2_SEND_REQUEST_HEADERS,
       [&](NetLogCaptureMode capture_mode) {
-        return Http2HeaderBlockNetLogParams(&request_headers, capture_mode);
+        return HttpHeaderBlockNetLogParams(&request_headers, capture_mode);
       });
   CHECK_EQ(pending_send_status_, MORE_DATA_TO_SEND);
   CHECK(!request_headers_valid_);
@@ -772,7 +772,7 @@ void SpdyStream::QueueNextDataFrame() {
 }
 
 void SpdyStream::OnEarlyHintsReceived(
-    const spdy::Http2HeaderBlock& response_headers,
+    const quiche::HttpHeaderBlock& response_headers,
     base::TimeTicks recv_first_byte_time) {
   // Record the timing of the 103 Early Hints response for the experiment
   // (https://crbug.com/1093693).
@@ -801,7 +801,7 @@ void SpdyStream::OnEarlyHintsReceived(
 }
 
 void SpdyStream::SaveResponseHeaders(
-    const spdy::Http2HeaderBlock& response_headers,
+    const quiche::HttpHeaderBlock& response_headers,
     int status) {
   if (response_headers.contains("transfer-encoding")) {
     session_->ResetStream(stream_id_, ERR_HTTP2_PROTOCOL_ERROR,

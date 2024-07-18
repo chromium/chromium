@@ -45,6 +45,7 @@
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -211,16 +212,16 @@ class SessionOpeningDelegate : public SpdyStream::Delegate {
 
   void OnHeadersSent() override {}
 
-  void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& headers) override {}
+  void OnEarlyHintsReceived(const quiche::HttpHeaderBlock& headers) override {}
 
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override {}
+      const quiche::HttpHeaderBlock& response_headers) override {}
 
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override {}
 
   void OnDataSent() override {}
 
-  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override {}
+  void OnTrailers(const quiche::HttpHeaderBlock& trailers) override {}
 
   void OnClose(int status) override {
     std::ignore = CreateFakeSpdySession(spdy_session_pool_, key_);
@@ -1142,7 +1143,7 @@ TEST_P(SpdySessionGoAwayOnChangeTest, GoAwayOnChange) {
   test::StreamDelegateDoNothing delegateA(spdy_streamA);
   spdy_streamA->SetDelegate(&delegateA);
 
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util.ConstructGetHeaderBlock(urlA.spec()));
   spdy_streamA->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
@@ -1270,7 +1271,7 @@ TEST_F(SpdySessionPoolTest, CloseOnIPAddressChanged) {
   test::StreamDelegateDoNothing delegateA(spdy_streamA);
   spdy_streamA->SetDelegate(&delegateA);
 
-  spdy::Http2HeaderBlock headers(
+  quiche::HttpHeaderBlock headers(
       spdy_util.ConstructGetHeaderBlock(urlA.spec()));
   spdy_streamA->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
@@ -1369,7 +1370,8 @@ TEST_F(SpdySessionPoolTest, HandleIPAddressChangeThenShutdown) {
   test::StreamDelegateDoNothing delegate(spdy_stream);
   spdy_stream->SetDelegate(&delegate);
 
-  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  quiche::HttpHeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(url.spec()));
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   base::RunLoop().RunUntilIdle();
@@ -1428,7 +1430,8 @@ TEST_F(SpdySessionPoolTest, HandleGracefulGoawayThenShutdown) {
   test::StreamDelegateDoNothing delegate(spdy_stream);
   spdy_stream->SetDelegate(&delegate);
 
-  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  quiche::HttpHeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(url.spec()));
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   // Send headers.
@@ -1528,7 +1531,8 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
   test::StreamDelegateDoNothing delegate(spdy_stream);
   spdy_stream->SetDelegate(&delegate);
 
-  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  quiche::HttpHeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(url.spec()));
   spdy_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
 
   base::RunLoop().RunUntilIdle();
@@ -1965,7 +1969,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
       IsError(ERR_IO_PENDING));
 
   // Activate the first stream by sending data.
-  spdy::Http2HeaderBlock headers(spdy_util.ConstructGetHeaderBlock(url.spec()));
+  quiche::HttpHeaderBlock headers(
+      spdy_util.ConstructGetHeaderBlock(url.spec()));
   active_stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
   base::RunLoop().RunUntilIdle();
 

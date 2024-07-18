@@ -28,7 +28,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 
 using std::string;
 

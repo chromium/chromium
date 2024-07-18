@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "net/http/bidirectional_stream.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/url_request/url_request_context_getter.h"
 
 namespace base {
@@ -42,14 +42,15 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
     virtual void OnStreamReady() = 0;
 
     virtual void OnHeadersReceived(
-        const spdy::Http2HeaderBlock& response_headers,
+        const quiche::HttpHeaderBlock& response_headers,
         const char* negotiated_protocol) = 0;
 
     virtual void OnDataRead(char* data, int size) = 0;
 
     virtual void OnDataSent(const char* data) = 0;
 
-    virtual void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) = 0;
+    virtual void OnTrailersReceived(
+        const quiche::HttpHeaderBlock& trailers) = 0;
 
     virtual void OnSucceeded() = 0;
 
@@ -180,10 +181,10 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   // net::BidirectionalStream::Delegate implementations:
   void OnStreamReady(bool request_headers_sent) override;
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override;
+      const quiche::HttpHeaderBlock& response_headers) override;
   void OnDataRead(int bytes_read) override;
   void OnDataSent() override;
-  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override;
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override;
   void OnFailed(int error) override;
   // Helper method to derive OnSucceeded.
   void MaybeOnSucceded();

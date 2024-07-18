@@ -26,6 +26,7 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_stream.h"
 #include "net/spdy/multiplexed_http_stream.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 
 namespace net {
@@ -112,7 +113,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   int DoSendBodyComplete(int rv);
 
   void OnReadResponseHeadersComplete(int rv);
-  int ProcessResponseHeaders(const spdy::Http2HeaderBlock& headers);
+  int ProcessResponseHeaders(const quiche::HttpHeaderBlock& headers);
   void ReadTrailingHeaders();
   void OnReadTrailingHeadersComplete(int rv);
 
@@ -178,12 +179,12 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   int response_status_ = ERR_UNEXPECTED;
 
   // Serialized request headers.
-  spdy::Http2HeaderBlock request_headers_;
+  quiche::HttpHeaderBlock request_headers_;
 
-  spdy::Http2HeaderBlock response_header_block_;
+  quiche::HttpHeaderBlock response_header_block_;
   bool response_headers_received_ = false;
 
-  spdy::Http2HeaderBlock trailing_header_block_;
+  quiche::HttpHeaderBlock trailing_header_block_;
   bool trailing_headers_received_ = false;
 
   // Number of bytes received by the headers stream on behalf of this stream.

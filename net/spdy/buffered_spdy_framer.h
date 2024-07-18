@@ -17,8 +17,8 @@
 #include "net/base/net_export.h"
 #include "net/log/net_log_source.h"
 #include "net/spdy/header_coalescer.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_frame_decoder_adapter.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_alt_svc_wire_format.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
@@ -49,7 +49,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
                          spdy::SpdyStreamId parent_stream_id,
                          bool exclusive,
                          bool fin,
-                         spdy::Http2HeaderBlock headers,
+                         quiche::HttpHeaderBlock headers,
                          base::TimeTicks recv_first_byte_time) = 0;
 
   // Called when a data frame header is received.
@@ -106,7 +106,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
   // Called when a PUSH_PROMISE frame has been parsed.
   virtual void OnPushPromise(spdy::SpdyStreamId stream_id,
                              spdy::SpdyStreamId promised_stream_id,
-                             spdy::Http2HeaderBlock headers) = 0;
+                             quiche::HttpHeaderBlock headers) = 0;
 
   // Called when an ALTSVC frame has been parsed.
   virtual void OnAltSvc(

@@ -177,7 +177,7 @@ void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
 }
 
 void BidirectionalStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   DCHECK(IsOnNetworkThread());
   DCHECK_EQ(STARTED, read_state_);
   if (!bidi_stream_)
@@ -252,7 +252,7 @@ void BidirectionalStream::OnDataSent() {
 }
 
 void BidirectionalStream::OnTrailersReceived(
-    const spdy::Http2HeaderBlock& response_trailers) {
+    const quiche::HttpHeaderBlock& response_trailers) {
   DCHECK(IsOnNetworkThread());
   if (!bidi_stream_)
     return;

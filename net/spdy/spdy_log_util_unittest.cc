@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/values.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -34,13 +35,13 @@ TEST(SpdyLogUtilTest, ElideGoAwayDebugDataForNetLog) {
                 NetLogCaptureMode::kIncludeSensitive, "\xfe\xff\x00"));
 }
 
-TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLog) {
-  spdy::Http2HeaderBlock headers;
+TEST(SpdyLogUtilTest, ElideHttpHeaderBlockForNetLog) {
+  quiche::HttpHeaderBlock headers;
   headers["foo"] = "bar";
   headers["cookie"] = "name=value";
 
   base::Value::List list =
-      ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
+      ElideHttpHeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
   ASSERT_EQ(2u, list.size());
 
@@ -50,8 +51,8 @@ TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLog) {
   ASSERT_TRUE(list[1].is_string());
   EXPECT_EQ("cookie: [10 bytes were stripped]", list[1].GetString());
 
-  list = ElideHttp2HeaderBlockForNetLog(headers,
-                                        NetLogCaptureMode::kIncludeSensitive);
+  list = ElideHttpHeaderBlockForNetLog(headers,
+                                       NetLogCaptureMode::kIncludeSensitive);
 
   ASSERT_EQ(2u, list.size());
 
@@ -62,13 +63,13 @@ TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLog) {
   EXPECT_EQ("cookie: name=value", list[1].GetString());
 }
 
-TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
-  spdy::Http2HeaderBlock headers;
+TEST(SpdyLogUtilTest, HttpHeaderBlockNetLogParams) {
+  quiche::HttpHeaderBlock headers;
   headers["foo"] = "bar";
   headers["cookie"] = "name=value";
 
   base::Value::Dict dict =
-      Http2HeaderBlockNetLogParams(&headers, NetLogCaptureMode::kDefault);
+      HttpHeaderBlockNetLogParams(&headers, NetLogCaptureMode::kDefault);
 
   ASSERT_EQ(1u, dict.size());
 
@@ -82,8 +83,8 @@ TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
   ASSERT_TRUE((*header_list)[1].is_string());
   EXPECT_EQ("cookie: [10 bytes were stripped]", (*header_list)[1].GetString());
 
-  dict = Http2HeaderBlockNetLogParams(&headers,
-                                      NetLogCaptureMode::kIncludeSensitive);
+  dict = HttpHeaderBlockNetLogParams(&headers,
+                                     NetLogCaptureMode::kIncludeSensitive);
 
   ASSERT_EQ(1u, dict.size());
 
@@ -99,14 +100,14 @@ TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
 }
 
 // Regression test for https://crbug.com/800282.
-TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLogWithNonUTF8Characters) {
-  spdy::Http2HeaderBlock headers;
+TEST(SpdyLogUtilTest, ElideHttpHeaderBlockForNetLogWithNonUTF8Characters) {
+  quiche::HttpHeaderBlock headers;
   headers["foo"] = "bar\x81";
   headers["O\xe2"] = "bar";
   headers["\xde\xad"] = "\xbe\xef";
 
   base::Value::List list =
-      ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
+      ElideHttpHeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
   ASSERT_EQ(3u, list.size());
   ASSERT_TRUE(list[0].is_string());

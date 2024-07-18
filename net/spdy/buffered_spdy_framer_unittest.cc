@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "net/log/net_log_with_source.h"
 #include "net/spdy/spdy_test_util_common.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "testing/platform_test.h"
 
 namespace net {
@@ -48,7 +49,7 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
                  spdy::SpdyStreamId parent_stream_id,
                  bool exclusive,
                  bool fin,
-                 spdy::Http2HeaderBlock headers,
+                 quiche::HttpHeaderBlock headers,
                  base::TimeTicks recv_first_byte_time) override {
     header_stream_id_ = stream_id;
     headers_frame_count_++;
@@ -111,7 +112,7 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
 
   void OnPushPromise(spdy::SpdyStreamId stream_id,
                      spdy::SpdyStreamId promised_stream_id,
-                     spdy::Http2HeaderBlock headers) override {
+                     quiche::HttpHeaderBlock headers) override {
     header_stream_id_ = stream_id;
     push_promise_frame_count_++;
     promised_stream_id_ = promised_stream_id;
@@ -169,7 +170,7 @@ class TestBufferedSpdyVisitor : public BufferedSpdyFramerVisitorInterface {
   spdy::SpdyStreamId promised_stream_id_;
 
   // Headers from OnHeaders and OnPushPromise for verification.
-  spdy::Http2HeaderBlock headers_;
+  quiche::HttpHeaderBlock headers_;
 
   // OnGoAway parameters.
   spdy::SpdyStreamId goaway_last_accepted_stream_id_;
@@ -201,7 +202,7 @@ TEST_F(BufferedSpdyFramerTest, OnSetting) {
 }
 
 TEST_F(BufferedSpdyFramerTest, HeaderListTooLarge) {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   std::string long_header_value(256 * 1024, 'x');
   headers["foo"] = long_header_value;
   spdy::SpdyHeadersIR headers_ir(/*stream_id=*/1, std::move(headers));
@@ -216,14 +217,14 @@ TEST_F(BufferedSpdyFramerTest, HeaderListTooLarge) {
   EXPECT_EQ(1, visitor.error_count_);
   EXPECT_EQ(0, visitor.headers_frame_count_);
   EXPECT_EQ(0, visitor.push_promise_frame_count_);
-  EXPECT_EQ(spdy::Http2HeaderBlock(), visitor.headers_);
+  EXPECT_EQ(quiche::HttpHeaderBlock(), visitor.headers_);
 }
 
 TEST_F(BufferedSpdyFramerTest, ValidHeadersAfterInvalidHeaders) {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers["invalid"] = "\r\n\r\n";
 
-  spdy::Http2HeaderBlock headers2;
+  quiche::HttpHeaderBlock headers2;
   headers["alpha"] = "beta";
 
   SpdyTestUtil spdy_test_util;
@@ -243,7 +244,7 @@ TEST_F(BufferedSpdyFramerTest, ValidHeadersAfterInvalidHeaders) {
 }
 
 TEST_F(BufferedSpdyFramerTest, ReadHeadersHeaderBlock) {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers["alpha"] = "beta";
   headers["gamma"] = "delta";
   spdy::SpdyHeadersIR headers_ir(/*stream_id=*/1, headers.Clone());
@@ -261,7 +262,7 @@ TEST_F(BufferedSpdyFramerTest, ReadHeadersHeaderBlock) {
 }
 
 TEST_F(BufferedSpdyFramerTest, ReadPushPromiseHeaderBlock) {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers["alpha"] = "beta";
   headers["gamma"] = "delta";
   NetLogWithSource net_log;

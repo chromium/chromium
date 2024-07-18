@@ -55,7 +55,7 @@ void HeaderCoalescer::OnHeader(std::string_view key, std::string_view value) {
   }
 }
 
-spdy::Http2HeaderBlock HeaderCoalescer::release_headers() {
+quiche::HttpHeaderBlock HeaderCoalescer::release_headers() {
   DCHECK(headers_valid_);
   headers_valid_ = false;
   return std::move(headers_);

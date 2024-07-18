@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/spdy/fuzzing/hpack_fuzz_util.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/http2/hpack/hpack_constants.h"
 #include "net/third_party/quiche/src/quiche/http2/hpack/hpack_encoder.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
@@ -58,7 +59,7 @@ int main(int argc, char** argv) {
   spdy::HpackEncoder encoder;
 
   for (int i = 0; i != example_count; ++i) {
-    spdy::Http2HeaderBlock headers =
+    quiche::HttpHeaderBlock headers =
         HpackFuzzUtil::NextGeneratedHeaderSet(&context);
 
     std::string buffer = encoder.EncodeHeaderBlock(headers);

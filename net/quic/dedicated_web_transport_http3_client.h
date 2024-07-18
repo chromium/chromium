@@ -22,6 +22,7 @@
 #include "net/quic/web_transport_client.h"
 #include "net/quic/web_transport_error.h"
 #include "net/socket/client_socket_factory.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
 #include "net/third_party/quiche/src/quiche/quic/core/deterministic_connection_id_generator.h"
@@ -66,7 +67,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   quic::WebTransportSession* session() override;
 
   void OnSettingsReceived();
-  void OnHeadersComplete(const spdy::Http2HeaderBlock& headers);
+  void OnHeadersComplete(const quiche::HttpHeaderBlock& headers);
   void OnConnectStreamWriteSideInDataRecvdState();
   void OnConnectStreamAborted();
   void OnConnectStreamDeleted();

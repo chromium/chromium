@@ -18,7 +18,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/spdy/spdy_read_queue.h"
 #include "net/spdy/spdy_stream.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_basic_stream.h"
 #include "net/websockets/websocket_quic_spdy_stream.h"
@@ -74,7 +74,7 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
     virtual ~Delegate() = default;
     virtual void OnHeadersSent() = 0;
     virtual void OnHeadersReceived(
-        const spdy::Http2HeaderBlock& response_headers) = 0;
+        const quiche::HttpHeaderBlock& response_headers) = 0;
     // Might destroy |this|.
     virtual void OnClose(int status) = 0;
   };
@@ -107,12 +107,12 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   // SpdyStream::Delegate methods.
 
   void OnHeadersSent() override;
-  void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& headers) override;
+  void OnEarlyHintsReceived(const quiche::HttpHeaderBlock& headers) override;
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override;
+      const quiche::HttpHeaderBlock& response_headers) override;
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override;
   void OnDataSent() override;
-  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override;
+  void OnTrailers(const quiche::HttpHeaderBlock& trailers) override;
   void OnClose(int status) override;
   bool CanGreaseFrameType() const override;
   NetLogSource source_dependency() const override;
@@ -176,7 +176,7 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
     virtual ~Delegate() = default;
     virtual void OnHeadersSent() = 0;
     virtual void OnHeadersReceived(
-        const spdy::Http2HeaderBlock& response_headers) = 0;
+        const quiche::HttpHeaderBlock& response_headers) = 0;
     virtual void OnClose(int status) = 0;
   };
 
@@ -193,7 +193,7 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   // Called by WebSocketQuicStreamAdapter::Delegate before it is destroyed.
   void clear_delegate() { delegate_ = nullptr; }
 
-  size_t WriteHeaders(spdy::Http2HeaderBlock header_block, bool fin);
+  size_t WriteHeaders(quiche::HttpHeaderBlock header_block, bool fin);
 
   // WebSocketBasicStream::Adapter methods.
   // TODO(momoka): Add functions that are needed to implement

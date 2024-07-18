@@ -80,6 +80,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_encrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
@@ -445,31 +446,31 @@ class QuicNetworkTransactionTest
   }
 
   // Uses default QuicTestPacketMaker.
-  spdy::Http2HeaderBlock GetRequestHeaders(const std::string& method,
-                                           const std::string& scheme,
-                                           const std::string& path) {
+  quiche::HttpHeaderBlock GetRequestHeaders(const std::string& method,
+                                            const std::string& scheme,
+                                            const std::string& path) {
     return GetRequestHeaders(method, scheme, path, client_maker_.get());
   }
 
   // Uses customized QuicTestPacketMaker.
-  spdy::Http2HeaderBlock GetRequestHeaders(const std::string& method,
-                                           const std::string& scheme,
-                                           const std::string& path,
-                                           QuicTestPacketMaker* maker) {
+  quiche::HttpHeaderBlock GetRequestHeaders(const std::string& method,
+                                            const std::string& scheme,
+                                            const std::string& path,
+                                            QuicTestPacketMaker* maker) {
     return maker->GetRequestHeaders(method, scheme, path);
   }
 
-  spdy::Http2HeaderBlock ConnectRequestHeaders(const std::string& host_port) {
+  quiche::HttpHeaderBlock ConnectRequestHeaders(const std::string& host_port) {
     return client_maker_->ConnectRequestHeaders(host_port);
   }
 
-  spdy::Http2HeaderBlock GetResponseHeaders(const std::string& status) {
+  quiche::HttpHeaderBlock GetResponseHeaders(const std::string& status) {
     return server_maker_.GetResponseHeaders(status);
   }
 
   // Appends alt_svc headers in the response headers.
-  spdy::Http2HeaderBlock GetResponseHeaders(const std::string& status,
-                                            const std::string& alt_svc) {
+  quiche::HttpHeaderBlock GetResponseHeaders(const std::string& status,
+                                             const std::string& alt_svc) {
     return server_maker_.GetResponseHeaders(status, alt_svc);
   }
 
@@ -523,7 +524,7 @@ class QuicNetworkTransactionTest
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
       bool fin,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       bool should_include_priority_frame = true) {
     return ConstructClientRequestHeadersPacket(
         packet_number, stream_id, fin, DEFAULT_PRIORITY, std::move(headers),
@@ -536,7 +537,7 @@ class QuicNetworkTransactionTest
       quic::QuicStreamId stream_id,
       bool fin,
       RequestPriority request_priority,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       bool should_include_priority_frame = true) {
     spdy::SpdyPriority priority =
         ConvertRequestPriorityToQuicPriority(request_priority);
@@ -560,7 +561,7 @@ class QuicNetworkTransactionTest
       quic::QuicStreamId stream_id,
       bool fin,
       RequestPriority request_priority,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       size_t* spdy_headers_frame_length,
       const std::vector<std::string>& data_writes) {
     spdy::SpdyPriority priority =
@@ -574,7 +575,7 @@ class QuicNetworkTransactionTest
   ConstructServerResponseHeadersPacket(uint64_t packet_number,
                                        quic::QuicStreamId stream_id,
                                        bool fin,
-                                       spdy::Http2HeaderBlock headers) {
+                                       quiche::HttpHeaderBlock headers) {
     return server_maker_.MakeResponseHeadersPacket(
         packet_number, stream_id, fin, std::move(headers), nullptr);
   }
@@ -589,7 +590,7 @@ class QuicNetworkTransactionTest
       std::string authority,
       std::string path,
       bool fin) {
-    spdy::Http2HeaderBlock headers;
+    quiche::HttpHeaderBlock headers;
     headers[":scheme"] = "https";
     headers[":path"] = path;
     headers[":protocol"] = "connect-udp";
@@ -1222,7 +1223,7 @@ TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithTrailers) {
       SYNCHRONOUS,
       ConstructClientAckPacket(++sent_packet_num, received_packet_num, 1));
   // Read the response trailers.
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers.AppendValueOrAddHeader("foo", "bar");
   quic_data.AddRead(ASYNC, server_maker_.MakeResponseHeadersPacket(
                                ++received_packet_num, stream_id, true,
@@ -1276,7 +1277,7 @@ TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithEmptyTrailers) {
   // Read the empty response trailers.
   quic_data.AddRead(ASYNC, server_maker_.MakeResponseHeadersPacket(
                                ++received_packet_num, stream_id, true,
-                               spdy::Http2HeaderBlock(), nullptr));
+                               quiche::HttpHeaderBlock(), nullptr));
   quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
   // Connection close on shutdown.
   quic_data.AddWrite(SYNCHRONOUS, ConstructClientAckAndConnectionClosePacket(
@@ -1519,7 +1520,7 @@ TEST_P(QuicNetworkTransactionTest, ResetOnEmptyResponseHeaders) {
 
   const quic::QuicStreamId request_stream_id =
       GetNthClientInitiatedBidirectionalStreamId(0);
-  spdy::Http2HeaderBlock empty_response_headers;
+  quiche::HttpHeaderBlock empty_response_headers;
   const std::string response_data = server_maker_.QpackEncodeHeaders(
       request_stream_id, std::move(empty_response_headers), nullptr);
   uint64_t read_packet_num = 1;
@@ -1562,7 +1563,7 @@ TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {
       ConstructClientRequestHeadersPacket(
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
           GetRequestHeaders("GET", "https", "/")));
-  spdy::Http2HeaderBlock response_headers = GetResponseHeaders("200");
+  quiche::HttpHeaderBlock response_headers = GetResponseHeaders("200");
   response_headers["key1"] = std::string(30000, 'A');
   response_headers["key2"] = std::string(30000, 'A');
   response_headers["key3"] = std::string(30000, 'A');
@@ -1621,7 +1622,7 @@ TEST_P(QuicNetworkTransactionTest, TooLargeResponseHeaders) {
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
           GetRequestHeaders("GET", "https", "/")));
 
-  spdy::Http2HeaderBlock response_headers = GetResponseHeaders("200");
+  quiche::HttpHeaderBlock response_headers = GetResponseHeaders("200");
   response_headers["key1"] = std::string(30000, 'A');
   response_headers["key2"] = std::string(30000, 'A');
   response_headers["key3"] = std::string(30000, 'A');
@@ -1686,7 +1687,7 @@ TEST_P(QuicNetworkTransactionTest, RedirectMultipleLocations) {
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
           GetRequestHeaders("GET", "https", "/")));
 
-  spdy::Http2HeaderBlock response_headers = GetResponseHeaders("301");
+  quiche::HttpHeaderBlock response_headers = GetResponseHeaders("301");
   response_headers.AppendValueOrAddHeader("location", "https://example1.test");
   response_headers.AppendValueOrAddHeader("location", "https://example2.test");
 
@@ -6321,7 +6322,7 @@ class QuicNetworkTransactionWithDestinationTest
                                       QuicTestPacketMaker* maker) {
     spdy::SpdyPriority priority =
         ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
-    spdy::Http2HeaderBlock headers(
+    quiche::HttpHeaderBlock headers(
         maker->GetRequestHeaders("GET", "https", "/"));
     return maker->MakeRequestHeadersPacket(
         packet_number, stream_id, true, priority, std::move(headers), nullptr);
@@ -6331,7 +6332,7 @@ class QuicNetworkTransactionWithDestinationTest
   ConstructServerResponseHeadersPacket(uint64_t packet_number,
                                        quic::QuicStreamId stream_id,
                                        QuicTestPacketMaker* maker) {
-    spdy::Http2HeaderBlock headers(maker->GetResponseHeaders("200"));
+    quiche::HttpHeaderBlock headers(maker->GetResponseHeaders("200"));
     return maker->MakeResponseHeadersPacket(packet_number, stream_id, false,
                                             std::move(headers), nullptr);
   }
@@ -7953,7 +7954,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyUserAgent) {
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
           DEFAULT_PRIORITY));
 
-  spdy::Http2HeaderBlock headers =
+  quiche::HttpHeaderBlock headers =
       ConnectRequestHeaders("mail.example.org:443");
   headers["user-agent"] = kConfiguredUserAgent;
   mock_quic_data.AddWrite(
@@ -8146,7 +8147,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
             client_maker.ConnectRequestHeaders("mail.example.org:443"), nullptr,
             false));
 
-    spdy::Http2HeaderBlock headers = server_maker.GetResponseHeaders("407");
+    quiche::HttpHeaderBlock headers = server_maker.GetResponseHeaders("407");
     headers["proxy-authenticate"] = "Basic realm=\"MyRealm1\"";
     headers["content-length"] = "10";
     mock_quic_data.AddRead(

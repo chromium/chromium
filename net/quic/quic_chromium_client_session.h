@@ -46,6 +46,7 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/spdy/http2_priority_dependencies.h"
 #include "net/spdy/multiplexed_session.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_client_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
@@ -705,7 +706,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // quic::QuicSpdySession methods:
   size_t WriteHeadersOnHeadersStream(
       quic::QuicStreamId id,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       bool fin,
       const spdy::SpdyStreamPrecedence& precedence,
       quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>

@@ -532,7 +532,7 @@ int QuicHttpStream::DoSendHeaders() {
     headers_bytes_sent_ += rv;
   }
 
-  request_headers_ = spdy::Http2HeaderBlock();
+  request_headers_ = quiche::HttpHeaderBlock();
   return rv;
 }
 
@@ -608,7 +608,7 @@ int QuicHttpStream::DoSendBodyComplete(int rv) {
 }
 
 int QuicHttpStream::ProcessResponseHeaders(
-    const spdy::Http2HeaderBlock& headers) {
+    const quiche::HttpHeaderBlock& headers) {
   const int rv = SpdyHeadersToHttpResponse(headers, response_info_);
   base::UmaHistogramBoolean("Net.QuicHttpStream.ProcessResponseHeaderSuccess",
                             rv == OK);

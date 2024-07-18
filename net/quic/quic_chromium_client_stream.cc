@@ -180,7 +180,7 @@ void QuicChromiumClientStream::Handle::InvokeCallbacksOnClose(int error) {
 }
 
 int QuicChromiumClientStream::Handle::ReadInitialHeaders(
-    spdy::Http2HeaderBlock* header_block,
+    quiche::HttpHeaderBlock* header_block,
     CompletionOnceCallback callback) {
   ScopedBoolSaver saver(&may_invoke_callbacks_, false);
   if (!stream_)
@@ -232,7 +232,7 @@ int QuicChromiumClientStream::Handle::ReadBody(
 }
 
 int QuicChromiumClientStream::Handle::ReadTrailingHeaders(
-    spdy::Http2HeaderBlock* header_block,
+    quiche::HttpHeaderBlock* header_block,
     CompletionOnceCallback callback) {
   ScopedBoolSaver saver(&may_invoke_callbacks_, false);
   if (!stream_)
@@ -248,7 +248,7 @@ int QuicChromiumClientStream::Handle::ReadTrailingHeaders(
 }
 
 int QuicChromiumClientStream::Handle::WriteHeaders(
-    spdy::Http2HeaderBlock header_block,
+    quiche::HttpHeaderBlock header_block,
     bool fin,
     quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
         ack_notifier_delegate) {
@@ -592,7 +592,7 @@ void QuicChromiumClientStream::OnInitialHeadersComplete(
     }
   }
 
-  spdy::Http2HeaderBlock header_block;
+  quiche::HttpHeaderBlock header_block;
   int64_t length = -1;
   if (!quic::SpdyUtils::CopyAndValidateHeaders(header_list, &length,
                                                &header_block)) {
@@ -693,7 +693,7 @@ void QuicChromiumClientStream::OnCanWrite() {
 }
 
 size_t QuicChromiumClientStream::WriteHeaders(
-    spdy::Http2HeaderBlock header_block,
+    quiche::HttpHeaderBlock header_block,
     bool fin,
     quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
         ack_listener) {
@@ -832,7 +832,7 @@ void QuicChromiumClientStream::NotifyHandleOfTrailingHeadersAvailable() {
 }
 
 int QuicChromiumClientStream::DeliverEarlyHints(
-    spdy::Http2HeaderBlock* headers) {
+    quiche::HttpHeaderBlock* headers) {
   if (early_hints_.empty()) {
     return ERR_IO_PENDING;
   }
@@ -856,7 +856,7 @@ int QuicChromiumClientStream::DeliverEarlyHints(
 }
 
 int QuicChromiumClientStream::DeliverInitialHeaders(
-    spdy::Http2HeaderBlock* headers) {
+    quiche::HttpHeaderBlock* headers) {
   if (!initial_headers_arrived_) {
     return ERR_IO_PENDING;
   }
@@ -879,7 +879,7 @@ int QuicChromiumClientStream::DeliverInitialHeaders(
 }
 
 bool QuicChromiumClientStream::DeliverTrailingHeaders(
-    spdy::Http2HeaderBlock* headers,
+    quiche::HttpHeaderBlock* headers,
     int* frame_len) {
   if (trailing_headers_frame_len_ == 0) {
     return false;

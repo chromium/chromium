@@ -412,7 +412,7 @@ int QuicProxyDatagramClientSocket::DoSendRequest() {
                        NetLogEventType::HTTP_TRANSACTION_SEND_TUNNEL_HEADERS,
                        request_line, &request_.extra_headers);
 
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   CreateSpdyHeadersFromHttpRequestForExtendedConnect(
       request_, /*priority=*/std::nullopt, "connect-udp",
       request_.extra_headers, &headers);
@@ -485,7 +485,7 @@ int QuicProxyDatagramClientSocket::DoReadReplyComplete(int result) {
 }
 
 void QuicProxyDatagramClientSocket::OnReadResponseHeadersComplete(int result) {
-  // Convert the now-populated spdy::Http2HeaderBlock to HttpResponseInfo
+  // Convert the now-populated quiche::HttpHeaderBlock to HttpResponseInfo
   if (result > 0) {
     result = ProcessResponseHeaders(response_header_block_);
   }
@@ -496,7 +496,7 @@ void QuicProxyDatagramClientSocket::OnReadResponseHeadersComplete(int result) {
 }
 
 int QuicProxyDatagramClientSocket::ProcessResponseHeaders(
-    const spdy::Http2HeaderBlock& headers) {
+    const quiche::HttpHeaderBlock& headers) {
   if (SpdyHeadersToHttpResponse(headers, &response_) != OK) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;

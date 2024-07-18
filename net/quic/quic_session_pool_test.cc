@@ -86,6 +86,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_data_writer.h"
 #include "net/third_party/quiche/src/quiche/http2/test_tools/spdy_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_handshake.h"
@@ -3760,7 +3761,7 @@ TEST_P(QuicSessionPoolTest,
   socket_data.AddWrite(
       "ack-ok", client_maker_.MakeAckPacket(to_proxy_packet_num++, 1, 2, 1));
 
-  spdy::Http2HeaderBlock headers =
+  quiche::HttpHeaderBlock headers =
       to_endpoint_maker.GetRequestHeaders("GET", "https", "/");
   spdy::SpdyPriority priority =
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
@@ -3840,7 +3841,7 @@ TEST_P(QuicSessionPoolTest,
                                   .AddRetireConnectionIdFrame(0u)
                                   .Build())
       .Sync();
-  spdy::Http2HeaderBlock response_headers =
+  quiche::HttpHeaderBlock response_headers =
       from_endpoint_maker.GetResponseHeaders("200");
   socket_data1.AddRead(
       "proxied-ok-response",
@@ -3978,7 +3979,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
   socket_data.AddWrite(
       "ack-ok", client_maker_.MakeAckPacket(to_proxy_packet_num++, 1, 2, 1));
 
-  spdy::Http2HeaderBlock headers =
+  quiche::HttpHeaderBlock headers =
       to_endpoint_maker.GetRequestHeaders("GET", "https", "/");
   spdy::SpdyPriority priority =
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
@@ -4068,7 +4069,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
           "ping",
           client_maker_.Packet(to_proxy_packet_num++).AddPingFrame().Build())
       .Sync();
-  spdy::Http2HeaderBlock response_headers =
+  quiche::HttpHeaderBlock response_headers =
       from_endpoint_maker.GetResponseHeaders("200");
   socket_data1.AddRead(
       "proxied-ok-response",
@@ -7729,7 +7730,7 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnAsyncWriteError) {
   client_maker_.set_connection_id(cid_on_new_path);
   ConstructGetRequestPacket(
       packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true);
-  spdy::Http2HeaderBlock headers =
+  quiche::HttpHeaderBlock headers =
       client_maker_.GetRequestHeaders("GET", "https", "/");
   spdy::SpdyPriority priority =
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);

@@ -43,6 +43,7 @@
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
@@ -121,7 +122,7 @@ class QuicProxyClientSocketTestBase
   virtual void InitializeClientSocket() = 0;
 
   virtual void PopulateConnectRequestIR(
-      spdy::Http2HeaderBlock* block,
+      quiche::HttpHeaderBlock* block,
       std::optional<const HttpRequestHeaders> extra_headers) = 0;
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructSettingsPacket(

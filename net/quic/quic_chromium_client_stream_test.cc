@@ -21,6 +21,7 @@
 #include "net/quic/quic_context.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
@@ -103,11 +104,11 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
   MOCK_METHOD3(OnStreamHeadersComplete,
                void(quic::QuicStreamId stream_id, bool fin, size_t frame_len));
   MOCK_CONST_METHOD0(OneRttKeysAvailable, bool());
-  // Methods taking non-copyable types like spdy::Http2HeaderBlock by value
+  // Methods taking non-copyable types like quiche::HttpHeaderBlock by value
   // cannot be mocked directly.
   size_t WriteHeadersOnHeadersStream(
       quic::QuicStreamId id,
-      spdy::Http2HeaderBlock headers,
+      quiche::HttpHeaderBlock headers,
       bool fin,
       const spdy::SpdyStreamPrecedence& precedence,
       quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
@@ -117,7 +118,7 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
   }
   MOCK_METHOD5(WriteHeadersOnHeadersStreamMock,
                size_t(quic::QuicStreamId id,
-                      const spdy::Http2HeaderBlock& headers,
+                      const quiche::HttpHeaderBlock& headers,
                       bool fin,
                       const spdy::SpdyStreamPrecedence& precedence,
                       const quiche::QuicheReferenceCountedPointer<
@@ -230,8 +231,9 @@ class QuicChromiumClientStreamTest
         "JBCScs_ejbKaqBDoB7ZGxTvqlrB__2ZmnHHjCr8RgMRtKNtIeuZAo ";
   }
 
-  spdy::Http2HeaderBlock CreateResponseHeaders(const std::string& status_code) {
-    spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock CreateResponseHeaders(
+      const std::string& status_code) {
+    quiche::HttpHeaderBlock headers;
     headers[":status"] = status_code;
     return headers;
   }
@@ -245,20 +247,20 @@ class QuicChromiumClientStreamTest
               std::string_view(buffer->data(), expected_data.length()));
   }
 
-  quic::QuicHeaderList ProcessHeaders(const spdy::Http2HeaderBlock& headers) {
+  quic::QuicHeaderList ProcessHeaders(const quiche::HttpHeaderBlock& headers) {
     quic::QuicHeaderList h = quic::test::AsHeaderList(headers);
     stream_->OnStreamHeaderList(false, h.uncompressed_header_bytes(), h);
     return h;
   }
 
-  quic::QuicHeaderList ProcessTrailers(const spdy::Http2HeaderBlock& headers) {
+  quic::QuicHeaderList ProcessTrailers(const quiche::HttpHeaderBlock& headers) {
     quic::QuicHeaderList h = quic::test::AsHeaderList(headers);
     stream_->OnStreamHeaderList(true, h.uncompressed_header_bytes(), h);
     return h;
   }
 
   quic::QuicHeaderList ProcessHeadersFull(
-      const spdy::Http2HeaderBlock& headers) {
+      const quiche::HttpHeaderBlock& headers) {
     quic::QuicHeaderList h = ProcessHeaders(headers);
     TestCompletionCallback callback;
     EXPECT_EQ(static_cast<int>(h.uncompressed_header_bytes()),
@@ -296,8 +298,8 @@ class QuicChromiumClientStreamTest
   quic::test::MockAlarmFactory alarm_factory_;
   MockQuicClientSessionBase session_;
   raw_ptr<QuicChromiumClientStream> stream_;
-  spdy::Http2HeaderBlock headers_;
-  spdy::Http2HeaderBlock trailers_;
+  quiche::HttpHeaderBlock headers_;
+  quiche::HttpHeaderBlock trailers_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -373,7 +375,7 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
       ERR_CONNECTION_CLOSED,
       handle_->WritevStreamData(buffers, lengths, true, callback.callback()));
 
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   EXPECT_EQ(0, handle_->WriteHeaders(std::move(headers), true, nullptr));
 }
 
@@ -483,7 +485,7 @@ TEST_P(QuicChromiumClientStreamTest, OnDataAvailableAfterReadBody) {
 }
 
 TEST_P(QuicChromiumClientStreamTest, ProcessHeadersWithError) {
-  spdy::Http2HeaderBlock bad_headers;
+  quiche::HttpHeaderBlock bad_headers;
   bad_headers["NAME"] = "...";
 
   EXPECT_CALL(
@@ -575,7 +577,7 @@ TEST_P(QuicChromiumClientStreamTest, OnTrailers) {
             handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()));
   EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
 
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["bar"] = "foo";
 
   auto t = ProcessTrailers(trailers);
@@ -627,7 +629,7 @@ TEST_P(QuicChromiumClientStreamTest, MarkTrailersConsumedWhenNotifyDelegate) {
       handle_->ReadBody(buffer.get(), 2 * data_len, callback.callback()),
       IsError(ERR_IO_PENDING));
 
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["bar"] = "foo";
   quic::QuicHeaderList t = ProcessTrailers(trailers);
   EXPECT_FALSE(stream_->IsDoneReading());
@@ -677,7 +679,7 @@ TEST_P(QuicChromiumClientStreamTest, ReadAfterTrailersReceivedButNotDelivered) {
   EXPECT_EQ(std::string_view(data), std::string_view(buffer->data(), data_len));
 
   // Deliver trailers. Delegate notification is posted asynchronously.
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["bar"] = "foo";
 
   quic::QuicHeaderList t = ProcessTrailers(trailers);
@@ -917,7 +919,7 @@ TEST_P(QuicChromiumClientStreamTest, HeadersAndDataBeforeHandle) {
 
 // Regression test for https://crbug.com/1043531.
 TEST_P(QuicChromiumClientStreamTest, ResetOnEmptyResponseHeaders) {
-  const spdy::Http2HeaderBlock empty_response_headers;
+  const quiche::HttpHeaderBlock empty_response_headers;
   ProcessHeaders(empty_response_headers);
 
   // Empty headers are allowed by QuicSpdyStream,
@@ -929,7 +931,7 @@ TEST_P(QuicChromiumClientStreamTest, ResetOnEmptyResponseHeaders) {
 // Tests that the stream resets when it receives an invalid ":status"
 // pseudo-header value.
 TEST_P(QuicChromiumClientStreamTest, InvalidStatus) {
-  spdy::Http2HeaderBlock headers = CreateResponseHeaders("xxx");
+  quiche::HttpHeaderBlock headers = CreateResponseHeaders("xxx");
 
   EXPECT_CALL(
       *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
@@ -944,7 +946,7 @@ TEST_P(QuicChromiumClientStreamTest, InvalidStatus) {
 
 // Tests that the stream resets when it receives 101 Switching Protocols.
 TEST_P(QuicChromiumClientStreamTest, SwitchingProtocolsResponse) {
-  spdy::Http2HeaderBlock informational_headers = CreateResponseHeaders("101");
+  quiche::HttpHeaderBlock informational_headers = CreateResponseHeaders("101");
 
   EXPECT_CALL(
       *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
@@ -959,7 +961,7 @@ TEST_P(QuicChromiumClientStreamTest, SwitchingProtocolsResponse) {
 
 // Tests that the stream ignores 100 Continue response.
 TEST_P(QuicChromiumClientStreamTest, ContinueResponse) {
-  spdy::Http2HeaderBlock informational_headers = CreateResponseHeaders("100");
+  quiche::HttpHeaderBlock informational_headers = CreateResponseHeaders("100");
 
   // This informational headers should be ignored.
   ProcessHeaders(informational_headers);
@@ -969,7 +971,7 @@ TEST_P(QuicChromiumClientStreamTest, ContinueResponse) {
   quic::QuicHeaderList header_list = ProcessHeaders(headers_);
 
   // Read the initial headers.
-  spdy::Http2HeaderBlock response_headers;
+  quiche::HttpHeaderBlock response_headers;
   // Pass DoNothing because the initial headers is already available and the
   // callback won't be called.
   EXPECT_EQ(static_cast<int>(header_list.uncompressed_header_bytes()),
@@ -982,12 +984,12 @@ TEST_P(QuicChromiumClientStreamTest, ContinueResponse) {
 // Tests that the stream handles 103 Early Hints responses.
 TEST_P(QuicChromiumClientStreamTest, EarlyHintsResponses) {
   // Pass Two Early Hints responses to the stream.
-  spdy::Http2HeaderBlock hints1_headers = CreateResponseHeaders("103");
+  quiche::HttpHeaderBlock hints1_headers = CreateResponseHeaders("103");
   hints1_headers["x-header1"] = "foo";
   quic::QuicHeaderList header_list = ProcessHeaders(hints1_headers);
   const size_t hints1_bytes = header_list.uncompressed_header_bytes();
 
-  spdy::Http2HeaderBlock hints2_headers = CreateResponseHeaders("103");
+  quiche::HttpHeaderBlock hints2_headers = CreateResponseHeaders("103");
   hints2_headers["x-header2"] = "foobarbaz";
   header_list = ProcessHeaders(hints2_headers);
   const size_t hints2_bytes = header_list.uncompressed_header_bytes();
@@ -997,7 +999,7 @@ TEST_P(QuicChromiumClientStreamTest, EarlyHintsResponses) {
   header_list = ProcessHeaders(headers_);
   const size_t initial_headers_bytes = header_list.uncompressed_header_bytes();
 
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
 
   // Read headers. The first two reads should return Early Hints.
   EXPECT_EQ(static_cast<int>(hints1_bytes),
@@ -1022,7 +1024,7 @@ TEST_P(QuicChromiumClientStreamTest, EarlyHintsResponses) {
 
 // Tests that pending reads for Early Hints work.
 TEST_P(QuicChromiumClientStreamTest, EarlyHintsAsync) {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   TestCompletionCallback hints_callback;
 
   // Try to read headers. The read should be blocked.
@@ -1030,7 +1032,7 @@ TEST_P(QuicChromiumClientStreamTest, EarlyHintsAsync) {
             handle_->ReadInitialHeaders(&headers, hints_callback.callback()));
 
   // Pass an Early Hints and the initial headers.
-  spdy::Http2HeaderBlock hints_headers = CreateResponseHeaders("103");
+  quiche::HttpHeaderBlock hints_headers = CreateResponseHeaders("103");
   hints_headers["x-header1"] = "foo";
   quic::QuicHeaderList header_list = ProcessHeaders(hints_headers);
   const size_t hints_bytes = header_list.uncompressed_header_bytes();
@@ -1063,7 +1065,7 @@ TEST_P(QuicChromiumClientStreamTest, EarlyHintsAfterInitialHeaders) {
           quic::QUIC_INVALID_HEADERS_STREAM_DATA, _,
           quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET));
 
-  spdy::Http2HeaderBlock hints_headers;
+  quiche::HttpHeaderBlock hints_headers;
   hints_headers[":status"] = "103";
   ProcessHeaders(hints_headers);
   base::RunLoop().RunUntilIdle();
@@ -1083,7 +1085,7 @@ TEST_P(QuicChromiumClientStreamTest, EarlyHintsAfterInitialHeadersWithoutRead) {
           quic::QUIC_INVALID_HEADERS_STREAM_DATA, _,
           quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET));
 
-  spdy::Http2HeaderBlock hints_headers;
+  quiche::HttpHeaderBlock hints_headers;
   hints_headers[":status"] = "103";
   ProcessHeaders(hints_headers);
   base::RunLoop().RunUntilIdle();
@@ -1094,7 +1096,7 @@ TEST_P(QuicChromiumClientStreamTest, EarlyHintsAfterInitialHeadersWithoutRead) {
 // the middle of writings.
 TEST_P(QuicChromiumClientStreamTest, TrailersAfterEarlyHintsWithoutRead) {
   // Process an Early Hints response headers on the stream.
-  spdy::Http2HeaderBlock hints_headers = CreateResponseHeaders("103");
+  quiche::HttpHeaderBlock hints_headers = CreateResponseHeaders("103");
   quic::QuicHeaderList hints_header_list = ProcessHeaders(hints_headers);
 
   // Process an initial response headers on the stream.
@@ -1102,14 +1104,14 @@ TEST_P(QuicChromiumClientStreamTest, TrailersAfterEarlyHintsWithoutRead) {
   quic::QuicHeaderList header_list = ProcessHeaders(headers_);
 
   // Process a trailer headers on the stream. This should not hit any DCHECK.
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["bar"] = "foo";
   quic::QuicHeaderList trailer_header_list = ProcessTrailers(trailers);
   base::RunLoop().RunUntilIdle();
 
   // Read the Early Hints response from the handle.
   {
-    spdy::Http2HeaderBlock headers;
+    quiche::HttpHeaderBlock headers;
     TestCompletionCallback callback;
     EXPECT_EQ(static_cast<int>(hints_header_list.uncompressed_header_bytes()),
               handle_->ReadInitialHeaders(&headers, callback.callback()));
@@ -1118,7 +1120,7 @@ TEST_P(QuicChromiumClientStreamTest, TrailersAfterEarlyHintsWithoutRead) {
 
   // Read the initial headers from the handle.
   {
-    spdy::Http2HeaderBlock headers;
+    quiche::HttpHeaderBlock headers;
     TestCompletionCallback callback;
     EXPECT_EQ(static_cast<int>(header_list.uncompressed_header_bytes()),
               handle_->ReadInitialHeaders(&headers, callback.callback()));
@@ -1127,7 +1129,7 @@ TEST_P(QuicChromiumClientStreamTest, TrailersAfterEarlyHintsWithoutRead) {
 
   // Read trailers from the handle.
   {
-    spdy::Http2HeaderBlock headers;
+    quiche::HttpHeaderBlock headers;
     TestCompletionCallback callback;
     EXPECT_EQ(static_cast<int>(trailer_header_list.uncompressed_header_bytes()),
               handle_->ReadTrailingHeaders(&headers, callback.callback()));

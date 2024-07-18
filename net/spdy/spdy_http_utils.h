@@ -11,7 +11,7 @@
 #include "base/types/expected.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "url/gurl.h"
@@ -27,42 +27,42 @@ class HttpResponseHeaders;
 // RFC 9218.
 NET_EXPORT extern const char* const kHttp2PriorityHeader;
 
-// Convert a spdy::Http2HeaderBlock into an HttpResponseInfo with some checks.
-// `headers` input parameter with the spdy::Http2HeaderBlock.
+// Convert a quiche::HttpHeaderBlock into an HttpResponseInfo with some checks.
+// `headers` input parameter with the quiche::HttpHeaderBlock.
 // `response` output parameter for the HttpResponseInfo.
 // Returns OK if successfully converted.  An error is returned if the
-// spdy::Http2HeaderBlock is incomplete (e.g. missing 'status' or 'version') or
+// quiche::HttpHeaderBlock is incomplete (e.g. missing 'status' or 'version') or
 // checks fail.
-NET_EXPORT int SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
+NET_EXPORT int SpdyHeadersToHttpResponse(const quiche::HttpHeaderBlock& headers,
                                          HttpResponseInfo* response);
 
-// Converts a spdy::Http2HeaderBlock object into an HttpResponseHeaders object
+// Converts a quiche::HttpHeaderBlock object into an HttpResponseHeaders object
 // by creating a string with embedded nul bytes instead of newlines and then
 // parsing it to the HttpResponseHeaders constructor to be parsed. Exposed for
 // testing.
 // TODO(crbug.com/40282642): Remove this once it is no longer needed.
 NET_EXPORT_PRIVATE base::expected<scoped_refptr<HttpResponseHeaders>, int>
 SpdyHeadersToHttpResponseHeadersUsingRawString(
-    const spdy::Http2HeaderBlock& headers);
+    const quiche::HttpHeaderBlock& headers);
 
-// Converts a spdy::Http2HeaderBlock object into an HttpResponseHeaders object
+// Converts a quiche::HttpHeaderBlock object into an HttpResponseHeaders object
 // by using the HttpResponseHeaders::Builder API. Exposed for testing.
 // TODO(crbug.com/40282642): Merge this back into
 // SpdyHeadersToHttpResponse() when
 // SpdyHeadersToHttpResponseHeadersUsingRawString() is removed.
 NET_EXPORT_PRIVATE base::expected<scoped_refptr<HttpResponseHeaders>, int>
 SpdyHeadersToHttpResponseHeadersUsingBuilder(
-    const spdy::Http2HeaderBlock& headers);
+    const quiche::HttpHeaderBlock& headers);
 
-// Create a spdy::Http2HeaderBlock from HttpRequestInfo and
+// Create a quiche::HttpHeaderBlock from HttpRequestInfo and
 // HttpRequestHeaders.
 NET_EXPORT void CreateSpdyHeadersFromHttpRequest(
     const HttpRequestInfo& info,
     std::optional<RequestPriority> priority,
     const HttpRequestHeaders& request_headers,
-    spdy::Http2HeaderBlock* headers);
+    quiche::HttpHeaderBlock* headers);
 
-// Create a spdy::Http2HeaderBlock from HttpRequestInfo and
+// Create a quiche::HttpHeaderBlock from HttpRequestInfo and
 // HttpRequestHeaders, with the given protocol for extended CONNECT.
 // The request's method must be `CONNECT`.
 NET_EXPORT void CreateSpdyHeadersFromHttpRequestForExtendedConnect(
@@ -70,18 +70,18 @@ NET_EXPORT void CreateSpdyHeadersFromHttpRequestForExtendedConnect(
     std::optional<RequestPriority> priority,
     const std::string& ext_connect_protocol,
     const HttpRequestHeaders& request_headers,
-    spdy::Http2HeaderBlock* headers);
+    quiche::HttpHeaderBlock* headers);
 
-// Create a spdy::Http2HeaderBlock from HttpRequestInfo and HttpRequestHeaders
+// Create a quiche::HttpHeaderBlock from HttpRequestInfo and HttpRequestHeaders
 // for a WebSockets over HTTP/2 request.
 NET_EXPORT void CreateSpdyHeadersFromHttpRequestForWebSocket(
     const GURL& url,
     const HttpRequestHeaders& request_headers,
-    spdy::Http2HeaderBlock* headers);
+    quiche::HttpHeaderBlock* headers);
 
-// Create HttpRequestHeaders from spdy::Http2HeaderBlock.
+// Create HttpRequestHeaders from quiche::HttpHeaderBlock.
 NET_EXPORT void ConvertHeaderBlockToHttpRequestHeaders(
-    const spdy::Http2HeaderBlock& spdy_headers,
+    const quiche::HttpHeaderBlock& spdy_headers,
     HttpRequestHeaders* http_headers);
 
 NET_EXPORT spdy::SpdyPriority ConvertRequestPriorityToSpdyPriority(

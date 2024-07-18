@@ -27,7 +27,6 @@
 #include "net/socket/next_proto.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_session.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "url/scheme_host_port.h"
 
@@ -240,7 +239,7 @@ int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
     return result;
   response_info_->remote_endpoint = address;
 
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(*request_info_, priority_, request_headers,
                                    &headers);
   DispatchRequestHeadersCallback(headers);
@@ -278,7 +277,7 @@ void SpdyHttpStream::OnHeadersSent() {
 }
 
 void SpdyHttpStream::OnEarlyHintsReceived(
-    const spdy::Http2HeaderBlock& headers) {
+    const quiche::HttpHeaderBlock& headers) {
   DCHECK(!response_headers_complete_);
   DCHECK(response_info_);
   DCHECK_EQ(stream_->type(), SPDY_REQUEST_RESPONSE_STREAM);
@@ -292,7 +291,7 @@ void SpdyHttpStream::OnEarlyHintsReceived(
 }
 
 void SpdyHttpStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   DCHECK(!response_headers_complete_);
   DCHECK(response_info_);
   response_headers_complete_ = true;
@@ -353,7 +352,7 @@ void SpdyHttpStream::OnDataSent() {
 }
 
 // TODO(xunjieli): Maybe do something with the trailers. crbug.com/422958.
-void SpdyHttpStream::OnTrailers(const spdy::Http2HeaderBlock& trailers) {}
+void SpdyHttpStream::OnTrailers(const quiche::HttpHeaderBlock& trailers) {}
 
 void SpdyHttpStream::OnClose(int status) {
   DCHECK(stream_);

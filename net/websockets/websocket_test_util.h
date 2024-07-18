@@ -19,7 +19,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_stream_parser.h"
 #include "net/socket/client_socket_handle.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_test_util.h"
@@ -97,7 +97,7 @@ std::string WebSocketStandardResponse(const std::string& extra_headers);
 HttpRequestHeaders WebSocketCommonTestHeaders();
 
 // Generates a handshake request header block when using WebSockets over HTTP/2.
-spdy::Http2HeaderBlock WebSocketHttp2Request(
+quiche::HttpHeaderBlock WebSocketHttp2Request(
     const std::string& path,
     const std::string& authority,
     const std::string& origin,
@@ -105,7 +105,7 @@ spdy::Http2HeaderBlock WebSocketHttp2Request(
 
 // Generates a handshake response header block when using WebSockets over
 // HTTP/2.
-spdy::Http2HeaderBlock WebSocketHttp2Response(
+quiche::HttpHeaderBlock WebSocketHttp2Response(
     const WebSocketExtraHeaders& extra_headers);
 
 // This class provides a convenient way to construct a MockClientSocketFactory
