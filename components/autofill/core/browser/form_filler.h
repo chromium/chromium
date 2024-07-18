@@ -234,6 +234,8 @@ class FormFiller {
     // The security origin from which the field was filled.
     url::Origin filled_origin;
     // The time at which the initial fill occurred.
+    // TODO(crbug.com/41490871): Remove in favor of
+    // FormStructure::last_filling_timestamp
     const base::TimeTicks original_fill_time;
     // The timer used to trigger a refill.
     base::OneShotTimer on_refill_timer;

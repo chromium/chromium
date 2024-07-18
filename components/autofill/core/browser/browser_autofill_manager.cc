@@ -2200,6 +2200,7 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
     return;
   }
   base::TimeTicks now = base::TimeTicks::Now();
+  // TODO(crbug.com/41490871): Replace with form.last_filling_timestamp()
   std::optional<base::TimeTicks> original_fill_time =
       form_filler_->GetOriginalFillingTime(form.global_id());
   if (!original_fill_time) {

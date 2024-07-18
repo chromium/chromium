@@ -520,6 +520,7 @@ void FormFiller::FillOrPreviewForm(
   }
 
   if (action_persistence == mojom::ActionPersistence::kFill && !is_refill) {
+    form_structure->set_last_filling_timestamp(base::TimeTicks::Now());
     SetFillingContext(
         form_structure->global_id(),
         std::make_unique<FillingContext>(*autofill_trigger_field,
@@ -845,6 +846,8 @@ bool FormFiller::ShouldTriggerRefill(
     return false;
   }
 
+  // TODO(crbug.com/41490871): Use form_structure.last_filling_timestamp()
+  // instead of filling_context->original_fill_time
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta delta = now - filling_context->original_fill_time;
 
