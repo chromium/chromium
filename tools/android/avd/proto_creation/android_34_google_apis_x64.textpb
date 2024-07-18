@@ -6,7 +6,7 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "rEp7n8dANflQLf4A6iSlCTShpLxCHGTPberLODDqXMgC"  # 34.2.16 (Stable)
+  version: "97gAPeXJa7zT-JcddyV8fpQtsx6kJjwqfmLe8FhZD1kC"  # 34.2.14 (Stable)
   dest_path: "android_34_google_apis_x64"
 }
 
