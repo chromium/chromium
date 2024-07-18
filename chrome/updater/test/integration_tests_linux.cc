@@ -72,7 +72,7 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
   return path->Append(GetExecutableRelativePath());
 }
 
-bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
+bool WaitForUpdaterExit() {
   const std::set<base::FilePath::StringType> process_names =
       GetTestProcessNames();
   return WaitFor(

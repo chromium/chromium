@@ -556,8 +556,11 @@ void PrintLog(UpdaterScope scope) {
 // test-specific directory name in Swarming/Isolate. Avoids overwriting the
 // destination log file if other instances of it exist in the destination
 // directory. Swarming retries each failed test. It is useful to capture a few
-// logs from previous failures instead of the log of the last run only.
-void CopyLog(const base::FilePath& src_dir) {
+// logs from previous failures instead of the log of the last run only. Logs
+// labeled with different (optional) infixes are numbered independently. The
+// infix is applied only to the output log file name; the retrieved log is
+// always `updater.log`.
+void CopyLog(const base::FilePath& src_dir, const std::string& infix) {
   base::FilePath log_path = src_dir.AppendASCII("updater.log");
   if (!base::PathExists(log_path)) {
     if (const std::vector<base::FilePath> files = GetUpdaterLogFilesInTmp();
@@ -566,15 +569,20 @@ void CopyLog(const base::FilePath& src_dir) {
     }
   }
 
+  const std::string real_infix =
+      infix.empty() ? "" : base::StrCat({".", infix});
+
   base::FilePath dest_dir = GetLogDestinationDir();
   if (!dest_dir.empty() && base::PathExists(dest_dir) &&
       base::PathExists(log_path)) {
     dest_dir = dest_dir.AppendASCII(GetTestName());
     EXPECT_TRUE(base::CreateDirectory(dest_dir));
-    const base::FilePath dest_file_path = [dest_dir] {
-      base::FilePath path = dest_dir.AppendASCII("updater.log");
+    const base::FilePath dest_file_path = [dest_dir, real_infix] {
+      base::FilePath path =
+          dest_dir.AppendASCII(base::StrCat({"updater", real_infix, ".log"}));
       for (int i = 1; i < 10 && base::PathExists(path); ++i) {
-        path = dest_dir.AppendASCII(base::StringPrintf("updater.%d.log", i));
+        path = dest_dir.AppendASCII(
+            base::StringPrintf("updater%s.%d.log", real_infix.c_str(), i));
       }
       return path;
     }();

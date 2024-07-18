@@ -257,7 +257,7 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
   EXPECT_FALSE(base::PathIsWritable(*path));
 }
 
-bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
+bool WaitForUpdaterExit() {
   return WaitFor(
       [] {
         std::string ps_stdout;

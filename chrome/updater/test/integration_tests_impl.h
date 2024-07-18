@@ -150,7 +150,7 @@ void SetMachineManaged(bool is_managed_device);
 void ExpectNoCrashes(UpdaterScope scope);
 
 // Copies the logs to a location where they can be retrieved by ResultDB.
-void CopyLog(const base::FilePath& src_dir);
+void CopyLog(const base::FilePath& src_dir, const std::string& infix);
 
 // Expects that the updater is installed on the system.
 void ExpectInstalled(UpdaterScope scope);
@@ -294,7 +294,7 @@ void RegisterApp(UpdaterScope scope, const RegistrationRequest& registration);
 void RegisterAppByValue(UpdaterScope scope,
                         const base::Value::Dict& registration_data);
 
-[[nodiscard]] bool WaitForUpdaterExit(UpdaterScope scope);
+[[nodiscard]] bool WaitForUpdaterExit();
 
 #if BUILDFLAG(IS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);

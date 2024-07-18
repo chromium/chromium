@@ -632,7 +632,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   // * Unsuccessful interactive installs show an install error dialog that needs
   //   to be explicitly closed via `CloseInstallCompleteDialog`.
   if (is_silent_install || expect_success) {
-    EXPECT_TRUE(WaitForUpdaterExit(scope));
+    EXPECT_TRUE(WaitForUpdaterExit());
   } else {
     CloseInstallCompleteDialog(GetLocalizedString(string_resource_id_to_find));
   }
@@ -890,7 +890,7 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
 
 // Waits for all updater processes to end, including the server process holding
 // the prefs lock.
-bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
+bool WaitForUpdaterExit() {
   return WaitFor(
       [] { return !IsUpdaterRunning(); },
       [] {

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -49,17 +50,16 @@ std::string SerializeRequest(HttpRequest& request) {
 
 }  // namespace
 
-ScopedServer::ScopedServer(
-    scoped_refptr<IntegrationTestCommands> integration_test_commands)
-    : test_server_(std::make_unique<net::test_server::EmbeddedTestServer>()),
-      integration_test_commands_(integration_test_commands) {
+ScopedServer::ScopedServer() {
   test_server_->RegisterRequestHandler(base::BindRepeating(
       &ScopedServer::HandleRequest, base::Unretained(this)));
   EXPECT_TRUE((test_server_handle_ = test_server_->StartAndReturnHandle()));
+}
 
-  integration_test_commands_->EnterTestMode(update_url(), crash_upload_url(),
-                                            device_management_url(), {},
-                                            base::Minutes(5));
+ScopedServer::ScopedServer(
+    scoped_refptr<IntegrationTestCommands> integration_test_commands)
+    : ScopedServer() {
+  ConfigureTestMode(integration_test_commands.get());
 }
 
 ScopedServer::~ScopedServer() {
@@ -71,6 +71,12 @@ ScopedServer::~ScopedServer() {
       matcher.Run(HttpRequest());
     });
   }
+}
+
+void ScopedServer::ConfigureTestMode(IntegrationTestCommands* commands) {
+  CHECK(commands);
+  commands->EnterTestMode(update_url(), crash_upload_url(),
+                          device_management_url(), {}, base::Minutes(5));
 }
 
 void ScopedServer::ExpectOnce(request::MatcherGroup request_matcher_group,

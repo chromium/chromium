@@ -27,7 +27,6 @@
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
-#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -76,7 +75,8 @@ std::string RegistrationRequestToString(
 
 class IntegrationTestCommandsSystem : public IntegrationTestCommands {
  public:
-  IntegrationTestCommandsSystem() = default;
+  explicit IntegrationTestCommandsSystem(UpdaterScope scope)
+      : updater_scope_(scope) {}
 
   void ExpectNoCrashes() const override {
     updater::test::ExpectNoCrashes(updater_scope_);
@@ -84,12 +84,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void PrintLog() const override { RunCommand("print_log"); }
 
-  void CopyLog() const override {
+  void CopyLog(const std::string& infix) const override {
     const std::optional<base::FilePath> path =
         GetInstallDirectory(updater_scope_);
     ASSERT_TRUE(path);
     if (path) {
-      updater::test::CopyLog(*path);
+      updater::test::CopyLog(*path, infix);
     }
   }
 
@@ -376,10 +376,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                                Param("app_version", version.GetString())});
   }
 
-  bool WaitForUpdaterExit() const override {
-    return updater::test::WaitForUpdaterExit(updater_scope_);
-  }
-
 #if BUILDFLAG(IS_WIN)
   void ExpectInterfacesRegistered() const override {
     RunCommand("expect_interfaces_registered");
@@ -614,11 +610,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand(command_switch, {});
   }
 
-  inline static const UpdaterScope updater_scope_ = GetUpdaterScopeForTesting();
+  const UpdaterScope updater_scope_;
 };
 
-scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsSystem() {
-  return base::MakeRefCounted<IntegrationTestCommandsSystem>();
+scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsSystem(
+    UpdaterScope scope) {
+  return base::MakeRefCounted<IntegrationTestCommandsSystem>(scope);
 }
 
 }  // namespace updater::test

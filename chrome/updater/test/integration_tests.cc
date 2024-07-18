@@ -236,9 +236,13 @@ class IntegrationTest : public ::testing::Test {
     VLOG(2) << __func__ << "completed.";
   }
 
-  void ExpectNoCrashes() { test_commands_->ExpectNoCrashes(); }
+  // TODO: crbug/354012131 -- Remove the virtual specifier here, and the
+  //   override (in `IntegrationTestUserInSystem`), after
+  //   `ExpectNoCrashes(kSystem)` in integration_tests_impl.cc checks
+  //   both system and user scopes.
+  virtual void ExpectNoCrashes() { test_commands_->ExpectNoCrashes(); }
 
-  void CopyLog() { test_commands_->CopyLog(); }
+  void CopyLog() { test_commands_->CopyLog(/*infix=*/""); }
 
   void PrintLog() { test_commands_->PrintLog(); }
 
@@ -472,10 +476,6 @@ class IntegrationTest : public ::testing::Test {
 
   base::FilePath GetDifferentUserPath() {
     return test_commands_->GetDifferentUserPath();
-  }
-
-  [[nodiscard]] bool WaitForUpdaterExit() {
-    return test_commands_->WaitForUpdaterExit();
   }
 
   void ExpectUpdateCheckRequest(ScopedServer* test_server) {
@@ -3816,5 +3816,110 @@ TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
 
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
+
+// Tests that interact with state in both system and user updater configuration
+// are run as part of the system-scope tests.
+class IntegrationTestUserInSystem : public IntegrationTest {
+ public:
+  ~IntegrationTestUserInSystem() override = default;
+
+ protected:
+  void SetUp() override {
+    if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+      GTEST_SKIP();
+    }
+
+    IntegrationTest::SetUp();
+    test_server_ = std::make_unique<ScopedServer>();
+    test_server_->ConfigureTestMode(user_test_commands_.get());
+    test_server_->ConfigureTestMode(test_commands_.get());
+  }
+
+  // TODO: crbug/354012131 -- Remove this when `ExpectNoCrashes(kSystem)` in
+  //   integration_tests_impl.cc checks both system and user scopes.
+  void ExpectNoCrashes() override {
+    test_commands_->ExpectNoCrashes();
+    user_test_commands_->ExpectNoCrashes();
+  }
+
+  void InstallUserUpdater(const base::Value::List& switches = {}) {
+    user_test_commands_->Install(switches);
+  }
+
+  void UninstallUserUpdater() {
+    ASSERT_TRUE(WaitForUpdaterExit());
+    ExpectNoCrashes();
+    PrintUserLog();
+    CopyUserLog();
+    user_test_commands_->Uninstall();
+    ASSERT_TRUE(WaitForUpdaterExit());
+  }
+
+  void ExpectUserUpdaterInstalled() { user_test_commands_->ExpectInstalled(); }
+
+  void InstallUserApp(const std::string& app_id, const base::Version& version) {
+    user_test_commands_->InstallApp(app_id, version);
+  }
+
+  void ExpectUserAppVersion(const std::string& app_id,
+                            const base::Version& version) {
+    user_test_commands_->ExpectAppVersion(app_id, version);
+  }
+
+  void SetUserAppExistenceCheckerPath(const std::string& app_id,
+                                      const base::FilePath& path) {
+    user_test_commands_->SetExistenceCheckerPath(app_id, path);
+  }
+
+  void SetUserAppTag(const std::string& app_id, const std::string& tag) {
+    user_test_commands_->SetAppTag(app_id, tag);
+  }
+
+  void ExpectUserAppTag(const std::string& app_id, const std::string& tag) {
+    user_test_commands_->ExpectAppTag(app_id, tag);
+  }
+
+  void PrintUserLog() { user_test_commands_->PrintLog(); }
+
+  void CopyUserLog() { user_test_commands_->CopyLog("user"); }
+
+  void ExpectUserUninstallPing(ScopedServer* test_server,
+                               std::optional<GURL> target_url = {}) {
+    user_test_commands_->ExpectPing(
+        test_server, update_client::protocol_request::kEventUninstall,
+        target_url);
+  }
+
+  scoped_refptr<IntegrationTestCommands> user_test_commands_ =
+      CreateIntegrationTestCommandsUser(UpdaterScope::kUser);
+  std::unique_ptr<ScopedServer> test_server_;
+};
+
+TEST_F(IntegrationTestUserInSystem, TagNonInterference) {
+  ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectUserUpdaterInstalled());
+
+  base::Version v("1.0.0.0");
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test_app", v));
+  ExpectAppVersion("test_app", v);
+  ExpectAppTag("test_app", "");
+  ASSERT_NO_FATAL_FAILURE(InstallUserApp("test_app", v));
+  ExpectUserAppVersion("test_app", v);
+  ExpectUserAppTag("test_app", "");
+
+  ASSERT_NO_FATAL_FAILURE(SetAppTag("test_app", "system"));
+  ExpectAppTag("test_app", "system");
+  ExpectUserAppTag("test_app", "");
+  ASSERT_NO_FATAL_FAILURE(SetUserAppTag("test_app", "user"));
+  ExpectUserAppTag("test_app", "user");
+  ExpectAppTag("test_app", "system");
+
+  ExpectUninstallPing(test_server_.get());
+  Uninstall();
+  ExpectUserUninstallPing(test_server_.get());
+  UninstallUserUpdater();
+}
 
 }  // namespace updater::test
