@@ -59,12 +59,12 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   ]
                 })"),
                 *base::JSONReader::Read(R"({
-                  "channels" {
+                  "channels": {
                     "test": {
-                      "name": "Test Title",
+                      "name": "Test Title"
                     },
                     "stable": {
-                      "another property": 123,
+                      "another property": 123
                     },
                     "another channel": {}
                   },
