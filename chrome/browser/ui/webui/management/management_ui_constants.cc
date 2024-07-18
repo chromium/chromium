@@ -16,6 +16,7 @@ const char kPolicyKeyReportExtensionsData[] = "report_extensions_data";
 const char kPolicyKeyReportSystemTelemetryData[] =
     "report_system_telemetry_data";
 const char kPolicyKeyReportUserBrowsingData[] = "report_user_browsing_data";
+const char kPolicyKeyReportVisitedUrlData[] = "report_visited_url_data";
 
 const char kManagementExtensionReportMachineName[] =
     "managementExtensionReportMachineName";
@@ -31,6 +32,8 @@ const char kManagementExtensionReportPerfCrash[] =
     "managementExtensionReportPerfCrash";
 const char kManagementExtensionReportUserBrowsingData[] =
     "managementExtensionReportUserBrowsingData";
+const char kManagementExtensionReportVisitedUrl[] =
+    "managementExtensionReportVisitedUrl";
 
 const char kThreatProtectionTitle[] = "threatProtectionTitle";
 const char kManagementDataLossPreventionName[] =
@@ -70,6 +73,7 @@ const char kReportingTypeSecurity[] = "security";
 const char kReportingTypeUser[] = "user";
 const char kReportingTypeUserActivity[] = "user-activity";
 const char kReportingTypeLegacyTech[] = "legacy-tech";
+const char kReportingTypeUrl[] = "url";
 
 const char kProfileReportingExplanation[] = "profileReportingExplanation";
 const char kProfileReportingOverview[] = "profileReportingOverview";

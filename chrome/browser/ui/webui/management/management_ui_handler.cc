@@ -85,6 +85,7 @@ enum class ReportingType {
   kUser,
   kUserActivity,
   kLegacyTech,
+  kUrl,
 };
 
 namespace {
@@ -158,6 +159,8 @@ const char* GetReportingTypeValue(ReportingType reportingType) {
       return kReportingTypeUserActivity;
     case ReportingType::kLegacyTech:
       return kReportingTypeLegacyTech;
+    case ReportingType::kUrl:
+      return kReportingTypeUrl;
     default:
       return kReportingTypeSecurity;
   }
@@ -270,6 +273,12 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
       Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
           enterprise_reporting::kCloudProfileReportingEnabled);
 
+  const bool real_time_url_check_connector_enabled =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()))
+          ->GetAppliedRealTimeUrlCheck() !=
+      safe_browsing::REAL_TIME_CHECK_DISABLED;
+
   if (cloud_legacy_tech_report_enabled) {
     Profile::FromWebUI(web_ui())->GetPrefs()->GetList(
         enterprise_reporting::kCloudLegacyTechReportAllowlist)[0];
@@ -298,6 +307,8 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
       {kPolicyKeyReportUserBrowsingData,
        kManagementExtensionReportUserBrowsingData, ReportingType::kUserActivity,
        false},
+      {kPolicyKeyReportVisitedUrlData, kManagementExtensionReportVisitedUrl,
+       ReportingType::kUrl, real_time_url_check_connector_enabled},
       {kPolicyKeyReportUserBrowsingData, kManagementLegacyTechReport,
        ReportingType::kLegacyTech, cloud_legacy_tech_report_enabled}};
 

@@ -55,6 +55,7 @@ extern const char kManagementExtensionReportVersion[];
 extern const char kManagementExtensionReportExtensionsPlugin[];
 extern const char kManagementExtensionReportPerfCrash[];
 extern const char kManagementExtensionReportUserBrowsingData[];
+extern const char kManagementExtensionReportVisitedUrl[];
 
 extern const char kThreatProtectionTitle[];
 extern const char kManagementDataLossPreventionName[];
@@ -84,6 +85,7 @@ extern const char kPolicyKeyReportDlpEvents[];
 extern const char kPolicyKeyReportExtensionsData[];
 extern const char kPolicyKeyReportSystemTelemetryData[];
 extern const char kPolicyKeyReportUserBrowsingData[];
+extern const char kPolicyKeyReportVisitedUrlData[];
 
 extern const char kReportingTypeDevice[];
 extern const char kReportingTypeExtensions[];
@@ -91,6 +93,7 @@ extern const char kReportingTypeSecurity[];
 extern const char kReportingTypeUser[];
 extern const char kReportingTypeUserActivity[];
 extern const char kReportingTypeLegacyTech[];
+extern const char kReportingTypeUrl[];
 
 extern const char kProfileReportingExplanation[];
 extern const char kProfileReportingOverview[];

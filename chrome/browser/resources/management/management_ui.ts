@@ -219,12 +219,13 @@ export class ManagementUiElement extends ManagementUiElementBase {
     }, {} as {[k: string]: {icon: string, messageIds: string[]}});
 
     const reportingTypeOrder: {[k: string]: number} = {
-      [ReportingType.SECURITY]: 1,
-      [ReportingType.EXTENSIONS]: 2,
-      [ReportingType.USER]: 3,
-      [ReportingType.USER_ACTIVITY]: 4,
-      [ReportingType.DEVICE]: 5,
-      [ReportingType.LEGACY_TECH]: 6,
+      [ReportingType.URL]: 1,
+      [ReportingType.SECURITY]: 2,
+      [ReportingType.EXTENSIONS]: 3,
+      [ReportingType.USER]: 4,
+      [ReportingType.USER_ACTIVITY]: 5,
+      [ReportingType.DEVICE]: 6,
+      [ReportingType.LEGACY_TECH]: 7,
     };
 
     this.browserReportingInfo_ =
@@ -430,6 +431,8 @@ export class ManagementUiElement extends ManagementUiElementBase {
         return 'management:public';
       case ReportingType.LEGACY_TECH:
         return 'management:legacy-tech';
+      case ReportingType.URL:
+        return 'management:link';
       default:
         return 'cr:security';
     }

@@ -424,6 +424,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     base::FilePath crostini_ansible_playbook_filepath;
     bool insights_extension_enabled;
     bool legacy_tech_reporting_enabled;
+    bool real_time_url_check_connector_enabled;
     base::Value::List report_app_inventory;
     base::Value::List report_app_usage;
     base::Value::List report_website_telemetry;
@@ -462,6 +463,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     setup_config_.report_website_activity_allowlist = base::Value::List();
     setup_config_.report_website_telemetry_allowlist = base::Value::List();
     setup_config_.legacy_tech_reporting_enabled = false;
+    setup_config_.real_time_url_check_connector_enabled = default_value;
   }
 
   void SetUpLocalState() {
@@ -535,6 +537,11 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         GetTestConfig().crostini_report_usage);
     local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled,
                             GetTestConfig().cloud_reporting_enabled);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+        policy::POLICY_SCOPE_MACHINE);
     if (GetTestConfig().legacy_tech_reporting_enabled) {
       base::Value::List allowlist;
       allowlist.Append("www.example.com");
@@ -1592,14 +1599,22 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
   local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
   SetUpProfileAndHandler();
 
+  profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
+
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineName, kManagementExtensionReportUsername,
       kManagementExtensionReportVersion,
-      kManagementExtensionReportExtensionsPlugin};
+      kManagementExtensionReportExtensionsPlugin,
+      kManagementExtensionReportVisitedUrl};
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   expected_messages.insert(kManagementDeviceSignalsDisclosure);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
   ASSERT_PRED_FORMAT2(MessagesToBeEQ, handler_.GetReportingInfo(),
                       expected_messages);
 }
@@ -1635,11 +1650,19 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_CALL(policy_service_, GetPolicies(_))
       .WillRepeatedly(ReturnRef(policies));
   local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
 
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineName, kManagementExtensionReportUsername,
       kManagementExtensionReportVersion,
-      kManagementExtensionReportExtensionsPlugin};
+      kManagementExtensionReportExtensionsPlugin,
+      kManagementExtensionReportVisitedUrl};
+
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
                       handler_.GetReportingInfo(/*can_collect_signals=*/false),
                       expected_messages);
@@ -1707,6 +1730,11 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
               GetPolicies(on_prem_reporting_extension_beta_policy_namespace))
       .WillOnce(ReturnRef(on_prem_reporting_extension_beta_policies));
   local_state_.SetBoolean(enterprise_reporting::kCloudReportingEnabled, true);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode, 1);
+  profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
 
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineNameAddress,
@@ -1715,8 +1743,10 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
       kManagementExtensionReportExtensionsPlugin,
       kManagementExtensionReportUserBrowsingData,
       kManagementExtensionReportPerfCrash,
-      kManagementLegacyTechReport};
+      kManagementLegacyTechReport,
+      kManagementExtensionReportVisitedUrl};
 
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
                       handler_.GetReportingInfo(/*can_collect_signals=*/false),
                       expected_messages);

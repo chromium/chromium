@@ -23,6 +23,7 @@ export enum ReportingType {
   USER_ACTIVITY = 'user-activity',
   EXTENSIONS = 'extensions',
   LEGACY_TECH = 'legacy-tech',
+  URL = 'url',
 }
 
 export interface BrowserReportingResponse {
