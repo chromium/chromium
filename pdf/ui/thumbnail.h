@@ -5,10 +5,15 @@
 #ifndef PDF_UI_THUMBNAIL_H_
 #define PDF_UI_THUMBNAIL_H_
 
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace chrome_pdf {
+
+class Thumbnail;
+
+using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
 
 class Thumbnail final {
  public:

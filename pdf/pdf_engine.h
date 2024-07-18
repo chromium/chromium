@@ -13,11 +13,11 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "pdf/document_layout.h"
+#include "pdf/ui/thumbnail.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -43,7 +43,6 @@ class Vector2d;
 
 namespace chrome_pdf {
 
-class Thumbnail;
 struct AccessibilityActionData;
 struct AccessibilityFocusInfo;
 struct AccessibilityLinkInfo;
@@ -53,8 +52,6 @@ struct AccessibilityTextFieldInfo;
 struct AccessibilityTextRunInfo;
 struct DocumentAttachmentInfo;
 struct DocumentMetadata;
-
-using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
 
 enum class FontMappingMode {
   // Do not perform font mapping.

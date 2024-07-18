@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_engine.h"
+#include "pdf/ui/thumbnail.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_doc.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
