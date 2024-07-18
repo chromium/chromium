@@ -22,6 +22,7 @@
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -95,16 +96,6 @@ const char kInvalidRemoteConsentResponse[] =
     "    \"resolutionApproach\": \"resolveInBrowser\""
     "  }"
     "}";
-
-const char kTokenBindingChallengeResponse[] = R"(
-    {
-      "tokenBindingResponse" : {
-        "retryResponse" : {
-          "challenge" : "SIGN_ME"
-        }
-      }
-    }
-  )";
 
 constexpr std::string_view kVersion = "test_version";
 constexpr std::string_view kChannel = "test_channel";
@@ -674,13 +665,16 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_RemoteConsentFailure) {
       OAuth2MintTokenApiCallResult::kParseRemoteConsentFailure, 1);
 }
 
-TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_TokenBindingChallenge) {
+TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure_TokenBindingChallenge) {
+  const std::string kChallenge = "SIGN_ME";
   CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
   GoogleServiceAuthError expected_error =
-      GoogleServiceAuthError::FromTokenBindingChallenge("SIGN_ME");
+      GoogleServiceAuthError::FromTokenBindingChallenge(kChallenge);
   EXPECT_CALL(delegate_, OnMintTokenFailure(expected_error));
-  ProcessApiCallSuccess(head_200_.get(), std::make_unique<std::string>(
-                                             kTokenBindingChallengeResponse));
+  network::mojom::URLResponseHeadPtr head(
+      network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED));
+  head->headers->SetHeader("X-Chrome-Auth-Token-Binding-Challenge", kChallenge);
+  ProcessApiCallFailure(net::OK, head.get(), nullptr);
   histogram_tester_.ExpectUniqueSample(
       kOAuth2MintTokenApiCallResultHistogram,
       OAuth2MintTokenApiCallResult::kChallengeResponseRequiredFailure, 1);

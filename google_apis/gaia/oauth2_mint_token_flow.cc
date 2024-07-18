@@ -31,6 +31,7 @@
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
@@ -63,9 +64,8 @@ const char kGrantedScopesKey[] = "grantedScopes";
 const char kError[] = "error";
 const char kMessage[] = "message";
 
-const char kTokenBindingResponseKey[] = "tokenBindingResponse";
-const char kRetryResponseKey[] = "retryResponse";
-const char kChallengeKey[] = "challenge";
+const char kTokenBindingChallengeHeader[] =
+    "X-Chrome-Auth-Token-Binding-Challenge";
 
 static GoogleServiceAuthError CreateAuthError(
     int net_error,
@@ -107,20 +107,20 @@ static GoogleServiceAuthError CreateAuthError(
   return GoogleServiceAuthError::FromServiceError(*message);
 }
 
-std::string* FindTokenBindingChallenge(base::Value::Dict& dict) {
-  base::Value::Dict* token_binding_response =
-      dict.FindDict(kTokenBindingResponseKey);
-  if (!token_binding_response) {
-    return nullptr;
+std::string FindTokenBindingChallenge(
+    int net_error,
+    const network::mojom::URLResponseHead* head) {
+  if (net_error != net::OK || !head || !head->headers) {
+    return std::string();
   }
 
-  base::Value::Dict* retry_response =
-      token_binding_response->FindDict(kRetryResponseKey);
-  if (!retry_response) {
-    return nullptr;
+  std::string challenge;
+  if (!head->headers->GetNormalizedHeader(kTokenBindingChallengeHeader,
+                                          &challenge)) {
+    return std::string();
   }
 
-  return retry_response->FindString(kChallengeKey);
+  return challenge;
 }
 
 bool AreCookiesEqual(const net::CanonicalCookie& lhs,
@@ -309,8 +309,9 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   std::string response_body;
-  if (body)
+  if (body) {
     response_body = std::move(*body);
+  }
 
   std::optional<base::Value> value = base::JSONReader::Read(response_body);
   if (!value || !value->is_dict()) {
@@ -321,15 +322,6 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   }
 
   base::Value::Dict& dict = value->GetDict();
-
-  std::string* challenge = FindTokenBindingChallenge(dict);
-  if (challenge) {
-    RecordApiCallResult(
-        OAuth2MintTokenApiCallResult::kChallengeResponseRequiredFailure);
-    ReportFailure(
-        GoogleServiceAuthError::FromTokenBindingChallenge(*challenge));
-    return;
-  }
 
   std::string* issue_advice_value = dict.FindString(kIssueAdviceKey);
   if (!issue_advice_value) {
@@ -376,6 +368,14 @@ void OAuth2MintTokenFlow::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
+  std::string challenge = FindTokenBindingChallenge(net_error, head);
+  if (!challenge.empty()) {
+    RecordApiCallResult(
+        OAuth2MintTokenApiCallResult::kChallengeResponseRequiredFailure);
+    ReportFailure(GoogleServiceAuthError::FromTokenBindingChallenge(challenge));
+    return;
+  }
+
   RecordApiCallResult(OAuth2MintTokenApiCallResult::kApiCallFailure);
   ReportFailure(CreateAuthError(net_error, head, std::move(body)));
 }
