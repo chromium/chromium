@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef DEVICE_GAMEPAD_PUBLIC_CPP_GAMEPAD_MOJOM_TRAITS_H_
 #define DEVICE_GAMEPAD_PUBLIC_CPP_GAMEPAD_MOJOM_TRAITS_H_
 
