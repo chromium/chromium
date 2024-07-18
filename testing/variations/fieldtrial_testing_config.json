@@ -1823,6 +1823,7 @@
     "AutofillEnableLoadingAndConfirmation": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
