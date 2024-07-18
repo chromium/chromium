@@ -120,6 +120,11 @@ inline constexpr char kFingerprintingProtectionEnabled[] =
 // Whether to send the DNT header.
 inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
 
+// Whether User Bypass 3PC exceptions have been migrated to Tracking Protection
+// exceptions.
+inline constexpr char kUserBypass3pcExceptionsMigrated[] =
+    "tracking_protection.user_bypass_3pc_exceptions_migrated";
+
 }  // namespace prefs
 
 namespace privacy_sandbox::tracking_protection {

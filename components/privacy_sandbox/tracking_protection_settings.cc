@@ -5,6 +5,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 
 #include "base/check.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -86,6 +87,20 @@ TrackingProtectionSettings::TrackingProtectionSettings(
   MaybeInitializeIppPref();
   // It's possible enterprise status changed while profile was shut down.
   OnEnterpriseControlForPrefsChanged();
+  // If feature status changed then we need to migrate content settings.
+  if (base::FeatureList::IsEnabled(kTrackingProtectionContentSettingFor3pcb) &&
+      !pref_service_->GetBoolean(prefs::kUserBypass3pcExceptionsMigrated)) {
+    MigrateUserBypassExceptions(ContentSettingsType::COOKIES,
+                                ContentSettingsType::TRACKING_PROTECTION);
+    pref_service_->SetBoolean(prefs::kUserBypass3pcExceptionsMigrated, true);
+  } else if (!base::FeatureList::IsEnabled(
+                 kTrackingProtectionContentSettingFor3pcb) &&
+             pref_service_->GetBoolean(
+                 prefs::kUserBypass3pcExceptionsMigrated)) {
+    MigrateUserBypassExceptions(ContentSettingsType::TRACKING_PROTECTION,
+                                ContentSettingsType::COOKIES);
+    pref_service_->SetBoolean(prefs::kUserBypass3pcExceptionsMigrated, false);
+  }
 }
 
 TrackingProtectionSettings::~TrackingProtectionSettings() = default;
@@ -213,6 +228,36 @@ void TrackingProtectionSettings::OnTrackingProtectionOnboardingUpdated(
         pref_service_->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
       }
       return;
+  }
+}
+
+void TrackingProtectionSettings::MigrateUserBypassExceptions(
+    ContentSettingsType from,
+    ContentSettingsType to) {
+  // Gives us a bit of padding and there's no need to migrate an exception
+  // expiring within the next 5 minutes.
+  const base::Time now = base::Time::Now() + base::Minutes(5);
+  ContentSettingsForOneType existing_exceptions =
+      host_content_settings_map_->GetSettingsForOneType(from);
+  for (auto exception : existing_exceptions) {
+    // Ensure the exception comes from user bypass.
+    if (exception.metadata.expiration() <= now ||
+        !exception.primary_pattern.MatchesAllHosts() ||
+        exception.secondary_pattern.MatchesAllHosts() ||
+        exception.setting_value != CONTENT_SETTING_ALLOW) {
+      continue;
+    }
+    // Add an exception for the type we're migrating to.
+    content_settings::ContentSettingConstraints constraints;
+    constraints.set_lifetime(exception.metadata.expiration() -
+                             base::Time::Now());
+    host_content_settings_map_->SetContentSettingCustomScope(
+        ContentSettingsPattern::Wildcard(), exception.secondary_pattern, to,
+        CONTENT_SETTING_ALLOW, constraints);
+    // Remove the exception for the type we're migrating from.
+    host_content_settings_map_->SetContentSettingCustomScope(
+        ContentSettingsPattern::Wildcard(), exception.secondary_pattern, from,
+        CONTENT_SETTING_DEFAULT);
   }
 }
 
