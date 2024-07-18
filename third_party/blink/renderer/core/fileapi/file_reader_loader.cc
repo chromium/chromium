@@ -239,9 +239,7 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
 
     bytes_loaded_ += buffer.size();
 
-    if (auto err = client_->DidReceiveData(
-            buffer.first(base::checked_cast<unsigned>(buffer.size())));
-        err != FileErrorCode::kOK) {
+    if (auto err = client_->DidReceiveData(buffer); err != FileErrorCode::kOK) {
       Failed(err, FailureType::kClientFailure);
       return;
     }
