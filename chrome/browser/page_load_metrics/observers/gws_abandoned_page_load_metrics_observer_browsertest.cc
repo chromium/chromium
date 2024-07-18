@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -55,6 +56,7 @@ std::unique_ptr<net::test_server::HttpResponse> SRPRedirectHandler(
 using AbandonReason = GWSAbandonedPageLoadMetricsObserver::AbandonReason;
 using NavigationMilestone =
     GWSAbandonedPageLoadMetricsObserver::NavigationMilestone;
+using page_load_metrics::PageLoadMetricsTestWaiter;
 
 class GWSAbandonedPageLoadMetricsObserverBrowserTest
     : public MetricIntegrationTest {
@@ -95,6 +97,10 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     return {NavigationMilestone::kNavigationStart,
             NavigationMilestone::kFirstRedirectResponseLoaderCallback,
             NavigationMilestone::kNonRedirectResponseLoaderCallback};
+  }
+
+  std::vector<NavigationMilestone> all_loading_milestones() {
+    return {NavigationMilestone::kParseStart};
   }
 
   GURL url_srp() {
@@ -154,6 +160,12 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     http_response->set_code(net::HttpStatusCode::HTTP_MOVED_PERMANENTLY);
     http_response->AddCustomHeader("Location", url_non_srp().spec());
     return http_response;
+  }
+
+  std::unique_ptr<PageLoadMetricsTestWaiter> CreatePageLoadMetricsTestWaiter() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return std::make_unique<PageLoadMetricsTestWaiter>(web_contents);
   }
 
   void SetUpOnMainThread() override {
@@ -234,6 +246,18 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
       histogram_tester().ExpectTotalCount(
           GetMilestoneHistogramName(milestone, histogram_suffix),
           (!is_redirect || include_redirect) ? count : 0);
+    }
+  }
+
+  void ExpectTotalCountForAllLoadingMilestones(
+      int count,
+      std::string histogram_suffix = "") {
+    for (auto milestone : all_loading_milestones()) {
+      SCOPED_TRACE(testing::Message()
+                   << " ExpectTotalCountForAllLoadingMilestones on milestone "
+                   << ((int)milestone) << " with suffix " << histogram_suffix);
+      histogram_tester().ExpectTotalCount(
+          GetMilestoneHistogramName(milestone, histogram_suffix), count);
     }
   }
 
@@ -579,6 +603,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest, Search) {
 
   // There should be a new entry for all the navigation milestones metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
+  ExpectTotalCountForAllLoadingMilestones(1);
 
   // There should be no new entry for the navigation abandonment metrics.
   ExpectEmptyNavigationAbandonment();
@@ -596,6 +621,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
   // There should be no entry for the navigation milestones metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 0);
+  ExpectTotalCountForAllLoadingMilestones(0);
 
   // There should be no entry for the navigation abandonment metrics.
   ExpectEmptyNavigationAbandonment();
@@ -651,6 +677,8 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 
   // There should be a new entry for all the navigation milestones metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
+  // There should be a new entry for all the loading milestones metrics.
+  ExpectTotalCountForAllLoadingMilestones(1);
 
   // There should be no new entry for the navigation abandonment metrics.
   ExpectEmptyNavigationAbandonment();
@@ -672,6 +700,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 2);
+  ExpectTotalCountForAllLoadingMilestones(2);
   ExpectEmptyNavigationAbandonment();
 
   // SRP Navigation #3: Go back to SRP, potentially restoring from BFCache.
@@ -691,6 +720,9 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   ExpectTotalCountForAllNavigationMilestones(
       /*include_redirect=*/false,
       content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 2 : 3);
+  ExpectTotalCountForAllLoadingMilestones(
+      content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 2 : 3);
+
   ExpectEmptyNavigationAbandonment();
 }
 
@@ -700,10 +732,16 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        PrerenderToSrp) {
   GURL url_srp_prerender(embedded_test_server()->GetURL(
       kSRPDomain, std::string(kSRPPath) + "prerender"));
-  // Navigate to an initial SRP page.]
+
+  // Navigate to an initial SRP page and wait until load event.]
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  waiter->AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_srp()));
+  waiter->Wait();
 
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
+  ExpectTotalCountForAllLoadingMilestones(1);
   ExpectEmptyNavigationAbandonment();
 
   // Start a prerender to SRP.
@@ -712,6 +750,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   // There should be only 1 entry for all the navigation milestones metrics, for
   // the initial SRP navigation.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
+  ExpectTotalCountForAllLoadingMilestones(1);
   ExpectEmptyNavigationAbandonment();
 
   // Activate the prerendered SRP on the initial WebContents.
@@ -729,6 +768,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   // There should be no new entry for the navigation milestones and abandonment
   // metrics.
   ExpectTotalCountForAllNavigationMilestones(/*include_redirect=*/false, 1);
+  ExpectTotalCountForAllLoadingMilestones(1);
   ExpectEmptyNavigationAbandonment();
 }
 

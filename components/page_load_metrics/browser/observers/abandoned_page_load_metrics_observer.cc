@@ -88,6 +88,7 @@ const char kMilestoneNonRedirectResponseLoaderCallback[] =
     "NonRedirectResponseLoaderCallback";
 const char kMilestoneCommitSent[] = "CommitSent";
 const char kMilestoneDidCommit[] = "DidCommit";
+const char kMilestoneParseStart[] = "ParseStart";
 
 // TODO(https://crbug.com/347706997): Record more milestones related to loading
 // and process creation timing.
@@ -151,6 +152,8 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kMilestoneCommitSent;
     case NavigationMilestone::kDidCommit:
       return internal::kMilestoneDidCommit;
+    case NavigationMilestone::kParseStart:
+      return internal::kMilestoneParseStart;
   }
 }
 
@@ -251,6 +254,15 @@ void AbandonedPageLoadMetricsObserver::LogMilestoneHistogram(
             GetMilestoneHistogramNameWithoutPrefixSuffix(milestone) + suffix,
         event_time - relative_start_time);
   }
+}
+
+void AbandonedPageLoadMetricsObserver::LogMilestoneHistogram(
+    NavigationMilestone milestone,
+    base::TimeDelta event_time) {
+  const base::TimeTicks navigation_start_time =
+      GetDelegate().GetNavigationStart();
+  LogMilestoneHistogram(milestone, navigation_start_time + event_time,
+                        navigation_start_time);
 }
 
 void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
@@ -368,13 +380,16 @@ AbandonedPageLoadMetricsObserver::OnCommit(
   LogPreviousHidingIfNeeded();
   LogPreviousBackgroundingIfNeeded();
 
-  // This function is called from the NavigationHandle destructor navigation
-  // finished. This means that the navigation can't be abandoned anymore, so we
-  // can stop observing.
-  // TODO(https://crbug.com/347706997): Once we add the loading milestones we
-  // need to continue observing, since the loading updates can arrive after
-  // this.
-  return STOP_OBSERVING;
+  return CONTINUE_OBSERVING;
+}
+
+void AbandonedPageLoadMetricsObserver::OnParseStart(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  auto loading_milestone =
+      std::make_pair(NavigationMilestone::kParseStart,
+                     timing.parse_timing->parse_start.value());
+  LogMilestoneHistogram(loading_milestone.first, loading_milestone.second);
+  latest_loading_milestone_ = loading_milestone;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -501,16 +516,26 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
 
   const std::string abandon_string = AbandonReasonToString(abandon_reason);
 
-  // Log the time from the latest navigation milestone received. This helps us
-  // know at what point of the navigation the abandonment happened. Note that
-  // for redirects and non-redirects we only check "loader callback" milestones
-  // and not the "response start" or "request start" counterparts, since we're
-  // only notified of NavigationHandleTiming update when we get the loader
-  // callback. Thus, the loader callback timing must be more recent than the
-  // response start or request start counterpart.
-  if (!latest_navigation_handle_timing_.navigation_commit_sent_time.is_null() &&
-      abandon_timing >
-          latest_navigation_handle_timing_.navigation_commit_sent_time) {
+  // Log the time from the latest navigation or loading milestone received. This
+  // helps us know at what point of the navigation the abandonment happened.
+  // Note that for redirects and non-redirects we only check "loader callback"
+  // milestones and not the "response start" or "request start" counterparts,
+  // since we're only notified of NavigationHandleTiming update when we get the
+  // loader callback. Thus, the loader callback timing must be more recent than
+  // the response start or request start counterpart.
+  if (latest_loading_milestone_.has_value() &&
+      abandon_timing > latest_loading_milestone_->second +
+                           GetDelegate().GetNavigationStart()) {
+    // `latest_loading_milestone_` has the taken time from the navigation start
+    // time as base::TimeDelta, adding the navigation start time to measure the
+    // abandoned time.
+    LogAbandonHistograms(
+        abandon_reason, latest_loading_milestone_->first, abandon_timing,
+        latest_loading_milestone_->second + GetDelegate().GetNavigationStart());
+  } else if (!latest_navigation_handle_timing_.navigation_commit_sent_time
+                  .is_null() &&
+             abandon_timing >
+                 latest_navigation_handle_timing_.navigation_commit_sent_time) {
     LogAbandonHistograms(
         abandon_reason, NavigationMilestone::kCommitSent, abandon_timing,
         latest_navigation_handle_timing_.navigation_commit_sent_time);

@@ -206,6 +206,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kNonRedirectResponseLoaderCallback"/>
   <int value="8" label="kCommitSent"/>
   <int value="9" label="kDidCommit"/>
+  <int value="10" label="kParseStart"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
