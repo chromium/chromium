@@ -4,25 +4,39 @@
 
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 
-#include "ash/constants/ash_features.h"
+#include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
+
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
 #include "chromeos/ash/components/cryptohome/auth_factor_input.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/constants/cryptohome_key_delegate_constants.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
+#include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
+#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
 #include "components/device_event_log/device_event_log.h"
@@ -679,8 +693,8 @@ void AuthFactorEditor::OnListAuthFactors(
             factor_with_status_proto.auth_factor().type())) {
       continue;
     }
-    auto factor = cryptohome::DeserializeAuthFactor(
-        factor_with_status_proto.auth_factor(), fallback_type);
+    auto factor = cryptohome::DeserializeAuthFactor(factor_with_status_proto,
+                                                    fallback_type);
     if (factor.ref().type() == cryptohome::AuthFactorType::kPin) {
       bool locked =
           factor_with_status_proto.status_info().time_available_in() > 0;

@@ -17,7 +17,6 @@
 #include "chromeos/ash/components/osauth/test_support/engine_test_util.h"
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"

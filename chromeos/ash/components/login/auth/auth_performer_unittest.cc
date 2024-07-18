@@ -8,25 +8,19 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
-#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
-#include "chromeos/ash/components/login/auth/public/auth_session_status.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -102,10 +96,13 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
         reply.set_auth_session_id("123");
         reply.set_broadcast_id("broadcast");
         reply.set_user_exists(true);
-        auto* factor = reply.add_auth_factors();
-        factor->set_label("legacy-0");
-        factor->set_type(
+        auto* factor = reply.add_configured_auth_factors_with_status();
+        factor->mutable_auth_factor()->set_label("legacy-0");
+        factor->mutable_auth_factor()->set_type(
             user_data_auth::AuthFactorType::AUTH_FACTOR_TYPE_UNSPECIFIED);
+        factor->mutable_status_info()->set_time_available_in(0);
+        factor->mutable_status_info()->set_time_expiring_in(
+            std::numeric_limits<uint64_t>::max());
         std::move(callback).Run(reply);
       });
   AuthPerformer performer(&mock_client_);
@@ -140,10 +137,13 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
         reply.set_auth_session_id("123");
         reply.set_broadcast_id("broadcast");
         reply.set_user_exists(true);
-        auto* factor = reply.add_auth_factors();
-        factor->set_label("legacy-0");
-        factor->set_type(
+        auto* factor = reply.add_configured_auth_factors_with_status();
+        factor->mutable_auth_factor()->set_label("legacy-0");
+        factor->mutable_auth_factor()->set_type(
             user_data_auth::AuthFactorType::AUTH_FACTOR_TYPE_UNSPECIFIED);
+        factor->mutable_status_info()->set_time_available_in(0);
+        factor->mutable_status_info()->set_time_expiring_in(
+            std::numeric_limits<uint64_t>::max());
         std::move(callback).Run(reply);
       });
   AuthPerformer performer(&mock_client_);
@@ -173,14 +173,22 @@ TEST_F(AuthPerformerTest, StartWithLegacyFp) {
         reply.set_auth_session_id("123");
         reply.set_broadcast_id("broadcast");
         reply.set_user_exists(true);
-        auto* legacy_fp_factor = reply.add_auth_factors();
-        legacy_fp_factor->set_label("");
-        legacy_fp_factor->set_type(user_data_auth::AuthFactorType::
-                                       AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT);
-        auto* password_factor = reply.add_auth_factors();
-        password_factor->set_label("password");
-        password_factor->set_type(
+        auto* legacy_fp_factor =
+            reply.add_configured_auth_factors_with_status();
+        legacy_fp_factor->mutable_auth_factor()->set_label("");
+        legacy_fp_factor->mutable_auth_factor()->set_type(
+            user_data_auth::AuthFactorType::
+                AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT);
+        legacy_fp_factor->mutable_status_info()->set_time_available_in(0);
+        legacy_fp_factor->mutable_status_info()->set_time_expiring_in(
+            std::numeric_limits<uint64_t>::max());
+        auto* password_factor = reply.add_configured_auth_factors_with_status();
+        password_factor->mutable_auth_factor()->set_label("password");
+        password_factor->mutable_auth_factor()->set_type(
             user_data_auth::AuthFactorType::AUTH_FACTOR_TYPE_PASSWORD);
+        legacy_fp_factor->mutable_status_info()->set_time_available_in(0);
+        legacy_fp_factor->mutable_status_info()->set_time_expiring_in(
+            std::numeric_limits<uint64_t>::max());
         std::move(callback).Run(reply);
       });
   AuthPerformer performer(&mock_client_);

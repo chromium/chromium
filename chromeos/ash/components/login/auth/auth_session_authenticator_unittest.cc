@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
@@ -13,8 +14,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -22,23 +21,19 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
-#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "chromeos/ash/components/login/auth/authenticator.h"
 #include "chromeos/ash/components/login/auth/mock_auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/mock_safe_mode_delegate.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
-#include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/prefs/testing_pref_store.h"
-#include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -180,6 +175,13 @@ StartAuthSessionReply BuildStartReply(const std::string& auth_session_id,
   reply.set_user_exists(user_exists);
   for (const auto& factor : factors) {
     (*reply.add_auth_factors()) = factor;
+
+    auto* factor_with_status = reply.add_configured_auth_factors_with_status();
+    factor_with_status->mutable_status_info();
+    *factor_with_status->mutable_auth_factor() = factor;
+    factor_with_status->mutable_status_info()->set_time_available_in(0);
+    factor_with_status->mutable_status_info()->set_time_expiring_in(
+        std::numeric_limits<uint64_t>::max());
   }
   return reply;
 }
@@ -350,7 +352,7 @@ class AuthSessionAuthenticatorTest : public testing::Test,
   std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(,
                          AuthSessionAuthenticatorTest,
                          /*local_passwords_feature_enabled=*/testing::Bool());
 

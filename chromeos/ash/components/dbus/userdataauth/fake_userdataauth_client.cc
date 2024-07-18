@@ -4,15 +4,21 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 
+#include <cstdint>
 #include <limits>
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
+#include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -24,6 +30,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
@@ -335,6 +342,27 @@ bool AuthInputMatchesFakeFactorType(
             return auth_input.has_smart_card_input();
           }),
       fake_factor);
+}
+
+// Helper that fills AuthFactorWithStatus' field with an auth factor.
+void BuildAuthFactorWithStatus(
+    const std::optional<user_data_auth::AuthFactor>& auth_factor,
+    user_data_auth::AuthFactorWithStatus* factor_with_status) {
+  *factor_with_status->mutable_auth_factor() = *auth_factor;
+  // Add all possible intents for conveniences.
+  factor_with_status->add_available_for_intents(
+      user_data_auth::AUTH_INTENT_DECRYPT);
+  factor_with_status->add_available_for_intents(
+      user_data_auth::AUTH_INTENT_VERIFY_ONLY);
+  factor_with_status->add_available_for_intents(
+      user_data_auth::AUTH_INTENT_WEBAUTHN);
+  factor_with_status->mutable_status_info()->set_time_available_in(0);
+  if (auth_factor->type() == user_data_auth::AUTH_FACTOR_TYPE_PIN) {
+    if (auth_factor->pin_metadata().auth_locked()) {
+      factor_with_status->mutable_status_info()->set_time_available_in(
+          std::numeric_limits<uint64_t>::max());
+    }
+  }
 }
 
 // Helper that automatically sends a reply struct to a supplied callback when
@@ -886,6 +914,9 @@ void FakeUserDataAuthClient::StartAuthSession(
           FakeAuthFactorToAuthFactor(label, factor);
       DCHECK(auth_factor);
       *reply.add_auth_factors() = *auth_factor;
+      auto* factor_with_status =
+          reply.add_configured_auth_factors_with_status();
+      BuildAuthFactorWithStatus(auth_factor, factor_with_status);
     }
   }
 }
@@ -918,22 +949,9 @@ void FakeUserDataAuthClient::ListAuthFactors(
         FakeAuthFactorToAuthFactor(label, factor);
     if (auth_factor) {
       *reply.add_configured_auth_factors() = *auth_factor;
-      // Hack as cryptohome sends information via list of available intents.
       auto* factor_with_status =
           reply.add_configured_auth_factors_with_status();
-      *factor_with_status->mutable_auth_factor() = *auth_factor;
-      factor_with_status->add_available_for_intents(
-          user_data_auth::AUTH_INTENT_DECRYPT);
-      factor_with_status->add_available_for_intents(
-          user_data_auth::AUTH_INTENT_VERIFY_ONLY);
-      factor_with_status->add_available_for_intents(
-          user_data_auth::AUTH_INTENT_WEBAUTHN);
-      if (absl::holds_alternative<PinFactor>(factor)) {
-        if (absl::get<PinFactor>(factor).locked) {
-          factor_with_status->mutable_status_info()->set_time_available_in(
-              std::numeric_limits<uint64_t>::max());
-        }
-      }
+      BuildAuthFactorWithStatus(auth_factor, factor_with_status);
     } else {
       LOG(WARNING) << "Ignoring auth factor incompatible with AuthFactor API: "
                    << label;

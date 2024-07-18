@@ -4,20 +4,30 @@
 
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 
+#include <cstdint>
+#include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
+#include "chromeos/ash/components/cryptohome/auth_factor_input.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -25,14 +35,14 @@
 #include "chromeos/ash/components/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
-#include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
+#include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
-#include "chromeos/ash/components/login/auth/public/auth_session_status.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/recovery_types.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_type.h"
@@ -590,14 +600,15 @@ void AuthPerformer::OnStartAuthSession(
   bool ignore_unknown_factors =
       command_line->HasSwitch(ash::switches::kIgnoreUnknownAuthFactors);
 
-  for (const auto& factor_proto : reply->auth_factors()) {
-    if (ignore_unknown_factors &&
-        !cryptohome::SafeConvertFactorTypeFromProto(factor_proto.type())) {
+  for (const auto& factor_proto :
+       reply->configured_auth_factors_with_status()) {
+    if (ignore_unknown_factors && !cryptohome::SafeConvertFactorTypeFromProto(
+                                      factor_proto.auth_factor().type())) {
       continue;
     }
     // TODO(b/347292062): Implement legacy fingerprint auth factor engine so
     // we can get rid of the the following temporary workaround.
-    if (factor_proto.type() ==
+    if (factor_proto.auth_factor().type() ==
         user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT) {
       continue;
     }

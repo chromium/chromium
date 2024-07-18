@@ -4,14 +4,21 @@
 
 #include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/cryptohome/auth_factor_input.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/recoverable_key_store.pb.h"
 
 namespace cryptohome {
 
@@ -295,35 +302,39 @@ void SerializeAuthInput(const AuthFactorRef& ref,
   }
 }
 
-AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
-                                 AuthFactorType fallback_type) {
+AuthFactor DeserializeAuthFactor(
+    const user_data_auth::AuthFactorWithStatus& proto,
+    AuthFactorType fallback_type) {
+  CHECK(proto.has_auth_factor());
+  auto factor_proto = proto.auth_factor();
   AuthFactorType type;
-  if (proto.type() == user_data_auth::AUTH_FACTOR_TYPE_UNSPECIFIED) {
+  if (factor_proto.type() == user_data_auth::AUTH_FACTOR_TYPE_UNSPECIFIED) {
     LOG(WARNING) << "Unspecified auth factor type found, treating it as a "
                  << static_cast<int>(fallback_type);
     type = fallback_type;
   } else {
-    type = ConvertFactorTypeFromProto(proto.type());
+    type = ConvertFactorTypeFromProto(factor_proto.type());
     // TODO(b/243808147): Remove this hack after fixing cryptohome to return
     // `AUTH_FACTOR_TYPE_UNSPECIFIED` for legacy kiosk keysets.
     if (fallback_type == cryptohome::AuthFactorType::kKiosk &&
         type != cryptohome::AuthFactorType::kKiosk) {
-      LOG(WARNING) << "Fixup kiosk key type for " << proto.label() << " "
-                   << proto.type();
+      LOG(WARNING) << "Fixup kiosk key type for " << factor_proto.label() << " "
+                   << factor_proto.type();
       type = cryptohome::AuthFactorType::kKiosk;
     }
   }
-  AuthFactorRef ref(type, KeyLabel{proto.label()});
+  AuthFactorRef ref(type, KeyLabel{factor_proto.label()});
   ComponentVersion chrome_ver{kFallbackFactorVersion};
   ComponentVersion chromeos_ver{kFallbackFactorVersion};
-  if (proto.has_common_metadata()) {
-    if (!proto.common_metadata().chrome_version_last_updated().empty()) {
-      chrome_ver = ComponentVersion(
-          proto.common_metadata().chrome_version_last_updated());
+  if (factor_proto.has_common_metadata()) {
+    auto common_metadata_proto = factor_proto.common_metadata();
+    if (!common_metadata_proto.chrome_version_last_updated().empty()) {
+      chrome_ver =
+          ComponentVersion(common_metadata_proto.chrome_version_last_updated());
     }
-    if (!proto.common_metadata().chromeos_version_last_updated().empty()) {
+    if (!common_metadata_proto.chromeos_version_last_updated().empty()) {
       chromeos_ver = ComponentVersion(
-          proto.common_metadata().chromeos_version_last_updated());
+          common_metadata_proto.chromeos_version_last_updated());
     }
   }
   AuthFactorCommonMetadata common_metadata{std::move(chrome_ver),
@@ -332,34 +343,34 @@ AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
   // Ignore is_active_for_login for now
   switch (type) {
     case AuthFactorType::kPassword: {
-      auto password_metadata = ParsePasswordMetadata(proto);
+      auto password_metadata = ParsePasswordMetadata(factor_proto);
       return AuthFactor(std::move(ref), std::move(common_metadata),
                         std::move(password_metadata));
     }
     case AuthFactorType::kRecovery: {
-      if (!proto.has_cryptohome_recovery_metadata()) {
+      if (!factor_proto.has_cryptohome_recovery_metadata()) {
         return AuthFactor(std::move(ref), std::move(common_metadata));
       }
       CryptohomeRecoveryMetadata recovery_metadata;
       recovery_metadata.mediator_pub_key =
-          proto.cryptohome_recovery_metadata().mediator_pub_key();
+          factor_proto.cryptohome_recovery_metadata().mediator_pub_key();
       return AuthFactor(std::move(ref), std::move(common_metadata),
                         std::move(recovery_metadata));
     }
     case AuthFactorType::kKiosk:
       return AuthFactor(std::move(ref), std::move(common_metadata));
     case AuthFactorType::kPin: {
-      DCHECK(proto.has_pin_metadata());
-      auto pin_metadata = ParsePinMetadata(proto);
-      PinStatus pin_status{proto.pin_metadata().auth_locked()};
+      DCHECK(factor_proto.has_pin_metadata());
+      auto pin_metadata = ParsePinMetadata(factor_proto);
+      PinStatus pin_status{factor_proto.pin_metadata().auth_locked()};
       return AuthFactor(std::move(ref), std::move(common_metadata),
                         std::move(pin_metadata), std::move(pin_status));
     }
     case AuthFactorType::kSmartCard: {
-      DCHECK(proto.has_smart_card_metadata());
+      DCHECK(factor_proto.has_smart_card_metadata());
       SmartCardMetadata smart_card_metadata;
       smart_card_metadata.public_key_spki_der =
-          proto.smart_card_metadata().public_key_spki_der();
+          factor_proto.smart_card_metadata().public_key_spki_der();
       return AuthFactor(std::move(ref), std::move(common_metadata),
                         std::move(smart_card_metadata));
     }
@@ -369,7 +380,7 @@ AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
       __builtin_unreachable();
     }
     case AuthFactorType::kFingerprint: {
-      DCHECK(proto.has_fingerprint_metadata());
+      DCHECK(factor_proto.has_fingerprint_metadata());
       FingerprintMetadata fingerprint_metadata;
       return AuthFactor(std::move(ref), std::move(common_metadata),
                         std::move(fingerprint_metadata));

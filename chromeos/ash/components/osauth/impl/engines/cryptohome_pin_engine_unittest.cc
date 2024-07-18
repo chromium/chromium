@@ -49,10 +49,14 @@ class CryptohomePinEngineTest : public EngineTestBase {
           user_data_auth::StartAuthSessionReply reply;
           reply.set_user_exists(true);
           reply.set_auth_session_id("fake id");
-          auto* factor = reply.add_auth_factors();
-          factor->set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
-          factor->set_label("pin");
-          factor->mutable_pin_metadata();
+          auto* factor = reply.add_configured_auth_factors_with_status();
+          factor->mutable_auth_factor()->set_type(
+              user_data_auth::AUTH_FACTOR_TYPE_PIN);
+          factor->mutable_auth_factor()->set_label("pin");
+          factor->mutable_auth_factor()->mutable_pin_metadata();
+          factor->mutable_status_info()->set_time_available_in(0);
+          factor->mutable_status_info()->set_time_expiring_in(
+              std::numeric_limits<uint64_t>::max());
           std::move(callback).Run(reply);
         });
     EXPECT_CALL(mock_udac_, ListAuthFactors(_, _))
