@@ -424,12 +424,28 @@ affect invariants or how features are designed.
     Store](https://chrome.google.com/webstore) is a rare example of a privileged
     web page, to which Chrome grants special APIs for installing extensions.
     This implementation currently relies on hosted apps.
+* **[Isolated Web Apps](https://github.com/WICG/isolated-web-apps/blob/main/README.md)**: Isolated
+    Web Apps (IWAs) are a type of web app that has stricter security and
+    isolation requirements compared to normal web apps. The StoragePartition
+    used for each IWA will be separate from the default StoragePartition used
+    for common browsing and separate from other IWAs. IWAs require strict CSP,
+    [CrossOriginIsolated](#crossoriginisolated), along with other isolation
+    criteria. These contexts are claimed to be
+    "[IsolatedContext](https://wicg.github.io/isolated-web-apps/isolated-contexts)"
+    and
+    "[IsolatedApplication](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/web_exposed_isolation_level.h;l=62;drc=998312ac45f85e53257049c5891dff558f203c00)".
 * **GuestView**: The Chrome Apps `<webview>` tag and similar cases like
     MimeHandlerView and ExtensionOptionsGuest embed one WebContents within
     another. All of these cases use strict site isolation for content they
     embed. Note that Chrome Apps allow `<webview>` tags to load normal web pages
     and the app's own `data:` or `chrome-extension://` URLs, but not URLs from
-    other extensions or apps.
+    other extensions or apps. The IWA
+    [<controlledframe>](/chrome/common/controlled_frame/README.md) tag is built
+    on top of the '<webview>' tag's implementation and exposed to contexts
+    that meet the proper security and isolation requirements, such as IWAs that
+    provide IsolatedContexts. See the
+    [Isolated Contexts spec](https://wicg.github.io/isolated-web-apps/isolated-contexts)
+    for more info.
 * **Sandboxed iframes**: Documents with the sandbox attribute and without
     `allow-same-origin` (either iframes or popups) may be same-site with their
     parent or opener but use an opaque origin. Chromium currently keeps these
