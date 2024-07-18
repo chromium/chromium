@@ -60,6 +60,8 @@ public class SafetyHubModuleProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_SIGNED_IN =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<String> ACCOUNT_EMAIL =
+            new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             PRIMARY_BUTTON_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
@@ -85,6 +87,7 @@ public class SafetyHubModuleProperties {
         IS_VISIBLE,
         IS_CONTROLLED_BY_POLICY,
         IS_SIGNED_IN,
+        ACCOUNT_EMAIL,
         PRIMARY_BUTTON_LISTENER,
         SECONDARY_BUTTON_LISTENER,
         SAFE_STATE_BUTTON_LISTENER

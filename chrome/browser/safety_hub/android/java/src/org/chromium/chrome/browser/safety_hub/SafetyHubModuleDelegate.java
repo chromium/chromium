@@ -64,4 +64,10 @@ public interface SafetyHubModuleDelegate {
      * @return Whether the primary account is signed in.
      */
     boolean isSignedIn();
+
+    /**
+     * @return The email associated with the currently signed in account.
+     */
+    @Nullable
+    String getAccountEmail();
 }

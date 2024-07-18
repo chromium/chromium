@@ -482,6 +482,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, disabledByPolicy);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.IS_SIGNED_IN, mDelegate.isSignedIn());
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.ACCOUNT_EMAIL, mDelegate.getAccountEmail());
         if (mDelegate.isSignedIn()) {
             mPasswordCheckPropertyModel.set(
                     SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,

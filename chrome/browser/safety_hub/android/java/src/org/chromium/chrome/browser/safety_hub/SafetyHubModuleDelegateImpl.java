@@ -64,14 +64,9 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     @Override
     public void showPasswordCheckUI(Context context) {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-
-        assert isSignedIn() : "The password module should be hidden if the user is not signed in.";
-        String account =
-                CoreAccountInfo.getEmailFrom(
-                        signinManager
-                                .getIdentityManager()
-                                .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        String account = getAccountEmail();
+        assert account != null
+                : "The password check UI should only be launched for signed in users.";
 
         passwordManagerHelper.showPasswordCheckup(
                 context, PasswordCheckReferrer.SAFETY_CHECK, mModalDialogManagerSupplier, account);
@@ -152,5 +147,12 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+    }
+
+    @Override
+    public String getAccountEmail() {
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        return CoreAccountInfo.getEmailFrom(
+                signinManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN));
     }
 }

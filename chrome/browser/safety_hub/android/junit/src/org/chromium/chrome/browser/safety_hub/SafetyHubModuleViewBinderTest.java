@@ -42,6 +42,7 @@ public class SafetyHubModuleViewBinderTest {
     private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error;
     private static final @DrawableRes int INFO_ICON = R.drawable.btn_info;
     private static final @DrawableRes int MANAGED_ICON = R.drawable.ic_business_small;
+    private static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
     private Activity mActivity;
     private PropertyModel mPasswordCheckPropertyModel;
     private SafetyHubExpandablePreference mPasswordCheckPreference;
@@ -133,9 +134,13 @@ public class SafetyHubModuleViewBinderTest {
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_passwords_safe);
-        String expectedSummary = mActivity.getString(R.string.safety_hub_checked_recently);
+        String expectedSummary =
+                mActivity.getString(
+                        R.string.safety_hub_password_check_time_recently, TEST_ACCOUNT_EMAIL);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 

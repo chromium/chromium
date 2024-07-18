@@ -44,7 +44,8 @@ public class SafetyHubModuleViewBinder {
                 || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey
                 || SafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
                 || SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER == propertyKey
-                || SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER == propertyKey) {
+                || SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER == propertyKey
+                || SafetyHubModuleProperties.ACCOUNT_EMAIL == propertyKey) {
             updatePasswordCheckModule(preference, model);
         }
     }
@@ -216,6 +217,7 @@ public class SafetyHubModuleViewBinder {
         boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
         boolean isSignedIn = model.get(SafetyHubModuleProperties.IS_SIGNED_IN);
         @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
+        String account = model.get(SafetyHubModuleProperties.ACCOUNT_EMAIL);
         String title;
         String summary;
         String primaryButtonText = null;
@@ -274,7 +276,15 @@ public class SafetyHubModuleViewBinder {
             primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
         } else {
             title = preference.getContext().getString(R.string.safety_check_passwords_safe);
-            summary = preference.getContext().getString(R.string.safety_hub_checked_recently);
+            if (account != null) {
+                summary =
+                        preference
+                                .getContext()
+                                .getString(
+                                        R.string.safety_hub_password_check_time_recently, account);
+            } else {
+                summary = preference.getContext().getString(R.string.safety_hub_checked_recently);
+            }
             secondaryButtonText =
                     preference
                             .getContext()

@@ -1780,7 +1780,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_VIEW_SITES_BUTTON" translateable="false">
         View sites
       </message>
-      <message name="IDS_SAFETY_HUB_PASSWORDS_NAVIGATION_BUTTON" translateable="false">
+      <message name="IDS_SAFETY_HUB_PASSWORDS_NAVIGATION_BUTTON" desc="Text for the button in the password check row in the Safety Check page indicating that upon clicking on it, the user will be redirected to the Google password manager.">
         Go to Password Manager
       </message>
       <message name="IDS_SAFETY_HUB_GO_TO_GOOGLE_PLAY_BUTTON" translateable="false">
@@ -1834,13 +1834,13 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_CHECKED_RECENTLY" translateable="false">
         Checked recently
       </message>
-      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user does not have any passwords saved to their Google account.">
         No saved passwords
       </message>
-      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the user has no passwords saved and that Safety check will start checking for breached passwords when they save them.">
         Chrome can check your passwords when you save them
       </message>
-      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY_MANAGED" translateable="false">
+      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY_MANAGED" desc="Summary for the password check row in the Safety Check page indicating that the organization of the user's account or device has disabled saving new passwords to the Google password manager.">
         Your organization turned off saving passwords
       </message>
       <message name="IDS_SAFETY_HUB_UPDATES_OUTDATED_SUMMARY" translateable="false">
@@ -1864,17 +1864,20 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PERMISSIONS_WARNING_SUMMARY" translateable="false">
         To protect your data, permissions were removed from abusive and unused sites
       </message>
-      <message name="IDS_SAFETY_HUB_COMPROMISED_PASSWORDS_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_COMPROMISED_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the checkup found compromised passwords and that the user should change them immediately.">
         You should change these now
       </message>
-      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_UNAVAILABLE_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_UNAVAILABLE_TITLE" desc="Title for the password check row in the Safety Check page indicating that the password checkup could not be completed.">
         Can't check passwords
       </message>
-      <message name="IDS_SAFETY_HUB_UNAVAILABLE_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_UNAVAILABLE_SUMMARY" desc="Summary for the rows in the Safety Check page indicating that the checkup for the specific module could not be run at this time and to check again later.">
         Try again later
       </message>
-      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_SIGNED_OUT_SUMMARY" translateable="false">
+      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_SIGNED_OUT_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the user should sign-in so Safety Check can check if they have compromised passwords. This is only shown for signed-out users when the checkup could not be completed.">
         To check for compromised passwords, sign in to your Google Account
+      </message>
+      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_TIME_RECENTLY" desc="Summary for the password check row in the Safety Check page indicating that the checkup was ran recently for the passwords in the user's Google account.">
+        Recently checked passwords saved to <ph name="USERNAME">%1$s<ex>elisa.becket@gmail.com</ex></ph>
       </message>
 
        <!-- Safe Browsing preferences -->
