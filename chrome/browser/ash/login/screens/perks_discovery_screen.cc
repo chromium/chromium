@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/perks_discovery_screen_handler.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/campaigns_model.h"
 
 namespace ash {
 namespace {
@@ -19,6 +21,8 @@ std::string PerksDiscoveryScreen::GetResultString(Result result) {
   switch (result) {
     case Result::kNext:
       return "Next";
+    case Result::kError:
+      return "Error";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
@@ -43,12 +47,42 @@ bool PerksDiscoveryScreen::MaybeSkip(WizardContext& context) {
   return false;
 }
 
+void PerksDiscoveryScreen::GetOobePerksPayload() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  auto* campaign =
+      campaigns_manager->GetCampaignBySlot(growth::Slot::kOobePerkDiscovery);
+  if (!campaign) {
+    LOG(ERROR) << "Campaign object is null. Failed to retrieve campaign for "
+                  "slot kOobePerkDiscovery.";
+    exit_callback_.Run(Result::kError);
+    return;
+  }
+  auto* payload = GetPayloadBySlot(campaign, growth::Slot::kOobePerkDiscovery);
+  if (!payload) {
+    LOG(ERROR) << "Payload object is null. Failed to retrieve payload for "
+                  "campaign and slot kOobePerkDiscovery.";
+    exit_callback_.Run(Result::kError);
+    return;
+  }
+}
+
 void PerksDiscoveryScreen::ShowImpl() {
   if (!view_) {
     return;
   }
 
   view_->Show();
+
+  // TODO(b:353863015) Optimize OOBE Load Growth Campaign Latency
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  if (!campaigns_manager) {
+    LOG(ERROR) << "CampaignsManager object is null. Failed to retrieve "
+                  "CampaignsManager instance.";
+    exit_callback_.Run(Result::kError);
+    return;
+  }
+  campaigns_manager->LoadCampaigns(base::BindOnce(
+      &PerksDiscoveryScreen::GetOobePerksPayload, weak_factory_.GetWeakPtr()));
 }
 
 void PerksDiscoveryScreen::HideImpl() {}

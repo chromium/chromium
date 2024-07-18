@@ -271,6 +271,7 @@ static_library("screens") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/components/growth:growth",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/osauth/public",

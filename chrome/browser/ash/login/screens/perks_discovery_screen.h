@@ -20,7 +20,7 @@ class PerksDiscoveryScreen : public BaseScreen {
  public:
   using TView = PerksDiscoveryScreenView;
 
-  enum class Result { kNext, kNotApplicable };
+  enum class Result { kNext, kError, kNotApplicable };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -40,9 +40,12 @@ class PerksDiscoveryScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
+  void GetOobePerksPayload();
 
   base::WeakPtr<PerksDiscoveryScreenView> view_;
   ScreenExitCallback exit_callback_;
+
+  base::WeakPtrFactory<PerksDiscoveryScreen> weak_factory_{this};
 };
 
 }  // namespace ash
