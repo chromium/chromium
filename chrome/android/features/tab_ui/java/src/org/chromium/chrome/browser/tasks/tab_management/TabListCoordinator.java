@@ -726,12 +726,16 @@ public class TabListCoordinator
     void postHiding() {
         unregisterLayoutChangeListener();
         mMediator.postHiding();
+        if (mHasEmptyView && mTabListEmptyCoordinator != null) {
+            mTabListEmptyCoordinator.setIsTabSwitcherShowing(false);
+        }
     }
 
     /** Destroy any members that needs clean up. */
     @Override
     public void onDestroy() {
         mMediator.destroy();
+        destroyEmptyView();
         if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.removeListObserver();
         }
