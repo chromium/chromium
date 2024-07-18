@@ -31,22 +31,23 @@ history::AnnotatedVisit SampleAnnotatedVisit(
     const std::string& originator_cache_guid,
     const std::optional<std::string> app_id = std::nullopt,
     const base::Time visit_time = base::Time::Now()) {
+  history::AnnotatedVisit annotated_visit;
+  history::URLRow url_row;
+  url_row.set_url(url);
+  annotated_visit.url_row = std::move(url_row);
   history::VisitContentModelAnnotations model_annotations;
   model_annotations.visibility_score = visibility_score;
   history::VisitContentAnnotations content_annotations;
   content_annotations.model_annotations = std::move(model_annotations);
-  history::URLRow url_row;
-  url_row.set_url(url);
+  annotated_visit.content_annotations = std::move(content_annotations);
+  history::VisitContextAnnotations context_annotations;
+  annotated_visit.context_annotations = std::move(context_annotations);
   history::VisitRow visit_row;
   visit_row.visit_id = visit_id;
   visit_row.visit_time = visit_time;
   visit_row.is_known_to_sync = true;
   visit_row.originator_cache_guid = originator_cache_guid;
   visit_row.app_id = app_id;
-
-  history::AnnotatedVisit annotated_visit;
-  annotated_visit.url_row = std::move(url_row);
-  annotated_visit.content_annotations = std::move(content_annotations);
   annotated_visit.visit_row = std::move(visit_row);
 
   return annotated_visit;
@@ -148,6 +149,7 @@ TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
   const auto* history = std::get_if<URLVisitAggregate::HistoryData>(
       &result.data.at(entry_url.spec()));
   EXPECT_EQ(history->last_app_id, "sample_app_id");
+  EXPECT_EQ(history->total_foreground_duration.InSeconds(), 0);
 }
 
 TEST_F(HistoryURLVisitDataFetcherTest,

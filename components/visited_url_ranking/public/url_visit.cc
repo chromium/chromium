@@ -105,8 +105,12 @@ URLVisitAggregate::TabData::~TabData() = default;
 URLVisitAggregate::HistoryData::HistoryData(
     history::AnnotatedVisit annotated_visit)
     : last_visited(std::move(annotated_visit)) {
-  total_foreground_duration =
-      last_visited.context_annotations.total_foreground_duration;
+  if (last_visited.context_annotations.total_foreground_duration
+          .InMilliseconds() > 0) {
+    total_foreground_duration =
+        last_visited.context_annotations.total_foreground_duration;
+  }
+
   if (last_visited.visit_row.app_id.has_value()) {
     last_app_id = last_visited.visit_row.app_id;
   }
