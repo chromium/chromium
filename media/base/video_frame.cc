@@ -568,7 +568,23 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
       base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
           ? shared_image->GetTextureTarget()
           : texture_target);
-  frame->shared_images_[0] = shared_image->MakeUnowned();
+
+  // Note that we can not use |shared_image|->MakeUnOwned() here since that
+  // will not work for MappableSI due to it owning a GMB internally and we can
+  // not create an unowned reference to it. Additionally
+  // removing the use of ClientSharedImage::MakeUnOwned() everywhere is
+  // currently work in progress as a part of Automatic shared image management
+  // for ClientSharedImage project, so we don't want to use it here as well. The
+  // downside right now with below code is that while destroying the
+  // ClientSharedImage when MappableSI is enabled, there will be more than one
+  // reference of it and we will hit CHECKs in
+  // ClientSharedImageInterface::DestroySharedImage(). To avoid this CHECKs, we
+  // will need to replace the ClientSharedImageInterface::DestroySharedImage()
+  // call sites with ClientSharedImage::UpdateDestructionSyncToken() for every
+  // VideoFrame MappableSI client. This works well since it is also eventual
+  // goal of ClientSharedImage for rest of the chrome. crbug.com/40286368 for
+  // more details on the work.
+  frame->shared_images_[0] = std::move(shared_image);
   return frame;
 }
 
