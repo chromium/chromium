@@ -216,6 +216,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Enables or disables CRAS to use speak-on-mute detection.
   virtual void SetSpeakOnMuteDetection(bool enabled) = 0;
 
+  virtual void SetSidetoneEnabled(bool enabled) = 0;
+
   // Adds input node |node_id| to the active input list. This is used to add
   // an additional active input node besides the one set by SetActiveInputNode.
   // Note that this action will not trigger an ActiveInputNodeChanged event and

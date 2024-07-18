@@ -328,6 +328,10 @@ void FakeCrasAudioClient::SetSpeakOnMuteDetection(bool enabled) {
   speak_on_mute_detection_enabled_ = enabled;
 }
 
+void FakeCrasAudioClient::SetSidetoneEnabled(bool enabled) {
+  sidetone_enabled_ = enabled;
+}
+
 void FakeCrasAudioClient::AddActiveInputNode(uint64_t node_id) {
   for (size_t i = 0; i < node_list_.size(); ++i) {
     if (node_list_[i].id == node_id) {

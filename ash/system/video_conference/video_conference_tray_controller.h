@@ -175,6 +175,12 @@ class ASH_EXPORT VideoConferenceTrayController
   bool HasCameraPermission() const;
   bool HasMicrophonePermission() const;
 
+  // Enable or disable sidetone.
+  void SetSidetoneEnabled(bool enabled);
+
+  // Gets the state for sidetone.
+  bool GetSidetoneEnabled() const;
+
   // Handles device usage from a VC app while the device is system disabled.
   virtual void HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device,

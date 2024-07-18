@@ -855,6 +855,15 @@ void CrasAudioHandler::SetSpeakOnMuteDetection(bool som_on) {
   speak_on_mute_detection_on_ = som_on;
 }
 
+void CrasAudioHandler::SetSidetoneEnabled(bool enabled) {
+  CrasAudioClient::Get()->SetSidetoneEnabled(enabled);
+  sidetone_enabled_ = enabled;
+}
+
+bool CrasAudioHandler::GetSidetoneEnabled() const {
+  return sidetone_enabled_;
+}
+
 void CrasAudioHandler::AddActiveNode(uint64_t node_id, bool notify) {
   const AudioDevice* device = GetDeviceFromId(node_id);
   if (!device) {
@@ -1768,6 +1777,8 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   // Sets force respect ui gains enabled based on audio pref, it re-applies the
   // previous state if CRAS restarts.
   CrasAudioClient::Get()->SetForceRespectUiGains(GetForceRespectUiGainsState());
+
+  CrasAudioClient::Get()->SetSidetoneEnabled(sidetone_enabled_);
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {

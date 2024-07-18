@@ -573,6 +573,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Enables or disables the speak-on-mute detection.
   void SetSpeakOnMuteDetection(bool som_on);
 
+  // Enable or disable sidetone;
+  void SetSidetoneEnabled(bool enabled);
+
+  // Get whether the sidetone is enabled or not
+  bool GetSidetoneEnabled() const;
+
   // Changes the active nodes to the nodes specified by |new_active_ids|.
   // The caller can pass in the "complete" active node list of either input
   // nodes, or output nodes, or both. If only input nodes are passed in,
@@ -1129,6 +1135,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Whether the speak-on-mute detection is enabled in CRAS.
   bool speak_on_mute_detection_on_ = false;
+
+  // Whether the sidetone is enabled in CRAS.
+  bool sidetone_enabled_ = false;
 
   // Indicates whether the audio selection notification should be displayed.
   bool should_show_notification_ = false;
