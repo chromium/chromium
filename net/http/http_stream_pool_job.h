@@ -12,6 +12,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/load_states.h"
@@ -25,6 +26,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -152,6 +154,9 @@ class HttpStreamPool::Job
   // Notifies a certificate error to all requests.
   void NotifyCertificateError(int rv, const SSLInfo& ssl_info);
 
+  // Notifies a client cert is needed to all requests.
+  void NotifyNeedsClientAuth(scoped_refptr<SSLCertRequestInfo> cert_info);
+
   // Creates a text based stream and notifies the highest priority request.
   void CreateTextBasedStreamAndNotify(
       std::unique_ptr<StreamSocket> stream_socket);
@@ -169,6 +174,9 @@ class HttpStreamPool::Job
 
   void OnInFlightAttemptComplete(InFlightAttempt* raw_attempt, int rv);
   void OnInFlightAttemptSlow(InFlightAttempt* raw_attempt);
+
+  void HandleAttemptFailure(std::unique_ptr<InFlightAttempt> in_flight_attempt,
+                            int rv);
 
   void MaybeComplete();
 

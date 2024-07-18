@@ -23,6 +23,7 @@
 #include "net/socket/stream_attempt.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
+#include "net/ssl/ssl_cert_request_info.h"
 
 namespace net {
 
@@ -310,6 +311,10 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
     return;
   }
 
+  // TODO(crbug.com/346835898): Ensure that we don't attempt connections when
+  // failing.
+  CHECK(!is_failing_);
+
   std::optional<IPEndPoint> ip_endpoint = GetIPEndPointToAttempt();
   if (!ip_endpoint.has_value()) {
     if (service_endpoint_request_finished_ && in_flight_attempts_.empty()) {
@@ -446,6 +451,24 @@ void HttpStreamPool::Job::NotifyCertificateError(int rv,
   // `this` may be deleted.
 }
 
+void HttpStreamPool::Job::NotifyNeedsClientAuth(
+    scoped_refptr<SSLCertRequestInfo> cert_info) {
+  is_failing_ = true;
+
+  RequestEntry* entry = ExtractFirstRequestToNotify();
+  if (!entry) {
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&Job::NotifyNeedsClientAuth,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                base::RetainedRef(cert_info)));
+
+  entry->delegate()->OnNeedsClientAuth(cert_info.get());
+  // `this` may be deleted.
+}
+
 void HttpStreamPool::Job::CreateTextBasedStreamAndNotify(
     std::unique_ptr<StreamSocket> stream_socket) {
   NextProto negotiated_protocol = stream_socket->GetNegotiatedProtocol();
@@ -528,37 +551,17 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
       std::move(in_flight_attempts_.extract(it).value());
   pool()->DecrementTotalConnectingStreamCount();
 
-  std::unique_ptr<StreamSocket> stream_socket =
-      in_flight_attempt->attempt->ReleaseStreamSocket();
-
   if (rv != OK) {
-    CHECK_NE(rv, ERR_IO_PENDING);
-    failed_ip_endpoints_.emplace(in_flight_attempt->attempt->ip_endpoint());
-    last_attempt_error_ = rv;
-    in_flight_attempt.reset();
-
-    if (IsCertificateError(rv)) {
-      // When a certificate error happened for an attempt, notifies all requests
-      // of the error.
-      CHECK(UsingTls());
-      CHECK(stream_socket);
-      SSLInfo ssl_info;
-      bool has_ssl_info = stream_socket->GetSSLInfo(&ssl_info);
-      CHECK(has_ssl_info);
-      stream_socket.reset();
-      NotifyCertificateError(rv, ssl_info);
-    } else {
-      stream_socket.reset();
-      MaybeAttemptConnection();
-    }
+    HandleAttemptFailure(std::move(in_flight_attempt), rv);
     return;
   }
-
-  CHECK(stream_socket);
 
   // TODO(crbug.com/346835898): Support preconnect.
 
   // TODO(crbug.com/346835898): Support HTTP/2.
+  std::unique_ptr<StreamSocket> stream_socket =
+      in_flight_attempt->attempt->ReleaseStreamSocket();
+  CHECK(stream_socket);
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
   CreateTextBasedStreamAndNotify(std::move(stream_socket));
 }
@@ -573,6 +576,45 @@ void HttpStreamPool::Job::OnInFlightAttemptSlow(InFlightAttempt* raw_attempt) {
   prefer_ipv6_ = !raw_attempt->attempt->ip_endpoint().address().IsIPv6();
 
   MaybeAttemptConnection();
+}
+
+void HttpStreamPool::Job::HandleAttemptFailure(
+    std::unique_ptr<InFlightAttempt> in_flight_attempt,
+    int rv) {
+  CHECK_NE(rv, ERR_IO_PENDING);
+  failed_ip_endpoints_.emplace(in_flight_attempt->attempt->ip_endpoint());
+
+  if (is_failing_) {
+    // `this` has already failed and is notifying requests to the failure.
+    return;
+  }
+
+  last_attempt_error_ = rv;
+
+  if (rv == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+    CHECK(UsingTls());
+    scoped_refptr<SSLCertRequestInfo> cert_info =
+        in_flight_attempt->attempt->GetCertRequestInfo();
+    in_flight_attempt.reset();
+    NotifyNeedsClientAuth(cert_info);
+    return;
+  }
+
+  if (IsCertificateError(rv)) {
+    // When a certificate error happened for an attempt, notifies all requests
+    // of the error.
+    CHECK(UsingTls());
+    CHECK(in_flight_attempt->attempt->stream_socket());
+    SSLInfo ssl_info;
+    bool has_ssl_info =
+        in_flight_attempt->attempt->stream_socket()->GetSSLInfo(&ssl_info);
+    CHECK(has_ssl_info);
+    in_flight_attempt.reset();
+    NotifyCertificateError(rv, ssl_info);
+  } else {
+    in_flight_attempt.reset();
+    MaybeAttemptConnection();
+  }
 }
 
 void HttpStreamPool::Job::MaybeComplete() {

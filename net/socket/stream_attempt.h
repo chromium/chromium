@@ -74,6 +74,8 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   // SSLCertRequestInfo received. Otherwise, returns nullptr.
   virtual scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo();
 
+  StreamSocket* stream_socket() const { return stream_socket_.get(); }
+
   std::unique_ptr<StreamSocket> ReleaseStreamSocket();
 
   const IPEndPoint& ip_endpoint() const { return ip_endpoint_; }

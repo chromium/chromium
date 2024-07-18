@@ -12,8 +12,10 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
@@ -29,6 +31,7 @@
 #include "net/socket/socket_test_util.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/spdy/spdy_test_util_common.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -340,7 +343,10 @@ class StreamRequester : public HttpStreamRequest::Delegate {
     NOTREACHED_NORETURN();
   }
 
-  void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override {}
+  void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override {
+    CHECK(!cert_info_);
+    cert_info_ = cert_info;
+  }
 
   void OnQuicBroken() override {}
 
@@ -357,6 +363,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   }
 
   const SSLInfo& cert_error_ssl_info() const { return cert_error_ssl_info_; }
+
+  scoped_refptr<SSLCertRequestInfo> cert_info() const { return cert_info_; }
 
  private:
   url::SchemeHostPort destination_;
@@ -375,6 +383,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   NetErrorDetails net_error_details_;
   ResolveErrorInfo resolve_error_info_;
   SSLInfo cert_error_ssl_info_;
+  scoped_refptr<SSLCertRequestInfo> cert_info_;
 };
 
 }  // namespace
@@ -612,6 +621,79 @@ TEST_F(HttpStreamPoolJobTest, CertificateError) {
       requester1.cert_error_ssl_info().cert->EqualsIncludingChain(kCert.get()));
   ASSERT_TRUE(
       requester2.cert_error_ssl_info().cert->EqualsIncludingChain(kCert.get()));
+}
+
+TEST_F(HttpStreamPoolJobTest, NeedsClientAuth) {
+  // Set the per-group limit to one to allow only one attempt.
+  constexpr size_t kMaxPerGroup = 1;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  const url::SchemeHostPort kDestination(GURL("https://a.test"));
+
+  auto data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(data.get());
+  SSLSocketDataProvider ssl(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+  ssl.cert_request_info->host_and_port =
+      HostPortPair::FromSchemeHostPort(kDestination);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDestination).RequestStream(pool());
+  StreamRequester requester2;
+  requester2.set_destination(kDestination).RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  EXPECT_FALSE(requester1.result().has_value());
+  EXPECT_FALSE(requester2.result().has_value());
+
+  endpoint_request->set_crypto_ready(true).CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  EXPECT_EQ(requester1.cert_info()->host_and_port,
+            HostPortPair::FromSchemeHostPort(kDestination));
+  EXPECT_EQ(requester2.cert_info()->host_and_port,
+            HostPortPair::FromSchemeHostPort(kDestination));
+}
+
+// Tests that after a fatal error (e.g., the server required a client cert),
+// following attempt failures are ignored and the existing requests get the
+// same fatal error.
+TEST_F(HttpStreamPoolJobTest, TcpFailAfterNeedsClientAuth) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  const url::SchemeHostPort kDestination(GURL("https://a.test"));
+
+  auto data1 = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(data1.get());
+  SSLSocketDataProvider ssl(SYNCHRONOUS, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+  ssl.cert_request_info->host_and_port =
+      HostPortPair::FromSchemeHostPort(kDestination);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  auto data2 = std::make_unique<SequencedSocketData>();
+  data2->set_connect_data(MockConnect(ASYNC, ERR_FAILED));
+  socket_factory()->AddSocketDataProvider(data2.get());
+
+  StreamRequester requester1;
+  requester1.set_destination(kDestination).RequestStream(pool());
+  StreamRequester requester2;
+  requester2.set_destination(kDestination).RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  EXPECT_EQ(requester1.cert_info()->host_and_port,
+            HostPortPair::FromSchemeHostPort(kDestination));
+  EXPECT_EQ(requester2.cert_info()->host_and_port,
+            HostPortPair::FromSchemeHostPort(kDestination));
 }
 
 TEST_F(HttpStreamPoolJobTest, RequestCancelledBeforeAttemptSuccess) {
