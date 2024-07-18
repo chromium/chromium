@@ -33,4 +33,10 @@ std::unique_ptr<views::View> CreatePasskeyIconWithLabelRow(
     const gfx::VectorIcon& icon,
     const std::u16string& label);
 
+// Creates a simple view with a password manager icon and a label.
+// +---------------------+
+// | <icon>      label   |
+// +---------------------+
+std::unique_ptr<views::View> CreateGpmIconWithLabel();
+
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_COMMON_VIEWS_H_

@@ -12,10 +12,12 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_gpm_account_info_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/pin_options_button.h"
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -26,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -154,6 +157,8 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
     return;
   }
 
+  UpdateFooter();
+
   // Force re-layout of the entire dialog client view, which includes the sheet
   // content as well as the button row on the bottom.
   // TODO(ellyjones): Why is this necessary?
@@ -192,6 +197,11 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
 bool AuthenticatorRequestDialogView::ShouldOtherMechanismsButtonBeVisible()
     const {
   return sheet_->model()->IsOtherMechanismButtonVisible();
+}
+
+void AuthenticatorRequestDialogView::AddedToWidget() {
+  // Updating footer requires widget to be present.
+  UpdateFooter();
 }
 
 bool AuthenticatorRequestDialogView::Accept() {
@@ -354,6 +364,26 @@ void AuthenticatorRequestDialogView::ForgotGPMPinPressed() {
 
 void AuthenticatorRequestDialogView::GPMPinOptionChosen(bool is_arbitrary) {
   sheet_->model()->OnGPMPinOptionChosen(is_arbitrary);
+}
+
+void AuthenticatorRequestDialogView::UpdateFooter() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  auto* frame_view = GetBubbleFrameView();
+  if (model_->step() == Step::kGPMCreatePin ||
+      model_->step() == Step::kGPMCreateArbitraryPin ||
+      model_->step() == Step::kGPMChangePin ||
+      model_->step() == Step::kGPMChangeArbitraryPin ||
+      model_->step() == Step::kGPMEnterPin ||
+      model_->step() == Step::kGPMEnterArbitraryPin) {
+    frame_view->SetFootnoteView(
+        std::make_unique<AuthenticatorGpmAccountInfoView>(
+            static_cast<AuthenticatorGpmPinSheetModel*>(sheet_->model())));
+  } else {
+    frame_view->SetFootnoteView(nullptr);
+  }
 }
 
 BEGIN_METADATA(AuthenticatorRequestDialogView)

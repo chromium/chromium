@@ -16540,7 +16540,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Letters &amp;&amp; Numbers
       </message>
       <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_TITLE" desc="The title of a dialog that is shown when a user is creating a new Google Password Manager PIN.">
-        Create a recovery PIN for Google Password Manager
+        Create a recovery PIN
       </message>
       <message name="IDS_WEBAUTHN_GPM_CREATE_ALPHANUMERIC_PIN_ACCESSIBILITY" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield during creation of an alphanumeric pin.">
         Create an alphanumeric recovery PIN for Google Password Manager
@@ -16549,10 +16549,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Create a 6-digit recovery PIN for Google Password Manager
       </message>
       <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_DESC" desc="The description of a dialog that is shown when a user is creating a Google Password Manager PIN explaining that it will be used to access their passkeys on all devices. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
-        A recovery PIN helps you access your saved passkeys on any device
+        This helps you access your saved passkeys on any device
       </message>
       <message name="IDS_WEBAUTHN_GPM_ENTER_PIN_TITLE" desc="The title of a dialog that is shown when a user has to verify their presence in passkey creation / sign-in flows by using their Google Password Manager PIN.">
-        Enter your PIN for Google Password Manager
+        Enter your PIN
       </message>
       <message name="IDS_WEBAUTHN_GPM_ENTER_ALPHANUMERIC_PIN_ACCESSIBILITY" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering an alphanumeric pin for user verification.">
         Enter your alphanumeric PIN for Google Password Manager
