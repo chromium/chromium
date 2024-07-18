@@ -1780,14 +1780,17 @@ def GetRevisionFromMilestone(milestone):
 
 
 def GetRevision(revision):
-  """Get revision from either milestone M85 or full version 85.0.4183.0"""
+  """Get revision from either milestone M85, full version 85.0.4183.0,
+     or a commit position.
+  """
   if type(revision) == type(0):
     return revision
   if IsVersionNumber(revision):
     return GetRevisionFromVersion(revision)
   elif revision[:1].upper() == 'M' and revision[1:].isdigit():
     return GetRevisionFromMilestone(int(revision[1:]))
-  return None
+  # By default, we assume it's a commit position.
+  return int(revision)
 
 
 def CheckDepotToolsInPath():
