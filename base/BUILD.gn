@@ -4716,11 +4716,9 @@ if (is_android) {
       "android/java/src/org/chromium/base/task/SerialExecutor.java",
       "android/java/src/org/chromium/base/task/SingleThreadTaskRunner.java",
       "android/java/src/org/chromium/base/task/SingleThreadTaskRunnerImpl.java",
-      "android/java/src/org/chromium/base/task/TaskExecutor.java",
       "android/java/src/org/chromium/base/task/TaskRunner.java",
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
-      "android/java/src/org/chromium/base/task/ThreadPoolTaskExecutor.java",
-      "android/java/src/org/chromium/base/task/UiThreadTaskExecutor.java",
+      "android/java/src/org/chromium/base/task/UiThreadTaskRunnerImpl.java",
     ]
     deps = [
       ":activity_state_java",
@@ -4957,7 +4955,6 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/task/AsyncTaskTest.java",
       "android/javatests/src/org/chromium/base/task/PostTaskTest.java",
       "android/javatests/src/org/chromium/base/task/SequencedTaskRunnerImplTest.java",
-      "android/javatests/src/org/chromium/base/task/SingleThreadTaskRunnerImplTest.java",
       "android/javatests/src/org/chromium/base/task/TaskRunnerImplTest.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherTestBase.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherTransitionToNativeTest.java",

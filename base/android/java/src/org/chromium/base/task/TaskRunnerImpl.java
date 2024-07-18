@@ -17,10 +17,11 @@ import org.chromium.base.TraceEvent;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -57,7 +58,7 @@ public class TaskRunnerImpl implements TaskRunner {
 
     @Nullable
     @GuardedBy("mPreNativeTaskLock")
-    private LinkedList<Runnable> mPreNativeTasks;
+    private Queue<Runnable> mPreNativeTasks;
 
     @Nullable
     @GuardedBy("mPreNativeTaskLock")
@@ -176,7 +177,7 @@ public class TaskRunnerImpl implements TaskRunner {
         }
     }
 
-    protected Boolean belongsToCurrentThreadInternal() {
+    final boolean belongsToCurrentThreadInternal() {
         // TODO(crbug.com/40108370): This function shouldn't be here, and should only be used
         // by derived classes (eg. SingleThreadTaskRunner) until it is moved there, as TaskRunner
         // has no notion of belonging to a thread.
@@ -184,7 +185,7 @@ public class TaskRunnerImpl implements TaskRunner {
         synchronized (mPreNativeTaskLock) {
             oneTimeInitialization();
         }
-        if (mNativeTaskRunnerAndroid == 0) return null;
+
         return TaskRunnerImplJni.get().belongsToCurrentThread(mNativeTaskRunnerAndroid);
     }
 
@@ -195,7 +196,7 @@ public class TaskRunnerImpl implements TaskRunner {
         if (!PostTask.registerPreNativeTaskRunner(this)) {
             initNativeTaskRunner();
         } else {
-            mPreNativeTasks = new LinkedList<>();
+            mPreNativeTasks = new ArrayDeque<>();
             mPreNativeDelayedTasks = new ArrayList<>();
         }
     }

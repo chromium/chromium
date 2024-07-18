@@ -4,10 +4,6 @@
 
 package org.chromium.base.task;
 
-import android.os.Handler;
-
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 
 /**
@@ -17,46 +13,26 @@ import org.jni_zero.JNINamespace;
  */
 @JNINamespace("base")
 public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements SingleThreadTaskRunner {
-    @Nullable private final Handler mHandler;
-
     /**
-     * @param handler                The backing Handler if any. Note this must run tasks on the
-     *                               same thread that the native code runs a task with |traits|.
-     *                               If handler is null then tasks won't run until native has
-     *                               initialized.
-     * @param traits                 The TaskTraits associated with this SingleThreadTaskRunnerImpl.
+     * @param traits The TaskTraits associated with this TaskRunner.
      */
-    public SingleThreadTaskRunnerImpl(Handler handler, @TaskTraits int traits) {
-        super(traits, "SingleThreadTaskRunnerImpl", TaskRunnerType.SINGLE_THREAD);
-        mHandler = handler;
+    public SingleThreadTaskRunnerImpl(@TaskTraits int traits) {
+        super(traits, "SingleThreadTaskRunner", TaskRunnerType.SINGLE_THREAD);
     }
 
     @Override
     public boolean belongsToCurrentThread() {
-        Boolean belongs = belongsToCurrentThreadInternal();
-        if (belongs != null) return belongs.booleanValue();
-        assert mHandler != null;
-        return mHandler.getLooper().getThread() == Thread.currentThread();
+        return belongsToCurrentThreadInternal();
     }
 
     @Override
     protected void schedulePreNativeTask() {
-        // if |mHandler| is null then pre-native task execution is not supported.
-        if (mHandler == null) {
-            return;
-        } else {
-            mHandler.post(mRunPreNativeTaskClosure);
-        }
+        // Pre-native task execution is not supported.
     }
 
     @Override
     protected boolean schedulePreNativeDelayedTask(Runnable task, long delay) {
-        if (mHandler == null) return false;
-        // In theory it would be fine to delay these tasks until native is initialized and post them
-        // to the native task runner, but in practice some tests don't initialize native and still
-        // expect delayed tasks to eventually run. There's no good reason not to support them here,
-        // there are so few of these tasks that they're very unlikely to cause performance problems.
-        mHandler.postDelayed(task, delay);
-        return true;
+        // Pre-native task execution is not supported.
+        return false;
     }
 }

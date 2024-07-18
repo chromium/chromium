@@ -123,8 +123,6 @@ public class ThreadUtils {
                     sUiThreadInitializer = new Throwable("This is who set sUiThreadHandler.");
                 }
                 Handler uiThreadHandler = new Handler(looper);
-                // Set up the UI Thread TaskExecutor before signaling readiness.
-                PostTask.onUiThreadReady(uiThreadHandler);
                 // volatile write signals readiness since other threads read it without acquiring
                 // sLock.
                 sUiThreadHandler = uiThreadHandler;

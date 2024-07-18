@@ -4,14 +4,11 @@
 
 package org.chromium.base.task;
 
-import android.os.Handler;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.ThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,40 +40,60 @@ public class PostTask {
             new ChromeThreadPoolExecutor();
     private static volatile Executor sPrenativeThreadPoolExecutorForTesting;
 
-    private static final ThreadPoolTaskExecutor sThreadPoolTaskExecutor =
-            new ThreadPoolTaskExecutor();
-    // Initialized on demand or when the UI thread is initialized to allow embedders (eg WebView) to
-    // override the UI thread.
-    private static UiThreadTaskExecutor sUiThreadTaskExecutor;
+    private static final TaskRunner[] sTraitsToRunnerMap =
+            new TaskRunner[TaskTraits.UI_TRAITS_END + 1];
+
+    static {
+        for (@TaskTraits int i = 0; i <= TaskTraits.THREAD_POOL_TRAITS_END; i++) {
+            sTraitsToRunnerMap[i] = new TaskRunnerImpl(i);
+        }
+        for (@TaskTraits int i = TaskTraits.UI_TRAITS_START; i <= TaskTraits.UI_TRAITS_END; i++) {
+            sTraitsToRunnerMap[i] = new UiThreadTaskRunnerImpl(i);
+        }
+    }
 
     // Used by AsyncTask / ChainedTask to auto-cancel tasks from prior tests.
     static int sTestIterationForTesting;
 
+    private static boolean isUiTaskTraits(@TaskTraits int taskTraits) {
+        return taskTraits >= TaskTraits.UI_TRAITS_START;
+    }
+
     /**
-     * @param traits The TaskTraits that describe the desired TaskRunner.
+     * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @return The TaskRunner for the specified TaskTraits.
      */
     public static TaskRunner createTaskRunner(@TaskTraits int taskTraits) {
-        return getTaskExecutorForTraits(taskTraits).createTaskRunner(taskTraits);
+        if (isUiTaskTraits(taskTraits)) {
+            return sTraitsToRunnerMap[taskTraits];
+        }
+        return new TaskRunnerImpl(taskTraits);
     }
 
     /**
      * Creates and returns a SequencedTaskRunner. SequencedTaskRunners automatically destroy
      * themselves, so the destroy() function is not required to be called.
-     * @param traits The TaskTraits that describe the desired TaskRunner.
+     *
+     * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @return The TaskRunner for the specified TaskTraits.
      */
     public static SequencedTaskRunner createSequencedTaskRunner(@TaskTraits int taskTraits) {
-        return getTaskExecutorForTraits(taskTraits).createSequencedTaskRunner(taskTraits);
+        if (isUiTaskTraits(taskTraits)) {
+            return (SequencedTaskRunner) sTraitsToRunnerMap[taskTraits];
+        }
+        return new SequencedTaskRunnerImpl(taskTraits);
     }
 
     /**
-     *
-     * @param traits The TaskTraits that describe the desired TaskRunner.
+     * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @return The TaskRunner for the specified TaskTraits.
      */
     public static SingleThreadTaskRunner createSingleThreadTaskRunner(@TaskTraits int taskTraits) {
-        return getTaskExecutorForTraits(taskTraits).createSingleThreadTaskRunner(taskTraits);
+        if (isUiTaskTraits(taskTraits)) {
+            return (SingleThreadTaskRunner) sTraitsToRunnerMap[taskTraits];
+        }
+        // Tasks posted via this API will not execute until after native has started.
+        return new SingleThreadTaskRunnerImpl(taskTraits);
     }
 
     /**
@@ -93,24 +110,23 @@ public class PostTask {
      * @param delay The delay in milliseconds before the task can be run.
      */
     public static void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-        getTaskExecutorForTraits(taskTraits).postDelayedTask(taskTraits, task, delay);
+        sTraitsToRunnerMap[taskTraits].postDelayedTask(task, delay);
     }
 
     /**
-     * This function executes the task immediately if the current thread is the
-     * same as the one corresponding to the SingleThreadTaskRunner, otherwise it
-     * posts it.
+     * This function executes the task immediately if the current thread is the same as the one
+     * corresponding to the SingleThreadTaskRunner, otherwise it posts it.
      *
-     * It should be executed only for tasks with traits corresponding to
-     * executors backed by a SingleThreadTaskRunner, like TaskTraits.UI_*.
+     * <p>It should be executed only for tasks with traits corresponding to executors backed by a
+     * SingleThreadTaskRunner, like TaskTraits.UI_*.
      *
-     * Use this only for trivial tasks as it ignores task priorities.
+     * <p>Use this only for trivial tasks as it ignores task priorities.
      *
      * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @param task The task to be run with the specified traits.
      */
     public static void runOrPostTask(@TaskTraits int taskTraits, Runnable task) {
-        if (getTaskExecutorForTraits(taskTraits).canRunTaskImmediately(taskTraits)) {
+        if (canRunTaskImmediately(taskTraits)) {
             task.run();
         } else {
             postTask(taskTraits, task);
@@ -122,7 +138,11 @@ public class PostTask {
      * the one corresponding to the SingleThreadTaskRunner)
      */
     public static boolean canRunTaskImmediately(@TaskTraits int taskTraits) {
-        return getTaskExecutorForTraits(taskTraits).canRunTaskImmediately(taskTraits);
+        if (isUiTaskTraits(taskTraits)) {
+            return ((SingleThreadTaskRunner) sTraitsToRunnerMap[taskTraits])
+                    .belongsToCurrentThread();
+        }
+        return false;
     }
 
     /**
@@ -204,15 +224,6 @@ public class PostTask {
         }
     }
 
-    private static TaskExecutor getTaskExecutorForTraits(@TaskTraits int traits) {
-        if (traits >= TaskTraits.UI_TRAITS_START) {
-            // UI thread may be posted to before initialized, so trigger the initialization.
-            if (sUiThreadTaskExecutor == null) ThreadUtils.getUiThreadHandler();
-            return sUiThreadTaskExecutor;
-        }
-        return sThreadPoolTaskExecutor;
-    }
-
     @CalledByNative
     private static void onNativeSchedulerReady() {
         // Unit tests call this multiple times.
@@ -258,16 +269,8 @@ public class PostTask {
         }
     }
 
-    /** Called once when the UI thread has been initialized */
-    public static void onUiThreadReady(Handler uiThreadHandler) {
-        assert sUiThreadTaskExecutor == null;
-        sUiThreadTaskExecutor = new UiThreadTaskExecutor(uiThreadHandler);
-    }
-
     public static void resetUiThreadForTesting() {
         // UI Thread cannot be reset cleanly after native initialization.
         assert !sNativeInitialized;
-
-        sUiThreadTaskExecutor = null;
     }
 }
