@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -78,6 +79,7 @@ public class TabGroupSyncLocalToRemoteTest {
     @Test
     @MediumTest
     @Feature({"Sync"})
+    @DisabledTest(message = "crbug.com/353952795")
     public void testCreateTabGroup() {
         WebPageStation firstPage = mTransitEntryPoints.alreadyStartedOnBlankPageNonBatched();
         Tab firstTab = firstPage.getLoadedTab();
