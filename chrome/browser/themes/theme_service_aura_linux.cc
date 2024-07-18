@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -119,7 +118,6 @@ void ThemeServiceAuraLinux::UseTheme(ui::SystemTheme system_theme) {
   } else {
     return;
   }
-  UMA_HISTOGRAM_ENUMERATION("Linux.SystemTheme.Profile", system_theme);
 }
 
 void ThemeServiceAuraLinux::UseSystemTheme() {
