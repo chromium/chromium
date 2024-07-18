@@ -1978,6 +1978,7 @@ class HardwareDisplayPlaneAtomicMock : public HardwareDisplayPlaneAtomic {
                         const gfx::Rect& src_rect,
                         const gfx::Rect& damage_rect,
                         const gfx::OverlayTransform transform,
+                        const gfx::ColorSpace& color_space,
                         int in_fence_fd,
                         uint32_t format_fourcc,
                         bool is_original_buffer) override {

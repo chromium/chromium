@@ -30,6 +30,11 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "gpu/config/gpu_finch_features.h"
+#include "ui/gl/gl_switches.h"
+#endif
+
 #if BUILDFLAG(ENABLE_CAST_OVERLAY_STRATEGY)
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #endif
@@ -37,6 +42,41 @@
 namespace viz {
 
 namespace {
+
+gfx::ColorSpace GetColorSpaceForOzone(gfx::BufferFormat format,
+                                      const gfx::ColorSpace& orig_color_space) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // The goal here is to ensure that the hw overlay path and the compositing
+  // path produce visually identical results. Otherwise, the user would perceive
+  // flickering when a particular resource (like a video) goes in and out of hw
+  // overlays repeatedly (for whatever reason).
+  //
+  // The Vulkan path is able to treat YUV 4:2:0 BT.601 and BT.709 resources
+  // correctly (see gpu::CreateVulkanYcbcrConversionInfo()). The GL path
+  // currently doesn't and just treats YUV 4:2:0 BT.709 resources as if they
+  // were BT.601 (but see the TODO below). Therefore, when Vulkan is enabled,
+  // we allow the overlay path to also distinguish between the two YUV
+  // encodings. Otherwise, we always use BT.601. This should ensure visual
+  // consistency between the compositing and the hw overlays path in both GL
+  // and Vulkan ChromeOS devices.
+  //
+  // TODO(b/233667677): the only reason the GL path treats YUV 4:2:0 BT.709
+  // resources as BT.601 is because of https://crrev.com/c/2336347. If we can
+  // be confident that hw overlays on all platforms can deal with BT.601 and
+  // BT.709 correctly, then we don't need GetColorSpaceForOzone() at all and we
+  // can just the pass the color space as-is to Ozone (and we would also need to
+  // change the GL path to distinguish between BT.601 and BT.709, see
+  // NativePixmapEGLBinding::InitializeFromNativePixmap()).
+  if ((format == gfx::BufferFormat::YUV_420_BIPLANAR) &&
+      (!base::FeatureList::IsEnabled(features::kVulkan) ||
+       !base::FeatureList::IsEnabled(features::kDefaultANGLEVulkan) ||
+       !base::FeatureList::IsEnabled(features::kVulkanFromANGLE))) {
+    return orig_color_space.GetWithMatrixAndRange(
+        gfx::ColorSpace::MatrixID::SMPTE170M, orig_color_space.GetRangeID());
+  }
+#endif
+  return orig_color_space;
+}
 
 // TODO(weiliangc): When difference between primary plane and non-primary plane
 // can be internalized, merge these two helper functions.
@@ -46,7 +86,8 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->transform = primary_plane.transform;
   ozone_candidate->format =
       SinglePlaneSharedImageFormatToBufferFormat(primary_plane.format);
-  ozone_candidate->color_space = primary_plane.color_space;
+  ozone_candidate->color_space = GetColorSpaceForOzone(
+      ozone_candidate->format, /*orig_color_space=*/primary_plane.color_space);
   ozone_candidate->display_rect = primary_plane.display_rect;
   ozone_candidate->crop_rect = primary_plane.uv_rect;
   ozone_candidate->clip_rect.reset();
@@ -63,7 +104,9 @@ void ConvertToOzoneOverlaySurface(
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = overlay_candidate.transform;
   ozone_candidate->format = gpu::ToBufferFormat(overlay_candidate.format);
-  ozone_candidate->color_space = overlay_candidate.color_space;
+  ozone_candidate->color_space =
+      GetColorSpaceForOzone(ozone_candidate->format,
+                            /*orig_color_space=*/overlay_candidate.color_space);
   ozone_candidate->display_rect = overlay_candidate.display_rect;
   ozone_candidate->crop_rect = overlay_candidate.uv_rect;
   ozone_candidate->clip_rect = overlay_candidate.clip_rect;
@@ -88,7 +131,9 @@ void ConvertToTiledOzoneOverlaySurface(
     ui::OverlaySurfaceCandidate* ozone_candidate) {
   ozone_candidate->transform = gfx::OVERLAY_TRANSFORM_NONE;
   ozone_candidate->format = gfx::BufferFormat::RGBA_8888;
-  ozone_candidate->color_space = overlay_candidate.color_space;
+  ozone_candidate->color_space =
+      GetColorSpaceForOzone(ozone_candidate->format,
+                            /*orig_color_space=*/overlay_candidate.color_space);
   ozone_candidate->display_rect = overlay_candidate.display_rect;
   ozone_candidate->crop_rect = gfx::RectF(1.0, 1.0);
   ozone_candidate->clip_rect = std::nullopt;

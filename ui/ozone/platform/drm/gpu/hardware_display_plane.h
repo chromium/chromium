@@ -95,8 +95,9 @@ class HardwareDisplayPlane {
   std::vector<uint32_t> supported_formats_;
   std::vector<drm_format_modifier> supported_format_modifiers_;
 
-  uint64_t color_encoding_bt601_;
-  uint64_t color_range_limited_;
+  uint64_t color_encoding_bt601_ = 0u;
+  uint64_t color_encoding_bt709_ = 0u;
+  uint64_t color_range_limited_ = 0u;
 
  private:
   void InitializeProperties(DrmDevice* drm);

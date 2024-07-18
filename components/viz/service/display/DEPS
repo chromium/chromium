@@ -59,7 +59,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "overlay_processor_win.cc|dc_layer_overlay.cc|overlay_dc_unittest.cc": [
+  # TODO(b/233667677): remove the overlay_processor_ozone.cc dependency on
+  # ui/gl/gl_switches.h when the GL path can distinguish between BT.601 and
+  # BT.709 YUV resources.
+  "overlay_processor_ozone.cc|overlay_processor_win.cc|dc_layer_overlay.cc|overlay_dc_unittest.cc": [
     # TODO(danakj): gl_switches.h brings runtime flags into the compositor which
     # makes testing coverage harder/less clear, it should not be here.
     "+ui/gl/gl_switches.h",

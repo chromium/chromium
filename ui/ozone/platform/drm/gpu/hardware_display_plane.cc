@@ -115,6 +115,8 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
   if (properties_.plane_color_encoding.id) {
     color_encoding_bt601_ = GetEnumValueForName(
         *drm, properties_.plane_color_encoding.id, "ITU-R BT.601 YCbCr");
+    color_encoding_bt709_ = GetEnumValueForName(
+        *drm, properties_.plane_color_encoding.id, "ITU-R BT.709 YCbCr");
     color_range_limited_ = GetEnumValueForName(
         *drm, properties_.plane_color_range.id, "YCbCr limited range");
   }
