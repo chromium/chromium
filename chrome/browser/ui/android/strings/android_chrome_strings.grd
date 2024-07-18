@@ -1702,19 +1702,19 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_WARNING_TITLE" translateable="false">
         {NUM_SITES, plural, =1 {1 site recently sent a lot of notifications} other {# sites recently sent a lot of notifications}}
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_TITLE" desc="Page title for the Safety Hub notifications review subpage, allowing users to revoke notification permissions from sites that send a lot of notifications.">
         Review notifications
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_HEADER" translateable="false">
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_HEADER" desc="Header text shown at the very top of the Safety Hub notifications review subpage. Further educates the user about the contents of the page.">
         You can review sites that send a lot of notifications and stop them from sending more in the future
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_SUBLABEL" translateable="false">
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_SUBLABEL" desc="Description text shown below a site name, when it is identified as a site that sends a lot of notifications and has low user interaction.">
         {NUM_SITES, plural, =1 {About 1 notification a day} other {About # notifications a day}}
       </message>
-      <message name="IDS_SAFETY_HUB_RESET_NOTIFICATIONS_MENU_ITEM" translateable="false">
+      <message name="IDS_SAFETY_HUB_RESET_NOTIFICATIONS_MENU_ITEM" desc="Menu item displayed when the user clicks the 3-dot menu icon, displayed to the right of a site that sends a lot of notifications. If clicked, it unsubscribes the user from receiving more notifications from that site.">
         Unsubscribe notifications from this site
       </message>
-      <message name="IDS_SAFETY_HUB_ALLOW_NOTIFICATIONS_MENU_ITEM" translateable="false">
+      <message name="IDS_SAFETY_HUB_ALLOW_NOTIFICATIONS_MENU_ITEM" desc="Menu item displayed when the user clicks the 3-dot menu icon, displayed to the right of a site that sends a lot of notifications. If clicked, it removes the site from the notifications review list.">
         Always allow notifications from this site
       </message>
       <message name="IDS_SAFETY_HUB_SAFETY_MODULES_SECTION_HEADER" translateable="false">
@@ -1744,13 +1744,13 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SUBLABEL" desc="Description text shown below a site name, when notification permissions were automatically revoked for that site.">
         Notifications <ph name="SEPARATOR">•</ph> Chrome removed these permissions because this site is dangerous
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_SNACKBAR" translateable="false">
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_SNACKBAR" desc="Snackbar text displayed when the user clicks the Unsubscribe button for a site which sends a lot of notifications. Informs the user for which site the notifications were unsubscribed.">
         Notifications not allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_ALLOW_SNACKBAR" translateable="false">
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_ALLOW_SNACKBAR" desc="Snackbar text displayed when the user clicks the Allow button for a site which sends a lot of notifications. Informs the user for which site the notifications were allowed.">
         Notifications allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_RESET_SNACKBAR" translateable="false">
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_RESET_SNACKBAR" desc="Snackbar text displayed when the user click the 'Unsubscribe all' button at the bottom of the notifications review subpage or in the notifications review module of the dashboard. Informs the user about the number of sites for which the notifications were unsubscribed.">
         Notifications not allowed for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
       </message>
       <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_TITLE" translateable="false">
@@ -1801,7 +1801,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_MENU_TEXT" desc="Text that appears when the user clicks the three dots at the top right of the permissions review subpage. Upon clicking on the text the user will be redirected to 'Site settings'">
         Go to site settings
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_MENU_TEXT" translateable="false">
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_MENU_TEXT" desc="Text that appears when the user clicks the 3-dot icon at the top right of the notifications review subpage. Upon clicking on the text the user will be redirected to the Notifications settings page.">
         Go to notification settings
       </message>
       <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_TITLE" translateable="false">
