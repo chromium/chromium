@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_group_confirmation_coordinator.h"
 
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -37,15 +41,15 @@
 
 - (void)start {
   CHECK(self.action);
-  // TODO(crbug.com/329627336) Add `title` and `message` depending on
-  // `actionType`.
   _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                           title:nil
-                         message:nil
+                           title:[self sheetTitle]
+                         message:[self sheetMessage]
                             rect:_sourceView.bounds
                             view:_sourceView];
+  _actionSheetCoordinator.popoverArrowDirection =
+      UIPopoverArrowDirectionDown | UIPopoverArrowDirectionUp;
 
   __weak TabGroupConfirmationCoordinator* weakSelf = self;
   [_actionSheetCoordinator addItemWithTitle:[self itemTitle]
@@ -90,6 +94,44 @@
       break;
     case TabGroupActionType::kDeleteTabGroup:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETEGROUP);
+  }
+  NOTREACHED();
+}
+
+// Returns a string used in the action sheet as a title.
+- (NSString*)sheetTitle {
+  switch (_actionType) {
+    case TabGroupActionType::kUngroupTabGroup:
+      // TODO(crbug.com/329631586): Implement the confirmation for ungrouping a
+      // tab group.
+    case TabGroupActionType::kDeleteTabGroup:
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_TITLE);
+  }
+  NOTREACHED();
+}
+
+// Returns a string used in the action sheet as a message.
+- (NSString*)sheetMessage {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  id<SystemIdentity> identity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
+  switch (_actionType) {
+    case TabGroupActionType::kUngroupTabGroup:
+      // TODO(crbug.com/329631586): Implement the confirmation for ungrouping a
+      // tab group.
+    case TabGroupActionType::kDeleteTabGroup:
+      if (identity) {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITH_EMAIL,
+            base::SysNSStringToUTF16(identity.userEmail));
+      } else {
+        return l10n_util::GetNSString(
+            IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITHOUT_EMAIL);
+      }
   }
   NOTREACHED();
 }

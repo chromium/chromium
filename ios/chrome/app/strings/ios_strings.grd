@@ -6099,6 +6099,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the CVC chip button displayed in the payment method manual fallback screen and that's allowing the user to autofill a specific form field with their payment method's CVC.">
         Autofill the CVC
       </message>
+      <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_TITLE" desc="Titie of the confirmation to delete a tab group in the action sheet.">
+        Delete Tab Group?
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITH_EMAIL" desc="Message of the confirmation to delete a tab group in the action sheet. This text is displayed when a user is signed in to Chrome with their account.">
+        This will delete the group from all devices signed into <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITHOUT_EMAIL" desc="Message of the confirmation to delete a tab group in the action sheet. This text is displayed when a user is not signed in.">
+        This will permanently delete the group from your device.
+      </message>
     </messages>
   </release>
 </grit>
