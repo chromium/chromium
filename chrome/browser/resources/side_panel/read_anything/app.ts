@@ -1852,10 +1852,22 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
   }
 
-  resetToDefaultWordBoundaryState() {
+  resetToDefaultWordBoundaryState(
+      possibleWordBoundarySupportChange: boolean = false) {
     this.wordBoundaryState = {
       previouslySpokenIndex: 0,
-      mode: this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED ?
+      // If a boundary has been detected, the mode should be reset to
+      // NO_BOUNDARIES instead of BOUNDARIES_NOT_SUPPORTED because we know word
+      // boundaries are supported- we just need to clear the current boundary
+      // state. This allows us to highlight the next word at the start of a
+      // sentence when playback state changes.
+      // However, if there's been a change that potentially impacts if word
+      // boundaries are supported (such as changing the voice), we should
+      // reset to BOUNDARIES_NOT_SUPPORTED because we don't know yet if word
+      // boundaries are supported for this voice.
+      mode: ((this.wordBoundaryState.mode ===
+              WordBoundaryMode.BOUNDARY_DETECTED) &&
+             !possibleWordBoundarySupportChange) ?
           WordBoundaryMode.NO_BOUNDARIES :
           WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED,
       speechUtteranceStartIndex: 0,
@@ -2065,9 +2077,23 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     event.preventDefault();
     event.stopPropagation();
 
+    let localesAreIdentical = false;
+    if (this.selectedVoice_) {
+      localesAreIdentical = this.selectedVoice_.lang.toLowerCase() ===
+          event.detail.selectedVoice.lang.toLowerCase();
+    }
+
     this.selectedVoice_ = event.detail.selectedVoice;
     chrome.readingMode.onVoiceChange(
         this.selectedVoice_.name, this.selectedVoice_.lang);
+
+    // If the locales are identical, the voices are likely from the same
+    // voice pack and use the same TTS engine, therefore, we don't need
+    // to reset the word boundary state.
+    if (!localesAreIdentical) {
+      this.resetToDefaultWordBoundaryState(
+          /*possibleWordBoundarySupportChange=*/ true);
+    }
 
     this.resetSpeechPostSettingChange_();
   }
