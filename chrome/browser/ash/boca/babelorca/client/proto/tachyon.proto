@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Source: http://google3/media/webrtc/server/tachyon/proto/tachyon.proto
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package babelorca;
+
+import "tachyon_common.proto";
+import "tachyon_enums.proto";
+
+message RegisterData {
+  DeviceId device_id = 1;
+}
+
+message SignInGaiaRequest {
+  RequestHeader header = 1;
+  RegisterData register_data = 2;
+  string app = 4;
+}
