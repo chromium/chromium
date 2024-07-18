@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +24,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -38,27 +40,37 @@ SecureDnsManager::SecureDnsManager(PrefService* pref_service)
   doh_templates_uri_resolver_ =
       std::make_unique<dns_over_https::TemplatesUriResolverImpl>();
   registrar_.Init(pref_service);
-  registrar_.Add(prefs::kDnsOverHttpsMode,
-                 base::BindRepeating(&SecureDnsManager::OnPrefChanged,
+  registrar_.Add(::prefs::kDnsOverHttpsMode,
+                 base::BindRepeating(&SecureDnsManager::OnDoHConfigPrefChanged,
                                      base::Unretained(this)));
-  registrar_.Add(prefs::kDnsOverHttpsTemplates,
-                 base::BindRepeating(&SecureDnsManager::OnPrefChanged,
+  registrar_.Add(::prefs::kDnsOverHttpsTemplates,
+                 base::BindRepeating(&SecureDnsManager::OnDoHConfigPrefChanged,
                                      base::Unretained(this)));
-  registrar_.Add(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                 base::BindRepeating(&SecureDnsManager::OnPrefChanged,
+  registrar_.Add(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                 base::BindRepeating(&SecureDnsManager::OnDoHConfigPrefChanged,
                                      base::Unretained(this)));
-  registrar_.Add(prefs::kDnsOverHttpsSalt,
-                 base::BindRepeating(&SecureDnsManager::OnPrefChanged,
+  registrar_.Add(::prefs::kDnsOverHttpsSalt,
+                 base::BindRepeating(&SecureDnsManager::OnDoHConfigPrefChanged,
                                      base::Unretained(this)));
+  registrar_.Add(
+      prefs::kDnsOverHttpsIncludedDomains,
+      base::BindRepeating(&SecureDnsManager::OnDoHIncludedDomainsPrefChanged,
+                          base::Unretained(this)));
+  registrar_.Add(
+      prefs::kDnsOverHttpsExcludedDomains,
+      base::BindRepeating(&SecureDnsManager::OnDoHExcludedDomainsPrefChanged,
+                          base::Unretained(this)));
   LoadProviders();
-  OnPrefChanged();
+  OnDoHIncludedDomainsPrefChanged();
+  OnDoHExcludedDomainsPrefChanged();
+  OnDoHConfigPrefChanged();
 }
 
 SecureDnsManager::~SecureDnsManager() {
   // `pref_service_` outlives the SecureDnsManager instance. The value of
   // `prefs::kDnsOverHttpsEffectiveTemplatesChromeOS` should not outlive the
   // current instance of SecureDnsManager.
-  pref_service_->ClearPref(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS);
+  pref_service_->ClearPref(::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS);
   registrar_.RemoveAll();
 }
 
@@ -130,7 +142,8 @@ base::Value::Dict SecureDnsManager::GetProviders(const std::string& mode,
 }
 
 void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
-  const std::string& mode = pref_service_->GetString(prefs::kDnsOverHttpsMode);
+  const std::string& mode =
+      pref_service_->GetString(::prefs::kDnsOverHttpsMode);
   if (mode == SecureDnsConfig::kModeOff) {
     return;
   }
@@ -139,7 +152,7 @@ void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
   // template URI if the admin has configured the
   // DnsOverHttpsTemplatesWithIdentifiers policy to include the IP addresses.
   std::string templates_with_identifiers =
-      pref_service_->GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+      pref_service_->GetString(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   if (!dns_over_https::TemplatesUriResolverImpl::
           IsDeviceIpAddressIncludedInUriTemplate(templates_with_identifiers)) {
     return;
@@ -147,7 +160,7 @@ void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
   UpdateTemplateUri();
 }
 
-void SecureDnsManager::OnPrefChanged() {
+void SecureDnsManager::OnDoHConfigPrefChanged() {
   UpdateTemplateUri();
 
   if (!doh_templates_uri_resolver_->GetDohWithIdentifiersActive()) {
@@ -157,7 +170,7 @@ void SecureDnsManager::OnPrefChanged() {
   // If DoH with identifiers are active, verify if network changes need to be
   // observed for URI template placeholder replacement.
   std::string templates_with_identifiers =
-      pref_service_->GetString(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+      pref_service_->GetString(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
 
   bool should_observe_default_network_changes =
       dns_over_https::TemplatesUriResolverImpl::
@@ -175,6 +188,30 @@ void SecureDnsManager::OnPrefChanged() {
       NetworkHandler::Get()->network_state_handler());
 }
 
+void SecureDnsManager::OnDoHIncludedDomainsPrefChanged() {
+  base::Value::List included_domains =
+      pref_service_->GetList(prefs::kDnsOverHttpsIncludedDomains).Clone();
+  NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
+      shill::kDOHIncludedDomainsProperty,
+      base::Value(std::move(included_domains)));
+
+  // TODO(b/351091814): Proxy DoH packets from the browser using plain-text DNS
+  // to DNS proxy. DNS proxy should be responsible for the DoH usage when domain
+  // DoH config is set.
+}
+
+void SecureDnsManager::OnDoHExcludedDomainsPrefChanged() {
+  base::Value::List excluded_domains =
+      pref_service_->GetList(prefs::kDnsOverHttpsExcludedDomains).Clone();
+  NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
+      shill::kDOHExcludedDomainsProperty,
+      base::Value(std::move(excluded_domains)));
+
+  // TODO(b/351091814): Proxy DoH packets from the browser using plain-text DNS
+  // to DNS proxy. DNS proxy should be responsible for the DoH usage when domain
+  // DoH config is set.
+}
+
 void SecureDnsManager::UpdateTemplateUri() {
   doh_templates_uri_resolver_->Update(pref_service_);
 
@@ -186,13 +223,13 @@ void SecureDnsManager::UpdateTemplateUri() {
   // TODO(acostinas, b/331903009): Storing the effective DoH providers in a
   // local_state pref on Chrome OS has downsides. Replace this pref with an
   // in-memory mechanism to sync effective DoH prefs.
-  pref_service_->SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
+  pref_service_->SetString(::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
                            effective_uri_templates);
 
   // Set the DoH URI template shill property which is synced with platform
   // daemons (shill, dns-proxy etc).
   base::Value::Dict doh_providers =
-      GetProviders(registrar_.prefs()->GetString(prefs::kDnsOverHttpsMode),
+      GetProviders(registrar_.prefs()->GetString(::prefs::kDnsOverHttpsMode),
                    effective_uri_templates);
 
   if (cached_doh_providers_ == doh_providers) {

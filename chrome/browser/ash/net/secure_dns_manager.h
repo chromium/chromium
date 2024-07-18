@@ -47,9 +47,11 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   base::Value::Dict GetProviders(const std::string& mode,
                                  const std::string& templates);
 
-  // Callback for the registrar. Evaluates the current settings and publishes
+  // Callbacks for the registrar. Evaluates the current settings and publishes
   // the result to shill.
-  void OnPrefChanged();
+  void OnDoHConfigPrefChanged();
+  void OnDoHIncludedDomainsPrefChanged();
+  void OnDoHExcludedDomainsPrefChanged();
 
   void UpdateTemplateUri();
 

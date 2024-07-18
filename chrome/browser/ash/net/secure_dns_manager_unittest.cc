@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -53,17 +55,34 @@ class MockDoHTemplatesUriResolver
   MOCK_METHOD(std::string, GetDisplayTemplates, (), (override));
 };
 
-void OnGetProperties(bool* success_out,
-                     std::map<std::string, std::string>* props_out,
-                     base::OnceClosure callback,
-                     std::optional<base::Value::Dict> result) {
+void OnGetDictProperties(const std::string& prop_name,
+                         bool* success_out,
+                         std::map<std::string, std::string>* props_out,
+                         base::OnceClosure callback,
+                         std::optional<base::Value::Dict> result) {
   *success_out = result.has_value();
   if (result) {
-    base::Value::Dict* value =
-        result->FindDict(shill::kDNSProxyDOHProvidersProperty);
+    base::Value::Dict* value = result->FindDict(prop_name);
     if (value != nullptr) {
       for (const auto kv : *value) {
         props_out->emplace(kv.first, kv.second.GetString());
+      }
+    }
+  }
+  std::move(callback).Run();
+}
+
+void OnGetStringsProperties(const std::string& prop_name,
+                            bool* success_out,
+                            std::vector<std::string>* props_out,
+                            base::OnceClosure callback,
+                            std::optional<base::Value::Dict> result) {
+  *success_out = result.has_value();
+  if (result) {
+    base::Value::List* value = result->FindList(prop_name);
+    if (value != nullptr) {
+      for (const auto& e : *value) {
+        props_out->push_back(e.GetString());
       }
     }
   }
@@ -76,11 +95,40 @@ std::map<std::string, std::string> GetDOHProviders() {
   ShillManagerClient* shill_manager = ShillManagerClient::Get();
   base::RunLoop run_loop;
   shill_manager->GetProperties(
-      base::BindOnce(&OnGetProperties, base::Unretained(&success),
-                     base::Unretained(&props), run_loop.QuitClosure()));
+      base::BindOnce(&OnGetDictProperties, shill::kDNSProxyDOHProvidersProperty,
+                     base::Unretained(&success), base::Unretained(&props),
+                     run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_TRUE(success);
   return props;
+}
+
+std::vector<std::string> GetDOHIncludedDomains() {
+  bool success = false;
+  std::vector<std::string> domains;
+  ShillManagerClient* shill_manager = ShillManagerClient::Get();
+  base::RunLoop run_loop;
+  shill_manager->GetProperties(base::BindOnce(
+      &OnGetStringsProperties, shill::kDOHIncludedDomainsProperty,
+      base::Unretained(&success), base::Unretained(&domains),
+      run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_TRUE(success);
+  return domains;
+}
+
+std::vector<std::string> GetDOHExcludedDomains() {
+  bool success = false;
+  std::vector<std::string> domains;
+  ShillManagerClient* shill_manager = ShillManagerClient::Get();
+  base::RunLoop run_loop;
+  shill_manager->GetProperties(base::BindOnce(
+      &OnGetStringsProperties, shill::kDOHExcludedDomainsProperty,
+      base::Unretained(&success), base::Unretained(&domains),
+      run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_TRUE(success);
+  return domains;
 }
 
 class SecureDnsManagerTest : public testing::Test {
@@ -91,15 +139,21 @@ class SecureDnsManagerTest : public testing::Test {
   SecureDnsManagerTest& operator=(const SecureDnsManagerTest&) = delete;
 
   void SetUp() override {
-    pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsMode,
+    pref_service_.registry()->RegisterStringPref(::prefs::kDnsOverHttpsMode,
                                                  SecureDnsConfig::kModeOff);
-    pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsTemplates,
+    pref_service_.registry()->RegisterStringPref(
+        ::prefs::kDnsOverHttpsTemplates, "");
+    pref_service_.registry()->RegisterStringPref(
+        ::prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
+    pref_service_.registry()->RegisterStringPref(
+        ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "");
+    pref_service_.registry()->RegisterStringPref(::prefs::kDnsOverHttpsSalt,
                                                  "");
-    pref_service_.registry()->RegisterStringPref(
-        prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
-    pref_service_.registry()->RegisterStringPref(
-        prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "");
-    pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsSalt, "");
+    pref_service_.registry()->RegisterListPref(
+        prefs::kDnsOverHttpsExcludedDomains, base::Value::List());
+    pref_service_.registry()->RegisterListPref(
+        prefs::kDnsOverHttpsIncludedDomains, base::Value::List());
+
     network_handler_test_helper_.RegisterPrefs(pref_service_.registry(),
                                                local_state_.registry());
     network_handler_test_helper_.InitializePrefs(&pref_service_, &local_state_);
@@ -126,36 +180,36 @@ class SecureDnsManagerTest : public testing::Test {
 };
 
 TEST_F(SecureDnsManagerTest, SetModeOff) {
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeOff));
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
   auto providers = GetDOHProviders();
 
   EXPECT_TRUE(providers.empty());
-  EXPECT_EQ(
-      pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
-      "");
+  EXPECT_EQ(pref_service()->GetString(
+                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+            "");
 }
 
 TEST_F(SecureDnsManagerTest, SetModeOffIgnoresTemplates) {
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeOff));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
   auto providers = GetDOHProviders();
 
   EXPECT_TRUE(providers.empty());
-  EXPECT_EQ(
-      pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
-      "");
+  EXPECT_EQ(pref_service()->GetString(
+                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+            "");
 }
 
 TEST_F(SecureDnsManagerTest, SetModeSecure) {
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeSecure));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
   auto providers = GetDOHProviders();
@@ -168,9 +222,9 @@ TEST_F(SecureDnsManagerTest, SetModeSecure) {
 }
 
 TEST_F(SecureDnsManagerTest, SetModeSecureMultipleTemplates) {
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeSecure));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplates,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplates,
                       base::Value(kMultipleTemplates));
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
@@ -179,15 +233,15 @@ TEST_F(SecureDnsManagerTest, SetModeSecureMultipleTemplates) {
   EXPECT_TRUE(providers.find(kGoogleDns) != providers.end());
   EXPECT_TRUE(providers.find(kCloudflareDns) != providers.end());
   EXPECT_EQ(providers.size(), 2u);
-  EXPECT_EQ(
-      pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
-      kMultipleTemplates);
+  EXPECT_EQ(pref_service()->GetString(
+                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+            kMultipleTemplates);
 }
 
 TEST_F(SecureDnsManagerTest, SetModeSecureWithFallback) {
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
   auto providers = GetDOHProviders();
@@ -200,9 +254,9 @@ TEST_F(SecureDnsManagerTest, SetModeSecureWithFallback) {
 }
 
 TEST_F(SecureDnsManagerTest, SetModeSecureWithFallbackMultipleTemplates) {
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplates,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplates,
                       base::Value(kMultipleTemplates));
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
@@ -211,15 +265,15 @@ TEST_F(SecureDnsManagerTest, SetModeSecureWithFallbackMultipleTemplates) {
   EXPECT_TRUE(providers.find(kGoogleDns) != providers.end());
   EXPECT_TRUE(providers.find(kCloudflareDns) != providers.end());
   EXPECT_EQ(providers.size(), 2u);
-  EXPECT_EQ(
-      pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
-      kMultipleTemplates);
+  EXPECT_EQ(pref_service()->GetString(
+                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+            kMultipleTemplates);
 }
 
 TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplates,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplates,
                       base::Value(kMultipleTemplates));
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
@@ -232,9 +286,9 @@ TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
   EXPECT_TRUE(it != providers.end());
   EXPECT_FALSE(it->second.empty());
   EXPECT_EQ(providers.size(), 2u);
-  EXPECT_EQ(
-      pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
-      kMultipleTemplates);
+  EXPECT_EQ(pref_service()->GetString(
+                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+            kMultipleTemplates);
 }
 
 // Tests that the `DoHTemplatesUriResolver` resolver is called when secure DNS
@@ -256,21 +310,21 @@ TEST_F(SecureDnsManagerTest, DoHTemplatesUriResolverCalled) {
   secure_dns_manager->SetDoHTemplatesUriResolverForTesting(
       std::move(template_uri_resolver));
 
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplates,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplates,
                       base::Value(kMultipleTemplates));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                       base::Value(kMultipleTemplates));
-  pref_service()->Set(prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
+  pref_service()->Set(::prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
 
   auto providers = GetDOHProviders();
 
   EXPECT_THAT(providers, SizeIs(1));
   EXPECT_THAT(providers, Contains(Key(effectiveTemplate)));
-  EXPECT_EQ(
-      pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
-      effectiveTemplate);
+  EXPECT_EQ(pref_service()->GetString(
+                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+            effectiveTemplate);
 }
 
 TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
@@ -287,11 +341,11 @@ TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
   fake_user_manager->AddUser(account_id);
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                       base::Value("https://dns.google/dns-query{?dns}"));
-  pref_service()->Set(prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
+  pref_service()->Set(::prefs::kDnsOverHttpsSalt, base::Value("testsalt"));
 
   auto providers = GetDOHProviders();
 
@@ -299,7 +353,7 @@ TEST_F(SecureDnsManagerTest, NetworkMetadataStoreHasDohWithIdentifiersActive) {
                   ->network_metadata_store()
                   ->secure_dns_templates_with_identifiers_active());
 
-  pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  pref_service()->ClearPref(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   providers = GetDOHProviders();
 
   EXPECT_FALSE(NetworkHandler::Get()
@@ -329,31 +383,31 @@ TEST_F(SecureDnsManagerTest, kDnsOverHttpsEffectiveTemplatesChromeOS) {
       "B07D2C5D119EB1881671C3B8D84CBE4FE3595C0C9ECBBF7670B18DDFDA072F66/{?dns}";
 
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                       base::Value(kUriTemplateWithIdentifiers));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
 
   auto providers = GetDOHProviders();
 
   // Verify that the value of kDnsOverHttpsEffectiveTemplatesChromeOS pref is
-  // prefs::kDnsOverHttpsTemplatesWithIdentifiers with the hex encoded hashed
+  // ::prefs::kDnsOverHttpsTemplatesWithIdentifiers with the hex encoded hashed
   // value of the user identifier.
-  EXPECT_EQ(
-      pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
-      kEffectiveUriTemplateWithIdentifiers);
+  EXPECT_EQ(pref_service()->GetString(
+                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+            kEffectiveUriTemplateWithIdentifiers);
 
-  pref_service()->ClearPref(prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+  pref_service()->ClearPref(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
 
   providers = GetDOHProviders();
 
   // Verify that the value of kDnsOverHttpsEffectiveTemplatesChromeOS pref is
-  // prefs::kDnsOverHttpsTemplates since the URI template with identifiers pref
-  // was cleared.
-  EXPECT_EQ(
-      pref_service()->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
-      kGoogleDns);
+  // ::prefs::kDnsOverHttpsTemplates since the URI template with identifiers
+  // pref was cleared.
+  EXPECT_EQ(pref_service()->GetString(
+                ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS),
+            kGoogleDns);
 }
 
 TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
@@ -384,9 +438,9 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
   EXPECT_EQ(actual_uri_template_update_count,
             expected_uri_template_update_count);
 
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                       base::Value(kUriTemplateWithEmail));
   // Each pref update above will trigger an update request for the URI
   // templates.
@@ -403,7 +457,7 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
   EXPECT_EQ(actual_uri_template_update_count,
             expected_uri_template_update_count);
 
-  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                       base::Value(kUriTemplateWithIp));
   EXPECT_EQ(actual_uri_template_update_count,
             ++expected_uri_template_update_count);
@@ -415,7 +469,7 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
 }
 
 TEST_F(SecureDnsManagerTest, DefaultTemplateUrisForwardedToShill) {
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
   auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
   auto providers = GetDOHProviders();
@@ -438,10 +492,16 @@ TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
   constexpr char kTemplateUri2[] = "https://dns.google2.com";
   constexpr char kEffectiveTemplateUri[] = "https://dns.google2.com";
 
-  // The call to update the property kDNSProxyDOHProvidersProperty should be
-  // invoked just once because the mock TemplateUriResolver always returns the
-  // same DoH providers.
+  // The call to update the shill properties should be invoked just once. For
+  // kDOHIncludedDomainsProperty, the mock TemplateUriResolver always returns
+  // the same DoH providers.
   testing::StrictMock<MockPropertyChangeObserver> observer;
+  EXPECT_CALL(observer,
+              OnPropertyChanged(shill::kDOHIncludedDomainsProperty, testing::_))
+      .Times(1);
+  EXPECT_CALL(observer,
+              OnPropertyChanged(shill::kDOHExcludedDomainsProperty, testing::_))
+      .Times(1);
   EXPECT_CALL(observer, OnPropertyChanged(shill::kDNSProxyDOHProvidersProperty,
                                           testing::_))
       .Times(1);
@@ -470,16 +530,40 @@ TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
 
   EXPECT_EQ(actual_uri_template_update_count, 0);
 
-  pref_service()->Set(prefs::kDnsOverHttpsMode,
+  pref_service()->Set(::prefs::kDnsOverHttpsMode,
                       base::Value(SecureDnsConfig::kModeAutomatic));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                       base::Value(kTemplateUri1));
-  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+  pref_service()->Set(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
                       base::Value(kTemplateUri2));
   // Verify that every pref update above will trigger an update request for the
   // DoH providers.
   EXPECT_EQ(actual_uri_template_update_count, 3);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(SecureDnsManagerTest, SetDOHIncludedDomains) {
+  std::vector<std::string> domains = {"test.com", "*.test.com"};
+  base::Value pref_value(base::Value::Type::LIST);
+  for (const auto& domain : domains) {
+    pref_value.GetList().Append(domain);
+  }
+  pref_service()->Set(prefs::kDnsOverHttpsIncludedDomains, pref_value);
+
+  auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
+  EXPECT_EQ(domains, GetDOHIncludedDomains());
+}
+
+TEST_F(SecureDnsManagerTest, SetDOHExcludedDomains) {
+  std::vector<std::string> domains = {"test.com", "*.test.com"};
+  base::Value pref_value(base::Value::Type::LIST);
+  for (const auto& domain : domains) {
+    pref_value.GetList().Append(domain);
+  }
+  pref_service()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
+  EXPECT_EQ(domains, GetDOHExcludedDomains());
 }
 
 }  // namespace
