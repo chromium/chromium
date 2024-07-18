@@ -11,15 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
