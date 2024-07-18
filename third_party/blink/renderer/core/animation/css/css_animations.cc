@@ -353,8 +353,7 @@ StringKeyframeVector ProcessKeyframesRule(
     const Document& document,
     const ComputedStyle* parent_style,
     TimingFunction* default_timing_function,
-    WritingMode writing_mode,
-    TextDirection text_direction,
+    WritingDirectionMode writing_direction,
     bool& has_named_range_keyframes) {
   StringKeyframeVector keyframes;
   const HeapVector<Member<StyleRuleKeyframe>>& style_keyframes =
@@ -399,8 +398,7 @@ StringKeyframeVector ProcessKeyframesRule(
       } else if (!CSSAnimations::IsAnimationAffectingProperty(property)) {
         // Map Logical to physical property name.
         const CSSProperty& physical_property =
-            property.ResolveDirectionAwareProperty(text_direction,
-                                                   writing_mode);
+            property.ResolveDirectionAwareProperty(writing_direction);
         const CSSPropertyName& name = physical_property.GetCSSPropertyName();
         keyframe->SetCSSPropertyValue(name, property_reference.Value());
       }
@@ -511,10 +509,10 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   //    the offset specified in the keyframe selector, and iterate over the
   //    result in reverse applying the following steps:
   bool has_named_range_keyframes = false;
-  keyframes = ProcessKeyframesRule(
-      keyframes_rule, find_result.tree_scope, element.GetDocument(),
-      parent_style, default_timing_function, writing_direction.GetWritingMode(),
-      writing_direction.Direction(), has_named_range_keyframes);
+  keyframes = ProcessKeyframesRule(keyframes_rule, find_result.tree_scope,
+                                   element.GetDocument(), parent_style,
+                                   default_timing_function, writing_direction,
+                                   has_named_range_keyframes);
 
   std::optional<double> last_offset;
   wtf_size_t merged_frame_count = 0;
@@ -1620,8 +1618,7 @@ void CSSAnimations::CalculateAnimationUpdate(
       Animation* animation = entry.key;
       if (auto* keyframe_effect =
               DynamicTo<KeyframeEffect>(animation->effect())) {
-        keyframe_effect->SetLogicalPropertyResolutionContext(
-            writing_direction.Direction(), writing_direction.GetWritingMode());
+        keyframe_effect->SetLogicalPropertyResolutionContext(writing_direction);
         animation->UpdateIfNecessary();
       }
     }
@@ -2545,8 +2542,7 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
     DCHECK_GE(longhand_id, kFirstCSSProperty);
     const CSSProperty& property =
         CSSProperty::Get(longhand_id)
-            .ResolveDirectionAwareProperty(writing_direction.Direction(),
-                                           writing_direction.GetWritingMode());
+            .ResolveDirectionAwareProperty(writing_direction);
     PropertyHandle property_handle = PropertyHandle(property);
 
     CalculateTransitionUpdateForPropertyHandle(

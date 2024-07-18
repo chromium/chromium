@@ -1885,8 +1885,7 @@ const CSSProperty& StyleCascade::ResolveSurrogate(const CSSProperty& property) {
   // properties.
   depends_on_cascade_affecting_property_ = true;
   const CSSProperty* original =
-      property.SurrogateFor(state_.StyleBuilder().Direction(),
-                            state_.StyleBuilder().GetWritingMode());
+      property.SurrogateFor(state_.StyleBuilder().GetWritingDirection());
   DCHECK(original);
   return *original;
 }

@@ -11,13 +11,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PROPERTY_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
 #include "third_party/blink/renderer/core/css/properties/css_unresolved_property.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -152,19 +153,17 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
       CSSValuePhase value_phase) const;
 
   const CSSProperty& ResolveDirectionAwareProperty(
-      TextDirection direction,
-      WritingMode writing_mode) const {
+      WritingDirectionMode writing_direction) const {
     if (!IsInLogicalPropertyGroup()) {
       // Avoid the potentially expensive virtual function call.
       return *this;
     } else {
-      return ResolveDirectionAwarePropertyInternal(direction, writing_mode);
+      return ResolveDirectionAwarePropertyInternal(writing_direction);
     }
   }
 
   virtual const CSSProperty& ResolveDirectionAwarePropertyInternal(
-      TextDirection,
-      WritingMode) const {
+      WritingDirectionMode) const {
     return *this;
   }
   virtual bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
@@ -190,7 +189,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     }
   }
 
-  virtual const CSSProperty* SurrogateFor(TextDirection, WritingMode) const {
+  virtual const CSSProperty* SurrogateFor(WritingDirectionMode) const {
     return nullptr;
   }
 

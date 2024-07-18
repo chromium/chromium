@@ -80,8 +80,7 @@ const char* {{class_name}}::GetJSPropertyName() const {
   {% if not is_alias %}
 
   {% if property.surrogate_for %}
-const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,
-    blink::WritingMode writing_mode) const {
+const CSSProperty* {{class_name}}::SurrogateFor(WritingDirectionMode) const {
   return &GetCSSProperty{{property.surrogate_for.name.to_upper_camel_case()}}();
 }
   {% endif %}
@@ -90,15 +89,14 @@ const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,
     {% set group_name = group.name.to_upper_camel_case() %}
     {% set resolver_name = group.resolver_name.to_upper_camel_case() %}
     {% if group.is_logical %}
-const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,
-    blink::WritingMode writing_mode) const {
-  return &ResolveDirectionAwarePropertyInternal(direction, writing_mode);
+const CSSProperty* {{class_name}}::SurrogateFor(
+    WritingDirectionMode writing_direction) const {
+  return &ResolveDirectionAwarePropertyInternal(writing_direction);
 }
 
 const CSSProperty& {{class_name}}::ResolveDirectionAwarePropertyInternal(
-    TextDirection direction,
-    blink::WritingMode writing_mode) const {
-  return CSSDirectionAwareResolver::Resolve{{resolver_name}}(direction, writing_mode,
+    WritingDirectionMode writing_direction) const {
+  return CSSDirectionAwareResolver::Resolve{{resolver_name}}(writing_direction,
       CSSDirectionAwareResolver::Physical{{group_name}}Mapping());
 }
 

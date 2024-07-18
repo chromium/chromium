@@ -825,10 +825,10 @@ StringKeyframeVector EffectInput::ParseKeyframesArgument(
 
   // Map logical to physical properties.
   const ComputedStyle* style = element ? element->GetComputedStyle() : nullptr;
-  TextDirection text_direction =
-      style ? style->Direction() : TextDirection::kLtr;
-  WritingMode writing_mode =
-      style ? style->GetWritingMode() : WritingMode::kHorizontalTb;
+  WritingDirectionMode writing_direction =
+      style ? style->GetWritingDirection()
+            : WritingDirectionMode(WritingMode::kHorizontalTb,
+                                   TextDirection::kLtr);
 
   StringKeyframeVector parsed_keyframes;
   if (script_iterator.IsNull()) {
@@ -842,7 +842,7 @@ StringKeyframeVector EffectInput::ParseKeyframesArgument(
 
   for (wtf_size_t i = 0; i < parsed_keyframes.size(); i++) {
     StringKeyframe* keyframe = parsed_keyframes[i];
-    keyframe->SetLogicalPropertyResolutionContext(text_direction, writing_mode);
+    keyframe->SetLogicalPropertyResolutionContext(writing_direction);
   }
 
   return parsed_keyframes;

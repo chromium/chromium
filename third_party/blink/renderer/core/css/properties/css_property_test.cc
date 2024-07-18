@@ -190,17 +190,15 @@ TEST_F(CSSPropertyTest, Surrogates) {
   // the test.
   const CSSProperty& inline_size = GetCSSPropertyInlineSize();
   const CSSProperty& writing_mode = GetCSSPropertyWebkitWritingMode();
-  EXPECT_EQ(&GetCSSPropertyWidth(),
-            inline_size.SurrogateFor(TextDirection::kLtr,
-                                     WritingMode::kHorizontalTb));
-  EXPECT_EQ(
-      &GetCSSPropertyHeight(),
-      inline_size.SurrogateFor(TextDirection::kLtr, WritingMode::kVerticalRl));
+  const WritingDirectionMode kHorizontalLtr = {WritingMode::kHorizontalTb,
+                                               TextDirection::kLtr};
+  EXPECT_EQ(&GetCSSPropertyWidth(), inline_size.SurrogateFor(kHorizontalLtr));
+  EXPECT_EQ(&GetCSSPropertyHeight(),
+            inline_size.SurrogateFor(
+                {WritingMode::kVerticalRl, TextDirection::kLtr}));
   EXPECT_EQ(&GetCSSPropertyWritingMode(),
-            writing_mode.SurrogateFor(TextDirection::kLtr,
-                                      WritingMode::kHorizontalTb));
-  EXPECT_FALSE(GetCSSPropertyWidth().SurrogateFor(TextDirection::kLtr,
-                                                  WritingMode::kHorizontalTb));
+            writing_mode.SurrogateFor(kHorizontalLtr));
+  EXPECT_FALSE(GetCSSPropertyWidth().SurrogateFor(kHorizontalLtr));
 }
 
 TEST_F(CSSPropertyTest, PairsWithIdenticalValues) {

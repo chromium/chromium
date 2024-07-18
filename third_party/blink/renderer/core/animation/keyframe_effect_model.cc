@@ -403,14 +403,12 @@ bool KeyframeEffectModelBase::IsTransformRelatedEffect() const {
 }
 
 bool KeyframeEffectModelBase::SetLogicalPropertyResolutionContext(
-    TextDirection text_direction,
-    WritingMode writing_mode) {
+    WritingDirectionMode writing_direction) {
   bool changed = false;
   for (wtf_size_t i = 0; i < keyframes_.size(); i++) {
     if (auto* string_keyframe = DynamicTo<StringKeyframe>(*keyframes_[i])) {
       if (string_keyframe->HasLogicalProperty()) {
-        string_keyframe->SetLogicalPropertyResolutionContext(text_direction,
-                                                             writing_mode);
+        string_keyframe->SetLogicalPropertyResolutionContext(writing_direction);
         changed = true;
       }
     }

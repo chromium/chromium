@@ -870,11 +870,9 @@ ActiveInterpolationsMap KeyframeEffect::InterpolationsForCommitStyles() {
 }
 
 void KeyframeEffect::SetLogicalPropertyResolutionContext(
-    TextDirection text_direction,
-    WritingMode writing_mode) {
+    WritingDirectionMode writing_direction) {
   if (auto* model = DynamicTo<StringKeyframeEffectModel>(Model())) {
-    if (model->SetLogicalPropertyResolutionContext(text_direction,
-                                                   writing_mode)) {
+    if (model->SetLogicalPropertyResolutionContext(writing_direction)) {
       ClearEffects();
       InvalidateAndNotifyOwner();
     }

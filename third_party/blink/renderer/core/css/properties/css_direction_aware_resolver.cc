@@ -327,92 +327,83 @@ CSSDirectionAwareResolver::PhysicalVisitedBorderColorMapping() {
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveInlineStart(
-    TextDirection direction,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<4>& group) {
-  return group.GetProperty(static_cast<size_t>(
-      WritingDirectionMode(writing_mode, direction).InlineStart()));
+  return group.GetProperty(
+      static_cast<size_t>(writing_direction.InlineStart()));
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveInlineEnd(
-    TextDirection direction,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<4>& group) {
-  return group.GetProperty(static_cast<size_t>(
-      WritingDirectionMode(writing_mode, direction).InlineEnd()));
+  return group.GetProperty(static_cast<size_t>(writing_direction.InlineEnd()));
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveBlockStart(
-    TextDirection direction,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<4>& group) {
-  return group.GetProperty(static_cast<size_t>(
-      WritingDirectionMode(writing_mode, direction).BlockStart()));
+  return group.GetProperty(static_cast<size_t>(writing_direction.BlockStart()));
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveBlockEnd(
-    TextDirection direction,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<4>& group) {
-  return group.GetProperty(static_cast<size_t>(
-      WritingDirectionMode(writing_mode, direction).BlockEnd()));
+  return group.GetProperty(static_cast<size_t>(writing_direction.BlockEnd()));
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveInline(
-    TextDirection,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<2>& group) {
-  if (IsHorizontalWritingMode(writing_mode)) {
+  if (writing_direction.IsHorizontal()) {
     return group.GetProperty(kPhysicalAxisX);
   }
   return group.GetProperty(kPhysicalAxisY);
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveBlock(
-    TextDirection,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<2>& group) {
-  if (IsHorizontalWritingMode(writing_mode)) {
+  if (writing_direction.IsHorizontal()) {
     return group.GetProperty(kPhysicalAxisY);
   }
   return group.GetProperty(kPhysicalAxisX);
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveStartStart(
-    TextDirection direction,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<4>& group) {
-  if (direction == TextDirection::kLtr) {
+  WritingMode writing_mode = writing_direction.GetWritingMode();
+  if (writing_direction.IsLtr()) {
     return group.GetProperty(kStartStartMap[static_cast<int>(writing_mode)]);
   }
   return group.GetProperty(kStartEndMap[static_cast<int>(writing_mode)]);
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveStartEnd(
-    TextDirection direction,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<4>& group) {
-  if (direction == TextDirection::kLtr) {
+  WritingMode writing_mode = writing_direction.GetWritingMode();
+  if (writing_direction.IsLtr()) {
     return group.GetProperty(kStartEndMap[static_cast<int>(writing_mode)]);
   }
   return group.GetProperty(kStartStartMap[static_cast<int>(writing_mode)]);
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveEndStart(
-    TextDirection direction,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<4>& group) {
-  if (direction == TextDirection::kLtr) {
+  WritingMode writing_mode = writing_direction.GetWritingMode();
+  if (writing_direction.IsLtr()) {
     return group.GetProperty(kEndStartMap[static_cast<int>(writing_mode)]);
   }
   return group.GetProperty(kEndEndMap[static_cast<int>(writing_mode)]);
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveEndEnd(
-    TextDirection direction,
-    WritingMode writing_mode,
+    WritingDirectionMode writing_direction,
     const PhysicalMapping<4>& group) {
-  if (direction == TextDirection::kLtr) {
+  WritingMode writing_mode = writing_direction.GetWritingMode();
+  if (writing_direction.IsLtr()) {
     return group.GetProperty(kEndEndMap[static_cast<int>(writing_mode)]);
   }
   return group.GetProperty(kEndStartMap[static_cast<int>(writing_mode)]);

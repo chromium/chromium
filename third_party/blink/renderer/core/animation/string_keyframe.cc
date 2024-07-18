@@ -22,7 +22,7 @@ namespace {
 bool IsLogicalProperty(CSSPropertyID property_id) {
   const CSSProperty& property = CSSProperty::Get(property_id);
   const CSSProperty& resolved_property = property.ResolveDirectionAwareProperty(
-      TextDirection::kLtr, WritingMode::kHorizontalTb);
+      {WritingMode::kHorizontalTb, TextDirection::kLtr});
   return resolved_property.PropertyID() != property_id;
 }
 
@@ -45,8 +45,7 @@ StringKeyframe::StringKeyframe(const StringKeyframe& copy_from)
           copy_from.presentation_attribute_map_->MutableCopy()),
       svg_attribute_map_(copy_from.svg_attribute_map_),
       has_logical_property_(copy_from.has_logical_property_),
-      text_direction_(copy_from.text_direction_),
-      writing_mode_(copy_from.writing_mode_) {
+      writing_direction_(copy_from.writing_direction_) {
   if (copy_from.css_property_map_)
     css_property_map_ = copy_from.css_property_map_->MutableCopy();
 }
@@ -258,11 +257,9 @@ Keyframe* StringKeyframe::Clone() const {
 }
 
 bool StringKeyframe::SetLogicalPropertyResolutionContext(
-    TextDirection text_direction,
-    WritingMode writing_mode) {
-  if (text_direction != text_direction_ || writing_mode != writing_mode_) {
-    text_direction_ = text_direction;
-    writing_mode_ = writing_mode;
+    WritingDirectionMode writing_direction) {
+  if (writing_direction != writing_direction_) {
+    writing_direction_ = writing_direction;
     if (has_logical_property_) {
       // force a rebuild of the property map on the next property fetch.
       InvalidateCssPropertyMap();
@@ -305,7 +302,7 @@ void StringKeyframe::EnsureCssPropertyMap() const {
   }
 
   for (const auto& resolver : resolvers) {
-    resolver->AppendTo(css_property_map_, text_direction_, writing_mode_);
+    resolver->AppendTo(css_property_map_, writing_direction_);
   }
 }
 
@@ -428,8 +425,7 @@ const CSSValue* PropertyResolver::CssValue() {
 }
 
 void PropertyResolver::AppendTo(MutableCSSPropertyValueSet* property_value_set,
-                                TextDirection text_direction,
-                                WritingMode writing_mode) {
+                                WritingDirectionMode writing_direction) {
   DCHECK(property_id_ != CSSPropertyID::kInvalid);
   DCHECK(property_id_ != CSSPropertyID::kVariable);
 
@@ -442,14 +438,14 @@ void PropertyResolver::AppendTo(MutableCSSPropertyValueSet* property_value_set,
         CSSPropertyValueSet::PropertyReference reference =
             css_property_value_set_->PropertyAt(i);
         SetProperty(property_value_set, reference.Id(), reference.Value(),
-                    text_direction, writing_mode);
+                    writing_direction);
       }
     } else {
       property_value_set->MergeAndOverrideOnConflict(css_property_value_set_);
     }
   } else {
-    SetProperty(property_value_set, property_id_, *css_value_, text_direction,
-                writing_mode);
+    SetProperty(property_value_set, property_id_, *css_value_,
+                writing_direction);
   }
 }
 
@@ -457,11 +453,10 @@ void PropertyResolver::SetProperty(
     MutableCSSPropertyValueSet* property_value_set,
     CSSPropertyID property_id,
     const CSSValue& value,
-    TextDirection text_direction,
-    WritingMode writing_mode) {
+    WritingDirectionMode writing_direction) {
   const CSSProperty& physical_property =
       CSSProperty::Get(property_id)
-          .ResolveDirectionAwareProperty(text_direction, writing_mode);
+          .ResolveDirectionAwareProperty(writing_direction);
   property_value_set->SetProperty(physical_property.PropertyID(), value);
 }
 
