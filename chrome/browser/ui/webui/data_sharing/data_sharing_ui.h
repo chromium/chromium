@@ -36,7 +36,8 @@ class DataSharingUI : public UntrustedTopChromeWebUIController,
 
  private:
   // data_sharing::mojom::PageHandlerFactory:
-  void CreatePageHandler(mojo::PendingReceiver<data_sharing::mojom::PageHandler>
+  void CreatePageHandler(mojo::PendingRemote<data_sharing::mojom::Page> page,
+                         mojo::PendingReceiver<data_sharing::mojom::PageHandler>
                              receiver) override;
 
   std::unique_ptr<DataSharingPageHandler> page_handler_;

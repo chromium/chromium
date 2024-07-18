@@ -3,18 +3,22 @@
 // found in the LICENSE file.
 
 import type {PageHandlerInterface} from './data_sharing.mojom-webui.js';
-import {PageHandlerFactory, PageHandlerRemote} from './data_sharing.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './data_sharing.mojom-webui.js';
 
 // Base class of BrowserProxy.
 // Implement common logic i.e. setting mojom pipe.
 export class BrowserProxyBase {
+  callbackRouter: PageCallbackRouter;
   handler: PageHandlerInterface;
 
   constructor() {
+    this.callbackRouter = new PageCallbackRouter();
+
     this.handler = new PageHandlerRemote();
 
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
         (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
   }
 }

@@ -5,7 +5,33 @@
     <title>Data Sharing Placeholder</title>
   </head>
   <body>
+      <!--
+        This UI for dev only.
+        TODO(b/353703768): Remove them later in development.
+      -->
     <h1>Data Sharing Placeholder</h1>
+    <div>
+      <label for="resource-id">ResourceId (e.g. ldap):</label>
+      <input id="resource-id" type="text" />
+      <label for="token-secret">Token Secret</label>
+      <input id="token-secret" type="text" />
+    </div>
+
+    <div>
+      <div>
+        <button id="create-group-button">Create Group</button>
+      </div>
+      <div>
+        <button id="create-join-flow-button">Create Join Flow</button>
+      </div>
+      <div>
+        <button id="create-invite-flow-button">Create Invite Flow</button>
+      </div>
+      <div>
+        <button id="create-manage-flow-button">Create Manage Flow</button>
+      </div>
+    </div>
     <script type="module" src="data_sharing.js"></script>
+    <link rel="stylesheet" href="data_sharing_sdk.css">
   </body>
 </html>
