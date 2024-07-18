@@ -170,13 +170,10 @@ void AddWordOnImage(FPDF_DOCUMENT document,
   const FS_MATRIX text_scale_matrix(
       word->bounding_box.width() / text_object_size.width(), 0, 0,
       word->bounding_box.height() / text_object_size.height(), 0, 0);
-  FPDFPageObj_Transform(text.get(), text_scale_matrix.a, text_scale_matrix.b,
-                        text_scale_matrix.c, text_scale_matrix.d,
-                        text_scale_matrix.e, text_scale_matrix.f);
+  CHECK(FPDFPageObj_TransformF(text.get(), &text_scale_matrix));
 
   for (const auto& matrix : transform_matrices) {
-    FPDFPageObj_Transform(text.get(), matrix.a, matrix.b, matrix.c, matrix.d,
-                          matrix.e, matrix.f);
+    FPDFPageObj_TransformF(text.get(), &matrix);
   }
 
   FPDFPage_InsertObject(page, text.release());
