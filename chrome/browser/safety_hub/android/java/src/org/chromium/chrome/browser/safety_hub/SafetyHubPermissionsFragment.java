@@ -126,7 +126,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
 
     @Override
     protected @StringRes int getHeaderId() {
-        return R.string.safety_hub_permissions_page_header;
+        return R.string.safety_hub_permissions_warning_summary;
     }
 
     @Override
@@ -136,7 +136,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
 
     @Override
     protected @StringRes int getMenuItemTextId() {
-        return R.string.safety_hub_permissions_page_menu_text;
+        return R.string.safety_hub_go_to_site_settings_button;
     }
 
     @Override

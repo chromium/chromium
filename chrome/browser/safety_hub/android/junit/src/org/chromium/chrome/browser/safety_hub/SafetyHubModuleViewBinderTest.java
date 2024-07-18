@@ -372,7 +372,7 @@ public class SafetyHubModuleViewBinderTest {
         String expectedTitle = mActivity.getString(R.string.safety_hub_permissions_ok_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_permissions_ok_summary);
         String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_settings_button);
+                mActivity.getString(R.string.safety_hub_go_to_site_settings_button);
 
         assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
         assertEquals(expectedSummary, mPermissionsPreference.getSummary().toString());
@@ -419,7 +419,7 @@ public class SafetyHubModuleViewBinderTest {
         String expectedSummary =
                 mActivity.getString(R.string.safety_hub_notifications_review_ok_summary);
         String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_notifications_button);
+                mActivity.getString(R.string.safety_hub_go_to_notification_settings_button);
 
         assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
         assertEquals(expectedSummary, mNotificationsReviewPreference.getSummary().toString());

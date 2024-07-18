@@ -152,7 +152,7 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
 
     @Override
     protected @StringRes int getMenuItemTextId() {
-        return R.string.safety_hub_notifications_page_menu_text;
+        return R.string.safety_hub_go_to_notification_settings_button;
     }
 
     @Override

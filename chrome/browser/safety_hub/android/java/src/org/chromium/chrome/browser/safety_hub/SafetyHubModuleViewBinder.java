@@ -431,7 +431,9 @@ public class SafetyHubModuleViewBinder {
             title = preference.getContext().getString(R.string.safety_hub_permissions_ok_title);
             summary = preference.getContext().getString(R.string.safety_hub_permissions_ok_summary);
             secondaryButtonText =
-                    preference.getContext().getString(R.string.safety_hub_go_to_settings_button);
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_go_to_site_settings_button);
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         }
@@ -496,7 +498,7 @@ public class SafetyHubModuleViewBinder {
             secondaryButtonText =
                     preference
                             .getContext()
-                            .getString(R.string.safety_hub_go_to_notifications_button);
+                            .getString(R.string.safety_hub_go_to_notification_settings_button);
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         }

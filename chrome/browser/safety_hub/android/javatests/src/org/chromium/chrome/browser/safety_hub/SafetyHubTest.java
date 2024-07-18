@@ -317,7 +317,7 @@ public final class SafetyHubTest {
     public void testPermissionsToSiteSettings() {
         SettingsActivity activity = mPermissionsFragmentTestRule.startSettingsActivity();
         openActionBarOverflowOrOptionsMenu(activity);
-        onViewWaiting(withText(R.string.safety_hub_permissions_page_menu_text)).perform(click());
+        onViewWaiting(withText(R.string.safety_hub_go_to_site_settings_button)).perform(click());
         onViewWaiting(withText(R.string.prefs_site_settings)).check(matches(isDisplayed()));
     }
 
@@ -459,7 +459,8 @@ public final class SafetyHubTest {
     public void testNotificationsToNotificationSettings() {
         SettingsActivity activity = mNotificationsFragmentTestRule.startSettingsActivity();
         openActionBarOverflowOrOptionsMenu(activity);
-        onViewWaiting(withText(R.string.safety_hub_notifications_page_menu_text)).perform(click());
+        onViewWaiting(withText(R.string.safety_hub_go_to_notification_settings_button))
+                .perform(click());
         onViewWaiting(
                         allOf(
                                 withText(R.string.push_notifications_permission_title),
