@@ -1052,6 +1052,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void startNativeInitialization() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.startNativeInitialization")) {
+            startUmaSession();
             // This is on the critical path so don't delay.
             setupCompositorContent();
             if (!DeviceFormFactor.isTablet()) {
