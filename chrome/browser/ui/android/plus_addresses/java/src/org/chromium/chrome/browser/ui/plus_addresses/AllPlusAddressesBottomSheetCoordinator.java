@@ -1,0 +1,51 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.plus_addresses;
+
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ItemType.PLUS_PROFILE;
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
+
+import android.content.Context;
+
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+
+import java.util.List;
+
+/**
+ * Coordinator for the all plus addresses bottom sheet UI component.
+ *
+ * <p>This component shows a bottom sheet to let the user select a plus address from the list of all
+ * user's plus addresses.
+ *
+ * <p>This coordinator manages the lifecycle of the bottom sheet mediator and view.
+ */
+class AllPlusAddressesBottomSheetCoordinator {
+    private final AllPlusAddressesBottomSheetMediator mMeditor;
+
+    AllPlusAddressesBottomSheetCoordinator(Context context, BottomSheetController sheetController) {
+        PropertyModel model = AllPlusAddressesBottomSheetProperties.createDefaultModel();
+        mMeditor = new AllPlusAddressesBottomSheetMediator(model);
+        AllPlusAddressesBottomSheetView view =
+                new AllPlusAddressesBottomSheetView(context, sheetController);
+
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(model.get(PLUS_PROFILES));
+        adapter.registerType(
+                PLUS_PROFILE,
+                AllPlusAddressesBottomSheetViewBinder::createPlusAddressView,
+                AllPlusAddressesBottomSheetViewBinder::bindPlusAddressView);
+        view.setSheetItemListAdapter(adapter);
+        PropertyModelChangeProcessor.create(
+                model,
+                view,
+                AllPlusAddressesBottomSheetViewBinder::bindAllPlusAddressesBottomSheet);
+    }
+
+    void showPlusProfiles(List<PlusProfile> profiles) {
+        mMeditor.showPlusProfiles(profiles);
+    }
+}

@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/AllPlusAddressesBottomSheetBridge_jni.h"
@@ -41,7 +42,9 @@ void AllPlusAddressesBottomSheetView::Show(
     base::span<const PlusProfile> profiles) {
   base::android::ScopedJavaGlobalRef<jobject> java_object =
       GetOrCreateJavaObject();
-  CHECK(java_object);
+  if (!java_object) {
+    return;
+  }
 
   JNIEnv* env = jni_zero::AttachCurrentThread();
   std::vector<base::android::ScopedJavaLocalRef<jobject>> java_profiles;
@@ -59,8 +62,13 @@ AllPlusAddressesBottomSheetView::GetOrCreateJavaObject() {
   if (java_object_internal_) {
     return java_object_internal_;
   }
+  if (!controller_->GetNativeView() ||
+      !controller_->GetNativeView()->GetWindowAndroid()) {
+    return nullptr;  // No window attached (yet or anymore).
+  }
   return java_object_internal_ = Java_AllPlusAddressesBottomSheetBridge_create(
-             jni_zero::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
+             jni_zero::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+             controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
 }
 
 }  // namespace plus_addresses

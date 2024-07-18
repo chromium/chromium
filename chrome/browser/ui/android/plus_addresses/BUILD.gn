@@ -9,6 +9,11 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetView.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationDelegate.java",
@@ -24,8 +29,10 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
@@ -36,7 +43,9 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/proposed_plus_address_background.xml",
+    "java/res/layout/all_plus_addresses_bottom_sheet.xml",
     "java/res/layout/plus_address_creation_prompt.xml",
+    "java/res/layout/plus_profile_info_view.xml",
     "java/res/values-night/colors.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
@@ -58,6 +67,7 @@ generate_jni("jni_headers") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetModuleTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContentTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediatorTest.java",
@@ -79,8 +89,10 @@ robolectric_library("junit") {
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

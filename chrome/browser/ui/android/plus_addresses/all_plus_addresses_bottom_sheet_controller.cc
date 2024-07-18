@@ -41,4 +41,8 @@ void AllPlusAddressesBottomSheetController::OnBottomSheetDismissed() {
   std::move(on_plus_address_selected_).Run(std::nullopt);
 }
 
+gfx::NativeView AllPlusAddressesBottomSheetController::GetNativeView() {
+  return web_contents_->GetNativeView();
+}
+
 }  // namespace plus_addresses

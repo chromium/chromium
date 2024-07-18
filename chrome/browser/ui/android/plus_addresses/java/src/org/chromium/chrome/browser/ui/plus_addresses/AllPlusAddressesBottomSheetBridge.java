@@ -8,19 +8,28 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.ui.base.WindowAndroid;
+
 import java.util.List;
 
 @JNINamespace("plus_addresses")
 public class AllPlusAddressesBottomSheetBridge {
     private long mNativeView;
+    private final AllPlusAddressesBottomSheetCoordinator mAllPlusAddressesBottomSheetCoordinator;
 
-    AllPlusAddressesBottomSheetBridge(long nativeView) {
+    AllPlusAddressesBottomSheetBridge(long nativeView, WindowAndroid windowAndroid) {
         mNativeView = nativeView;
+        mAllPlusAddressesBottomSheetCoordinator =
+                new AllPlusAddressesBottomSheetCoordinator(
+                        windowAndroid.getActivity().get(),
+                        BottomSheetControllerProvider.from(windowAndroid));
     }
 
     @CalledByNative
-    private static AllPlusAddressesBottomSheetBridge create(long nativeView) {
-        return new AllPlusAddressesBottomSheetBridge(nativeView);
+    private static AllPlusAddressesBottomSheetBridge create(
+            long nativeView, WindowAndroid windowAndroid) {
+        return new AllPlusAddressesBottomSheetBridge(nativeView, windowAndroid);
     }
 
     @CalledByNative
@@ -30,6 +39,6 @@ public class AllPlusAddressesBottomSheetBridge {
 
     @CalledByNative
     private void showPlusAddresses(@JniType("std::vector") List<PlusProfile> profiles) {
-        // TODO: crbug.com/327838324 - Implement the bottom sheet UI.
+        mAllPlusAddressesBottomSheetCoordinator.showPlusProfiles(profiles);
     }
 }

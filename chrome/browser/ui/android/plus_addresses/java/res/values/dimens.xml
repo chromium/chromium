@@ -8,4 +8,9 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Proposed plus address background rounded cornders radiums. -->
     <dimen name="plus_address_rounded_corner_radius">4dp</dimen>
+
+    <!-- All plus addresses bottom sheet. -->
+    <dimen name="all_plus_addresses_bottom_sheet_padding">20dp</dimen>
+    <dimen name="all_plus_addresses_sheet_divider_margin">24dp</dimen>
+    <dimen name="all_plus_addresses_chip_margin">24dp</dimen>
 </resources>

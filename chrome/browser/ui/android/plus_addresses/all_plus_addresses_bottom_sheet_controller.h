@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace content {
 class WebContents;
@@ -48,6 +49,8 @@ class AllPlusAddressesBottomSheetController final {
 
   void OnPlusAddressSelected(const std::string& plus_address);
   void OnBottomSheetDismissed();
+
+  gfx::NativeView GetNativeView();
 
  private:
   const raw_ref<content::WebContents> web_contents_;
