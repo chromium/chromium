@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
+#include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "android_webview/browser/permission/permission_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -125,8 +126,18 @@ class AwBrowserPermissionRequestDelegateForTesting final
   std::list<std::unique_ptr<Request>> request_;
 };
 
+class MockContextPermissionDelegate : public AwContextPermissionsDelegate {
+ public:
+  MockContextPermissionDelegate() = default;
+  PermissionStatus GetGeolocationPermission(
+      const GURL& requesting_origin) const override {
+    return PermissionStatus::ASK;
+  }
+};
+
 class AwPermissionManagerForTesting : public AwPermissionManager {
  public:
+  AwPermissionManagerForTesting() : AwPermissionManager(context_delegate_) {}
   ~AwPermissionManagerForTesting() override {
     // Call CancelPermissionRequests() from here so that it calls virtual
     // methods correctly.
@@ -171,6 +182,7 @@ class AwPermissionManagerForTesting : public AwPermissionManager {
   }
 
   std::unique_ptr<AwBrowserPermissionRequestDelegateForTesting> delegate_;
+  MockContextPermissionDelegate context_delegate_;
 };
 
 class AwPermissionManagerTest : public testing::Test {

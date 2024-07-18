@@ -23,6 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.blink.mojom.PermissionStatus;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.Origin;
@@ -361,6 +362,17 @@ public class AwBrowserContext implements BrowserContextHandle {
             SharedPreferences.Editor prefsEditor = createSharedPrefs(sharedPrefsFilename).edit();
             prefsEditor.clear().apply();
         }
+    }
+
+    @CalledByNative
+    private int getGeolocationPermission(String origin) {
+        AwGeolocationPermissions permissions = getGeolocationPermissions();
+        if (!permissions.hasOrigin(origin)) {
+            return PermissionStatus.ASK;
+        }
+        return permissions.isOriginAllowed(origin)
+                ? PermissionStatus.GRANTED
+                : PermissionStatus.DENIED;
     }
 
     @NativeMethods

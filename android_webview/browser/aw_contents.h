@@ -303,6 +303,8 @@ class AwContents : public FindHelper::Listener,
   void RendererUnresponsive(content::RenderProcessHost* render_process_host);
   void RendererResponsive(content::RenderProcessHost* render_process_host);
 
+  bool UseLegacyGeolocationPermissionAPI();
+
   // content::WebContentsObserver overrides
   void PrimaryPageChanged(content::Page& page) override;
   void DidFinishNavigation(
