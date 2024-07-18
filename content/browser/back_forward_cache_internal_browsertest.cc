@@ -3934,24 +3934,20 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
       &location_change_counter_for_testing));
 
   // Generate a location change event.
-  blink::mojom::AXLocationAndScrollUpdatesPtr changes_1 =
-      blink::mojom::AXLocationAndScrollUpdates::New();
+  std::vector<blink::mojom::LocationChangesPtr> changes_1;
   ui::AXRelativeBounds relative_bounds_1;
   relative_bounds_1.bounds =
       gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
-  changes_1->location_changes.push_back(
-      blink::mojom::AXLocationChange::New(0, relative_bounds_1));
+  changes_1.push_back(blink::mojom::LocationChanges::New(0, relative_bounds_1));
   rfh_a->HandleAXLocationChanges(rfh_a->GetAXTreeID(), std::move(changes_1),
                                  /*reset_token=*/1);
 
   // Generate another location change event.
-  blink::mojom::AXLocationAndScrollUpdatesPtr changes_2 =
-      blink::mojom::AXLocationAndScrollUpdates::New();
+  std::vector<blink::mojom::LocationChangesPtr> changes_2;
   ui::AXRelativeBounds relative_bounds_2;
   relative_bounds_2.bounds =
       gfx::RectF(/*x=*/2, /*y=*/3, /*width=*/4, /*height=*/5);
-  changes_2->location_changes.push_back(
-      blink::mojom::AXLocationChange::New(0, relative_bounds_2));
+  changes_2.push_back(blink::mojom::LocationChanges::New(0, relative_bounds_2));
   rfh_a->HandleAXLocationChanges(rfh_a->GetAXTreeID(), std::move(changes_2),
                                  /*reset_token=*/1);
 

@@ -7,7 +7,6 @@
 
 #include "content/public/browser/web_contents_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 
 namespace content {
@@ -258,8 +257,7 @@ class MockWebContentsObserver : public WebContentsObserver {
               (override));
   MOCK_METHOD(void,
               AccessibilityLocationChangesReceived,
-              (const ui::AXTreeID& tree_id,
-               const blink::mojom::AXLocationAndScrollUpdatesPtr& details),
+              (const std::vector<ui::AXLocationChanges>& details),
               (override));
   MOCK_METHOD(void, DidChangeThemeColor, (), (override));
   MOCK_METHOD(void, OnBackgroundColorChanged, (), (override));

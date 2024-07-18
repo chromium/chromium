@@ -66,7 +66,8 @@ class FakeAccessibilityService
       const std::vector<ui::AXEvent>& events) override;
   void DispatchAccessibilityLocationChange(
       const ui::AXTreeID& tree_id,
-      const blink::mojom::AXLocationAndScrollUpdatesPtr changes) override;
+      int node_id,
+      const ui::AXRelativeBounds& bounds) override;
   void DispatchGetTextLocationResult(
       const ui::AXActionData& data,
       const std::optional<gfx::Rect>& rect) override;

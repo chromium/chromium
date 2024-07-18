@@ -12,8 +12,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom-forward.h"
-#include "third_party/blink/public/mojom/render_accessibility.mojom-forward.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/mojom/ax_updates_and_events.mojom.h"
@@ -58,7 +56,7 @@ class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
                       HandleAXEventsCallback callback) override;
 
   void HandleAXLocationChanges(
-      blink::mojom::AXLocationAndScrollUpdatesPtr changes,
+      std::vector<blink::mojom::LocationChangesPtr> changes,
       uint32_t reset_token) override;
 
  private:

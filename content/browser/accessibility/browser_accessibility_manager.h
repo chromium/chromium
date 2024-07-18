@@ -20,7 +20,6 @@
 #include "cc/base/rtree.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
@@ -258,8 +257,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
   // Called when the renderer process updates the location of accessibility
   // objects. Calls SendLocationChangeEvents(), which can be overridden.
-  void OnLocationChanges(
-      const blink::mojom::AXLocationAndScrollUpdatesPtr& changes);
+  void OnLocationChanges(const std::vector<ui::AXLocationChanges>& changes);
 
   // Called when a new find in page result is received. We hold on to this
   // information and don't activate it until the user requests it.
@@ -495,11 +493,11 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   explicit BrowserAccessibilityManager(
       ui::AXPlatformTreeManagerDelegate* delegate);
 
-  // Send platform-specific notifications to each of these object ids that
+  // Send platform-specific notifications to each of these objects that
   // their location has changed. This is called by OnLocationChanges
   // after it's updated the internal data structure.
   virtual void SendLocationChangeEvents(
-      const std::vector<blink::mojom::AXLocationChangePtr>& changes);
+      const std::vector<ui::AXLocationChanges>& changes);
 
   // Given the data from an atomic update, collect the nodes that need updating
   // assuming that this platform is one where plain text node content is

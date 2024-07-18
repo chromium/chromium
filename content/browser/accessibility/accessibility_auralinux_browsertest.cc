@@ -207,7 +207,7 @@ AtkText* AccessibilityAuraLinuxBrowserTest::GetScrollableInputField() {
   // Set the caret before the last character.
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   long caret_offset = InputContentsString().size() - 1;
   ExecuteScript(base::ASCIIToUTF16(
       base::StrCat({"let textField = document.querySelector('input,textarea');"

@@ -6,10 +6,10 @@ module ax.mojom;
 
 import "ui/accessibility/mojom/ax_action_data.mojom";
 import "ui/accessibility/mojom/ax_event.mojom";
+import "ui/accessibility/mojom/ax_relative_bounds.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom";
 
 // Main interface a client uses to send accessibility tree updates and results,
 // implemented in the Accessibility service and Automation extension API.
@@ -32,12 +32,13 @@ interface Automation {
     gfx.mojom.Point mouse_location,
     array<ax.mojom.AXEvent> events);
 
-  // Dispatches some location changes to the service.
-  // Currently used by Blink in
+  // Dispatches a location change for a specific |node_id| in the tree
+  // with ID |tree_id|. Currently used by Blink in
   // RenderAccessibilityHost::HandleAXLocationChanges.
   DispatchAccessibilityLocationChange(
     ax.mojom.AXTreeID tree_id,
-    blink.mojom.AXLocationAndScrollUpdates changes);
+    int32 node_id,
+    ax.mojom.AXRelativeBounds bounds);
 
   // Dispatches the result of a query for text location.
   // Currently supported by ARC++ in response to

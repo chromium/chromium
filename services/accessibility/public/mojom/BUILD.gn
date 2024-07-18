@@ -9,7 +9,7 @@ mojom("automation") {
   sources = [ "automation.mojom" ]
   public_deps = [
     "//mojo/public/mojom/base",
-    "//third_party/blink/public/mojom:accessibility_mojom",
+    "//ui/accessibility/mojom",
   ]
 }
 

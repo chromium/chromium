@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+.container {
+  padding: 100px;
+  margin: 100px;
+  border: 1px solid #000;
+  height: 900px;
+  overflow: scroll;
+}
+.bigbutton {
+  display:block;
+  width: 600px;
+  height: 600px;
+}
+</style>
+</head>
+<body>
+
+<div id="container" class="container" role="group">
+    <button class="bigbutton">One</button>
+    <button class="bigbutton">Two</button>
+    <button class="bigbutton">Three</button>
+</div>
+
+<script>
+
+function scrollPromise(scroller, scrollPosition) {
+  return new Promise(resolve => {
+    scroller.addEventListener('scrollend', resolve, { once: true });
+    // Ensure page is rendered before adjusting the scroll position.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scroller.scrollTop = scrollPosition;
+      });
+    });
+  });
+}
+
+function scrollNotificationPromise(expectedScroll) {
+  return new Promise(resolve => {
+    accessibilityController.addNotificationListener(target => {
+      if (target.role == 'AXRole: AXGroup' &&
+          target.scrollY() == expectedScroll) {
+        accessibilityController.removeNotificationListener();
+        resolve();
+      }
+    });
+  });
+}
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const scrollPosition = 500;
+  return Promise.all([
+    scrollNotificationPromise(scrollPosition),
+    scrollPromise(container, scrollPosition)
+  ]).then(results => {
+    assert_equals(container.scrollTop, scrollPosition);
+  });
+}, "This test ensures that scrolling the window sends a notification.");
+
+</script>
+
+</body>
+</html>

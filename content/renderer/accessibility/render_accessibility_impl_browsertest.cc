@@ -18,7 +18,6 @@
 #include "content/renderer/render_frame_impl.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
-#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom.h"
 #include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/ax_action_target.h"
@@ -251,8 +250,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
   EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
 
   // Make sure that a location change is sent for the fixed-positioned node.
-  std::vector<blink::mojom::AXLocationChangePtr>& changes =
-      GetLocationChanges();
+  std::vector<blink::mojom::LocationChangesPtr>& changes = GetLocationChanges();
   EXPECT_EQ(changes.size(), 1u);
   EXPECT_EQ(changes[0]->id, expected_id);
   EXPECT_EQ(changes[0]->new_location, expected_bounds);
@@ -316,13 +314,9 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
   EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
 
   // Make sure that a location change is sent for the fixed-positioned node.
-  std::vector<blink::mojom::AXLocationChangePtr>& changes =
-      GetLocationChanges();
+  std::vector<blink::mojom::LocationChangesPtr>& changes = GetLocationChanges();
   EXPECT_EQ(changes.size(), 2u);
   for (auto& change : changes) {
-    if (change->id == root_obj.AxID()) {
-      continue;
-    }
     auto search = expected.find(change->id);
     EXPECT_NE(search, expected.end());
     EXPECT_EQ(search->second, change->new_location);

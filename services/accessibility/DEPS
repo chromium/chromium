@@ -1,5 +1,4 @@
 include_rules = [
-  "+third_party/blink/public/mojom",
   "+ui/accessibility/ax_enum_util.h",
   "+ui/accessibility/ax_enums.mojom.h",
   "+ui/accessibility/ax_event.h",

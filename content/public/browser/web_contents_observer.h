@@ -26,7 +26,6 @@
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
@@ -34,7 +33,6 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -52,6 +50,7 @@ class Size;
 
 namespace ui {
 struct AXUpdatesAndEvents;
+struct AXLocationChanges;
 namespace mojom {
 enum class VirtualKeyboardMode;
 }  // namespace mojom
@@ -784,8 +783,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void AccessibilityEventReceived(
       const ui::AXUpdatesAndEvents& details) {}
   virtual void AccessibilityLocationChangesReceived(
-      const ui::AXTreeID& tree_id,
-      const blink::mojom::AXLocationAndScrollUpdatesPtr& details) {}
+      const std::vector<ui::AXLocationChanges>& details) {}
 
   // Invoked when theme color is changed.
   virtual void DidChangeThemeColor() {}

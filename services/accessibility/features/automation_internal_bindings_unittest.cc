@@ -16,8 +16,6 @@
 #include "services/accessibility/features/bindings_isolate_holder.h"
 #include "services/accessibility/features/v8_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom-forward.h"
-#include "third_party/blink/public/mojom/ax_location_and_scroll_updates.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-template.h"
 
@@ -147,13 +145,8 @@ class AutomationInternalBindingsTest : public testing::Test {
   void DispatchLocationChange(const ui::AXTreeID& tree_id,
                               int node_id,
                               const ui::AXRelativeBounds& bounds) {
-    blink::mojom::AXLocationAndScrollUpdatesPtr changes =
-        blink::mojom::AXLocationAndScrollUpdates::New();
-    changes->location_changes.push_back(
-        blink::mojom::AXLocationChange::New(node_id, bounds));
-
     test_isolate_holder_->GetAutomationBindings()
-        ->DispatchAccessibilityLocationChange(tree_id, std::move(changes));
+        ->DispatchAccessibilityLocationChange(tree_id, node_id, bounds);
   }
 
   std::string LoadScriptFromFile(const std::string& file_path) {

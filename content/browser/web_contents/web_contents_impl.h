@@ -82,7 +82,6 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
@@ -698,8 +697,7 @@ class CONTENT_EXPORT WebContentsImpl
   void ProcessAccessibilityUpdatesAndEvents(
       ui::AXUpdatesAndEvents& details) override;
   void AccessibilityLocationChangesReceived(
-      const ui::AXTreeID& tree_id,
-      const blink::mojom::AXLocationAndScrollUpdatesPtr& details) override;
+      const std::vector<ui::AXLocationChanges>& details) override;
   ui::AXNode* GetAccessibilityRootNode() override;
   std::string DumpAccessibilityTree(
       bool internal,

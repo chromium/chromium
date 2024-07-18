@@ -335,10 +335,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void InvalidateBoundingBox(const LayoutObject*) override;
   void InvalidateBoundingBox(const AXID&);
 
-  void SetCachedBoundingBox(AXID id,
-                            const ui::AXRelativeBounds& bounds,
-                            const int scroll_x,
-                            const int scroll_y);
+  void SetCachedBoundingBox(AXID id, const ui::AXRelativeBounds& bounds);
 
   const AtomicString& ComputedRoleForNode(Node*) override;
   String ComputedNameForNode(Node*) override;
@@ -671,6 +668,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     kEditableTextContentChanged,
     kFocusableChanged,
     kIdChanged,
+    kMarkDirtyFromHandleScroll,
     kNodeIsAttached,
     kNodeGainedFocus,
     kNodeLostFocus,
@@ -1083,6 +1081,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Help de-dupe processing of repetitive events.
   HashSet<AXID> nodes_with_pending_children_changed_;
+  HashSet<AXID> nodes_with_pending_scroll_changed_;
 
   // Nodes with document markers that have received accessibility updates.
   HashSet<AXID> nodes_with_spelling_or_grammar_markers_;
@@ -1146,13 +1145,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXID current_menu_list_axid_ = 0;
 
   // Known locations and sizes of bounding boxes that are known to have been
-  // serialized as well as their scroll offsets.
-  struct CachedLocationChange {
-    ui::AXRelativeBounds bounds;
-    int scroll_x;
-    int scroll_y;
-  };
-  HashMap<AXID, CachedLocationChange> cached_bounding_boxes_;
+  // serialized.
+  HashMap<AXID, ui::AXRelativeBounds> cached_bounding_boxes_;
 
   // The list of node IDs whose position is fixed or sticky.
   HashSet<AXID> fixed_or_sticky_node_ids_;

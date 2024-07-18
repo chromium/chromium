@@ -13,12 +13,6 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-mojom("accessibility_mojom") {
-  generate_java = true
-  sources = [ "ax_location_and_scroll_updates.mojom" ]
-  public_deps = [ "//ui/accessibility/mojom" ]
-}
-
 # This target includes all mojom interfaces which can be used from
 # renderer/platform. In particular these mojom interfaces can't use types that
 # are typemapped to a type in renderer/core.
@@ -285,7 +279,6 @@ mojom("mojom_platform") {
   }
 
   public_deps = [
-    ":accessibility_mojom",
     ":android_mojo_bindings",
     ":authenticator_test_mojo_bindings",
     ":color_scheme_mojo_bindings",
@@ -1393,7 +1386,6 @@ mojom("mojom_core") {
   ]
 
   public_deps = [
-    ":accessibility_mojom",
     ":android_mojo_bindings",
     ":color_scheme_mojo_bindings",
     ":mojom_platform",

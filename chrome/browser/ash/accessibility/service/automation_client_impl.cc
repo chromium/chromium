@@ -55,12 +55,13 @@ void AutomationClientImpl::DispatchAccessibilityEvents(
 }
 
 void AutomationClientImpl::DispatchAccessibilityLocationChange(
-    const ui::AXTreeID& tree_id,
-    const blink::mojom::AXLocationAndScrollUpdatesPtr& details) {
+    const ui::AXLocationChanges& details) {
+  ui::AXTreeID tree_id = details.ax_tree_id;
   if (tree_id == ui::AXTreeIDUnknown())
     return;
   for (auto& remote : automation_remotes_) {
-    remote->DispatchAccessibilityLocationChange(tree_id, details.Clone());
+    remote->DispatchAccessibilityLocationChange(tree_id, details.id,
+                                                details.new_location);
   }
 }
 void AutomationClientImpl::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {

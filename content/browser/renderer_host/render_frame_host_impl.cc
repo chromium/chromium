@@ -10283,7 +10283,7 @@ void RenderFrameHostImpl::HandleAXEvents(
 
 void RenderFrameHostImpl::HandleAXLocationChanges(
     const ui::AXTreeID& tree_id,
-    const blink::mojom::AXLocationAndScrollUpdatesPtr& changes,
+    std::vector<blink::mojom::LocationChangesPtr> changes,
     uint32_t reset_token) {
   if (tree_id != GetAXTreeID()) {
     // The message has arrived after the frame has navigated which means its
@@ -10305,13 +10305,23 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     }
   }
 
+  // Send the updates to the automation extension API.
+  std::vector<ui::AXLocationChanges> details;
+  details.reserve(changes.size());
+  for (auto& change : changes) {
+    ui::AXLocationChanges detail;
+    detail.id = change->id;
+    detail.ax_tree_id = GetAXTreeID();
+    detail.new_location = change->new_location;
+    details.push_back(detail);
+  }
   BrowserAccessibilityManager* manager =
       GetOrCreateBrowserAccessibilityManager();
   if (manager) {
-    manager->OnLocationChanges(changes);
+    manager->OnLocationChanges(details);
   }
 
-  delegate_->AccessibilityLocationChangesReceived(tree_id, changes);
+  delegate_->AccessibilityLocationChangesReceived(details);
 }
 
 void RenderFrameHostImpl::ResetWaitingState() {

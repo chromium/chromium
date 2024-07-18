@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+<style>
+.container {
+  padding: 100px;
+  margin: 100px;
+  border: 1px solid #000;
+  height: 900px;
+  overflow: scroll;
+}
+.inner {
+  width: 2000px;
+}
+.bigbutton {
+  display:inline-block;
+  width: 600px;
+  height: 600px;
+}
+</style>
+</head>
+<body>
+
+<div id="container" class="container">
+    <div class="inner">
+        <button class="bigbutton">One</button>
+        <button class="bigbutton">Two</button>
+        <button class="bigbutton">Three</button>
+    </div>
+</div>
+
+<script>
+
+async_test((t) => {
+  var container = document.getElementById('container');
+
+  accessibilityController.addNotificationListener(t.step_func((target, notification) => {
+    if (target.role == 'AXRole: AXGenericContainer') {
+      console.log('Got notification on container div');
+      assert_equals(container.scrollLeft, 500);
+      t.done();
+    }
+  }));
+
+  window.setTimeout(function() {
+    container.scrollLeft = 500;
+  }, 0);
+
+  window.setTimeout(t.step_func_done(() => {
+    assert_unreached();
+  }), 200);
+}, "This test ensures that scrolling the window sends a notification.");
+
+</script>
+
+</body>
+</html>

@@ -1442,11 +1442,7 @@ void AXObject::SerializeBoundingBoxAttributes(ui::AXNodeData& dst) const {
     dst.AddBoolAttribute(ax::mojom::blink::BoolAttribute::kIsLineBreakingObject,
                          true);
   }
-
-  gfx::Point scroll_offset = GetScrollOffset();
-  AXObjectCache().SetCachedBoundingBox(AXObjectID(), dst.relative_bounds,
-                                       scroll_offset.x(), scroll_offset.y());
-  ;
+  AXObjectCache().SetCachedBoundingBox(AXObjectID(), dst.relative_bounds);
 }
 
 static bool AXShouldIncludePageScaleFactorInRoot() {
