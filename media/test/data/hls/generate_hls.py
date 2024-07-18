@@ -58,21 +58,21 @@ class H265Codec():
   def IsVideo(self):
     return True
   def GetFlag(self, name:str, id:int):
-    return ['-map', f'"[{name}out]"', f'-c:v:{id}', 'libx265']
+    return ['-map', f'[{name}out]', f'-c:v:{id}', 'libx265']
 
 
 class VP9Codec():
   def IsVideo(self):
     return True
   def GetFlag(self, name:str, id:int):
-    return ['-map', f'"[{name}out]"', f'-c:v:{id}', 'libvpx-vp9']
+    return ['-map', f'[{name}out]', f'-c:v:{id}', 'libvpx-vp9']
 
 
 class AV1Codec():
   def IsVideo(self):
     return True
   def GetFlag(self, name:str, id:int):
-    return ['-map', f'"[{name}out]"', f'-c:v:{id}', 'libaom-av1']
+    return ['-map', f'[{name}out]', f'-c:v:{id}', 'libaom-av1']
 
 
 class AACCodec():
@@ -194,7 +194,7 @@ class HlsStream(typing.NamedTuple):
         rendition.rendition_id = count
         count += 1
         rendition.rendition_name = 'AUDIORENDITIONSHAVENONAMES'
-        yield from rendition.GetFlags()
+      yield from rendition.GetFlags()
 
     yield ['-f', 'hls']
     yield ['-hls_time', '1']
@@ -223,7 +223,7 @@ class HlsStream(typing.NamedTuple):
 
 
 def create_single_codecs_per_container(args):
-  video = [H264Codec, H265Codec, VP9Codec, AV1Codec]
+  video = [H264Codec, H265Codec, VP9Codec]
   audio = [AACCodec, FLACCodec, AC3Codec]
   # All codecs are supported in mp4.
   for codec in video+audio:
@@ -286,7 +286,7 @@ def main(args):
     _gen_tempfile(media_file)
     for stream in globals()[args[0]](args[1:]):
       for flag in stream.GetFlags(media_file):
-        print(' '.join(flag))
+        print(' '.join(flag), '\\')
       _gen_media(stream, media_file)
 
 

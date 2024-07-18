@@ -33,6 +33,99 @@
 <script>
   const ok_event = "canplaythrough";
 
+  const content_definitions = [
+    {
+      type: "audio",
+      name: "vod_aac_0AAC",
+      location: "vod_aac_0AAC/chunklist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0AAC",
+      location: "vod_fmp4_0AAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0AC3",
+      location: "vod_fmp4_0AC3/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0FLAC",
+      location: "vod_fmp4_0FLAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0H264",
+      location: "vod_fmp4_0H264/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0H265",
+      location: "vod_fmp4_0H265/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0VP9",
+      location: "vod_fmp4_0VP9/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0AAC",
+      location: "vod_mpegts_0AAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0AC3",
+      location: "vod_mpegts_0AC3/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0FLAC",
+      location: "vod_mpegts_0FLAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0H264",
+      location: "vod_mpegts_0H264/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0H265",
+      location: "vod_mpegts_0H265/playlist.m3u8"
+    },
+    {
+      type: "audio",
+      name: "vod_aac_0AAC",
+      location: "vod_aac_0AAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_aes128_mpegts_AAC_H264",
+      location: "https://bitmovin-a.akamaihd.net/content/art-of-motion_drm/m3u8s/11331.m3u8",
+    },
+    {
+      type: "video",
+      name: "vod_aes128_fmp4_AAC_H264",
+      location: "https://storage.googleapis.com/shaka-demo-assets/sintel-fmp4-aes/master.m3u8",
+    },
+    {
+      type: "video",
+      name: "vod_aes128rot_fmp4_AAC_H264",
+      location: "https://storage.googleapis.com/shaka-demo-assets/sintel-ts-aes-key-rotation/master.m3u8",
+    },
+    {
+      type: "video",
+      name: "vod_wv_fmp4_MP4A_H264",
+      location: "https://storage.googleapis.com/shaka-demo-assets/angel-one-widevine-hls/hls.m3u8",
+    },
+    {
+      type: "video",
+      name: "vod_ck_fmp4_MP4A_H264",
+      location: "https://storage.googleapis.com/shaka-demo-assets/angel-one-sample-aes-ctr-multiple-key/manifest.m3u8",
+    },
+  ];
+
   function attach_listener(element, event, fn) {
     if (element.listeners === undefined) {
       element.listeners = {};
@@ -81,27 +174,25 @@
 
   function load_sequential_video(content, done) {
     if (content.length === 0) return done();
-    const [name, src, element] = content.pop();
-    load_video(name, name+"/"+src, element, load_sequential_video.bind(null, content, done));
+    const spec = content.pop();
+    load_video(spec.name, spec.location, spec.type,
+               load_sequential_video.bind(null, content, done))
   }
 
-  load_sequential_video([
-    ["vod_fmp4_0AAC", "playlist.m3u8", "video"],
-    ["vod_fmp4_0AC3", "playlist.m3u8", "video"],
-    ["vod_fmp4_0AV1", "playlist.m3u8", "video"],
-    ["vod_fmp4_0FLAC", "playlist.m3u8", "video"],
-    ["vod_fmp4_0H264", "playlist.m3u8", "video"],
-    ["vod_fmp4_0H265", "playlist.m3u8", "video"],
-    ["vod_fmp4_0VP9", "playlist.m3u8", "video"],
-    ["vod_mpegts_0AAC", "playlist.m3u8", "video"],
-    ["vod_mpegts_0AC3", "playlist.m3u8", "video"],
-    ["vod_mpegts_0FLAC", "playlist.m3u8", "video"],
-    ["vod_mpegts_0H264", "playlist.m3u8", "video"],
-    ["vod_mpegts_0H265", "playlist.m3u8", "video"],
-    ["vod_aac_0AAC", "chunklist.m3u8", "audio"],
-    ["enc_vod_mpegts_0H264+AAC", "playlist.m3u8", "video"],
-  ], () => {
-    console.log('DONE!');
-  });
+  function load_videos() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const video_param = urlParams.get('video');
+    let videos = content_definitions;
+    if (video_param != null) {
+      videos = videos.filter((v) => {
+        return v.name == video_param;
+      });
+    }
+    load_sequential_video(videos, () => {
+      console.log('DONE!');
+    });
+  }
+
+  load_videos();
 </script>
 </html>
