@@ -185,8 +185,7 @@ class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
     output_buffer_->SetOffset(0);
     ASSERT_EQ(kTestDataSize, output_buffer_->size());
 
-    EXPECT_EQ(0, memcmp(output_buffer_->data(), input_buffer_->StartOfBuffer(),
-                        kTestDataSize));
+    EXPECT_EQ(output_buffer_->span(), input_buffer_->span_before_offset());
   }
 
  protected:

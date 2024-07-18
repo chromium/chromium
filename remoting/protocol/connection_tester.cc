@@ -47,8 +47,8 @@ void StreamConnectionTester::CheckResults() {
   output_buffer_->SetOffset(0);
   ASSERT_EQ(test_data_size_, output_buffer_->size());
 
-  EXPECT_EQ(0, memcmp(output_buffer_->data(), input_buffer_->StartOfBuffer(),
-                      test_data_size_));
+  EXPECT_EQ(base::as_bytes(output_buffer_->span()),
+            input_buffer_->span_before_offset());
 }
 
 void StreamConnectionTester::Done() {

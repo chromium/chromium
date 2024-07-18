@@ -425,9 +425,8 @@ bool SslHmacChannelAuthenticator::HandleAuthBytesRead(int read_result) {
     return true;
   }
 
-  if (!VerifyAuthBytes(
-          std::string(auth_read_buf_->StartOfBuffer(),
-                      auth_read_buf_->StartOfBuffer() + kAuthDigestLength))) {
+  if (!VerifyAuthBytes(std::string(base::as_string_view(
+          auth_read_buf_->everything().first(kAuthDigestLength))))) {
     LOG(WARNING) << "Mismatched authentication";
     NotifyError(net::ERR_FAILED);
     return false;

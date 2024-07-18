@@ -389,12 +389,11 @@ bool StreamPacketSocket::HandleReadResult(int result) {
   }
 
   read_buffer_->set_offset(read_buffer_->offset() + result);
-  uint8_t* head = reinterpret_cast<uint8_t*>(read_buffer_->StartOfBuffer());
-  int pos = 0;
-  while (pos < read_buffer_->offset()) {
+  base::span<uint8_t> span = read_buffer_->span_before_offset();
+  while (!span.empty()) {
     size_t bytes_consumed = 0;
-    auto packet = packet_processor_->Unpack(
-        head + pos, read_buffer_->offset() - pos, &bytes_consumed);
+    auto packet =
+        packet_processor_->Unpack(span.data(), span.size(), &bytes_consumed);
     if (packet) {
       NotifyPacketReceived(rtc::ReceivedPacket(
           rtc::MakeArrayView(packet->bytes(), packet->size()),
@@ -403,13 +402,13 @@ bool StreamPacketSocket::HandleReadResult(int result) {
     if (!bytes_consumed) {
       break;
     }
-    pos += bytes_consumed;
+    span = span.subspan(bytes_consumed);
   }
   // We've consumed all complete packets from the buffer; now move any remaining
   // bytes to the head of the buffer and set offset to reflect this.
-  if (pos && pos <= read_buffer_->offset()) {
-    memmove(head, head + pos, read_buffer_->offset() - pos);
-    read_buffer_->set_offset(read_buffer_->offset() - pos);
+  if (!span.empty()) {
+    read_buffer_->everything().copy_prefix_from(span);
+    read_buffer_->set_offset(span.size());
   }
 
   return true;
