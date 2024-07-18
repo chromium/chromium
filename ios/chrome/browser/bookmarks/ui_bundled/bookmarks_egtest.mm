@@ -802,6 +802,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
 
+  [ChromeEarlGreyUI waitForAppToIdle];
+
   // Delete Folder 2.
   [BookmarkEarlGrey
       removeBookmarkWithTitle:@"Folder 2"
