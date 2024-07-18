@@ -478,8 +478,8 @@ void MediaRouterDesktop::RegisterMediaRoutesObserver(
     // must complete before invoking its virtual OnRoutesUpdated() method.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&MediaRouterDesktop::NotifyOfExistingRoutes,
-                       weak_factory_.GetWeakPtr(), observer->AsWeakPtr()));
+        base::BindOnce(&MediaRouterDesktop::NotifyNewObserversOfExistingRoutes,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -950,13 +950,9 @@ const MediaRoute* MediaRouterDesktop::GetRoute(
   return it == routes.end() ? nullptr : &*it;
 }
 
-void MediaRouterDesktop::NotifyOfExistingRoutes(
-    base::WeakPtr<MediaRoutesObserver> observer) const {
+void MediaRouterDesktop::NotifyNewObserversOfExistingRoutes() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (observer) {
-    observer->OnRoutesUpdated(
-        routes_query_.cached_route_list().value_or(std::vector<MediaRoute>{}));
-  }
+  routes_query_.NotifyNewObserversOfExistingRoutes();
 }
 
 // NOTE: To record this on Android, will need to move to
@@ -1108,6 +1104,7 @@ void MediaRouterDesktop::MediaRoutesQuery::UpdateCachedRouteList() {
 
 void MediaRouterDesktop::MediaRoutesQuery::AddObserver(
     MediaRoutesObserver* observer) {
+  new_observers_.push_back(observer);
   observers_.AddObserver(observer);
   observer->OnRoutesUpdated(
       cached_route_list_.value_or(std::vector<MediaRoute>()));
@@ -1115,10 +1112,12 @@ void MediaRouterDesktop::MediaRoutesQuery::AddObserver(
 
 void MediaRouterDesktop::MediaRoutesQuery::RemoveObserver(
     MediaRoutesObserver* observer) {
+  std::erase(new_observers_, observer);
   observers_.RemoveObserver(observer);
 }
 
 void MediaRouterDesktop::MediaRoutesQuery::NotifyObservers() {
+  new_observers_.clear();
   for (auto& observer : observers_) {
     observer.OnRoutesUpdated(
         cached_route_list_.value_or(std::vector<MediaRoute>()));
@@ -1132,6 +1131,16 @@ bool MediaRouterDesktop::MediaRoutesQuery::HasObserver(
 
 bool MediaRouterDesktop::MediaRoutesQuery::HasObservers() const {
   return !observers_.empty();
+}
+
+void MediaRouterDesktop::MediaRoutesQuery::
+    NotifyNewObserversOfExistingRoutes() {
+  while (!new_observers_.empty()) {
+    auto observer = new_observers_.back();
+    std::erase(new_observers_, observer);
+    observer->OnRoutesUpdated(
+        cached_route_list().value_or(std::vector<MediaRoute>{}));
+  }
 }
 
 MediaRouterDesktop::InternalMediaRoutesObserver::InternalMediaRoutesObserver(

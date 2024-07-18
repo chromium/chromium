@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/media_router/common/media_route.h"
 
@@ -22,8 +21,7 @@ class MediaRouter;
 // |OnRoutesUpdated| that match the route IDs contained in the
 // |joinable_route_ids| can be connected joined by the source.  If no
 // |source_id| is supplied, then the idea of joinable routes no longer applies.
-class MediaRoutesObserver : public base::CheckedObserver,
-                            public base::SupportsWeakPtr<MediaRoutesObserver> {
+class MediaRoutesObserver : public base::CheckedObserver {
  public:
   explicit MediaRoutesObserver(MediaRouter* router);
 
