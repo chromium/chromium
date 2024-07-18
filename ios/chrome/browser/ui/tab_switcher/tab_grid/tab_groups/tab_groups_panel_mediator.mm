@@ -224,7 +224,9 @@ NSString* CreationText(base::Time creation_date) {
 #pragma mark TabGroupsPanelMutator
 
 - (void)selectTabGroupsPanelItem:(TabGroupsPanelItem*)item {
-  // TODO(crbug.com/329626537): Handle opening the tab group locally.
+  _tabGroupSyncService->OpenTabGroup(
+      item.savedTabGroupID,
+      std::make_unique<tab_groups::TabGroupActionContext>());
 }
 
 #pragma mark TabGroupSyncServiceObserverDelegate
