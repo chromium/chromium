@@ -1065,6 +1065,8 @@ XrResult OpenXrApiWrapper::LocateViews(
   if ((view_state.viewStateFlags & XR_VIEW_STATE_POSITION_VALID_BIT) &&
       (view_state.viewStateFlags & XR_VIEW_STATE_ORIENTATION_VALID_BIT)) {
     view_config.SetViews(std::move(new_views));
+  } else {
+    DVLOG(3) << __func__ << " Could not locate views";
   }
 
   return XR_SUCCESS;

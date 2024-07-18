@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define _USE_MATH_DEFINES  // For VC++ to get M_PI. This has to be first.
+
 #include "device/vr/openxr/openxr_view_configuration.h"
+
+#include <cmath>
 
 #include "base/check_op.h"
 #include "base/ranges/algorithm.h"
@@ -11,6 +15,18 @@
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
+
+namespace {
+// This default isn't necessarily suitable for rendering, but it avoids a rare
+// situation where if we cannot locate views on the first frame, xrEndFrame will
+// return XR_ERROR_POSE_INVALID which will esesntially terminate the session.
+constexpr float kDefaultFov = M_PI / 2.0f;
+constexpr XrView kDefaultView{
+    XR_TYPE_VIEW,
+    /*next=*/nullptr,
+    /*pose=*/{{0, 0, 0, 1}, {0, 0, 0}},
+    /*fov=*/{kDefaultFov, kDefaultFov, kDefaultFov, kDefaultFov}};
+}  // namespace
 
 mojom::XREye GetEyeFromIndex(int i) {
   if (i == kLeftView) {
@@ -98,7 +114,7 @@ void OpenXrViewConfiguration::Initialize(
   active_ = false;
   viewport_ = gfx::Rect();
   SetProperties(std::move(properties));
-  local_from_view_.resize(properties_.size());
+  local_from_view_.resize(properties_.size(), kDefaultView);
   projection_views_.resize(properties_.size());
 
   initialized_ = true;
