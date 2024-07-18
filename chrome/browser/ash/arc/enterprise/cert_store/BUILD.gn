@@ -23,6 +23,7 @@ static_library("cert_store") {
     "//chrome/browser/ash/arc/keymint",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/policy/remote_commands",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/services/keymanagement/public/mojom",

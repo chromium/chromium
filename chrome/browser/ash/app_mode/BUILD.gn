@@ -114,6 +114,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
@@ -144,6 +145,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/policy/remote_commands/crd",
   ]
 }
 

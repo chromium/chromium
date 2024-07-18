@@ -100,6 +100,7 @@ static_library("ui") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
@@ -153,6 +154,7 @@ static_library("ui") {
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/system",
   ]
 }

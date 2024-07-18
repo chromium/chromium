@@ -38,6 +38,7 @@ static_library("web_app") {
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/image_decoder",
     "//chromeos/ash/components/settings",
     "//components/prefs",
@@ -47,7 +48,10 @@ static_library("web_app") {
     "//services/network/public/cpp",
     "//skia",
   ]
-  allow_circular_includes_from = [ "//chrome/browser/ash/login/ui" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/policy/remote_commands/crd",
+  ]
 }
 
 source_set("unit_tests") {
