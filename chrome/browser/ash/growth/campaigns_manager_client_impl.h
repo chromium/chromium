@@ -62,14 +62,17 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
 
   // UiActionPerformer::Observer:
   void OnReadyToLogImpression(int campaign_id,
-                              std::optional<int> group_id) override;
+                              std::optional<int> group_id,
+                              bool should_log_cros_events) override;
   void OnDismissed(int campaign_id,
                    std::optional<int> group_id,
-                   bool should_mark_dismissed) override;
+                   bool should_mark_dismissed,
+                   bool should_log_cros_events) override;
   void OnButtonPressed(int campaign_id,
                        std::optional<int> group_id,
                        CampaignButtonId button_id,
-                       bool should_mark_dismissed) override;
+                       bool should_mark_dismissed,
+                       bool should_log_cros_events) override;
 
  private:
   void OnComponentDownloaded(

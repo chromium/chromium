@@ -221,19 +221,21 @@ signin::IdentityManager* CampaignsManagerClientImpl::GetIdentityManager()
 
 void CampaignsManagerClientImpl::OnReadyToLogImpression(
     int campaign_id,
-    std::optional<int> group_id) {
+    std::optional<int> group_id,
+    bool should_log_cros_events) {
   // Records impression UMA metrics.
   // TODO: b/348495965 - Verify group metrics when ready.
-  RecordImpression(campaign_id);
+  RecordImpression(campaign_id, should_log_cros_events);
   RecordImpressionEvents(campaign_id, group_id);
 }
 
 void CampaignsManagerClientImpl::OnDismissed(int campaign_id,
                                              std::optional<int> group_id,
-                                             bool should_mark_dismissed) {
+                                             bool should_mark_dismissed,
+                                             bool should_log_cros_events) {
   // Records dismissal UMA metrics.
   // TODO: b/348495965 - Verify group metrics when ready.
-  RecordDismissed(campaign_id);
+  RecordDismissed(campaign_id, should_log_cros_events);
 
   if (!should_mark_dismissed) {
     return;
@@ -245,9 +247,10 @@ void CampaignsManagerClientImpl::OnDismissed(int campaign_id,
 void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
                                                  std::optional<int> group_id,
                                                  CampaignButtonId button_id,
-                                                 bool should_mark_dismissed) {
+                                                 bool should_mark_dismissed,
+                                                 bool should_log_cros_events) {
   // TODO: b/348495965 - Verify group metrics when ready.
-  RecordButtonPressed(campaign_id, button_id);
+  RecordButtonPressed(campaign_id, button_id, should_log_cros_events);
 
   if (!should_mark_dismissed) {
     return;

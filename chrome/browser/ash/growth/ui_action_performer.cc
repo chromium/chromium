@@ -20,26 +20,31 @@ void UiActionPerformer::RemoveObserver(Observer* observer) {
 
 void UiActionPerformer::NotifyReadyToLogImpression(
     int campaign_id,
-    std::optional<int> group_id) {
+    std::optional<int> group_id,
+    bool should_log_cros_events) {
   for (auto& observer : observers_) {
-    observer.OnReadyToLogImpression(campaign_id, group_id);
+    observer.OnReadyToLogImpression(campaign_id, group_id,
+                                    should_log_cros_events);
   }
 }
 
 void UiActionPerformer::NotifyDismissed(int campaign_id,
                                         std::optional<int> group_id,
-                                        bool should_mark_dismissed) {
+                                        bool should_mark_dismissed,
+                                        bool should_log_cros_events) {
   for (auto& observer : observers_) {
-    observer.OnDismissed(campaign_id, group_id, should_mark_dismissed);
+    observer.OnDismissed(campaign_id, group_id, should_mark_dismissed,
+                         should_log_cros_events);
   }
 }
 
 void UiActionPerformer::NotifyButtonPressed(int campaign_id,
                                             std::optional<int> group_id,
                                             CampaignButtonId button_id,
-                                            bool should_mark_dismissed) {
+                                            bool should_mark_dismissed,
+                                            bool should_log_cros_events) {
   for (auto& observer : observers_) {
     observer.OnButtonPressed(campaign_id, group_id, button_id,
-                             should_mark_dismissed);
+                             should_mark_dismissed, should_log_cros_events);
   }
 }

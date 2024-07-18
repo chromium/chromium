@@ -24,12 +24,14 @@ enum class CampaignButtonId {
 };
 
 // Records how many times a button is pressed in the campaign UI.
-void RecordButtonPressed(int campaign_id, CampaignButtonId button_id);
+void RecordButtonPressed(int campaign_id,
+                         CampaignButtonId button_id,
+                         bool should_log_cros_events);
 
 // Records how many times a campaign UI is dismissed.
-void RecordDismissed(int campaign_id);
+void RecordDismissed(int campaign_id, bool should_log_cros_events);
 
 // Records how many times a campaign UI is about to show.
-void RecordImpression(int campaign_id);
+void RecordImpression(int campaign_id, bool should_log_cros_events);
 
 #endif  // CHROME_BROWSER_ASH_GROWTH_METRICS_H_

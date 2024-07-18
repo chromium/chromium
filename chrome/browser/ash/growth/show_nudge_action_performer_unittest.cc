@@ -140,8 +140,11 @@ TEST_F(ShowNudgeActionPerformerTest, ShouldCallOnReadyToLogImpression) {
   ASSERT_TRUE(value.has_value());
 
   int campaign_id = 100;
-  EXPECT_CALL(mock_observer_, OnReadyToLogImpression(testing::Eq(campaign_id),
-                                                     /*group_id=*/testing::_))
+  EXPECT_CALL(
+      mock_observer_,
+      OnReadyToLogImpression(testing::Eq(campaign_id),
+                             /*group_id=*/testing::_,
+                             /*should_log_cros_events=*/testing::Eq(false)))
       .Times(1);
 
   action().Run(

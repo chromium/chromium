@@ -113,9 +113,10 @@ TEST_F(ShowNotificationActionPerformerTest, TestValidParams) {
                                                kTestTitle, kTestMessage);
   auto value = base::JSONReader::Read(valid_params);
   ASSERT_TRUE(value.has_value());
-  EXPECT_CALL(mock_observer_,
-              OnReadyToLogImpression(testing::Eq(kTestCampaignId),
-                                     testing::Eq(std::nullopt)))
+  EXPECT_CALL(
+      mock_observer_,
+      OnReadyToLogImpression(testing::Eq(kTestCampaignId),
+                             testing::Eq(std::nullopt), testing::Eq(false)))
       .Times(1);
 
   action().Run(
@@ -152,9 +153,10 @@ TEST_F(ShowNotificationActionPerformerTest, TestInvalidParams) {
   auto* const invalid_params = "{}";
   auto value = base::JSONReader::Read(invalid_params);
   ASSERT_TRUE(value.has_value());
-  EXPECT_CALL(mock_observer_,
-              OnReadyToLogImpression(testing::Eq(kTestCampaignId),
-                                     testing::Eq(std::nullopt)))
+  EXPECT_CALL(
+      mock_observer_,
+      OnReadyToLogImpression(testing::Eq(kTestCampaignId),
+                             testing::Eq(std::nullopt), testing::Eq(false)))
       .Times(0);
 
   action().Run(

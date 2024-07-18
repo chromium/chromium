@@ -210,7 +210,7 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0) {
   CampaignButtonId button_id = CampaignButtonId::kPrimary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/true);
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
                                        campaign_id,
@@ -223,12 +223,28 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0) {
                              button_id);
 }
 
+TEST_F(CampaignsManagerClientTest, NotRecordButtonPressedCrosEvents) {
+  int campaign_id = 0;
+  CampaignButtonId button_id = CampaignButtonId::kPrimary;
+  campaigns_manager_client_->OnButtonPressed(
+      campaign_id, /*group_id=*/std::nullopt, button_id,
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/false);
+
+  histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
+                                       campaign_id,
+                                       /*expected_bucket_count=*/1);
+
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_.GetEvents();
+  ASSERT_EQ(events.size(), 0U);
+}
+
 TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0NoDismissal) {
   int campaign_id = 0;
   CampaignButtonId button_id = CampaignButtonId::kPrimary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/false);
+      /*should_mark_dismissed=*/false, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
                                        campaign_id,
@@ -246,7 +262,7 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id499) {
   CampaignButtonId button_id = CampaignButtonId::kPrimary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/true);
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
                                        campaign_id,
@@ -264,7 +280,7 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id500) {
   CampaignButtonId button_id = CampaignButtonId::kPrimary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/true);
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName1000,
                                        campaign_id,
@@ -283,10 +299,10 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton0Id0And500) {
   CampaignButtonId button_id = CampaignButtonId::kPrimary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id_0, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/true);
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
   campaigns_manager_client_->OnButtonPressed(
       campaign_id_500, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/true);
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton0HistogramName500,
                                        campaign_id_0,
@@ -309,7 +325,7 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0) {
   CampaignButtonId button_id = CampaignButtonId::kSecondary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/true);
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
                                        campaign_id,
@@ -327,7 +343,7 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0NoDismissal) {
   CampaignButtonId button_id = CampaignButtonId::kSecondary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/false);
+      /*should_mark_dismissed=*/false, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
                                        campaign_id,
@@ -345,7 +361,7 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id499) {
   CampaignButtonId button_id = CampaignButtonId::kSecondary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/true);
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
                                        campaign_id,
@@ -363,7 +379,7 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id500) {
   CampaignButtonId button_id = CampaignButtonId::kSecondary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/true);
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName1000,
                                        campaign_id,
@@ -382,10 +398,10 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0And500) {
   CampaignButtonId button_id = CampaignButtonId::kSecondary;
   campaigns_manager_client_->OnButtonPressed(
       campaign_id_0, /*group_id=*/std::nullopt, button_id,
-      /*should_mark_dismissed=*/true);
-  campaigns_manager_client_->OnButtonPressed(campaign_id_500, std::nullopt,
-                                             button_id,
-                                             /*should_mark_dismissed=*/true);
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
+  campaigns_manager_client_->OnButtonPressed(
+      campaign_id_500, std::nullopt, button_id,
+      /*should_mark_dismissed=*/true, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kButtonPressedButton1HistogramName500,
                                        campaign_id_0,
@@ -406,7 +422,8 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0And500) {
 TEST_F(CampaignsManagerClientTest, RecordDismissedId0) {
   int campaign_id = 0;
   campaigns_manager_client_->OnDismissed(campaign_id, /*group_id=*/std::nullopt,
-                                         /*should_mark_dismissed=*/false);
+                                         /*should_mark_dismissed=*/false,
+                                         /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500, campaign_id,
                                        /*expected_bucket_count=*/1);
@@ -417,10 +434,25 @@ TEST_F(CampaignsManagerClientTest, RecordDismissedId0) {
   ValidateDismissedEvent(events[0], campaign_id, /*group_id=*/std::nullopt);
 }
 
+TEST_F(CampaignsManagerClientTest, NotRecordDismissedCrosEvents) {
+  int campaign_id = 0;
+  campaigns_manager_client_->OnDismissed(campaign_id, /*group_id=*/std::nullopt,
+                                         /*should_mark_dismissed=*/false,
+                                         /*should_log_cros_events=*/false);
+
+  histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500, campaign_id,
+                                       /*expected_bucket_count=*/1);
+
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_.GetEvents();
+  ASSERT_EQ(events.size(), 0U);
+}
+
 TEST_F(CampaignsManagerClientTest, RecordDismissedId499) {
   int campaign_id = 499;
   campaigns_manager_client_->OnDismissed(campaign_id, /*group_id=*/std::nullopt,
-                                         /*should_mark_dismissed=*/false);
+                                         /*should_mark_dismissed=*/false,
+                                         /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500, campaign_id,
                                        /*expected_bucket_count=*/1);
@@ -434,7 +466,8 @@ TEST_F(CampaignsManagerClientTest, RecordDismissedId499) {
 TEST_F(CampaignsManagerClientTest, RecordDismissedId500) {
   int campaign_id = 500;
   campaigns_manager_client_->OnDismissed(campaign_id, /*group_id=*/std::nullopt,
-                                         /*should_mark_dismissed=*/false);
+                                         /*should_mark_dismissed=*/false,
+                                         /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kDismissedHistogramName1000, campaign_id,
                                        /*expected_bucket_count=*/1);
@@ -450,10 +483,12 @@ TEST_F(CampaignsManagerClientTest, RecordDismissedId0And500) {
   int campaign_id_500 = 500;
   campaigns_manager_client_->OnDismissed(campaign_id_0,
                                          /*group_id=*/std::nullopt,
-                                         /*should_mark_dismissed=*/false);
+                                         /*should_mark_dismissed=*/false,
+                                         /*should_log_cros_events=*/true);
   campaigns_manager_client_->OnDismissed(campaign_id_500,
                                          /*group_id=*/std::nullopt,
-                                         /*should_mark_dismissed=*/false);
+                                         /*should_mark_dismissed=*/false,
+                                         /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500,
                                        campaign_id_0,
@@ -471,8 +506,9 @@ TEST_F(CampaignsManagerClientTest, RecordDismissedId0And500) {
 
 TEST_F(CampaignsManagerClientTest, RecordImpressionId0) {
   int campaign_id = 0;
-  campaigns_manager_client_->OnReadyToLogImpression(campaign_id,
-                                                    /*group_id=*/std::nullopt);
+  campaigns_manager_client_->OnReadyToLogImpression(
+      campaign_id,
+      /*group_id=*/std::nullopt, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kImpressionHistogramName500, campaign_id,
                                        /*expected_bucket_count=*/1);
@@ -483,10 +519,25 @@ TEST_F(CampaignsManagerClientTest, RecordImpressionId0) {
   ValidateImpresionEvent(events[0], campaign_id, /*group_id=*/std::nullopt);
 }
 
+TEST_F(CampaignsManagerClientTest, NotRecordImpressionCrosEvents) {
+  int campaign_id = 0;
+  campaigns_manager_client_->OnReadyToLogImpression(
+      campaign_id,
+      /*group_id=*/std::nullopt, /*should_log_cros_events=*/false);
+
+  histogram_tester_.ExpectUniqueSample(kImpressionHistogramName500, campaign_id,
+                                       /*expected_bucket_count=*/1);
+
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_.GetEvents();
+  ASSERT_EQ(events.size(), 0U);
+}
+
 TEST_F(CampaignsManagerClientTest, RecordImpressionId499) {
   int campaign_id = 499;
-  campaigns_manager_client_->OnReadyToLogImpression(campaign_id,
-                                                    /*group_id=*/std::nullopt);
+  campaigns_manager_client_->OnReadyToLogImpression(
+      campaign_id,
+      /*group_id=*/std::nullopt, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kImpressionHistogramName500, campaign_id,
                                        /*expected_bucket_count=*/1);
@@ -499,8 +550,9 @@ TEST_F(CampaignsManagerClientTest, RecordImpressionId499) {
 
 TEST_F(CampaignsManagerClientTest, RecordImpressionId500) {
   int campaign_id = 500;
-  campaigns_manager_client_->OnReadyToLogImpression(campaign_id,
-                                                    /*group_id=*/std::nullopt);
+  campaigns_manager_client_->OnReadyToLogImpression(
+      campaign_id,
+      /*group_id=*/std::nullopt, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kImpressionHistogramName1000,
                                        campaign_id,
@@ -515,10 +567,12 @@ TEST_F(CampaignsManagerClientTest, RecordImpressionId500) {
 TEST_F(CampaignsManagerClientTest, RecordImpressionId0And500) {
   int campaign_id_0 = 0;
   int campaign_id_500 = 500;
-  campaigns_manager_client_->OnReadyToLogImpression(campaign_id_0,
-                                                    /*group_id=*/std::nullopt);
-  campaigns_manager_client_->OnReadyToLogImpression(campaign_id_500,
-                                                    /*group_id=*/std::nullopt);
+  campaigns_manager_client_->OnReadyToLogImpression(
+      campaign_id_0,
+      /*group_id=*/std::nullopt, /*should_log_cros_events=*/true);
+  campaigns_manager_client_->OnReadyToLogImpression(
+      campaign_id_500,
+      /*group_id=*/std::nullopt, /*should_log_cros_events=*/true);
 
   histogram_tester_.ExpectUniqueSample(kImpressionHistogramName500,
                                        campaign_id_0,

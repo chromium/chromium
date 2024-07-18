@@ -19,7 +19,8 @@ class UiActionPerformer : public growth::ActionPerformer {
    public:
     // Trigger when calling to show the UI. The UI may or may not show.
     virtual void OnReadyToLogImpression(int campaign_id,
-                                        std::optional<int> group_id) = 0;
+                                        std::optional<int> group_id,
+                                        bool should_log_cros_events) = 0;
 
     // Trigger when the UI is pressed.
     // NOTE: Any button press could dismiss the UI. And the UI could auto
@@ -28,13 +29,15 @@ class UiActionPerformer : public growth::ActionPerformer {
     // automatically.
     virtual void OnDismissed(int campaign_id,
                              std::optional<int> group_id,
-                             bool should_mark_dismissed) = 0;
+                             bool should_mark_dismissed,
+                             bool should_log_cros_events) = 0;
 
     // Trigger when the button in the UI (if exists) is pressed.
     virtual void OnButtonPressed(int campaign_id,
                                  std::optional<int> group_id,
                                  CampaignButtonId button_id,
-                                 bool should_mark_dismissed) = 0;
+                                 bool should_mark_dismissed,
+                                 bool should_log_cros_events) = 0;
   };
 
   UiActionPerformer();
@@ -44,14 +47,18 @@ class UiActionPerformer : public growth::ActionPerformer {
   void RemoveObserver(Observer* observer);
 
  protected:
-  void NotifyReadyToLogImpression(int campaign_id, std::optional<int> group_id);
+  void NotifyReadyToLogImpression(int campaign_id,
+                                  std::optional<int> group_id,
+                                  bool should_log_cros_events = false);
   void NotifyDismissed(int campaign_id,
                        std::optional<int> group_id,
-                       bool should_mark_dismissed);
+                       bool should_mark_dismissed,
+                       bool should_log_cros_events = false);
   void NotifyButtonPressed(int campaign_id,
                            std::optional<int> group_id,
                            CampaignButtonId button_id,
-                           bool should_mark_dismissed);
+                           bool should_mark_dismissed,
+                           bool should_log_cros_events = false);
 
  private:
   base::ObserverList<Observer> observers_;

@@ -1354,7 +1354,7 @@ BASE_FEATURE(kGrowthCampaignsCloseNudgeWhenTargetInactivated,
 // Enables CrOS events recording with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsCrOSEvents,
              "GrowthCampaignsCrOSEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether growth campaigns experiment tag targeting is enabled. The
 // flag also used by finch to tag the session with finch params.

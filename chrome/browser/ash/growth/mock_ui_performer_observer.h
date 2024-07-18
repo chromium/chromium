@@ -16,14 +16,17 @@ class MockUiPerformerObserver : public UiActionPerformer::Observer {
   // UiActionPerformer::Observer:
   MOCK_METHOD(void,
               OnReadyToLogImpression,
-              (int, std::optional<int>),
+              (int, std::optional<int>, bool),
               (override));
 
-  MOCK_METHOD(void, OnDismissed, (int, std::optional<int>, bool), (override));
+  MOCK_METHOD(void,
+              OnDismissed,
+              (int, std::optional<int>, bool, bool),
+              (override));
 
   MOCK_METHOD(void,
               OnButtonPressed,
-              (int, std::optional<int>, CampaignButtonId, bool),
+              (int, std::optional<int>, CampaignButtonId, bool, bool),
               (override));
 };
 

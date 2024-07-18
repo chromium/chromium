@@ -43,13 +43,17 @@ class ShowNudgeActionPerformer : public UiActionPerformer,
                           std::optional<int> group_id,
                           const base::Value::Dict* button_dict,
                           ash::AnchoredNudgeData& nudge_data,
-                          bool is_primary);
+                          bool is_primary,
+                          bool should_log_cros_events);
   void OnNudgeButtonClicked(int campaign_id,
                             std::optional<int> group_id,
                             CampaignButtonId button_id,
                             const base::Value::Dict* action_dict,
-                            bool should_mark_dismissed);
-  void OnNudgeDismissed(int campaign_id, std::optional<int> group_id);
+                            bool should_mark_dismissed,
+                            bool should_log_cros_events);
+  void OnNudgeDismissed(int campaign_id,
+                        std::optional<int> group_id,
+                        bool should_log_cros_events);
   void MaybeCancelNudge();
   void CancelNudge();
 

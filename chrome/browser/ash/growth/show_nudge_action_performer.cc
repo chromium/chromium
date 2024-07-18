@@ -38,6 +38,7 @@ constexpr char kNudgeBodyPath[] = "body";
 constexpr char kImagePath[] = "image";
 constexpr char kDurationPath[] = "duration";
 constexpr char kClearEventsPath[] = "clearEvents";
+constexpr char kLogCrOSEventsPath[] = "shouldLogCrOSEvents";
 constexpr char kPrimaryButtonPath[] = "primaryButton";
 constexpr char kSecondaryButtonPath[] = "secondaryButton";
 constexpr char kLabelPath[] = "label";
@@ -385,21 +386,27 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   nudge_data.duration =
       ConvertDuration(static_cast<NudgeDuration>(duration_value));
 
+  // Default value of `should_log_cros_events` is false if this is not
+  // configurated.
+  const auto log_cros_events = nudge_payload->FindBool(kLogCrOSEventsPath);
+  bool should_log_cros_events = log_cros_events.value_or(false);
+
   // Add buttons if available.
   MaybeSetButtonData(campaign_id, group_id,
                      nudge_payload->FindDict(kPrimaryButtonPath), nudge_data,
-                     /*is_primary=*/true);
+                     /*is_primary=*/true, should_log_cros_events);
   MaybeSetButtonData(campaign_id, group_id,
                      nudge_payload->FindDict(kSecondaryButtonPath), nudge_data,
-                     /*is_primary=*/false);
+                     /*is_primary=*/false, should_log_cros_events);
 
   // Set image data if available.
   MaybeSetImageData(nudge_payload->FindDict(kImagePath), nudge_data);
 
   // Set nudge dismiss callback.
-  nudge_data.dismiss_callback = base::BindRepeating(
-      &ShowNudgeActionPerformer::OnNudgeDismissed,
-      weak_ptr_factory_.GetWeakPtr(), campaign_id, group_id);
+  nudge_data.dismiss_callback =
+      base::BindRepeating(&ShowNudgeActionPerformer::OnNudgeDismissed,
+                          weak_ptr_factory_.GetWeakPtr(), campaign_id, group_id,
+                          should_log_cros_events);
 
   // Shell may not be initialized in test.
   if (ash::Shell::HasInstance()) {
@@ -424,7 +431,7 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   }
 
   // TODO: b/331045558 - Add close button callback.
-  NotifyReadyToLogImpression(campaign_id, group_id);
+  NotifyReadyToLogImpression(campaign_id, group_id, should_log_cros_events);
 
   const base::Value::List* clear_events =
       nudge_payload->FindList(kClearEventsPath);
@@ -447,7 +454,8 @@ void ShowNudgeActionPerformer::MaybeSetButtonData(
     std::optional<int> group_id,
     const base::Value::Dict* button_dict,
     ash::AnchoredNudgeData& nudge_data,
-    bool is_primary) {
+    bool is_primary,
+    bool should_log_cros_events) {
   if (!button_dict) {
     return;
   }
@@ -468,7 +476,7 @@ void ShowNudgeActionPerformer::MaybeSetButtonData(
       &ShowNudgeActionPerformer::OnNudgeButtonClicked,
       weak_ptr_factory_.GetWeakPtr(), campaign_id, group_id,
       is_primary ? CampaignButtonId::kPrimary : CampaignButtonId::kSecondary,
-      action, should_mark_dismissed);
+      action, should_mark_dismissed, should_log_cros_events);
   if (is_primary) {
     nudge_data.primary_button_text = button_text;
     nudge_data.primary_button_callback = callback;
@@ -483,8 +491,10 @@ void ShowNudgeActionPerformer::OnNudgeButtonClicked(
     std::optional<int> group_id,
     CampaignButtonId button_id,
     const base::Value::Dict* action_dict,
-    bool should_mark_dismissed) {
-  NotifyButtonPressed(campaign_id, group_id, button_id, should_mark_dismissed);
+    bool should_mark_dismissed,
+    bool should_log_cros_events) {
+  NotifyButtonPressed(campaign_id, group_id, button_id, should_mark_dismissed,
+                      should_log_cros_events);
 
   if (!action_dict) {
     return;
@@ -510,11 +520,13 @@ void ShowNudgeActionPerformer::OnNudgeButtonClicked(
 }
 
 void ShowNudgeActionPerformer::OnNudgeDismissed(int campaign_id,
-                                                std::optional<int> group_id) {
+                                                std::optional<int> group_id,
+                                                bool should_log_cros_events) {
   // Dismissed automatically or by clicking on the X button. In this case, we
   // don't mark the nudge as dismissed and will resurface if impression
   // conditions met.
-  NotifyDismissed(campaign_id, group_id, /*should_mark_dismissed=*/false);
+  NotifyDismissed(campaign_id, group_id, /*should_mark_dismissed=*/false,
+                  should_log_cros_events);
 }
 
 void ShowNudgeActionPerformer::OnWidgetVisibilityChanged(views::Widget* widget,

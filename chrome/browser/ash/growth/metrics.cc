@@ -64,12 +64,15 @@ std::string GetImpressionHistogramName(int campaign_id) {
 
 }  // namespace
 
-void RecordButtonPressed(int campaign_id, CampaignButtonId button_id) {
+void RecordButtonPressed(int campaign_id,
+                         CampaignButtonId button_id,
+                         bool should_log_cros_events) {
   const std::string histogram_name =
       GetButtonPressedHistogramName(campaign_id, button_id);
   base::UmaHistogramSparse(histogram_name, campaign_id);
 
-  if (ash::features::IsGrowthCampaignsCrOSEventsEnabled()) {
+  if (ash::features::IsGrowthCampaignsCrOSEventsEnabled() &&
+      should_log_cros_events) {
     metrics::structured::StructuredMetricsClient::Record(
         std::move(cros_events::Growth_Ui_ButtonPressed()
                       .SetCampaignId(campaign_id)
@@ -78,21 +81,23 @@ void RecordButtonPressed(int campaign_id, CampaignButtonId button_id) {
   }
 }
 
-void RecordDismissed(int campaign_id) {
+void RecordDismissed(int campaign_id, bool should_log_cros_events) {
   const std::string histogram_name = GetDismissedHistogramName(campaign_id);
   base::UmaHistogramSparse(histogram_name, campaign_id);
 
-  if (ash::features::IsGrowthCampaignsCrOSEventsEnabled()) {
+  if (ash::features::IsGrowthCampaignsCrOSEventsEnabled() &&
+      should_log_cros_events) {
     metrics::structured::StructuredMetricsClient::Record(std::move(
         cros_events::Growth_Ui_Dismissed().SetCampaignId(campaign_id)));
   }
 }
 
-void RecordImpression(int campaign_id) {
+void RecordImpression(int campaign_id, bool should_log_cros_events) {
   const std::string histogram_name = GetImpressionHistogramName(campaign_id);
   base::UmaHistogramSparse(histogram_name, campaign_id);
 
-  if (ash::features::IsGrowthCampaignsCrOSEventsEnabled()) {
+  if (ash::features::IsGrowthCampaignsCrOSEventsEnabled() &&
+      should_log_cros_events) {
     metrics::structured::StructuredMetricsClient::Record(std::move(
         cros_events::Growth_Ui_Impression().SetCampaignId(campaign_id)));
   }
