@@ -29,7 +29,9 @@
 #include <sanitizer/msan_interface.h>
 #elif defined(ABSL_HAVE_MMAP)
 #include <sys/mman.h>
-#elif defined(_WIN32)
+#endif
+
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
