@@ -355,19 +355,29 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, DotSlashPaths) {
   EXPECT_TRUE(job_observer.WaitForExpectedJobs());
 }
 
+// Make sure that `VerifierObserver` doesn't crash on destruction.
+//
+// Regression test for https://crbug.com/353880557.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
+                       VerifierObserverNoCrashOnDestruction) {
+  constexpr char kId[] = "jmllhlobpjcnnomjlipadejplhmheiif";
+  constexpr char kCrxRelpath[] = "content_verifier/content_script.crx";
+
+  VerifierObserver verifier_observer;
+
+  InstallExtensionFromWebstore(test_data_dir_.AppendASCII(kCrxRelpath), 1);
+
+  DisableExtension(kId);
+  EnableExtension(kId);
+}
+
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScripts) {
   TestContentScriptExtension("content_verifier/content_script.crx",
                              "jmllhlobpjcnnomjlipadejplhmheiif", "script.js",
                              ScriptModificationAction::kAlter);
 }
 
-// crbug.com/897059 tracks test flakiness.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ContentScriptsInLocales DISABLED_ContentScriptsInLocales
-#else
-#define MAYBE_ContentScriptsInLocales ContentScriptsInLocales
-#endif
-IN_PROC_BROWSER_TEST_F(ContentVerifierTest, MAYBE_ContentScriptsInLocales) {
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScriptsInLocales) {
   TestContentScriptExtension("content_verifier/content_script_locales.crx",
                              "jaghonccckpcikmliipifpoodmeofoon",
                              "_locales/en/content_script.js",

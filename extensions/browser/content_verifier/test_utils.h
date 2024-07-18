@@ -231,6 +231,8 @@ class VerifierObserver : public ContentVerifier::TestObserver {
   // Created and accessed on |creation_thread_|.
   scoped_refptr<content::MessageLoopRunner> loop_runner_;
   content::BrowserThread::ID creation_thread_;
+
+  base::WeakPtrFactory<VerifierObserver> weak_ptr_factory_{this};
 };
 
 // Used to hold the result of a callback from the ContentHash creation.
