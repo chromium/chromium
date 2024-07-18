@@ -302,6 +302,9 @@ class GraphBuilderCoreml {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
       const mojom::Transpose& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForWhere(
+      const mojom::Where& operation,
+      CoreML::Specification::MILSpec::Block& block);
 
   // Add constants as immediate values in the model file.
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddConstantImmediateValue(

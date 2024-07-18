@@ -134,6 +134,7 @@ constexpr char kOpSoftplusTypeName[] = "softplus";
 constexpr char kOpSoftsignTypeName[] = "softsign";
 constexpr char kOpTanhTypeName[] = "tanh";
 constexpr char kOpTransposeTypeName[] = "transpose";
+constexpr char kOpWhereTypeName[] = "select";
 // Elementwise binary operators.
 constexpr char kOpAddTypeName[] = "add";
 constexpr char kOpMultiplyTypeName[] = "mul";
@@ -342,6 +343,8 @@ OperandDataType MILDataTypeToOperandType(
 
 std::string_view MilDataTypeToString(
     CoreML::Specification::MILSpec::DataType mil_data_type) {
+  // String values accepted by Core ML for the kOpDataTypeName parameter.
+  // Expand as needed when adding new ops that support other types.
   switch (mil_data_type) {
     case CoreML::Specification::MILSpec::DataType::FLOAT32:
       return "fp32";
@@ -353,11 +356,9 @@ std::string_view MilDataTypeToString(
       return "int8";
     case CoreML::Specification::MILSpec::DataType::UINT8:
       return "uint8";
+    case CoreML::Specification::MILSpec::DataType::BOOL:
+      return "bool";
     default:
-      // The supported data types are an intersection of all the data types
-      // in WebNN and the data types supported by the dtype parameter for
-      // currently supported CoreML ops. Expand this list as needed for
-      // new ops.
       NOTREACHED_NORETURN() << "Unsupported data type.";
   }
 }
@@ -632,19 +633,23 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
       OperandDataType::kInt32};
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
-  return ContextProperties(InputOperandLayout::kNchw,
-                           {/*input=*/kFloatsAndInt32,
-                            /*constant=*/kFloatsAndInt32,
-                            /*arg_min_max_input=*/kFloatsAndInt32,
-                            /*arg_min_max_output=*/
-                            kArgMinMaxOutputSupportedDataTypes,
-                            /*concat_inputs=*/kFloatsAndInt32,
-                            /*gather_input=*/kGatherInputSupportedDataTypes,
-                            /*gather_indices=*/
-                            kGatherIndicesSupportedDataTypes,
-                            /*where_condition=*/{},
-                            /*where_true_value=*/{},
-                            /*where_false_value=*/{}});
+  return ContextProperties(
+      InputOperandLayout::kNchw,
+      {/*input=*/kFloatsAndInt32,
+       /*constant=*/kFloatsAndInt32,
+       /*arg_min_max_input=*/kFloatsAndInt32,
+       /*arg_min_max_output=*/
+       kArgMinMaxOutputSupportedDataTypes,
+       /*concat_inputs=*/kFloatsAndInt32,
+       /*gather_input=*/kGatherInputSupportedDataTypes,
+       /*gather_indices=*/
+       kGatherIndicesSupportedDataTypes,
+       /*where_condition=*/{OperandDataType::kUint8},
+       // Note that BOOL is also supported by CoreML, but WebNN does not have a
+       // corresponding BOOL type. See docs here:
+       // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
+       /*where_true_value=*/kFloatsAndInt32,
+       /*where_false_value=*/kFloatsAndInt32});
 }
 
 GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
@@ -849,6 +854,10 @@ GraphBuilderCoreml::BuildCoreMLModel() {
             AddOperationForTranspose(*operation->get_transpose(), block));
         break;
       }
+      case mojom::Operation::Tag::kWhere: {
+        RETURN_IF_ERROR(AddOperationForWhere(*operation->get_where(), block));
+        break;
+      }
       case mojom::Operation::Tag::kExpand:
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
@@ -860,7 +869,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTriangular:
-      case mojom::Operation::Tag::kWhere:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
   }
@@ -2429,6 +2437,47 @@ GraphBuilderCoreml::AddOperationForTranspose(
 
   CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
   PopulateNamedValueType(operation.output_operand_id, output);
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForWhere(
+    const mojom::Where& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& true_operand_info =
+      GetOperandInfo(operation.true_value_operand_id);
+  const OperandInfo& false_operand_info =
+      GetOperandInfo(operation.false_value_operand_id);
+  const OperandInfo& condition_operand_info =
+      GetOperandInfo(operation.condition_operand_id);
+  CHECK(context_properties_.data_type_limits.where_true_value.Has(
+      MILDataTypeToOperandType(true_operand_info.mil_data_type)));
+  CHECK(context_properties_.data_type_limits.where_false_value.Has(
+      MILDataTypeToOperandType(false_operand_info.mil_data_type)));
+  CHECK(context_properties_.data_type_limits.where_condition.Has(
+      MILDataTypeToOperandType(condition_operand_info.mil_data_type)));
+
+  ASSIGN_OR_RETURN(uint64_t bool_condition_operand_id,
+                   GenerateInternalOperandInfo(
+                       CoreML::Specification::MILSpec::DataType::BOOL,
+                       condition_operand_info.dimensions));
+
+  RETURN_IF_ERROR(AddOperationForCast(operation.condition_operand_id,
+                                      bool_condition_operand_id, block));
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpWhereTypeName);
+
+  constexpr char kParamA[] = "a";
+  constexpr char kParamB[] = "b";
+  constexpr char kParamCond[] = "cond";
+  SetInputWithName(*op->mutable_inputs(), kParamA,
+                   true_operand_info.coreml_name);
+  SetInputWithName(*op->mutable_inputs(), kParamB,
+                   false_operand_info.coreml_name);
+  SetInputWithName(*op->mutable_inputs(), kParamCond,
+                   GetOperandInfo(bool_condition_operand_id).coreml_name);
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }
 
