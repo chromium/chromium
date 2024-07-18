@@ -366,6 +366,10 @@ class DeviceAPIServiceParamTest
     feature_list_.InitAndEnableFeature(param);
   }
 
+  void DisableFeature(const base::Feature& feature) {
+    feature_list_.InitAndDisableFeature(feature);
+  }
+
   void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
     profile()->GetPrefs()->SetList(
         prefs::kKioskBrowserPermissionsAllowedForOrigins,
@@ -607,6 +611,8 @@ TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
 
 TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
        TestMultipleOriginPolicyWhenFeatureIsDisabled) {
+  DisableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
   SetKioskBrowserPermissionsAllowedForOrigins(kTrustedUrl);
   SetAllowedOrigin(kTrustedUrl);
 
