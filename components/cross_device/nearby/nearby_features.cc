@@ -25,7 +25,7 @@ BASE_FEATURE(kEnableNearbyBleV2ExtendedAdvertising,
 // V2, for incremental testing purposes. Assumes that the caller will also check
 // if the hardware supports the GATT server dual role.
 BASE_FEATURE(kEnableNearbyBleV2GattServer,
-             "kEnableNearbyBleV2GattServer",
+             "EnableNearbyBleV2GattServer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of Bluetooth Classic advertising from within the

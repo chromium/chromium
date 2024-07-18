@@ -21982,6 +21982,7 @@ from previous Chrome versions.
   <int value="499549982" label="PrintManagementJelly:enabled"/>
   <int value="499932714" label="RunTasksByBatches:enabled"/>
   <int value="500177932" label="ArcSmartTextSelection:disabled"/>
+  <int value="500179558" label="EnableNearbyBleV2GattServer:enabled"/>
   <int value="500947367"
       label="WebAuthenticationCrosPlatformAuthenticator:disabled"/>
   <int value="501477022" label="DrawOcclusion:enabled"/>
@@ -24220,6 +24221,7 @@ from previous Chrome versions.
   <int value="1454527518" label="ArcNativeBridgeExperiment:enabled"/>
   <int value="1454656852" label="ResponsiveToolbar:enabled"/>
   <int value="1455708250" label="AutofillEnableVerveCardSupport:disabled"/>
+  <int value="1455753326" label="EnableNearbyBleV2GattServer:disabled"/>
   <int value="1455881930" label="V8VmFuture:enabled"/>
   <int value="1455970119" label="MacCoreLocationBackend:disabled"/>
   <int value="1456108837" label="RealboxSecondaryZeroSuggest:disabled"/>
