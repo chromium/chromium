@@ -496,6 +496,8 @@ source_set("unit_tests") {
       "model_execution/repetition_checker_unittest.cc",
       "model_execution/simple_response_parser_unittest.cc",
       "model_execution/substitution_unittest.cc",
+      "model_execution/test/feature_config_builder.cc",
+      "model_execution/test/feature_config_builder.h",
       "model_execution/test_on_device_model_component.cc",
       "model_execution/test_on_device_model_component.h",
     ]
