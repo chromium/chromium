@@ -28,7 +28,7 @@ BASE_DECLARE_FEATURE(kShadowDomSupport);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
 BASE_DECLARE_FEATURE(kPasswordReuseDetectionEnabled);
 BASE_DECLARE_FEATURE(kNoPasswordSuggestionFiltering);
-BASE_DECLARE_FEATURE(kShowWebauthnSuggestionsOnAutofocus);
+BASE_DECLARE_FEATURE(kShowSuggestionsOnAutofocus);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kPasswordSuggestionBottomSheetV2);

@@ -16242,7 +16242,6 @@ from previous Chrome versions.
   <int value="-1946057753" label="GaiaIdCacheInAccountManagerFacade:disabled"/>
   <int value="-1945601266" label="freeze-user-agent"/>
   <int value="-1945524394" label="EnableBackgroundBlur:disabled"/>
-  <int value="-1944445271" label="ShowWebauthnSuggestionsOnAutofocus:disabled"/>
   <int value="-1943817505" label="SingleClickAutofill:enabled"/>
   <int value="-1943507605" label="enable-new-video-renderer"/>
   <int value="-1943313820" label="SystemKeyboardLock:disabled"/>
@@ -24148,6 +24147,7 @@ from previous Chrome versions.
       label="enable-bound-session-credentials-software-keys-for-manual-testing:disabled"/>
   <int value="1431934725" label="OmniboxAutocompleteTitles:disabled"/>
   <int value="1432263468" label="SpeculationRulesPrefetchProxy:disabled"/>
+  <int value="1433119211" label="ShowSuggestionsOnAutofocus:enabled"/>
   <int value="1433706192" label="FileSystemObserver:disabled"/>
   <int value="1434502662" label="NtpDummyModules:enabled"/>
   <int value="1434515920" label="ReaderModeInCCT:enabled"/>
@@ -24301,7 +24301,6 @@ from previous Chrome versions.
   <int value="1492255992" label="OnDeviceGrammarCheck:enabled"/>
   <int value="1492541927" label="QuickAnswersTranslationCloudAPI:enabled"/>
   <int value="1493223152" label="CloseAllTabsModalDialog:enabled"/>
-  <int value="1493522762" label="ShowWebauthnSuggestionsOnAutofocus:enabled"/>
   <int value="1493727661" label="ChromeRootStoreUsed:disabled"/>
   <int value="1494628887" label="MediaPickerAdoption:disabled"/>
   <int value="1495059835" label="VirtualKeyboardMultipasteSuggestion:enabled"/>
@@ -25178,6 +25177,7 @@ from previous Chrome versions.
   <int value="1843847665" label="SyncPromoAfterSigninIntercept:disabled"/>
   <int value="1844110073" label="enable-app-view"/>
   <int value="1844222711" label="AssistantConsentV2:disabled"/>
+  <int value="1845205143" label="ShowSuggestionsOnAutofocus:disabled"/>
   <int value="1845781020" label="DesktopSharePreview:disabled"/>
   <int value="1846717591" label="CaptureMode:disabled"/>
   <int value="1847024354" label="enable-hotword-hardware"/>

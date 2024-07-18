@@ -21084,7 +21084,7 @@
             ]
         }
     ],
-    "ShowWebauthnSuggestionsOnAutofocus": [
+    "ShowSuggestionsOnAutofocus": [
         {
             "platforms": [
                 "android",
@@ -21098,7 +21098,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ShowWebauthnSuggestionsOnAutofocus"
+                        "ShowSuggestionsOnAutofocus"
                     ]
                 }
             ]
