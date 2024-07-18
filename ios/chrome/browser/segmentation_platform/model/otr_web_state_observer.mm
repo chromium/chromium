@@ -134,7 +134,7 @@ void OTRWebStateObserver::OnBrowserStateAdded(const base::FilePath& path) {
       std::make_unique<AllWebStateListObservationRegistrar>(
           browser_list,
           std::make_unique<WebStateObserver>(path, this, browser_list),
-          AllWebStateListObservationRegistrar::INCOGNITO);
+          AllWebStateListObservationRegistrar::Mode::INCOGNITO);
 }
 
 void OTRWebStateObserver::OnBrowserStateWasRemoved(const base::FilePath& path) {

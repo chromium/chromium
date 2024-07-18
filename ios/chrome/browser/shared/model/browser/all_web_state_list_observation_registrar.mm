@@ -16,11 +16,25 @@ using ObservationMode = AllWebStateListObservationRegistrar::Mode;
 bool ShouldPropagateEvent(Browser::Type type, ObservationMode mode) {
   switch (type) {
     case Browser::Type::kIncognito:
-      return (mode & ObservationMode::INCOGNITO) == ObservationMode::INCOGNITO;
+      switch (mode) {
+        case ObservationMode::INCOGNITO:
+        case ObservationMode::ALL:
+          return true;
+
+        case ObservationMode::REGULAR:
+          return false;
+      }
 
     case Browser::Type::kRegular:
     case Browser::Type::kInactive:
-      return (mode & ObservationMode::REGULAR) == ObservationMode::REGULAR;
+      switch (mode) {
+        case ObservationMode::REGULAR:
+        case ObservationMode::ALL:
+          return true;
+
+        case ObservationMode::INCOGNITO:
+          return false;
+      }
 
     case Browser::Type::kTemporary:
       // Never propagate temporary Browser events.
@@ -29,15 +43,17 @@ bool ShouldPropagateEvent(Browser::Type type, ObservationMode mode) {
 }
 
 // Returns the browser types associated with `mode`.
-int BrowserTypesForMode(AllWebStateListObservationRegistrar::Mode mode) {
-  int browser_types = 0;
-  if (mode & AllWebStateListObservationRegistrar::Mode::REGULAR) {
-    browser_types |= BrowserList::BrowserType::kRegularAndInactive;
+BrowserList::BrowserType BrowserTypesForMode(ObservationMode mode) {
+  switch (mode) {
+    case ObservationMode::REGULAR:
+      return BrowserList::BrowserType::kRegularAndInactive;
+
+    case ObservationMode::INCOGNITO:
+      return BrowserList::BrowserType::kIncognito;
+
+    case ObservationMode::ALL:
+      return BrowserList::BrowserType::kAll;
   }
-  if (mode & AllWebStateListObservationRegistrar::Mode::INCOGNITO) {
-    browser_types |= BrowserList::BrowserType::kIncognito;
-  }
-  return browser_types;
 }
 
 }  // namespace
@@ -52,7 +68,7 @@ AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
       mode_(mode) {
   browser_list_->AddObserver(this);
 
-  int browser_types = BrowserTypesForMode(mode_);
+  const BrowserList::BrowserType browser_types = BrowserTypesForMode(mode_);
 
   // There may already be browsers in `browser_list` when this object is
   // created. Register as an observer for (mode permitting) both the regular and
@@ -97,11 +113,7 @@ void AllWebStateListObservationRegistrar::OnBrowserListShutdown(
     BrowserList* browser_list) {
   DCHECK_EQ(browser_list, browser_list_);
   // Stop observing all observed web state lists.
-  int browser_types = BrowserTypesForMode(mode_);
-
-  for (Browser* browser : browser_list_->BrowsersOfType(browser_types)) {
-    scoped_observations_.RemoveObservation(browser->GetWebStateList());
-  }
+  scoped_observations_.RemoveAllObservations();
 
   // Stop observimg the browser list, and clear `browser_list_`.
   browser_list_->RemoveObserver(this);
