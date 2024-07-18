@@ -25,6 +25,7 @@
 
 <template is="dom-if" if="[[showAddActionDialog_]]" restamp>
   <facegaze-actions-add-dialog
+      on-facegaze-command-pair-added="onCommandPairAdded_"
       on-close="onAddActionDialogClose_">
   </facegaze-actions-add-dialog>
 </template>
@@ -377,19 +378,26 @@
   </div>
 </settings-card>
 
-<!-- TODO(b:341770753): Connect this section to prefs directly. -->
 <!-- TODO(b:341770753): Localize strings. -->
 <!-- TODO(b:341770753): Remove style="display:none" when this section is ready. -->
 <settings-card aria-hidden="true" style="display:none"
     header-text="$i18n{faceGazeActionsSectionTitle}">
-  <dom-repeat items="{{configuredActions_}}">
+  <dom-repeat items="[[commandPairs_]]">
     <template>
       <div class="settings-box first">
         <div class="start settings-box-text" aria-hidden="true">
-          <span>[[item.actionDisplayText]]</span>
+          <span>[[getActionDisplayText_(item.action)]]</span>
         </div>
-        <cros-chip type="input" label="[[item.gestureDisplayText]]"></cros-chip>
-        <cr-icon-button class="icon-clear" on-click="onRemoveActionButtonClick_">
+        <template is="dom-if" if="[[item.gesture]]" restamp>
+          <cros-chip type="input" label="[[getGestureDisplayText_(item.gesture)]]">
+          </cros-chip>
+        </template>
+        <template is="dom-if" if="[[!item.gesture]]" restamp>
+          <cros-chip type="input" label="Assign a gesture" on-click="onAssignGestureButtonClick_">
+            <iron-icon icon="cr:add" slot="icon"></iron-icon>
+          </cros-chip>
+        </template>
+        <cr-icon-button class="icon-clear" on-click="onRemoveCommandPairButtonClick_">
         </cr-icon-button>
       </div>
     </template>
@@ -399,6 +407,7 @@
         id="addActionButton"
         class="button"
         on-click="onAddActionButtonClick_">
+      <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
       $i18n{faceGazeActionsAddAction}
     </cr-button>
   </div>

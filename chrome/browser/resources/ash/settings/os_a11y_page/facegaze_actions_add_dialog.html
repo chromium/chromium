@@ -92,7 +92,7 @@
               tabindex$="[[tabIndex]]">
             <paper-ripple></paper-ripple>
             <div class="flex padded" aria-hidden="true">
-                [[item.displayText]]
+                [[getActionDisplayText_(item)]]
             </div>
             <iron-icon icon="settings:check-circle" hidden="[[!selected]]">
             </iron-icon>
@@ -127,7 +127,7 @@
                 tabindex$="[[tabIndex]]">
               <paper-ripple></paper-ripple>
               <div class="flex padded" aria-hidden="true">
-                  [[item.displayText]]
+                  [[getGestureDisplayText_(item)]]
               </div>
               <iron-icon icon="settings:check-circle" hidden="[[!selected]]">
               </iron-icon>

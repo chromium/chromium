@@ -429,6 +429,7 @@ build_webui("build") {
     "nearby_share_page/types.ts",
     "os_a11y_page/audio_and_captions_page_browser_proxy.ts",
     "os_a11y_page/cursor_and_touchpad_page_browser_proxy.ts",
+    "os_a11y_page/facegaze_constants.ts",
     "os_a11y_page/keyboard_and_text_input_page_browser_proxy.ts",
     "os_a11y_page/os_a11y_page_browser_proxy.ts",
     "os_a11y_page/switch_access_constants.ts",

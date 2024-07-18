@@ -14,7 +14,6 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
@@ -23,21 +22,12 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
+import {FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeUtils} from './facegaze_constants.js';
 
 export interface FaceGazeAddActionDialogElement {
   $: {
     dialog: CrDialogElement,
   };
-}
-
-export interface ActionItem {
-  value: MacroName;
-  displayText: string;
-}
-
-export interface GestureItem {
-  value: FacialGesture;
-  displayText: string;
 }
 
 export enum AddDialogPage {
@@ -47,7 +37,7 @@ export enum AddDialogPage {
 }
 
 const FaceGazeAddActionDialogElementBase =
-    PrefsMixin(I18nMixin(CrScrollableMixin(PolymerElement)));
+    I18nMixin(CrScrollableMixin(PolymerElement));
 
 export class FaceGazeAddActionDialogElement extends
     FaceGazeAddActionDialogElementBase {
@@ -114,132 +104,17 @@ export class FaceGazeAddActionDialogElement extends
   }
 
   // Internal state.
-  private selectedAction_: ActionItem;
-  private selectedGesture_: GestureItem;
+  private selectedAction_: MacroName|null = null;
+  private selectedGesture_: FacialGesture|null = null;
   private currentPage_: AddDialogPage = AddDialogPage.SELECT_ACTION;
 
   // Computed properties.
-  private displayedActions_: ActionItem[];
-  private displayedGestures_: GestureItem[];
+  private displayedActions_: MacroName[] = FaceGazeActions;
 
-  override ready(): void {
-    super.ready();
-
-    // TODO(b:341770753): Localize these strings.
-    this.displayedActions_ = [
-      {
-        value: MacroName.MOUSE_CLICK_LEFT,
-        displayText: 'Click a mouse button',
-      },
-      {
-        value: MacroName.MOUSE_CLICK_RIGHT,
-        displayText: 'Right-click the mouse',
-      },
-      {
-        value: MacroName.MOUSE_LONG_CLICK_LEFT,
-        displayText: 'Long click mouse',
-      },
-      {
-        value: MacroName.RESET_CURSOR,
-        displayText: 'Reset cursor to center',
-      },
-      {
-        value: MacroName.TOGGLE_DICTATION,
-        displayText: 'Start or stop dictation',
-      },
-      {
-        value: MacroName.KEY_PRESS_SPACE,
-        displayText: 'Press space key',
-      },
-      {
-        value: MacroName.KEY_PRESS_DOWN,
-        displayText: 'Press down key',
-      },
-      {
-        value: MacroName.KEY_PRESS_LEFT,
-        displayText: 'Press left key',
-      },
-      {
-        value: MacroName.KEY_PRESS_RIGHT,
-        displayText: 'Press right key',
-      },
-      {
-        value: MacroName.KEY_PRESS_UP,
-        displayText: 'Press up key',
-      },
-      {
-        value: MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
-        displayText: 'Toggle overview',
-      },
-      {
-        value: MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
-        displayText: 'Play or pause media',
-      },
-    ];
-
-    this.displayedGestures_ = [
-      {
-        value: FacialGesture.BROW_INNER_UP,
-        displayText: 'Brow inner up',
-      },
-      {
-        value: FacialGesture.BROWS_DOWN,
-        displayText: 'Brows down',
-      },
-      {
-        value: FacialGesture.EYE_SQUINT_LEFT,
-        displayText: 'Squint left eye',
-      },
-      {
-        value: FacialGesture.EYE_SQUINT_RIGHT,
-        displayText: 'Squint right eye',
-      },
-      {
-        value: FacialGesture.EYES_BLINK,
-        displayText: 'Eyes blink',
-      },
-      {
-        value: FacialGesture.EYES_LOOK_DOWN,
-        displayText: 'Eyes look down',
-      },
-      {
-        value: FacialGesture.EYES_LOOK_LEFT,
-        displayText: 'Eyes look left',
-      },
-      {
-        value: FacialGesture.EYES_LOOK_RIGHT,
-        displayText: 'Eyes look right',
-      },
-      {
-        value: FacialGesture.EYES_LOOK_UP,
-        displayText: 'Eyes look up',
-      },
-      {
-        value: FacialGesture.JAW_OPEN,
-        displayText: 'Jaw open',
-      },
-      {
-        value: FacialGesture.MOUTH_LEFT,
-        displayText: 'Mouth left',
-      },
-      {
-        value: FacialGesture.MOUTH_PUCKER,
-        displayText: 'Mouth pucker',
-      },
-      {
-        value: FacialGesture.MOUTH_RIGHT,
-        displayText: 'Mouth right',
-      },
-      {
-        value: FacialGesture.MOUTH_SMILE,
-        displayText: 'Mouth smile',
-      },
-      {
-        value: FacialGesture.MOUTH_UPPER_UP,
-        displayText: 'Mouth upper up',
-      },
-    ];
-  }
+  // TODO(b:353403651): If left-click action is assigned to a singular gesture
+  // then remove it from the list of available gestures to avoid losing left
+  // click functionality.
+  private displayedGestures_: FacialGesture[] = FaceGazeGestures;
 
   private getItemClass_(selected: boolean): 'selected'|'' {
     return selected ? 'selected' : '';
@@ -248,15 +123,17 @@ export class FaceGazeAddActionDialogElement extends
   private getLocalizedSelectGestureTitle_(): string {
     return this.i18n(
         'faceGazeActionsDialogSelectGestureTitle',
-        this.selectedAction_ ? this.selectedAction_.displayText : '');
+        this.selectedAction_ ?
+            FaceGazeUtils.getMacroDisplayText(this.selectedAction_) :
+            '');
   }
 
-  private getDisplayText_(action: GestureItem): string {
-    return action.displayText;
+  private getActionDisplayText_(action: MacroName): string {
+    return FaceGazeUtils.getMacroDisplayText(action);
   }
 
-  private getGestureDisplayText_(gesture: ActionItem): string {
-    return gesture.displayText;
+  private getGestureDisplayText_(gesture: FacialGesture|null): string {
+    return FaceGazeUtils.getGestureDisplayText(gesture);
   }
 
   // Disable next buttons
@@ -317,7 +194,23 @@ export class FaceGazeAddActionDialogElement extends
   }
 
   private onSaveButtonClick_(): void {
-    // TODO(b:341770753): Save individual pref for this action/gesture.
+    if (this.selectedAction_ === null) {
+      console.error(
+          'FaceGaze Add Dialog clicked save button but no action has been selected. Closing dialog.');
+      this.$.dialog.close();
+      return;
+    }
+
+    const commandPair =
+        new FaceGazeCommandPair(this.selectedAction_, this.selectedGesture_);
+    const event = new CustomEvent(FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, {
+      bubbles: true,
+      composed: true,
+      detail: commandPair,
+    });
+    this.dispatchEvent(event);
+
+    this.$.dialog.close();
   }
 
   private onKeydown_(e: KeyboardEvent): void {
@@ -334,5 +227,9 @@ customElements.define(
 declare global {
   interface HTMLElementTagNameMap {
     [FaceGazeAddActionDialogElement.is]: FaceGazeAddActionDialogElement;
+  }
+
+  interface HTMLElementEventMap {
+    [FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME]: CustomEvent<FaceGazeCommandPair>;
   }
 }

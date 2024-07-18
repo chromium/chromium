@@ -19,7 +19,7 @@ import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
@@ -27,6 +27,7 @@ import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {Route, routes} from '../router.js';
 
 import {getTemplate} from './facegaze_actions_card.html.js';
+import {FACE_GAZE_GESTURE_TO_MACROS_PREF, FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeCommandPair, FaceGazeUtils} from './facegaze_constants.js';
 
 const FaceGazeActionsCardElementBase = DeepLinkingMixin(RouteObserverMixin(
     WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
@@ -38,13 +39,12 @@ export interface FaceGazeActionsCardElement {
 }
 
 export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
+  static readonly FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME =
+      'commandPairs_' as const;
   private showAddActionDialog_: boolean;
-  private configuredActions_: Array<{
-    action: MacroName,
-    actionDisplayText: string,
-    gesture: FacialGesture,
-    gestureDisplayText: string,
-  }> = [];
+
+  // This should be kept in sync with the pref with all interactions.
+  private commandPairs_: FaceGazeCommandPair[] = [];
 
   static get is() {
     return 'facegaze-actions-card' as const;
@@ -56,7 +56,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
   static get properties() {
     return {
-      configuredActions_: {
+      commandPairs_: {
         type: Array,
         value: () => [],
       },
@@ -427,6 +427,8 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     this.keyPressToggleOverviewMenuOptions_ = this.getGestureMenuOptions_();
     this.keyPressMediaPlayPauseMenuOptions_ = this.getGestureMenuOptions_();
     this.updateVirtualPrefs_();
+
+    this.updateConfiguredCommandPairsFromPrefs_();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -436,6 +438,11 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     }
 
     this.attemptDeepLink();
+  }
+
+  private getCurrentAssignedGestures_(): Record<FacialGesture, MacroName> {
+    return {...this.get(FACE_GAZE_GESTURE_TO_MACROS_PREF)} as
+        Record<FacialGesture, MacroName>;
   }
 
   private onAddActionButtonClick_(): void {
@@ -503,13 +510,12 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   }
 
   private updateVirtualPrefs_(): void {
-    const assignedGestures =
-        this.get('prefs.settings.a11y.face_gaze.gestures_to_macros.value');
+    const assignedGestures = this.getCurrentAssignedGestures_();
 
     // Build the reverse map.
     const macrosToGestures = new Map();
     for (const [gesture, macro] of Object.entries(assignedGestures)) {
-      if (macro === '') {
+      if (macro === MacroName.UNSPECIFIED) {
         // Unassigned.
         continue;
       }
@@ -677,8 +683,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       newKeyPressToggleOverviewMenuOptions,
       newKeyPressMediaPlayPauseMenuOptions,
     ];
-    const assignedGestures = {
-        ...this.get('prefs.settings.a11y.face_gaze.gestures_to_macros.value')};
+    const assignedGestures = this.getCurrentAssignedGestures_();
 
     // First clear out the previous macro for this gesture, if it has changed.
     let alreadySet = false;
@@ -689,7 +694,8 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
           alreadySet = true;
           break;
         }
-        assignedGestures[currentGesture] = MacroName.UNSPECIFIED;
+        assignedGestures[currentGesture as FacialGesture] =
+            MacroName.UNSPECIFIED;
 
         // Make `currentGesture` visible in all the drop-downs.
         newMenuOptions.forEach((menuOptions) => {
@@ -702,7 +708,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     if (value !== 'deselect') {
       // Update the gesture->macro mapping pref.
       if (!alreadySet) {
-        assignedGestures[value] = macro;
+        assignedGestures[value as FacialGesture] = macro;
       }
       // Make 'gesture' hidden in all the other drop-downs.
       if (macro !== MacroName.MOUSE_CLICK_LEFT) {
@@ -754,9 +760,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
             newKeyPressMediaPlayPauseMenuOptions, value, true);
       }
     }
-    this.set(
-        'prefs.settings.a11y.face_gaze.gestures_to_macros.value',
-        {...assignedGestures});
+    this.set(FACE_GAZE_GESTURE_TO_MACROS_PREF, {...assignedGestures});
 
     // Force polymer to update the objects.
     // TODO(b:341770655): This isn't working consistently.
@@ -877,11 +881,171 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
         'settings.a11y.face_gaze.gestures_to_confidence', gestureName,
         confidence);
   }
+
+  private onAssignGestureButtonClick_(): void {
+    // TODO(b:351025155): We need to send information to
+    // facegaze_actions_add_dialog to tell it to set its current page, and send
+    // the details of this action.
+    this.showAddActionDialog_ = true;
+  }
+
+  private getActionDisplayText_(action: MacroName): string {
+    return FaceGazeUtils.getMacroDisplayText(action);
+  }
+
+  private getGestureDisplayText_(gesture: FacialGesture|null): string {
+    return FaceGazeUtils.getGestureDisplayText(gesture);
+  }
+
+  removeCommandPairForTest(macro: MacroName, gesture: FacialGesture): void {
+    this.updatePrefWithRemovedCommandPair_(
+        new FaceGazeCommandPair(macro, gesture));
+  }
+
+  // When an action is removed from the list, update the pref and then update
+  // the UI accordingly.
+  private onRemoveCommandPairButtonClick_(
+      e: DomRepeatEvent<FaceGazeCommandPair>): void {
+    const removedCommandPair: FaceGazeCommandPair = e.model.item;
+    this.updatePrefWithRemovedCommandPair_(removedCommandPair);
+
+    const removeIndex = this.commandPairs_.findIndex(
+        (item: FaceGazeCommandPair) => item.equals(removedCommandPair));
+    this.splice(
+        FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
+        removeIndex, 1);
+  }
+
+  private updatePrefWithRemovedCommandPair_(removedCommandPair:
+                                                FaceGazeCommandPair): void {
+    // Get current assigned gestures to macros.
+    const assignedGestures = this.getCurrentAssignedGestures_();
+
+    for (const [currentGesture, assignedMacro] of Object.entries(
+             assignedGestures)) {
+      if (removedCommandPair.equals(new FaceGazeCommandPair(
+              assignedMacro, currentGesture as FacialGesture))) {
+        assignedGestures[currentGesture as FacialGesture] =
+            MacroName.UNSPECIFIED;
+        break;
+      }
+    }
+
+    this.set(FACE_GAZE_GESTURE_TO_MACROS_PREF, assignedGestures);
+  }
+
+  addCommandPairForTest(macro: MacroName, gesture: FacialGesture): void {
+    const commandPair = new FaceGazeCommandPair(macro, gesture);
+    const event = new CustomEvent(FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, {
+      bubbles: true,
+      composed: true,
+      detail: commandPair,
+    });
+    this.onCommandPairAdded_(event);
+  }
+
+  // When an action is added from the dialog, update the pref and then update
+  // the UI accordingly.
+  private onCommandPairAdded_(
+      e: HTMLElementEventMap[typeof FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME]):
+      void {
+    const newCommandPair = e.detail;
+    // TODO(b:353403651): Ensure the gesture for the left-click action cannot
+    // be unassigned as that would make FaceGaze unusable and the user may
+    // require assistance in reassigning the action.
+    this.updatePrefWithAddedCommandPair_(newCommandPair);
+
+    // If gesture is already mapped to another action, remove that pairing as
+    // gesture can only be mapped to one action.
+    const unassignIndex = this.commandPairs_.findIndex(
+        (item) => item.gesture === newCommandPair.gesture &&
+            item.action !== newCommandPair.action);
+
+    if (unassignIndex >= 0) {
+      // Update configuration and notify Polymer.
+      this.commandPairs_[unassignIndex].gesture = null;
+      this.notifyPath(
+          `${FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME}.${
+              unassignIndex}.gesture`);
+    }
+
+    // TODO(b:341770796): This logic will need to be updated once the gesture
+    // threshold becomes part of the setting.
+    // We will have to:
+    // 1. Remove the gesture from the previously set action if there is one
+    // (logic exists above)
+    // 2. Check to see if there is a matching gesture/action pair for which we
+    // need to update the gesture threshold.
+    // If there is a matching pair, then update the existing item instead of
+    // pushing a new one.
+    const updateIndex = this.commandPairs_.findIndex(
+        (item: FaceGazeCommandPair) => item.equals(newCommandPair));
+    if (updateIndex < 0) {
+      // Add new gesture/action pairing if it does not already exist.
+      this.push(
+          FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
+          newCommandPair);
+    }
+  }
+
+  private updatePrefWithAddedCommandPair_(newCommandPair: FaceGazeCommandPair):
+      void {
+    if (!newCommandPair.gesture) {
+      console.error(
+          'FaceGaze added action with no valid gesture value: ' +
+          this.getActionDisplayText_(newCommandPair.action));
+      return;
+    }
+
+    // Get current assigned gestures to macros.
+    const assignedGestures = this.getCurrentAssignedGestures_();
+
+    // If the current gesture is already set to a macro, clear out the macro for
+    // the gesture.
+    let alreadySet = false;
+    for (const [currentGesture, assignedMacro] of Object.entries(
+             assignedGestures)) {
+      if (newCommandPair.gesture === currentGesture) {
+        if (newCommandPair.action === assignedMacro) {
+          alreadySet = true;
+          break;
+        }
+
+        assignedGestures[currentGesture] = MacroName.UNSPECIFIED;
+        break;
+      }
+    }
+
+    if (!alreadySet) {
+      assignedGestures[newCommandPair.gesture] = newCommandPair.action;
+    }
+
+    this.set(FACE_GAZE_GESTURE_TO_MACROS_PREF, assignedGestures);
+  }
+
+  private updateConfiguredCommandPairsFromPrefs_(): void {
+    // Get current assigned gestures to macros.
+    const assignedGestures = this.getCurrentAssignedGestures_();
+
+    for (const [currentGesture, assignedMacro] of Object.entries(
+             assignedGestures)) {
+      if (assignedMacro !== MacroName.UNSPECIFIED) {
+        this.push(
+            FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
+            new FaceGazeCommandPair(
+                assignedMacro, currentGesture as FacialGesture));
+      }
+    }
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     [FaceGazeActionsCardElement.is]: FaceGazeActionsCardElement;
+  }
+
+  interface HTMLElementEventMap {
+    [FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME]: CustomEvent<MacroName>;
   }
 }
 
