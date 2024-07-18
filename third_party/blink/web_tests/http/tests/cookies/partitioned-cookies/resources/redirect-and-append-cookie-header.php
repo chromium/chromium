@@ -1,4 +1,6 @@
 <?php
+  header("Access-Control-Allow-Origin: *");
+
   // Extract the cookie information.
   $headers = getallheaders();
   $cookieHeader = $headers['Cookie'];
