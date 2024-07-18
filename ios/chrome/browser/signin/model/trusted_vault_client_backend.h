@@ -92,13 +92,7 @@ class TrustedVaultClientBackend : public KeyedService {
       id<SystemIdentity> identity,
       const std::string& security_domain_path,
       UIViewController* presenting_view_controller,
-      CompletionBlock completion);
-  // DEPRECATED: Please use the method above.
-  virtual CancelDialogCallback ReauthenticationWithCancelCallback(
-      id<SystemIdentity> identity,
-      const std::string& security_domain_path,
-      UIViewController* presenting_view_controller,
-      CompletionBlock completion);
+      CompletionBlock completion) = 0;
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of improving recoverability as returned via
@@ -109,13 +103,7 @@ class TrustedVaultClientBackend : public KeyedService {
       id<SystemIdentity> identity,
       const std::string& security_domain_path,
       UIViewController* presenting_view_controller,
-      CompletionBlock completion);
-  // DEPRECATED: Please use the method above.
-  virtual CancelDialogCallback FixDegradedRecoverabilityWithCancelCallback(
-      id<SystemIdentity> identity,
-      const std::string& security_domain_path,
-      UIViewController* presenting_view_controller,
-      CompletionBlock completion);
+      CompletionBlock completion) = 0;
 
   // Clears local data belonging to `identity`, such as shared keys. This
   // excludes the physical client's key pair, which remains unchanged.
