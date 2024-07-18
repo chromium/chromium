@@ -248,6 +248,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // OnConstructDefaultStillCaptureRequestSettings triggers
   // |request_manager_| to request a still capture.
   void OnConstructedDefaultStillCaptureRequestSettings(
+      cros::mojom::Camera3RequestTemplate requset_template,
       cros::mojom::CameraMetadataPtr settings);
   // OnConstructedDefaultPortraitModeRequestSettings triggers
   // |request_manager_| to request portrait mode still captures.

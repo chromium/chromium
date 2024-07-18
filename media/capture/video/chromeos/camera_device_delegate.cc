@@ -56,6 +56,7 @@ constexpr int32_t kColorTemperatureStep = 100;
 constexpr int32_t kMicroToNano = 1000;
 
 constexpr char kIntelPowerMode[] = "intel.vendorCamera.powerMode";
+constexpr char kLibcameraStillCaptureMFNR[] = "org.libcamera.stillCaptureMFNR";
 constexpr uint8_t kIntelPowerModeLowPower = 0;
 constexpr uint8_t kIntelPowerModeHighQuality = 1;
 
@@ -1189,7 +1190,7 @@ void CameraDeviceDelegate::ConstructDefaultRequestSettings(
         request_template,
         base::BindOnce(&CameraDeviceDelegate::
                            OnConstructedDefaultStillCaptureRequestSettings,
-                       GetWeakPtr()));
+                       GetWeakPtr(), request_template));
   } else if (stream_type == StreamType::kPortraitJpegOutput) {
     auto request_template =
         cros::mojom::Camera3RequestTemplate::CAMERA3_TEMPLATE_STILL_CAPTURE;
@@ -1249,8 +1250,19 @@ void CameraDeviceDelegate::OnConstructedDefaultPreviewRequestSettings(
 }
 
 void CameraDeviceDelegate::OnConstructedDefaultStillCaptureRequestSettings(
+    cros::mojom::Camera3RequestTemplate requset_template,
     cros::mojom::CameraMetadataPtr settings) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  if (requset_template ==
+      cros::mojom::Camera3RequestTemplate::CAMERA3_TEMPLATE_STILL_CAPTURE) {
+    const VendorTagInfo* info =
+        camera_hal_delegate_->GetVendorTagInfoByName(kLibcameraStillCaptureMFNR);
+    if (info != nullptr) {
+      auto e = BuildMetadataEntry(info->tag, uint8_t{1});
+      AddOrUpdateMetadataEntry(&settings, std::move(e));
+    }
+  }
 
   while (!take_photo_callbacks_.empty()) {
     auto take_photo_callback = base::BindOnce(
