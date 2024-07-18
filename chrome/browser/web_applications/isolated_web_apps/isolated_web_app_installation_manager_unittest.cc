@@ -47,6 +47,7 @@ namespace web_app {
 namespace {
 
 using base::test::ErrorIs;
+using base::test::HasValue;
 using base::test::ValueIs;
 using ::testing::_;
 using ::testing::Eq;
@@ -61,8 +62,10 @@ MATCHER_P(IsSameOriginWith, url, "") {
   return arg.IsSameOriginWith(url);
 }
 
+using MaybeInstallIsolatedWebAppCommandSuccess =
+    IsolatedWebAppInstallationManager::MaybeInstallIsolatedWebAppCommandSuccess;
 using MaybeIwaInstallSource =
-    base::expected<std::optional<IsolatedWebAppInstallSource>, std::string>;
+    IsolatedWebAppInstallationManager::MaybeIwaInstallSource;
 
 class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
  public:
@@ -75,7 +78,13 @@ class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,
-      const base::Location& call_location) override {}
+      const base::Location& call_location) override {
+    // This test is only interested in IsolatedWebAppInstallationManager
+    // behavior, so stub out the install command to avoid needing to
+    // configure it correctly.
+    std::move(callback).Run(InstallIsolatedWebAppCommandSuccess(
+        base::Version("0"), IwaStorageUnownedBundle(base::FilePath())));
+  }
 };
 
 // Sets the current working directory to a location that contains a file.
@@ -161,7 +170,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
       KeepAliveRestartOption::DISABLED);
   manager().OnReportInstallationResultForTesting(future.GetCallback());
   manager().InstallFromCommandLine(
-      CreateCommandLine("http://example.com:12345", std::nullopt),
+      CreateCommandLine("https://example.com:12345", std::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
   EXPECT_THAT(future.Take(),
@@ -181,12 +190,67 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
       KeepAliveRestartOption::DISABLED);
   manager().OnReportInstallationResultForTesting(future.GetCallback());
   manager().InstallFromCommandLine(
-      CreateCommandLine("http://example.com:12345", std::nullopt),
+      CreateCommandLine("https://example.com:12345", std::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
   EXPECT_THAT(
       future.Take(),
       ErrorIs(HasSubstr("Isolated Web App Developer Mode is not enabled")));
+}
+
+TEST_F(IsolatedWebAppInstallationManagerTest,
+       InstallFromSecureRemoteProxySucceeds) {
+  base::test::TestFuture<MaybeInstallIsolatedWebAppCommandSuccess> future;
+  manager().InstallIsolatedWebAppFromDevModeProxy(
+      GURL("https://example.com"),
+      IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      future.GetCallback());
+
+  EXPECT_THAT(future.Take(), HasValue());
+}
+
+TEST_F(IsolatedWebAppInstallationManagerTest,
+       InstallFromInsecureRemoteProxyFails) {
+  base::test::TestFuture<MaybeInstallIsolatedWebAppCommandSuccess> future;
+  manager().InstallIsolatedWebAppFromDevModeProxy(
+      GURL("http://example.com"),
+      IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      future.GetCallback());
+
+  EXPECT_THAT(future.Take(), ErrorIs(HasSubstr("Proxy URL not trustworthy")));
+}
+
+TEST_F(IsolatedWebAppInstallationManagerTest,
+       InstallFromHttpLocalhostProxySucceeds) {
+  base::test::TestFuture<MaybeInstallIsolatedWebAppCommandSuccess> future;
+  manager().InstallIsolatedWebAppFromDevModeProxy(
+      GURL("http://localhost:8080"),
+      IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      future.GetCallback());
+
+  EXPECT_THAT(future.Take(), HasValue());
+}
+
+TEST_F(IsolatedWebAppInstallationManagerTest,
+       InstallFromProxyWithBadSchemeFails) {
+  base::test::TestFuture<MaybeInstallIsolatedWebAppCommandSuccess> future;
+  manager().InstallIsolatedWebAppFromDevModeProxy(
+      GURL("file://hi"),
+      IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      future.GetCallback());
+
+  EXPECT_THAT(future.Take(),
+              ErrorIs(HasSubstr("Proxy URL must be HTTP or HTTPS")));
+}
+
+TEST_F(IsolatedWebAppInstallationManagerTest, InstallFromProxyWithPathFails) {
+  base::test::TestFuture<MaybeInstallIsolatedWebAppCommandSuccess> future;
+  manager().InstallIsolatedWebAppFromDevModeProxy(
+      GURL("http://localhost:8080/foo"),
+      IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      future.GetCallback());
+
+  EXPECT_THAT(future.Take(), ErrorIs(HasSubstr("Non-origin URL provided")));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerTest,
@@ -204,7 +268,7 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
       KeepAliveRestartOption::DISABLED);
   manager().OnReportInstallationResultForTesting(future.GetCallback());
   manager().InstallFromCommandLine(
-      CreateCommandLine("http://example.com:12345", std::nullopt),
+      CreateCommandLine("https://example.com:12345", std::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
   EXPECT_THAT(
@@ -320,13 +384,13 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        ErrorWhenProxyFlagInvalidAndBundleFlagAbsent) {
   EXPECT_THAT(ParseCommandLine("invalid", std::nullopt),
-              ErrorIs(HasSubstr("Invalid URL")));
+              ErrorIs(HasSubstr("Proxy URL must be HTTP or HTTPS")));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        ErrorWhenProxyFlagInvalidAndBundleFlagEmpty) {
   EXPECT_THAT(ParseCommandLine("invalid", base::FilePath::FromUTF8Unsafe("")),
-              ErrorIs(HasSubstr("Invalid URL")));
+              ErrorIs(HasSubstr("Proxy URL must be HTTP or HTTPS")));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
@@ -345,7 +409,7 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        InstallsAppWhenProxyFlagValidAndBundleFlagAbsent) {
-  constexpr std::string_view kUrl = "http://example.com";
+  constexpr std::string_view kUrl = "https://example.com";
   EXPECT_THAT(ParseCommandLine(kUrl, std::nullopt),
               ValueIs(Optional(
                   Property(&IsolatedWebAppInstallSource::source,
@@ -357,7 +421,7 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        InstallsAppWhenProxyFlagWithPortValidAndBundleFlagAbsent) {
-  constexpr std::string_view kUrl = "http://example.com:12345";
+  constexpr std::string_view kUrl = "https://example.com:12345";
   EXPECT_THAT(ParseCommandLine(kUrl, std::nullopt),
               ValueIs(Optional(
                   Property(&IsolatedWebAppInstallSource::source,
@@ -369,13 +433,13 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        ErrorWhenProxyFlagHasPathAndBundleFlagInValid) {
-  EXPECT_THAT(ParseCommandLine("http://example.com/path", std::nullopt),
+  EXPECT_THAT(ParseCommandLine("https://example.com/path", std::nullopt),
               ErrorIs(HasSubstr("Non-origin URL provided")));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        InstallsAppWhenProxyFlagValidAndBundleFlagEmpty) {
-  constexpr std::string_view kUrl = "http://example.com";
+  constexpr std::string_view kUrl = "https://example.com";
   EXPECT_THAT(ParseCommandLine(kUrl, base::FilePath::FromUTF8Unsafe("")),
               ValueIs(Optional(
                   Property(&IsolatedWebAppInstallSource::source,
@@ -388,7 +452,7 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        ErrorWhenProxyFlagValidAndBundleFlagInvalid) {
   EXPECT_THAT(
-      ParseCommandLine("http://example.com",
+      ParseCommandLine("https://example.com",
                        base::FilePath::FromUTF8Unsafe("does_not_exist.wbn")),
       ErrorIs(HasSubstr("cannot both be provided")));
 }
@@ -396,7 +460,7 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        ErrorWhenProxyFlagValidAndBundleFlagValid) {
   ScopedWorkingDirectoryWithFile cwd;
-  EXPECT_THAT(ParseCommandLine("http://example.com", cwd.existing_file_name()),
+  EXPECT_THAT(ParseCommandLine("https://example.com", cwd.existing_file_name()),
               ErrorIs(HasSubstr("cannot both be provided")));
 }
 

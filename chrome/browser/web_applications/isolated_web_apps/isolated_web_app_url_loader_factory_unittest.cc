@@ -214,7 +214,7 @@ class IsolatedWebAppURLLoaderFactoryTestBase : public WebAppTest {
   const GURL kDevAppOriginUrl = GURL("isolated-app://" + kDevWebBundleId);
   const GURL kDevAppStartUrl = kDevAppOriginUrl.Resolve("/ix.html");
   const url::Origin kProxyOrigin =
-      url::Origin::Create(GURL("https://proxy.example.com"));
+      url::Origin::Create(GURL("http://proxy.example.com"));
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1215,8 +1215,10 @@ class IsolatedWebAppURLLoaderFactoryHeaderTest
                                                base::Version("1.0.0")}));
   }
 
+  bool is_bundle() { return is_bundle_; }
+
   GURL GetAppOriginUrl() {
-    return is_bundle_ ? kEd25519AppOriginUrl : kDevAppStartUrl;
+    return is_bundle() ? kEd25519AppOriginUrl : kDevAppStartUrl;
   }
 
  private:
@@ -1268,8 +1270,6 @@ TEST_P(IsolatedWebAppURLLoaderFactoryHeaderTest, CspInjected) {
   EXPECT_THAT(csp->raw_directives[Directive::ObjectSrc], Eq("'none'"));
   EXPECT_THAT(csp->raw_directives[Directive::FrameSrc],
               Eq("'self' https: blob: data:"));
-  EXPECT_THAT(csp->raw_directives[Directive::ConnectSrc],
-              Eq("'self' https: wss: blob: data:"));
   EXPECT_THAT(csp->raw_directives[Directive::ScriptSrc],
               Eq("'self' 'wasm-unsafe-eval'"));
   EXPECT_THAT(csp->raw_directives[Directive::ImgSrc],
@@ -1283,6 +1283,13 @@ TEST_P(IsolatedWebAppURLLoaderFactoryHeaderTest, CspInjected) {
   EXPECT_THAT(csp->raw_directives[Directive::RequireTrustedTypesFor],
               Eq("'script'"));
   EXPECT_THAT(csp->raw_directives[Directive::FrameAncestors], Eq("'self'"));
+  if (is_bundle()) {
+    EXPECT_THAT(csp->raw_directives[Directive::ConnectSrc],
+                Eq("'self' https: wss: blob: data:"));
+  } else {
+    EXPECT_THAT(csp->raw_directives[Directive::ConnectSrc],
+                Eq("'self' https: wss: blob: data: ws://proxy.example.com:80"));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
