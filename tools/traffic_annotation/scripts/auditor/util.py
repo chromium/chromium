@@ -193,11 +193,21 @@ def policy_to_text(chrome_policy: Iterable[Message]) -> str:
           # Skip the policy_options field.
           continue
         writer = text_format.TextWriter(as_utf8=True)
-        text_format.PrintField(subfield,
-                               subvalue,
-                               writer,
-                               as_one_line=True,
-                               use_short_repeated_primitives=True)
+        if subfield.label == FieldDescriptor.LABEL_REPEATED:
+          # text_format.PrintField needs repeated fields passed in
+          # one-at-a-time.
+          for repeated_value in subvalue:
+            text_format.PrintField(subfield,
+                                   repeated_value,
+                                   writer,
+                                   as_one_line=True,
+                                   use_short_repeated_primitives=True)
+        else:
+          text_format.PrintField(subfield,
+                                 subvalue,
+                                 writer,
+                                 as_one_line=True,
+                                 use_short_repeated_primitives=True)
         items.append(writer.getvalue().strip())
   # We wrote an extra comma at the end, remove it before returning.
   return ", ".join(items)
