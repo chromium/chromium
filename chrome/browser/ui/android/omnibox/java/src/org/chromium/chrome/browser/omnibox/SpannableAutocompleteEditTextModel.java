@@ -75,7 +75,6 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
     private AutocompleteInputConnection mInputConnection;
     private boolean mLastEditWasTyping = true;
     private boolean mIgnoreTextChangeFromAutocomplete = true;
-    private boolean mLayoutDirectionIsLtr = true;
     private int mBatchEditNestCount;
     private int mDeletePostfixOnNextBeginImeCommand;
 
@@ -536,11 +535,6 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
     @Override
     public boolean shouldIgnoreAccessibilityEvent() {
         return mDelegateShouldIgnoreAccessibilityEvents;
-    }
-
-    @Override
-    public void setLayoutDirectionIsLtr(boolean isLtr) {
-        mLayoutDirectionIsLtr = isLtr;
     }
 
     @VisibleForTesting

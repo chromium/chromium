@@ -138,8 +138,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
     }
 
     @Test
-    public void dispatchKeyEvent_processAutocompleteKeysWhenAutocompletionIsAvailable_ltr() {
-        mModel.setLayoutDirectionIsLtr(true);
+    public void dispatchKeyEvent_processAutocompleteKeysWhenAutocompletionIsAvailable() {
         mCurrentState.setAutocompleteText(Optional.of("google.com"));
 
         confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_RIGHT);
@@ -150,31 +149,7 @@ public class SpannableAutocompleteEditTextModelUnitTest {
     }
 
     @Test
-    public void dispatchKeyEvent_processAutocompleteKeysWhenAutocompletionIsAvailable_rtl() {
-        mModel.setLayoutDirectionIsLtr(false);
-        mCurrentState.setAutocompleteText(Optional.of("google.com"));
-
-        confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_LEFT);
-        // Enter is forwarded to the delegate for handling which is what "bypassed" checks.
-        confirmAutocompletionBypassed(KeyEvent.KEYCODE_ENTER);
-        confirmAutocompletionApplied(KeyEvent.KEYCODE_TAB);
-        confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-    }
-
-    @Test
-    public void dispatchKeyEvent_passAutocompleteKeysWhenAutocompletionIsNotAvailable_ltr() {
-        mModel.setLayoutDirectionIsLtr(true);
-        mCurrentState.setAutocompleteText(Optional.empty());
-
-        confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_RIGHT);
-        confirmAutocompletionBypassed(KeyEvent.KEYCODE_ENTER);
-        confirmAutocompletionBypassed(KeyEvent.KEYCODE_TAB);
-        confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_LEFT);
-    }
-
-    @Test
-    public void dispatchKeyEvent_passAutocompleteKeysWhenAutocompletionIsNotAvailable_rtl() {
-        mModel.setLayoutDirectionIsLtr(false);
+    public void dispatchKeyEvent_passAutocompleteKeysWhenAutocompletionIsNotAvailable() {
         mCurrentState.setAutocompleteText(Optional.empty());
 
         confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_RIGHT);

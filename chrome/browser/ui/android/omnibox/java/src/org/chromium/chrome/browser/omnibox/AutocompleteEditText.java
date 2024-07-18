@@ -97,7 +97,6 @@ public class AutocompleteEditText extends VerticallyFixedEditText
 
         mModel = new SpannableAutocompleteEditTextModel(this, getContext());
         mModel.setIgnoreTextChangeFromAutocomplete(true);
-        mModel.setLayoutDirectionIsLtr(getLayoutDirection() != LAYOUT_DIRECTION_RTL);
         mModel.onFocusChanged(hasFocus());
         mModel.onSetText(getText());
         mModel.onTextChanged(getText(), 0, 0, getText().length());
@@ -349,14 +348,6 @@ public class AutocompleteEditText extends VerticallyFixedEditText
 
     @Override
     public void onUpdateSelectionForTesting(int selStart, int selEnd) {}
-
-    @Override
-    public void onRtlPropertiesChanged(int layoutDirection) {
-        super.onRtlPropertiesChanged(layoutDirection);
-        if (mModel != null) {
-            mModel.setLayoutDirectionIsLtr(layoutDirection != LAYOUT_DIRECTION_RTL);
-        }
-    }
 
     @Override
     public String getKeyboardPackageName() {
