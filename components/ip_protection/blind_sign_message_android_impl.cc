@@ -22,6 +22,8 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 
+namespace ip_protection {
+
 BlindSignMessageAndroidImpl::BlindSignMessageAndroidImpl() = default;
 
 BlindSignMessageAndroidImpl::~BlindSignMessageAndroidImpl() = default;
@@ -162,3 +164,5 @@ void BlindSignMessageAndroidImpl::OnSendRequestComplete(
     }
   }
 }
+
+}  // namespace ip_protection

@@ -29,6 +29,8 @@ using ::testing::_;
 using ::testing::Not;
 using ::testing::Property;
 
+namespace ip_protection {
+
 namespace {
 
 class MockIpProtectionAuthClient
@@ -551,3 +553,5 @@ TEST_F(BlindSignMessageAndroidImplTest,
             absl::StatusCode::kOk);
   ASSERT_TRUE(fetcher_->GetIpProtectionAuthClientForTesting() != nullptr);
 }
+
+}  // namespace ip_protection

@@ -18,6 +18,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ip_protection {
+
 namespace {
 
 constexpr char kServiceType[] = "test_service_type";
@@ -318,3 +320,5 @@ TEST_F(IpProtectionProxyConfigFetcherTest,
   EXPECT_EQ(proxy_list, std::nullopt);
   EXPECT_TRUE(geo_hint.is_null());
 }
+
+}  // namespace ip_protection

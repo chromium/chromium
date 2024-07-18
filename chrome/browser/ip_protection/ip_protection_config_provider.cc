@@ -76,9 +76,10 @@ void IpProtectionConfigProvider::SetUp() {
   }
   if (!ip_protection_proxy_config_fetcher_) {
     ip_protection_proxy_config_fetcher_ =
-        std::make_unique<IpProtectionProxyConfigFetcher>(
+        std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
             url_loader_factory_.get(),
-            IpProtectionConfigProviderHelper::kChromeIpBlinding, GetAPIKey());
+            ip_protection::IpProtectionConfigProviderHelper::kChromeIpBlinding,
+            GetAPIKey());
   }
   if (!bsa_) {
     if (!blind_sign_auth_) {
@@ -93,7 +94,7 @@ void IpProtectionConfigProvider::SetUp() {
 }
 
 void IpProtectionConfigProvider::SetUpForTesting(
-    std::unique_ptr<IpProtectionProxyConfigRetriever>
+    std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
         ip_protection_proxy_config_retriever,
     std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
     quiche::BlindSignAuthInterface* bsa) {
@@ -102,7 +103,7 @@ void IpProtectionConfigProvider::SetUpForTesting(
   ip_protection_config_http_ = nullptr;
   url_loader_factory_ = nullptr;
   ip_protection_proxy_config_fetcher_ =
-      std::make_unique<IpProtectionProxyConfigFetcher>(
+      std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
           std::move(ip_protection_proxy_config_retriever));
   ip_protection_config_http_ = std::move(ip_protection_config_http);
 
@@ -361,7 +362,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
 
   std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
-    network::mojom::BlindSignedAuthTokenPtr converted_token =
+    network::mojom::BlindSignedAuthTokenPtr converted_token = ip_protection::
         IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(token);
     if (converted_token.is_null() || converted_token->token.empty()) {
       TryGetAuthTokensComplete(
@@ -436,19 +437,21 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
     case IpProtectionTryGetAuthTokensResult::kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
-      backoff = IpProtectionConfigProviderHelper::kNotEligibleBackoff;
+      backoff =
+          ip_protection::IpProtectionConfigProviderHelper::kNotEligibleBackoff;
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenTransient:
     case IpProtectionTryGetAuthTokensResult::kFailedBSAOther:
       // Transient failure to fetch an OAuth token, or some other error from
       // BSA that is probably transient.
-      backoff = IpProtectionConfigProviderHelper::kTransientBackoff;
+      backoff =
+          ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff;
       exponential = true;
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedBSA400:
     case IpProtectionTryGetAuthTokensResult::kFailedBSA401:
       // Both 400 and 401 suggest a bug, so do not retry aggressively.
-      backoff = IpProtectionConfigProviderHelper::kBugBackoff;
+      backoff = ip_protection::IpProtectionConfigProviderHelper::kBugBackoff;
       exponential = true;
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenDeprecated:

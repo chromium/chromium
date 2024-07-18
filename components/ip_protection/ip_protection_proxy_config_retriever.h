@@ -19,6 +19,8 @@ namespace network {
 class SimpleURLLoader;
 }  // namespace network
 
+namespace ip_protection {
+
 // Retrieves proxy configuration that is necessary for IP Protection from the
 // server.
 class IpProtectionProxyConfigRetriever {
@@ -48,4 +50,7 @@ class IpProtectionProxyConfigRetriever {
   base::WeakPtrFactory<IpProtectionProxyConfigRetriever> weak_ptr_factory_{
       this};
 };
+
+}  // namespace ip_protection
+
 #endif  // COMPONENTS_IP_PROTECTION_IP_PROTECTION_PROXY_CONFIG_RETRIEVER_H_

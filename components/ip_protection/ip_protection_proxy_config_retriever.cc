@@ -13,6 +13,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
+namespace ip_protection {
+
 namespace {
 constexpr std::string_view kGoogApiKeyHeader = "X-Goog-Api-Key";
 constexpr net::NetworkTrafficAnnotationTag kGetProxyConfigTrafficAnnotation =
@@ -152,3 +154,5 @@ void IpProtectionProxyConfigRetriever::OnGetProxyConfigCompleted(
 
   std::move(callback).Run(std::move(response_proto));
 }
+
+}  // namespace ip_protection

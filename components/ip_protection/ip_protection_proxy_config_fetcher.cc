@@ -21,6 +21,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
 
+namespace ip_protection {
+
 IpProtectionProxyConfigFetcher::IpProtectionProxyConfigFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string type,
@@ -186,3 +188,5 @@ net::ProxyChain IpProtectionProxyConfigFetcher::MakeChainForTesting(
   }
   return net::ProxyChain::ForIpProtection(servers, chain_id);
 }
+
+}  // namespace ip_protection

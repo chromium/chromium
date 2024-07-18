@@ -22,6 +22,8 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 
+namespace ip_protection {
+
 // Uses the IpProtectionAuthClient to make IPC calls to service implementing IP
 // Protection for async requests in BlindSignAuth. DoRequest makes an IPC
 // request for either GetInitialData or AuthAndSign and if successful, receives
@@ -142,5 +144,7 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
 
   base::WeakPtrFactory<BlindSignMessageAndroidImpl> weak_ptr_factory_{this};
 };
+
+}  // namespace ip_protection
 
 #endif  // COMPONENTS_IP_PROTECTION_BLIND_SIGN_MESSAGE_ANDROID_IMPL_H_

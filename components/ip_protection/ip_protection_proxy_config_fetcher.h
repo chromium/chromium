@@ -18,6 +18,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
+namespace ip_protection {
+
 // Manages fetching the proxy configuration from the server that is
 // necessary for IP Protection.
 //
@@ -96,5 +98,7 @@ class IpProtectionProxyConfigFetcher {
   base::TimeDelta next_get_proxy_config_backoff_ =
       kGetProxyConfigFailureTimeout;
 };
+
+}  // namespace ip_protection
 
 #endif  // COMPONENTS_IP_PROTECTION_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_

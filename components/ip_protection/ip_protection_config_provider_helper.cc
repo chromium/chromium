@@ -19,6 +19,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
 
+namespace ip_protection {
+
 // static
 network::mojom::BlindSignedAuthTokenPtr
 IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
@@ -105,3 +107,5 @@ IpProtectionConfigProviderHelper::CreateMockBlindSignedAuthTokenForTesting(
       CreateBlindSignTokenForTesting(token_value, expiration, geo_hint);
   return CreateBlindSignedAuthToken(std::move(blind_sign_token));
 }
+
+}  // namespace ip_protection

@@ -110,11 +110,12 @@ class AwIpProtectionConfigProvider
           pending_remote);
 
   // Like `SetUp()`, but providing values for each of the member variables.
-  void SetUpForTesting(std::unique_ptr<IpProtectionProxyConfigRetriever>
-                           ip_protection_proxy_config_retriever,
-                       std::unique_ptr<BlindSignMessageAndroidImpl>
-                           blind_sign_message_android_impl,
-                       quiche::BlindSignAuthInterface* bsa);
+  void SetUpForTesting(
+      std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
+          ip_protection_proxy_config_retriever,
+      std::unique_ptr<ip_protection::BlindSignMessageAndroidImpl>
+          blind_sign_message_android_impl,
+      quiche::BlindSignAuthInterface* bsa);
 
  private:
   // Set up
@@ -145,9 +146,10 @@ class AwIpProtectionConfigProvider
   std::optional<base::TimeDelta> CalculateBackoff(
       AwIpProtectionTryGetAuthTokensResult result);
 
-  std::unique_ptr<IpProtectionProxyConfigFetcher>
+  std::unique_ptr<ip_protection::IpProtectionProxyConfigFetcher>
       ip_protection_proxy_config_fetcher_;
-  std::unique_ptr<BlindSignMessageAndroidImpl> blind_sign_message_android_impl_;
+  std::unique_ptr<ip_protection::BlindSignMessageAndroidImpl>
+      blind_sign_message_android_impl_;
   std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;
 
   // Injected browser context.

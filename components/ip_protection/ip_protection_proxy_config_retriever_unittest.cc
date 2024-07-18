@@ -18,6 +18,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ip_protection {
+
 namespace {
 constexpr std::string_view kGoogApiKeyHeader = "X-Goog-Api-Key";
 }
@@ -167,3 +169,5 @@ TEST_F(IpProtectionProxyConfigRetrieverTest, GetProxyConfigFails) {
 
   ASSERT_FALSE(result.has_value());
 }
+
+}  // namespace ip_protection

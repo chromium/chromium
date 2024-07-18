@@ -18,6 +18,8 @@ namespace quiche {
 struct BlindSignToken;
 }  // namespace quiche
 
+namespace ip_protection {
+
 // Contains static variables and methods for IpProtectionConfigProviders.
 //
 // It is the implementation's job to actually get the IP protection tokens on
@@ -65,5 +67,7 @@ class IpProtectionConfigProviderHelper {
   static constexpr base::TimeDelta kTransientBackoff = base::Seconds(5);
   static constexpr base::TimeDelta kBugBackoff = base::Minutes(10);
 };
+
+}  // namespace ip_protection
 
 #endif  // COMPONENTS_IP_PROTECTION_IP_PROTECTION_CONFIG_PROVIDER_HELPER_H_

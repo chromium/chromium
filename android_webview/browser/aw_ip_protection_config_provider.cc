@@ -60,17 +60,18 @@ AwIpProtectionConfigProvider::~AwIpProtectionConfigProvider() = default;
 void AwIpProtectionConfigProvider::SetUp() {
   if (!blind_sign_message_android_impl_) {
     blind_sign_message_android_impl_ =
-        std::make_unique<BlindSignMessageAndroidImpl>();
+        std::make_unique<ip_protection::BlindSignMessageAndroidImpl>();
   }
 
   if (!ip_protection_proxy_config_fetcher_) {
     CHECK(aw_browser_context_);
     ip_protection_proxy_config_fetcher_ =
-        std::make_unique<IpProtectionProxyConfigFetcher>(
+        std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
             aw_browser_context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get(),
-            IpProtectionConfigProviderHelper::kWebViewIpBlinding, GetAPIKey());
+            ip_protection::IpProtectionConfigProviderHelper::kWebViewIpBlinding,
+            GetAPIKey());
   }
 
   if (!bsa_) {
@@ -86,9 +87,9 @@ void AwIpProtectionConfigProvider::SetUp() {
 }
 
 void AwIpProtectionConfigProvider::SetUpForTesting(
-    std::unique_ptr<IpProtectionProxyConfigRetriever>
+    std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
         ip_protection_proxy_config_retriever,
-    std::unique_ptr<BlindSignMessageAndroidImpl>
+    std::unique_ptr<ip_protection::BlindSignMessageAndroidImpl>
         blind_sign_message_android_impl,
     quiche::BlindSignAuthInterface* bsa) {
   // Carefully destroy any existing values in the correct order.
@@ -98,7 +99,7 @@ void AwIpProtectionConfigProvider::SetUpForTesting(
   ip_protection_proxy_config_fetcher_ = nullptr;
 
   ip_protection_proxy_config_fetcher_ =
-      std::make_unique<IpProtectionProxyConfigFetcher>(
+      std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
           std::move(ip_protection_proxy_config_retriever));
   blind_sign_message_android_impl_ = std::move(blind_sign_message_android_impl);
   bsa_ = bsa;
@@ -209,7 +210,7 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
 
   std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
-    network::mojom::BlindSignedAuthTokenPtr converted_token =
+    network::mojom::BlindSignedAuthTokenPtr converted_token = ip_protection::
         IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(token);
     if (converted_token.is_null() || converted_token->token.empty()) {
       VLOG(2) << "AwIpProtectionConfigProvider::"
@@ -269,7 +270,8 @@ std::optional<base::TimeDelta> AwIpProtectionConfigProvider::CalculateBackoff(
       break;
     case AwIpProtectionTryGetAuthTokensResult::kFailedBSATransient:
     case AwIpProtectionTryGetAuthTokensResult::kFailedBSAOther:
-      backoff = IpProtectionConfigProviderHelper::kTransientBackoff;
+      backoff =
+          ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff;
       // Note that we calculate the backoff assuming that we've waited for
       // `last_try_get_auth_tokens_backoff_` time already, but this may not be
       // the case when:

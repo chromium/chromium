@@ -135,7 +135,7 @@ class IpProtectionConfigProvider
 
   // Like `SetUp()`, but providing values for each of the member variables.
   void SetUpForTesting(
-      std::unique_ptr<IpProtectionProxyConfigRetriever>
+      std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
           ip_protection_proxy_config_retriever,
       std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
       quiche::BlindSignAuthInterface* bsa);
@@ -253,7 +253,7 @@ class IpProtectionConfigProvider
   // scoped_refptr here.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http_;
-  std::unique_ptr<IpProtectionProxyConfigFetcher>
+  std::unique_ptr<ip_protection::IpProtectionProxyConfigFetcher>
       ip_protection_proxy_config_fetcher_;
   std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;
 
