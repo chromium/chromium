@@ -21,6 +21,10 @@ ci/android-archive-rel
 ci/android-arm64-proguard-rel
 ci/android-bfcache-rel
 ci/android-binary-size-generator
+ci/android-desktop-arm64-compile-dbg
+ci/android-desktop-arm64-compile-rel
+ci/android-desktop-x64-compile-dbg
+ci/android-desktop-x64-compile-rel
 ci/android-official
 ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
@@ -35,6 +39,10 @@ try/android-14-x64-rel
 try/android-15-x64-fyi-rel
 try/android-15-x64-rel
 try/android-clobber-rel
+try/android-desktop-arm64-compile-dbg
+try/android-desktop-arm64-compile-rel
+try/android-desktop-x64-compile-dbg
+try/android-desktop-x64-compile-rel
 try/android-official
 try/android-tablet-14-arm64-fyi-rel
 try/android-x64-rel

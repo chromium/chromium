@@ -67,6 +67,12 @@
     "android-webview-13-x64-hostside-rel": "ci/android-webview-13-x64-hostside-rel/gn-args.json",
     "android-x86-rel": "ci/android-x86-rel/gn-args.json"
   },
+  "chromium.android.desktop": {
+    "android-desktop-arm64-compile-dbg": "ci/android-desktop-arm64-compile-dbg/gn-args.json",
+    "android-desktop-arm64-compile-rel": "ci/android-desktop-arm64-compile-rel/gn-args.json",
+    "android-desktop-x64-compile-dbg": "ci/android-desktop-x64-compile-dbg/gn-args.json",
+    "android-desktop-x64-compile-rel": "ci/android-desktop-x64-compile-rel/gn-args.json"
+  },
   "chromium.android.fyi": {
     "android-12l-x64-fyi-dbg": "ci/android-12l-x64-fyi-dbg/gn-args.json",
     "android-13-x64-fyi-rel": "ci/android-13-x64-fyi-rel/gn-args.json",
@@ -593,6 +599,10 @@
     "android-cronet-x86-dbg-oreo-tests": "try/android-cronet-x86-dbg-oreo-tests/gn-args.json",
     "android-cronet-x86-dbg-pie-tests": "try/android-cronet-x86-dbg-pie-tests/gn-args.json",
     "android-cronet-x86-rel": "try/android-cronet-x86-rel/gn-args.json",
+    "android-desktop-arm64-compile-dbg": "try/android-desktop-arm64-compile-dbg/gn-args.json",
+    "android-desktop-arm64-compile-rel": "try/android-desktop-arm64-compile-rel/gn-args.json",
+    "android-desktop-x64-compile-dbg": "try/android-desktop-x64-compile-dbg/gn-args.json",
+    "android-desktop-x64-compile-rel": "try/android-desktop-x64-compile-rel/gn-args.json",
     "android-deterministic-dbg": "try/android-deterministic-dbg/gn-args.json",
     "android-deterministic-rel": "try/android-deterministic-rel/gn-args.json",
     "android-fieldtrial-rel": "try/android-fieldtrial-rel/gn-args.json",

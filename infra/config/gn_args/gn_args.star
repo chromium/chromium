@@ -96,6 +96,14 @@ gn_args.config(
     },
 )
 
+# For Android builds requiring is_desktop_android.
+gn_args.config(
+    name = "android_desktop",
+    args = {
+        "is_desktop_android": True,
+    },
+)
+
 # Representative GN args for Android developer builds.
 gn_args.config(
     name = "android_developer",

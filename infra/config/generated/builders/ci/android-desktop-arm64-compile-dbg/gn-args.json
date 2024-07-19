@@ -1,0 +1,16 @@
+{
+  "gn_args": {
+    "debuggable_apks": false,
+    "ffmpeg_branding": "Chrome",
+    "is_component_build": false,
+    "is_debug": true,
+    "is_desktop_android": true,
+    "proprietary_codecs": true,
+    "symbol_level": 1,
+    "system_webview_package_name": "com.google.android.webview.debug",
+    "target_cpu": "arm64",
+    "target_os": "android",
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}
