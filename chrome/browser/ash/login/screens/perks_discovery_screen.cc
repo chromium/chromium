@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/login/screens/perks_discovery_screen.h"
 
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/perks_discovery_screen_handler.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
@@ -83,6 +86,16 @@ PerksDiscoveryScreen::~PerksDiscoveryScreen() = default;
 
 bool PerksDiscoveryScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  const user_manager::UserManager* user_manager =
+      user_manager::UserManager::Get();
+  bool is_managed_account = profile->GetProfilePolicyConnector()->IsManaged();
+  bool is_child_account = user_manager->IsLoggedInAsChildUser();
+  if (is_managed_account || is_child_account) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
