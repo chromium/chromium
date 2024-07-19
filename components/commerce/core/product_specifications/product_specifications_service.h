@@ -113,6 +113,8 @@ class ProductSpecificationsService
 
   void NotifyProductSpecificationsRemoval(const ProductSpecificationsSet& set);
 
+  void MigrateLegacySpecificsIfApplicable();
+
   base::WeakPtrFactory<ProductSpecificationsService> weak_ptr_factory_{this};
 };
 

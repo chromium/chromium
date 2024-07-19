@@ -497,6 +497,7 @@ void ProductSpecificationsService::OnInit() {
     std::move(deferred_operation).Run();
   }
   deferred_operations_.clear();
+  MigrateLegacySpecificsIfApplicable();
 }
 
 void ProductSpecificationsService::OnProductSpecificationsSetAdded(
@@ -612,6 +613,33 @@ void ProductSpecificationsService::NotifyProductSpecificationsRemoval(
     const ProductSpecificationsSet& set) {
   for (auto& observer : observers_) {
     observer.OnProductSpecificationsSetRemoved(set);
+  }
+}
+
+void ProductSpecificationsService::MigrateLegacySpecificsIfApplicable() {
+  if (kProductSpecsMigrateToMultiSpecifics.Get()) {
+    std::vector<sync_pb::ProductComparisonSpecifics> migrate_specifics_to_add;
+    for (auto [uuid, specifics] : bridge_->entries()) {
+      // It's possible for the legacy format to have no URLs and just a name
+      // so detect legacy specifics to have a name and no ProductComparison
+      // and no ProductComparisonItem fields.
+      if (specifics.has_name() && !specifics.has_product_comparison() &&
+          !specifics.has_product_comparison_item()) {
+        specifics.mutable_product_comparison()->set_name(specifics.name());
+        specifics.clear_name();
+        bridge_->UpdateSpecifics(specifics);
+
+        std::vector<GURL> urls;
+        for (const sync_pb::ComparisonData& data : specifics.data()) {
+          urls.emplace_back(data.url());
+        }
+        bridge_->AddSpecifics(CreateItemLevelSpecifics(
+            uuid, urls,
+            base::Time::FromMillisecondsSinceUnixEpoch(
+                specifics.update_time_unix_epoch_millis())));
+        specifics.clear_data();
+      }
+    }
   }
 }
 

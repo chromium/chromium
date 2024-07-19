@@ -191,6 +191,11 @@ const base::FeatureParam<bool> kPriceInsightsShowFeedback{
 const char kPriceInsightsUseCacheParam[] = "price-insights-use-cache";
 const base::FeatureParam<bool> kPriceInsightsUseCache{
     &commerce::kPriceInsights, kPriceInsightsUseCacheParam, true};
+const char kProductSpecsMigrateToMultiSpecificsParam[] =
+    "migrate-legacy-to-multi-specifics";
+const base::FeatureParam<bool> kProductSpecsMigrateToMultiSpecifics{
+    &commerce::kProductSpecificationsMultiSpecifics,
+    kProductSpecsMigrateToMultiSpecificsParam, false};
 
 // Tonal colors for the expanded state of the price tracking chip on desktop.
 BASE_FEATURE(kPriceTrackingIconColors,

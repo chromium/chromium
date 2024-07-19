@@ -217,6 +217,14 @@ class ProductSpecificationsServiceTest : public testing::Test {
         commerce::kProductSpecificationsMultiSpecifics);
   }
 
+  void EnableMigrateProductSpecificationsSets() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        commerce::kProductSpecificationsMultiSpecifics,
+        {
+            {commerce::kProductSpecsMigrateToMultiSpecificsParam, "true"},
+        });
+  }
+
   std::map<std::string, sync_pb::ProductComparisonSpecifics> GetAllStoreData() {
     base::RunLoop loop;
     std::map<std::string, sync_pb::ProductComparisonSpecifics>
@@ -324,6 +332,10 @@ class ProductSpecificationsServiceTest : public testing::Test {
   void DeleteSpecifics(
       const std::vector<sync_pb::ProductComparisonSpecifics> to_delete) {
     bridge()->DeleteSpecifics(to_delete);
+  }
+
+  void MigrateLegacySpecificsIfApplicable() {
+    service()->MigrateLegacySpecificsIfApplicable();
   }
 
  protected:
@@ -1099,6 +1111,24 @@ TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsDelete) {
       .Times(1);
   ApplyIncrementalSyncChangesForTesting(to_change);
   VerifyProductSpecificationsSet(new_set->uuid(), std::nullopt);
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestMigration) {
+  std::optional<ProductSpecificationsSet> set_to_migrate =
+      service()->AddProductSpecificationsSet(
+          "New set",
+          {GURL("https://a.example.com"), GURL("https://b.example.com")});
+
+  EnableMigrateProductSpecificationsSets();
+  EXPECT_EQ(std::nullopt, service()->GetSetByUuid(set_to_migrate->uuid()));
+  MigrateLegacySpecificsIfApplicable();
+  std::optional<ProductSpecificationsSet> migrated_set =
+      service()->GetSetByUuid(set_to_migrate->uuid());
+  EXPECT_NE(std::nullopt, migrated_set);
+  EXPECT_EQ(set_to_migrate->uuid(), migrated_set->uuid());
+  EXPECT_EQ(set_to_migrate->urls(), migrated_set->urls());
+  // TODO(crbug.com/353746117) add in time checks
+  EXPECT_EQ(set_to_migrate->name(), migrated_set->name());
 }
 
 }  // namespace commerce
