@@ -18,7 +18,7 @@ import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {ScoredURLUserAction} from '../../../most_relevant_tab_resumption.mojom-webui.js';
 import type {InfoDialogElement} from '../../info_dialog.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
-import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
+import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import {getTemplate} from './module.html.js';
 import {MostRelevantTabResumptionProxyImpl} from './most_relevant_tab_resumption_proxy.js';
@@ -28,7 +28,7 @@ export const MAX_TABS = 5;
 export interface MostRelevantTabResumptionModuleElement {
   $: {
     infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
-    moduleHeaderElementV2: ModuleHeaderElementV2,
+    moduleHeaderElementV2: ModuleHeaderElement,
     tabs: HTMLElement,
   };
 }

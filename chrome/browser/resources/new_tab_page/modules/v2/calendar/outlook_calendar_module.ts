@@ -8,13 +8,13 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
-import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
+import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import {getHtml} from './outlook_calendar_module.html.js';
 
 export interface OutlookCalendarModuleElement {
   $: {
-    moduleHeaderElementV2: ModuleHeaderElementV2,
+    moduleHeaderElementV2: ModuleHeaderElement,
   };
 }
 

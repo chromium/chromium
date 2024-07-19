@@ -11,7 +11,7 @@ import type {File} from '../../../file_suggestion.mojom-webui.js';
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {FileProxy} from '../../drive/file_module_proxy.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
-import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
+import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import {getCss} from './module.css.js';
 import {getHtml} from './module.html.js';
@@ -19,7 +19,7 @@ import {getHtml} from './module.html.js';
 export interface ModuleElement {
   $: {
     files: HTMLElement,
-    moduleHeaderElementV2: ModuleHeaderElementV2,
+    moduleHeaderElementV2: ModuleHeaderElement,
   };
 }
 

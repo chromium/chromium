@@ -13,7 +13,7 @@ import type {Tab} from '../../../history_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import type {InfoDialogElement} from '../../info_dialog.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
-import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
+import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import {getTemplate} from './module.html.js';
 import {TabResumptionProxyImpl} from './tab_resumption_proxy.js';
@@ -24,7 +24,7 @@ export const MAX_TABS =
 export interface TabResumptionModuleElement {
   $: {
     infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
-    moduleHeaderElementV2: ModuleHeaderElementV2,
+    moduleHeaderElementV2: ModuleHeaderElement,
   };
 }
 

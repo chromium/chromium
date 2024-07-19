@@ -4,7 +4,7 @@
 
 import {ModuleHeaderElementV2} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ModuleHeaderV2', () => {
   let moduleHeaderElementV2: ModuleHeaderElementV2;
@@ -38,7 +38,7 @@ suite('ModuleHeaderV2', () => {
         },
       ],
     ];
-    await flushTasks();
+    await microtasksFinished();
     // Assert.
     const dropDownItems =
         moduleHeaderElementV2.shadowRoot!.querySelectorAll('button');
@@ -62,7 +62,7 @@ suite('ModuleHeaderV2', () => {
           ],
           [],
         ];
-        await flushTasks();
+        await microtasksFinished();
         // Assert.
         const horizontalRule =
             moduleHeaderElementV2.shadowRoot!.querySelector('hr');
@@ -84,7 +84,7 @@ suite('ModuleHeaderV2', () => {
             },
           ],
         ];
-        await flushTasks();
+        await microtasksFinished();
         // Assert.
         const horizontalRule =
             moduleHeaderElementV2.shadowRoot!.querySelector('hr');

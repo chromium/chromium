@@ -10,7 +10,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CalendarEvent, GoogleCalendarPageHandlerRemote} from '../../../google_calendar.mojom-webui.js';
 import {I18nMixinLit} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
-import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
+import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import type {CalendarElement} from './calendar.js';
 import {getCss} from './google_calendar_module.css.js';
@@ -20,7 +20,7 @@ import {GoogleCalendarProxyImpl} from './google_calendar_proxy.js';
 export interface GoogleCalendarModuleElement {
   $: {
     calendar: CalendarElement,
-    moduleHeaderElementV2: ModuleHeaderElementV2,
+    moduleHeaderElementV2: ModuleHeaderElement,
   };
 }
 
