@@ -4,7 +4,9 @@
 
 #include "content/browser/compute_pressure/pressure_service_for_frame.h"
 
+#include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace content {
 
@@ -23,6 +25,17 @@ bool PressureServiceForFrame::CanCallAddClient() const {
 
 bool PressureServiceForFrame::ShouldDeliverUpdate() const {
   return HasImplicitFocus(&render_frame_host());
+}
+
+std::optional<base::UnguessableToken> PressureServiceForFrame::GetTokenFor(
+    device::mojom::PressureSource source) const {
+  const auto* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  if (const auto* pressure_manager_proxy =
+          WebContentsPressureManagerProxy::FromWebContents(web_contents)) {
+    return pressure_manager_proxy->GetTokenFor(source);
+  }
+  return std::nullopt;
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PressureServiceForFrame);

@@ -138,7 +138,7 @@ void PressureServiceBase::AddClient(device::mojom::PressureSource source,
             pressure_client.BindNewPipeAndPassReceiver()));
   } else {
     manager_remote_->AddClient(
-        source, /*token=*/std::nullopt,
+        source, GetTokenFor(source),
         base::BindOnce(&PressureServiceBase::DidAddClient,
                        weak_ptr_factory_.GetWeakPtr(), source,
                        std::move(callback)));

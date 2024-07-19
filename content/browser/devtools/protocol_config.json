@@ -42,6 +42,9 @@
                   "setDevicePostureOverride",
                   "clearDevicePostureOverride",
 
+                  "setPressureSourceOverrideEnabled",
+                  "setPressureStateOverride",
+
                   "setIdleOverride",
                   "clearIdleOverride",
                   "setGeolocationOverride",
@@ -58,7 +61,8 @@
                 "async": [
                   "getOverriddenSensorInformation",
                   "setSensorOverrideEnabled",
-                  "setSensorOverrideReadings"
+                  "setSensorOverrideReadings",
+                  "setPressureStateOverride"
                 ]
             },
             {

@@ -1,0 +1,4 @@
+Tests pressure overrides work in dedicated workers
+PASS: Set pressure state override to 'critical'
+worker update == cpu,critical
+

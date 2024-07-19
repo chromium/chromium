@@ -6,11 +6,13 @@
 #define CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_BASE_H_
 
 #include <array>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/unguessable_token.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,6 +50,10 @@ class CONTENT_EXPORT PressureServiceBase
 
   // Verifies if the data should be delivered according to focus status.
   virtual bool ShouldDeliverUpdate() const = 0;
+
+  // Returns a token for use with automation calls when one is set.
+  virtual std::optional<base::UnguessableToken> GetTokenFor(
+      device::mojom::PressureSource) const = 0;
 
   bool IsManagerReceiverBoundForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

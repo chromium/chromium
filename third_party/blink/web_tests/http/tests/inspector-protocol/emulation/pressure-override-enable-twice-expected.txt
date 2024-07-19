@@ -1,0 +1,22 @@
+Tests setPressureSourceOverrideEnabled fails if enabling the same pressure source twice
+PASS: Enabling pressure source override
+Attempting to enable an already enabled pressure source
+{
+    error : {
+        code : -32602
+        message : The specified pressure source is already overridden
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : The specified pressure source is already overridden
+    }
+    id : <number>
+    sessionId : <string>
+}
+PASS: Removing pressure source override
+PASS: Enabling pressure source override again
+

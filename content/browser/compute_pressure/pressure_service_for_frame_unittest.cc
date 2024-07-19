@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
+#include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
@@ -189,6 +190,34 @@ TEST_F(PressureServiceForFrameTest, AddClient) {
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
   EXPECT_EQ(client.updates()[0], update);
+}
+
+TEST_F(PressureServiceForFrameTest, WebContentPressureManagerProxyTest) {
+  auto* pressure_service =
+      PressureServiceForFrame::GetOrCreateForCurrentDocument(
+          contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pressure_service, nullptr);
+
+  auto* web_contents =
+      WebContents::FromRenderFrameHost(&pressure_service->render_frame_host());
+  EXPECT_EQ(WebContentsPressureManagerProxy::FromWebContents(web_contents),
+            nullptr);
+  auto* pressure_manager_proxy =
+      WebContentsPressureManagerProxy::GetOrCreate(web_contents);
+  EXPECT_NE(pressure_manager_proxy, nullptr);
+  EXPECT_EQ(pressure_manager_proxy,
+            WebContentsPressureManagerProxy::FromWebContents(web_contents));
+
+  EXPECT_EQ(pressure_service->GetTokenFor(PressureSource::kCpu), std::nullopt);
+  {
+    auto pressure_source =
+        pressure_manager_proxy->CreateVirtualPressureSourceForDevTools(
+            PressureSource::kCpu,
+            device::mojom::VirtualPressureSourceMetadata::New());
+    EXPECT_NE(pressure_service->GetTokenFor(PressureSource::kCpu),
+              std::nullopt);
+  }
+  EXPECT_EQ(pressure_service->GetTokenFor(PressureSource::kCpu), std::nullopt);
 }
 
 TEST_F(PressureServiceForFrameTest, AddClientNotSupported) {

@@ -1,0 +1,16 @@
+Tests that pressure source overrides persist across navigations
+PASS: Created cpu virtual pressure source
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Navigating to a different URL
+[
+    [0] : [
+        [0] : cpu
+        [1] : critical
+    ]
+]
+

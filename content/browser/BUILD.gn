@@ -776,6 +776,8 @@ source_set("browser") {
     "compute_pressure/pressure_service_for_frame.h",
     "compute_pressure/pressure_service_for_worker.cc",
     "compute_pressure/pressure_service_for_worker.h",
+    "compute_pressure/web_contents_pressure_manager_proxy.cc",
+    "compute_pressure/web_contents_pressure_manager_proxy.h",
     "contacts/contacts_manager_impl.cc",
     "contacts/contacts_manager_impl.h",
     "contacts/contacts_provider.h",
