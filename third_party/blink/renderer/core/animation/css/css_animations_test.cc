@@ -887,7 +887,9 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     const gfx::FloatAnimationCurve* opacity_curve =
         gfx::FloatAnimationCurve::ToFloatAnimationCurve(
             keyframe_model->curve());
-    EXPECT_NEAR(expected_value, opacity_curve->GetValue(iteration_time),
+    EXPECT_NEAR(expected_value,
+                opacity_curve->GetTransformedValue(
+                    iteration_time, gfx::TimingFunction::LimitDirection::RIGHT),
                 kTolerance);
   }
 

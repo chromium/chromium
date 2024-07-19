@@ -197,6 +197,12 @@ float FakeFloatAnimationCurve::GetValue(base::TimeDelta now) const {
   return 0.0f;
 }
 
+float FakeFloatAnimationCurve::GetTransformedValue(
+    base::TimeDelta now,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  return GetValue(now);
+}
+
 std::unique_ptr<gfx::AnimationCurve> FakeFloatAnimationCurve::Clone() const {
   return base::WrapUnique(new FakeFloatAnimationCurve);
 }
@@ -213,6 +219,11 @@ base::TimeDelta FakeTransformTransition::Duration() const {
 gfx::TransformOperations FakeTransformTransition::GetValue(
     base::TimeDelta time) const {
   return gfx::TransformOperations();
+}
+gfx::TransformOperations FakeTransformTransition::GetTransformedValue(
+    base::TimeDelta time,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  return GetValue(time);
 }
 
 bool FakeTransformTransition::PreservesAxisAlignment() const {
@@ -240,6 +251,12 @@ base::TimeDelta FakeFloatTransition::Duration() const {
 float FakeFloatTransition::GetValue(base::TimeDelta time) const {
   const double progress = std::min(time / duration_, 1.0);
   return (1.0 - progress) * from_ + progress * to_;
+}
+
+float FakeFloatTransition::GetTransformedValue(
+    base::TimeDelta time,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  return GetValue(time);
 }
 
 std::unique_ptr<gfx::AnimationCurve> FakeFloatTransition::Clone() const {

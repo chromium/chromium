@@ -41,6 +41,12 @@
 namespace cc {
 namespace {
 
+#define SAMPLE(curve, time)                                                  \
+  curve->GetTransformedValue(time,                                           \
+                             time < base::TimeDelta()                        \
+                                 ? gfx::TimingFunction::LimitDirection::LEFT \
+                                 : gfx::TimingFunction::LimitDirection::RIGHT)
+
 class LayerTreeHostAnimationTest : public LayerTreeTest {
  public:
   LayerTreeHostAnimationTest()
@@ -399,15 +405,15 @@ class LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction
     const gfx::FloatAnimationCurve* curve =
         gfx::FloatAnimationCurve::ToFloatAnimationCurve(
             keyframe_model->curve());
-    float start_opacity = curve->GetValue(base::TimeDelta());
-    float end_opacity = curve->GetValue(curve->Duration());
+    float start_opacity = SAMPLE(curve, base::TimeDelta());
+    float end_opacity = SAMPLE(curve, curve->Duration());
     float linearly_interpolated_opacity =
         0.25f * end_opacity + 0.75f * start_opacity;
     base::TimeDelta time = curve->Duration() * 0.25f;
     // If the linear timing function associated with this animation was not
     // picked up, then the linearly interpolated opacity would be different
     // because of the default ease timing function.
-    EXPECT_FLOAT_EQ(linearly_interpolated_opacity, curve->GetValue(time));
+    EXPECT_FLOAT_EQ(linearly_interpolated_opacity, SAMPLE(curve, time));
 
     EndTest();
   }

@@ -68,6 +68,9 @@ class CC_ANIMATION_EXPORT KeyframedFilterAnimationCurve
 
   // FilterAnimationCurve implementation
   FilterOperations GetValue(base::TimeDelta t) const override;
+  FilterOperations GetTransformedValue(
+      base::TimeDelta t,
+      gfx::TimingFunction::LimitDirection limit_direction) const override;
 
  private:
   KeyframedFilterAnimationCurve();

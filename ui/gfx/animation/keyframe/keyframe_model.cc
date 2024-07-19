@@ -123,6 +123,12 @@ std::optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
     base::TimeTicks monotonic_time) const {
   base::TimeDelta local_time = ConvertMonotonicTimeToLocalTime(monotonic_time);
   KeyframeModel::Phase phase = CalculatePhase(local_time);
+  return CalculateActiveTime(local_time, phase);
+}
+
+std::optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
+    base::TimeDelta local_time,
+    KeyframeModel::Phase phase) const {
   DCHECK(playback_rate_);
   switch (phase) {
     case KeyframeModel::Phase::BEFORE:
@@ -170,24 +176,37 @@ bool KeyframeModel::StartShouldBeDeferred() const {
 }
 
 base::TimeDelta KeyframeModel::TrimTimeToCurrentIteration(
-    base::TimeTicks monotonic_time) const {
+    base::TimeTicks monotonic_time,
+    TimingFunction::LimitDirection* limit_direction) const {
   DCHECK(playback_rate_);
   DCHECK_GE(iteration_start_, 0);
 
   DCHECK(HasActiveTime(monotonic_time));
-  base::TimeDelta active_time = CalculateActiveTime(monotonic_time).value();
+
+  base::TimeDelta local_time = ConvertMonotonicTimeToLocalTime(monotonic_time);
+  KeyframeModel::Phase phase = CalculatePhase(local_time);
+  base::TimeDelta active_time = CalculateActiveTime(local_time, phase).value();
   base::TimeDelta start_offset = curve_->Duration() * iteration_start_;
 
-  // Return start offset if we are before the start of the keyframe model
-  if (active_time.is_negative())
-    return start_offset;
+  if (limit_direction) {
+    if (phase == KeyframeModel::Phase::BEFORE) {
+      *limit_direction = TimingFunction::LimitDirection::LEFT;
+    } else {
+      *limit_direction = TimingFunction::LimitDirection::RIGHT;
+    }
+  }
+
+  DCHECK(!active_time.is_negative());
+
   // Always return zero if we have no iterations.
-  if (!iterations_)
+  if (!iterations_) {
     return base::TimeDelta();
+  }
 
   // Don't attempt to trim if we have no duration.
-  if (curve_->Duration() <= base::TimeDelta())
+  if (curve_->Duration() <= base::TimeDelta()) {
     return base::TimeDelta();
+  }
 
   base::TimeDelta repeated_duration = std::isfinite(iterations_)
                                           ? (curve_->Duration() * iterations_)

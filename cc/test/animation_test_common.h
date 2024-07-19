@@ -29,6 +29,9 @@ class FakeFloatAnimationCurve : public gfx::FloatAnimationCurve {
 
   base::TimeDelta Duration() const override;
   float GetValue(base::TimeDelta now) const override;
+  float GetTransformedValue(
+      base::TimeDelta now,
+      gfx::TimingFunction::LimitDirection limit_direction) const override;
   std::unique_ptr<gfx::AnimationCurve> Clone() const override;
 
  private:
@@ -42,6 +45,10 @@ class FakeTransformTransition : public gfx::TransformAnimationCurve {
 
   base::TimeDelta Duration() const override;
   gfx::TransformOperations GetValue(base::TimeDelta time) const override;
+  gfx::TransformOperations GetTransformedValue(
+      base::TimeDelta time,
+      gfx::TimingFunction::LimitDirection limit_direction) const override;
+
   bool PreservesAxisAlignment() const override;
   bool MaximumScale(float* max_scale) const override;
 
@@ -58,6 +65,9 @@ class FakeFloatTransition : public gfx::FloatAnimationCurve {
 
   base::TimeDelta Duration() const override;
   float GetValue(base::TimeDelta time) const override;
+  float GetTransformedValue(
+      base::TimeDelta time,
+      gfx::TimingFunction::LimitDirection limit_direction) const override;
 
   std::unique_ptr<gfx::AnimationCurve> Clone() const override;
 

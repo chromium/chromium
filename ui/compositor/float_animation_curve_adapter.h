@@ -26,6 +26,8 @@ class FloatAnimationCurveAdapter : public gfx::FloatAnimationCurve {
   base::TimeDelta Duration() const override;
   std::unique_ptr<gfx::AnimationCurve> Clone() const override;
   float GetValue(base::TimeDelta t) const override;
+  float GetTransformedValue(base::TimeDelta t,
+                            gfx::TimingFunction::LimitDirection) const override;
 
  private:
   gfx::Tween::Type tween_type_;

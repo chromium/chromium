@@ -112,7 +112,9 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   CloneToScrollOffsetAnimationCurve() const;
   void Tick(base::TimeDelta t,
             int property_id,
-            gfx::KeyframeModel* keyframe_model) const override;
+            gfx::KeyframeModel* keyframe_model,
+            gfx::TimingFunction::LimitDirection limit_direction =
+                gfx::TimingFunction::LimitDirection::RIGHT) const override;
   static void SetAnimationDurationForTesting(base::TimeDelta duration);
   void set_target(Target* target) { target_ = target; }
 

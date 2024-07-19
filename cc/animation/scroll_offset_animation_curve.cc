@@ -330,7 +330,8 @@ std::unique_ptr<gfx::AnimationCurve> ScrollOffsetAnimationCurve::Clone() const {
 void ScrollOffsetAnimationCurve::Tick(
     base::TimeDelta t,
     int property_id,
-    gfx::KeyframeModel* keyframe_model) const {
+    gfx::KeyframeModel* keyframe_model,
+    gfx::TimingFunction::LimitDirection unused) const {
   if (target_) {
     target_->OnScrollOffsetAnimated(GetValue(t), property_id, keyframe_model);
   }

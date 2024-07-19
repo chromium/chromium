@@ -39,4 +39,10 @@ float FloatAnimationCurveAdapter::GetValue(base::TimeDelta t) const {
       target_value_);
 }
 
+float FloatAnimationCurveAdapter::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection) const {
+  return GetValue(t);
+}
+
 }  // namespace ui

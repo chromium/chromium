@@ -106,14 +106,20 @@ void TransitionValueTo(KeyframeEffect* animator,
         running_keyframe_model->curve());
 
     if (running_keyframe_model->IsFinishedAt(monotonic_time)) {
-      effective_current = curve->GetValue(GetEndTime(running_keyframe_model));
+      effective_current = curve->GetTransformedValue(
+          GetEndTime(running_keyframe_model),
+          gfx::TimingFunction::LimitDirection::RIGHT);
     } else {
-      if (SufficientlyEqual(
-              to, curve->GetValue(GetEndTime(running_keyframe_model)))) {
+      if (SufficientlyEqual(to,
+                            curve->GetTransformedValue(
+                                GetEndTime(running_keyframe_model),
+                                gfx::TimingFunction::LimitDirection::RIGHT))) {
         return;
       }
-      if (SufficientlyEqual(
-              to, curve->GetValue(GetStartTime(running_keyframe_model)))) {
+      if (SufficientlyEqual(to,
+                            curve->GetTransformedValue(
+                                GetStartTime(running_keyframe_model),
+                                gfx::TimingFunction::LimitDirection::RIGHT))) {
         ReverseKeyframeModel(monotonic_time, running_keyframe_model);
         return;
       }
@@ -208,9 +214,11 @@ void KeyframeEffect::TickKeyframeModel(base::TimeTicks monotonic_time,
   }
 
   AnimationCurve* curve = keyframe_model->curve();
-  base::TimeDelta trimmed =
-      keyframe_model->TrimTimeToCurrentIteration(monotonic_time);
-  curve->Tick(trimmed, keyframe_model->TargetProperty(), keyframe_model);
+  TimingFunction::LimitDirection limit_direction;
+  base::TimeDelta trimmed = keyframe_model->TrimTimeToCurrentIteration(
+      monotonic_time, &limit_direction);
+  curve->Tick(trimmed, keyframe_model->TargetProperty(), keyframe_model,
+              limit_direction);
 }
 
 bool KeyframeEffect::TickInternal(base::TimeTicks monotonic_time,
@@ -395,7 +403,8 @@ ValueType KeyframeEffect::GetTargetValue(int target_property,
   }
   const auto* curve = AnimationTraits<ValueType>::ToDerivedCurve(
       running_keyframe_model->curve());
-  return curve->GetValue(GetEndTime(running_keyframe_model));
+  return curve->GetTransformedValue(GetEndTime(running_keyframe_model),
+                                    gfx::TimingFunction::LimitDirection::RIGHT);
 }
 
 }  // namespace gfx

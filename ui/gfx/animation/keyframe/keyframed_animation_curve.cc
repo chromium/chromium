@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve-inl.h"
@@ -264,8 +265,15 @@ std::unique_ptr<AnimationCurve> KeyframedColorAnimationCurve::Clone() const {
 }
 
 SkColor KeyframedColorAnimationCurve::GetValue(base::TimeDelta t) const {
+  // Use GetTransformedValue instead.
+  NOTREACHED_NORETURN();
+}
+
+SkColor KeyframedColorAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
   KeyframesAndProgress values = GetKeyframesAndProgress(
-      keyframes_, timing_function_, scaled_duration(), t);
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
   return gfx::Tween::ColorValueBetween(values.progress,
                                        keyframes_[values.from]->Value(),
                                        keyframes_[values.to]->Value());
@@ -275,8 +283,10 @@ std::unique_ptr<AnimationCurve> KeyframedColorAnimationCurve::Retarget(
     base::TimeDelta t,
     SkColor new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 std::unique_ptr<KeyframedFloatAnimationCurve>
@@ -321,13 +331,22 @@ std::unique_ptr<AnimationCurve> KeyframedFloatAnimationCurve::Retarget(
     base::TimeDelta t,
     float new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 float KeyframedFloatAnimationCurve::GetValue(base::TimeDelta t) const {
+  // Use GetTransformedValue instead.
+  NOTREACHED_NORETURN();
+}
+
+float KeyframedFloatAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
   KeyframesAndProgress values = GetKeyframesAndProgress(
-      keyframes_, timing_function_, scaled_duration(), t);
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
   double from = keyframes_[values.from]->Value();
   double to = keyframes_[values.to]->Value();
   return from + (to - from) * values.progress;
@@ -374,8 +393,15 @@ std::unique_ptr<AnimationCurve> KeyframedTransformAnimationCurve::Clone()
 
 gfx::TransformOperations KeyframedTransformAnimationCurve::GetValue(
     base::TimeDelta t) const {
+  // Use GetTransformedValue instead.
+  NOTREACHED_NORETURN();
+}
+
+gfx::TransformOperations KeyframedTransformAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
   KeyframesAndProgress values = GetKeyframesAndProgress(
-      keyframes_, timing_function_, scaled_duration(), t);
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
   return keyframes_[values.to]->Value().Blend(keyframes_[values.from]->Value(),
                                               values.progress);
 }
@@ -404,8 +430,10 @@ std::unique_ptr<AnimationCurve> KeyframedTransformAnimationCurve::Retarget(
     base::TimeDelta t,
     const gfx::TransformOperations& new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 std::unique_ptr<KeyframedSizeAnimationCurve>
@@ -447,8 +475,15 @@ std::unique_ptr<AnimationCurve> KeyframedSizeAnimationCurve::Clone() const {
 }
 
 gfx::SizeF KeyframedSizeAnimationCurve::GetValue(base::TimeDelta t) const {
+  // Use GetTransformedValue instead.
+  NOTREACHED_NORETURN();
+}
+
+gfx::SizeF KeyframedSizeAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
   KeyframesAndProgress values = GetKeyframesAndProgress(
-      keyframes_, timing_function_, scaled_duration(), t);
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
   return gfx::Tween::SizeFValueBetween(values.progress,
                                        keyframes_[values.from]->Value(),
                                        keyframes_[values.to]->Value());
@@ -458,8 +493,10 @@ std::unique_ptr<AnimationCurve> KeyframedSizeAnimationCurve::Retarget(
     base::TimeDelta t,
     const gfx::SizeF& new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 std::unique_ptr<KeyframedRectAnimationCurve>
@@ -501,8 +538,15 @@ std::unique_ptr<AnimationCurve> KeyframedRectAnimationCurve::Clone() const {
 }
 
 gfx::Rect KeyframedRectAnimationCurve::GetValue(base::TimeDelta t) const {
+  // Use GetTransformedValue instead.
+  NOTREACHED_NORETURN();
+}
+
+gfx::Rect KeyframedRectAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
   KeyframesAndProgress values = GetKeyframesAndProgress(
-      keyframes_, timing_function_, scaled_duration(), t);
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
   return gfx::Tween::RectValueBetween(values.progress,
                                       keyframes_[values.from]->Value(),
                                       keyframes_[values.to]->Value());
@@ -512,8 +556,10 @@ std::unique_ptr<AnimationCurve> KeyframedRectAnimationCurve::Retarget(
     base::TimeDelta t,
     const gfx::Rect& new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 bool SufficientlyEqual(float lhs, float rhs) {

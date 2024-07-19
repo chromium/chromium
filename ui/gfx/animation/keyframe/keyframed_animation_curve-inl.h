@@ -173,15 +173,13 @@ KeyframesAndProgress GetKeyframesAndProgress(
     const std::vector<std::unique_ptr<KeyframeType>>& keyframes,
     const std::unique_ptr<gfx::TimingFunction>& timing_function,
     double scaled_duration,
-    base::TimeDelta time) {
+    base::TimeDelta time,
+    gfx::TimingFunction::LimitDirection limit_direction) {
   if (keyframes.size() == 1) {
     return {0, 0, 1};
   }
   base::TimeDelta start_time = keyframes.front()->Time() * scaled_duration;
   base::TimeDelta end_time = keyframes.back()->Time() * scaled_duration;
-  gfx::TimingFunction::LimitDirection limit_direction =
-      time < start_time ? gfx::TimingFunction::LimitDirection::LEFT
-                        : gfx::TimingFunction::LimitDirection::RIGHT;
   time = std::clamp(time, start_time, end_time);
   base::TimeDelta transformed_time = TransformedAnimationTime(
       keyframes, timing_function, scaled_duration, time, limit_direction);

@@ -9,11 +9,14 @@
 
 namespace cc {
 
-void FilterAnimationCurve::Tick(base::TimeDelta t,
-                                int property_id,
-                                gfx::KeyframeModel* keyframe_model) const {
+void FilterAnimationCurve::Tick(
+    base::TimeDelta t,
+    int property_id,
+    gfx::KeyframeModel* keyframe_model,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
   if (target_) {
-    target_->OnFilterAnimated(GetValue(t), property_id, keyframe_model);
+    target_->OnFilterAnimated(GetTransformedValue(t, limit_direction),
+                              property_id, keyframe_model);
   }
 }
 
@@ -93,10 +96,18 @@ std::unique_ptr<gfx::AnimationCurve> KeyframedFilterAnimationCurve::Clone()
   return std::move(to_return);
 }
 
+// Use GetTransformedValue instead. This method is for animation curves that
+// do not use timing functions.
 FilterOperations KeyframedFilterAnimationCurve::GetValue(
     base::TimeDelta t) const {
+  NOTREACHED_NORETURN();
+}
+
+FilterOperations KeyframedFilterAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
   KeyframesAndProgress values = GetKeyframesAndProgress(
-      keyframes_, timing_function_, scaled_duration(), t);
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
   return keyframes_[values.to]->Value().Blend(keyframes_[values.from]->Value(),
                                               values.progress);
 }

@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -45,9 +46,11 @@ class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
   virtual int Type() const = 0;
   virtual const char* TypeName() const = 0;
   virtual std::unique_ptr<AnimationCurve> Clone() const = 0;
-  virtual void Tick(base::TimeDelta t,
-                    int property_id,
-                    KeyframeModel* keyframe_model) const = 0;
+  virtual void Tick(
+      base::TimeDelta t,
+      int property_id,
+      KeyframeModel* keyframe_model,
+      gfx::TimingFunction::LimitDirection limit_direction) const = 0;
 
   // Returns true if this animation preserves axis alignment.
   virtual bool PreservesAxisAlignment() const;
@@ -61,34 +64,43 @@ class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
   virtual base::TimeDelta TickInterval() const;
 };
 
-#define DECLARE_ANIMATION_CURVE_BODY(T, Name)                                \
- public:                                                                     \
-  static const Name##AnimationCurve* To##Name##AnimationCurve(               \
-      const AnimationCurve* c);                                              \
-  static Name##AnimationCurve* To##Name##AnimationCurve(AnimationCurve* c);  \
-  class Target {                                                             \
-   public:                                                                   \
-    virtual ~Target() = default;                                             \
-    virtual void On##Name##Animated(const T& value,                          \
-                                    int target_property_id,                  \
-                                    gfx::KeyframeModel* keyframe_model) = 0; \
-  };                                                                         \
-  ~Name##AnimationCurve() override = default;                                \
-  virtual T GetValue(base::TimeDelta t) const = 0;                           \
-  void Tick(base::TimeDelta t, int property_id,                              \
-            gfx::KeyframeModel* keyframe_model) const override;              \
-  void set_target(Target* target) {                                          \
-    target_ = target;                                                        \
-  }                                                                          \
-  int Type() const override;                                                 \
-  const char* TypeName() const override;                                     \
-                                                                             \
- protected:                                                                  \
-  Target* target() const {                                                   \
-    return target_;                                                          \
-  }                                                                          \
-                                                                             \
- private:                                                                    \
+// Two methods are provided for sampling curves: GetValue and
+// GetTransformedValue. Use GetTransformedValue when a timing function is
+// being applied to the sampled animation curve.
+// RAW_PTR_EXCLUSION: #macro
+#define DECLARE_ANIMATION_CURVE_BODY(T, Name)                                 \
+ public:                                                                      \
+  static const Name##AnimationCurve* To##Name##AnimationCurve(                \
+      const AnimationCurve* c);                                               \
+  static Name##AnimationCurve* To##Name##AnimationCurve(AnimationCurve* c);   \
+  class Target {                                                              \
+   public:                                                                    \
+    virtual ~Target() = default;                                              \
+    virtual void On##Name##Animated(const T& value,                           \
+                                    int target_property_id,                   \
+                                    gfx::KeyframeModel* keyframe_model) = 0;  \
+  };                                                                          \
+  ~Name##AnimationCurve() override = default;                                 \
+  virtual T GetValue(base::TimeDelta t) const = 0;                            \
+  virtual T GetTransformedValue(                                              \
+      base::TimeDelta t, gfx::TimingFunction::LimitDirection limit_direction) \
+      const = 0;                                                              \
+  void Tick(base::TimeDelta t, int property_id,                               \
+            gfx::KeyframeModel* keyframe_model,                               \
+            gfx::TimingFunction::LimitDirection limit_direction =             \
+                gfx::TimingFunction::LimitDirection::RIGHT) const override;   \
+  void set_target(Target* target) {                                           \
+    target_ = target;                                                         \
+  }                                                                           \
+  int Type() const override;                                                  \
+  const char* TypeName() const override;                                      \
+                                                                              \
+ protected:                                                                   \
+  Target* target() const {                                                    \
+    return target_;                                                           \
+  }                                                                           \
+                                                                              \
+ private:                                                                     \
   raw_ptr<Target, DanglingUntriaged> target_ = nullptr;
 
 class GFX_KEYFRAME_ANIMATION_EXPORT ColorAnimationCurve
