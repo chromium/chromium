@@ -313,6 +313,19 @@ void ManifestManager::ResolveCallbacks(Result result) {
   Vector<InternalRequestManifestCallback> callbacks;
   callbacks.swap(pending_callbacks_);
 
+  // URLs that are too long are silently truncated by the mojo serialization.
+  // Since that might violate invariants the manifest is expected to have, check
+  // if any URLs would be too long and return an error instead if that is the
+  // case.
+  const bool has_overlong_urls =
+      result.manifest().manifest_url.GetString().length() > url::kMaxURLChars ||
+      result.manifest().id.GetString().length() > url::kMaxURLChars ||
+      result.manifest().start_url.GetString().length() > url::kMaxURLChars ||
+      result.manifest().scope.GetString().length() > url::kMaxURLChars;
+  if (has_overlong_urls) {
+    result = Result(mojom::blink::ManifestRequestResult::kUnexpectedFailure);
+  }
+
   const Result* result_ptr = nullptr;
   if (result.result() == mojom::blink::ManifestRequestResult::kSuccess) {
     cached_result_ = std::move(result);
