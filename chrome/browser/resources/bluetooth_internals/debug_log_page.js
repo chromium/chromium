@@ -36,9 +36,7 @@ export class DebugLogPage extends Page {
     this.btsnoopInterface_ = null;
 
     // <if expr="chromeos_ash">
-    this.pageDiv.appendChild(
-        document.importNode($('btsnoop-template').content, true /* deep */));
-    this.setUpBtmonButton();
+    this.prepareBtsnoopTemplate();
     // </if>
 
     this.bluetoothInternalsHandler_.getDebugLogsChangeHandler().then(
@@ -119,5 +117,17 @@ export class DebugLogPage extends Page {
     }
     this.setBtmonButtonText('Start snoop');
     this.btsnoopInterface_ = null;
+  }
+
+  async prepareBtsnoopTemplate() {
+    const {enabled} =
+        await this.bluetoothInternalsHandler_.isBtsnoopFeatureEnabled();
+    if (!enabled) {
+      return;
+    }
+
+    this.pageDiv.appendChild(
+        document.importNode($('btsnoop-template').content, true /* deep */));
+    this.setUpBtmonButton();
   }
 }

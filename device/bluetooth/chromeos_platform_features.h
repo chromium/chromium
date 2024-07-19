@@ -19,6 +19,10 @@ DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kBluetoothFlossCoredump);
 // Enables/disables the bluetooth telephony feature for floss
 DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kBluetoothFlossTelephony);
 
+// Enables/disables the option to collect btsnoop log from
+// chrome://bluetooth-internals
+DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kBluetoothBtsnoopInternals);
+
 }  // namespace chromeos::bluetooth::features
 
 #endif  // DEVICE_BLUETOOTH_CHROMEOS_PLATFORM_FEATURES_H_

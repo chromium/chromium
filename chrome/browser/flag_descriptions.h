@@ -3556,6 +3556,9 @@ extern const char kAutocorrectUseReplaceSurroundingTextDescription[];
 extern const char kBluetoothAudioLEAudioOnlyName[];
 extern const char kBluetoothAudioLEAudioOnlyDescription[];
 
+extern const char kBluetoothBtsnoopInternalsName[];
+extern const char kBluetoothBtsnoopInternalsDescription[];
+
 extern const char kBluetoothFlossTelephonyName[];
 extern const char kBluetoothFlossTelephonyDescription[];
 

@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -27,6 +28,7 @@
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "device/bluetooth/chromeos_platform_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -245,6 +247,17 @@ void BluetoothInternalsHandler::StartBtsnoop(StartBtsnoopCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 #else
   std::move(callback).Run(mojo::NullRemote());
+#endif
+}
+
+void BluetoothInternalsHandler::IsBtsnoopFeatureEnabled(
+    IsBtsnoopFeatureEnabledCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool enabled = base::FeatureList::IsEnabled(
+      chromeos::bluetooth::features::kBluetoothBtsnoopInternals);
+  std::move(callback).Run(enabled);
+#else
+  std::move(callback).Run(false);
 #endif
 }
 

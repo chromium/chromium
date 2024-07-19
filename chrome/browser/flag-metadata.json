@@ -1004,6 +1004,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "bluetooth-btsnoop-internals",
+    "owners": ["apusaka@chromium.org", "chromeos-bt-team@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "bluetooth-coredump",
     "owners": ["mmandlik@chromium.org", "chromeos-bt-team@google.com"],
     "expiry_milestone": 120

@@ -6130,6 +6130,13 @@ const char kBluetoothAudioLEAudioOnlyDescription[] =
     "(A2DP, HFP, AVRCP). This is used for prototyping and demonstration "
     "purposes.";
 
+const char kBluetoothBtsnoopInternalsName[] =
+    "Enables btsnoop collection in chrome://bluetooth-internals";
+const char kBluetoothBtsnoopInternalsDescription[] =
+    "Enables bluetooth traffic (btsnoop) collection via the page "
+    "chrome://bluetooth-internals. Btsnoop logs are essential for debugging "
+    "bluetooth issues.";
+
 const char kBluetoothFlossTelephonyName[] = "Bluetooth Floss Telephony";
 const char kBluetoothFlossTelephonyDescription[] =
     "Enable Floss to create a Bluetooth HID device that allows applications to "

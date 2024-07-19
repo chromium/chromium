@@ -58,6 +58,10 @@ interface BluetoothInternalsHandler {
   // chrome/browser/ash/bluetooth/bluetooth_log_controller.cc.
   // On other platforms, it immediately returns null.
   StartBtsnoop() => (pending_remote<BluetoothBtsnoop>? btsnoop);
+
+  // Returns whether btsnoop feature is enabled via flags.
+  // When the flag is stable we can remove this.
+  IsBtsnoopFeatureEnabled() => (bool enabled);
 };
 
 // Interface to control the btsnoop process returned by

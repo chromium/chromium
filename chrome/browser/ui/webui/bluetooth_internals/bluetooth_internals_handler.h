@@ -70,6 +70,8 @@ class BluetoothInternalsHandler
   void RestartSystemBluetooth(RestartSystemBluetoothCallback callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void StartBtsnoop(StartBtsnoopCallback callback) override;
+  void IsBtsnoopFeatureEnabled(
+      IsBtsnoopFeatureEnabledCallback callback) override;
 
  private:
   void OnGetAdapter(GetAdapterCallback callback,
