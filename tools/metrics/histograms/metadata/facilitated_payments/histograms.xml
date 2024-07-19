@@ -227,23 +227,6 @@ reviewer.
 </histogram>
 
 <histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.Transaction.Latency"
-    enum="FacilitatedPayments.TransactionResult" expires_after="2024-09-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    On a webpage that is eligible for facilitated payments, this histogram logs
-    the latency of the overall transaction from the time the FOP selector is
-    shown to the user to the time the transaction result is received from Google
-    Play Services. [Frequency] Logged at most once per page load. [Trigger] FOP
-    selector is shown to the user and user takes action on it.
-  </summary>
-  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
-</histogram>
-
-<histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.Transaction.Result"
     enum="FacilitatedPayments.TransactionResult" expires_after="2024-09-01">
   <owner>siashah@google.com</owner>
@@ -257,6 +240,28 @@ reviewer.
     is shown to the user and user takes action on it.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.Transaction.{TransactionResult}.Latency"
+    enum="FacilitatedPayments.TransactionResult" expires_after="2024-09-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for facilitated payments, this histogram logs
+    the latency of an overall transaction from the time the FOP selector is
+    shown to the user to the time the transaction is completed with the result
+    as {TransactionResult}. [Frequency] Logged at most once per page load.
+    [Trigger] FOP selector is shown to the user and user takes action on it.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="TransactionResult">
+    <variant name=".Abandoned" summary="Abandoned transaction"/>
+    <variant name=".Failed" summary="Failed transaction"/>
+    <variant name=".Success" summary="Successful transaction"/>
+  </token>
 </histogram>
 
 </histograms>

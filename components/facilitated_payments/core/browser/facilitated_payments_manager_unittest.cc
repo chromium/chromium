@@ -1674,7 +1674,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       /*sample=*/TransactionResult::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Latency",
+      "FacilitatedPayments.Pix.Transaction.Success.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
 }
@@ -1701,7 +1701,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       /*sample=*/TransactionResult::kAbandoned,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Latency",
+      "FacilitatedPayments.Pix.Transaction.Abandoned.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
 }
@@ -1728,7 +1728,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       /*sample=*/TransactionResult::kFailed,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Latency",
+      "FacilitatedPayments.Pix.Transaction.Failed.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
 }
@@ -1749,7 +1749,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       /*sample=*/TransactionResult::kFailed,
       /*expected_bucket_count=*/0);
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Latency",
+      "FacilitatedPayments.Pix.Transaction.Failed.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/0);
 }

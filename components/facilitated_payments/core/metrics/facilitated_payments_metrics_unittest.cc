@@ -91,7 +91,7 @@ TEST(FacilitatedPaymentsMetricsTest, LogFopSelectorShown) {
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult) {
+TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Success) {
   base::HistogramTester histogram_tester;
 
   LogTransactionResult(TransactionResult::kSuccess, base::Milliseconds(10));
@@ -101,7 +101,37 @@ TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult) {
       /*sample=*/TransactionResult::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Latency",
+      "FacilitatedPayments.Pix.Transaction.Success.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Failed) {
+  base::HistogramTester histogram_tester;
+
+  LogTransactionResult(TransactionResult::kFailed, base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Result",
+      /*sample=*/TransactionResult::kFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Failed.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Abandoned) {
+  base::HistogramTester histogram_tester;
+
+  LogTransactionResult(TransactionResult::kAbandoned, base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Result",
+      /*sample=*/TransactionResult::kAbandoned,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Abandoned.Latency",
       /*sample=*/10,
       /*expected_bucket_count=*/1);
 }

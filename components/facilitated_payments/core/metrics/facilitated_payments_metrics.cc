@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 
 namespace payments::facilitated {
@@ -64,8 +65,22 @@ void LogTransactionResult(TransactionResult result, base::TimeDelta duration) {
   // FacilitatedPaymentsType enum.
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.Transaction.Result",
                                 result);
-  base::UmaHistogramLongTimes("FacilitatedPayments.Pix.Transaction.Latency",
-                              duration);
+  std::string latency_histogram_transaction_result_type;
+  switch (result) {
+    case TransactionResult::kSuccess:
+      latency_histogram_transaction_result_type = "Success";
+      break;
+    case TransactionResult::kAbandoned:
+      latency_histogram_transaction_result_type = "Abandoned";
+      break;
+    case TransactionResult::kFailed:
+      latency_histogram_transaction_result_type = "Failed";
+      break;
+  }
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.Pix.Transaction.",
+                    latency_histogram_transaction_result_type, ".Latency"}),
+      duration);
 }
 
 }  // namespace payments::facilitated
