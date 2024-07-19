@@ -261,6 +261,8 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected)
   if (!is_network_connected) {
     textfield_->SetEnabled(false);
     textfield_->SetPaintToLayer();
+    // Make the layer transparent.
+    textfield_->layer()->SetFillsBoundsOpaquely(false);
     textfield_->layer()->SetOpacity(kOfflineStateOpacity);
   }
   // Shrink the inactive `textfield_` ring so it's not touching the other views
