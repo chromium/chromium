@@ -58,9 +58,7 @@ size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
 ClientTagBasedModelTypeProcessor::ClientTagBasedModelTypeProcessor(
     ModelType type,
     const base::RepeatingClosure& dump_stack)
-    : type_(type), dump_stack_(dump_stack) {
-  ResetState(CLEAR_METADATA);
-}
+    : type_(type), dump_stack_(dump_stack) {}
 
 ClientTagBasedModelTypeProcessor::~ClientTagBasedModelTypeProcessor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -390,7 +388,6 @@ void ClientTagBasedModelTypeProcessor::ConnectSync(
 void ClientTagBasedModelTypeProcessor::DisconnectSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DUMP_WILL_BE_CHECK(IsConnected());
-  DUMP_WILL_BE_CHECK(!model_error_);
 
   DVLOG(1) << "Disconnecting sync for " << ModelTypeToDebugString(type_);
   weak_ptr_factory_for_worker_.InvalidateWeakPtrs();
@@ -618,16 +615,19 @@ base::Time ClientTagBasedModelTypeProcessor::GetEntityModificationTime(
 
 void ClientTagBasedModelTypeProcessor::NudgeForCommitIfNeeded() {
   // Don't bother sending anything if there's no one to send to.
-  if (!IsConnected())
+  if (!IsConnected()) {
     return;
+  }
 
   // Don't send anything if the type is not ready to handle commits.
-  if (!entity_tracker_)
+  if (!entity_tracker_) {
     return;
+  }
 
   // Nudge worker if there are any entities with local changes.0
-  if (entity_tracker_->HasLocalChanges())
+  if (entity_tracker_->HasLocalChanges()) {
     worker_->NudgeForCommit();
+  }
 }
 
 void ClientTagBasedModelTypeProcessor::GetLocalChanges(
@@ -1202,9 +1202,6 @@ void ClientTagBasedModelTypeProcessor::RemoveEntity(
 
 void ClientTagBasedModelTypeProcessor::ResetState(
     SyncStopMetadataFate metadata_fate) {
-  // This should reset all mutable fields (except for |bridge_|).
-  worker_.reset();
-
   switch (metadata_fate) {
     case KEEP_METADATA:
       break;
@@ -1213,8 +1210,9 @@ void ClientTagBasedModelTypeProcessor::ResetState(
       break;
   }
 
-  // Do not let any delayed callbacks to be called.
-  weak_ptr_factory_for_worker_.InvalidateWeakPtrs();
+  if (IsConnected()) {
+    DisconnectSync();
+  }
 }
 
 void ClientTagBasedModelTypeProcessor::HasUnsyncedData(

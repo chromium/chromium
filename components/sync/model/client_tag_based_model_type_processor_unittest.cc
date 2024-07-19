@@ -1742,15 +1742,17 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldStopAndKeepMetadata) {
   type_processor()->OnSyncStopping(KEEP_METADATA);
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
 
-  // The third item is added after disable.
+  // The third item is added while paused.
   WritePrefItem(bridge(), kKey3, kValue3);
 
   // Now we re-enable.
   OnSyncStarting();
   worker()->UpdateFromServer();
 
-  // Once we're ready to commit, only the newest items should be committed.
-  worker()->VerifyPendingCommits({{GetPrefHash(kKey3)}});
+  // The second item had a commit in progress, but it wasn't confirmed, so it
+  // should be re-committed. The third item was added while paused, so should
+  // get committed now.
+  worker()->VerifyPendingCommits({{GetPrefHash(kKey2), GetPrefHash(kKey3)}});
 }
 
 // Test proper handling of disable and re-enable.
