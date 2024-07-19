@@ -543,7 +543,7 @@ TEST_F(FileSystemOperationImplTest, TestMoveSuccessSrcFileAndOverwrite) {
       Move(src_file, dest_file, FileSystemOperation::CopyOrMoveOptionSet()));
   EXPECT_TRUE(FileExists("dest"));
 
-  EXPECT_EQ(1, change_observer()->get_and_reset_modify_file_count());
+  EXPECT_EQ(1, change_observer()->get_and_reset_create_file_from_count());
   EXPECT_EQ(1, change_observer()->get_and_reset_remove_file_count());
   EXPECT_TRUE(change_observer()->HasNoChange());
 

@@ -114,6 +114,14 @@ void LocalFileChangeTracker::OnCreateFileFrom(const FileSystemURL& url,
                                SYNC_FILE_TYPE_FILE));
 }
 
+void LocalFileChangeTracker::OnMoveFileFrom(const FileSystemURL& url,
+                                            const FileSystemURL& src) {
+  RecordChange(url, FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
+                               SYNC_FILE_TYPE_FILE));
+  RecordChange(src,
+               FileChange(FileChange::FILE_CHANGE_DELETE, SYNC_FILE_TYPE_FILE));
+}
+
 void LocalFileChangeTracker::OnRemoveFile(const FileSystemURL& url) {
   RecordChange(url, FileChange(FileChange::FILE_CHANGE_DELETE,
                                SYNC_FILE_TYPE_FILE));

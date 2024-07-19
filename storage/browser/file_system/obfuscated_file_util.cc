@@ -682,17 +682,12 @@ base::File::Error ObfuscatedFileUtil::CopyOrMoveFile(
   if (error != base::File::FILE_OK)
     return error;
 
-  if (overwrite) {
-    context->change_observers()->Notify(&FileChangeObserver::OnModifyFile,
-                                        dest_url);
-  } else {
+  if (copy) {
     context->change_observers()->Notify(&FileChangeObserver::OnCreateFileFrom,
                                         dest_url, src_url);
-  }
-
-  if (!copy) {
-    context->change_observers()->Notify(&FileChangeObserver::OnRemoveFile,
-                                        src_url);
+  } else {
+    context->change_observers()->Notify(&FileChangeObserver::OnMoveFileFrom,
+                                        dest_url, src_url);
     TouchDirectory(db, src_file_info.parent_id);
   }
 

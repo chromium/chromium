@@ -38,6 +38,21 @@
 
 namespace content {
 
+namespace {
+
+storage::FileSystemURL ToFileSystemURL(storage::FileSystemContext& context,
+                                       const storage::FileSystemURL& base_url,
+                                       const base::FilePath& absolute_path) {
+  storage::FileSystemURL result = context.CreateCrackedFileSystemURL(
+      base_url.storage_key(), base_url.mount_type(), absolute_path);
+  if (base_url.bucket()) {
+    result.SetBucket(base_url.bucket().value());
+  }
+  return result;
+}
+
+}  // namespace
+
 FileSystemAccessWatcherManager::Observation::Change::Change(
     storage::FileSystemURL url,
     FileSystemAccessChangeSource::ChangeInfo change_info)
@@ -156,15 +171,66 @@ void FileSystemAccessWatcherManager::OnRawChange(
     return;
   }
 
+  if (change_info != FileSystemAccessChangeSource::ChangeInfo()) {
+    // If non-empty ChangeInfo exists, this change should not be an error.
+    CHECK(!error);
+  }
+  // For ChangeType::kMoved, ChangeInfo.moved_from_path is expected.
+  bool is_move_event = change_info.change_type ==
+                       FileSystemAccessChangeSource::ChangeType::kMoved;
+  CHECK(!is_move_event || change_info.moved_from_path.has_value());
+  std::optional<storage::FileSystemURL> moved_from_url =
+      is_move_event ? std::make_optional(
+                          ToFileSystemURL(*manager()->context(), changed_url,
+                                          change_info.moved_from_path.value()))
+                    : std::nullopt;
+
   const std::optional<std::list<Observation::Change>> changes_or_error =
       error ? std::nullopt
             : std::make_optional(
                   std::list<Observation::Change>({{changed_url, change_info}}));
   for (auto& observation : observations_) {
-    if (observation.scope().Contains(changed_url)) {
-      observation.NotifyOfChanges(
-          changes_or_error, base::PassKey<FileSystemAccessWatcherManager>());
+    bool modified_url_in_scope = observation.scope().Contains(changed_url);
+    bool moved_from_url_in_scope =
+        is_move_event && observation.scope().Contains(moved_from_url.value());
+
+    if (!modified_url_in_scope && !moved_from_url_in_scope) {
+      continue;
     }
+
+    if (is_move_event) {
+      if (!moved_from_url_in_scope) {
+        // If a file/dir is moved into the scope, the change should be reported
+        // as ChangeType::kCreated.
+        FileSystemAccessChangeSource::ChangeInfo updated_change_info(
+            change_info.file_path_type,
+            FileSystemAccessChangeSource::ChangeType::kCreated,
+            change_info.modified_path);
+        observation.NotifyOfChanges(
+            std::list<Observation::Change>(
+                {{changed_url, std::move(updated_change_info)}}),
+            base::PassKey<FileSystemAccessWatcherManager>());
+        continue;
+      }
+      if (!modified_url_in_scope) {
+        // If a file/dir is moved out of the scope, the change should be
+        // reported as ChangeType::kDeleted.
+        FileSystemAccessChangeSource::ChangeInfo updated_change_info(
+            change_info.file_path_type,
+            FileSystemAccessChangeSource::ChangeType::kDeleted,
+            change_info.moved_from_path.value());
+        observation.NotifyOfChanges(
+            std::list<Observation::Change>(
+                {{moved_from_url.value(), std::move(updated_change_info)}}),
+            base::PassKey<FileSystemAccessWatcherManager>());
+        continue;
+      }
+    }
+
+    // The default case, including move within scope, should notify the changes
+    // as is.
+    observation.NotifyOfChanges(
+        changes_or_error, base::PassKey<FileSystemAccessWatcherManager>());
   }
 }
 

@@ -67,11 +67,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileChangeObserver {
   virtual ~FileChangeObserver() = default;
 
   virtual void OnCreateFile(const FileSystemURL& url) = 0;
+  // File copy
   virtual void OnCreateFileFrom(const FileSystemURL& url,
                                 const FileSystemURL& src) = 0;
+  // File move
+  virtual void OnMoveFileFrom(const FileSystemURL& url,
+                              const FileSystemURL& src) = 0;
   virtual void OnRemoveFile(const FileSystemURL& url) = 0;
   virtual void OnModifyFile(const FileSystemURL& url) = 0;
-
   virtual void OnCreateDirectory(const FileSystemURL& url) = 0;
   virtual void OnRemoveDirectory(const FileSystemURL& url) = 0;
 };

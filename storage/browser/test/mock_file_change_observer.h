@@ -29,6 +29,8 @@ class MockFileChangeObserver : public FileChangeObserver {
   void OnCreateFile(const FileSystemURL& url) override;
   void OnCreateFileFrom(const FileSystemURL& url,
                         const FileSystemURL& src) override;
+  void OnMoveFileFrom(const FileSystemURL& url,
+                      const FileSystemURL& src) override;
   void OnRemoveFile(const FileSystemURL& url) override;
   void OnModifyFile(const FileSystemURL& url) override;
   void OnCreateDirectory(const FileSystemURL& url) override;

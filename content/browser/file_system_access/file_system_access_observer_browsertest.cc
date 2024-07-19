@@ -688,18 +688,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
   // TODO(crbug.com/321980270): Support change types for the local file system
   // on more platforms.
-  //
-  // TODO(crbug.com/340584120): Consider reporting a consistent change type when
-  // writing to a file via a WritableFileStream. On the local file system,
-  // changes are naively considered "created" events because the swap file is
-  // moved over the target file. Meanwhile, the BucketFS intentionally reports
-  // the move as a modification if the move overwrote an existing file.
   const std::string expected_change_type =
-      SupportsChangeInfo()
-          ? (GetTestFileSystemType() == TestFileSystemType::kBucket
-                 ? "modified"
-                 : "appeared")
-          : "unknown";
+      SupportsChangeInfo() ? "appeared" : "unknown";
   EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
               testing::StrEq(expected_change_type));
 }
@@ -911,11 +901,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
   auto& record_dict = records.GetList().front().GetDict();
   const std::string expected_change_type =
-      SupportsChangeInfo()
-          ? (GetTestFileSystemType() == TestFileSystemType::kBucket
-                 ? "moved"
-                 : "appeared")
-          : "unknown";
+      SupportsChangeInfo() ? "appeared" : "unknown";
   EXPECT_THAT(*record_dict.FindString("type"),
               testing::StrEq(expected_change_type));
   if (SupportsReportingModifiedPath()) {
@@ -952,19 +938,93 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
   auto& record_dict = records.GetList().front().GetDict();
-  // TODO(crbug.com/40105284): Consider reporting a consistent change
-  // type when moving a file out of the watched scope. On the BucketFS,
-  // changes are considered "disappeared" events while on local file system, it
-  // is reported as "moved".
   const std::string expected_change_type =
       SupportsChangeInfo() ? "disappeared" : "unknown";
+  EXPECT_THAT(*record_dict.FindString("type"),
+              testing::StrEq(expected_change_type));
+  if (SupportsReportingModifiedPath()) {
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::ElementsAre("oldFile.txt"));
+  } else {
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::IsEmpty());
+  }
+  EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    FileSystemAccessObserverBrowserTest,
+    NonRecursiveWatchReportsDisappearedWhenDirectDescendentMovedToNonDirectDescendent) {
+  base::FilePath dir_path = CreateDirectoryToBePicked();
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         GET_DIRECTORY(GetTestFileSystemType())
+         // Move dir/oldFile.txt to dir/subdir/newFile.txt while watching
+         // dir/ non-recursively.
+         "const subdir = "
+         "    await dir.getDirectoryHandle('subdir', { create: true });"
+         "const oldFile = "
+         "    await dir.getFileHandle('oldFile.txt', { create: true });"
+         "const observer = new FileSystemObserver(onChange);"
+         "await observer.observe(dir, { recursive: false });"
+         "await oldFile.move(subdir, 'newFile.txt');"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.GetList().front().GetDict();
+  const std::string expected_change_type =
+      SupportsChangeInfo() ? "disappeared" : "unknown";
+  EXPECT_THAT(*record_dict.FindString("type"),
+              testing::StrEq(expected_change_type));
+  if (SupportsReportingModifiedPath()) {
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::ElementsAre("oldFile.txt"));
+  } else {
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::IsEmpty());
+  }
+  EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    FileSystemAccessObserverBrowserTest,
+    NonRecursiveWatchReportsAppearedWhenDirectDescendentMovedFromNonDirectDescendent) {
+  base::FilePath dir_path = CreateDirectoryToBePicked();
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         GET_DIRECTORY(GetTestFileSystemType())
+         // Move dir/subdir/oldFile.txt to dir/newFile.txt while watching
+         // dir/ non-recursively.
+         "const subdir = "
+         "    await dir.getDirectoryHandle('subdir', { create: true });"
+         "const oldFile = "
+         "    await subdir.getFileHandle('oldFile.txt', { create: true });"
+         "const observer = new FileSystemObserver(onChange);"
+         "await observer.observe(dir, { recursive: false });"
+         "await oldFile.move(dir, 'newFile.txt');"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.GetList().front().GetDict();
+  const std::string expected_change_type =
+      SupportsChangeInfo() ? "appeared" : "unknown";
   EXPECT_THAT(*record_dict.FindString("type"),
               testing::StrEq(expected_change_type));
   if (SupportsReportingModifiedPath()) {
     // Moved-to path is out of the watched scope, so moved-from path is reported
     // as `relativePathComponents`.
     EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
-                testing::ElementsAre("oldFile.txt"));
+                testing::ElementsAre("newFile.txt"));
   } else {
     EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
                 testing::IsEmpty());

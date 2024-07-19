@@ -789,37 +789,6 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeType) {
   }));
 }
 
-TEST_F(FileSystemAccessWatcherManagerTest, ErrorTakesPrecedenceOverChangeType) {
-  base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
-
-  FakeChangeSource source(
-      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
-      file_system_context_);
-  watcher_manager().RegisterSource(&source);
-  EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
-
-  // Attempting to observe a scope covered by `source` will use `source`.
-  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
-                                        blink::mojom::FileSystemAccessErrorPtr>>
-      get_observation_future;
-  watcher_manager().GetFileObservation(file_url,
-                                       get_observation_future.GetCallback());
-  ASSERT_TRUE(get_observation_future.Get().has_value());
-
-  ChangeAccumulator accumulator(get_observation_future.Take().value());
-  EXPECT_TRUE(
-      watcher_manager().HasObservationForTesting(accumulator.observation()));
-
-  base::FilePath path;
-  ChangeInfo change_info(FilePathType::kUnknown, ChangeType::kCreated, path);
-  source.Signal(/*relative_path=*/path, /*error=*/true, change_info);
-
-  EXPECT_THAT(accumulator.has_error(), testing::IsTrue());
-  EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
-}
-
 // TODO(crbug.com/321980129): Consider parameterizing these tests once
 // observing changes to other backends is supported.
 

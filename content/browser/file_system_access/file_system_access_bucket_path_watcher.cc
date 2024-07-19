@@ -63,6 +63,15 @@ void FileSystemAccessBucketPathWatcher::OnCreateFileFrom(
     const storage::FileSystemURL& src) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NotifyOfChange(url, /*error=*/false,
+                 ChangeInfo(FilePathType::kFile, ChangeType::kCreated,
+                            base::FilePath(url.virtual_path())));
+}
+
+void FileSystemAccessBucketPathWatcher::OnMoveFileFrom(
+    const storage::FileSystemURL& url,
+    const storage::FileSystemURL& src) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NotifyOfChange(url, /*error=*/false,
                  ChangeInfo(FilePathType::kFile, ChangeType::kMoved,
                             base::FilePath(url.virtual_path()),
                             base::FilePath(src.virtual_path())));
