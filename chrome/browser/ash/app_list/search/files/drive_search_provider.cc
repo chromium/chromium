@@ -52,44 +52,6 @@ void LogStatus(Status status) {
                                 status);
 }
 
-// Reparents file paths.
-std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> GetFileInfo(
-    std::vector<drivefs::mojom::QueryItemPtr> items,
-    base::FilePath mount_path) {
-  std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> item_info;
-
-  for (const auto& item : items) {
-    // Strip leading separators so that the path can be reparented.
-    const auto& path = item->path;
-    DCHECK(!path.value().empty());
-    const base::FilePath relative_path =
-        !path.value().empty() && base::FilePath::IsSeparator(path.value()[0])
-            ? base::FilePath(path.value().substr(1))
-            : path;
-
-    // Reparent the file path into the user's DriveFS mount.
-    DCHECK(!relative_path.IsAbsolute());
-    base::FilePath reparented_path = mount_path.Append(relative_path.value());
-
-    std::optional<base::Time> last_accessed;
-    // DriveFS surfaces atime in the virtual vilesystem as
-    // `last_viewed_by_me_time` (http://go/lkrez), which does not account for
-    // "last viewed by other users".
-    // We can use `last_viewed_by_me_time` from the metadata response directly
-    // as it should be the same (http://go/yufhv).
-    // This avoids needing to perform I/O to stat the file.
-    if (base::Time viewed_time = item->metadata->last_viewed_by_me_time;
-        !viewed_time.is_null()) {
-      last_accessed = viewed_time;
-    }
-
-    item_info.push_back(std::make_unique<DriveSearchProvider::FileInfo>(
-        reparented_path, std::move(item->metadata), last_accessed));
-  }
-
-  return item_info;
-}
-
 }  // namespace
 
 DriveSearchProvider::FileInfo::FileInfo(
@@ -170,26 +132,52 @@ void DriveSearchProvider::OnSearchDriveByFileName(
       last_query_.size() < kMinQuerySizeForSharedFiles) {
     std::vector<drivefs::mojom::QueryItemPtr> filtered_items;
     for (auto& item : items) {
-      if (!item->metadata->shared)
+      if (!item->metadata->shared) {
         filtered_items.push_back(std::move(item));
+      }
     }
     items = std::move(filtered_items);
   }
 
-  if (!drive_service_->IsMounted())
+  if (!drive_service_->IsMounted()) {
     return;
+  }
 
   base::UmaHistogramTimes("Apps.AppList.DriveSearchProvider.DriveFSLatency",
                           base::TimeTicks::Now() - query_start_time_);
   results_returned_time_ = base::TimeTicks::Now();
 
-  SetSearchResults(
-      GetFileInfo(std::move(items), drive_service_->GetMountPointPath()));
-}
+  base::FilePath mount_path = drive_service_->GetMountPointPath();
+  std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> item_info;
 
-void DriveSearchProvider::SetSearchResults(
-    std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> item_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& item : items) {
+    // Strip leading separators so that the path can be reparented.
+    const auto& path = item->path;
+    DCHECK(!path.value().empty());
+    const base::FilePath relative_path =
+        !path.value().empty() && base::FilePath::IsSeparator(path.value()[0])
+            ? base::FilePath(path.value().substr(1))
+            : path;
+
+    // Reparent the file path into the user's DriveFS mount.
+    DCHECK(!relative_path.IsAbsolute());
+    base::FilePath reparented_path = mount_path.Append(relative_path.value());
+
+    std::optional<base::Time> last_accessed;
+    // DriveFS surfaces atime in the virtual vilesystem as
+    // `last_viewed_by_me_time` (http://go/lkrez), which does not account for
+    // "last viewed by other users".
+    // We can use `last_viewed_by_me_time` from the metadata response directly
+    // as it should be the same (http://go/yufhv).
+    // This avoids needing to perform I/O to stat the file.
+    if (base::Time viewed_time = item->metadata->last_viewed_by_me_time;
+        !viewed_time.is_null()) {
+      last_accessed = viewed_time;
+    }
+
+    item_info.push_back(std::make_unique<DriveSearchProvider::FileInfo>(
+        reparented_path, std::move(item->metadata), last_accessed));
+  }
 
   SearchProvider::Results results;
   for (const auto& info : item_info) {

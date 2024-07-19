@@ -61,7 +61,6 @@ class DriveSearchProvider : public SearchProvider {
  private:
   void OnSearchDriveByFileName(drive::FileError error,
                                std::vector<drivefs::mojom::QueryItemPtr> items);
-  void SetSearchResults(std::vector<std::unique_ptr<FileInfo>> items);
   std::unique_ptr<FileResult> MakeResult(const base::FilePath& path,
                                          double relevance,
                                          FileResult::Type type,
