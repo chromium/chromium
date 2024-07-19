@@ -34,7 +34,7 @@ void ValidateNotification(const auto& new_result,
 }  // namespace
 
 TEST(PasswordStatusCheckResultAndroidTest, ResultToDict) {
-  auto result = std::make_unique<PasswordStatusCheckResultAndroid>();
+  auto result = std::make_unique<PasswordStatusCheckResultAndroid>(0);
   result->UpdateCompromisedPasswordCount(1);
   EXPECT_THAT(result->GetCompromisedPasswordsCount(), 1);
 
@@ -47,7 +47,7 @@ TEST(PasswordStatusCheckResultAndroidTest, ResultToDict) {
 }
 
 TEST(PasswordStatusCheckResultAndroidTest, ResultIsTrigger) {
-  auto result = std::make_unique<PasswordStatusCheckResultAndroid>();
+  auto result = std::make_unique<PasswordStatusCheckResultAndroid>(0);
 
   // When there is no leaked password, then notification should not be
   // triggered.
@@ -59,8 +59,8 @@ TEST(PasswordStatusCheckResultAndroidTest, ResultIsTrigger) {
 }
 
 TEST(PasswordStatusCheckResultAndroidTest, ResultWarrantsNewNotification) {
-  auto old_result = std::make_unique<PasswordStatusCheckResultAndroid>();
-  auto new_result = std::make_unique<PasswordStatusCheckResultAndroid>();
+  auto old_result = std::make_unique<PasswordStatusCheckResultAndroid>(0);
+  auto new_result = std::make_unique<PasswordStatusCheckResultAndroid>(0);
   ValidateNotification(new_result, old_result, false);
 
   // Compromised pwd count is 1 in new, but 0 in old -> warrants
@@ -85,7 +85,7 @@ TEST(PasswordStatusCheckResultAndroidTest, ResultWarrantsNewNotification) {
 }
 
 TEST(PasswordStatusCheckResultAndroidTest, CloneResult) {
-  auto result = std::make_unique<PasswordStatusCheckResultAndroid>();
+  auto result = std::make_unique<PasswordStatusCheckResultAndroid>(0);
   result->UpdateCompromisedPasswordCount(1);
 
   auto cloned_result = result->Clone();

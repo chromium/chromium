@@ -4,21 +4,34 @@
 
 #include "chrome/browser/ui/safety_hub/password_status_check_result_android.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
-PasswordStatusCheckResultAndroid::PasswordStatusCheckResultAndroid() = default;
+PasswordStatusCheckResultAndroid::PasswordStatusCheckResultAndroid(
+    int compromised_passwords_count)
+    : compromised_passwords_count_(compromised_passwords_count) {}
 PasswordStatusCheckResultAndroid::~PasswordStatusCheckResultAndroid() = default;
 
 PasswordStatusCheckResultAndroid::PasswordStatusCheckResultAndroid(
     const PasswordStatusCheckResultAndroid&) = default;
 PasswordStatusCheckResultAndroid& PasswordStatusCheckResultAndroid::operator=(
     const PasswordStatusCheckResultAndroid&) = default;
+
+// static
+std::optional<std::unique_ptr<SafetyHubService::Result>>
+PasswordStatusCheckResultAndroid::GetResult(const PrefService* pref_service) {
+  int compromised_passwords_count =
+      pref_service->GetInteger(prefs::kBreachedCredentialsCount);
+  return std::make_unique<PasswordStatusCheckResultAndroid>(
+      compromised_passwords_count);
+}
 
 void PasswordStatusCheckResultAndroid::UpdateCompromisedPasswordCount(
     int count) {
@@ -47,6 +60,12 @@ bool PasswordStatusCheckResultAndroid::WarrantsNewMenuNotification(
   std::optional<int> prev_count = previous_result_dict.FindInt(
       safety_hub::kSafetyHubCompromiedPasswordOriginsCount);
   if (!prev_count.has_value()) {
+    return false;
+  }
+
+  // If compromised_passwords_count_ is -1(default) or 0(after compromised
+  // passwords are fixed), the notification should not be shown.
+  if (compromised_passwords_count_ < 1) {
     return false;
   }
 

@@ -19,12 +19,13 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif
 namespace {
 SafetyHubModuleInfoElement::SafetyHubModuleInfoElement() = default;
 SafetyHubModuleInfoElement::~SafetyHubModuleInfoElement() = default;
@@ -48,7 +49,7 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     NotificationPermissionsReviewService* notification_permissions_service,
 #if !BUILDFLAG(IS_ANDROID)
     PasswordStatusCheckService* password_check_service,
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
     Profile* profile) {
   pref_service_ = std::move(pref_service);
   const base::Value::Dict& stored_notifications =
@@ -68,18 +69,21 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
   // method is called, so it is safe to use |base::Unretained| here.
   SetInfoElement(
       safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
-      MenuNotificationPriority::LOW, base::Days(10),
+      MenuNotificationPriority::LOW,
+      features::kRevokedPermissionsNotificationInterval.Get(),
       base::BindRepeating(&SafetyHubService::GetCachedResult,
                           base::Unretained(unused_site_permissions_service)),
       stored_notifications);
   SetInfoElement(
       safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
-      MenuNotificationPriority::LOW, base::Days(10),
+      MenuNotificationPriority::LOW,
+      features::kNotificationPermissionsNotificationInterval.Get(),
       base::BindRepeating(&SafetyHubService::GetCachedResult,
                           base::Unretained(notification_permissions_service)),
       stored_notifications);
   SetInfoElement(safety_hub::SafetyHubModuleType::SAFE_BROWSING,
-                 MenuNotificationPriority::MEDIUM, base::Days(90),
+                 MenuNotificationPriority::MEDIUM,
+                 features::kSafeBrowsingNotificationInterval.Get(),
                  base::BindRepeating(&SafetyHubSafeBrowsingResult::GetResult,
                                      base::Unretained(pref_service)),
                  stored_notifications);
@@ -103,7 +107,8 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
                                "passwords");
     SetInfoElement(
         safety_hub::SafetyHubModuleType::PASSWORDS,
-        MenuNotificationPriority::HIGH, base::Days(0),
+        MenuNotificationPriority::HIGH,
+        features::kPasswordCheckNotificationInterval.Get(),
         base::BindRepeating(&PasswordStatusCheckService::GetCachedResult,
                             base::Unretained(password_check_service)),
         stored_notifications);

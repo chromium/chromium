@@ -733,6 +733,31 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int>
     kSafetyCheckNotificationPermissionsLowEnagementLimit;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kPasswordCheckNotificationIntervalName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kRevokedPermissionsNotificationIntervalName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kNotificationPermissionsNotificationIntervalName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kSafeBrowsingNotificationIntervalName[];
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kPasswordCheckNotificationInterval;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kRevokedPermissionsNotificationInterval;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kNotificationPermissionsNotificationInterval;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kSafeBrowsingNotificationInterval;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kSchedulerConfiguration);
 #endif

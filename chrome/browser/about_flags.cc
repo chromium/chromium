@@ -3289,6 +3289,23 @@ const FeatureEntry::FeatureVariation
          std::size(kSafetyCheckUnusedSitePermissionsWithDelayParam), nullptr},
 };
 
+const FeatureEntry::FeatureParam kSafetyHub_NoDelay[] = {
+    {features::kPasswordCheckNotificationIntervalName, "0d"},
+    {features::kRevokedPermissionsNotificationIntervalName, "0d"},
+    {features::kNotificationPermissionsNotificationIntervalName, "0d"},
+    {features::kSafeBrowsingNotificationIntervalName, "0d"}};
+const FeatureEntry::FeatureParam kSafetyHub_WithDelay[] = {
+    {features::kPasswordCheckNotificationIntervalName, "0d"},
+    {features::kRevokedPermissionsNotificationIntervalName, "5m"},
+    {features::kNotificationPermissionsNotificationIntervalName, "5m"},
+    {features::kSafeBrowsingNotificationIntervalName, "5m"}};
+const FeatureEntry::FeatureVariation kSafetyHubVariations[] = {
+    {"for testing no delay", kSafetyHub_NoDelay, std::size(kSafetyHub_NoDelay),
+     nullptr},
+    {"for testing with delay", kSafetyHub_WithDelay,
+     std::size(kSafetyHub_WithDelay), nullptr},
+};
+
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingControl1[] = {
     {tpcd::experiment::kForceEligibleForTestingName, "false"},
     {tpcd::experiment::kDisable3PCookiesName, "false"},
@@ -10130,7 +10147,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"safety-hub", flag_descriptions::kSafetyHubName,
      flag_descriptions::kSafetyHubDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kSafetyHub)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSafetyHub,
+                                    kSafetyHubVariations,
+                                    "SafetyHub")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"record-permissions-expiration-timestamp",

@@ -191,8 +191,6 @@ source_set("android") {
     "magic_stack_bridge.h",
     "notification_permission_review_bridge.cc",
     "notification_permission_review_bridge.h",
-    "prefs.cc",
-    "prefs.h",
     "unused_site_permissions_bridge.cc",
     "unused_site_permissions_bridge.h",
   ]
