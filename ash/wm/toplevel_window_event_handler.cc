@@ -1018,10 +1018,12 @@ void ToplevelWindowEventHandler::HandleDrag(aura::Window* target,
   if (event->phase() != ui::EP_PRETARGET)
     return;
 
-  // Break the Snap Group when dragging a window out of it.
+  // Break the Snap Group when dragging a window out of it. Check
+  // `window_resizer_` to avoid breaking the group if it is tab dragging.
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
     if (SnapGroup* snap_group =
-            snap_group_controller->GetSnapGroupForGivenWindow(target)) {
+            snap_group_controller->GetSnapGroupForGivenWindow(target);
+        snap_group && window_resizer_) {
       snap_group->OnLocatedEvent(event);
     }
   }
