@@ -17932,23 +17932,23 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <!-- Safety Hub elements. -->
     <!-- TODO(crbug.com/324562205): Make strings translateable once finalized. -->
     <if expr="is_android">
-        <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION" translateable="false">
+        <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION" desc="Summary for the Safe Browsing module of Safety Check in the Magic Stack. Shown when Safe Browsing is turned off by the user.">
           Get protection against dangerous sites
         </message>
-        <message name="IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION" translateable="false">
+        <message name="IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION" desc="Summary for the notification review Safety Check module on the Magic Stack. Shown when Safety Check has identified several sites that sent lots of notifications.">
           {NUM_SITES, plural,
           =1 {Found 1 site with lots of notifications}
           other {Found {NUM_SITES} sites with lots of notifications}}
         </message>
-        <message name="IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION" translateable="false">
+        <message name="IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION" desc="Title for the permissions review Safety Check module on the Magic Stack. Shown when Safety Check has identified several sites that send abusive notifications.">
           {NUM_SITES, plural,
           =1 {Chrome removed permissions for 1 site}
           other {Chrome removed permissions for {NUM_SITES} sites}}
         </message>
-        <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION" translateable="false">
+        <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION" desc="Title for the permissions review Safety Check module on the Magic Stack. Shown when Safety Check has identified several unused sites that have granted permissions.">
           {NUM_SITES, plural,
-          =1 {Chrome removed permissions for 1 unused site}
-          other {Chrome removed permissions for {NUM_SITES} ununsed sites}}
+          =1 {Chrome removed permissions for 1 site}
+          other {Chrome removed permissions for {NUM_SITES} sites}}
         </message>
         <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" translateable="false">
           {NUM_SITES, plural,

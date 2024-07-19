@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -53,12 +56,17 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver {
         }
 
         switch (magicStackEntry.getModuleType()) {
-            case MagicStackEntry.ModuleType.REVOKED_PERMISSIONS:
             case MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS:
-                bindSafeStateView(magicStackEntry);
+                bindSafeStateView(
+                        mContext.getResources()
+                                .getString(R.string.safety_hub_magic_stack_notifications_title),
+                        magicStackEntry.getDescription());
+                break;
+            case MagicStackEntry.ModuleType.REVOKED_PERMISSIONS:
+                bindSafeStateView(magicStackEntry.getDescription(), null);
                 break;
             case MagicStackEntry.ModuleType.SAFE_BROWSING:
-                bindSafeBrowsingView(magicStackEntry);
+                bindSafeBrowsingView(magicStackEntry.getDescription());
                 break;
         }
 
@@ -79,15 +87,14 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver {
         showModule();
     }
 
-    private void bindSafeStateView(MagicStackEntry magicStackEntry) {
+    private void bindSafeStateView(@NonNull String title, @Nullable String summary) {
         mModel.set(
                 SafetyHubMagicStackViewProperties.HEADER,
                 mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
-        mModel.set(
-                SafetyHubMagicStackViewProperties.TITLE,
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_state_title));
-        mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, magicStackEntry.getDescription());
+        mModel.set(SafetyHubMagicStackViewProperties.TITLE, title);
+        if (summary != null) {
+            mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
+        }
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
                 mContext.getResources()
@@ -105,7 +112,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver {
                                 mContext, SafetyHubFragment.class));
     }
 
-    private void bindSafeBrowsingView(MagicStackEntry magicStackEntry) {
+    private void bindSafeBrowsingView(@NonNull String summary) {
         mModel.set(
                 SafetyHubMagicStackViewProperties.HEADER,
                 mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
@@ -113,7 +120,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver {
                 SafetyHubMagicStackViewProperties.TITLE,
                 mContext.getResources()
                         .getString(R.string.safety_hub_magic_stack_safe_browsing_title));
-        mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, magicStackEntry.getDescription());
+        mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_TEXT,
                 mContext.getResources()

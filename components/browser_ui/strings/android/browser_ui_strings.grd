@@ -1141,22 +1141,22 @@
       </message>
 
       <!-- Safety Hub Magic Stack strings -->
-      <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" translateable="false">
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" desc="Title for the Magic Stack card for all Safety Check modules.">
         Safety Check
       </message>
-      <message name="IDS_SAFETY_HUB_MAGIC_STACK_HIDE_TEXT" translateable="false">
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_HIDE_TEXT" desc="Text that appears in the context menu when the Safety Check Magic Stack cards are long pressed. Hides and disables dhe Safety Check Magic Stack module when pressed.">
         Hide Safety Check
       </message>
-      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_TITLE" translateable="false">
-        No urgent issues found
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_NOTIFICATIONS_TITLE" desc="Title for the notification review Safety Check module on the Magic Stack. Shown when Safety Check has identified several sites that sent lots of notifications.">
+        Stop lots of notifications
       </message>
-      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_TEXT" translateable="false">
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_TEXT" desc="Action button for the safe state modules of Safety Check in the Magic Stack. Shown in the notification or permissison review modules. Opens Safety Check when clicked.">
         Review
       </message>
-      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_TITLE" translateable="false">
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing module of Safety Check in the Magic Stack. Shown when Safe Browsing is turned off by the user.">
         Turn on Safe Browsing
       </message>
-      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_BUTTON_TEXT" translateable="false">
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_BUTTON_TEXT" desc="Action button for the Safe Browsing module of Safety Check in the Magic Stack. Open Safe Browsing settings when clicked.">
         Go to settings
       </message>
 

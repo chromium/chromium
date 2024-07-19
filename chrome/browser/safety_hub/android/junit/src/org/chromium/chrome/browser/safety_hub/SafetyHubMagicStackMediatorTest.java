@@ -14,6 +14,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.Nullable;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -110,7 +112,10 @@ public class SafetyHubMagicStackMediatorTest {
     public void testRevokedPermisisonsDisplayed() {
         MagicStackEntry entry =
                 MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.REVOKED_PERMISSIONS);
-        testSafeStateDisplayed(entry);
+        doReturn(entry).when(mMagicStackBridge).getModuleToShow();
+        mMediator.showModule();
+
+        testSafeStateDisplayed(DESCRIPTION, null);
     }
 
     @Test
@@ -118,23 +123,22 @@ public class SafetyHubMagicStackMediatorTest {
         MagicStackEntry entry =
                 MagicStackEntry.create(
                         DESCRIPTION, MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS);
-        testSafeStateDisplayed(entry);
-    }
-
-    private void testSafeStateDisplayed(MagicStackEntry entry) {
         doReturn(entry).when(mMagicStackBridge).getModuleToShow();
-
         mMediator.showModule();
 
+        testSafeStateDisplayed(
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_notifications_title),
+                DESCRIPTION);
+    }
+
+    private void testSafeStateDisplayed(String title, @Nullable String summary) {
         verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.HEADER),
                 mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
-        assertEquals(
-                mModel.get(SafetyHubMagicStackViewProperties.TITLE),
-                mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_safe_state_title));
-        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
+        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.TITLE), title);
+        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), summary);
         assertEquals(
                 mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
                 mContext.getResources()
