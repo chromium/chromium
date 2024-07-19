@@ -411,6 +411,10 @@ int FlossDBusManager::GetActiveAdapter() const {
   return active_adapter_;
 }
 
+bool FlossDBusManager::AreClientsReady() const {
+  return client_on_ready_ && client_on_ready_->Finished();
+}
+
 FlossAdapterClient* FlossDBusManager::GetAdapterClient() {
   return client_bundle_->adapter_client();
 }

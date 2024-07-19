@@ -185,6 +185,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   // Get the active adapter.
   int GetActiveAdapter() const;
 
+  // Checks whether the necessary clients are ready. This will happen
+  // asynchronously and may take multiple seconds during tests.
+  bool AreClientsReady() const;
+
   // Returns system bus pointer (owned by FlossDBusThreadManager).
   dbus::Bus* GetSystemBus() const { return bus_; }
 

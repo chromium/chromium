@@ -24,6 +24,7 @@ source_set("interactive_ui_tests") {
     "//chrome/test/base/ash/interactive/webui:test_support",
     "//device/bluetooth",
     "//ui/base",
+    "//ui/base:test_support",
     "//ui/views",
     "//ui/views/controls/webview",
   ]
