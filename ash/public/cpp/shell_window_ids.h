@@ -166,6 +166,9 @@ enum ShellWindowId {
   // notifier elements such as notification popups, toasts and system nudges.
   kShellWindowId_SettingBubbleContainer,
 
+  // The container for the live caption window.
+  kShellWindowId_LiveCaptionContainer,
+
   // The container for help bubbles which are anchored to views for the purpose
   // of user education. In the case of the Welcome Tour, which walks new users
   // through ChromeOS System UI, a background blur will be applied to the

@@ -133,10 +133,10 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
         kShellWindowId_DragImageAndTooltipContainer);
   }
 
-  // Live caption bubble always goes into the shelf bubble container, above the
+  // Live caption bubble always goes into its dedicated container, above the
   // float, always-on-top and shelf containers for example.
   if (window->GetProperty(captions::kIsCaptionBubbleKey)) {
-    return target_root->GetChildById(kShellWindowId_SettingBubbleContainer);
+    return target_root->GetChildById(kShellWindowId_LiveCaptionContainer);
   }
 
   // The MahiMenu always goes into the settings bubble container, this ensures
