@@ -3503,6 +3503,22 @@
             ]
         }
     ],
+    "COMInitForUtilWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UtilWinProcessUsesUIPump",
+                        "UtilityWithUIPumpInitializesCOM"
+                    ]
+                }
+            ]
+        }
+    ],
     "CPSS-V2-Android": [
         {
             "platforms": [
