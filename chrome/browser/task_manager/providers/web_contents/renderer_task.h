@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 
@@ -81,6 +82,8 @@ class RendererTask : public Task,
 
   content::WebContents* web_contents() const { return web_contents_; }
 
+  base::WeakPtr<RendererTask> AsWeakPtr();
+
  protected:
   // Returns the title of the given |web_contents|.
   static std::u16string GetTitleFromWebContents(
@@ -133,6 +136,8 @@ class RendererTask : public Task,
 
   base::TerminationStatus termination_status_;
   int termination_error_code_;
+
+  base::WeakPtrFactory<RendererTask> weak_ptr_factor_{this};
 };
 
 }  // namespace task_manager

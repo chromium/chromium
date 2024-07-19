@@ -177,6 +177,10 @@ void RendererTask::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
     UpdateFavicon();
 }
 
+base::WeakPtr<RendererTask> RendererTask::AsWeakPtr() {
+  return weak_ptr_factor_.GetWeakPtr();
+}
+
 // static
 std::u16string RendererTask::GetTitleFromWebContents(
     content::WebContents* web_contents) {
