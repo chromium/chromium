@@ -1441,6 +1441,7 @@ struct EnhancedSafeBrowsingActivePromoData
       break;
     case SettingsItemTypeNotifications:
       CHECK([self shouldShowNotificationsSettings]);
+      base::RecordAction(base::UserMetricsAction("Settings.Notifications"));
       [self showNotifications];
       break;
     case SettingsItemTypeVoiceSearch:
@@ -1449,6 +1450,7 @@ struct EnhancedSafeBrowsingActivePromoData
           initWithPrefs:_browserState->GetPrefs()];
       break;
     case SettingsItemTypeSafetyCheck:
+      base::RecordAction(base::UserMetricsAction("Settings.SafetyCheck"));
       [self showSafetyCheck];
       break;
     case SettingsItemTypePrivacy:
@@ -1506,6 +1508,7 @@ struct EnhancedSafeBrowsingActivePromoData
                     animated:YES];
       break;
     case SettingsItemTypePlusAddresses: {
+      base::RecordAction(base::UserMetricsAction("Settings.PlusAddresses"));
       OpenNewTabCommand* command = [OpenNewTabCommand
           commandWithURLFromChrome:
               GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
@@ -1602,6 +1605,8 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)articlesForYouSwitchToggled:(UISwitch*)sender {
+  base::RecordAction(base::UserMetricsAction("Settings.ArticlesForYouToggled"));
+
   NSIndexPath* switchPath = [self.tableViewModel
       indexPathForItemType:SettingsItemTypeArticlesForYou
          sectionIdentifier:SettingsSectionIdentifierAdvanced];

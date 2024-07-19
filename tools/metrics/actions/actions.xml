@@ -32890,6 +32890,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.ArticlesForYouToggled">
+  <owner>gambard@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Reported when the user toggles &quot;Articles For You&quot; in settings. iOS
+    only.
+  </description>
+</action>
+
 <action name="Settings.Bandwidth">
   <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
@@ -33027,6 +33036,25 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user taps on the account item in the settings. Recorded
     for iOS only.
+  </description>
+</action>
+
+<action name="Settings.Notifications">
+  <owner>guiperez@google.com</owner>
+  <owner>wry@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Reported when the user navigates to &quot;Notifications&quot; in settings.
+    iOS only.
+  </description>
+</action>
+
+<action name="Settings.PlusAddresses">
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Reported when the user navigates to &quot;Plus Addresses&quot; in settings.
+    iOS only.
   </description>
 </action>
 
@@ -33832,6 +33860,15 @@ should be able to be added at any place in this file.
   <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a topic that was previously in their allowed topics list.
+  </description>
+</action>
+
+<action name="Settings.SafetyCheck">
+  <owner>bwwilliams@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Reported when the user navigates to &quot;Safety Check&quot; in settings.
+    iOS only.
   </description>
 </action>
 
