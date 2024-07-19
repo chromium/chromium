@@ -7,6 +7,8 @@
 #include <windows.h>
 
 #include "base/base64.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -281,7 +283,6 @@ OSCrypt::InitResult OSCryptImpl::InitWithExistingKey(PrefService* local_state) {
 
   if (!base::StartsWith(encrypted_key_with_header, kDPAPIKeyPrefix,
                         base::CompareCase::SENSITIVE)) {
-    DUMP_WILL_BE_NOTREACHED() << "Invalid key format.";
     return OSCrypt::kInvalidKeyFormat;
   }
 
