@@ -586,7 +586,7 @@ TEST_F(OutputControllerTest, PlaySwitchDeviceSwitchDevice2Close) {
   Create();
   Play();
   SwitchDeviceId();
-  SwitchDeviceId(/*expect_play_event=*/true, /*device_id*/"deviceId_2");
+  SwitchDeviceId(/*expect_play_event=*/true, /*device_id*/ "deviceId_2");
   Close();
 }
 

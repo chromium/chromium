@@ -90,6 +90,17 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
       const media::AudioParameters& params,
       const base::UnguessableToken& group_id,
       CreateOutputStreamCallback created_callback) final;
+  void CreateSwitchableOutputStream(
+      mojo::PendingReceiver<media::mojom::AudioOutputStream> receiver,
+      mojo::PendingReceiver<media::mojom::DeviceSwitchInterface>
+          device_switch_receiver,
+      mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+          observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
+      const std::string& output_device_id,
+      const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
+      CreateOutputStreamCallback created_callback) final;
   void BindMuter(
       mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
       const base::UnguessableToken& group_id) final;
@@ -112,6 +123,17 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
   void DestroyOutputStream(OutputStream* stream);
   void DestroyMuter(base::WeakPtr<LocalMuter> muter);
   void DestroyLoopbackStream(LoopbackStream* stream);
+  void CreateOutputStreamInternal(
+      mojo::PendingReceiver<media::mojom::AudioOutputStream> receiver,
+      mojo::PendingReceiver<media::mojom::DeviceSwitchInterface>
+          device_switch_receiver,
+      mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+          observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
+      const std::string& output_device_id,
+      const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
+      CreateOutputStreamCallback created_callback);
 
   SEQUENCE_CHECKER(owning_sequence_);
 

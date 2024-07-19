@@ -162,6 +162,8 @@ OutputStream::OutputStream(
     ManagedDeviceOutputStreamCreateCallback
         managed_device_output_stream_create_callback,
     mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
+    mojo::PendingReceiver<media::mojom::DeviceSwitchInterface>
+        device_switch_receiver,
     mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
         observer,
     mojo::PendingRemote<media::mojom::AudioLog> log,
@@ -172,6 +174,7 @@ OutputStream::OutputStream(
     const base::UnguessableToken& loopback_group_id)
     : delete_callback_(std::move(delete_callback)),
       receiver_(this, std::move(stream_receiver)),
+      device_switch_receiver_(this, std::move(device_switch_receiver)),
       observer_(std::move(observer)),
       log_(std::move(log)),
       coordinator_(coordinator),
@@ -204,6 +207,9 @@ OutputStream::OutputStream(
   base::RepeatingClosure error_handler =
       base::BindRepeating(&OutputStream::OnError, base::Unretained(this));
   receiver_.set_disconnect_handler(error_handler);
+  if (device_switch_receiver_.is_bound()) {
+    device_switch_receiver_.set_disconnect_handler(error_handler);
+  }
 
   // We allow the observer to terminate the stream by closing the message pipe.
   if (observer_)
@@ -292,6 +298,15 @@ void OutputStream::SetVolume(double volume) {
   controller_.SetVolume(volume);
   if (log_)
     log_->OnSetVolume(volume);
+}
+
+void OutputStream::SwitchAudioOutputDeviceId(
+    const std::string& output_device_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "SwitchAudioOutputDeviceId",
+                                      this, "device_id", output_device_id);
+
+  controller_.SwitchAudioOutputDeviceId(output_device_id);
 }
 
 void OutputStream::CreateAudioPipe(CreatedCallback created_callback) {

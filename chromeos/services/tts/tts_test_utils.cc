@@ -28,6 +28,21 @@ void MockAudioStreamFactory::CreateOutputStream(
   std::move(callback).Run(nullptr);
 }
 
+void MockAudioStreamFactory::CreateSwitchableOutputStream(
+    mojo::PendingReceiver<media::mojom::AudioOutputStream> stream,
+    mojo::PendingReceiver<media::mojom::DeviceSwitchInterface>
+        device_switch_receiver,
+    mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+        observer,
+    mojo::PendingRemote<media::mojom::AudioLog> log,
+    const std::string& device_id,
+    const media::AudioParameters& params,
+    const base::UnguessableToken& group_id,
+    CreateOutputStreamCallback callback) {
+  audio_output_stream_ = std::move(stream);
+  std::move(callback).Run(nullptr);
+}
+
 MockTtsEventObserver::MockTtsEventObserver() = default;
 MockTtsEventObserver::~MockTtsEventObserver() = default;
 void MockTtsEventObserver::OnStart() {

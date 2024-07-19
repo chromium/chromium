@@ -41,6 +41,7 @@ class AudioParameters;
 
 namespace audio {
 class OutputStream final : public media::mojom::AudioOutputStream,
+                           public media::mojom::DeviceSwitchInterface,
                            public OutputController::EventHandler {
  public:
   using DeleteCallback = base::OnceCallback<void(OutputStream*)>;
@@ -55,6 +56,8 @@ class OutputStream final : public media::mojom::AudioOutputStream,
       ManagedDeviceOutputStreamCreateCallback
           managed_device_output_stream_create_callback,
       mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
+      mojo::PendingReceiver<media::mojom::DeviceSwitchInterface>
+          device_switch_receiver,
       mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
           observer,
       mojo::PendingRemote<media::mojom::AudioLog> log,
@@ -74,6 +77,9 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   void Pause() final;
   void Flush() final;
   void SetVolume(double volume) final;
+
+  // media::mojom::DeviceSwitchInterface implementation.
+  void SwitchAudioOutputDeviceId(const std::string& output_device_id) final;
 
   // OutputController::EventHandler implementation.
   void OnControllerPlaying() final;
@@ -121,6 +127,7 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   base::CancelableSyncSocket foreign_socket_;
   DeleteCallback delete_callback_;
   mojo::Receiver<AudioOutputStream> receiver_;
+  mojo::Receiver<DeviceSwitchInterface> device_switch_receiver_;
   mojo::AssociatedRemote<media::mojom::AudioOutputStreamObserver> observer_;
   const mojo::SharedRemote<media::mojom::AudioLog> log_;
   const raw_ptr<LoopbackCoordinator> coordinator_;

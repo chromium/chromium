@@ -85,3 +85,9 @@ interface AudioOutputStreamProviderClient {
   Created(pending_remote<AudioOutputStream> stream,
           ReadWriteAudioDataPipe data_pipe);
 };
+
+// An interface for updating AudioOutputStream output device.
+interface DeviceSwitchInterface {
+  // Update the device id for given output streaming.
+  SwitchAudioOutputDeviceId(string output_device_id);
+};

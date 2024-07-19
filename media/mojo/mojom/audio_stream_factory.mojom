@@ -78,6 +78,17 @@ interface AudioStreamFactory {
     mojo_base.mojom.UnguessableToken group_id)
     => (media.mojom.ReadWriteAudioDataPipe? data_pipe);
 
+  // Same as CreateOutputStream(), but the output device of the resulting
+  // AudioOutputStream can be switched via DeviceSwitchInterface.
+  CreateSwitchableOutputStream(
+    pending_receiver<media.mojom.AudioOutputStream> stream,
+    pending_receiver<media.mojom.DeviceSwitchInterface> device_switch_receiver,
+    pending_associated_remote<media.mojom.AudioOutputStreamObserver>? observer,
+    pending_remote<media.mojom.AudioLog>? log,
+    string device_id, media.mojom.AudioParameters params,
+    mojo_base.mojom.UnguessableToken group_id)
+    => (media.mojom.ReadWriteAudioDataPipe? data_pipe);
+
   // Binds the request to the LocalMuter associated with the given |group_id|.
   // While one or more bindings to a group's LocalMuter exists, all local audio
   // playout for the streams in that group is muted.
