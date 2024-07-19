@@ -66,6 +66,10 @@ void AllPlusAddressesBottomSheetView::Show(
       env, ui_info,
       l10n_util::GetStringUTF16(
           IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_TITLE_ANDROID));
+  Java_AllPlusAddressesBottomSheetUIInfo_setWarning(
+      env, ui_info,
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_WARNING_ANDROID));
   Java_AllPlusAddressesBottomSheetUIInfo_setPlusProfiles(env, ui_info,
                                                          java_profiles);
 

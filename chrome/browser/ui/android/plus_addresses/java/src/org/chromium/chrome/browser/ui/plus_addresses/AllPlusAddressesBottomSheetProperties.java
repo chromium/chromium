@@ -14,17 +14,20 @@ class AllPlusAddressesBottomSheetProperties {
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>("title");
+    static final WritableObjectPropertyKey<String> WARNING =
+            new WritableObjectPropertyKey<>("warning");
     static final ReadableObjectPropertyKey<ModelList> PLUS_PROFILES =
             new ReadableObjectPropertyKey<>("plus_profiles");
 
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE, TITLE, PLUS_PROFILES,
+        VISIBLE, TITLE, WARNING, PLUS_PROFILES,
     };
 
     static PropertyModel createDefaultModel() {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(VISIBLE, false)
                 .with(TITLE, "")
+                .with(WARNING, "")
                 .with(PLUS_PROFILES, new ModelList())
                 .build();
     }

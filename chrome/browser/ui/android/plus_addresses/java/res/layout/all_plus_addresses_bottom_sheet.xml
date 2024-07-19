@@ -21,6 +21,15 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/all_plus_addresses_bottom_sheet_padding"
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
+    <TextView
+        android:id="@+id/sheet_warning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginStart="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginTop="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sheet_item_list"
         android:layout_width="match_parent"

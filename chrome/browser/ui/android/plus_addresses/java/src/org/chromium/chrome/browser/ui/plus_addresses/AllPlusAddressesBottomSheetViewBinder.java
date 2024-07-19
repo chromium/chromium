@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBott
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PlusProfileProperties.PLUS_PROFILE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.TITLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.WARNING;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,8 @@ class AllPlusAddressesBottomSheetViewBinder {
             view.setVisible(model.get(VISIBLE));
         } else if (propertyKey == TITLE) {
             view.setTitle(model.get(TITLE));
+        } else if (propertyKey == WARNING) {
+            view.setWarning(model.get(WARNING));
         } else if (propertyKey == PLUS_PROFILES) {
             // Intentionally empty. The adapter will observe changes to PLUS_PROFILES.
         } else {

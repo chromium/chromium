@@ -166,5 +166,8 @@
     <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_TITLE_ANDROID" desc="The title text of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
       Select Plus Address placeholder
     </message>
+    <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_WARNING_ANDROID" desc="The user warning text of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
+      Select Plus Address warning placeholder.
+    </message>
 
 </grit-part>

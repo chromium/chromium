@@ -41,6 +41,7 @@ public class AllPlusAddressesBottomSheetViewTest {
     private static final int WIDTH = 2000;
     private static final int HEIGHT = 2000;
     private static final String BOTTOMSHEET_TITLE = "Bottom sheet title";
+    private static final String BOTTOMSHEET_WARNING = "Bottom sheet warning";
     private static final PlusProfile PROFILE_1 = new PlusProfile("google.com", "example@gmail.com");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -72,6 +73,14 @@ public class AllPlusAddressesBottomSheetViewTest {
         mView.setTitle(BOTTOMSHEET_TITLE);
         TextView title = mView.getContentView().findViewById(R.id.sheet_title);
         assertEquals(title.getText(), BOTTOMSHEET_TITLE);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetWarning() {
+        mView.setWarning(BOTTOMSHEET_WARNING);
+        TextView title = mView.getContentView().findViewById(R.id.sheet_warning);
+        assertEquals(title.getText(), BOTTOMSHEET_WARNING);
     }
 
     @Test

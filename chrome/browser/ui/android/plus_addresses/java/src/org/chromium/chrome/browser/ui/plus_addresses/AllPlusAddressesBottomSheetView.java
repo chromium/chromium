@@ -48,6 +48,10 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
         ((TextView) mContentView.findViewById(R.id.sheet_title)).setText(title);
     }
 
+    void setWarning(String warning) {
+        ((TextView) mContentView.findViewById(R.id.sheet_warning)).setText(warning);
+    }
+
     void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
         mSheetItemListView.setAdapter(adapter);
     }
