@@ -37,10 +37,11 @@ import java.util.List;
 /** The main coordinator for the context menu, responsible for creating the context menu */
 public class AwContextMenuCoordinator implements ContextMenuUi {
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ListItemType.DIVIDER, ListItemType.CONTEXT_MENU_ITEM})
+    @IntDef({ListItemType.DIVIDER, ListItemType.HEADER, ListItemType.CONTEXT_MENU_ITEM})
     public @interface ListItemType {
         int DIVIDER = 0;
-        int CONTEXT_MENU_ITEM = 1;
+        int HEADER = 1;
+        int CONTEXT_MENU_ITEM = 2;
     }
 
     private static final int INVALID_ITEM_ID = -1;
@@ -55,7 +56,6 @@ public class AwContextMenuCoordinator implements ContextMenuUi {
         mDialog.dismiss();
     }
 
-    // TODO(crbug.com/323344356) Add header component to context menu
     @Override
     public void displayMenu(
             WindowAndroid window,
@@ -77,7 +77,12 @@ public class AwContextMenuCoordinator implements ContextMenuUi {
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
         mDialog.setOnDismissListener(dialogInterface -> onMenuClosed.run());
 
-        ModelList listItems = getItemList(items);
+        AwContextMenuHeaderCoordinator headerCoordinator =
+                new AwContextMenuHeaderCoordinator(params);
+
+        ListItem headerItem = new ListItem(ListItemType.HEADER, headerCoordinator.getModel());
+
+        ModelList listItems = getItemList(headerItem, items);
 
         ModelListAdapter adapter =
                 new ModelListAdapter(listItems) {
@@ -103,6 +108,10 @@ public class AwContextMenuCoordinator implements ContextMenuUi {
         mListView = menu.findViewById(R.id.context_menu_list_view);
         mListView.setAdapter(adapter);
 
+        adapter.registerType(
+                ListItemType.HEADER,
+                new LayoutViewBuilder(R.layout.aw_context_menu_header),
+                AwContextMenuHeaderViewBinder::bind);
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM,
                 new LayoutViewBuilder(R.layout.aw_context_menu_row),
@@ -143,8 +152,10 @@ public class AwContextMenuCoordinator implements ContextMenuUi {
         return dialog;
     }
 
-    private static ModelList getItemList(List<Pair<Integer, ModelList>> items) {
+    private static ModelList getItemList(
+            ListItem headerItem, List<Pair<Integer, ModelList>> items) {
         ModelList itemList = new ModelList();
+        itemList.add(headerItem);
 
         for (Pair<Integer, ModelList> group : items) {
             itemList.addAll(group.second);

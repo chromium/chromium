@@ -37,6 +37,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.contextmenu.AwContextMenuHeaderCoordinator;
 import org.chromium.android_webview.contextmenu.AwContextMenuItem;
 import org.chromium.android_webview.contextmenu.AwContextMenuItem.Item;
 import org.chromium.android_webview.contextmenu.AwContextMenuItemDelegate;
@@ -219,8 +220,8 @@ public class ContextMenuTest extends AwParameterizedTest {
                 new ContextMenuParams(
                         0,
                         0,
-                        new GURL("http://www.blah.com/page_url"),
-                        new GURL("http://www.blah.com/other_blah"),
+                        new GURL("http://www.example.com/page_url"),
+                        new GURL("http://www.example.com/other_example"),
                         "BLAH!",
                         GURL.emptyGURL(),
                         GURL.emptyGURL(),
@@ -251,6 +252,38 @@ public class ContextMenuTest extends AwParameterizedTest {
         }
 
         Assert.assertArrayEquals(actualItems, expectedItems);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testHeaderHasURLText() throws Throwable {
+        String expectedHeaderText = "http://www.testurl.com/first_page";
+
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        0,
+                        new GURL("http://www.example.com/page_url"),
+                        GURL.emptyGURL(),
+                        "BLAH!",
+                        new GURL(expectedHeaderText),
+                        GURL.emptyGURL(),
+                        "",
+                        null,
+                        false,
+                        0,
+                        0,
+                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        false,
+                        /* additionalNavigationParams= */ null);
+
+        AwContextMenuHeaderCoordinator headerCoordinator =
+                new AwContextMenuHeaderCoordinator(params);
+
+        String actualHeaderTitle = headerCoordinator.getTitle();
+
+        Assert.assertEquals(actualHeaderTitle, expectedHeaderText);
     }
 
     private void loadUrlSync(String url) throws Exception {
