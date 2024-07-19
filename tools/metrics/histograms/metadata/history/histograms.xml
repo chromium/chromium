@@ -1775,6 +1775,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.DatabaseCachedPassageHitCount"
+    units="passages" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Number of passages that skip the embedder because the stored data for the
+    URL was retrieved and used as a cache. This is effectively the numerator for
+    History.Embeddings.DatabaseCachedPassageRatio.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.DatabaseCachedPassageRatio" units="%"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
@@ -1786,6 +1797,29 @@ chromium-metrics-reviews@google.com.
     embedder this portion of work. Logged regardless of presence/absence of
     existing data for the URL, as long as the kUseDatabaseBeforeEmbedder feature
     parameter is enabled.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.DatabaseCachedPassageTryCount"
+    units="passages" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Number of passages that attempted to bypass the embedder by using the
+    database as an embeddings cache. This is effectively the denominator for
+    History.Embeddings.DatabaseCachedPassageRatio.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.DatabaseCacheHit" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Whether one passage attempting to bypass the embedder actually bypassed the
+    embedder due to having its embedding already available in the database.
+    Logged History.Embeddings.DatabaseCachedPassageTryCount times when a set of
+    passages are checked against available passages/embeddings in the database.
   </summary>
 </histogram>
 

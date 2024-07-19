@@ -676,6 +676,15 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(
     base::UmaHistogramPercentage(
         "History.Embeddings.DatabaseCachedPassageRatio",
         100 * (old_size - new_size) / old_size);
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseCachedPassageHitCount",
+        old_size - new_size);
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseCachedPassageTryCount", old_size);
+    for (size_t i = 0; i < old_size; i++) {
+      base::UmaHistogramBoolean("History.Embeddings.DatabaseCacheHit",
+                                i >= new_size);
+    }
 
     VLOG(4) << "All " << passages.size() << " non-cached passages for url_id "
             << url_passages.url_id << ":";
