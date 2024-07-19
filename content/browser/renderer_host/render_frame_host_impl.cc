@@ -219,6 +219,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/bindings/urgent_message_scope.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/net_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -1274,6 +1275,31 @@ bool IsTargetLifecycleStateOfBoostRenderProcessForLoading(
   }
 }
 
+std::optional<std::string_view> GetHostnameMinusRegistry(const GURL& url) {
+  const size_t registry_length =
+      net::registry_controlled_domains::GetRegistryLength(
+          url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+
+  const std::string_view hostname = url.host_piece();
+  if (registry_length == 0 || registry_length == std::string::npos ||
+      registry_length >= hostname.length()) {
+    return std::nullopt;
+  }
+
+  // Removes the tld and the preceding dot.
+  return hostname.substr(0, hostname.length() - (registry_length + 1));
+}
+
+bool IsSameHostnameMinusRegistry(const GURL& url1, const GURL& url2) {
+  auto hostname_minus_registry1 = GetHostnameMinusRegistry(url1);
+  auto hostname_minus_registry2 = GetHostnameMinusRegistry(url2);
+  if (!hostname_minus_registry1 || !hostname_minus_registry2) {
+    return false;
+  }
+  return *hostname_minus_registry1 == *hostname_minus_registry2;
+}
+
 bool IsTargetUrlOfBoostRenderProcessForLoading(const GURL& url) {
   static const bool kIsEnabled = base::FeatureList::IsEnabled(
       blink::features::kBoostRenderProcessForLoading);
@@ -1290,8 +1316,8 @@ bool IsTargetUrlOfBoostRenderProcessForLoading(const GURL& url) {
   }
 
   for (GURL target_url : *kTargetUrls) {
-    if (url.host() == target_url.host() &&
-        url.path().starts_with(target_url.path())) {
+    if (IsSameHostnameMinusRegistry(url, target_url) &&
+        url.path_piece() == target_url.path_piece()) {
       return true;
     }
   }

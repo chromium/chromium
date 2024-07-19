@@ -1141,13 +1141,20 @@ const BoostRenderProcessForLoadingBrowserTestParam
         },
         {
             .enable_boost_render_process_for_loading = true,
-            .target_urls = "[\"http://a.com\", \"http://b.com\"]",
+            .target_urls = "[\"http://a.com/simple_page.html\", "
+                           "\"http://b.com/simple_page.html\"]",
             .expect_render_process_backgrounded_ = false,
         },
         {
             .enable_boost_render_process_for_loading = true,
-            .target_urls = "[\"http://b.com\", \"http://c.com\"]",
+            .target_urls = "[\"http://b.com/simple_page.html\", "
+                           "\"http://c.com/simple_page.html\"]",
             .expect_render_process_backgrounded_ = true,
+        },
+        {
+            .enable_boost_render_process_for_loading = true,
+            .target_urls = "[\"http://a.co.jp/simple_page.html\"]",
+            .expect_render_process_backgrounded_ = false,
         },
 };
 
