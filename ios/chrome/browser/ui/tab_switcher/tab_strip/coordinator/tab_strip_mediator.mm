@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -692,6 +694,23 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   base::RecordAction(base::UserMetricsAction("MobileTabStripDeleteGroup"));
   CloseAllWebStatesInGroup(*_webStateList, tabGroupItem.tabGroup,
                            WebStateList::CLOSE_USER_ACTION);
+}
+
+- (void)closeGroup:(TabGroupItem*)tabGroupItem {
+  if (!self.webStateList) {
+    return;
+  }
+
+  if (IsTabGroupSyncEnabled()) {
+    tab_groups::TabGroupSyncService* syncService =
+        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    tab_groups::utils::CloseTabGroupLocally(tabGroupItem.tabGroup,
+                                            self.webStateList, syncService);
+  } else {
+    CloseAllWebStatesInGroup(*self.webStateList, tabGroupItem.tabGroup,
+                             WebStateList::CLOSE_USER_ACTION);
+  }
 }
 
 #pragma mark - CRWWebStateObserver

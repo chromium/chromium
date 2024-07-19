@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_features_utils.h"
@@ -201,10 +202,20 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
   UIMenu* editGroupMenu = CreateDisplayInlineUIMenu(editGroupMenuElements);
   [menuElements addObject:editGroupMenu];
 
-  // Add action to close all of the tabs in that group and delete the group.
-  [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                  [weakSelf.mutator deleteGroup:tabGroupItem];
-                }]];
+  if (IsTabGroupSyncEnabled()) {
+    [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+                    [weakSelf.mutator closeGroup:tabGroupItem];
+                  }]];
+    if (!self.incognito) {
+      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                      [weakSelf.mutator deleteGroup:tabGroupItem];
+                    }]];
+    }
+  } else {
+    [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                    [weakSelf.mutator deleteGroup:tabGroupItem];
+                  }]];
+  }
 
   return menuElements;
 }

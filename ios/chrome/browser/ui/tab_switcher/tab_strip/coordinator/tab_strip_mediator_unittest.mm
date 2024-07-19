@@ -1173,6 +1173,30 @@ TEST_F(TabStripMediatorTest, DeleteGroup) {
   EXPECT_FALSE(web_state_list_->ContainsGroup(group));
 }
 
+// Tests that closing a group works.
+TEST_F(TabStripMediatorTest, CloseGroup) {
+  AddWebState();
+  AddWebState();
+  const TabGroup* group =
+      web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
+  TabGroupItem* groupItem =
+      [[TabGroupItem alloc] initWithTabGroup:group
+                                webStateList:web_state_list_];
+
+  InitializeMediator();
+
+  ASSERT_EQ(1, web_state_list_->active_index());
+  ASSERT_EQ(2, web_state_list_->count());
+  ASSERT_TRUE(web_state_list_->ContainsGroup(group));
+
+  [mediator_ closeGroup:groupItem];
+
+  // Check model is updated.
+  EXPECT_EQ(WebStateList::kInvalidIndex, web_state_list_->active_index());
+  EXPECT_EQ(0, web_state_list_->count());
+  EXPECT_FALSE(web_state_list_->ContainsGroup(group));
+}
+
 // Tests that adding a tab to a group works.
 TEST_F(TabStripMediatorTest, AddTabToGroup) {
   AddWebState();

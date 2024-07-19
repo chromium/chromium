@@ -14,6 +14,7 @@ source_set("context_menu") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui",

@@ -58,6 +58,9 @@ class TabGroup;
 /// Tells the receiver to delete the group associated with `tabGroupItem`.
 - (void)deleteGroup:(TabGroupItem*)tabGroupItem;
 
+/// Tells the receiver to close the group associated with `tabGroupItem`.
+- (void)closeGroup:(TabGroupItem*)tabGroupItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_MUTATOR_H_
