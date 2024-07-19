@@ -463,7 +463,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const std::optional<std::string>& user_agent,
       base::Value::Dict body) override;
   void QueueEnterpriseReport(
       const std::string& type,
@@ -471,7 +470,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const std::optional<std::string>& user_agent,
       base::Value::Dict body) override;
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
@@ -801,7 +799,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const std::optional<std::string>& user_agent,
       base::Value::Dict body,
       net::ReportingTargetType target_type);
 

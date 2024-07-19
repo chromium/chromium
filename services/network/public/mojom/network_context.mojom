@@ -1222,9 +1222,8 @@ interface NetworkContext {
   // Queues a report via the Reporting API. |type| describes the type of report
   // (as well as what data will contained in |body|). |group| specifies the
   // endpoint group that the report will be delivered to. |url| indicates the
-  // URL of the resource that the report describes. |user_agent| may be
-  // provided, or will be automatically generated if omitted; |body| holds the
-  // contents of the report.
+  // URL of the resource that the report describes. |body| holds the contents
+  // of the report.
   //
   // |reporting_source| and |network_isolation_key| are used both for looking
   // up the appropriately scoped reporting information and for sending the
@@ -1247,7 +1246,6 @@ interface NetworkContext {
               url.mojom.Url url,
               mojo_base.mojom.UnguessableToken? reporting_source,
               NetworkAnonymizationKey network_anonymization_key,
-              string? user_agent,
               mojo_base.mojom.DictionaryValue body);
 
   QueueEnterpriseReport(string type,
@@ -1255,7 +1253,6 @@ interface NetworkContext {
               url.mojom.Url url,
               mojo_base.mojom.UnguessableToken? reporting_source,
               NetworkAnonymizationKey network_anonymization_key,
-              string? user_agent,
               mojo_base.mojom.DictionaryValue body);
 
   // Queues a signed exchange report.

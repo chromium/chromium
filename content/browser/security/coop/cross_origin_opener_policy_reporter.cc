@@ -281,7 +281,7 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
 
   storage_partition_->GetNetworkContext()->QueueReport(
       "coop", endpoint, context_url_, reporting_source_,
-      network_anonymization_key_, std::nullopt, std::move(body));
+      network_anonymization_key_, std::move(body));
 }
 
 void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
@@ -294,8 +294,7 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
            ToString(is_report_only ? coop_.report_only_value : coop_.value));
   storage_partition_->GetNetworkContext()->QueueReport(
       "coop", endpoint, context_url_, reporting_source_,
-      network_anonymization_key_,
-      /*user_agent=*/std::nullopt, std::move(body));
+      network_anonymization_key_, std::move(body));
 }
 
 }  // namespace content

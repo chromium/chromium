@@ -191,7 +191,7 @@ class SendTestReportsAtNavigationFinishObserver : public WebContentsObserver {
     for (const base::UnguessableToken& reporting_source : reporting_sources_) {
       network_context->QueueReport(
           "type", "default", url_, reporting_source,
-          net::NetworkAnonymizationKey::CreateSameSite(site), "Mozilla/1.0",
+          net::NetworkAnonymizationKey::CreateSameSite(site),
           base::Value::Dict());
     }
   }

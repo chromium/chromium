@@ -955,17 +955,43 @@ TEST_F(NetworkContextTest, EnableReportingWithStore) {
                   ->store());
 }
 
+TEST_F(NetworkContextTest, QueueReport) {
+  auto reporting_context = std::make_unique<net::TestReportingContext>(
+      base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
+      net::ReportingPolicy());
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  params->user_agent = kUserAgent_;
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      std::move(params),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
+
+  network_context->QueueReport(kType_, kGroup_, kUrl_, kReportingSource_, kNak_,
+                               base::Value::Dict());
+
+  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
+      network_context->url_request_context()->reporting_service()->GetReports();
+  ASSERT_EQ(1u, reports.size());
+  EXPECT_EQ(kUrl_, reports[0]->url);
+  EXPECT_EQ(kUserAgent_, reports[0]->user_agent);
+  EXPECT_EQ(kGroup_, reports[0]->group);
+  EXPECT_EQ(kType_, reports[0]->type);
+  EXPECT_EQ(net::ReportingTargetType::kDeveloper, reports[0]->target_type);
+}
+
 TEST_F(NetworkContextTest, QueueEnterpriseReport) {
   auto reporting_context = std::make_unique<net::TestReportingContext>(
       base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
       net::ReportingPolicy());
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  params->user_agent = kUserAgent_;
   std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
-      CreateNetworkContextParamsForTesting(),
+      std::move(params),
       net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
-  network_context->QueueEnterpriseReport(kType_, kGroup_, kUrl_,
-                                         kReportingSource_, kNak_, kUserAgent_,
-                                         base::Value::Dict());
+  network_context->QueueEnterpriseReport(
+      kType_, kGroup_, kUrl_, kReportingSource_, kNak_, base::Value::Dict());
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
       network_context->url_request_context()->reporting_service()->GetReports();
@@ -2614,7 +2640,7 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
       net::ReportingTargetType::kDeveloper);
   network_context->QueueEnterpriseReport("type", "group", domain, std::nullopt,
                                          net::NetworkAnonymizationKey(),
-                                         "Mozilla/1.0", base::Value::Dict());
+                                         base::Value::Dict());
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
   reporting_cache->GetReports(&reports);

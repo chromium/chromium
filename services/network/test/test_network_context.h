@@ -137,7 +137,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const std::optional<std::string>& user_agent,
       base::Value::Dict body) override {}
   void QueueEnterpriseReport(
       const std::string& type,
@@ -145,7 +144,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const std::optional<std::string>& user_agent,
       base::Value::Dict body) override {}
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,

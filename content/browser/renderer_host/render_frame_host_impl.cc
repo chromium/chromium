@@ -14681,7 +14681,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(
       /*type=*/"crash", /*group=*/"default", last_committed_url_,
       GetReportingSource(), isolation_info_.network_anonymization_key(),
-      /*user_agent=*/std::nullopt, std::move(body));
+      std::move(body));
 }
 
 void RenderFrameHostImpl::SendCommitNavigation(

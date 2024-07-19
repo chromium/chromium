@@ -1402,10 +1402,9 @@ void NetworkContext::QueueReport(
     const GURL& url,
     const std::optional<base::UnguessableToken>& reporting_source,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const std::optional<std::string>& user_agent,
     base::Value::Dict body) {
   QueueReportInternal(type, group, url, reporting_source,
-                      network_anonymization_key, user_agent, std::move(body),
+                      network_anonymization_key, std::move(body),
                       net::ReportingTargetType::kDeveloper);
 }
 
@@ -1415,10 +1414,9 @@ void NetworkContext::QueueEnterpriseReport(
     const GURL& url,
     const std::optional<base::UnguessableToken>& reporting_source,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const std::optional<std::string>& user_agent,
     base::Value::Dict body) {
   QueueReportInternal(type, group, url, reporting_source,
-                      network_anonymization_key, user_agent, std::move(body),
+                      network_anonymization_key, std::move(body),
                       net::ReportingTargetType::kEnterprise);
 }
 
@@ -1428,7 +1426,6 @@ void NetworkContext::QueueReportInternal(
     const GURL& url,
     const std::optional<base::UnguessableToken>& reporting_source,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const std::optional<std::string>& user_agent,
     base::Value::Dict body,
     net::ReportingTargetType target_type) {
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -1447,9 +1444,8 @@ void NetworkContext::QueueReportInternal(
     return;
   }
 
-  std::string reported_user_agent = user_agent.value_or("");
-  if (reported_user_agent.empty() &&
-      request_context->http_user_agent_settings() != nullptr) {
+  std::string reported_user_agent = "";
+  if (request_context->http_user_agent_settings() != nullptr) {
     reported_user_agent =
         request_context->http_user_agent_settings()->GetUserAgent();
   }

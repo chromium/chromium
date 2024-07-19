@@ -122,8 +122,7 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
     if (auto* storage_partition = storage_partition_.get()) {
       storage_partition->GetNetworkContext()->QueueReport(
           kType, *endpoint, context_url_, reporting_source_,
-          network_anonymization_key_,
-          /*user_agent=*/std::nullopt, std::move(body_to_pass));
+          network_anonymization_key_, std::move(body_to_pass));
     }
   }
 }

@@ -52,11 +52,9 @@ class TestNetworkContext : public network::TestNetworkContext {
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const std::optional<std::string>& user_agent,
       base::Value::Dict body) override {
-    DCHECK(!user_agent);
-    reports_.emplace_back(
-        Report(type, group, url, network_anonymization_key, std::move(body)));
+    reports_.emplace_back(type, group, url, network_anonymization_key,
+                          std::move(body));
   }
 
   const std::vector<Report>& reports() const { return reports_; }
