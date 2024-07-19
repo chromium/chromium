@@ -222,6 +222,11 @@ PrimaryAccountManager::PrimaryAccountManager(
     scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
     scoped_pref_commit.ClearPref(
         prefs::kCookieClearOnExitMigrationNoticeComplete);
+  } else {
+    signin_allowed_.Init(
+        prefs::kSigninAllowed, client_->GetPrefs(),
+        base::BindRepeating(&PrimaryAccountManager::OnSigninAllowedPrefChanged,
+                            base::Unretained(this)));
   }
 }
 
@@ -409,6 +414,10 @@ void PrimaryAccountManager::Initialize() {
                                    account_info.gaia);
       scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    account_info.email);
+    } else if (ShouldSigninAllowedPrefAffectPrimaryAccount(
+                   pref_consented_to_sync)) {
+      SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
+                                scoped_pref_commit);
     } else {
       SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
                                 scoped_pref_commit);
@@ -818,4 +827,26 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
       }
     }
   }
+}
+
+void PrimaryAccountManager::OnSigninAllowedPrefChanged() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (ShouldSigninAllowedPrefAffectPrimaryAccount(
+          /*is_sync_consent=*/GetPrimaryAccountState().consent_level ==
+          signin::ConsentLevel::kSync)) {
+    ClearPrimaryAccount(signin_metrics::ProfileSignout::kPrefChanged);
+  }
+#endif
+}
+
+bool PrimaryAccountManager::ShouldSigninAllowedPrefAffectPrimaryAccount(
+    bool is_sync_consent) {
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+         !signin_allowed_.GetValue() &&
+         // If sync is enabled, we do not directly clear the primary account.
+         // This is handled by `PrimaryAccountPolicyManager`. That flow is
+         // extremely hard to follow especially for the case when the user is
+         // syncing with a managed account as in that case the whole profile
+         // needs to be deleted.
+         !is_sync_consent;
 }

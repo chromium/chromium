@@ -1173,3 +1173,81 @@ TEST_F(PrimaryAccountManagerTest,
         kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
   }
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesWithinSession) {
+  base::test::ScopedFeatureList feature{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id =
+      AddToAccountTracker("account_id", "user@gmail.com");
+
+  // Simulate an explicit signin through the Chrome Signin Intercept bubble.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+
+  ASSERT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Disable SigninAllowed pref.
+  prefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  EXPECT_FALSE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}
+
+TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesAfterRestart) {
+  base::test::ScopedFeatureList feature{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id =
+      AddToAccountTracker("account_id", "user@gmail.com");
+
+  // Simulate an explicit signin through the Chrome Signin Intercept bubble.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+
+  ASSERT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Making sure that a simple restart keeps the primary account.
+  ShutDownManager();
+  CreatePrimaryAccountManager();
+  ASSERT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // This simulates changing the pref only after a restart, from settings for
+  // example.
+  ShutDownManager();
+  prefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  CreatePrimaryAccountManager();
+  EXPECT_FALSE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}
+
+TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesWithSync) {
+  base::test::ScopedFeatureList feature{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id =
+      AddToAccountTracker("account_id", "user@gmail.com");
+
+  // Simulate a user with sync consent.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSync,
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+
+  ASSERT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // Disable SigninAllowed pref.
+  prefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  // Sync status should be not be changed from the `PrimaryAccountManager`, it
+  // should be handled by the `PrimaryAccountPolicyManager`.
+  EXPECT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
+}
+#endif
