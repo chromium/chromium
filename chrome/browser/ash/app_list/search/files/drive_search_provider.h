@@ -29,20 +29,6 @@ namespace app_list {
 
 class DriveSearchProvider : public SearchProvider {
  public:
-  struct FileInfo {
-    base::FilePath reparented_path;
-    drivefs::mojom::FileMetadataPtr metadata;
-    std::optional<base::Time> last_accessed;
-
-    FileInfo(const base::FilePath& reparented_path,
-             drivefs::mojom::FileMetadataPtr metadata,
-             const std::optional<base::Time>& last_accessed);
-    ~FileInfo();
-
-    FileInfo(const FileInfo&) = delete;
-    FileInfo& operator=(const FileInfo&) = delete;
-  };
-
   explicit DriveSearchProvider(Profile* profile,
                                bool should_filter_shared_files = true);
   ~DriveSearchProvider() override;

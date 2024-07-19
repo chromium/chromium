@@ -54,16 +54,6 @@ void LogStatus(Status status) {
 
 }  // namespace
 
-DriveSearchProvider::FileInfo::FileInfo(
-    const base::FilePath& reparented_path,
-    drivefs::mojom::FileMetadataPtr metadata,
-    const std::optional<base::Time>& last_accessed)
-    : reparented_path(reparented_path), last_accessed(last_accessed) {
-  this->metadata = std::move(metadata);
-}
-
-DriveSearchProvider::FileInfo::~FileInfo() = default;
-
 DriveSearchProvider::DriveSearchProvider(Profile* profile,
                                          bool should_filter_shared_files)
     : SearchProvider(SearchCategory::kFiles),
@@ -148,8 +138,8 @@ void DriveSearchProvider::OnSearchDriveByFileName(
   results_returned_time_ = base::TimeTicks::Now();
 
   base::FilePath mount_path = drive_service_->GetMountPointPath();
-  std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> item_info;
 
+  SearchProvider::Results results;
   for (const auto& item : items) {
     // Strip leading separators so that the path can be reparented.
     const auto& path = item->path;
@@ -175,30 +165,24 @@ void DriveSearchProvider::OnSearchDriveByFileName(
       last_accessed = viewed_time;
     }
 
-    item_info.push_back(std::make_unique<DriveSearchProvider::FileInfo>(
-        reparented_path, std::move(item->metadata), last_accessed));
-  }
-
-  SearchProvider::Results results;
-  for (const auto& info : item_info) {
     double relevance = FileResult::CalculateRelevance(
-        last_tokenized_query_, info->reparented_path, info->last_accessed);
+        last_tokenized_query_, reparented_path, last_accessed);
     if (search_features::IsLauncherFuzzyMatchAcrossProvidersEnabled() &&
         relevance < kRelevanceThreshold) {
       continue;
     }
 
     std::unique_ptr<FileResult> result;
-    GURL url(info->metadata->alternate_url);
-    if (info->metadata->type ==
+    GURL url(item->metadata->alternate_url);
+    if (item->metadata->type ==
         drivefs::mojom::FileMetadata::Type::kDirectory) {
-      const auto type = info->metadata->shared
+      const auto type = item->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;
-      result = MakeResult(info->reparented_path, relevance, type, url);
+      result = MakeResult(reparented_path, relevance, type, url);
     } else {
-      result = MakeResult(info->reparented_path, relevance,
-                          FileResult::Type::kFile, url);
+      result =
+          MakeResult(reparented_path, relevance, FileResult::Type::kFile, url);
     }
     results.push_back(std::move(result));
   }
