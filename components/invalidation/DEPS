@@ -9,4 +9,5 @@ include_rules = [
   "+google_apis/gaia",
   "+mojo/public",
   "+net/base/backoff_entry.h",
+  "+services/network/public",
 ]

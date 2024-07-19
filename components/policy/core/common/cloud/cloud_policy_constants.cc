@@ -160,6 +160,4 @@ std::string GetPolicyVerificationKey() {
 // rotation. From a different angle, if a key is no longer trusted, so should
 // anything bound to it.
 
-const char kPolicyFCMInvalidationSenderID[] = "1013309121859";
-
 }  // namespace policy

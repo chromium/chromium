@@ -29,8 +29,10 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
-#include "components/invalidation/impl/fcm_invalidation_service.h"
-#include "components/invalidation/impl/fcm_network_handler.h"
+#include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/public/invalidation_service.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -72,6 +74,9 @@ namespace {
 constexpr base::FilePath::StringPieceType kCachedPolicyDirname =
     FILE_PATH_LITERAL("Policies");
 #endif
+
+constexpr char kInvalidationListenerLogPrefix[] =
+    "ChromeBrowserCloudManagementControllerDesktop";
 
 }  // namespace
 
@@ -180,14 +185,17 @@ void ChromeBrowserCloudManagementControllerDesktop::OnServiceAccountSet(
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
-  if (policy_invalidator_)
+  if (policy_invalidator_) {
     policy_invalidator_->Shutdown();
-  if (commands_invalidator_)
+  }
+  if (commands_invalidator_) {
     commands_invalidator_->Shutdown();
+  }
 
   policy_invalidator_.reset();
   commands_invalidator_.reset();
-  invalidation_service_.reset();
+  std::visit([](auto&& inv) { inv.reset(); },
+             invalidation_service_or_listener_);
   device_instance_id_driver_.reset();
   identity_provider_.reset();
 
@@ -276,7 +284,7 @@ ChromeBrowserCloudManagementControllerDesktop::CreateDeviceTrustKeyManager() {
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
-  if (invalidation_service_) {
+  if (IsInvalidationsServiceStarted()) {
     NOTREACHED_IN_MIGRATION()
         << "Trying to start an invalidation service when there's "
            "already one. Please see crbug.com/1186159.";
@@ -288,20 +296,15 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
   device_instance_id_driver_ = std::make_unique<instance_id::InstanceIDDriver>(
       g_browser_process->gcm_driver());
 
-  invalidation_service_ =
-      std::make_unique<invalidation::FCMInvalidationService>(
-          identity_provider_.get(),
-          base::BindRepeating(&invalidation::FCMNetworkHandler::Create,
-                              g_browser_process->gcm_driver(),
-                              device_instance_id_driver_.get()),
-          base::BindRepeating(&invalidation::FCMInvalidationListener::Create),
-          base::BindRepeating(
-              &invalidation::PerUserTopicSubscriptionManager::Create,
-              base::RetainedRef(
-                  g_browser_process->shared_url_loader_factory())),
-          device_instance_id_driver_.get(), g_browser_process->local_state(),
-          policy::kPolicyFCMInvalidationSenderID);
-  invalidation_service_->Init();
+  invalidation_service_or_listener_ =
+      invalidation::CreateInvalidationServiceOrListener(
+          identity_provider_.get(), g_browser_process->gcm_driver(),
+          device_instance_id_driver_.get(),
+          g_browser_process->shared_url_loader_factory(),
+          g_browser_process->local_state(),
+          policy::kPolicyFCMInvalidationSenderID,
+          invalidation::InvalidationListener::kProjectNumberEnterprise,
+          kInvalidationListenerLogPrefix);
 
   policy_invalidator_ = std::make_unique<CloudPolicyInvalidator>(
       PolicyInvalidationScope::kCBCM,
@@ -311,7 +314,8 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::DefaultClock::GetInstance(),
       0 /* highest_handled_invalidation_version */);
-  policy_invalidator_->Initialize(invalidation_service_.get());
+  policy_invalidator_->Initialize(invalidation::UniquePointerVariantToPointer(
+      invalidation_service_or_listener_));
 
   g_browser_process->browser_policy_connector()
       ->machine_level_user_cloud_policy_manager()
@@ -325,7 +329,8 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
           ->machine_level_user_cloud_policy_manager()
           ->core(),
       base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
-  commands_invalidator_->Initialize(invalidation_service_.get());
+  commands_invalidator_->Initialize(invalidation::UniquePointerVariantToPointer(
+      invalidation_service_or_listener_));
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -337,7 +342,8 @@ bool ChromeBrowserCloudManagementControllerDesktop::
     IsInvalidationsServiceStarted() const {
   // This object is created when StartInvalidations is called, and stays alive
   // thereafter.
-  return !!invalidation_service_;
+  return std::visit([](auto&& inv) { return !!inv; },
+                    invalidation_service_or_listener_);
 }
 
 }  // namespace policy

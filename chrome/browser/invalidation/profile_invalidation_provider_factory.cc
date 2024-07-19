@@ -21,11 +21,9 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/invalidation/impl/fcm_invalidation_service.h"
-#include "components/invalidation/impl/fcm_network_handler.h"
-#include "components/invalidation/impl/invalidation_prefs.h"
-#include "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
+#include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -45,27 +43,22 @@
 namespace invalidation {
 namespace {
 
-std::unique_ptr<InvalidationService> CreateInvalidationServiceForSenderId(
-    Profile* profile,
-    IdentityProvider* identity_provider,
-    const std::string& sender_id) {
-  auto service = std::make_unique<FCMInvalidationService>(
+std::variant<std::unique_ptr<InvalidationService>,
+             std::unique_ptr<InvalidationListener>>
+CreateInvalidationServiceOrListenerImpl(Profile* profile,
+                                        IdentityProvider* identity_provider,
+                                        std::string sender_id,
+                                        std::string project_number,
+                                        std::string log_prefix) {
+  return CreateInvalidationServiceOrListener(
       identity_provider,
-      base::BindRepeating(
-          &FCMNetworkHandler::Create,
-          gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
-          instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-              ->driver()),
-      base::BindRepeating(&invalidation::FCMInvalidationListener::Create),
-      base::BindRepeating(
-          &PerUserTopicSubscriptionManager::Create,
-          base::RetainedRef(profile->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess())),
+      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver(),
-      profile->GetPrefs(), sender_id);
-  service->Init();
-  return service;
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      profile->GetPrefs(), std::move(sender_id), std::move(project_number),
+      std::move(log_prefix));
 }
 
 }  // namespace
@@ -121,8 +114,9 @@ void ProfileInvalidationProviderFactory::RegisterTestingFactory(
 std::unique_ptr<KeyedService>
 ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (testing_factory_)
+  if (testing_factory_) {
     return testing_factory_.Run(context);
+  }
 
   std::unique_ptr<IdentityProvider> identity_provider;
 
@@ -143,10 +137,12 @@ ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
     identity_provider = std::make_unique<ProfileIdentityProvider>(
         IdentityManagerFactory::GetForProfile(profile));
   }
-  auto custom_sender_id_factory = base::BindRepeating(
-      &CreateInvalidationServiceForSenderId, profile, identity_provider.get());
+  ProfileInvalidationProvider::InvalidationServiceOrListenerFactory
+      service_or_listener_factory =
+          base::BindRepeating(&CreateInvalidationServiceOrListenerImpl, profile,
+                              identity_provider.get());
   return std::make_unique<ProfileInvalidationProvider>(
-      std::move(identity_provider), std::move(custom_sender_id_factory));
+      std::move(identity_provider), std::move(service_or_listener_factory));
 }
 
 void ProfileInvalidationProviderFactory::RegisterProfilePrefs(

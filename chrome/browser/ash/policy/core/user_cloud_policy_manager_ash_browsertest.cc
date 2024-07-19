@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/invalidation/invalidation_factory.h"
 #include "components/policy/proto/policy_common_definitions.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -143,15 +144,35 @@ class UserCloudPolicyManagerExistingConsumerUserTest
   }
 };
 
+struct FeaturesTestParam {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+};
+
 // Test scenarios for child user signing in for the first time.
 class UserCloudPolicyManagerNewChildUserTest
-    : public UserCloudPolicyManagerTestBase {
+    : public UserCloudPolicyManagerTestBase,
+      public testing::WithParamInterface<FeaturesTestParam> {
  protected:
   UserCloudPolicyManagerNewChildUserTest()
       : UserCloudPolicyManagerTestBase(
             ash::LoggedInUserMixin::LogInType::kChild,
-            /*user_existed_before=*/false) {}
+            /*user_existed_before=*/false) {
+    scoped_feature_list_.InitWithFeatures(GetParam().enabled_features,
+                                          GetParam().disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    UserCloudPolicyManagerNewChildUserTest,
+    testing::Values(FeaturesTestParam{},
+                    FeaturesTestParam{
+                        .enabled_features = {
+                            invalidation::kInvalidationsWithDirectMessages}}));
 
 IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewManagedUserTest, StartSession) {
   // User hasn't signed in yet, so shouldn't know if the user requires policy.
@@ -255,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerExistingConsumerUserTest,
             GetProfileRequiresPolicy());
 }
 
-IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewChildUserTest,
+IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerNewChildUserTest,
                        PolicyForChildUser) {
   // If a user signs in with a known non-enterprise account there should be no
   // policy in case user type is child.
@@ -279,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewChildUserTest,
           arc::prefs::kArcEnabled));
 }
 
-IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewChildUserTest,
+IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerNewChildUserTest,
                        PolicyForChildUserMissing) {
   // If a user signs in with a known non-enterprise account there should be no
   // policy in case user type is child.

@@ -8,6 +8,8 @@ if (is_android) {
 
 static_library("invalidation") {
   sources = [
+    "invalidation_factory.cc",
+    "invalidation_factory.h",
     "invalidation_listener.cc",
     "invalidation_listener.h",
     "invalidation_listener_impl.cc",
@@ -25,6 +27,7 @@ static_library("invalidation") {
     "//components/invalidation/impl",
     "//components/keyed_service/core",
     "//components/pref_registry",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//google_apis",
   ]

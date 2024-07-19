@@ -8,9 +8,12 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
+#include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/public/invalidation_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace user_prefs {
@@ -19,28 +22,32 @@ class PrefRegistrySyncable;
 
 namespace invalidation {
 
-class InvalidationService;
-
-// A KeyedService that owns an InvalidationService.
+// A KeyedService that owns InvalidationService instances (legacy) and
+// InvalidationListener instances for sender ids (Pantheon project ids).
 class ProfileInvalidationProvider : public KeyedService {
  public:
-  using CustomSenderInvalidationServiceFactory =
-      base::RepeatingCallback<std::unique_ptr<InvalidationService>(
-          const std::string&)>;
+  using InvalidationServiceOrListenerFactory =
+      base::RepeatingCallback<std::variant<
+          std::unique_ptr<InvalidationService>,
+          std::unique_ptr<InvalidationListener>>(std::string /*sender_id*/,
+                                                 std::string /*project_id*/,
+                                                 std::string /*log_prefix*/)>;
 
   ProfileInvalidationProvider(
       std::unique_ptr<IdentityProvider> identity_provider,
-      CustomSenderInvalidationServiceFactory
-          custom_sender_invalidation_service_factory = {});
+      InvalidationServiceOrListenerFactory
+          invalidation_service_or_listener_factory = {});
   ProfileInvalidationProvider(const ProfileInvalidationProvider& other) =
       delete;
   ProfileInvalidationProvider& operator=(
       const ProfileInvalidationProvider& other) = delete;
   ~ProfileInvalidationProvider() override;
 
-  // Returns the InvalidationService specific to |sender_id|.
-  InvalidationService* GetInvalidationServiceForCustomSender(
-      const std::string& sender_id);
+  // Returns the `InvalidationService` or `InvalidationListener` specific to
+  // `sender_id`.
+  std::variant<InvalidationService*, InvalidationListener*>
+  GetInvalidationServiceOrListener(const std::string& sender_id,
+                                   const std::string& project_id);
 
   IdentityProvider* GetIdentityProvider();
 
@@ -54,10 +61,12 @@ class ProfileInvalidationProvider : public KeyedService {
  private:
   std::unique_ptr<IdentityProvider> identity_provider_;
 
-  CustomSenderInvalidationServiceFactory
-      custom_sender_invalidation_service_factory_;
-  std::unordered_map<std::string, std::unique_ptr<InvalidationService>>
-      custom_sender_invalidation_services_;
+  InvalidationServiceOrListenerFactory
+      invalidation_service_or_listener_factory_;
+  std::map<std::pair<std::string, std::string>,
+           std::variant<std::unique_ptr<InvalidationService>,
+                        std::unique_ptr<InvalidationListener>>>
+      sender_id_to_invalidation_service_or_listener_;
 };
 
 }  // namespace invalidation

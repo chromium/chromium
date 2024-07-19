@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_set>
+#include <variant>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -35,6 +37,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -113,8 +116,9 @@ CertProvisioningSchedulerImpl::CreateUserCertProvisioningScheduler(
 std::unique_ptr<CertProvisioningScheduler>
 CertProvisioningSchedulerImpl::CreateDeviceCertProvisioningScheduler(
     policy::CloudPolicyClient* cloud_policy_client,
-    policy::AffiliatedInvalidationServiceProvider*
-        invalidation_service_provider) {
+    std::variant<policy::AffiliatedInvalidationServiceProvider*,
+                 invalidation::InvalidationListener*>
+        invalidation_service_provider_or_listener) {
   PrefService* pref_service = g_browser_process->local_state();
   platform_keys::PlatformKeysService* platform_keys_service =
       GetPlatformKeysService(CertScope::kDevice, /*profile=*/nullptr);
@@ -131,7 +135,7 @@ CertProvisioningSchedulerImpl::CreateDeviceCertProvisioningScheduler(
       std::make_unique<CertProvisioningClientImpl>(*cloud_policy_client),
       platform_keys_service, network_state_handler,
       std::make_unique<CertProvisioningDeviceInvalidatorFactory>(
-          invalidation_service_provider));
+          invalidation_service_provider_or_listener));
 }
 
 CertProvisioningSchedulerImpl::CertProvisioningSchedulerImpl(

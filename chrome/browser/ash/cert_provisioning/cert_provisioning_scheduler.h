@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_SCHEDULER_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_SCHEDULER_H_
 
+#include <variant>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -20,8 +21,10 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;
@@ -116,8 +119,9 @@ class CertProvisioningSchedulerImpl
   static std::unique_ptr<CertProvisioningScheduler>
   CreateDeviceCertProvisioningScheduler(
       policy::CloudPolicyClient* cloud_policy_client,
-      policy::AffiliatedInvalidationServiceProvider*
-          invalidation_service_provider);
+      std::variant<policy::AffiliatedInvalidationServiceProvider*,
+                   invalidation::InvalidationListener*>
+          invalidation_service_provider_or_listener);
 
   CertProvisioningSchedulerImpl(
       CertScope cert_scope,

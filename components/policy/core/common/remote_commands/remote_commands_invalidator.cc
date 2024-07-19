@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
+#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -25,14 +26,6 @@ namespace {
 
 // TODO(b/351754537): Decide on final invalidation type name.
 constexpr char RemoteCommandsInvalidatorType[] = "remote_command";
-
-template <typename T, typename U>
-auto PointerVariantToRawPointer(
-    const std::variant<T*, U*>& invalidation_service_or_listener) {
-  return std::visit(
-      [](auto&& arg) -> std::variant<raw_ptr<T>, raw_ptr<U>> { return arg; },
-      invalidation_service_or_listener);
-}
 
 }  // namespace
 
@@ -59,8 +52,8 @@ void RemoteCommandsInvalidator::Initialize(
         std::get<invalidation::InvalidationListener*>(
             invalidation_service_or_listener))
       << "InvalidationListener is used but is null";
-  invalidation_service_or_listener_ =
-      PointerVariantToRawPointer(invalidation_service_or_listener);
+  invalidation_service_or_listener_ = invalidation::PointerVariantToRawPointer(
+      invalidation_service_or_listener);
 
   state_ = STOPPED;
 
@@ -107,6 +100,9 @@ void RemoteCommandsInvalidator::Stop() {
   if (state_ == STARTED) {
     invalidation_service_observation_.Reset();
     invalidation_listener_observation_.Reset();
+    // Drop the reference to `invalidation_service_or_listener_` as it
+    // may be destroyed sooner than `DeviceLocalAccountPolicyService`.
+
     state_ = STOPPED;
 
     OnStop();

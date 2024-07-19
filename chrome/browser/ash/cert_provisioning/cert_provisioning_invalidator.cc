@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
+#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation.h"
@@ -42,21 +43,6 @@ const char* CertScopeToString(CertScope scope) {
   NOTREACHED_IN_MIGRATION()
       << "Unknown cert scope: " << static_cast<int>(scope);
   return "";
-}
-
-template <typename T, typename U>
-auto PointerVariantToRawPointer(
-    const std::variant<T*, U*>& invalidation_service_or_listener) {
-  return std::visit(
-      [](auto&& arg) -> std::variant<raw_ptr<T>, raw_ptr<U>> { return arg; },
-      invalidation_service_or_listener);
-}
-
-template <typename T, typename U>
-auto RawPointerVariantToPointer(const std::variant<raw_ptr<T>, raw_ptr<U>>&
-                                    invalidation_service_or_listener) {
-  return std::visit([](auto&& arg) -> std::variant<T*, U*> { return arg; },
-                    invalidation_service_or_listener);
 }
 
 }  // namespace
@@ -96,7 +82,8 @@ CertProvisioningInvalidationHandler::CertProvisioningInvalidationHandler(
     OnInvalidationEventCallback on_invalidation_event_callback)
     : scope_(scope),
       invalidation_service_or_listener_(
-          PointerVariantToRawPointer(invalidation_service_or_listener)),
+          invalidation::PointerVariantToRawPointer(
+              invalidation_service_or_listener)),
       topic_(topic),
       listener_type_(listener_type),
       on_invalidation_event_callback_(
@@ -297,15 +284,15 @@ void CertProvisioningUserInvalidator::Register(
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);
   CHECK(invalidation_provider);
-  invalidation::InvalidationService* invalidation_service =
-      invalidation_provider->GetInvalidationServiceForCustomSender(
-          policy::kPolicyFCMInvalidationSenderID);
-  CHECK(invalidation_service);
 
   invalidation_handler_ =
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
-          CertScope::kUser, invalidation_service, topic, listener_type,
-          std::move(on_invalidation_event_callback));
+          CertScope::kUser,
+          invalidation_provider->GetInvalidationServiceOrListener(
+              policy::kPolicyFCMInvalidationSenderID,
+              invalidation::InvalidationListener::kProjectNumberEnterprise),
+          topic, listener_type, std::move(on_invalidation_event_callback));
+
   if (!invalidation_handler_) {
     LOG(ERROR) << "Failed to register for invalidation topic";
   }
@@ -318,8 +305,9 @@ CertProvisioningDeviceInvalidatorFactory::
         std::variant<policy::AffiliatedInvalidationServiceProvider*,
                      invalidation::InvalidationListener*>
             invalidation_service_provider_or_listener)
-    : invalidation_service_provider_or_listener_(PointerVariantToRawPointer(
-          invalidation_service_provider_or_listener)) {
+    : invalidation_service_provider_or_listener_(
+          invalidation::PointerVariantToRawPointer(
+              invalidation_service_provider_or_listener)) {
   CHECK(!std::holds_alternative<
             raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
             invalidation_service_provider_or_listener_) ||
@@ -341,7 +329,8 @@ CertProvisioningDeviceInvalidatorFactory::
 std::unique_ptr<CertProvisioningInvalidator>
 CertProvisioningDeviceInvalidatorFactory::Create() {
   return std::make_unique<CertProvisioningDeviceInvalidator>(
-      RawPointerVariantToPointer(invalidation_service_provider_or_listener_));
+      invalidation::RawPointerVariantToPointer(
+          invalidation_service_provider_or_listener_));
 }
 
 //=============== CertProvisioningDeviceInvalidator ============================
@@ -350,8 +339,9 @@ CertProvisioningDeviceInvalidator::CertProvisioningDeviceInvalidator(
     std::variant<policy::AffiliatedInvalidationServiceProvider*,
                  invalidation::InvalidationListener*>
         invalidation_service_provider_or_listener)
-    : invalidation_service_provider_or_listener_(PointerVariantToRawPointer(
-          invalidation_service_provider_or_listener)) {
+    : invalidation_service_provider_or_listener_(
+          invalidation::PointerVariantToRawPointer(
+              invalidation_service_provider_or_listener)) {
   CHECK(!std::holds_alternative<
             raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
             invalidation_service_provider_or_listener_) ||
