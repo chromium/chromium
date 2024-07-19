@@ -3649,12 +3649,6 @@ bool WebMediaPlayerImpl::ShouldDisableVideoWhenHidden() const {
     return false;
   }
 
-  // Media Foundation does not currently support smoothly disabling &
-  // re-enabling video tracks.
-  if (renderer_type_ == media::RendererType::kMediaFoundation) {
-    return false;
-  }
-
   // Videos shorter than the maximum allowed keyframe distance can be optimized.
   base::TimeDelta duration = GetPipelineMediaDuration();
   if (duration < kMaxKeyframeDistanceToDisableBackgroundVideo) {
