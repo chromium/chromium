@@ -330,6 +330,21 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertLedLitUpState) {
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertKeyboardBacklightState) {
+  EXPECT_EQ(
+      ConvertKeyboardBacklightState(cx_diag::KeyboardBacklightState::kNone),
+      crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State::
+          kUnmappedEnumField);
+  EXPECT_EQ(
+      ConvertKeyboardBacklightState(cx_diag::KeyboardBacklightState::kOk),
+      crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State::kOk);
+  EXPECT_EQ(ConvertKeyboardBacklightState(
+                cx_diag::KeyboardBacklightState::kAnyNotLitUp),
+            crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
+                State::kAnyNotLitUp);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertRoutineArgumentsUnionErrorWithMultipleNonnullFields) {
   auto args_union = cx_diag::CreateRoutineArgumentsUnion();
   args_union.memory = cx_diag::CreateMemoryRoutineArguments();
@@ -426,6 +441,17 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
 }
 
 TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithKeyboardBacklightArgs) {
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.keyboard_backlight =
+      cx_diag::CreateKeyboardBacklightRoutineArguments();
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_keyboard_backlight());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
      ConvertRoutineInquiryReplyUnionAllFieldsAreNull) {
   auto result =
       ConvertRoutineInquiryReplyUnion(cx_diag::RoutineInquiryReplyUnion());
@@ -442,6 +468,17 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   ASSERT_TRUE(result.has_value());
   ASSERT_FALSE(result.value().is_null());
   EXPECT_TRUE(result.value()->is_check_led_lit_up_state());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineInquiryReplyUnionSuccessWithCheckKeyboardBacklightState) {
+  auto reply_union = cx_diag::RoutineInquiryReplyUnion();
+  reply_union.check_keyboard_backlight_state =
+      cx_diag::CheckKeyboardBacklightStateReply();
+  auto result = ConvertRoutineInquiryReplyUnion(std::move(reply_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_check_keyboard_backlight_state());
 }
 
 }  // namespace chromeos::converters::diagnostics

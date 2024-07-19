@@ -48,6 +48,11 @@ crosapi::mojom::TelemetryDiagnosticCheckLedLitUpStateReply::State
 ConvertLedLitUpState(
     chromeos::api::os_diagnostics::LedLitUpState led_lit_up_state);
 
+crosapi::mojom::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State
+ConvertKeyboardBacklightState(
+    chromeos::api::os_diagnostics::KeyboardBacklightState
+        keyboard_backlight_state);
+
 // Converts the web IDL union to the Mojo union type. Returns std::nullopt when
 // the conversion fails. Returns an `unrecognizedArgument` if all fields in
 // `extension_union` are null to handle the case when extension is newer than

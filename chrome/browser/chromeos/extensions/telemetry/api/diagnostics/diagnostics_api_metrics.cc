@@ -31,6 +31,9 @@ DiagnosticRoutineCategoryHistogramValue ConvertToHistogramValue(
     case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::
         kCameraFrameAnalysis:
       return DiagnosticRoutineCategoryHistogramValue::kCameraFrameAnalysis;
+    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::
+        kKeyboardBacklight:
+      return DiagnosticRoutineCategoryHistogramValue::kKeyboardBacklight;
   }
 }
 

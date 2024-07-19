@@ -94,6 +94,11 @@ crosapi::TelemetryDiagnosticCheckLedLitUpStateInquiryPtr UncheckedConvertPtr(
   return crosapi::TelemetryDiagnosticCheckLedLitUpStateInquiry::New();
 }
 
+crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateInquiryPtr
+UncheckedConvertPtr(healthd::CheckKeyboardBacklightStateInquiryPtr input) {
+  return crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateInquiry::New();
+}
+
 crosapi::TelemetryDiagnosticRoutineInquiryPtr UncheckedConvertPtr(
     healthd::RoutineInquiryPtr input) {
   switch (input->which()) {
@@ -103,9 +108,12 @@ crosapi::TelemetryDiagnosticRoutineInquiryPtr UncheckedConvertPtr(
     case healthd::RoutineInquiry::Tag::kCheckLedLitUpState:
       return crosapi::TelemetryDiagnosticRoutineInquiry::NewCheckLedLitUpState(
           ConvertRoutinePtr(std::move(input->get_check_led_lit_up_state())));
+    case healthd::RoutineInquiry::Tag::kCheckKeyboardBacklightState:
+      return crosapi::TelemetryDiagnosticRoutineInquiry::
+          NewCheckKeyboardBacklightState(ConvertRoutinePtr(
+              std::move(input->get_check_keyboard_backlight_state())));
     // The following routines have not been added to crosapi yet.
     case healthd::RoutineInquiry::Tag::kUnplugAcAdapterInquiry:
-    case healthd::RoutineInquiry::Tag::kCheckKeyboardBacklightState:
       return crosapi::TelemetryDiagnosticRoutineInquiry::NewUnrecognizedInquiry(
           /*unrecognizedArgument=*/false);
   }
@@ -227,6 +235,9 @@ healthd::RoutineArgumentPtr UncheckedConvertPtr(
     case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kCameraFrameAnalysis:
       return healthd::RoutineArgument::NewCameraFrameAnalysis(
           ConvertRoutinePtr(std::move(input->get_camera_frame_analysis())));
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kKeyboardBacklight:
+      return healthd::RoutineArgument::NewKeyboardBacklight(
+          ConvertRoutinePtr(std::move(input->get_keyboard_backlight())));
   }
 }
 
@@ -278,6 +289,13 @@ healthd::CheckLedLitUpStateReplyPtr UncheckedConvertPtr(
   return arg;
 }
 
+healthd::CheckKeyboardBacklightStateReplyPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReplyPtr input) {
+  auto arg = healthd::CheckKeyboardBacklightStateReply::New();
+  arg->state = Convert(input->state);
+  return arg;
+}
+
 healthd::NetworkBandwidthRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticNetworkBandwidthRoutineArgumentPtr input) {
   return healthd::NetworkBandwidthRoutineArgument::New();
@@ -286,6 +304,11 @@ healthd::NetworkBandwidthRoutineArgumentPtr UncheckedConvertPtr(
 healthd::CameraFrameAnalysisRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineArgumentPtr input) {
   return healthd::CameraFrameAnalysisRoutineArgument::New();
+}
+
+healthd::KeyboardBacklightRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticKeyboardBacklightRoutineArgumentPtr input) {
+  return healthd::KeyboardBacklightRoutineArgument::New();
 }
 
 healthd::RoutineInquiryReplyPtr UncheckedConvertPtr(
@@ -299,6 +322,11 @@ healthd::RoutineInquiryReplyPtr UncheckedConvertPtr(
         kCheckLedLitUpState:
       return healthd::RoutineInquiryReply::NewCheckLedLitUpState(
           ConvertRoutinePtr(std::move(input->get_check_led_lit_up_state())));
+    case crosapi::TelemetryDiagnosticRoutineInquiryReply::Tag::
+        kCheckKeyboardBacklightState:
+      return healthd::RoutineInquiryReply::NewCheckKeyboardBacklightState(
+          ConvertRoutinePtr(
+              std::move(input->get_check_keyboard_backlight_state())));
   }
   NOTREACHED_NORETURN();
 }
@@ -354,6 +382,23 @@ healthd::CheckLedLitUpStateReply::State Convert(
       return healthd::CheckLedLitUpStateReply::State::kCorrectColor;
     case crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::kNotLitUp:
       return healthd::CheckLedLitUpStateReply::State::kNotLitUp;
+  }
+  NOTREACHED_NORETURN();
+}
+
+healthd::CheckKeyboardBacklightStateReply::State Convert(
+    crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State input) {
+  switch (input) {
+    case crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State::
+        kUnmappedEnumField:
+      return healthd::CheckKeyboardBacklightStateReply::State::
+          kUnmappedEnumField;
+    case crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State::
+        kOk:
+      return healthd::CheckKeyboardBacklightStateReply::State::kOk;
+    case crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State::
+        kAnyNotLitUp:
+      return healthd::CheckKeyboardBacklightStateReply::State::kAnyNotLitUp;
   }
   NOTREACHED_NORETURN();
 }

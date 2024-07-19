@@ -89,6 +89,17 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
   EXPECT_TRUE(result.check_led_lit_up_state.has_value());
 }
 
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     RoutineInquiryCheckKeyboardBacklightState) {
+  auto result = ConvertPtr(
+      crosapi::TelemetryDiagnosticRoutineInquiry::
+          NewCheckKeyboardBacklightState(
+              crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateInquiry::
+                  New()));
+
+  EXPECT_TRUE(result.check_keyboard_backlight_state.has_value());
+}
+
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingInfo) {
   constexpr char kMsg[] = "TEST";
   constexpr uint32_t kPercentage = 50;

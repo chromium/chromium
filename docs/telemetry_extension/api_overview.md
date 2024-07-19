@@ -655,12 +655,21 @@ as the argument of `replyToRoutineInquiry`.
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 
+### CheckKeyboardBacklightStateInquiry
+Details regarding the inquiry to check the keyboard backlight LED state. Clients
+should inspect the keyboard backlight and report its state using
+`CheckKeyboardBacklightStateReply` as the argument of `replyToRoutineInquiry`.
+
+| Property Name | Type | Description |
+| ------------- | ---- | ----------- |
+
 ### RoutineInquiryUnion
 This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | checkLedLitUpState | CheckLedLitUpStateInquiry | See `CheckLedLitUpStateInquiry`. |
+| checkKeyboardBacklightState | CheckKeyboardBacklightStateInquiry | See `CheckKeyboardBacklightStateInquiry`. |
 
 ### RoutineInteractionUnion
 This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
@@ -844,6 +853,13 @@ camera is opened during the execution of the routine.
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 
+### CreateKeyboardBacklightRoutineArguments
+This routine checks whether the keyboard backlight can be lit up at any
+brightness level.
+
+| Property Name | Type | Description |
+| ------------- | ---- | ----------- |
+
 ### Enum CameraFrameAnalysisIssue
 | Property Name |
 ------------ |
@@ -877,6 +893,8 @@ This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 | networkBandwidth | CreateNetworkBandwidthRoutineArguments | M125 | Arguments to create a network bandwidth routine | `os.diagnostics.network_info_mlab` |
 | ledLitUp | CreateLedLitUpRoutineArguments | M125 | Arguments to create a LED lit up routine | None |
 | cameraFrameAnalysis | CreateCameraFrameAnalysisRoutineArguments | (not released) | Arguments to create a camera frame analysis routine | None |
+| keyboardBacklight | CreateKeyboardBacklightRoutineArguments | M128 | Arguments to create a keyboard backlight routine | None |
+
 
 ### CreateRoutineResponse
 | Property Name | Type | Description |
@@ -899,10 +917,21 @@ This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 | correct_color |
 | not_lit_up |
 
+### Enum KeyboardBacklightState
+| Property Name |
+------------ |
+| ok |
+| any_not_lit_up |
+
 ### CheckLedLitUpStateReply
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | state | LedLitUpState | State of the target LED |
+
+### CheckKeyboardBacklightStateReply
+| Property Name | Type                   | Description                         |
+| ------------- | ---------------------- | ----------------------------------- |
+| state         | KeyboardBacklightState | State of the keyboard backlight LED |
 
 ### RoutineInquiryReplyUnion
 This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
@@ -911,6 +940,7 @@ This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that shall be replied |
 | checkLedLitUpState | CheckLedLitUpStateReply | Reply to a `CheckLedLitUpStateInquiry` |
+| checkKeyboardBacklightState | CheckKeyboardBacklightStateReply | Reply to a `CheckKeyboardBacklightStateInquiry` |
 
 ### ReplyToRoutineInquiryRequest
 | Property Name | Type | Description |

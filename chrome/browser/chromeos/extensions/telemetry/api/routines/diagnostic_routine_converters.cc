@@ -111,6 +111,11 @@ cx_diag::RoutineInquiryUnion UncheckedConvertPtr(
     case crosapi::TelemetryDiagnosticRoutineInquiry::Tag::kCheckLedLitUpState:
       inquiry.check_led_lit_up_state = cx_diag::CheckLedLitUpStateInquiry();
       break;
+    case crosapi::TelemetryDiagnosticRoutineInquiry::Tag::
+        kCheckKeyboardBacklightState:
+      inquiry.check_keyboard_backlight_state =
+          cx_diag::CheckKeyboardBacklightStateInquiry();
+      break;
   }
   return inquiry;
 }

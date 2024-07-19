@@ -854,6 +854,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="SensitiveSensor"/>
   <int value="20" label="CameraFrameAnalysis"/>
   <int value="21" label="BatteryDischarge"/>
+  <int value="22" label="KeyboardBacklight"/>
 </enum>
 
 <enum name="CrosHealthdTelemetryResult">
@@ -1873,8 +1874,9 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
   <int value="2" label="VolumeButton"/>
   <int value="3" label="Fan"/>
   <int value="4" label="LedLitUp"/>
-  <int value="5" label="kNetworkBandwidth"/>
-  <int value="6" label="kCameraFrameAnalysis"/>
+  <int value="5" label="NetworkBandwidth"/>
+  <int value="6" label="CameraFrameAnalysis"/>
+  <int value="7" label="KeyboardBacklight"/>
 </enum>
 
 <enum name="UmaInitParamsResult">

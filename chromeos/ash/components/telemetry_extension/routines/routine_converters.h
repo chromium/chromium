@@ -54,6 +54,10 @@ crosapi::mojom::TelemetryDiagnosticRoutineStateRunningPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryDiagnosticCheckLedLitUpStateInquiryPtr
 UncheckedConvertPtr(cros_healthd::mojom::CheckLedLitUpStateInquiryPtr input);
 
+crosapi::mojom::TelemetryDiagnosticCheckKeyboardBacklightStateInquiryPtr
+UncheckedConvertPtr(
+    cros_healthd::mojom::CheckKeyboardBacklightStateInquiryPtr input);
+
 crosapi::mojom::TelemetryDiagnosticRoutineInquiryPtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineInquiryPtr input);
 
@@ -93,6 +97,10 @@ cros_healthd::mojom::LedLitUpRoutineArgumentPtr UncheckedConvertPtr(
 cros_healthd::mojom::CheckLedLitUpStateReplyPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticCheckLedLitUpStateReplyPtr input);
 
+cros_healthd::mojom::CheckKeyboardBacklightStateReplyPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticCheckKeyboardBacklightStateReplyPtr
+        input);
+
 cros_healthd::mojom::RoutineInquiryReplyPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr input);
 
@@ -102,6 +110,10 @@ cros_healthd::mojom::NetworkBandwidthRoutineArgumentPtr UncheckedConvertPtr(
 
 cros_healthd::mojom::CameraFrameAnalysisRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticCameraFrameAnalysisRoutineArgumentPtr
+        input);
+
+cros_healthd::mojom::KeyboardBacklightRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticKeyboardBacklightRoutineArgumentPtr
         input);
 
 }  // namespace unchecked
@@ -114,6 +126,10 @@ cros_healthd::mojom::LedColor Convert(
 
 cros_healthd::mojom::CheckLedLitUpStateReply::State Convert(
     crosapi::mojom::TelemetryDiagnosticCheckLedLitUpStateReply::State input);
+
+cros_healthd::mojom::CheckKeyboardBacklightStateReply::State Convert(
+    crosapi::mojom::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State
+        input);
 
 crosapi::mojom::TelemetryDiagnosticMemtesterTestItemEnum Convert(
     cros_healthd::mojom::MemtesterTestItemEnum input);

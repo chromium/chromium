@@ -207,12 +207,20 @@ namespace os.diagnostics {
   dictionary CheckLedLitUpStateInquiry {
   };
 
+  // Details regarding the inquiry to check the keyboard backlight lit up state.
+  // Clients should confirm the correctness and report its state using
+  // `CheckKeyboardBacklightStateReply` as the argument of
+  // `replyToRoutineInquiry`.
+  dictionary CheckKeyboardBacklightStateInquiry {
+  };
+
   // This is a union type. Exactly one field should be set.
   //
   // At this time, there is only one member type. Other member types will be
   // added when needed.
   dictionary RoutineInquiryUnion {
     CheckLedLitUpStateInquiry? checkLedLitUpState;
+    CheckKeyboardBacklightStateInquiry? checkKeyboardBacklightState;
   };
 
   // This is a union type. Exactly one field should be set.
@@ -466,6 +474,11 @@ namespace os.diagnostics {
   dictionary CreateCameraFrameAnalysisRoutineArguments {
   };
 
+  // The routine checks whether the keyboard backlight can be lit up at any
+  // brightness level.
+  dictionary CreateKeyboardBacklightRoutineArguments {
+  };
+
   enum CameraFrameAnalysisIssue {
     // No issue.
     no_issue,
@@ -508,6 +521,7 @@ namespace os.diagnostics {
     CreateNetworkBandwidthRoutineArguments? networkBandwidth;
     CreateLedLitUpRoutineArguments? ledLitUp;
     CreateCameraFrameAnalysisRoutineArguments? cameraFrameAnalysis;
+    CreateKeyboardBacklightRoutineArguments? keyboardBacklight;
   };
 
   // This is a union type. Exactly one field should be set.
@@ -558,17 +572,25 @@ namespace os.diagnostics {
     not_lit_up
   };
 
+  enum KeyboardBacklightState {
+    ok,
+    any_not_lit_up
+  };
+
   dictionary CheckLedLitUpStateReply {
     // State of the target LED.
     LedLitUpState state;
   };
 
+  dictionary CheckKeyboardBacklightStateReply {
+    // State of the keyboard backlight.
+    KeyboardBacklightState state;
+  };
+
   // This is a union type. Exactly one field should be set.
-  //
-  // At this time, there is only one member type. Other member types will be
-  // added when needed.
   [ignoreAdditionalProperties] dictionary RoutineInquiryReplyUnion {
     CheckLedLitUpStateReply? checkLedLitUpState;
+    CheckKeyboardBacklightStateReply? checkKeyboardBacklightState;
   };
 
   dictionary ReplyToRoutineInquiryRequest {

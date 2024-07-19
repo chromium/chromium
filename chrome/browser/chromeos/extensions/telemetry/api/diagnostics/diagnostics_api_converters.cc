@@ -99,6 +99,17 @@ bool PopulateCameraFrameAnalysisRoutineArguments(
   return true;
 }
 
+// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
+// `CreateKeyboardBacklightRoutineArguments` instance. Returns whether `out`
+// was successfully populated.
+bool PopulateKeyboardBacklightRoutineArguments(
+    const cx_diag::CreateKeyboardBacklightRoutineArguments& cx_args,
+    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+  out = crosapi::TelemetryDiagnosticRoutineArgument::NewKeyboardBacklight(
+      crosapi::TelemetryDiagnosticKeyboardBacklightRoutineArgument::New());
+  return true;
+}
+
 // Populates a `TelemetryDiagnosticRoutineInquiryReplyPtr` object from a
 // `CheckLedLitUpStateReply` instance. Returns whether `out` was successfully
 // populated.
@@ -109,6 +120,20 @@ bool PopulateCheckLedLitUpStateReply(
   args->state = ConvertLedLitUpState(cx_args.state);
   out = crosapi::TelemetryDiagnosticRoutineInquiryReply::NewCheckLedLitUpState(
       std::move(args));
+  return true;
+}
+
+// Populates a `TelemetryDiagnosticRoutineInquiryReplyPtr` object from a
+// `CheckKeyboardBacklightStateReply` instance. Returns whether `out` was
+// successfully populated.
+bool PopulateCheckKeyboardBacklightStateReply(
+    const cx_diag::CheckKeyboardBacklightStateReply& cx_args,
+    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr& out) {
+  auto args =
+      crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::New();
+  args->state = ConvertKeyboardBacklightState(cx_args.state);
+  out = crosapi::TelemetryDiagnosticRoutineInquiryReply::
+      NewCheckKeyboardBacklightState(std::move(args));
   return true;
 }
 
@@ -384,6 +409,22 @@ crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State ConvertLedLitUpState(
   }
 }
 
+crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State
+ConvertKeyboardBacklightState(
+    cx_diag::KeyboardBacklightState keyboard_backlight_state) {
+  switch (keyboard_backlight_state) {
+    case cx_diag::KeyboardBacklightState::kNone:
+      return crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
+          State::kUnmappedEnumField;
+    case cx_diag::KeyboardBacklightState::kOk:
+      return crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
+          State::kOk;
+    case cx_diag::KeyboardBacklightState::kAnyNotLitUp:
+      return crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
+          State::kAnyNotLitUp;
+  }
+}
+
 std::optional<crosapi::TelemetryDiagnosticRoutineArgumentPtr>
 ConvertRoutineArgumentsUnion(
     cx_diag::CreateRoutineArgumentsUnion extension_union) {
@@ -427,6 +468,12 @@ ConvertRoutineArgumentsUnion(
       return std::nullopt;
     }
   }
+  if (extension_union.keyboard_backlight) {
+    if (result || !PopulateKeyboardBacklightRoutineArguments(
+                      extension_union.keyboard_backlight.value(), result)) {
+      return std::nullopt;
+    }
+  }
   if (result) {
     return result;
   }
@@ -447,6 +494,13 @@ ConvertRoutineInquiryReplyUnion(
   if (extension_union.check_led_lit_up_state) {
     if (result || !PopulateCheckLedLitUpStateReply(
                       extension_union.check_led_lit_up_state.value(), result)) {
+      return std::nullopt;
+    }
+  }
+  if (extension_union.check_keyboard_backlight_state) {
+    if (result ||
+        !PopulateCheckKeyboardBacklightStateReply(
+            extension_union.check_keyboard_backlight_state.value(), result)) {
       return std::nullopt;
     }
   }

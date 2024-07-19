@@ -115,6 +115,16 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertKeyboardBacklightRoutineArgumentPtr) {
+  auto input =
+      crosapi::TelemetryDiagnosticKeyboardBacklightRoutineArgument::New();
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertUnrecognizedRoutineInquiryReplyPtr) {
   auto input =
       crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
@@ -137,6 +147,18 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->is_check_led_lit_up_state());
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertRoutineCheckKeyboardBacklightInquiryReplyPtr) {
+  auto input = crosapi::TelemetryDiagnosticRoutineInquiryReply::
+      NewCheckKeyboardBacklightState(
+          crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::New());
+
+  const auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_check_keyboard_backlight_state());
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
@@ -191,7 +213,7 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
   const auto result = ConvertRoutinePtr(std::move(input));
 
   ASSERT_TRUE(result);
-  EXPECT_TRUE(result->is_unrecognizedInquiry());
+  EXPECT_TRUE(result->is_check_keyboard_backlight_state());
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
@@ -258,6 +280,22 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
   EXPECT_EQ(healthd::CheckLedLitUpStateReply::State::kNotLitUp,
             Convert(crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
                         kNotLitUp));
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticCheckKeyboardBacklightStateReplyState) {
+  EXPECT_EQ(
+      healthd::CheckKeyboardBacklightStateReply::State::kUnmappedEnumField,
+      Convert(crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
+                  State::kUnmappedEnumField));
+  EXPECT_EQ(
+      healthd::CheckKeyboardBacklightStateReply::State::kOk,
+      Convert(crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
+                  State::kOk));
+  EXPECT_EQ(
+      healthd::CheckKeyboardBacklightStateReply::State::kAnyNotLitUp,
+      Convert(crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
+                  State::kAnyNotLitUp));
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
