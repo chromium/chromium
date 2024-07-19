@@ -71,7 +71,7 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
                                             .withIncognito(false)
                                             .withIsOpeningTabs(0)
                                             .withTabAlreadySelected(mHostStation.getLoadedTab())
-                                            .withPath(siteSuggestion.url.getPath())
+                                            .withExpectedUrlSubstring(siteSuggestion.url.getPath())
                                             .build());
             mTiles.add(item);
         }

@@ -16,21 +16,29 @@ public abstract class NavigatePageStations {
 
     /** Create a PageStation representing one.html. */
     public static Builder<WebPageStation> newNavigateOnePageBuilder() {
-        return WebPageStation.newWebPageStationBuilder().withPath(PATH_ONE).withTitle("One");
+        return WebPageStation.newWebPageStationBuilder()
+                .withExpectedUrlSubstring(PATH_ONE)
+                .withExpectedTitle("One");
     }
 
     /** Create a PageStation representing two.html. */
     public static Builder<WebPageStation> newNavigateTwoPageBuilder() {
-        return WebPageStation.newWebPageStationBuilder().withPath(PATH_TWO).withTitle("Two");
+        return WebPageStation.newWebPageStationBuilder()
+                .withExpectedUrlSubstring(PATH_TWO)
+                .withExpectedTitle("Two");
     }
 
     /** Create a PageStation representing three.html. */
     public static Builder<WebPageStation> newNavigateThreePageBuilder() {
-        return WebPageStation.newWebPageStationBuilder().withPath(PATH_THREE).withTitle("Three");
+        return WebPageStation.newWebPageStationBuilder()
+                .withExpectedUrlSubstring(PATH_THREE)
+                .withExpectedTitle("Three");
     }
 
     /** Create a PageStation representing simple.html. */
     public static Builder<WebPageStation> newNavigateSimplePageBuilder() {
-        return WebPageStation.newWebPageStationBuilder().withPath(PATH_SIMPLE).withTitle("Simple");
+        return WebPageStation.newWebPageStationBuilder()
+                .withExpectedUrlSubstring(PATH_SIMPLE)
+                .withExpectedTitle("Simple");
     }
 }

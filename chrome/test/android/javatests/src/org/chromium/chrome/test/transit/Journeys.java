@@ -64,7 +64,7 @@ public class Journeys {
                             .withIsOpeningTabs(1)
                             .withIsSelectingTabs(1)
                             .withIncognito(isIncognito)
-                            .withPath(url)
+                            .withExpectedUrlSubstring(url)
                             .build();
             startingStation =
                     startingStation.travelToSync(

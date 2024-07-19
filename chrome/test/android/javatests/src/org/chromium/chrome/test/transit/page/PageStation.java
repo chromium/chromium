@@ -58,8 +58,8 @@ public class PageStation extends Station {
         private Integer mNumTabsBeingOpened;
         private Integer mNumTabsBeingSelected;
         private Tab mTabAlreadySelected;
-        private String mPath;
-        private String mTitle;
+        private String mExpectedUrlSubstring;
+        private String mExpectedTitle;
         private List<Facility<T>> mFacilities;
 
         public Builder(Function<Builder<T>, T> factoryMethod) {
@@ -99,13 +99,13 @@ public class PageStation extends Station {
             return this;
         }
 
-        public Builder<T> withPath(String path) {
-            mPath = path;
+        public Builder<T> withExpectedUrlSubstring(String value) {
+            mExpectedUrlSubstring = value;
             return this;
         }
 
-        public Builder<T> withTitle(String title) {
-            mTitle = title;
+        public Builder<T> withExpectedTitle(String title) {
+            mExpectedTitle = title;
             return this;
         }
 
@@ -145,8 +145,8 @@ public class PageStation extends Station {
     protected final int mNumTabsBeingOpened;
     protected final int mNumTabsBeingSelected;
     protected final Tab mTabAlreadySelected;
-    protected final String mPath;
-    protected final String mTitle;
+    protected final String mExpectedUrlSubstring;
+    protected final String mExpectedTitle;
 
     // TODO(crbug.com/41497463): These should be shared, not unscoped, but for now they need to be
     // unscoped since they unintentionally still exist in the non-Hub tab switcher. They are mostly
@@ -184,11 +184,11 @@ public class PageStation extends Station {
                         "mTabAlreadySelected=%s mNumTabsBeingSelected=%s",
                         mTabAlreadySelected, mNumTabsBeingSelected);
 
-        // path is optional
-        mPath = builder.mPath;
+        // URL substring is optional.
+        mExpectedUrlSubstring = builder.mExpectedUrlSubstring;
 
         // title is optional
-        mTitle = builder.mTitle;
+        mExpectedTitle = builder.mExpectedTitle;
 
         if (builder.mFacilities != null) {
             for (Facility<T> facility : builder.mFacilities) {
@@ -247,12 +247,13 @@ public class PageStation extends Station {
 
         elements.declareEnterCondition(new PageInteractableOrHiddenCondition(mPageLoadedSupplier));
 
-        if (mTitle != null) {
-            elements.declareEnterCondition(new PageTitleCondition(mTitle, mPageLoadedSupplier));
-        }
-        if (mPath != null) {
+        if (mExpectedTitle != null) {
             elements.declareEnterCondition(
-                    new PageUrlContainsCondition(mPath, mPageLoadedSupplier));
+                    new PageTitleCondition(mExpectedTitle, mPageLoadedSupplier));
+        }
+        if (mExpectedUrlSubstring != null) {
+            elements.declareEnterCondition(
+                    new PageUrlContainsCondition(mExpectedUrlSubstring, mPageLoadedSupplier));
         }
     }
 
@@ -347,8 +348,8 @@ public class PageStation extends Station {
     /** Loads a |url| in the same tab and waits to transition. */
     public <T extends PageStation> T loadPageProgrammatically(String url, Builder<T> builder) {
         builder.initFrom(this);
-        if (builder.mPath == null) {
-            builder.mPath = url;
+        if (builder.mExpectedUrlSubstring == null) {
+            builder.mExpectedUrlSubstring = url;
         }
 
         T destination = builder.build();

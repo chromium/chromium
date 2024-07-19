@@ -58,6 +58,6 @@ public class PopupOnLoadPageStation extends WebPageStation {
                         .withIsOpeningTabs(2)
                         .withIsSelectingTabs(2)
                         // Expect popup_test.html to open two.html in foreground.
-                        .withPath("two.html"));
+                        .withExpectedUrlSubstring("two.html"));
     }
 }
