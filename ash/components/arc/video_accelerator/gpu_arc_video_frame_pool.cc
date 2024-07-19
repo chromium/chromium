@@ -101,7 +101,9 @@ void GpuArcVideoFramePool::Initialize(
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(!has_error_);
+  if (has_error_) {
+    return;
+  }
 
   if (pool_client_) {
     DVLOGF(3) << "Attempting to call GpuArcVideoFramePool::Initialize() when "
@@ -122,7 +124,10 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
   DVLOGF(3) << "id: " << video_frame->id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(!has_error_);
+  if (has_error_) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   if (!pool_client_version_) {
     DVLOGF(3) << "Unknown pool client version. Discarding video frame.";
@@ -286,7 +291,11 @@ void GpuArcVideoFramePool::RequestFrames(
 void GpuArcVideoFramePool::OnRequestVideoFramesDone() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!has_error_);
+
+  if (has_error_) {
+    return;
+  }
+
   CHECK(pool_client_version_.has_value());
   CHECK_GE(pool_client_version_.value(), kMinVersionForRequestFramesAck);
 
@@ -422,8 +431,6 @@ void GpuArcVideoFramePool::Stop() {
   weak_this_factory_.InvalidateWeakPtrs();
 
   pool_client_version_.reset();
-  pool_client_.reset();
-  video_frame_pool_receiver_.reset();
 
   if (notify_layout_changed_cb_) {
     std::move(notify_layout_changed_cb_)
