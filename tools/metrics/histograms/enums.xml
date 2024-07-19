@@ -13665,6 +13665,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Tab changed"/>
   <int value="2" label="Navigation initiated"/>
   <int value="3" label="Dismissed due to interaction with info block"/>
+  <int value="4" label="Keyboard opened"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h:ContextualPanelDismissedReason) -->

@@ -43,7 +43,8 @@ enum class ContextualPanelDismissedReason {
   TabChanged = 1,
   NavigationInitiated = 2,
   BlockInteraction = 3,
-  kMaxValue = BlockInteraction,
+  KeyboardOpened = 4,
+  kMaxValue = KeyboardOpened,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelDismissedReason)
 

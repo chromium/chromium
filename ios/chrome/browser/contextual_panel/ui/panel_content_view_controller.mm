@@ -215,6 +215,16 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
       setContentHeight:[self preferredHeightForContent]];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(handleKeyboardWillShow:)
+             name:UIKeyboardWillShowNotification
+           object:nil];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   _appearanceTime = base::Time::Now();
@@ -525,6 +535,14 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
   UIPointerStyle* style = [UIPointerStyle styleWithEffect:effect shape:shape];
   return style;
+}
+
+#pragma mark - Keyboard notifications
+
+- (void)handleKeyboardWillShow:(NSNotification*)notification {
+  base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
+                                ContextualPanelDismissedReason::KeyboardOpened);
+  [self.contextualSheetCommandHandler closeContextualSheet];
 }
 
 @end
