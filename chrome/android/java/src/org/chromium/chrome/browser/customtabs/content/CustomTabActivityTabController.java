@@ -506,6 +506,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         // be generated in the middle of tab initialization.
         mTabObserverRegistrar.addObserversForTab(tab);
         prepareTabBackground(tab);
+        mCustomTabObserver.get().setLongPressLinkSelectText(tab, mIntentDataProvider.isAuthView());
     }
 
     public void registerTabObserver(TabObserver observer) {

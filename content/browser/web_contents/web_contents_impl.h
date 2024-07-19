@@ -361,6 +361,12 @@ class CONTENT_EXPORT WebContentsImpl
   // A notification is then propagated to observers.
   void DidCapturedSurfaceControl();
 
+  // Let long press on links select the link text instead of triggering
+  // the context menu.
+#if BUILDFLAG(IS_ANDROID)
+  void SetLongPressLinkSelectText(bool enabled);
+#endif
+
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() final;
   void SetDelegate(WebContentsDelegate* delegate) override;
@@ -2383,6 +2389,10 @@ class CONTENT_EXPORT WebContentsImpl
   bool is_spatial_navigation_disabled_ = false;
 
   bool stylus_handwriting_enabled_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  bool long_press_link_select_text_ = false;
+#endif
 
   bool is_currently_audible_ = false;
   bool was_ever_audible_ = false;

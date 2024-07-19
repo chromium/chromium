@@ -614,6 +614,14 @@ public interface WebContents extends Parcelable {
     int getCurrentBackForwardTransitionStage();
 
     /**
+     * Let long press on links select the link text instead of triggering context menu. Disabled by
+     * default i.e. the context menu gets triggered.
+     *
+     * @param enabled {@code true} to enabled the behavior.
+     */
+    void setLongPressLinkSelectText(boolean enabled);
+
+    /**
      * Notify that the constraints of the browser controls have changed. This means that the the
      * browser controls went from being forced fully visible/hidden to not being forced (or
      * vice-versa).

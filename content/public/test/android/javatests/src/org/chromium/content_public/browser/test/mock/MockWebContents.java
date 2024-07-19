@@ -376,6 +376,9 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public void setLongPressLinkSelectText(boolean enabled) {}
+
+    @Override
     public void notifyControlsConstraintsChanged(
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo) {}

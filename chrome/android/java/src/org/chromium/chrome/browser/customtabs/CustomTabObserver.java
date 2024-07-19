@@ -68,6 +68,9 @@ public class CustomTabObserver extends EmptyTabObserver {
     // The time of the first navigation commit in the most recent Custom Tab launch.
     private long mFirstCommitRealtimeMillis;
 
+    // Lets Long press on links select the link text instead of triggering context menu.
+    private boolean mLongPressLinkSelectText;
+
     @IntDef({State.RESET, State.WAITING_LOAD_START, State.WAITING_LOAD_FINISH})
     @Retention(RetentionPolicy.SOURCE)
     @interface State {
@@ -112,9 +115,9 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     /**
-     * Tracks the next page load, with timestamp as the origin of time.
-     * If a load is already happening, we track its PLT.
-     * If not, we track NavigationCommit timing + PLT for the next load.
+     * Tracks the next page load, with timestamp as the origin of time. If a load is already
+     * happening, we track its PLT. If not, we track NavigationCommit timing + PLT for the next
+     * load.
      */
     public void trackNextPageLoadForLaunch(Tab tab, Intent sourceIntent) {
         mIntentReceivedRealtimeMillis = BrowserIntentUtils.getStartupRealtimeMillis(sourceIntent);
@@ -139,6 +142,29 @@ public class CustomTabObserver extends EmptyTabObserver {
         if (usedSpeculation && hasCommitted) {
             recordFirstCommitNavigation(mLaunchedForSpeculationRealtimeMillis);
         }
+    }
+
+    /**
+     * Enable/disable the behavior of long press on links selecting text instead of triggering
+     * context menu.
+     *
+     * @param tab Tab to apply the behavior to for its WebContents.
+     * @param enabled Behavior enabled or not.
+     */
+    public void setLongPressLinkSelectText(Tab tab, boolean enabled) {
+        mLongPressLinkSelectText = enabled;
+        setLongPressLinkSelectTextInternal(tab);
+    }
+
+    private void setLongPressLinkSelectTextInternal(Tab tab) {
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+        webContents.setLongPressLinkSelectText(mLongPressLinkSelectText);
+    }
+
+    @Override
+    public void onContentChanged(Tab tab) {
+        setLongPressLinkSelectTextInternal(tab);
     }
 
     @Override

@@ -2473,6 +2473,11 @@
       status: "stable"
     },
     {
+      // Long press on a link selects the link text instead of bringing up
+      // context menu. Enabled only on Android AuthView.
+      name: "LongPressLinkSelectText",
+    },
+    {
       // Use LongAnimationFrameMonitor to emit longtask entries
       name: "LongTaskFromLongAnimationFrame",
       status: "test",

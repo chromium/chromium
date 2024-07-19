@@ -193,6 +193,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->scroll_top_left_interop_enabled = data.scroll_top_left_interop_enabled();
   out->disable_accelerated_small_canvases =
       data.disable_accelerated_small_canvases();
+  out->long_press_link_select_text = data.long_press_link_select_text();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)

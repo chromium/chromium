@@ -1233,6 +1233,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public void setLongPressLinkSelectText(boolean enabled) {
+        checkNotDestroyed();
+        WebContentsImplJni.get().setLongPressLinkSelectText(mNativeWebContentsAndroid, enabled);
+    }
+
+    @Override
     public void notifyControlsConstraintsChanged(
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo) {
@@ -1449,6 +1455,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
         @AnimationStage
         int getCurrentBackForwardTransitionStage(long nativeWebContentsAndroid);
+
+        void setLongPressLinkSelectText(long nativeWebContentsAndroid, boolean enabled);
 
         void notifyControlsConstraintsChanged(
                 long nativeWebContentsAndroid,

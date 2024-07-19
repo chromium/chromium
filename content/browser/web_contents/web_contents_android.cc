@@ -923,6 +923,11 @@ jint WebContentsAndroid::GetCurrentBackForwardTransitionStage(JNIEnv* env) {
   return static_cast<jint>(stage);
 }
 
+void WebContentsAndroid::SetLongPressLinkSelectText(JNIEnv* env,
+                                                    jboolean enabled) {
+  web_contents_->SetLongPressLinkSelectText((bool)enabled);
+}
+
 void WebContentsAndroid::NotifyControlsConstraintsChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jold_tags_info,

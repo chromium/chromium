@@ -3210,6 +3210,10 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
     prefs.spatial_navigation_enabled = false;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  prefs.long_press_link_select_text = long_press_link_select_text_;
+#endif
+
   prefs.stylus_handwriting_enabled = stylus_handwriting_enabled_;
 
   prefs.disable_reading_from_canvas =
@@ -11062,6 +11066,16 @@ BackForwardTransitionAnimationManager*
 WebContentsImpl::GetBackForwardTransitionAnimationManager() {
   return GetView()->GetBackForwardTransitionAnimationManager();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void WebContentsImpl::SetLongPressLinkSelectText(bool enabled) {
+  if (long_press_link_select_text_ == enabled) {
+    return;
+  }
+  long_press_link_select_text_ = enabled;
+  NotifyPreferencesChanged();
+}
+#endif
 
 net::handles::NetworkHandle WebContentsImpl::GetTargetNetwork() {
   return target_network_;

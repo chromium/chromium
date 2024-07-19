@@ -1773,6 +1773,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.scroll_top_left_interop_enabled);
   RuntimeEnabledFeatures::SetAcceleratedSmallCanvasesEnabled(
       !prefs.disable_accelerated_small_canvases);
+  RuntimeEnabledFeatures::SetLongPressLinkSelectTextEnabled(
+      prefs.long_press_link_select_text);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
