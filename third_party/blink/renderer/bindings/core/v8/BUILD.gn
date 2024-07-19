@@ -27,6 +27,11 @@ blink_core_sources("v8") {
     ":generated",
     "//third_party/blink/renderer/platform",
     "//v8",
+
+    # TODO(crbug.com/354107461): Use targets having headers included from
+    # gen/third_party/blink/renderer/bindings/core/v8/v8_html_permission_element.cc
+    # instead after fixing cyclic dependency.
+    "//third_party/blink/renderer/bindings:buildflags",
   ]
 }
 
