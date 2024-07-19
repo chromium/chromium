@@ -80,12 +80,14 @@
         icon-aria-label="[[settingControlledByPrimaryUserText_()]]">
     </cr-tooltip-icon>
   </template>
-  <cr-button 
-      id="changeAccessButton" 
-      on-click="showManageGeolocationDialog_" 
-      disabled="[[isSecondaryUser_]]">
-    $i18n{geolocationChangeAccessButtonText}
-  </cr-button>
+  <controlled-button
+      id="changeAccessButton"
+      class="action-button"
+      label="$i18n{geolocationChangeAccessButtonText}"
+      on-click="showManageGeolocationDialog_"
+      disabled="[[!isGeolocationModifiable_(prefs.ash.user.geolocation_access_level.*)]]"
+      pref="[[prefs.ash.user.geolocation_access_level]]">
+  </controlled-button>
 </div>
 
 <div class="hr"></div>

@@ -12,6 +12,7 @@ import './privacy_hub_app_permission_row.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../controls/controlled_button.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -220,8 +221,23 @@ export class SettingsPrivacyHubGeolocationSubpage extends
     this.appPermissionsObserverReceiver_!.$.close();
   }
 
+  private isGeolocationPrefEnforced_(): boolean {
+    return this.getPref('ash.user.geolocation_access_level').enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+
+  private isGeolocationModifiable_(): boolean {
+    if (isSecondaryUser() || this.isGeolocationPrefEnforced_()) {
+      return false;
+    }
+
+    return true;
+  }
+
   private showManageGeolocationDialog_(): void {
-    this.shouldShowManageGeolocationDialog_ = true;
+    if (this.isGeolocationModifiable_()) {
+      this.shouldShowManageGeolocationDialog_ = true;
+    }
   }
 
   private onCancelClicked_(): void {

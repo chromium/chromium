@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {PrivacyHubBrowserProxyImpl, SettingsPrivacyHubGeolocationSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, ControlledRadioButtonElement, CrDialogElement, CrLinkRowElement, CrTooltipIconElement, GeolocationAccessLevel, Router, routes, ScheduleType, setAppPermissionProviderForTesting, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, ControlledButtonElement, ControlledRadioButtonElement, CrDialogElement, CrLinkRowElement, CrTooltipIconElement, GeolocationAccessLevel, Router, routes, ScheduleType, setAppPermissionProviderForTesting, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -725,6 +725,30 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         getSystemServicePermissionText(systemServices[1]!));
   });
 
+  test('Location controls is disabled when managed by policy', async () => {
+    await initPage();
+    privacyHubGeolocationSubpage.prefs.ash.user.geolocation_access_level
+        .enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
+    privacyHubGeolocationSubpage.prefs.ash.user.geolocation_access_level
+        .controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
+    privacyHubGeolocationSubpage.notifyPath(
+        'prefs.ash.user.geolocation_access_level.enforcement');
+    privacyHubGeolocationSubpage.notifyPath(
+        'prefs.ash.user.geolocation_access_level.controlledBy');
+    await flushTasks();
+
+    // Change button should be disabled.
+    const changeButton =
+        privacyHubGeolocationSubpage.shadowRoot!
+            .querySelector<ControlledButtonElement>('#changeAccessButton')!;
+    assertTrue(changeButton.disabled, 'Change button not disabled');
+
+    // Policy indicator should be shown.
+    assertTrue(
+        !!changeButton.shadowRoot!.querySelector('cr-policy-pref-indicator'),
+        'Policy indicator missing');
+  });
+
   test('Location control is disabled for secondary users', async () => {
     // Simulate secondary user flow.
     loadTimeData.overrideValues({
@@ -734,8 +758,8 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
     // Change button should be disabled.
     const changeButton =
-        privacyHubGeolocationSubpage.shadowRoot!.querySelector<CrButtonElement>(
-            '#changeAccessButton')!;
+        privacyHubGeolocationSubpage.shadowRoot!
+            .querySelector<ControlledButtonElement>('#changeAccessButton')!;
     assertTrue(changeButton.disabled);
 
     // Managed icon with tooltip should be present.
