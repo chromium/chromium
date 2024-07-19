@@ -239,7 +239,7 @@ suite('VoiceSelectionMenu', () => {
 
       setup(() => {
         voiceSelectionMenu.localeToDisplayName = {
-          'en-US': 'English (United States)',
+          'en-us': 'English (United States)',
         };
         flush();
         groupTitles = voiceSelectionMenu!.$.voiceSelectionMenu.get()
@@ -253,7 +253,7 @@ suite('VoiceSelectionMenu', () => {
       });
 
       test('it defaults to the locale when there is no display name', () => {
-        assertEquals('it-IT', groupTitles.item(1)!.textContent!.trim());
+        assertEquals('it-it', groupTitles.item(1)!.textContent!.trim());
       });
     });
 
@@ -274,8 +274,8 @@ suite('VoiceSelectionMenu', () => {
         const voiceNames = menu.querySelectorAll<HTMLElement>('.voice-name');
 
         assertEquals(2, groupTitles.length);
-        assertEquals('en-US', groupTitles.item(0)!.textContent!.trim());
-        assertEquals('en-UK', groupTitles.item(1)!.textContent!.trim());
+        assertEquals('en-us', groupTitles.item(0)!.textContent!.trim());
+        assertEquals('en-uk', groupTitles.item(1)!.textContent!.trim());
         assertEquals(3, voiceNames.length);
         assertEquals('English', voiceNames.item(0)!.textContent!.trim());
         assertEquals('English', voiceNames.item(1)!.textContent!.trim());

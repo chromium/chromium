@@ -52,7 +52,7 @@ const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
 export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode};
   selectedVoice: SpeechSynthesisVoice;
-  localeToDisplayName: {[lang: string]: string};
+  localeToDisplayName: {[lang: string]: string} = {};
   previewVoicePlaying: SpeechSynthesisVoice|null;
   enabledLangs: string[];
   availableVoices: SpeechSynthesisVoice[];
@@ -133,6 +133,11 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
         ({lang}) => enablesLangsLowerCase.has(lang.toLowerCase()));
   }
 
+  private getLangDisplayName(lang: string): string {
+    const langLower = lang.toLowerCase();
+    return this.localeToDisplayName[langLower] || langLower;
+  }
+
   private computeVoiceDropdown_(): VoiceDropdownGroup[] {
     if (!this.enabledVoices_) {
       return [];
@@ -147,10 +152,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
             previewPlaying: areVoicesEqual(this.previewVoicePlaying, voice),
           };
 
-          const lang = (this.localeToDisplayName &&
-                        voice.lang in this.localeToDisplayName) ?
-              this.localeToDisplayName[voice.lang] :
-              voice.lang;
+          const lang = this.getLangDisplayName(voice.lang);
 
           if (languageToDropdownItems[lang]) {
             languageToDropdownItems[lang].push(dropdownItem);

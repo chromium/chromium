@@ -1019,10 +1019,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
 
   private getLanguageDownloadedTitle_(lang: string) {
-    const langDisplayName =
-        (this.localeToDisplayName && lang in this.localeToDisplayName) ?
-        this.localeToDisplayName[lang] :
-        lang;
+    const langDisplayName = this.getLangDisplayName(lang);
 
     return loadTimeData.getStringF(
         'readingModeVoiceDownloadedTitle', langDisplayName);
@@ -1209,6 +1206,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
+  private getLangDisplayName(lang: string): string {
+    const langLower = lang.toLowerCase();
+    return this.localeToDisplayName[langLower] || langLower;
+  }
+
   private populateDisplayNamesForLocaleCodes() {
     this.localeToDisplayName = {};
 
@@ -1227,12 +1229,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private maybeAddDisplayName(lang: string) {
-    if (!(lang in this.localeToDisplayName)) {
+    const langLower = lang.toLowerCase();
+    if (!(langLower in this.localeToDisplayName)) {
       const langDisplayName =
-          chrome.readingMode.getDisplayNameForLocale(lang, lang);
+          chrome.readingMode.getDisplayNameForLocale(langLower, langLower);
       if (langDisplayName) {
         this.localeToDisplayName =
-            {...this.localeToDisplayName, [lang]: langDisplayName};
+            {...this.localeToDisplayName, [langLower]: langDisplayName};
       }
     }
   }

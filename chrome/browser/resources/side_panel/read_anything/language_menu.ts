@@ -100,7 +100,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   }
 
   selectedLang: string;
-  localeToDisplayName: {[lang: string]: string};
+  localeToDisplayName: {[lang: string]: string} = {};
   enabledLangs: string[];
   lastDownloadedLang: string;
 
@@ -164,17 +164,16 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     event.model.item.callback();
   }
 
-  private getDisplayName(
-      localeToDisplayName: {[lang: string]: string}, lang: string) {
-    return (localeToDisplayName && lang in localeToDisplayName) ?
-        localeToDisplayName[lang] :
-        lang;
+  private getDisplayName(lang: string) {
+    const langLower = lang.toLowerCase();
+    return this.localeToDisplayName[langLower] || langLower;
   }
 
   private getLanguageDownloadedTitle_() {
-    const langDisplayName =
-        this.getDisplayName(this.localeToDisplayName, this.lastDownloadedLang);
-
+    if (!this.lastDownloadedLang) {
+      return '';
+    }
+    const langDisplayName = this.getDisplayName(this.lastDownloadedLang);
     return loadTimeData.getStringF(
         'readingModeVoiceDownloadedTitle', langDisplayName);
   }
@@ -196,9 +195,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         chrome.readingMode.isLanguagePackDownloadingEnabled &&
             chrome.readingMode.isChromeOsAsh ?
         Array.from(
-            this.baseLanguages,
-            (key) =>
-                [key, this.getDisplayName(this.localeToDisplayName, key)]) :
+            this.baseLanguages, (key) => [key, this.getDisplayName(key)]) :
         [];
 
     // Next, add any other supported languages to the menu, if they don't
@@ -209,7 +206,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
               ([key, _]) => key === lang.toLowerCase())) {
         langsAndReadableLangs.push([
           lang.toLowerCase(),
-          this.getDisplayName(this.localeToDisplayName, lang),
+          this.getDisplayName(lang),
         ]);
 
         if (chrome.readingMode.isLanguagePackDownloadingEnabled) {

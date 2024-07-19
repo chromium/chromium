@@ -143,7 +143,7 @@ suite('LanguageMenu', () => {
           assertTrue(isPositionedOnPage(languageMenu));
           assertEquals(1, getLanguageLineItems().length);
           assertLanguageLineWithTextAndSwitch(
-              'en-US', getLanguageLineItems()[0]!);
+              'en-us', getLanguageLineItems()[0]!);
           assertEquals('', getLanguageSearchField().value);
         });
 
@@ -160,9 +160,9 @@ suite('LanguageMenu', () => {
         assertTrue(isPositionedOnPage(languageMenu));
         assertEquals(2, getLanguageLineItems().length);
         assertLanguageLineWithTextAndSwitch(
-            'en-UK', getLanguageLineItems()[0]!);
+            'en-uk', getLanguageLineItems()[0]!);
         assertLanguageLineWithTextAndSwitch(
-            'en-US', getLanguageLineItems()[1]!);
+            'en-us', getLanguageLineItems()[1]!);
         assertEquals('', getLanguageSearchField().value);
         assertEquals(true, getNoResultsFoundMessage()!.hidden);
       });
@@ -171,7 +171,7 @@ suite('LanguageMenu', () => {
     suite('with display names for locales', () => {
       setup(() => {
         languageMenu.localeToDisplayName = {
-          'en-US': 'English (United States)',
+          'en-us': 'English (United States)',
         };
         flush();
       });
@@ -222,20 +222,20 @@ suite('LanguageMenu', () => {
           assertTrue(isPositionedOnPage(languageMenu));
           assertEquals(3, getLanguageLineItems().length);
           assertLanguageLineWithTextAndSwitch(
-              'en-UK', getLanguageLineItems()[0]!);
+              'en-uk', getLanguageLineItems()[0]!);
           assertLanguageLineWithTextAndSwitch(
-              'en-US', getLanguageLineItems()[1]!);
+              'en-us', getLanguageLineItems()[1]!);
           assertLanguageLineWithTextAndSwitch(
-              'it-IT', getLanguageLineItems()[2]!);
+              'it-it', getLanguageLineItems()[2]!);
           assertEquals('', getLanguageSearchField().value);
         });
 
     suite('with display names for locales', () => {
       setup(() => {
         languageMenu.localeToDisplayName = {
-          'en-US': 'English (United States)',
-          'it-IT': 'Italian',
-          'en-UK': 'English (United Kingdom)',
+          'en-us': 'English (United States)',
+          'it-it': 'Italian',
+          'en-uk': 'English (United Kingdom)',
         };
         flush();
       });
@@ -259,7 +259,7 @@ suite('LanguageMenu', () => {
         ];
         setAvailableVoices();
         languageMenu.localeToDisplayName = {
-          'en-US': 'English (United States)',
+          'en-us': 'English (United States)',
           'en': 'English',
         };
         flush();
@@ -495,19 +495,19 @@ suite('LanguageMenu', () => {
     test('only shows one line per unique language name', () => {
       assertTrue(isPositionedOnPage(languageMenu));
       assertEquals(4, getLanguageLineItems().length);
-      assertLanguageLineWithTextAndSwitch('en-UK', getLanguageLineItems()[0]!);
-      assertLanguageLineWithTextAndSwitch('en-US', getLanguageLineItems()[1]!);
-      assertLanguageLineWithTextAndSwitch('it-IT', getLanguageLineItems()[2]!);
-      assertLanguageLineWithTextAndSwitch('zh-CN', getLanguageLineItems()[3]!);
+      assertLanguageLineWithTextAndSwitch('en-uk', getLanguageLineItems()[0]!);
+      assertLanguageLineWithTextAndSwitch('en-us', getLanguageLineItems()[1]!);
+      assertLanguageLineWithTextAndSwitch('it-it', getLanguageLineItems()[2]!);
+      assertLanguageLineWithTextAndSwitch('zh-cn', getLanguageLineItems()[3]!);
     });
 
     suite('with display names for locales', () => {
       setup(() => {
         languageMenu.localeToDisplayName = {
-          'en-US': 'English (United States)',
-          'it-IT': 'Italian',
-          'en-UK': 'English (United Kingdom)',
-          'zh-CN': 'Chinese',
+          'en-us': 'English (United States)',
+          'it-it': 'Italian',
+          'en-uk': 'English (United Kingdom)',
+          'zh-cn': 'Chinese',
         };
         flush();
       });
