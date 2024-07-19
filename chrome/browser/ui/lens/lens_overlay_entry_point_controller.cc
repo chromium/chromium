@@ -69,18 +69,6 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
   }
 }
 
-void LensOverlayEntryPointController::SetToolbarEntrypointActionState(
-    bool is_active) {
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  CHECK(browser_view);
-  auto* toolbar_container =
-      browser_view->toolbar()->pinned_toolbar_actions_container();
-  CHECK(toolbar_container);
-
-  toolbar_container->UpdateActionState(kActionSidePanelShowLensOverlayResults,
-                                       is_active);
-}
-
 actions::ActionItem* LensOverlayEntryPointController::GetToolbarEntrypoint() {
   BrowserActions* browser_actions = browser_->browser_actions();
   return actions::ActionManager::Get().FindAction(

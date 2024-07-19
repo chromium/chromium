@@ -25,12 +25,6 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   explicit LensOverlayEntryPointController(Browser* browser);
   ~LensOverlayEntryPointController() override;
 
-  // Sets the action state for our toolbar entrypoint. This will set the toolbar
-  // to visible if it is active and not already visible to the user. When
-  // setting is_active to false, will remove from the toolbar if not pinned by
-  // the user.
-  void SetToolbarEntrypointActionState(bool is_active);
-
  private:
   // FullscreenObserver:
   void OnFullscreenStateChanged() override;
