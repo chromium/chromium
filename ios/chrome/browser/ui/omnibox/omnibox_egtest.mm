@@ -1557,6 +1557,8 @@ void FocusFakebox() {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"hello" flags:0];
 
   // Omnibox now should contain the page url prefixed with 'hello'
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText("hello" +
                                                       _URL1.GetContent())];
