@@ -12,6 +12,8 @@ static_library("signin") {
     "auth_error_observer.h",
     "auth_error_observer_factory.cc",
     "auth_error_observer_factory.h",
+    "authentication_flow_auto_reload_manager.cc",
+    "authentication_flow_auto_reload_manager.h",
     "merge_session_navigation_throttle.cc",
     "merge_session_navigation_throttle.h",
     "merge_session_throttling_utils.cc",

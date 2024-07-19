@@ -27,12 +27,16 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/simple_test_clock.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
@@ -910,6 +914,142 @@ IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') != -1");
 }
 
+// Class for testing `DeviceAuthenticationFlowAutoReloadInterval` policy cases.
+class AutoReloadWebviewLoginTest : public WebviewLoginTest {
+ public:
+  AutoReloadWebviewLoginTest() = default;
+  AutoReloadWebviewLoginTest(const AutoReloadWebviewLoginTest&) = delete;
+  AutoReloadWebviewLoginTest& operator=(const AutoReloadWebviewLoginTest&) =
+      delete;
+
+  // Sets up the `DeviceAuthenticationFlowAutoReloadInterval` policy.
+  void SetAutoReloadInterval(const int& reload_interval) {
+    em::ChromeDeviceSettingsProto& proto(device_policy_builder_.payload());
+    proto.mutable_deviceauthenticationflowautoreloadinterval()->set_value(
+        reload_interval);
+
+    device_policy_builder_.Build();
+
+    FakeSessionManagerClient::Get()->set_device_policy(
+        device_policy_builder_.GetBlob());
+
+    PrefChangeRegistrar registrar;
+    base::test::TestFuture<const char*> pref_changed_future;
+    registrar.Init(g_browser_process->local_state());
+    registrar.Add(
+        prefs::kAuthenticationFlowAutoReloadInterval,
+        base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
+                            prefs::kAuthenticationFlowAutoReloadInterval));
+
+    FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
+
+    EXPECT_EQ(prefs::kAuthenticationFlowAutoReloadInterval,
+              pref_changed_future.Take());
+  }
+
+  void EnterUsernameAndGoToPasswordPage() {
+    WaitForGaiaPageLoadAndPropertyUpdate();
+    ExpectIdentifierPage();
+    SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail,
+                                 FakeGaiaMixin::kEmailPath);
+    test::OobeJS().ClickOnPath(kPrimaryButton);
+    WaitForGaiaPageBackButtonUpdate();
+    ExpectPasswordPage();
+  }
+
+  void AdvanceTime(base::TimeDelta time_change) {
+    // Advance() doesn't trigger the scheduled timer so we need to resume the
+    // timer in order to get the updated clock time
+    // TODO(b/353919505): Add method to WallClockTimer for resuming clock for
+    // testing.
+    test_clock_->Advance(time_change);
+    LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->GetHandler<GaiaScreenHandler>()
+        ->GetAutoReloadManagerForTesting()
+        .ResumeTimerForTesting();
+  }
+
+  void SetUpTestClocks() {
+    base::Time now = base::Time::Now();
+    test_clock_ = std::make_unique<base::SimpleTestClock>();
+    test_clock_->SetNow(now);
+    base::TimeTicks now_ticks = base::TimeTicks::Now();
+    test_tick_clock_ = std::make_unique<base::SimpleTestTickClock>();
+    test_tick_clock_->SetNowTicks(now_ticks);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SetUpTestClocks();
+    AuthenticationFlowAutoReloadManager::SetClockForTesting(
+        test_clock_.get(), test_tick_clock_.get());
+
+    WebviewLoginTest::SetUpInProcessBrowserTestFixture();
+  }
+
+ protected:
+  std::unique_ptr<base::SimpleTestClock> test_clock_;
+  std::unique_ptr<base::SimpleTestTickClock> test_tick_clock_;
+
+ private:
+  policy::DevicePolicyBuilder device_policy_builder_;
+
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
+                       NewUserWithAutoReloadDisabled) {
+  EnterUsernameAndGoToPasswordPage();
+  // Check policy not set
+  PrefService* local_state = g_browser_process->local_state();
+  int pref_reload_interval = local_state->GetInteger(
+      ash::prefs::kAuthenticationFlowAutoReloadInterval);
+  EXPECT_EQ(pref_reload_interval, 0);
+
+  EXPECT_FALSE(LoginDisplayHost::default_host()
+                   ->GetOobeUI()
+                   ->GetHandler<GaiaScreenHandler>()
+                   ->GetAutoReloadManagerForTesting()
+                   .IsTimerActiveForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest, NewUserWithAutoReloadSet) {
+  SetAutoReloadInterval(10);  // 10 minutes
+
+  WaitForGaiaPageLoad();
+
+  AdvanceTime(base::Minutes(10));
+
+  WaitForGaiaPageReload();
+
+  AdvanceTime(base::Minutes(10));
+
+  WaitForGaiaPageReload();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
+                       AutoReloadEnabledThenDisabled) {
+  SetAutoReloadInterval(10);  // 10 minutes
+
+  WaitForGaiaPageLoad();
+
+  AdvanceTime(base::Minutes(10));
+
+  // Wait for page to be reloaded and properties updated.
+  EnterUsernameAndGoToPasswordPage();
+
+  AdvanceTime(base::Minutes(5));
+
+  SetAutoReloadInterval(0);  // 0 minutes
+
+  EXPECT_FALSE(LoginDisplayHost::default_host()
+                   ->GetOobeUI()
+                   ->GetHandler<GaiaScreenHandler>()
+                   ->GetAutoReloadManagerForTesting()
+                   .IsTimerActiveForTesting());
+}
+
 class ReauthWebviewLoginTest : public WebviewLoginTest {
  protected:
   LoginManagerMixin::TestUserInfo user_with_gaia_pw_{
@@ -1315,11 +1455,11 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     base::test::TestFuture<const char*> pref_changed_future;
     registrar.Init(ProfileHelper::GetSigninProfile()->GetPrefs());
     registrar.Add(
-        prefs::kManagedAutoSelectCertificateForUrls,
+        ::prefs::kManagedAutoSelectCertificateForUrls,
         base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
-                            prefs::kManagedAutoSelectCertificateForUrls));
+                            ::prefs::kManagedAutoSelectCertificateForUrls));
     FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
-    EXPECT_EQ(prefs::kManagedAutoSelectCertificateForUrls,
+    EXPECT_EQ(::prefs::kManagedAutoSelectCertificateForUrls,
               pref_changed_future.Take());
   }
 
@@ -1371,11 +1511,11 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     base::test::TestFuture<const char*> pref_changed_future;
     registrar.Init(ProfileHelper::GetSigninProfile()->GetPrefs());
     registrar.Add(
-        prefs::kPromptOnMultipleMatchingCertificates,
+        ::prefs::kPromptOnMultipleMatchingCertificates,
         base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
-                            prefs::kPromptOnMultipleMatchingCertificates));
+                            ::prefs::kPromptOnMultipleMatchingCertificates));
     FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
-    EXPECT_EQ(prefs::kPromptOnMultipleMatchingCertificates,
+    EXPECT_EQ(::prefs::kPromptOnMultipleMatchingCertificates,
               pref_changed_future.Take());
   }
 

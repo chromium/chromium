@@ -118,6 +118,7 @@
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -677,10 +678,20 @@ void GaiaScreenHandler::DeclareJSCallbacks() {
 
 void GaiaScreenHandler::HandleAuthenticatorLoaded() {
   VLOG(1) << "Authenticator finished loading";
+
+  auth_flow_auto_reload_manager_.Activate(
+      base::BindOnce(&GaiaScreenHandler::ReloadGaia, weak_factory_.GetWeakPtr(),
+                     /*force_reload=*/true));
+
   // Recreate the client cert usage observer, in order to track only the certs
   // used during the current sign-in attempt.
   extension_provided_client_cert_usage_observer_ =
       std::make_unique<LoginClientCertUsageObserver>();
+}
+
+ash::AuthenticationFlowAutoReloadManager&
+GaiaScreenHandler::GetAutoReloadManagerForTesting() {
+  return auth_flow_auto_reload_manager_;
 }
 
 void GaiaScreenHandler::HandleWebviewLoadAborted(int error_code) {
@@ -733,6 +744,10 @@ void GaiaScreenHandler::HandleCompleteAuthenticationEvent(
     bool services_provided,
     const base::Value::Dict& password_attributes,
     const base::Value::Dict& sync_trusted_vault_keys) {
+  absl::Cleanup run_callback_on_return = [this] {
+    auth_flow_auto_reload_manager_.Terminate();
+  };
+
   if (gaia_id.empty()) {
     LOG(WARNING) << "GaiaId is empty!";
   }

@@ -177,8 +177,9 @@ inline constexpr char kOobeMetricsReportedAsEnabled[] =
 inline constexpr char kOobeStatsReportingControllerReportedReset[] =
     "OobeStatsReportingControllerReportedReset";
 
-// Time interval by which the user's authentication flow should automatically be
-// reloaded. Policy name: `DeviceAuthenticationFlowAutoReloadInterval`.
+// Time interval (in minutes) by which the user's authentication flow should
+// automatically be reloaded. Policy name:
+// `DeviceAuthenticationFlowAutoReloadInterval`.
 inline constexpr char kAuthenticationFlowAutoReloadInterval[] =
     "AuthenticationFlowAutoReloadInterval";
 

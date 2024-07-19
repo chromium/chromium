@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
+#include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
@@ -208,6 +209,8 @@ class GaiaScreenHandler final
   // to learn of the relevant state transitions e.g. with an Observer class.
   bool IsLoadedForTesting() const;
   bool IsNavigationBlockedForTesting() const;
+
+  ash::AuthenticationFlowAutoReloadManager& GetAutoReloadManagerForTesting();
 
  private:
   void LoadGaia(const login::GaiaContext& context);
@@ -509,6 +512,8 @@ class GaiaScreenHandler final
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
   bool is_gaia_password_required_ = false;
+
+  ash::AuthenticationFlowAutoReloadManager auth_flow_auto_reload_manager_;
 
   base::WeakPtrFactory<GaiaScreenHandler> weak_factory_{this};
 };

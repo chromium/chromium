@@ -20,6 +20,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/onboarding_user_activity_counter.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -133,8 +134,9 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(
       ash::quick_start::prefs::kResumeQuickStartAfterRebootInfo);
 
-  registry->RegisterIntegerPref(prefs::kAuthenticationFlowAutoReloadInterval,
-                                0);
+  registry->RegisterIntegerPref(
+      prefs::kAuthenticationFlowAutoReloadInterval,
+      constants::kDefaultAuthenticationFlowAutoReloadInterval);
 }
 
 // static
