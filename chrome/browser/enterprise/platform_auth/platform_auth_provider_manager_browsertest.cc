@@ -28,12 +28,50 @@ class PlatformAuthManagerBrowserTest : public InProcessBrowserTest {
       const PlatformAuthManagerBrowserTest&) = delete;
 };
 
-IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest, Data) {
+IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
+                       DataWithoutOriginFiltering) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install a mock provider.
   auto mock_provider =
       std::make_unique<::testing::StrictMock<MockPlatformAuthProvider>>();
+  EXPECT_CALL(*mock_provider, SupportsOriginFiltering())
+      .WillOnce(::testing::Return(false));
+
+  MockPlatformAuthProvider* unsafe_mock_provider = mock_provider.get();
+  ScopedSetProviderForTesting set_provider(std::move(mock_provider));
+
+  EXPECT_CALL(*unsafe_mock_provider, FetchOrigins(_)).Times(0);
+  // Issue a request to that origin and ensure that auth data is collected.
+  EXPECT_CALL(*unsafe_mock_provider, GetData(_, _))
+      .WillOnce([](const GURL& url,
+                   PlatformAuthProviderManager::GetDataCallback callback) {
+        net::HttpRequestHeaders auth_headers;
+        auth_headers.SetHeader(net::HttpRequestHeaders::kCookie,
+                               "new-cookie=new-cookie-data");
+        std::move(callback).Run(std::move(auth_headers));
+      });
+
+  PlatformAuthProviderManager::GetInstance().SetEnabled(true,
+                                                        base::OnceClosure());
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+  ::testing::Mock::VerifyAndClearExpectations(unsafe_mock_provider);
+
+  // The provider instance will be destroyed when `set_provider` is destroyed.
+  EXPECT_CALL(*unsafe_mock_provider, Die());
+}
+
+IN_PROC_BROWSER_TEST_F(PlatformAuthManagerBrowserTest,
+                       DataWithOriginFiltering) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install a mock provider.
+  auto mock_provider =
+      std::make_unique<::testing::StrictMock<MockPlatformAuthProvider>>();
+  EXPECT_CALL(*mock_provider, SupportsOriginFiltering())
+      .WillOnce(::testing::Return(true));
   MockPlatformAuthProvider* unsafe_mock_provider = mock_provider.get();
   ScopedSetProviderForTesting set_provider(std::move(mock_provider));
 

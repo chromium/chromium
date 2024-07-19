@@ -10,6 +10,8 @@
 #include "chrome/browser/chrome_browser_main_posix.h"
 #include "chrome/browser/mac/code_sign_clone_manager.h"
 
+class PlatformAuthPolicyObserver;
+
 namespace mac_metrics {
 class Metrics;
 }
@@ -31,6 +33,7 @@ class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
   void PostCreateMainMessageLoop() override;
   void PreProfileInit() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
+  void PostMainMessageLoopRun() override;
 
   // Perform platform-specific work that needs to be done after the main event
   // loop has ended. The embedder must be sure to call this.
@@ -48,6 +51,9 @@ class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
   // covered by the code signature reachable on the filesystem for dynamic and
   // static verification.
   code_sign_clone_manager::CodeSignCloneManager code_sign_clone_manager_;
+
+  // Applies enterprise policies for platform auth SSO.
+  std::unique_ptr<PlatformAuthPolicyObserver> platform_auth_policy_observer_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_MAC_H_
