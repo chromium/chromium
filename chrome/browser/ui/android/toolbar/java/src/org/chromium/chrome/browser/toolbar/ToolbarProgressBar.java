@@ -202,7 +202,16 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
     }
 
     /**
+     * Returns the height the progress bar would be when it is displayed. This is different from
+     * getHeight() which returns the progress bar height only if it's currently in the layout.
+     */
+    public int getDefaultHeight() {
+        return mProgressBarHeight;
+    }
+
+    /**
      * Set the top progress bar's top margin.
+     *
      * @param topMargin The top margin of the progress bar in px.
      */
     private void setTopMargin(int topMargin) {

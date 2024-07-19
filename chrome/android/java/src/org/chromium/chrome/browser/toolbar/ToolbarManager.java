@@ -178,6 +178,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.net.NetError;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
@@ -319,6 +320,7 @@ public class ToolbarManager
 
     private boolean mBackGestureInProgress;
     private boolean mStartNavDuringOngoingGesture;
+    private WindowAndroid.ProgressBarConfig.Provider mProgressBarConfigProvider;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -878,6 +880,7 @@ public class ToolbarManager
                         // In those cases we actually still want to use the most recently selected
                         // tab, but will update the URL.
                         onBackPressStateChanged();
+                        onBackForwardTransitionAnimationChange();
                         mBackGestureInProgress = false;
                         if (tab == null) {
                             mLocationBarModel.notifyUrlChanged();
@@ -1059,6 +1062,11 @@ public class ToolbarManager
                     @Override
                     public void didFirstVisuallyNonEmptyPaint(Tab tab) {
                         mToolbar.onDidFirstVisuallyNonEmptyPaint();
+                    }
+
+                    @Override
+                    public void didBackForwardTransitionAnimationChange() {
+                        onBackForwardTransitionAnimationChange();
                     }
                 };
 
@@ -1247,6 +1255,24 @@ public class ToolbarManager
         if (mDesktopWindowStateProvider != null) {
             mDesktopWindowStateProvider.addObserver(mControlContainer);
         }
+
+        mProgressBarConfigProvider =
+                new WindowAndroid.ProgressBarConfig.Provider() {
+                    @Override
+                    public WindowAndroid.ProgressBarConfig getProgressBarConfig() {
+                        WindowAndroid.ProgressBarConfig config =
+                                new WindowAndroid.ProgressBarConfig();
+                        config.backgroundColor = mToolbar.getProgressBar().getBackgroundColor();
+                        config.heightPhysical = mToolbar.getProgressBar().getDefaultHeight();
+                        config.color = mToolbar.getProgressBar().getForegroundColor();
+                        if (mToolbarHairline != null) {
+                            config.hairlineHeightPhysical = mToolbarHairline.getHeight();
+                            config.hairlineColor = mToolbar.getToolbarHairlineColor();
+                        }
+                        return config;
+                    }
+                };
+        mWindowAndroid.setProgressBarConfigProvider(mProgressBarConfigProvider);
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
@@ -1867,6 +1893,8 @@ public class ToolbarManager
         mControlContainer.destroy();
         mConstraintsProxy.destroy();
         mLocationBarFocusHandler.destroy();
+
+        mWindowAndroid.setProgressBarConfigProvider(null);
     }
 
     /** Called when the orientation of the activity has changed. */
@@ -2456,6 +2484,16 @@ public class ToolbarManager
     private void onBackPressStateChanged() {
         Tab tab = mActivityTabProvider.get();
         mBackPressStateSupplier.set(tab != null && mToolbarTabController.canGoBack());
+    }
+
+    private void onBackForwardTransitionAnimationChange() {
+        Tab tab = mActivityTabProvider.get();
+        final boolean backGestureInvokeAnimationInProgress =
+                tab != null
+                        && tab.getWebContents().getCurrentBackForwardTransitionStage()
+                                == AnimationStage.INVOKE_ANIMATION;
+        mToolbar.setShowingProgressBarForBackForwardTransition(
+                backGestureInvokeAnimationInProgress);
     }
 
     public @BackPressResult int handleBackPress() {

@@ -110,6 +110,14 @@ public abstract class ToolbarLayout extends FrameLayout
 
     protected final DestroyChecker mDestroyChecker;
 
+    /** Set if the progress bar is being drawn by WebContents for back forward transition. */
+    private boolean mShowingProgressBarForBackForwardTransition;
+
+    /** Caches the color for the toolbar hairline. */
+    private @ColorInt int mToolbarHairlineColor;
+
+    private ImageView mToolbarShadow;
+
     /** Basic constructor for {@link ToolbarLayout}. */
     public ToolbarLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -246,6 +254,42 @@ public abstract class ToolbarLayout extends FrameLayout
      */
     protected ColorStateList getTint() {
         return mThemeColorProvider == null ? mDefaultTint : mThemeColorProvider.getTint();
+    }
+
+    protected ImageView getToolbarShadow() {
+        return mToolbarShadow;
+    }
+
+    /**
+     * Notifies whether the progress bar is being drawn by WebContents for back forward transition
+     * UI.
+     */
+    public final void setShowingProgressBarForBackForwardTransition(
+            boolean showingProgressBarForBackForwardTransition) {
+        if (mShowingProgressBarForBackForwardTransition
+                == showingProgressBarForBackForwardTransition) return;
+
+        mShowingProgressBarForBackForwardTransition = showingProgressBarForBackForwardTransition;
+        mProgressBar.setVisibility(
+                mShowingProgressBarForBackForwardTransition ? View.GONE : View.VISIBLE);
+        updateShadowVisibility();
+    }
+
+    /** Update the visibility of the toolbar shadow. */
+    protected void updateShadowVisibility() {
+        boolean shouldDrawShadow = shouldDrawShadow();
+        int shadowVisibility = shouldDrawShadow ? View.VISIBLE : View.INVISIBLE;
+
+        if (mToolbarShadow != null && mToolbarShadow.getVisibility() != shadowVisibility) {
+            mToolbarShadow.setVisibility(shadowVisibility);
+        }
+    }
+
+    /**
+     * @return Whether the toolbar shadow should be drawn.
+     */
+    protected boolean shouldDrawShadow() {
+        return !mShowingProgressBarForBackForwardTransition;
     }
 
     @Override
@@ -412,6 +456,10 @@ public abstract class ToolbarLayout extends FrameLayout
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+
+        mToolbarShadow = getRootView().findViewById(R.id.toolbar_hairline);
+        updateShadowVisibility();
+
         // TODO(crbug.com/40657306): lazy initialize progress bar.
         // Posting adding progress bar can prevent parent view group from using a stale children
         // count, which can cause a crash in rare cases.
@@ -833,8 +881,14 @@ public abstract class ToolbarLayout extends FrameLayout
         final ImageView shadow = getRootView().findViewById(R.id.toolbar_hairline);
         // Tests don't always set this up. TODO(crbug.com/40866629): Refactor this dep.
         if (shadow != null) {
-            shadow.setImageTintList(ColorStateList.valueOf(getToolbarHairlineColor(toolbarColor)));
+            mToolbarHairlineColor = computeToolbarHairlineColor(toolbarColor);
+            shadow.setImageTintList(ColorStateList.valueOf(mToolbarHairlineColor));
         }
+    }
+
+    /** Returns the color of the hairline drawn underneath the toolbar. */
+    public @ColorInt int getToolbarHairlineColor() {
+        return mToolbarHairlineColor;
     }
 
     /**
@@ -842,7 +896,7 @@ public abstract class ToolbarLayout extends FrameLayout
      *
      * @param toolbarColor Toolbar color
      */
-    public @ColorInt int getToolbarHairlineColor(@ColorInt int toolbarColor) {
+    private @ColorInt int computeToolbarHairlineColor(@ColorInt int toolbarColor) {
         return ThemeUtils.getToolbarHairlineColor(
                 getContext(), toolbarColor, mToolbarDataProvider.isIncognitoBranded());
     }

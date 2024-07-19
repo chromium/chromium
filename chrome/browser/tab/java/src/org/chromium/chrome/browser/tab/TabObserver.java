@@ -411,4 +411,10 @@ public interface TabObserver {
      * @param tabGroupId The new tab group ID, may be null.
      */
     default void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {}
+
+    /**
+     * Called when the animation state for the back forward session history navigation has changed.
+     * Retrieve the current animation state using the Tab's WebContents.
+     */
+    default void didBackForwardTransitionAnimationChange() {}
 }

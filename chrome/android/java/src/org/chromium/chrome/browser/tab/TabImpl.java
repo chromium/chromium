@@ -1299,6 +1299,10 @@ class TabImpl implements Tab {
     }
 
     void handleBackForwardTransitionUiChanged() {
+        for (TabObserver observer : mObservers) {
+            observer.didBackForwardTransitionAnimationChange();
+        }
+
         // Start the cross-fade animation after the invoking animation is done.
         switch (getWebContents().getCurrentBackForwardTransitionStage()) {
             case AnimationStage.NONE:

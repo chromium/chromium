@@ -138,7 +138,6 @@ public class ToolbarPhone extends ToolbarLayout
     protected @NonNull ImageView mHomeButton;
     private TextView mUrlBar;
     protected View mUrlActionContainer;
-    protected ImageView mToolbarShadow;
     private OptionalButtonCoordinator mOptionalButtonCoordinator;
 
     @ViewDebug.ExportedProperty(category = "chrome")
@@ -1273,8 +1272,8 @@ public class ToolbarPhone extends ToolbarLayout
             mHomeButton.setTranslationY(0);
         }
 
-        if (!mUrlFocusChangeInProgress && mToolbarShadow != null) {
-            mToolbarShadow.setAlpha(mUrlBar.hasFocus() ? 0.f : 1.f);
+        if (!mUrlFocusChangeInProgress && getToolbarShadow() != null) {
+            getToolbarShadow().setAlpha(mUrlBar.hasFocus() ? 0.f : 1.f);
         }
 
         mLocationBar.getPhoneCoordinator().setAlpha(1);
@@ -1309,7 +1308,7 @@ public class ToolbarPhone extends ToolbarLayout
             if (!mUrlBar.hasFocus() && mNtpSearchBoxScrollFraction == 1.f) {
                 alpha = 1.f;
             }
-            mToolbarShadow.setAlpha(alpha);
+            getToolbarShadow().setAlpha(alpha);
         }
 
         NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
@@ -1692,14 +1691,6 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        mToolbarShadow = getRootView().findViewById(R.id.toolbar_hairline);
-        updateShadowVisibility();
-    }
-
-    @Override
     public void draw(Canvas canvas) {
         if (mDestroyChecker.isDestroyed()) return;
         // If capturing a texture of the toolbar, ensure the alpha is set prior to draw(...) being
@@ -1898,7 +1889,7 @@ public class ToolbarPhone extends ToolbarLayout
             if (!hideShadowForIncognitoNtp()
                     && !hideShadowForInterstitial()
                     && !hideShadowForRegularNtpTextureCapture()) {
-                mToolbarShadow.setVisibility(VISIBLE);
+                getToolbarShadow().setVisibility(VISIBLE);
             }
             mPreTextureCaptureAlpha = getAlpha();
             mPreTextureCaptureVisibility = getVisibility();
@@ -2107,8 +2098,8 @@ public class ToolbarPhone extends ToolbarLayout
             animators.add(animator);
         }
 
-        if (mToolbarShadow != null) {
-            animator = ObjectAnimator.ofFloat(mToolbarShadow, ALPHA, urlHasFocus() ? 0 : 1);
+        if (getToolbarShadow() != null) {
+            animator = ObjectAnimator.ofFloat(getToolbarShadow(), ALPHA, urlHasFocus() ? 0 : 1);
             animator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
             animator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
             animators.add(animator);
@@ -2156,8 +2147,8 @@ public class ToolbarPhone extends ToolbarLayout
 
         if (isLocationBarShownInNtp() && mNtpSearchBoxScrollFraction == 0f) return;
 
-        if (mToolbarShadow != null) {
-            animator = ObjectAnimator.ofFloat(mToolbarShadow, ALPHA, 1);
+        if (getToolbarShadow() != null) {
+            animator = ObjectAnimator.ofFloat(getToolbarShadow(), ALPHA, 1);
             animator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
             animator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
             animators.add(animator);
@@ -2492,23 +2483,15 @@ public class ToolbarPhone extends ToolbarLayout
         return !isLocationBarShownInNtp() || mUrlExpansionFraction > 0;
     }
 
-    /** Update the visibility of the toolbar shadow. */
-    private void updateShadowVisibility() {
-        boolean shouldDrawShadow = shouldDrawShadow();
-        int shadowVisibility = shouldDrawShadow ? View.VISIBLE : View.INVISIBLE;
-
-        if (mToolbarShadow != null && mToolbarShadow.getVisibility() != shadowVisibility) {
-            mToolbarShadow.setVisibility(shadowVisibility);
-        }
-    }
-
     /**
      * @return Whether the toolbar shadow should be drawn.
      */
-    private boolean shouldDrawShadow() {
+    @Override
+    protected boolean shouldDrawShadow() {
         // TODO(twellington): Move this shadow state information to ToolbarDataProvider and show
         // shadow when incognito NTP is scrolled.
-        return mTabSwitcherState == STATIC_TAB
+        return super.shouldDrawShadow()
+                && mTabSwitcherState == STATIC_TAB
                 && !hideShadowForIncognitoNtp()
                 && !hideShadowForInterstitial()
                 && getVisibility() == View.VISIBLE;

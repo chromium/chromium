@@ -312,6 +312,11 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
     }
 
+    /** Returns the color of the hairline drawn underneath the toolbar. */
+    public @ColorInt int getToolbarHairlineColor() {
+        return mToolbarLayout.getToolbarHairlineColor();
+    }
+
     /**
      * @param urlExpansionObserver The observer that observes URL expansion progress change.
      */
@@ -397,6 +402,16 @@ public class TopToolbarCoordinator implements Toolbar {
             mTabStripTransitionCoordinator = null;
         }
         cleanUpIncognitoStateObserver();
+    }
+
+    /**
+     * Notifies whether the progress bar is being drawn by WebContents for back forward transition
+     * UI.
+     */
+    public void setShowingProgressBarForBackForwardTransition(
+            boolean showingProgressBarForBackForwardTransition) {
+        mToolbarLayout.setShowingProgressBarForBackForwardTransition(
+                showingProgressBarForBackForwardTransition);
     }
 
     @Override
