@@ -24,13 +24,17 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kExplicitSigninMigrationHistogramName[] =
     "Signin.ExplicitSigninMigration";
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
 
 constexpr char kSigninPendingStartTimePref[] =
     "signin.signin_pending_start_time";
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // This pref contains the web signin start time of the accounts that have signed
 // on the web only. If the account is removed or any account gets signed in to
 // Chrome, the pref is cleared.
@@ -40,6 +44,7 @@ constexpr char kSigninPendingStartTimePref[] =
 // different platforms, however it is fine the purpose of this metric.
 constexpr char kWebSigninAccountStartTimesPref[] =
     "signin.web_signin_accounts_start_time_dict";
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -74,8 +79,9 @@ void RecordSigninPendingResolution(SigninPendingResolution resolution,
                                 base::Days(14), 50);
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Metric is recorded for specific access points.
-void MaybeRecordWebSigninToChromeSignin(
+void MaybeRecordWebSigninToChromeSigninTimes(
     base::Time web_signin_start_time,
     signin_metrics::AccessPoint access_point) {
   std::string_view access_point_string;
@@ -100,6 +106,7 @@ void MaybeRecordWebSigninToChromeSignin(
                                 time_in_web_signin_only_until_chrome_signin,
                                 base::Seconds(0), base::Days(7), 50);
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 
@@ -109,24 +116,9 @@ SigninMetricsService::SigninMetricsService(
     : identity_manager_(identity_manager), pref_service_(pref_service) {
   identity_manager_scoped_observation_.Observe(&identity_manager_.get());
 
-  // Record migration status to explicit signin.
-  ExplicitSigninMigration explicit_signin_migration =
-      ExplicitSigninMigration::kMigratedSignedOut;
-  const bool explicit_signin_pref =
-      pref_service.GetBoolean(prefs::kExplicitBrowserSignin);
-  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    explicit_signin_migration =
-        explicit_signin_pref ? ExplicitSigninMigration::kMigratedSyncing
-                             : ExplicitSigninMigration::kNotMigratedSyncing;
-  } else if (identity_manager_->HasPrimaryAccount(
-                 signin::ConsentLevel::kSignin)) {
-    explicit_signin_migration =
-        explicit_signin_pref ? ExplicitSigninMigration::kMigratedSignedIn
-                             : ExplicitSigninMigration::kNotMigratedSignedIn;
-  }
-
-  base::UmaHistogramEnumeration(kExplicitSigninMigrationHistogramName,
-                                explicit_signin_migration);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  RecordExplicitSigninMigrationStatus();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 SigninMetricsService::~SigninMetricsService() = default;
@@ -134,7 +126,9 @@ SigninMetricsService::~SigninMetricsService() = default;
 // static
 void SigninMetricsService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kSigninPendingStartTimePref, base::Time());
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterDictionaryPref(kWebSigninAccountStartTimesPref);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 void SigninMetricsService::OnPrimaryAccountChanged(
@@ -143,48 +137,18 @@ void SigninMetricsService::OnPrimaryAccountChanged(
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       return;
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       std::optional<signin_metrics::AccessPoint> access_point =
           event_details.GetAccessPoint();
       CHECK(access_point.has_value());
 
-      if (pref_service_->HasPrefPath(kWebSigninAccountStartTimesPref)) {
-        const base::Value::Dict& web_signin_account_start_time_dict =
-            pref_service_->GetDict(kWebSigninAccountStartTimesPref);
+      MaybeRecordWebSigninToChromeSigninMetrics(
+          event_details.GetCurrentState().primary_account.account_id,
+          *access_point);
 
-        // This value only exists if the initial signin was from a web signin
-        // source.
-        const base::Value* start_time_value =
-            web_signin_account_start_time_dict.Find(
-                event_details.GetCurrentState()
-                    .primary_account.account_id.ToString());
-        std::optional<base::Time> start_time =
-            start_time_value ? base::ValueToTime(start_time_value)
-                             : std::nullopt;
-        if (start_time.has_value()) {
-          MaybeRecordWebSigninToChromeSignin(start_time.value(),
-                                             access_point.value());
-
-          base::UmaHistogramEnumeration(
-              "Signin.WebSignin.SourceToChromeSignin", access_point.value(),
-              signin_metrics::AccessPoint::ACCESS_POINT_MAX);
-        }
-        // Clear all related web signin information on the first Chrome signin
-        // event.
-        pref_service_->ClearPref(kWebSigninAccountStartTimesPref);
-      }
-
-      ChromeSigninUserChoice signin_choice =
-          SigninPrefs(pref_service_.get())
-              .GetChromeSigninInterceptionUserChoice(
-                  event_details.GetCurrentState().primary_account.gaia);
-      base::UmaHistogramEnumeration("Signin.Settings.ChromeSignin.OnSignin",
-                                    signin_choice);
-      if (signin_choice == ChromeSigninUserChoice::kDoNotSignin) {
-        base::UmaHistogramEnumeration(
-            "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin",
-            access_point.value(),
-            signin_metrics::AccessPoint::ACCESS_POINT_MAX);
-      }
+      RecordSigninInterceptionMetrics(
+          event_details.GetCurrentState().primary_account.gaia, *access_point);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
       return;
     }
@@ -249,6 +213,7 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void SigninMetricsService::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
       info.access_point ==
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
@@ -258,13 +223,81 @@ void SigninMetricsService::OnExtendedAccountInfoUpdated(
     update->Set(info.account_id.ToString(),
                 base::TimeToValue(base::Time::Now()));
   }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 void SigninMetricsService::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& core_account_id) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (pref_service_->HasPrefPath(kWebSigninAccountStartTimesPref)) {
     ScopedDictPrefUpdate update(&pref_service_.get(),
                                 kWebSigninAccountStartTimesPref);
     update->Remove(core_account_id.ToString());
   }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+void SigninMetricsService::RecordExplicitSigninMigrationStatus() {
+  ExplicitSigninMigration explicit_signin_migration =
+      ExplicitSigninMigration::kMigratedSignedOut;
+  const bool explicit_signin_pref =
+      pref_service_->GetBoolean(prefs::kExplicitBrowserSignin);
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    explicit_signin_migration =
+        explicit_signin_pref ? ExplicitSigninMigration::kMigratedSyncing
+                             : ExplicitSigninMigration::kNotMigratedSyncing;
+  } else if (identity_manager_->HasPrimaryAccount(
+                 signin::ConsentLevel::kSignin)) {
+    explicit_signin_migration =
+        explicit_signin_pref ? ExplicitSigninMigration::kMigratedSignedIn
+                             : ExplicitSigninMigration::kNotMigratedSignedIn;
+  }
+
+  base::UmaHistogramEnumeration(kExplicitSigninMigrationHistogramName,
+                                explicit_signin_migration);
+}
+
+void SigninMetricsService::MaybeRecordWebSigninToChromeSigninMetrics(
+    const CoreAccountId& account_id,
+    signin_metrics::AccessPoint access_point) {
+  if (pref_service_->HasPrefPath(kWebSigninAccountStartTimesPref)) {
+    const base::Value::Dict& web_signin_account_start_time_dict =
+        pref_service_->GetDict(kWebSigninAccountStartTimesPref);
+
+    // This value only exists if the initial signin was from a web signin
+    // source.
+    const base::Value* start_time_value =
+        web_signin_account_start_time_dict.Find(account_id.ToString());
+    std::optional<base::Time> start_time =
+        start_time_value ? base::ValueToTime(start_time_value) : std::nullopt;
+    if (start_time.has_value()) {
+      MaybeRecordWebSigninToChromeSigninTimes(start_time.value(), access_point);
+
+      base::UmaHistogramEnumeration(
+          "Signin.WebSignin.SourceToChromeSignin", access_point,
+          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    }
+    // Clear all related web signin information on the first Chrome signin
+    // event.
+    pref_service_->ClearPref(kWebSigninAccountStartTimesPref);
+  }
+}
+
+void SigninMetricsService::RecordSigninInterceptionMetrics(
+    const std::string& gaia_id,
+    signin_metrics::AccessPoint access_point) {
+  ChromeSigninUserChoice signin_choice =
+      SigninPrefs(pref_service_.get())
+          .GetChromeSigninInterceptionUserChoice(gaia_id);
+  base::UmaHistogramEnumeration("Signin.Settings.ChromeSignin.OnSignin",
+                                signin_choice);
+  if (signin_choice == ChromeSigninUserChoice::kDoNotSignin) {
+    base::UmaHistogramEnumeration(
+        "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", access_point,
+        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+  }
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

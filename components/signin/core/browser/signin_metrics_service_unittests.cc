@@ -318,6 +318,7 @@ const AccessPointParam params[] = {
     {signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS, ""},
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class SigninMetricsServiceAccessPointParamTest
     : public SigninMetricsServiceTest,
       public testing::WithParamInterface<AccessPointParam> {};
@@ -419,6 +420,7 @@ TEST_F(SigninMetricsServiceTest, WebSigninToSignout) {
   EXPECT_EQ(
       0., histogram_tester.GetTotalCountsForPrefix("Signin.WebSignin.").size());
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
   base::HistogramTester histogram_tester;
@@ -437,6 +439,7 @@ TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
       signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(SigninMetricsServiceTest, ExplicitSigninMigration) {
   {
     base::HistogramTester histogram_tester;
@@ -483,7 +486,6 @@ TEST_F(SigninMetricsServiceTest, ExplicitSigninMigration) {
   }
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
   base::HistogramTester histogram_tester;
   CreateSigninMetricsService();
@@ -526,4 +528,4 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
       "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", access_point,
       1);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
