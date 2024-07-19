@@ -143,6 +143,20 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                 @"Cannot reset histogram tester.");
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+
+  if ([self isRunningTest:@selector
+            (testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled)]) {
+    config.features_disabled.push_back(
+        kClearDeviceDataOnSignOutForManagedUsers);
+  } else {
+    config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
+  }
+
+  return config;
+}
+
 // Tests that opening the sign-in screen from the Settings and signing in works
 // correctly when there is already an identity on the device.
 - (void)testSignInOneUser {
@@ -268,14 +282,61 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that signing out of a managed account from the Settings works
 // correctly.
-// TODO(crbug.com/331182048): Test failing on devices and simulator.
-- (void)DISABLED_testSignInDisconnectFromChromeManaged {
+- (void)testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   ExpectSigninConsentHistogram(SigninAccountType::kManaged);
 
   [SigninEarlGreyUI signOut];
+}
+
+- (void)testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled {
+  // Sign-in with a managed account.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  ExpectSigninConsentHistogram(SigninAccountType::kManaged);
+
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Open the "Account Settings" view.
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
+
+  // We're now in the "manage sync" view, and the signout button is at the very
+  // bottom. Scroll there.
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap the "Sign out" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+      performAction:grey_tap()];
+
+  // Click on signout in the dialog.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::AlertAction(l10n_util::GetNSString(
+                         IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Close the snackbar, so that it can't obstruct other UI items.
+  [SigninEarlGreyUI dismissSignoutSnackbar];
+
+  // Wait until the user is signed out. Use a longer timeout for cases where
+  // sign out also triggers a clear browsing data.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:SettingsDoneButton()
+                                  timeout:base::test::ios::
+                                              kWaitForClearBrowsingDataTimeout];
+
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
 }
 
 // Opens the sign in screen and then cancel it by opening a new tab. Ensures
