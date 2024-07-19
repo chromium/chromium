@@ -17,6 +17,7 @@
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "chrome/browser/profiles/profile.h"
@@ -625,8 +626,16 @@ ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
   bool success =
       ExtractNavigationEntries(buffer, saved_state_version, &is_off_the_record,
                                &current_entry_index, &navigations);
-  if (!success || jis_off_the_record != is_off_the_record) {
-    return ScopedJavaLocalRef<jobject>();
+
+  bool safeToAppend = success && jis_off_the_record == is_off_the_record;
+  base::UmaHistogramBoolean(
+      "Tabs.DeserializationResultForAppendPendingNavigation", safeToAppend);
+  if (!safeToAppend) {
+    LOG(WARNING) << "Failed to deserialize navigation entries, clobbering "
+                    "previous navigation state.";
+    return CreateSingleNavigationStateAsByteBuffer(
+        env, title, url, referrer_url, referrer_policy, jinitiator_origin,
+        jis_off_the_record);
   }
 
   std::vector<sessions::SerializedNavigationEntry> new_navigations;

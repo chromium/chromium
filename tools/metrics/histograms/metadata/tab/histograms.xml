@@ -1502,6 +1502,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.DeserializationResultForAppendPendingNavigation"
+    enum="BooleanSuccess" expires_after="2025-01-05">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Recorded when a tab's WebContentsState is being modified by
+    freezing and appending to it. Success indicates that the previous state was
+    safely deserialized and could be appended to. Failure indicates that the
+    previous WebContentsState could not be read and will be clobbered.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.DroppedDuplicatesCountOn{Occasion}" units="tabs"
     expires_after="2024-10-16">
   <owner>lpromero@google.com</owner>
@@ -1566,6 +1578,17 @@ chromium-metrics-reviews@google.com.
     Creation Rank&quot; is relative to other background tabs which were opened
     from the same URL via the context menu. The newest background tab has a
     &quot;Reverse Tab Creation Rank&quot; of zero.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.FreezeAndAppendPendingNavigationResult"
+    enum="BooleanSuccess" expires_after="2025-01-05">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Recorded when a tab's WebContentsState is being frozen and
+    appended to. Success indicates that the append succeeded. Failure indicates
+    it was not possible to freeze the tab and we had to fallback to a lazy load.
   </summary>
 </histogram>
 

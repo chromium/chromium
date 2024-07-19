@@ -734,7 +734,21 @@ class TabImpl implements Tab {
                         referrer != null ? referrer.getPolicy() : 0,
                         params.getInitiatorOrigin(),
                         isIncognito());
-        mUrl = new GURL(mWebContentsState.getVirtualUrlFromState());
+
+        // The only reason this should still be null is if we failed to allocate a byte buffer,
+        // which probably means we are close to an OOM.
+        boolean success = mWebContentsState != null;
+        RecordHistogram.recordBooleanHistogram(
+                "Tabs.FreezeAndAppendPendingNavigationResult", success);
+        if (success) {
+            mUrl = new GURL(mWebContentsState.getVirtualUrlFromState());
+        } else {
+            // Since we are not allowed to auto-navigate the only remaining fallback is to clobber
+            // all navigation state and treat the tab as if it is in a pending load state. All the
+            // previous state was already cleaned up so we just need to set the params here.
+            mPendingLoadParams = params;
+            mUrl = new GURL(params.getUrl());
+        }
         while (observers.hasNext()) {
             observers.next().onUrlUpdated(this);
         }
