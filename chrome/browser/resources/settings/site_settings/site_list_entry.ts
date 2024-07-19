@@ -260,6 +260,8 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
   }
 
   private onResetButtonClick_() {
+    this.fire('site-list-entry-reset-click');
+
     // Use the appropriate method to reset a chooser exception.
     if (this.chooserType !== ChooserType.NONE && this.chooserObject !== null) {
       this.browserProxy.resetChooserExceptionForSite(

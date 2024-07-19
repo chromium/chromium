@@ -1445,6 +1445,30 @@ suite('SiteList', function() {
         // Focus a site’s list entry.
         assertEquals(firstListEntry, testElement.shadowRoot!.activeElement);
       });
+
+  test('Reset the last Geolocation entry moves focus', async function() {
+    testElement.readOnlyList = true;
+    flush();
+
+    setUpCategory(
+        ContentSettingsTypes.GEOLOCATION, ContentSetting.ALLOW,
+        prefsOneEnabled);
+    await browserProxy.whenCalled('getExceptionList');
+    flush();
+
+    const item = testElement.shadowRoot!.querySelector('site-list-entry')!;
+
+    const resetButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#resetSite');
+    assertTrue(!!resetButton);
+    resetButton.click();
+    await browserProxy.whenCalled('resetCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    // Resetting the last element should move the focus to the list's header.
+    assertEquals(
+        testElement.$.listHeader, testElement.shadowRoot!.activeElement);
+  });
 });
 
 suite('SiteListSearchTests', function() {
