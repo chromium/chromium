@@ -143,9 +143,9 @@ class DataControlsReportingServiceTest : public testing::Test {
 }  // namespace
 
 TEST_F(DataControlsReportingServiceTest, NoServiceInIncognito) {
-  ASSERT_FALSE(ReportingServiceFactory::GetForBrowserContext(
+  ASSERT_FALSE(ReportingServiceFactory::GetInstance()->GetForBrowserContext(
       incognito_managed_profile()));
-  ASSERT_FALSE(ReportingServiceFactory::GetForBrowserContext(
+  ASSERT_FALSE(ReportingServiceFactory::GetInstance()->GetForBrowserContext(
       incognito_unmanaged_profile()));
 }
 
@@ -153,8 +153,8 @@ TEST_F(DataControlsReportingServiceTest, NoReportInUnmanagedProfile) {
   auto validator = helper_->CreateValidator();
   validator.ExpectNoReport();
 
-  auto* service =
-      ReportingServiceFactory::GetForBrowserContext(unmanaged_profile_);
+  auto* service = ReportingServiceFactory::GetInstance()->GetForBrowserContext(
+      unmanaged_profile_);
   service->ReportPaste(
       managed_endpoint(GURL(kGoogleUrl)),
       unmanaged_endpoint(GURL(kChromiumUrl)),
@@ -180,8 +180,8 @@ TEST_F(DataControlsReportingServiceTest, NoReportInUnmanagedProfile) {
 }
 
 TEST_F(DataControlsReportingServiceTest, NoReportWithoutTriggeredRules) {
-  auto* service =
-      ReportingServiceFactory::GetForBrowserContext(managed_profile_);
+  auto* service = ReportingServiceFactory::GetInstance()->GetForBrowserContext(
+      managed_profile_);
   {
     auto validator = helper_->CreateValidator();
     validator.ExpectNoReport();
@@ -273,8 +273,8 @@ TEST_F(DataControlsReportingServiceTest,
       /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
       /*content_size=*/1234);
 
-  auto* service =
-      ReportingServiceFactory::GetForBrowserContext(managed_profile_);
+  auto* service = ReportingServiceFactory::GetInstance()->GetForBrowserContext(
+      managed_profile_);
   service->ReportPaste(
       managed_endpoint(GURL(kGoogleUrl)), managed_endpoint(GURL(kChromiumUrl)),
       {
@@ -309,8 +309,8 @@ TEST_F(DataControlsReportingServiceTest,
       /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
       /*content_size=*/1234);
 
-  auto* service =
-      ReportingServiceFactory::GetForBrowserContext(managed_profile_);
+  auto* service = ReportingServiceFactory::GetInstance()->GetForBrowserContext(
+      managed_profile_);
   service->ReportPasteWarningBypassed(
       incognito_managed_endpoint(GURL(kGoogleUrl)),
       managed_endpoint(GURL(kChromiumUrl)),
@@ -343,8 +343,8 @@ TEST_F(DataControlsReportingServiceTest,
       /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
       /*content_size=*/1234);
 
-  auto* service =
-      ReportingServiceFactory::GetForBrowserContext(managed_profile_);
+  auto* service = ReportingServiceFactory::GetInstance()->GetForBrowserContext(
+      managed_profile_);
   service->ReportPaste(unmanaged_endpoint(GURL(kGoogleUrl)),
                        managed_endpoint(GURL(kChromiumUrl)),
                        {
@@ -382,8 +382,8 @@ TEST_F(DataControlsReportingServiceTest,
       /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
       /*content_size=*/1234);
 
-  auto* service =
-      ReportingServiceFactory::GetForBrowserContext(managed_profile_);
+  auto* service = ReportingServiceFactory::GetInstance()->GetForBrowserContext(
+      managed_profile_);
   service->ReportPaste(unmanaged_endpoint(GURL(kGoogleUrl)),
                        managed_endpoint(GURL(kChromiumUrl)),
                        {
@@ -395,8 +395,8 @@ TEST_F(DataControlsReportingServiceTest,
 
 TEST_F(DataControlsReportingServiceTest, CopyInManagedProfile) {
   Verdict::TriggeredRules triggered_rules = {{0, {"rule_1_id", "rule_1_name"}}};
-  auto* service =
-      ReportingServiceFactory::GetForBrowserContext(managed_profile_);
+  auto* service = ReportingServiceFactory::GetInstance()->GetForBrowserContext(
+      managed_profile_);
 
   {
     auto validator = helper_->CreateValidator();

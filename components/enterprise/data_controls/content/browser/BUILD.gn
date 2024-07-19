@@ -9,6 +9,8 @@ assert(enterprise_data_controls)
 
 source_set("browser") {
   sources = [
+    "reporting_service_base.h",
+    "reporting_service_base_factory.h",
     "rules_service.cc",
     "rules_service.h",
     "rules_service_factory.h",

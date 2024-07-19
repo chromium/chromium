@@ -212,10 +212,9 @@ void ReportingService::ReportCopyOrPaste(
 // ReportingServiceFactory implementation
 // --------------------------------------
 
-// static
-ReportingService* ReportingServiceFactory::GetForBrowserContext(
+ReportingServiceBase* ReportingServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<ReportingService*>(
+  return static_cast<ReportingServiceBase*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 

@@ -9,7 +9,8 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "components/enterprise/data_controls/content/browser/reporting_service_base.h"
+#include "components/enterprise/data_controls/content/browser/reporting_service_base_factory.h"
 
 class Profile;
 
@@ -24,7 +25,7 @@ namespace data_controls {
 class Verdict;
 
 // Keyed service that provides an interface to report Data Control events.
-class ReportingService : public KeyedService {
+class ReportingService : public ReportingServiceBase {
  public:
   // Converts `source` into a string to be sent in paste reporting events.
   // Depending on what policies are applied and the relationship between
@@ -40,20 +41,21 @@ class ReportingService : public KeyedService {
 
   ~ReportingService() override;
 
+  // data_controls::ReportingServiceBase:
   void ReportPaste(const content::ClipboardEndpoint& source,
                    const content::ClipboardEndpoint& destination,
                    const content::ClipboardMetadata& metadata,
-                   const Verdict& verdict);
+                   const Verdict& verdict) override;
   void ReportPasteWarningBypassed(const content::ClipboardEndpoint& source,
                                   const content::ClipboardEndpoint& destination,
                                   const content::ClipboardMetadata& metadata,
-                                  const Verdict& verdict);
+                                  const Verdict& verdict) override;
   void ReportCopy(const content::ClipboardEndpoint& source,
                   const content::ClipboardMetadata& metadata,
-                  const Verdict& verdict);
+                  const Verdict& verdict) override;
   void ReportCopyWarningBypassed(const content::ClipboardEndpoint& source,
                                  const content::ClipboardMetadata& metadata,
-                                 const Verdict& verdict);
+                                 const Verdict& verdict) override;
 
  protected:
   friend class ReportingServiceFactory;
@@ -74,10 +76,12 @@ class ReportingService : public KeyedService {
   const raw_ref<Profile> profile_;
 };
 
-class ReportingServiceFactory : public ProfileKeyedServiceFactory {
+class ReportingServiceFactory : public ReportingServiceBaseFactory,
+                                public ProfileKeyedServiceFactory {
  public:
-  static ReportingService* GetForBrowserContext(
-      content::BrowserContext* context);
+  // data_controls::ReportingServiceBaseFactory:
+  ReportingServiceBase* GetForBrowserContext(
+      content::BrowserContext* context) override;
 
   static ReportingServiceFactory* GetInstance();
 

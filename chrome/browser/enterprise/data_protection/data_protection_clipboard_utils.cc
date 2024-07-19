@@ -249,8 +249,8 @@ void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
                                   const data_controls::Verdict& verdict,
                                   bool bypassed = false) {
   auto* reporting_service =
-      data_controls::ReportingServiceFactory::GetForBrowserContext(
-          destination.browser_context());
+      data_controls::ReportingServiceFactory::GetInstance()
+          ->GetForBrowserContext(destination.browser_context());
 
   // `reporting_service` can be null for incognito browser contexts, so since
   // there's no reporting in that case we just return early.
@@ -271,8 +271,8 @@ void MaybeReportDataControlsCopy(const content::ClipboardEndpoint& source,
                                  const data_controls::Verdict& verdict,
                                  bool bypassed = false) {
   auto* reporting_service =
-      data_controls::ReportingServiceFactory::GetForBrowserContext(
-          source.browser_context());
+      data_controls::ReportingServiceFactory::GetInstance()
+          ->GetForBrowserContext(source.browser_context());
 
   // `reporting_service` can be null for incognito browser contexts, so since
   // there's no reporting in that case we just return early.
