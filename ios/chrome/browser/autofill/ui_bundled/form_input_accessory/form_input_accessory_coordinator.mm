@@ -530,11 +530,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
 - (void)openPasswordDetailsInEditModeForCredential:
     (password_manager::CredentialUIEntry)credential {
   [self reset];
-  id<SettingsCommands> settingsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SettingsCommands);
-  [settingsHandler showPasswordDetailsForCredential:credential
-                                         inEditMode:YES
-                                   showCancelButton:YES];
+  [self dispatchCommandToEditPassword:credential];
 }
 
 #pragma mark - ManualFillAllPasswordCoordinatorDelegate
@@ -542,6 +538,14 @@ const base::Feature* FetchIPHFeatureFromEnum(
 - (void)manualFillAllPasswordCoordinatorWantsToBeDismissed:
     (ManualFillAllPasswordCoordinator*)coordinator {
   [self stopManualFillAllPasswordCoordinator];
+}
+
+- (void)manualFillAllPasswordCoordinator:
+            (ManualFillAllPasswordCoordinator*)coordinator
+    didTriggerOpenPasswordDetailsInEditMode:
+        (password_manager::CredentialUIEntry)credential {
+  [self stopManualFillAllPasswordCoordinator];
+  [self dispatchCommandToEditPassword:credential];
 }
 
 #pragma mark - CardCoordinatorDelegate
@@ -882,6 +886,17 @@ const base::Feature* FetchIPHFeatureFromEnum(
 - (void)updateKeyboardAccessoryForManualFilling {
   [self.formInputAccessoryViewController lockManualFallbackView];
   self.formInputAccessoryMediator.suggestionsEnabled = NO;
+}
+
+// Creates a SettingsCommend handler and uses it to dispatch a command to show
+// the details of a password in edit mode.
+- (void)dispatchCommandToEditPassword:
+    (password_manager::CredentialUIEntry)credential {
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsHandler showPasswordDetailsForCredential:credential
+                                         inEditMode:YES
+                                   showCancelButton:YES];
 }
 
 @end

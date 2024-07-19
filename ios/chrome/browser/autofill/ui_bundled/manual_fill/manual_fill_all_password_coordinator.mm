@@ -7,6 +7,10 @@
 #import "base/ios/block_types.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -19,11 +23,6 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_list_navigator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 
@@ -145,6 +144,14 @@
   [self.manualFillAllPasswordCoordinatorDelegate
       manualFillAllPasswordCoordinatorWantsToBeDismissed:self];  // The job is
                                                                  // done.
+}
+
+- (void)manualFillPasswordMediator:(ManualFillPasswordMediator*)mediator
+    didTriggerOpenPasswordDetailsInEditMode:
+        (password_manager::CredentialUIEntry)credential {
+  [self.manualFillAllPasswordCoordinatorDelegate
+             manualFillAllPasswordCoordinator:self
+      didTriggerOpenPasswordDetailsInEditMode:credential];
 }
 
 #pragma mark - PasswordViewControllerDelegate

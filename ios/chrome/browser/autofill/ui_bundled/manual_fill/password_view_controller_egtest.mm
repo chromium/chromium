@@ -9,13 +9,13 @@
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
@@ -122,6 +122,11 @@ id<GREYMatcher> AutofillFormButton() {
   return grey_allOf(ButtonWithAccessibilityLabelId(
                         IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE),
                     grey_interactable(), nullptr);
+}
+
+// Matcher for the page showing the details of a password.
+id<GREYMatcher> PasswordDetailsPage() {
+  return grey_accessibilityID(kPasswordDetailsViewControllerID);
 }
 
 // Opens the password manual fill view and verifies that the password view
@@ -1129,6 +1134,53 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:grey_tap()];
 
   // TODO(crbug.com/332956674): Check that the updated suggestion is visible.
+}
+
+// Tests the "Edit" action of the overflow menu button in the all password list
+// displays the password's details in edit mode.
+- (void)testEditPasswordFromAllPasswordListOverflowMenu {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  // Disable the password bottom sheet.
+  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+
+  [self loadLoginPage];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Wait for the accessory icon to appear.
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the password manual fill view.
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
+
+  // Tap the "Select Password..." action.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      performAction:grey_tap()];
+
+  // Acknowledge concerns using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
+      performAction:grey_tap()];
+
+  // Tap the overflow menu button and select the "Edit" action.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
+      performAction:grey_tap()];
+
+  // Check that the password details page opened.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsPage()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap Cancel Button.
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that tapping the "Autofill Form" button fills the password form with

@@ -457,18 +457,31 @@ BOOL AreCredentialsAtIndicesConnected(
 - (UIAction*)createMenuEditActionForPassword:(PasswordForm)password {
   MenuScenarioHistogram menuScenario =
       self.isActionSectionEnabled
-          ? kMenuScenarioHistogramAutofillManualFallbackAllPasswordsEntry
-          : kMenuScenarioHistogramAutofillManualFallbackPasswordEntry;
+          ? kMenuScenarioHistogramAutofillManualFallbackPasswordEntry
+          : kMenuScenarioHistogramAutofillManualFallbackAllPasswordsEntry;
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:menuScenario];
 
   __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-    [weakSelf.navigator
-        openPasswordDetailsInEditModeForCredential:CredentialUIEntry(password)];
+    [weakSelf openPasswordDetailsInEditMode:CredentialUIEntry(password)
+                           fromMenuScenario:menuScenario];
   }];
 
   return editAction;
+}
+
+// Requests the appropriate delegate to open the details of the given credential
+// in edit mode.
+- (void)openPasswordDetailsInEditMode:(CredentialUIEntry)credential
+                     fromMenuScenario:(MenuScenarioHistogram)menuScenario {
+  if (menuScenario ==
+      kMenuScenarioHistogramAutofillManualFallbackAllPasswordsEntry) {
+    [self.delegate manualFillPasswordMediator:self
+        didTriggerOpenPasswordDetailsInEditMode:credential];
+  } else {
+    [self.navigator openPasswordDetailsInEditModeForCredential:credential];
+  }
 }
 
 #pragma mark - Setters

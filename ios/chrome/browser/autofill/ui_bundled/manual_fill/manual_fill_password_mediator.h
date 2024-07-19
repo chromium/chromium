@@ -17,6 +17,7 @@
 @protocol PasswordListNavigator;
 
 namespace password_manager {
+struct CredentialUIEntry;
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
@@ -42,9 +43,16 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
 
 // Delegate for the password mediator.
 @protocol ManualFillPasswordMediatorDelegate <NSObject>
+
 // The mediator will attempt to inject content.
 - (void)manualFillPasswordMediatorWillInjectContent:
     (ManualFillPasswordMediator*)mediator;
+
+// Requests the delegate to open the details of a credential in edit mode.
+- (void)manualFillPasswordMediator:(ManualFillPasswordMediator*)mediator
+    didTriggerOpenPasswordDetailsInEditMode:
+        (password_manager::CredentialUIEntry)credential;
+
 @end
 
 // Object in charge of getting the passwords relevant for the manual fill
