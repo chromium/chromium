@@ -7,7 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
+#include <numeric>
 
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -355,6 +357,38 @@ TEST(VideoFrame, CreateBlackFrame) {
 
 static void FrameNoLongerNeededCallback(bool* triggered) {
   *triggered = true;
+}
+
+TEST(VideoFrame, DestructChainOfWrappedVideoFrames) {
+  constexpr int kWidth = 4;
+  constexpr int kHeight = 4;
+  constexpr int kFramesInChain = 50000;
+  auto frame = VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight));
+  bool base_frame_done_callback_was_run = false;
+  frame->AddDestructionObserver(base::BindOnce(
+      &FrameNoLongerNeededCallback, &base_frame_done_callback_was_run));
+  std::array<bool, kFramesInChain> wrapped_frame_done_callback_was_run;
+  std::vector<scoped_refptr<VideoFrame>> frames;
+
+  for (int i = 0; i < kFramesInChain; i++) {
+    frames.push_back(frame);
+    frame = VideoFrame::WrapVideoFrame(
+        frame, frame->format(), frame->visible_rect(), frame->natural_size());
+    frame->AddDestructionObserver(base::BindOnce(
+        &FrameNoLongerNeededCallback, &wrapped_frame_done_callback_was_run[i]));
+  }
+  frames.clear();
+
+  EXPECT_FALSE(base_frame_done_callback_was_run);
+  EXPECT_FALSE(std::accumulate(wrapped_frame_done_callback_was_run.begin(),
+                               wrapped_frame_done_callback_was_run.end(), true,
+                               std::logical_and<bool>()));
+
+  frame.reset();
+  EXPECT_TRUE(base_frame_done_callback_was_run);
+  EXPECT_TRUE(std::accumulate(wrapped_frame_done_callback_was_run.begin(),
+                              wrapped_frame_done_callback_was_run.end(), true,
+                              std::logical_and<bool>()));
 }
 
 TEST(VideoFrame, WrapVideoFrame) {

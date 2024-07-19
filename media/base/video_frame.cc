@@ -1045,9 +1045,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
   //
   // We must still keep |frame| alive though since it may have destruction
   // observers which signal that the underlying resource is okay to reuse. E.g.,
-  // VideoFramePool.
+  // VideoFramePool. That's why we put it into |intermediate_wrapped_frame_|.
   if (frame->wrapped_frame_) {
-    wrapping_frame->AddDestructionObserver(base::DoNothingWithBoundArgs(frame));
+    wrapping_frame->intermediate_wrapped_frame_ = frame;
     frame = frame->wrapped_frame_;
   }
 
@@ -1679,6 +1679,17 @@ VideoFrame::~VideoFrame() {
   }
   for (auto& callback : done_callbacks) {
     std::move(callback).Run();
+  }
+
+  // This flattens the call graph avoiding recursion while walking
+  // `intermediate_wrapped_frame_` pointer chain, otherwise we might get
+  // a stack overflow while deleting the whole chain of nested frames.
+  auto frame_to_release = std::move(intermediate_wrapped_frame_);
+  // Delete all the frames for which `intermediate_wrapped_frame_` is
+  // the only reference.
+  while (frame_to_release && frame_to_release->HasOneRef()) {
+    auto next_frame = std::move(frame_to_release->intermediate_wrapped_frame_);
+    frame_to_release = next_frame;
   }
 }
 

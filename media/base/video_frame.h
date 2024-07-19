@@ -916,6 +916,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Set by WrapVideoFrame to soft-apply a new set of format, visible rectangle,
   // and natural size on |wrapped_frame_|
   scoped_refptr<VideoFrame> wrapped_frame_;
+  // This is set when WrapVideoFrame() was given an already wrapped frame,
+  // and it needs to be preserved for proper destruction later
+  // (e.g. calling |done_callbacks_|).
+  scoped_refptr<VideoFrame> intermediate_wrapped_frame_;
 
   // Storage type for the different planes.
   StorageType storage_type_;  // TODO(mcasas): make const
