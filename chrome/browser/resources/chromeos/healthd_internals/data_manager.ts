@@ -60,7 +60,7 @@ export class DataManager {
   // is dynamic and initialized when the first batch of data is obtained.
   // - Frequency data of logical CPUs.
   private cpuFrequencyDataSeries: DataSeries[] = [];
-  // - Temeprature data of thermal sensors.
+  // - Temperature data of thermal sensors.
   private thermalDataSeries: DataSeries[] = [];
 
   // Set in constructor.
@@ -139,7 +139,14 @@ export class DataManager {
 
   private updateCpuFrequencyData(cpu: HealthdApiCpuResult, timestamp: number) {
     if (this.cpuFrequencyDataSeries.length === 0) {
-      this.initFrequencyCpuDataSeries(cpu);
+      this.initCpuFrequencyDataSeries(cpu);
+    }
+
+    const cpuNumber: number = cpu.physicalCpus.reduce(
+        (acc, item) => acc + item.logicalCpus.length, 0);
+    if (cpuNumber !== this.cpuFrequencyDataSeries.length) {
+      console.warn('CPU frequency data: Number of CPUs changed.');
+      return;
     }
 
     let count: number = 0;
@@ -174,21 +181,20 @@ export class DataManager {
       this.batteryDataSeries.push(
           new DataSeries(header, getLineChartColor(index)));
     }
-    this.batteryChart.initLineChart(this.batteryDataSeries);
+    this.batteryChart.addDataSeries(this.batteryDataSeries);
   }
 
-  private initFrequencyCpuDataSeries(cpu: HealthdApiCpuResult) {
+  private initCpuFrequencyDataSeries(cpu: HealthdApiCpuResult) {
     let count: number = 0;
     for (const [physicalCpuId, physicalCpu] of cpu.physicalCpus.entries()) {
       for (let logicalCpuId: number = 0;
            logicalCpuId < physicalCpu.logicalCpus.length; ++logicalCpuId) {
         this.cpuFrequencyDataSeries.push(new DataSeries(
-            `CPU #${physicalCpuId}-${logicalCpuId}`,
-            LINE_CHART_COLOR_SET[count]));
+            `CPU #${physicalCpuId}-${logicalCpuId}`, getLineChartColor(count)));
         count += 1;
       }
     }
-    this.cpuFrequencyChart.initLineChart(this.cpuFrequencyDataSeries);
+    this.cpuFrequencyChart.addDataSeries(this.cpuFrequencyDataSeries);
   }
 
   private initThermalDataSeries(thermals: HealthdApiThermalResult[]) {
@@ -196,6 +202,6 @@ export class DataManager {
       this.thermalDataSeries.push(new DataSeries(
           `${thermal.name} (${thermal.source})`, getLineChartColor(index)));
     }
-    this.thermalChart.initLineChart(this.thermalDataSeries);
+    this.thermalChart.addDataSeries(this.thermalDataSeries);
   }
 }

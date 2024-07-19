@@ -26,13 +26,17 @@ export class HealthdInternalsCpuFrequencyChartElement extends PolymerElement {
     return getTemplate();
   }
 
-  initLineChart(cpuDataSeries: DataSeries[]) {
+  override connectedCallback() {
+    super.connectedCallback();
+
     const UNITBASE_FREQUENCY: number = 1000;
     const UNIT_FREQUENCY: string[] = ['kHz', 'mHz', 'GHz'];
     this.$.lineChart.initCanvasDrawer(UNIT_FREQUENCY, UNITBASE_FREQUENCY);
+  }
 
-    for (let i = 0; i < cpuDataSeries.length; ++i) {
-      this.$.lineChart.addDataSeries(cpuDataSeries[i]);
+  addDataSeries(cpuFrequencyDataSeries: DataSeries[]) {
+    for (const dataSeries of cpuFrequencyDataSeries) {
+      this.$.lineChart.addDataSeries(dataSeries);
     }
   }
 

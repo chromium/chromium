@@ -26,13 +26,17 @@ export class HealthdInternalsThermalChartElement extends PolymerElement {
     return getTemplate();
   }
 
-  initLineChart(thermalDataSeries: DataSeries[]) {
+  override connectedCallback() {
+    super.connectedCallback();
+
     const UNITBASE_NO_CARRY: number = 1;
     const UNIT_CELSIUS: string[] = ['C'];
     this.$.lineChart.initCanvasDrawer(UNIT_CELSIUS, UNITBASE_NO_CARRY);
+  }
 
-    for (let i = 0; i < thermalDataSeries.length; ++i) {
-      this.$.lineChart.addDataSeries(thermalDataSeries[i]);
+  addDataSeries(thermalDataSeries: DataSeries[]) {
+    for (const dataSeries of thermalDataSeries) {
+      this.$.lineChart.addDataSeries(dataSeries);
     }
   }
 

@@ -26,19 +26,17 @@ export class HealthdInternalsBatteryChartElement extends PolymerElement {
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      dataManager: {type: Object},
-    };
-  }
+  override connectedCallback() {
+    super.connectedCallback();
 
-  initLineChart(batteryDataSeries: DataSeries[]) {
     const UNITBASE_NO_CARRY: number = 1;
     const UNIT_PURE_NUMBER: string[] = [''];
     this.$.lineChart.initCanvasDrawer(UNIT_PURE_NUMBER, UNITBASE_NO_CARRY);
+  }
 
-    for (let i = 0; i < batteryDataSeries.length; ++i) {
-      this.$.lineChart.addDataSeries(batteryDataSeries[i]);
+  addDataSeries(batteryDataSeries: DataSeries[]) {
+    for (const dataSeries of batteryDataSeries) {
+      this.$.lineChart.addDataSeries(dataSeries);
     }
   }
 
