@@ -676,5 +676,35 @@ TEST_F(AdapterTest, TestMetricsOnShutdown_PendingConnects) {
                                    "NumberOfServiceDiscoveriesInProgress")
                     .size());
 }
+
+TEST_F(AdapterTest,
+       TestConnectToServiceInsecurely_UnknownDevice_Error_DeviceRemoved) {
+  EXPECT_CALL(*mock_bluetooth_adapter_,
+              ConnectDevice(kUnknownDeviceAddress, _, _, _))
+      .WillOnce(
+          [&](const std::string& address,
+              const std::optional<device::BluetoothDevice::AddressType>&
+                  address_type,
+              MockBluetoothAdapterWithAdvertisements::ConnectDeviceCallback
+                  callback,
+              MockBluetoothAdapterWithAdvertisements::ConnectDeviceErrorCallback
+                  error_callback) {
+            // Device is removed before `ConnectToService()` error, which
+            // removes all entries from the map.
+            adapter_->DeviceRemoved(mock_bluetooth_adapter_.get(),
+                                    mock_unknown_bluetooth_device_.get());
+
+            // Trigger error callback verify Adapter doesn't crash.
+            std::move(error_callback).Run("error_message");
+          });
+
+  adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
+
+  base::test::TestFuture<mojom::ConnectToServiceResultPtr> future;
+  adapter_->ConnectToServiceInsecurely(
+      kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false, future.GetCallback());
+  EXPECT_FALSE(future.Take());
+}
 #endif
 }  // namespace bluetooth

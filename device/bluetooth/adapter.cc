@@ -369,9 +369,24 @@ void Adapter::DeviceChanged(device::BluetoothAdapter* adapter,
 
 void Adapter::DeviceRemoved(device::BluetoothAdapter* adapter,
                             device::BluetoothDevice* device) {
+  // First abort the requests that are pending service discovery.
   ProcessPendingInsecureServiceConnectionRequest(device,
                                                  /*disconnected=*/true);
 
+  // Then abort all other requests refer to this device.
+  const std::string& address = device->GetAddress();
+  std::vector<int> request_ids;
+  for (const auto& [req_id, details] : connect_to_service_request_map_) {
+    if (address == details->address) {
+      request_ids.push_back(req_id);
+    }
+  }
+  for (int req_id : request_ids) {
+    ProcessDeviceForInsecureServiceConnection(req_id, device,
+                                              /*disconnected=*/true);
+  }
+
+  // Finally emit DeviceRemoved to the observers.
   for (auto& observer : observers_)
     observer->DeviceRemoved(Device::ConstructDeviceInfoStruct(device));
 }
@@ -597,12 +612,19 @@ void Adapter::OnConnectToServiceError(int request_id,
 void Adapter::OnConnectToServiceInsecurelyError(
     int request_id,
     const std::string& error_message) {
-  DCHECK(connect_to_service_request_map_.contains(request_id));
   DLOG(ERROR) << error_message;
+  auto it = connect_to_service_request_map_.find(request_id);
+  if (it == connect_to_service_request_map_.end()) {
+    DLOG(WARNING) << "Request ID not found, possibly already removed?";
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+    RecordConnectToServiceInsecurelyResult(
+        ConnectToServiceInsecurelyResult::kDoesNotExistError);
+#endif
+    return;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  device::BluetoothDevice* device =
-      adapter_->GetDevice(connect_to_service_request_map_[request_id]->address);
+  device::BluetoothDevice* device = adapter_->GetDevice(it->second->address);
   DCHECK(device);
 
   ConnectToServiceFailureReason failure_reason =
@@ -617,8 +639,7 @@ void Adapter::OnConnectToServiceInsecurelyError(
        failure_reason == ConnectToServiceFailureReason::kReasonRefused ||
        failure_reason == ConnectToServiceFailureReason::kReasonUnknown);
 
-  if (is_half_paired_failure &&
-      connect_to_service_request_map_[request_id]->should_unbond_on_error) {
+  if (is_half_paired_failure && it->second->should_unbond_on_error) {
     // To recover from the half-paired state, just forget the remote device.
     // This strategy works because the local device will continue attempting to
     // connect. On the next attempt, it will no longer be in the half-paired
@@ -657,11 +678,12 @@ void Adapter::OnCreateRfcommServiceInsecurelyError(
 void Adapter::ExecuteConnectToServiceCallback(
     int request_id,
     mojom::ConnectToServiceResultPtr result) {
+  // The request may have already been cancelled if the device was removed.
   auto it = connect_to_service_request_map_.find(request_id);
-  CHECK(it != connect_to_service_request_map_.end(), base::NotFatalUntil::M130);
-
-  std::move(it->second->callback).Run(std::move(result));
-  connect_to_service_request_map_.erase(it);
+  if (it != connect_to_service_request_map_.end()) {
+    std::move(it->second->callback).Run(std::move(result));
+    connect_to_service_request_map_.erase(it);
+  }
 }
 
 }  // namespace bluetooth
