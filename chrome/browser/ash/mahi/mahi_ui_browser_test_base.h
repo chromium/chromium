@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/auto_reset.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/mahi/fake_mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
@@ -52,6 +53,7 @@ class MahiUiBrowserTestBase : public SystemWebAppBrowserTestBase {
   FakeMahiBrowserDelegateAsh fake_browser_delegate_;
   ScopedMahiBrowserDelegateOverrider browser_delegate_overrider_{
       &fake_browser_delegate_};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace ash

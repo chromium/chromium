@@ -85,13 +85,15 @@ class InputsSectionTest : public ChromeAshTestBase {
 TEST_F(InputsSectionTest,
        InputsSectionShouldIncludeHelpMeWriteSettingsWhenMagicBoostIsDisabled) {
   base::test::ScopedFeatureList feature_list;
+
+  // Note that `kMahi` is associated with the Magic Boost feature.
   feature_list.InitWithFeatures(
       /*enabled_features=*/
       {
           chromeos::features::kFeatureManagementOrca,
       },
       /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
-                             chromeos::features::kMagicBoost});
+                             chromeos::features::kMahi});
 
   auto mock_geolocation_provider =
       std::make_unique<input_method::EditorGeolocationMockProvider>("us");
@@ -111,9 +113,11 @@ TEST_F(InputsSectionTest,
 TEST_F(InputsSectionTest,
        InputsSectionShouldNotHaveHelpMeWriteSettingsWhenMagicBoostIsEnabled) {
   base::test::ScopedFeatureList feature_list;
+
+  // Note that `kMahi` is associated with the Magic Boost feature.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
-                            chromeos::features::kMagicBoost},
+                            chromeos::features::kMahi},
       /*disabled_features=*/{
           ash::features::kOrcaUseAccountCapabilities,
       });
@@ -135,13 +139,15 @@ TEST_F(InputsSectionTest,
 
 TEST_F(InputsSectionTest, SearchResultShouldIncludeHelpMeWrite) {
   base::test::ScopedFeatureList feature_list;
+
+  // Note that `kMahi` is associated with the Magic Boost feature.
   feature_list.InitWithFeatures(
       /*enabled_features=*/
       {
           chromeos::features::kFeatureManagementOrca,
       },
       /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
-                             chromeos::features::kMagicBoost});
+                             chromeos::features::kMahi});
 
   auto mock_geolocation_provider =
       std::make_unique<input_method::EditorGeolocationMockProvider>("us");

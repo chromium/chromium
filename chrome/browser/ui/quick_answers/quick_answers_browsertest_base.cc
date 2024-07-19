@@ -25,7 +25,8 @@ constexpr char kDataUrlTemplate[] =
 }  // namespace
 
 QuickAnswersBrowserTestBase::QuickAnswersBrowserTestBase() {
-  scoped_feature_list_.InitWithFeatureState(chromeos::features::kMagicBoost,
+  // Note that `kMahi` is associated with the Magic Boost feature.
+  scoped_feature_list_.InitWithFeatureState(chromeos::features::kMahi,
                                             IsMagicBoostEnabled());
 }
 
