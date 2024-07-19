@@ -171,6 +171,10 @@ const CGFloat kFeedContainerExtraHeight = 500;
   NSLayoutConstraint* _moduleWidth;
 }
 
+// Properties synthesized from NewTabPageConsumer.
+@synthesize mostVisitedVisible = _mostVisitedVisible;
+@synthesize magicStackVisible = _magicStackVisible;
+
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
@@ -278,7 +282,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   // back to the NTP.
   [self updateFakeOmniboxForScrollPosition];
 
-  if (self.isFeedVisible) {
+  if (self.feedVisible) {
     [self updateFeedInsetsForMinimumHeight];
   } else {
     [self setMinimumHeight];
@@ -360,7 +364,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
     if (weakSelf.omniboxFocused && [weakSelf scrollPosition] < pinnedOffsetY) {
       weakSelf.collectionView.contentOffset = CGPointMake(0, pinnedOffsetY);
     }
-    if (!weakSelf.isFeedVisible) {
+    if (!weakSelf.feedVisible) {
       [weakSelf setMinimumHeight];
     }
   };
@@ -369,7 +373,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
                       completion:^(
                           id<UIViewControllerTransitionCoordinatorContext>) {
                         [self updateNTPLayout];
-                        if (self.isFeedVisible) {
+                        if (self.feedVisible) {
                           [self updateFeedInsetsForMinimumHeight];
                         }
                         [self updateFeedContainerHeight];
@@ -434,7 +438,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   // action) needs to wait until it is ready. viewDidAppear: currently serves as
   // this proxy as there is no specific signal given from the feed that its
   // contents have loaded.
-  if (self.isFeedVisible && _appearing) {
+  if (self.feedVisible && _appearing) {
     self.shouldFocusFakebox = YES;
   } else {
     [self shiftTilesUpToFocusOmnibox];
@@ -448,7 +452,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   [self.feedWrapperViewController loadViewIfNeeded];
   self.collectionView.accessibilityIdentifier = kNTPCollectionViewIdentifier;
 
-  if (self.isFeedVisible) {
+  if (self.feedVisible) {
     _feedContainer = [[UIView alloc] initWithFrame:CGRectZero];
     _feedContainer.userInteractionEnabled = YES;
     _feedContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -496,9 +500,12 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self addViewControllerAboveFeed:self.feedHeaderViewController];
   }
 
-  [self addViewControllerAboveFeed:self.magicStackCollectionView];
+  if (!IsHomeCustomizationEnabled() || self.magicStackVisible) {
+    [self addViewControllerAboveFeed:self.magicStackCollectionView];
+  }
 
-  if (!ShouldPutMostVisitedSitesInMagicStack()) {
+  if (!ShouldPutMostVisitedSitesInMagicStack() &&
+      (!IsHomeCustomizationEnabled() || self.mostVisitedVisible)) {
     [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
   }
 
@@ -507,6 +514,12 @@ const CGFloat kFeedContainerExtraHeight = 500;
   DCHECK(
       [self.headerViewController.view isDescendantOfView:self.containerView]);
   self.headerViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // The view controllers have to be added in reverse order, so the array is
+  // then reversed to reflect the visible order.
+  self.viewControllersAboveFeed =
+      [[[self.viewControllersAboveFeed reverseObjectEnumerator] allObjects]
+          mutableCopy];
 
   // TODO(crbug.com/40165977): The contentCollectionView width might be
   // narrower than the ContentSuggestions view. This causes elements to be
@@ -532,7 +545,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 
   // If the feed is not visible, we control the delegate ourself (since it is
   // otherwise controlled by the feed service).
-  if (!self.isFeedVisible) {
+  if (!self.feedVisible) {
     self.feedWrapperViewController.contentCollectionView.delegate = self;
     [self setMinimumHeight];
   }
@@ -634,10 +647,21 @@ const CGFloat kFeedContainerExtraHeight = 500;
   CGFloat heightAboveFeed = 0;
   for (UIViewController* viewController in self.viewControllersAboveFeed) {
     heightAboveFeed += viewController.view.frame.size.height;
+
+    // If the current view controller represents a module, account for the
+    // vertical spacing between modules.
+    if (IsHomeCustomizationEnabled() &&
+        (viewController == self.magicStackCollectionView ||
+         viewController == self.contentSuggestionsViewController ||
+         viewController == self.feedHeaderViewController)) {
+      heightAboveFeed += kSpaceBetweenModules;
+    }
   }
-  heightAboveFeed += kBottomMagicStackPadding;
-  if (!self.contentSuggestionsViewController) {
-    heightAboveFeed += content_suggestions::HeaderBottomPadding();
+  if (!IsHomeCustomizationEnabled()) {
+    heightAboveFeed += kBottomMagicStackPadding;
+    if (!self.contentSuggestionsViewController) {
+      heightAboveFeed += content_suggestions::HeaderBottomPadding();
+    }
   }
   return heightAboveFeed;
 }
@@ -651,7 +675,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 }
 
 - (void)updateFeedInsetsForMinimumHeight {
-  DCHECK(self.isFeedVisible);
+  DCHECK(self.feedVisible);
   CGFloat minimumNTPHeight = self.collectionView.bounds.size.height;
   minimumNTPHeight -= [self feedHeaderHeight];
   if ([self shouldPinFakeOmnibox]) {
@@ -862,7 +886,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
   }
   [self.overscrollActionsController scrollViewDidEndDragging:scrollView
                                               willDecelerate:decelerate];
-  if (self.isFeedVisible) {
+  if (self.feedVisible) {
     [self.feedMetricsRecorder recordFeedScrolled:scrollView.contentOffset.y -
                                                  self.scrollStartPosition];
   }
@@ -1212,19 +1236,37 @@ const CGFloat kFeedContainerExtraHeight = 500;
 // the width animation.
 - (void)setInitialFakeOmniboxConstraints {
   [NSLayoutConstraint deactivateConstraints:self.fakeOmniboxConstraints];
-  if (self.contentSuggestionsViewController) {
-    self.fakeOmniboxConstraints = @[
-      [self.contentSuggestionsViewController.view.topAnchor
-          constraintEqualToAnchor:self.headerViewController.view.bottomAnchor],
-    ];
+
+  if (IsHomeCustomizationEnabled()) {
+    // If there's a module below the header, anchor the header to it.
+    if ([self.viewControllersAboveFeed lastObject] !=
+        self.headerViewController) {
+      NSInteger headerIndex = [self.viewControllersAboveFeed
+          indexOfObject:self.headerViewController];
+      UIView* viewBelowHeader =
+          [self.viewControllersAboveFeed objectAtIndex:(headerIndex + 1)].view;
+      self.fakeOmniboxConstraints = @[
+        [viewBelowHeader.topAnchor
+            constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
+                           constant:kSpaceBetweenModules],
+      ];
+    }
   } else {
-    // If `contentSuggestionsViewController` is nil, that means MVTs are in the
-    // Magic Stack.
-    self.fakeOmniboxConstraints = @[
-      [self.magicStackCollectionView.view.topAnchor
-          constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
-                         constant:content_suggestions::HeaderBottomPadding()],
-    ];
+    if (self.contentSuggestionsViewController) {
+      self.fakeOmniboxConstraints = @[
+        [self.contentSuggestionsViewController.view.topAnchor
+            constraintEqualToAnchor:self.headerViewController.view
+                                        .bottomAnchor],
+      ];
+    } else {
+      // If `contentSuggestionsViewController` is nil, that means MVTs are in
+      // the Magic Stack.
+      self.fakeOmniboxConstraints = @[
+        [self.magicStackCollectionView.view.topAnchor
+            constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
+                           constant:content_suggestions::HeaderBottomPadding()],
+      ];
+    }
   }
   [NSLayoutConstraint activateConstraints:self.fakeOmniboxConstraints];
 }
@@ -1327,9 +1369,9 @@ const CGFloat kFeedContainerExtraHeight = 500;
   }
 
   NSLayoutConstraint* feedHeaderTopAnchor;
-    feedHeaderTopAnchor = [self.feedHeaderViewController.view.topAnchor
-        constraintEqualToAnchor:self.magicStackCollectionView.view.bottomAnchor
-                       constant:kBottomMagicStackPadding];
+  feedHeaderTopAnchor = [self.feedHeaderViewController.view.topAnchor
+      constraintEqualToAnchor:self.magicStackCollectionView.view.bottomAnchor
+                     constant:kBottomMagicStackPadding];
   self.feedHeaderConstraints = @[
     feedHeaderTopAnchor,
     [bottomView.topAnchor constraintEqualToAnchor:self.feedHeaderViewController
@@ -1447,7 +1489,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 
 // Handles device rotation.
 - (void)deviceOrientationDidChange {
-  if (self.viewDidAppear && self.isFeedVisible) {
+  if (self.viewDidAppear && self.feedVisible) {
     [self.feedMetricsRecorder
         recordDeviceOrientationChanged:[[UIDevice currentDevice] orientation]];
   }
@@ -1501,8 +1543,9 @@ const CGFloat kFeedContainerExtraHeight = 500;
       [self.feedHeaderViewController.view.widthAnchor
           constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
     ]];
-
-    [self setInitialFeedHeaderConstraints];
+    if (!IsHomeCustomizationEnabled()) {
+      [self setInitialFeedHeaderConstraints];
+    }
     if (self.feedTopSectionViewController) {
       [NSLayoutConstraint activateConstraints:@[
         [self.feedTopSectionViewController.view.centerXAnchor
@@ -1518,10 +1561,19 @@ const CGFloat kFeedContainerExtraHeight = 500;
       ]];
     }
   } else {
+    if (!IsHomeCustomizationEnabled()) {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.collectionView.topAnchor
+            constraintEqualToAnchor:self.magicStackCollectionView.view
+                                        .bottomAnchor],
+      ]];
+    }
+  }
+  if (IsHomeCustomizationEnabled()) {
+    UIView* lastView = [self.viewControllersAboveFeed lastObject].view;
     [NSLayoutConstraint activateConstraints:@[
       [self.collectionView.topAnchor
-          constraintEqualToAnchor:self.magicStackCollectionView.view
-                                      .bottomAnchor],
+          constraintEqualToAnchor:lastView.bottomAnchor],
     ]];
   }
 
@@ -1543,7 +1595,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [[self containerView].safeAreaLayoutGuide.trailingAnchor
         constraintEqualToAnchor:self.headerViewController.view.trailingAnchor],
   ]];
-  if (self.contentSuggestionsViewController) {
+  if (self.contentSuggestionsViewController &&
+      (!IsHomeCustomizationEnabled() || self.mostVisitedVisible)) {
     [NSLayoutConstraint activateConstraints:@[
       [self.contentSuggestionsViewController.view.leadingAnchor
           constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
@@ -1551,19 +1604,50 @@ const CGFloat kFeedContainerExtraHeight = 500;
           constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
     ]];
   }
-  [NSLayoutConstraint activateConstraints:@[
-    [self.magicStackCollectionView.view.leadingAnchor
-        constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
-    [self.magicStackCollectionView.view.trailingAnchor
-        constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
-  ]];
-  if (!ShouldPutMostVisitedSitesInMagicStack()) {
+  if (!IsHomeCustomizationEnabled() || self.magicStackVisible) {
     [NSLayoutConstraint activateConstraints:@[
-      [self.magicStackCollectionView.view.topAnchor
-          constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                      .bottomAnchor],
+      [self.magicStackCollectionView.view.leadingAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
+      [self.magicStackCollectionView.view.trailingAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
     ]];
   }
+  if (!ShouldPutMostVisitedSitesInMagicStack()) {
+    if (!IsHomeCustomizationEnabled()) {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.magicStackCollectionView.view.topAnchor
+            constraintEqualToAnchor:self.contentSuggestionsViewController.view
+                                        .bottomAnchor],
+      ]];
+    }
+  }
+
+  // Anchor each module except the one directly below the header, since it will
+  // dynamically update its top anchor when the fake omnibox is pinned.
+  if (IsHomeCustomizationEnabled() &&
+      [self.viewControllersAboveFeed lastObject] != self.headerViewController) {
+    // Start with the bottom module's index, which is either the feed header if
+    // enabled, or the last object of the module array if not.
+    NSUInteger startIndex =
+        self.feedHeaderViewController
+            ? [self.viewControllersAboveFeed
+                  indexOfObject:self.feedHeaderViewController]
+            : self.viewControllersAboveFeed.count - 1;
+
+    // While the current module's index is not the view directly below the
+    // header, anchor to the module above it.
+    NSUInteger headerIndex =
+        [self.viewControllersAboveFeed indexOfObject:self.headerViewController];
+    for (NSUInteger index = startIndex; index > headerIndex + 1; --index) {
+      UIView* view = self.viewControllersAboveFeed[index].view;
+      UIView* viewAbove = self.viewControllersAboveFeed[index - 1].view;
+      [NSLayoutConstraint activateConstraints:@[
+        [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
+                                       constant:kSpaceBetweenModules],
+      ]];
+    }
+  }
+
   [self setInitialFakeOmniboxConstraints];
 }
 
@@ -1625,11 +1709,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 // include non-feed items in its `accessibilityElements` so they are added here.
 - (void)updateAccessibilityElements {
   NSMutableArray* elements = [[NSMutableArray alloc] init];
-  // viewControllersAboveFeed elements are added from bottom to top, so we
-  // iterate in reverse to get the correct order.
-  NSEnumerator<UIViewController*>* enumerator =
-      [self.viewControllersAboveFeed reverseObjectEnumerator];
-  for (UIViewController* viewController in enumerator) {
+  for (UIViewController* viewController in self.viewControllersAboveFeed) {
     [elements addObject:viewController.view];
   }
   [elements addObject:self.collectionView];
@@ -1780,21 +1860,23 @@ const CGFloat kFeedContainerExtraHeight = 500;
       [self.contentSuggestionsViewController.view removeFromSuperview];
       [self.contentSuggestionsViewController didMoveToParentViewController:nil];
 
-      // Add child VC to new parent.
-      [self.contentSuggestionsViewController
-          willMoveToParentViewController:self.feedWrapperViewController
-                                             .feedViewController];
-      [self.feedWrapperViewController.feedViewController
-          addChildViewController:self.contentSuggestionsViewController];
-      [self.collectionView
-          addSubview:self.contentSuggestionsViewController.view];
-      [self.contentSuggestionsViewController
-          didMoveToParentViewController:self.feedWrapperViewController
-                                            .feedViewController];
+      if (!IsHomeCustomizationEnabled() || self.mostVisitedVisible) {
+        // Add child VC to new parent.
+        [self.contentSuggestionsViewController
+            willMoveToParentViewController:self.feedWrapperViewController
+                                               .feedViewController];
+        [self.feedWrapperViewController.feedViewController
+            addChildViewController:self.contentSuggestionsViewController];
+        [self.collectionView
+            addSubview:self.contentSuggestionsViewController.view];
+        [self.contentSuggestionsViewController
+            didMoveToParentViewController:self.feedWrapperViewController
+                                              .feedViewController];
 
-      [self.feedMetricsRecorder
-          recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
-                                       kContentSuggestionsParent];
+        [self.feedMetricsRecorder
+            recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
+                                         kContentSuggestionsParent];
+      }
     }
   }
 
@@ -1847,8 +1929,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
 - (void)addViewControllerAboveFeed:(UIViewController*)viewController {
   // Gets the current parent view controller based on feed visibility.
   UIViewController* parentViewController =
-      self.isFeedVisible ? self.feedWrapperViewController.feedViewController
-                         : self.feedWrapperViewController;
+      self.feedVisible ? self.feedWrapperViewController.feedViewController
+                       : self.feedWrapperViewController;
 
   // Adds view controller and its view as children of the parent view
   // controller.
@@ -1881,7 +1963,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 // Returns the container view of the NTP content, depending on prefs and flags.
 - (UIView*)containerView {
   UIView* containerView;
-  if (self.isFeedVisible) {
+  if (self.feedVisible) {
     // TODO(crbug.com/40799579): Remove this when the bug is fixed.
     if (IsNTPViewHierarchyRepairEnabled()) {
       [self verifyNTPViewHierarchy];

@@ -10,8 +10,8 @@
 
 + (NSString*)titleForToggleType:(CustomizationToggleType)type {
   switch (type) {
-    case CustomizationToggleType::kShortcuts:
-      return @"Test title 1 (Shortcuts)";
+    case CustomizationToggleType::kMostVisited:
+      return @"Test title 1 (Most visited)";
     case CustomizationToggleType::kMagicStack:
       return @"Test title 2 (Magic Stack)";
     case CustomizationToggleType::kDiscover:
@@ -21,7 +21,7 @@
 
 + (NSString*)subtitleForToggleType:(CustomizationToggleType)type {
   switch (type) {
-    case CustomizationToggleType::kShortcuts:
+    case CustomizationToggleType::kMostVisited:
       return @"Test subtitle 1";
     case CustomizationToggleType::kMagicStack:
       return @"Test subtitle 2";
@@ -32,7 +32,7 @@
 
 + (UIImage*)iconForToggleType:(CustomizationToggleType)type {
   switch (type) {
-    case CustomizationToggleType::kShortcuts:
+    case CustomizationToggleType::kMostVisited:
       return DefaultSymbolWithPointSize(kHistorySymbol, kToggleIconPointSize);
     case CustomizationToggleType::kMagicStack:
       return DefaultSymbolWithPointSize(kMagicStackSymbol,
@@ -46,8 +46,8 @@
 + (NSString*)accessibilityIdentifierForToggleType:
     (CustomizationToggleType)type {
   switch (type) {
-    case CustomizationToggleType::kShortcuts:
-      return kCustomizationToggleShortcutsIdentifier;
+    case CustomizationToggleType::kMostVisited:
+      return kCustomizationToggleMostVisitedIdentifier;
     case CustomizationToggleType::kMagicStack:
       return kCustomizationToggleMagicStackIdentifier;
     case CustomizationToggleType::kDiscover:

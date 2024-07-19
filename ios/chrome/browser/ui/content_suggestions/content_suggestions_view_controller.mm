@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 
@@ -74,10 +75,15 @@
         constraintEqualToAnchor:self.view.trailingAnchor],
     [self.verticalStackView.topAnchor
         constraintEqualToAnchor:self.view.topAnchor
-                       constant:content_suggestions::HeaderBottomPadding()],
+                       constant:
+                           (IsHomeCustomizationEnabled()
+                                ? 0
+                                : content_suggestions::HeaderBottomPadding())],
     [self.verticalStackView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor
-                       constant:-kBottomMagicStackPadding]
+                       constant:(IsHomeCustomizationEnabled()
+                                     ? 0
+                                     : -kBottomMagicStackPadding)]
   ]];
 
   if (_mostVisitedTileConfig && !ShouldPutMostVisitedSitesInMagicStack()) {
@@ -152,7 +158,9 @@
     [self.verticalStackView
         insertArrangedSubview:self.mostVisitedModuleContainer
                       atIndex:0];
-    [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
+    [self.verticalStackView setCustomSpacing:(IsHomeCustomizationEnabled()
+                                                  ? 0
+                                                  : kMostVisitedBottomMargin)
                                    afterView:self.mostVisitedModuleContainer];
     [NSLayoutConstraint activateConstraints:@[
       [self.mostVisitedModuleContainer.widthAnchor

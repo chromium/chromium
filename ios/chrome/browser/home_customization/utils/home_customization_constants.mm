@@ -12,8 +12,8 @@ NSString* const kBottomSheetDetentIdentifier = @"BottomSheetDetentIdentifier";
 NSString* const kNavigationBarDismissButtonIdentifier =
     @"NavigationBarDismissButtonIdentifier";
 
-NSString* const kCustomizationToggleShortcutsIdentifier =
-    @"CustomizationToggleShortcutsIdentifier";
+NSString* const kCustomizationToggleMostVisitedIdentifier =
+    @"CustomizationToggleMostVisitedIdentifier";
 NSString* const kCustomizationToggleMagicStackIdentifier =
     @"CustomizationToggleMagicStackIdentifier";
 NSString* const kCustomizationToggleDiscoverIdentifier =

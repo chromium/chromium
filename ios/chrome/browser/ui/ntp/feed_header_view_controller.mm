@@ -123,6 +123,7 @@ NSInteger kFeedSymbolPointSize = 17;
   self.view.backgroundColor = [UIColor clearColor];
   self.view.maximumContentSizeCategory =
       UIContentSizeCategoryAccessibilityMedium;
+  self.view.accessibilityLabel = kNTPFeedHeaderIdentifier;
 
   self.container = [[UIView alloc] init];
 
@@ -244,11 +245,11 @@ NSInteger kFeedSymbolPointSize = 17;
     return;
   }
 
+  [self resetView];
+
   if ([self.feedControlDelegate shouldFeedBeVisible]) {
-    [self removeViewsForHiddenFeed];
     [self addViewsForVisibleFeed];
   } else {
-    [self removeViewsForVisibleFeed];
     [self addViewsForHiddenFeed];
   }
 
@@ -256,8 +257,7 @@ NSInteger kFeedSymbolPointSize = 17;
 }
 
 - (void)updateForFollowingFeedVisibilityChanged {
-  [self removeViewsForHiddenFeed];
-  [self removeViewsForVisibleFeed];
+  [self resetView];
   [self.titleLabel removeFromSuperview];
 
   // The management button is different for the Following feed header, so it's
@@ -751,8 +751,13 @@ NSInteger kFeedSymbolPointSize = 17;
   [self.container addSubview:self.hiddenFeedLabel];
 }
 
-// Removes views that only appear when the feed visibility is enabled.
-- (void)removeViewsForVisibleFeed {
+// Removes the subviews from the header.
+- (void)resetView {
+  if (self.hiddenFeedLabel) {
+    [self.hiddenFeedLabel removeFromSuperview];
+    self.hiddenFeedLabel = nil;
+  }
+
   if (self.followingDot) {
     [self.followingDot removeFromSuperview];
     self.followingDot = nil;
@@ -770,14 +775,6 @@ NSInteger kFeedSymbolPointSize = 17;
 
   if (self.customSearchEngineView) {
     [self removeCustomSearchEngineView];
-  }
-}
-
-// Removes views that only appear when the feed visibility is disabled.
-- (void)removeViewsForHiddenFeed {
-  if (self.hiddenFeedLabel) {
-    [self.hiddenFeedLabel removeFromSuperview];
-    self.hiddenFeedLabel = nil;
   }
 }
 

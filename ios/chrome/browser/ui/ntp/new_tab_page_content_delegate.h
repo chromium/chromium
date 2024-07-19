@@ -29,6 +29,9 @@
 // Updates the NTP for the selected feed.
 - (void)updateForSelectedFeed:(FeedType)selectedFeed;
 
+// Updates the NTP for changes in module visibility.
+- (void)updateModuleVisibility;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONTENT_DELEGATE_H_

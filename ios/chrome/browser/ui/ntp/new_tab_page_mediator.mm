@@ -152,6 +152,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)setUp {
   _feedHeaderVisible = [self updatedFeedHeaderVisible];
   self.templateURLService->Load();
+  [self updateModuleVisibilityForConsumer];
   [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
                                             self.templateURLService)];
   [self.headerConsumer
@@ -263,10 +264,14 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kArticlesForYouEnabled ||
-      preferenceName == prefs::kNTPContentSuggestionsEnabled ||
-      preferenceName == prefs::kNTPContentSuggestionsForSupervisedUserEnabled) {
-    [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
+  [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
+
+  // Handle customization prefs
+  if (preferenceName == prefs::kHomeCustomizationMostVisitedEnabled ||
+      preferenceName == prefs::kHomeCustomizationMagicStackEnabled ||
+      preferenceName == prefs::kHomeCustomizationDiscoverEnabled) {
+    [self updateModuleVisibilityForConsumer];
+    [self.NTPContentDelegate updateModuleVisibility];
   }
 }
 
@@ -300,6 +305,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (BOOL)updatedFeedHeaderVisible {
   return _prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
          _prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
+         _prefService->GetBoolean(prefs::kHomeCustomizationDiscoverEnabled) &&
          !IsFeedAblationEnabled() &&
          IsContentSuggestionsForSupervisedUserEnabled(_prefService) &&
          !_isSafeMode &&
@@ -316,11 +322,21 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   [self.feedControlDelegate setFeedAndHeaderVisibility:_feedHeaderVisible];
 }
 
+// Updates the consumer with the current visibility of the NTP modules.
+- (void)updateModuleVisibilityForConsumer {
+  self.consumer.mostVisitedVisible =
+      _prefService->GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled);
+  self.consumer.magicStackVisible =
+      _prefService->GetBoolean(prefs::kHomeCustomizationMagicStackEnabled);
+}
+
 // Starts observing some prefs.
 - (void)startObservingPrefs {
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(_prefService);
   _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+
+  // Observe feed visibility prefs.
   _prefObserverBridge->ObserveChangesForPreference(
       prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
   _prefObserverBridge->ObserveChangesForPreference(
@@ -328,6 +344,14 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _prefObserverBridge->ObserveChangesForPreference(
       prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
       _prefChangeRegistrar.get());
+
+  // Observe customization prefs.
+  _prefObserverBridge->ObserveChangesForPreference(
+      prefs::kHomeCustomizationMostVisitedEnabled, _prefChangeRegistrar.get());
+  _prefObserverBridge->ObserveChangesForPreference(
+      prefs::kHomeCustomizationMagicStackEnabled, _prefChangeRegistrar.get());
+  _prefObserverBridge->ObserveChangesForPreference(
+      prefs::kHomeCustomizationDiscoverEnabled, _prefChangeRegistrar.get());
 }
 
 @end

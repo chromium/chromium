@@ -20,7 +20,7 @@ extern NSString* const kBottomSheetDetentIdentifier;
 extern NSString* const kNavigationBarDismissButtonIdentifier;
 
 // The identifiers for the main page toggle cells.
-extern NSString* const kCustomizationToggleShortcutsIdentifier;
+extern NSString* const kCustomizationToggleMostVisitedIdentifier;
 extern NSString* const kCustomizationToggleMagicStackIdentifier;
 extern NSString* const kCustomizationToggleDiscoverIdentifier;
 
@@ -35,7 +35,7 @@ enum class CustomizationMenuPage : NSInteger {
 
 // Enum representing the toggle cells to control module visibility.
 enum class CustomizationToggleType : NSInteger {
-  kShortcuts,
+  kMostVisited,
   kMagicStack,
   kDiscover,
 };

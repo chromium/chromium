@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 @property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 
 // Whether or not the feed is visible.
-@property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
+@property(nonatomic, assign) BOOL feedVisible;
 
 // The view controller representing the NTP feed header.
 @property(nonatomic, weak) FeedHeaderViewController* feedHeaderViewController;

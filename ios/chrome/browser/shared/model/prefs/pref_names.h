@@ -623,8 +623,8 @@ inline constexpr char kChoiceScreenSkippedCount[] =
     "ios.search_engine_choice_screen.skip_count";
 
 // Prefs indicating whether Home surface modules are enabled.
-inline constexpr char kHomeCustomizationShortcutsEnabled[] =
-    "ios.home_customization.shortcuts.enabled";
+inline constexpr char kHomeCustomizationMostVisitedEnabled[] =
+    "ios.home_customization.most_visited.enabled";
 inline constexpr char kHomeCustomizationMagicStackEnabled[] =
     "ios.home_customization.magic_stack.enabled";
 inline constexpr char kHomeCustomizationDiscoverEnabled[] =

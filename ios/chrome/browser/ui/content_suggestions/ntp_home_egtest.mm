@@ -1643,7 +1643,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
   // Reset prefs so that this test run is independent.
   [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kHomeCustomizationShortcutsEnabled];
+                   forUserPref:prefs::kHomeCustomizationMostVisitedEnabled];
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kHomeCustomizationMagicStackEnabled];
   [ChromeEarlGrey setBoolValue:YES
@@ -1670,7 +1670,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // that they're all on.
   [[EarlGrey
       selectElementWithMatcher:CustomizationToggle(
-                                   kCustomizationToggleShortcutsIdentifier)]
+                                   kCustomizationToggleMostVisitedIdentifier)]
       assertWithMatcher:grey_switchWithOnState(YES)];
   [[EarlGrey
       selectElementWithMatcher:CustomizationToggle(
@@ -1691,11 +1691,25 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kCustomizationToggleDiscoverIdentifier)]
       performAction:grey_turnSwitchOn(NO)];
 
-  // Dismiss the customization menu, then open and expand it again.
+  // Dismiss the customization menu and check that only the Shortcuts are
+  // visible.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNavigationBarDismissButtonIdentifier)]
       performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kContentSuggestionsCollectionIdentifier)]
+      assertWithMatcher:grey_not(grey_notVisible())];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Re-open the menu and check that the toggles retained the correct state.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]
@@ -1704,11 +1718,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                  grey_accessibilityID(l10n_util::GetNSString(
                      IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-
-  // Check that the state of each switch was retained.
   [[EarlGrey
       selectElementWithMatcher:CustomizationToggle(
-                                   kCustomizationToggleShortcutsIdentifier)]
+                                   kCustomizationToggleMostVisitedIdentifier)]
       assertWithMatcher:grey_switchWithOnState(YES)];
   [[EarlGrey
       selectElementWithMatcher:CustomizationToggle(
@@ -1719,8 +1731,34 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                                    kCustomizationToggleDiscoverIdentifier)]
       assertWithMatcher:grey_switchWithOnState(NO)];
 
-  // TODO(crbug.com/350990359): Check that module visibility changed once
-  // implemented.
+  // Toggle different modules and check that their visibility was properly
+  // modified.
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleMagicStackIdentifier)]
+      performAction:grey_turnSwitchOn(YES)];
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleDiscoverIdentifier)]
+      performAction:grey_turnSwitchOn(YES)];
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleMostVisitedIdentifier)]
+      performAction:grey_turnSwitchOn(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNavigationBarDismissButtonIdentifier)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kContentSuggestionsCollectionIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_not(grey_notVisible())];
+  [self checkFeedLabelForFeedVisible:YES];
 }
 
 #pragma mark - Helpers

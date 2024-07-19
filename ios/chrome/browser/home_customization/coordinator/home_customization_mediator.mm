@@ -27,8 +27,8 @@
 
 - (void)configureMainPageData {
   std::map<CustomizationToggleType, BOOL> toggleMap = {
-      {CustomizationToggleType::kShortcuts,
-       [self isModuleEnabledForType:CustomizationToggleType::kShortcuts]},
+      {CustomizationToggleType::kMostVisited,
+       [self isModuleEnabledForType:CustomizationToggleType::kMostVisited]},
       {CustomizationToggleType::kMagicStack,
        [self isModuleEnabledForType:CustomizationToggleType::kMagicStack]},
       {CustomizationToggleType::kDiscover,
@@ -42,9 +42,9 @@
 // Returns whether the module with `type` is enabled in the preferences.
 - (BOOL)isModuleEnabledForType:(CustomizationToggleType)type {
   switch (type) {
-    case CustomizationToggleType::kShortcuts:
+    case CustomizationToggleType::kMostVisited:
       return _prefService->GetBoolean(
-          prefs::kHomeCustomizationShortcutsEnabled);
+          prefs::kHomeCustomizationMostVisitedEnabled);
     case CustomizationToggleType::kMagicStack:
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackEnabled);
@@ -58,8 +58,8 @@
 - (void)handleModuleToggledWithType:(CustomizationToggleType)type
                             enabled:(BOOL)enabled {
   switch (type) {
-    case CustomizationToggleType::kShortcuts:
-      _prefService->SetBoolean(prefs::kHomeCustomizationShortcutsEnabled,
+    case CustomizationToggleType::kMostVisited:
+      _prefService->SetBoolean(prefs::kHomeCustomizationMostVisitedEnabled,
                                enabled);
       break;
     case CustomizationToggleType::kMagicStack:

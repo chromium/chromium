@@ -969,7 +969,7 @@
     self.discoverFeedService->SetFollowingFeedContentSeen();
   }
 
-  [self updateNTPForFeed];
+  [self handleChangeInModules];
 
   // Scroll position resets when changing the feed, so we set it back to what it
   // was.
@@ -993,7 +993,7 @@
   self.discoverFeedService->SetFollowingFeedSortType(sortType);
   self.feedHeaderViewController.followingFeedSortType = sortType;
 
-  [self updateNTPForFeed];
+  [self handleChangeInModules];
 
   // Scroll position resets when changing the feed, so we set it back to what it
   // was.
@@ -1020,7 +1020,7 @@
   if (!self.NTPViewController.viewLoaded) {
     return;
   }
-  [self updateNTPForFeed];
+  [self handleChangeInModules];
   [self.NTPViewController setContentOffsetToTop];
 }
 
@@ -1171,6 +1171,13 @@
   // inserted.
   [self.feedHeaderViewController updateForSelectedFeed];
   self.feedMetricsRecorder.followDelegate = self;
+}
+
+- (void)updateModuleVisibility {
+  [self handleChangeInModules];
+  [self cancelOmniboxEdit];
+  [self setContentOffsetToTop];
+  [self.feedHeaderViewController updateForFeedVisibilityChanged];
 }
 
 #pragma mark - NewTabPageDelegate
@@ -1391,14 +1398,15 @@
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  [self handleFeedVisibilityDidChange];
+  // Observes changes in feed visibility pref.
+  [self updateModuleVisibility];
 }
 
 #pragma mark - DiscoverFeedObserverBridge
 
 - (void)discoverFeedModelWasCreated {
   if (self.NTPViewController.viewDidAppear) {
-    [self updateNTPForFeed];
+    [self handleChangeInModules];
 
     if (IsWebChannelsEnabled()) {
       [self.feedHeaderViewController updateForFollowingFeedVisibilityChanged];
@@ -1444,7 +1452,7 @@
       // If sign-in becomes disabled, the sign-in promo must be disabled too.
       // TODO(crbug.com/40280872): The sign-in promo should just be hidden
       // instead of resetting the hierarchy.
-      [self updateNTPForFeed];
+      [self handleChangeInModules];
       [self setContentOffsetToTop];
   }
 }
@@ -1518,9 +1526,8 @@
   }
 }
 
-// Updates the NTP to take into account a new feed, or a change in feed
-// visibility.
-- (void)updateNTPForFeed {
+// Updates the NTP to take into account a change in module visibility
+- (void)handleChangeInModules {
   DCHECK(self.NTPViewController);
 
   [self.NTPViewController resetViewHierarchy];
@@ -1620,7 +1627,7 @@
 - (void)setFeedVisibleFromHeader:(BOOL)visible {
   [self.feedExpandedPref setValue:visible];
   [self.feedMetricsRecorder recordDiscoverFeedVisibilityChanged:visible];
-  [self handleFeedVisibilityDidChange];
+  [self updateModuleVisibility];
 }
 
 // Configures and returns the feed top section coordinator.
@@ -1647,15 +1654,6 @@
   self.feedManagementCoordinator.navigationDelegate = self.NTPMediator;
   self.feedManagementCoordinator.feedMetricsRecorder = self.feedMetricsRecorder;
   [self.feedManagementCoordinator start];
-}
-
-// Handles how the NTP should react when the feed visbility preference is
-// changed.
-- (void)handleFeedVisibilityDidChange {
-  [self updateNTPForFeed];
-  [self cancelOmniboxEdit];
-  [self setContentOffsetToTop];
-  [self.feedHeaderViewController updateForFeedVisibilityChanged];
 }
 
 // Private setter for the `webState` property.

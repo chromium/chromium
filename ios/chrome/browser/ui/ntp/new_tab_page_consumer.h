@@ -16,6 +16,12 @@
 // enough down that the omnibo was already pinned to the top).
 @property(nonatomic, assign, readonly) CGFloat collectionShiftingOffset;
 
+// Whether the Most Visited module is visible on the NTP.
+@property(nonatomic, assign) BOOL mostVisitedVisible;
+
+// Whether the Magic Stack module is visible on the NTP.
+@property(nonatomic, assign) BOOL magicStackVisible;
+
 // Indicates that the omnibox has become the first responder to the keyboard.
 - (void)omniboxDidBecomeFirstResponder;
 
