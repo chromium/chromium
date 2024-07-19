@@ -6,6 +6,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
@@ -25,6 +26,10 @@ namespace {
 
 static constexpr std::string kPassageIdToken = "ID";
 
+std::string GetPassageIdStr(size_t id) {
+  return base::StringPrintf("%04d", static_cast<int>(id));
+}
+
 void AddQueryAndPassagesToSession(const std::string& query,
                                   const std::vector<std::string>& passages,
                                   Session* session) {
@@ -33,7 +38,7 @@ void AddQueryAndPassagesToSession(const std::string& query,
   for (size_t i = 0; i < passages.size(); i++) {
     auto* passage = request.add_passages();
     passage->set_text(passages[i]);
-    passage->set_passage_id(i + 1);
+    passage->set_passage_id(GetPassageIdStr(i + 1));
   }
   session->AddContext(request);
 }

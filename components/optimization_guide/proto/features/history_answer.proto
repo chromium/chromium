@@ -47,7 +47,9 @@ message Passage {
   string text = 1;
 
   // Id of the passage.
-  int32 passage_id = 2;
+  string passage_id = 3;
+
+  reserved 2;
 }
 
 // History AQA answer response.
@@ -70,10 +72,12 @@ message Answer {
 }
 
 // AQA citation.
-// Next ID: 2
+// Next ID: 3
 message Citation {
   // Passage id from the request.
-  int32 passage_id = 1;
+  string passage_id = 2;
+
+  reserved 1;
 }
 
 // Next ID: 3
