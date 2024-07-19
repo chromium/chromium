@@ -948,7 +948,7 @@ void MediaRecorderHandler::WriteData(std::string_view data) {
   const base::TimeTicks now = base::TimeTicks::Now();
   // Non-buffered mode does not need to check timestamps.
   if (timeslice_.is_zero()) {
-    recorder_->WriteData(data.data(), data.length(), /*last_in_slice=*/true,
+    recorder_->WriteData(base::as_byte_span(data), /*last_in_slice=*/true,
                          (now - base::TimeTicks::UnixEpoch()).InMillisecondsF(),
                          /*error_event=*/nullptr);
     return;
@@ -958,7 +958,7 @@ void MediaRecorderHandler::WriteData(std::string_view data) {
   DVLOG_IF(1, last_in_slice) << "Slice finished @ " << now;
   if (last_in_slice)
     slice_origin_timestamp_ = now;
-  recorder_->WriteData(data.data(), data.length(), last_in_slice,
+  recorder_->WriteData(base::as_byte_span(data), last_in_slice,
                        (now - base::TimeTicks::UnixEpoch()).InMillisecondsF(),
                        /*error_event=*/nullptr);
 }
