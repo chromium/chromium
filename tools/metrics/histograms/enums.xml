@@ -430,6 +430,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5"
       label="Not supported as the user data dir is on a network drive"/>
   <int value="6" label="Not supported as it is disabled by policy"/>
+  <int value="7" label="Not supported as the Windows profile is roaming"/>
+  <int value="8" label="Not supported as the Chrome profile is roaming"/>
 </enum>
 
 <enum name="AppInputEventSource">
