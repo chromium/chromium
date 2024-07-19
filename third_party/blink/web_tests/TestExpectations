@@ -2600,9 +2600,6 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/353583079 [ Mac14 ] external/wpt/html/browsers/the-window-object/window-indexed-properties-delete-no-cache.html [ Timeout ]
-crbug.com/353583079 [ Mac13 ] external/wpt/html/browsers/the-window-object/window-indexed-properties-delete-no-cache.html [ Timeout ]
-crbug.com/353583079 [ Mac11 ] external/wpt/html/browsers/the-window-object/window-indexed-properties-delete-no-cache.html [ Timeout ]
 crbug.com/353583104 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
 crbug.com/353583078 external/wpt/trusted-types/block-text-node-insertion-into-svg-script-element.html [ Timeout ]
 crbug.com/353583105 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/config-cross-origin-apis.https.html [ Timeout ]
