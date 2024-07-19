@@ -1,6 +1,7 @@
 Name: Byte Buddy Android
 URL: https://github.com/raphw/byte-buddy/tree/master/byte-buddy-android
 Version: 7ed7903954b6cb3f85754eb14fb792ce4dc52b54
+Revision: 7ed7903954b6cb3f85754eb14fb792ce4dc52b54
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
