@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/manifest.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace safety_hub_test_util {

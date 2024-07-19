@@ -6,24 +6,27 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_PASSWORD_STATUS_CHECK_SERVICE_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/api/passwords_private/password_check_delegate.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
 class PasswordStatusCheckResult;
 
+namespace password_manager {
+class BulkLeakCheckServiceAdapter;
+}
 // The service that runs password checks periodically to get unsecure credential
 // information. The service also observes the changes in password store to get
 // notified about the newly discovered password issues.
 class PasswordStatusCheckService
     : public KeyedService,
-      public password_manager::SavedPasswordsPresenter::Observer,
       public password_manager::BulkLeakCheckServiceInterface::Observer,
-      public password_manager::PasswordStoreInterface::Observer {
+      public password_manager::PasswordStoreInterface::Observer,
+      public password_manager::InsecureCredentialsManager::Observer {
  public:
   explicit PasswordStatusCheckService(Profile* profile);
 
@@ -43,13 +46,7 @@ class PasswordStatusCheckService
   size_t weak_credential_count() const { return weak_credential_count_; }
   size_t reused_credential_count() const { return reused_credential_count_; }
 
-  bool is_update_credential_count_pending() const {
-    return running_update_credential_count_ > 0;
-  }
-
-  bool is_password_check_running() const {
-    return password_check_state_ != kStopped;
-  }
+  bool is_password_check_running() const;
 
   bool no_passwords_saved() const { return no_passwords_saved_; }
 
@@ -78,15 +75,15 @@ class PasswordStatusCheckService
   // is_password_check_running().
   bool IsUpdateRunning() const;
 
+  bool is_running_weak_reused_check() const {
+    return running_weak_reused_check_;
+  }
+
   // Verifies that both `password_check_delegate_` and
   // `saved_passwords_presenter_` are initialized.
   bool IsInfrastructureReady() const;
 
   // Testing functions.
-  bool IsObservingSavedPasswordsPresenterForTesting() const {
-    return saved_passwords_presenter_observation_.IsObserving();
-  }
-
   bool IsObservingBulkLeakCheckForTesting() const {
     return bulk_leak_check_observation_.IsObserving();
   }
@@ -97,8 +94,14 @@ class PasswordStatusCheckService
     return saved_passwords_presenter_.get();
   }
 
-  extensions::PasswordCheckDelegate* GetPasswordCheckDelegateForTesting() {
-    return password_check_delegate_.get();
+  password_manager::InsecureCredentialsManager*
+  GetInsecureCredentialsManagerForTesting() {
+    return insecure_credentials_manager_.get();
+  }
+
+  password_manager::BulkLeakCheckServiceAdapter*
+  GetBulkLeakCheckServiceAdapterForTesting() {
+    return bulk_leak_check_service_adapter_.get();
   }
 
  private:
@@ -128,15 +131,13 @@ class PasswordStatusCheckService
   // issues.
   void RunPasswordCheckAsync();
 
-  // SavedPasswordsPresenter::Observer implementation.
-  // Getting notified about this indicates that the presenter is initialized.
-  void OnSavedPasswordsChanged(
-      const password_manager::PasswordStoreChangeList& changes) override;
+  // Runs weak/reused password check.
+  void RunWeakReusedCheckAsync();
 
   // BulkLeakCheckService::Observer implementation.
   // This is observed to get notified of the progress of the password check.
   void OnStateChanged(
-      password_manager::BulkLeakCheckService::State state) override;
+      password_manager::BulkLeakCheckServiceInterface::State state) override;
   void OnCredentialDone(const password_manager::LeakCheckCredential& credential,
                         password_manager::IsLeaked is_leaked) override;
   void OnBulkCheckServiceShutDown() override;
@@ -151,11 +152,14 @@ class PasswordStatusCheckService
                         const std::vector<password_manager::PasswordForm>&
                             retained_passwords) override;
 
+  // InsecureCredentialsManager::Observer implementation.
+  void OnInsecureCredentialsChanged() override;
+
   // Called whenever password_check_delegate_->StartPasswordCheck is completed.
   // This is only used to prevent the infra being shutdown while there is an
   // ongoing check in the delegate.
   void OnStartedPasswordCheck(
-      password_manager::BulkLeakCheckService::State state);
+      password_manager::BulkLeakCheckServiceInterface::State state);
 
   // This is called when weak and reuse checks are complete and
   // `InsecureCredentialsManager` is ready to be queried for credential issues.
@@ -163,7 +167,7 @@ class PasswordStatusCheckService
 
   // Initializes `saved_passwords_presenter_` and `password_check_delegate_`. If
   // there is no `password_store`, then the infra can not be initialized.
-  void MaybeInitializePasswordCheckInfrastructure();
+  void MaybeInitializePasswordCheckInfrastructure(base::OnceClosure completion);
 
   // Brings cached values for insecure credential counts up to date with
   // |saved_passwords_presenter_|.
@@ -181,26 +185,19 @@ class PasswordStatusCheckService
 
   raw_ptr<Profile> profile_;
 
-  // Required for `password_check_delegate_`. Because it is memory intensive,
-  // only initialized when needed.
-  std::unique_ptr<extensions::IdGenerator> credential_id_generator_;
-
   // Required to obtain the list of saved passwords. Also is required for
   // construction of `PasswordCheckDelegate`. Because it is memory intensive,
   // only initialized when needed.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
       saved_passwords_presenter_;
 
-  // Required to run the password check. Because it is memory intensive, only
-  // initialized when needed.
-  std::unique_ptr<extensions::PasswordCheckDelegate> password_check_delegate_;
+  // Used to obtain the list of insecure credentials.
+  std::unique_ptr<password_manager::InsecureCredentialsManager>
+      insecure_credentials_manager_;
 
-  // A scoped observer for `saved_passwords_presenter_`. This is used for
-  // detecting when `saved_passwords_presenter_` is initialized through
-  // `OnSavedPasswordsChanged`.
-  base::ScopedObservation<password_manager::SavedPasswordsPresenter,
-                          password_manager::SavedPasswordsPresenter::Observer>
-      saved_passwords_presenter_observation_{this};
+  // Adapter used to start, monitor and stop a bulk leak check.
+  std::unique_ptr<password_manager::BulkLeakCheckServiceAdapter>
+      bulk_leak_check_service_adapter_;
 
   // A scoped observer for `BulkLeakCheckService` which is used by
   // `PasswordCheckDelegate`. This is used for detecting when password check is
@@ -220,6 +217,14 @@ class PasswordStatusCheckService
                           password_manager::PasswordStoreInterface::Observer>
       account_password_store_observation_{this};
 
+  // A scoped observer for `insecure_credentials_manager_`. This is used for
+  // detecting when insecure credentials are changed through
+  // `OnInsecureCredentialsChanged`.
+  base::ScopedObservation<
+      password_manager::InsecureCredentialsManager,
+      password_manager::InsecureCredentialsManager::Observer>
+      insecure_credentials_manager_observation_{this};
+
   // Cached results of the password check.
   size_t compromised_credential_count_ = 0;
   size_t weak_credential_count_ = 0;
@@ -228,15 +233,8 @@ class PasswordStatusCheckService
   // True when password stores are empty and there are no saved passwords.
   bool no_passwords_saved_ = true;
 
-  // Counter of running sync update credential count checks. Memory intensive
-  // objects will be reset after all have finished and password_check_state_ is
-  // kStopped.
-  int running_update_credential_count_ = 0;
-
-  // Enum to keep the state of password check. Memory intensive objects
-  // will be reset after the state is kStopped and
-  // running_update_credential_count_ is zero.
-  PasswordCheckState password_check_state_ = kStopped;
+  // Indicates whether weak reause check is currently running.
+  bool running_weak_reused_check_ = false;
 
   // Timer to schedule the run of the password check after some time has passed.
   base::OneShotTimer password_check_timer_;

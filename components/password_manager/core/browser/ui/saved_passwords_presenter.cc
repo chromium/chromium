@@ -120,7 +120,9 @@ SavedPasswordsPresenter::SavedPasswordsPresenter(
 
 SavedPasswordsPresenter::~SavedPasswordsPresenter() = default;
 
-void SavedPasswordsPresenter::Init() {
+void SavedPasswordsPresenter::Init(base::OnceClosure completion_callback) {
+  init_completion_callback_ = std::move(completion_callback);
+
   // Clear old cache.
   sort_key_to_password_forms_.clear();
   passwords_grouper_->ClearCache();
@@ -454,6 +456,10 @@ void SavedPasswordsPresenter::NotifySavedPasswordsChanged(
   }
   for (auto& observer : observers_) {
     observer.OnSavedPasswordsChanged(changes);
+  }
+
+  if (init_completion_callback_) {
+    std::move(init_completion_callback_).Run();
   }
 }
 
