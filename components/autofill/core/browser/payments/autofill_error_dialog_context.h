@@ -37,8 +37,10 @@ enum class AutofillErrorDialogType {
   // Error shown when the server returns result for credit card upload as
   // unsuccessful.
   kCreditCardUploadError = 7,
+  // Error shown when the server cannot enroll the virtual card.
+  kVirtualCardEnrollmentTemporaryError = 8,
   // kMaxValue is required for logging histograms.
-  kMaxValue = kCreditCardUploadError,
+  kMaxValue = kVirtualCardEnrollmentTemporaryError,
 };
 
 // The context for the autofill error dialog.

@@ -179,13 +179,21 @@ void IOSChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
 
 void IOSChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
     bool is_vcn_enrolled) {
-  if (virtual_card_enroll_ui_model_ &&
-      base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    return;
+  }
+  if (virtual_card_enroll_ui_model_) {
     virtual_card_enroll_ui_model_->SetEnrollmentProgress(
         is_vcn_enrolled
             ? VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled
             : VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
+  }
+  if (!is_vcn_enrolled) {
+    AutofillErrorDialogContext autofill_error_dialog_context;
+    autofill_error_dialog_context.type =
+        AutofillErrorDialogType::kVirtualCardEnrollmentTemporaryError;
+    ShowAutofillErrorDialog(std::move(autofill_error_dialog_context));
   }
 }
 

@@ -73,6 +73,22 @@ TEST_F(AutofillErrorDialogControllerImplTest, CreditCardUploadError) {
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
   EXPECT_EQ(controller()->GetButtonLabel(), l10n_util::GetStringUTF16(IDS_OK));
 }
+
+TEST_F(AutofillErrorDialogControllerImplTest,
+       VirtualCardEnrollmentTemporaryError) {
+  AutofillErrorDialogContext context;
+  context.type = AutofillErrorDialogType::kVirtualCardEnrollmentTemporaryError;
+
+  ShowPrompt(context);
+
+  EXPECT_EQ(controller()->GetTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE));
+  EXPECT_EQ(controller()->GetDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION));
+  EXPECT_EQ(controller()->GetButtonLabel(), l10n_util::GetStringUTF16(IDS_OK));
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 // Param of the AutofillErrorDialogControllerImplTest:
