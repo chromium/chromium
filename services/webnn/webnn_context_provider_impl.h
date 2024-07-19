@@ -49,9 +49,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  enum class WebNNStatus {
+    kWebNNGpuDisabled = 0,
+    kWebNNNpuDisabled = 1,
+    kWebNNGpuFeatureStatusDisabled = 2,
+    kWebNNEnabled = 3,
+  };
+
   static void CreateForTesting(
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-      bool is_gpu_supported = true);
+      WebNNStatus status = WebNNStatus::kWebNNEnabled);
 
   // Called when a WebNNContextImpl has a connection error. After this call, it
   // is no longer safe to access |impl|.

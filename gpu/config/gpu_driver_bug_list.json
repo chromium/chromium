@@ -3356,11 +3356,25 @@
       "vendor_id": "0x8086",
       "multi_gpu_category": "any",
       "driver_version": {
-            "op": "<",
-            "value": "31.0.101.5590"
+        "op": "<",
+        "value": "31.0.101.5590"
       },
       "features": [
         "disable_vp9_hmft_temporal_encoding"
+      ]
+    },
+    {
+      "id": 433,
+      "cr_bugs": [
+        325123735
+      ],
+      "description": "Qualcomm GPUs have driver bugs preventing WebNN from working correctly",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x4d4f4351",
+      "features": [
+        "disable_webnn_for_gpu"
       ]
     }
   ]

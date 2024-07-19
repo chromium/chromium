@@ -58,18 +58,18 @@ using webnn::mojom::WebNNContextProvider;
 base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
     gpu::SharedContextState* shared_context_state,
     const gpu::GpuFeatureInfo& gpu_feature_info) {
+  if (gpu_feature_info.IsWorkaroundEnabled(DISABLE_WEBNN_FOR_GPU)) {
+    return base::unexpected(
+        dml::CreateError(mojom::Error::Code::kNotSupportedError,
+                         "WebNN is blocklisted for GPU."));
+  }
+
   if (!shared_context_state) {
     // Unit tests do not pass in a SharedContextState, since a reference to
     // a GpuServiceImpl must be initialized to obtain a SharedContextState.
     // Instead, we just enumerate the first DXGI adapter.
     CHECK_IS_TEST();
     return dml::Adapter::GetInstanceForTesting(dml::kMinDMLFeatureLevelForGpu);
-  }
-
-  if (gpu_feature_info.IsWorkaroundEnabled(DISABLE_WEBNN_FOR_GPU)) {
-    return base::unexpected(
-        dml::CreateError(mojom::Error::Code::kNotSupportedError,
-                         "WebNN is blocklisted for GPU."));
   }
 
   // At the current stage, all `ContextImplDml` share this instance.
@@ -153,7 +153,7 @@ void WebNNContextProviderImpl::BindWebNNContextProvider(
 // static
 void WebNNContextProviderImpl::CreateForTesting(
     mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-    bool is_gpu_supported) {
+    WebNNStatus status) {
   CHECK_IS_TEST();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -161,12 +161,22 @@ void WebNNContextProviderImpl::CreateForTesting(
 #else
   gpu::GpuFeatureInfo gpu_feature_info;
   gpu::GPUInfo gpu_info;
-  for (auto& status : gpu_feature_info.status_values) {
-    status = gpu::GpuFeatureStatus::kGpuFeatureStatusDisabled;
+
+  for (auto& status_value : gpu_feature_info.status_values) {
+    status_value = gpu::GpuFeatureStatus::kGpuFeatureStatusDisabled;
   }
-  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] =
-      is_gpu_supported ? gpu::kGpuFeatureStatusEnabled
-                       : gpu::kGpuFeatureStatusBlocklisted;
+  if (status != WebNNStatus::kWebNNGpuFeatureStatusDisabled) {
+    gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] =
+        gpu::kGpuFeatureStatusEnabled;
+  }
+  if (status == WebNNStatus::kWebNNGpuDisabled) {
+    gpu_feature_info.enabled_gpu_driver_bug_workarounds.push_back(
+        DISABLE_WEBNN_FOR_GPU);
+  }
+  if (status == WebNNStatus::kWebNNNpuDisabled) {
+    gpu_feature_info.enabled_gpu_driver_bug_workarounds.push_back(
+        DISABLE_WEBNN_FOR_NPU);
+  }
 
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
       base::WrapUnique(new WebNNContextProviderImpl(
@@ -213,11 +223,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         gpu::kGpuFeatureStatusEnabled) {
       std::move(callback).Run(ToError<mojom::CreateContextResult>(
           mojom::Error::Code::kNotSupportedError,
-          "WebNN is not compatible with GPU."));
-      LOG(ERROR) << "[WebNN] is not compatible with GPU.";
+          "WebNN is not compatible with device."));
+      LOG(ERROR) << "[WebNN] is not compatible with device.";
       return;
     }
-
     // Get the `Adapter` instance which is created for the adapter according to
     // the device type. At the current stage, all `ContextImpl` share one
     // instance for one device type.

@@ -1439,18 +1439,6 @@
       ]
     },
     {
-      "id": 180,
-      "cr_bugs": [325123735],
-      "description": "QC GPUs have driver bugs preventing WebNN from working correctly",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x4d4f4351",
-      "features": [
-        "webnn"
-      ]
-    },
-    {
       "id": 181,
       "cr_bugs": [329702368],
       "description": "Corrupted browser/webpage rendering on Win10/Intel HD Graphics 4400",

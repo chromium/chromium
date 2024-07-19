@@ -347,7 +347,7 @@ GpuFeatureStatus GetWebNNFeatureStatus(
     return kGpuFeatureStatusDisabled;
   }
   if (blocklisted_features.count(GPU_FEATURE_TYPE_WEBNN)) {
-    return kGpuFeatureStatusBlocklisted;
+    return kGpuFeatureStatusSoftware;
   }
   return kGpuFeatureStatusEnabled;
 }
@@ -375,7 +375,8 @@ void SetProcessGlWorkaroundsFromGpuFeatures(
 }
 
 // Adjust gpu feature status based on enabled gpu driver bug workarounds.
-void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info) {
+void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info,
+                                         const GPUInfo& gpu_info) {
   if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_D3D11) ||
       gpu_feature_info->IsWorkaroundEnabled(DISABLE_ES3_GL_CONTEXT)) {
     gpu_feature_info->status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
@@ -384,6 +385,21 @@ void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info) {
   if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_CANVAS_OOP_RASTERIZATION)) {
     gpu_feature_info->status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
         kGpuFeatureStatusBlocklisted;
+  }
+  // If disable_webnn_for_gpu workaround is enabled for the GPU device, we need
+  // to check to see if there is a NPU device available before setting the WebNN
+  // gpu feature status. If there is a NPU device, check the
+  // disable_webnn_for_npu workaround.
+  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_WEBNN_FOR_GPU)) {
+    if (gpu_info.npus.size() > 0) {
+      if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_WEBNN_FOR_NPU)) {
+        gpu_feature_info->status_values[GPU_FEATURE_TYPE_WEBNN] =
+            kGpuFeatureStatusSoftware;
+      }
+    } else {
+      gpu_feature_info->status_values[GPU_FEATURE_TYPE_WEBNN] =
+          kGpuFeatureStatusSoftware;
+    }
   }
 }
 
@@ -489,7 +505,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
-      kGpuFeatureStatusDisabled;
+      kGpuFeatureStatusSoftware;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -525,7 +541,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
       kGpuFeatureStatusDisabled;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
-      kGpuFeatureStatusDisabled;
+      kGpuFeatureStatusSoftware;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -699,7 +715,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
         gfx::MakeExtensionString(all_disabled_extensions);
   }
 
-  AdjustGpuFeatureStatusToWorkarounds(&gpu_feature_info);
+  AdjustGpuFeatureStatusToWorkarounds(&gpu_feature_info, gpu_info);
 
   SetProcessGlWorkaroundsFromGpuFeatures(gpu_feature_info);
 

@@ -100,8 +100,8 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetNpuInstance(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::GPUInfo& gpu_info) {
   if (gpu_feature_info.IsWorkaroundEnabled(gpu::DISABLE_WEBNN_FOR_NPU)) {
-    return HandleAdapterFailure(mojom::Error::Code::kNotSupportedError,
-                                "WebNN is blocklisted for NPU.");
+    return base::unexpected(CreateError(mojom::Error::Code::kNotSupportedError,
+                                        "WebNN is blocklisted for NPU."));
   }
 
   // If the `Adapter` instance is created, add a reference and return it.
