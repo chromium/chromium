@@ -25,19 +25,11 @@
 
 namespace blink {
 
+namespace {
 bool IsManifestEmpty(const mojom::blink::ManifestPtr& manifest) {
   return manifest == mojom::blink::Manifest::New();
 }
-
-bool IsDefaultManifest(const mojom::blink::ManifestPtr& manifest,
-                       const KURL& document_url) {
-  mojom::blink::ManifestPtr expected_manifest = mojom::blink::Manifest::New();
-  expected_manifest->start_url = document_url;
-  expected_manifest->id = document_url;
-  expected_manifest->id.RemoveFragmentIdentifier();
-  expected_manifest->scope = KURL(document_url.BaseAsString());
-  return manifest == expected_manifest;
-}
+}  // namespace
 
 class ManifestParserTest : public testing::Test {
  public:
@@ -66,16 +58,35 @@ class ManifestParserTest : public testing::Test {
   }
 
   mojom::blink::ManifestPtr& ParseManifest(const String& data) {
-    return ParseManifestWithURLs(data, default_manifest_url,
-                                 default_document_url);
+    return ParseManifestWithURLs(data, DefaultManifestUrl(),
+                                 DefaultDocumentUrl());
   }
 
   const Vector<String>& errors() const { return errors_; }
 
   unsigned int GetErrorCount() const { return errors_.size(); }
 
-  const KURL& DefaultDocumentUrl() const { return default_document_url; }
-  const KURL& DefaultManifestUrl() const { return default_manifest_url; }
+  static KURL DefaultDocumentUrl() { return KURL("http://foo.com/index.html"); }
+  static KURL DefaultManifestUrl() {
+    return KURL("http://foo.com/manifest.json");
+  }
+
+  bool HasDefaultValuesWithUrls(
+      const mojom::blink::ManifestPtr& manifest,
+      const KURL& document_url = DefaultDocumentUrl(),
+      const KURL& manifest_url = DefaultManifestUrl()) {
+    mojom::blink::ManifestPtr expected_manifest = mojom::blink::Manifest::New();
+    // A true "default" manifest would have an empty manifest URL. However in
+    // these tests we don't want to check for that, rather this method is used
+    // to check that a manifest has all its fields set to "default" values, but
+    // also have the expected manifest url.
+    expected_manifest->manifest_url = manifest_url;
+    expected_manifest->start_url = document_url;
+    expected_manifest->id = document_url;
+    expected_manifest->id.RemoveFragmentIdentifier();
+    expected_manifest->scope = KURL(document_url.BaseAsString());
+    return manifest == expected_manifest;
+  }
 
   void VerifySafeUrlPatternSizes(const SafeUrlPattern& pattern,
                                  size_t protocol_size,
@@ -100,9 +111,6 @@ class ManifestParserTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   mojom::blink::ManifestPtr manifest_;
   Vector<String> errors_;
-
-  const KURL default_document_url = KURL("http://foo.com/index.html");
-  const KURL default_manifest_url = KURL("http://foo.com/manifest.json");
 };
 
 TEST_F(ManifestParserTest, CrashTest) {
@@ -143,7 +151,7 @@ TEST_F(ManifestParserTest, EmptyStringNull) {
 
   // A parsing error is equivalent to an empty manifest.
   EXPECT_TRUE(IsManifestEmpty(manifest));
-  EXPECT_FALSE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
+  EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
 }
 
 TEST_F(ManifestParserTest, ValidNoContentParses) {
@@ -154,7 +162,7 @@ TEST_F(ManifestParserTest, ValidNoContentParses) {
 
   // Check that the fields are null or set to their default values.
   EXPECT_FALSE(IsManifestEmpty(manifest));
-  EXPECT_TRUE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
+  EXPECT_TRUE(HasDefaultValuesWithUrls(manifest, DefaultDocumentUrl(), KURL()));
   EXPECT_TRUE(manifest->name.IsNull());
   EXPECT_TRUE(manifest->short_name.IsNull());
   EXPECT_EQ(manifest->start_url, DefaultDocumentUrl());
@@ -180,7 +188,7 @@ TEST_F(ManifestParserTest, UnrecognizedFieldsIgnored) {
 
   // Check that subsequent fields parsed.
   EXPECT_FALSE(IsManifestEmpty(manifest));
-  EXPECT_FALSE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
+  EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
   EXPECT_EQ(manifest->name, "bar");
   EXPECT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
 }
@@ -192,7 +200,7 @@ TEST_F(ManifestParserTest, MultipleErrorsReporting) {
       "start_url": null, "icons": {}, "theme_color": 42,
       "background_color": 42, "shortcuts": {} })");
   EXPECT_FALSE(IsManifestEmpty(manifest));
-  EXPECT_TRUE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
+  EXPECT_TRUE(HasDefaultValuesWithUrls(manifest));
 
   EXPECT_THAT(errors(),
               testing::UnorderedElementsAre(
@@ -214,7 +222,7 @@ TEST_F(ManifestParserTest, NameParseRules) {
     auto& manifest = ParseManifest(R"({ "name": "foo" })");
     EXPECT_EQ(manifest->name, "foo");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
+    EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -441,7 +449,7 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
     ASSERT_FALSE(IsManifestEmpty(manifest));
     EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_TRUE(manifest->has_valid_specified_start_url);
-    EXPECT_FALSE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
+    EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
   }
 
   // Whitespaces.
@@ -461,7 +469,7 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
                 testing::ElementsAre(
                     "property 'start_url' ignored, type string expected."));
     EXPECT_FALSE(manifest->has_valid_specified_start_url);
-    EXPECT_TRUE(IsDefaultManifest(manifest, DefaultDocumentUrl()));
+    EXPECT_TRUE(HasDefaultValuesWithUrls(manifest));
   }
 
   // Don't parse if property isn't a string.

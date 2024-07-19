@@ -297,6 +297,7 @@ bool ManifestParser::Parse() {
     return false;
   }
 
+  manifest_->manifest_url = manifest_url_;
   manifest_->name = ParseName(root_object.get());
   manifest_->short_name = ParseShortName(root_object.get());
   manifest_->description = ParseDescription(root_object.get());

@@ -234,7 +234,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, 404Manifest) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_TRUE(blink::IsEmptyManifest(manifest()));
+  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
   EXPECT_FALSE(manifest_url().is_empty());
   // 1 error for syntax errors in manifest/thereisnomanifestthere.json.
   EXPECT_EQ(1, GetConsoleErrorCount());
@@ -271,7 +272,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ParseErrorManifest) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_TRUE(blink::IsEmptyManifest(manifest()));
+  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(1, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
@@ -739,10 +741,10 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
   ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
   // Same-origin manifest will not be fetched from a unique origin, regardless
-  // of CORS headers.
+  // of CORS headers. Manifest URL is still returned though.
   GetManifestAndWait();
   EXPECT_TRUE(blink::IsEmptyManifest(manifest()));
-  EXPECT_TRUE(manifest_url().is_empty());
+  EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   EXPECT_EQ(0u, reported_manifest_urls().size());
 
@@ -752,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
 
   GetManifestAndWait();
   EXPECT_TRUE(blink::IsEmptyManifest(manifest()));
-  EXPECT_TRUE(manifest_url().is_empty());
+  EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   EXPECT_EQ(0u, reported_manifest_urls().size());
 }

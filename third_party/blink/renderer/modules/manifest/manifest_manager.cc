@@ -164,7 +164,8 @@ void ManifestManager::DidChangeManifest() {
 void ManifestManager::FetchManifest() {
   if (!CanFetchManifest()) {
     ResolveCallbacks(
-        Result(mojom::blink::ManifestRequestResult::kNoManifestAllowed));
+        Result(mojom::blink::ManifestRequestResult::kNoManifestAllowed,
+               ManifestURL()));
     return;
   }
 
@@ -194,7 +195,8 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
     // catch this error appropriately as a network issue instead of using a
     // 'default' manifest that wasn't intended by the developer.
     ResolveCallbacks(
-        Result(mojom::blink::ManifestRequestResult::kManifestFailedToFetch));
+        Result(mojom::blink::ManifestRequestResult::kManifestFailedToFetch,
+               response.CurrentRequestUrl(), DefaultManifest()));
     return;
   }
   ParseManifestFromPage(document_url, response.CurrentRequestUrl(), data);
@@ -245,11 +247,13 @@ void ManifestManager::ParseManifestFromPage(const KURL& document_url,
   // Having errors while parsing the manifest doesn't mean the manifest parsing
   // failed. Some properties might have been ignored but some others kept.
   if (failed) {
+    result.SetManifest(DefaultManifest());
     ResolveCallbacks(std::move(result));
     return;
   }
 
   result.SetManifest(parser.TakeManifest());
+
   // We should always have a start_url, manifest_id, and scope, as any errors
   // still have fallbacks back to the document_url.
   CHECK(!result.manifest().start_url.IsEmpty() &&
@@ -354,7 +358,11 @@ mojom::blink::ManifestPtr ManifestManager::DefaultManifest() {
                         /*document_url=*/window.Url(), GetExecutionContext());
   parser.Parse();
   CHECK(!parser.failed());
-  return parser.TakeManifest();
+  auto result = parser.TakeManifest();
+  // Reset manifest_url in the parsed manifest, as the window url isn't really
+  // the url for this manifest.
+  result->manifest_url = KURL();
+  return result;
 }
 
 void ManifestManager::ContextDestroyed() {

@@ -23,6 +23,10 @@ import "url/mojom/url.mojom";
 // if the manifest failed to parse.
 [JavaClassName="WebManifest"]
 struct Manifest {
+  // The URL this manifest was loaded from. This can be an empty URL if this is
+  // an automatically generated "default" manifest.
+  url.mojom.Url manifest_url;
+
   mojo_base.mojom.String16? name;
 
   mojo_base.mojom.String16? short_name;
@@ -407,8 +411,8 @@ enum ManifestRequestResult {
   // The page does not specify a manifest, a default manifest is returned
   // instead.
   kNoManifestSpecified,
-  // The manifest failed to fetch or failed to parse. An empty manifest will be
-  // returned with this response.
+  // The manifest failed to fetch or failed to parse. A default manifest will
+  // be returned in addition to the manifest URL the page specified.
   kManifestFailedToFetch,
   kManifestFailedToParse,
   // Success, the manifest was loaded from the URL specified by the page.
