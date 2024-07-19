@@ -327,7 +327,7 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
     ASSERT_TRUE(graphite_texture.isValid()) << "plane_index=" << plane;
 
     ASSERT_TRUE(context_state_->gpu_main_graphite_recorder());
-    auto sk_image = SkImages::AdoptTextureFrom(
+    auto sk_image = SkImages::WrapTexture(
         context_state_->gpu_main_graphite_recorder(), graphite_texture,
         plane_color_type, skia_representation->alpha_type(), nullptr);
     ASSERT_TRUE(sk_image) << "plane_index=" << plane;

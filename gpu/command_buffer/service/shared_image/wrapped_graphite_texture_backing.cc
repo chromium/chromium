@@ -291,7 +291,7 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
   for (int i = 0; i < format().NumberOfPlanes(); i++) {
     const auto color_type =
         viz::ToClosestSkColorType(/*gpu_compositing=*/true, format(), i);
-    sk_sp<SkImage> sk_image = SkImages::AdoptTextureFrom(
+    sk_sp<SkImage> sk_image = SkImages::WrapTexture(
         context_state_->gpu_main_graphite_recorder(), graphite_textures_[i],
         color_type, kOpaque_SkAlphaType, /*colorSpace=*/nullptr);
     if (!sk_image) {
