@@ -3591,7 +3591,7 @@ TEST_F(SearchProviderTest, ParseDeletionUrl) {
       SCOPED_TRACE(" and match index: " + base::NumberToString(j));
       EXPECT_EQ(match.contents, base::UTF16ToUTF8(matches[j].contents));
       EXPECT_EQ(match.deletion_url,
-                matches[j].GetAdditionalInfo("deletion_url"));
+                matches[j].GetAdditionalInfoForDebugging("deletion_url"));
     }
   }
 }

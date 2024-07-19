@@ -148,8 +148,9 @@ class DocumentProviderTest : public testing::Test,
     std::vector<Summary> summaries;
     base::ranges::transform(
         matches, std::back_inserter(summaries), [](const auto& match) {
-          return Summary{match.contents, match.relevance,
-                         match.GetAdditionalInfo("from cache") == "true"};
+          return Summary{
+              match.contents, match.relevance,
+              match.GetAdditionalInfoForDebugging("from cache") == "true"};
         });
     return summaries;
   }

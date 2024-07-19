@@ -142,7 +142,9 @@ SearchProvider::SearchProvider(AutocompleteProviderClient* client,
 
 // static
 std::string SearchProvider::GetSuggestMetadata(const AutocompleteMatch& match) {
-  return match.GetAdditionalInfo(kSuggestMetadataKey);
+  // TODO(manukh): Unused, delete this method, `kSuggestMetadataKey`, writing to
+  //   `kSuggestMetadataKey`, and the wiring for metadata.
+  return match.GetAdditionalInfoForDebugging(kSuggestMetadataKey);
 }
 
 void SearchProvider::RegisterDisplayedAnswers(
@@ -1109,8 +1111,11 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         (i->type != AutocompleteMatchType::SEARCH_OTHER_ENGINE)) {
       // If we've already hit the limit on non-server-scored suggestions, and
       // this isn't a server-scored suggestion we can add, skip it.
+      // TODO (manukh): `GetAdditionalInfoForDebugging()` shouldn't be used for
+      //   non-debugging purposes.
       if ((num_suggestions >= provider_max_matches_) &&
-          (i->GetAdditionalInfo(kRelevanceFromServerKey) != kTrue)) {
+          (i->GetAdditionalInfoForDebugging(kRelevanceFromServerKey) !=
+           kTrue)) {
         continue;
       }
 

@@ -611,11 +611,12 @@ TEST_F(BaseSearchProviderTest, MatchTailSuggestionProperly) {
 
   ASSERT_EQ(1UL, map.size());
   const auto& entry = *(map.begin());
-  std::string text =
-      entry.second.GetAdditionalInfo(kACMatchPropertyContentsStartIndex);
+  std::string text = entry.second.GetAdditionalInfoForDebugging(
+      kACMatchPropertyContentsStartIndex);
   size_t length;
   EXPECT_TRUE(base::StringToSizeT(text, &length));
-  text = entry.second.GetAdditionalInfo(kACMatchPropertySuggestionText);
+  text = entry.second.GetAdditionalInfoForDebugging(
+      kACMatchPropertySuggestionText);
   EXPECT_GE(text.length(), length);
 }
 

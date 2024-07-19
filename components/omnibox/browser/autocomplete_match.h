@@ -512,8 +512,12 @@ struct AutocompleteMatch {
   void RecordAdditionalInfo(const std::string& property, base::Time value);
 
   // Returns the value recorded for |property| in the |additional_info|
-  // dictionary.  Returns the empty string if no such value exists.
-  std::string GetAdditionalInfo(const std::string& property) const;
+  // dictionary. Returns the empty string if no such value exists. This is for
+  // debugging in chrome://omnibox only. It should only be called by
+  // `OmniboxPageHandler` and tests. For match info that's used for
+  // non-debugging, use class fields. Unfortunately, There are existing
+  // non-debug callsites; those should be cleaned up, not added to.
+  std::string GetAdditionalInfoForDebugging(const std::string& property) const;
 
   // Returns the provider type selected from this match, which is by default
   // taken from the match `provider` type but may be a (pseudo-)provider

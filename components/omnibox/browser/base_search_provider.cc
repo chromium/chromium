@@ -98,12 +98,16 @@ BaseSearchProvider::BaseSearchProvider(AutocompleteProvider::Type type,
 
 // static
 bool BaseSearchProvider::ShouldPrefetch(const AutocompleteMatch& match) {
-  return match.GetAdditionalInfo(kShouldPrefetchKey) == kTrue;
+  // TODO (manukh): `GetAdditionalInfoForDebugging()` shouldn't be used for
+  //   non-debugging purposes.
+  return match.GetAdditionalInfoForDebugging(kShouldPrefetchKey) == kTrue;
 }
 
 // static
 bool BaseSearchProvider::ShouldPrerender(const AutocompleteMatch& match) {
-  return match.GetAdditionalInfo(kShouldPrerenderKey) == kTrue;
+  // TODO (manukh): `GetAdditionalInfoForDebugging()` shouldn't be used for
+  //   non-debugging purposes.
+  return match.GetAdditionalInfoForDebugging(kShouldPrerenderKey) == kTrue;
 }
 
 // static
@@ -422,12 +426,16 @@ bool BaseSearchProvider::CanSendSuggestRequestWithPageURL(
 
 void BaseSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
   DCHECK(match.deletable);
-  if (!match.GetAdditionalInfo(BaseSearchProvider::kDeletionUrlKey).empty()) {
+  // TODO (manukh): `GetAdditionalInfoForDebugging()` shouldn't be used for
+  //   non-debugging purposes.
+  if (!match.GetAdditionalInfoForDebugging(BaseSearchProvider::kDeletionUrlKey)
+           .empty()) {
     deletion_loaders_.push_back(
         client()
             ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
             ->StartDeletionRequest(
-                match.GetAdditionalInfo(BaseSearchProvider::kDeletionUrlKey),
+                match.GetAdditionalInfoForDebugging(
+                    BaseSearchProvider::kDeletionUrlKey),
                 base::BindOnce(&BaseSearchProvider::OnDeletionComplete,
                                base::Unretained(this))));
   }

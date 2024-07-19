@@ -70,7 +70,10 @@ FeaturedSearchProvider::FeaturedSearchProvider(
 // static
 FeaturedSearchProvider::IPHType FeaturedSearchProvider::GetIPHType(
     const AutocompleteMatch& match) {
-  std::string info = match.GetAdditionalInfo(kIPHTypeAdditionalInfoKey);
+  // TODO (manukh): `GetAdditionalInfoForDebugging()` shouldn't be used for
+  //   non-debugging purposes.
+  std::string info =
+      match.GetAdditionalInfoForDebugging(kIPHTypeAdditionalInfoKey);
   CHECK(!info.empty());
   int converted_value = 0;
   CHECK(base::StringToInt(info, &converted_value));
