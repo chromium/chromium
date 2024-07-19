@@ -103,7 +103,9 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/test/with_feature_override.h"
+#include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "pdf/pdf_features.h"
 #endif
 
@@ -2284,20 +2286,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, CannotZoomInvalidTab) {
 
 #if BUILDFLAG(ENABLE_PDF)
 class ExtensionApiPdfTest : public base::test::WithFeatureOverride,
-                            public ExtensionApiTest {
+                            public PDFExtensionTestBase {
  public:
   ExtensionApiPdfTest()
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+
+  bool UseOopif() const override { return GetParam(); }
 };
 
 // Regression test for crbug.com/660498.
 IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
-  // TODO(crbug.com/40268279): Remove this once the test passes for OOPIF PDF.
-  if (IsParamFeatureEnabled()) {
-    GTEST_SKIP();
-  }
-
-  ASSERT_TRUE(StartEmbeddedTestServer());
   content::WebContents* first_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(first_web_contents);
@@ -2313,14 +2311,21 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(second_web_contents));
-
+  // Ensure the PDF has loaded, and get the WebContents to click.
   auto* web_contents_for_click = second_web_contents;
-  auto inner_web_contents = web_contents_for_click->GetInnerWebContents();
-  ASSERT_EQ(1U, inner_web_contents.size());
-  // With MimeHandlerViewInCrossProcessFrame input should directly route to
-  // the guest WebContents as there is no longer a BrowserPlugin involved.
-  web_contents_for_click = inner_web_contents[0];
+  if (UseOopif()) {
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(second_web_contents)
+                    ->WaitUntilPdfLoadedInFirstChild());
+  } else {
+    ASSERT_TRUE(
+        pdf_extension_test_util::EnsurePDFHasLoaded(second_web_contents));
+
+    auto inner_web_contents = web_contents_for_click->GetInnerWebContents();
+    ASSERT_EQ(1U, inner_web_contents.size());
+    // With MimeHandlerViewInCrossProcessFrame input should directly route to
+    // the guest WebContents as there is no longer a BrowserPlugin involved.
+    web_contents_for_click = inner_web_contents[0];
+  }
 
   // (400, 300) in `web_contents_for_click` translates to a different coordinate
   // in the PDF Viewer. The exact coordinate depends on the PDF Viewer's UI
