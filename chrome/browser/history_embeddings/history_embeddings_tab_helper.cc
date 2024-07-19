@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_row.h"
@@ -44,7 +45,8 @@ void HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(
     base::Time visit_time,
     const GURL& url) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !history_embeddings::IsHistoryEmbeddingEnabled() ||
+      !history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext())) ||
       !GetHistoryEmbeddingsService()) {
     return;
   }
@@ -63,7 +65,8 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (!render_frame_host->IsInPrimaryMainFrame() ||
-      !history_embeddings::IsHistoryEmbeddingEnabled() ||
+      !history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext())) ||
       !GetHistoryEmbeddingsService() ||
       !GetHistoryEmbeddingsService()->IsEligible(validated_url)) {
     return;

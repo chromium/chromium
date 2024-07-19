@@ -1963,6 +1963,8 @@ static_library("browser") {
       "history_embeddings/history_embeddings_service_factory.h",
       "history_embeddings/history_embeddings_tab_helper.cc",
       "history_embeddings/history_embeddings_tab_helper.h",
+      "history_embeddings/history_embeddings_utils.cc",
+      "history_embeddings/history_embeddings_utils.h",
     ]
   }
 

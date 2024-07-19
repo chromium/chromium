@@ -11133,6 +11133,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/permissions",
       "//chrome/browser/permissions:interactive_ui_tests",
       "//chrome/browser/policy:test_support",

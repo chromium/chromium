@@ -5,7 +5,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -79,6 +81,13 @@ class HistoryEmbeddingsInteractiveTest
 // browser test which gives some coverage.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsInteractiveTest, FeedbackDialog) {
+  optimization_guide::EnableSigninAndModelExecutionCapability(
+      browser()->profile());
+  browser()->profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::UserVisibleFeatureKey::kHistorySearch),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
+
   // Setup a search result so that the WebUI can show the results with the
   // thumbs up/down UI.
   OverrideVisibilityScoresForTesting({

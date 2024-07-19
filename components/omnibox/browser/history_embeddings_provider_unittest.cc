@@ -131,17 +131,8 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   AutocompleteInput long_input = CreateAutocompleteInput(u"query query query");
 
   // When the feature is disabled, should early exit.
-  base::test::ScopedFeatureList disabled_feature;
-  disabled_feature.InitWithFeatures(
-      {
-#if BUILDFLAG(IS_CHROMEOS)
-          {
-              chromeos::features::kFeatureManagementHistoryEmbedding,
-          }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-      },
-      /*disabled_features=*/{history_embeddings::kHistoryEmbeddings});
-
+  EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
+      .WillOnce(testing::Return(false));
   EXPECT_CALL(history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
@@ -157,6 +148,8 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
       },
       /*disabled_features=*/{});
+  EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
+      .WillRepeatedly(testing::Return(true));
 
   EXPECT_CALL(history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
@@ -172,15 +165,8 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleSequentialSearches) {
-  base::test::ScopedFeatureList enabled_feature;
-  enabled_feature.InitWithFeatures(
-      {
-          {history_embeddings::kHistoryEmbeddings},
-#if BUILDFLAG(IS_CHROMEOS)
-          {chromeos::features::kFeatureManagementHistoryEmbedding},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-      },
-      /*disabled_features=*/{});
+  EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
+      .WillRepeatedly(testing::Return(true));
 
   // Start 1st search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
@@ -206,15 +192,8 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleSequentialSearches) {
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleParallelSearches) {
-  base::test::ScopedFeatureList enabled_feature;
-  enabled_feature.InitWithFeatures(
-      {
-          {history_embeddings::kHistoryEmbeddings},
-#if BUILDFLAG(IS_CHROMEOS)
-          {chromeos::features::kFeatureManagementHistoryEmbedding},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-      },
-      /*disabled_features=*/{});
+  EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
+      .WillRepeatedly(testing::Return(true));
 
   // Start 1st search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
@@ -237,15 +216,8 @@ TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleParallelSearches) {
 
 TEST_F(HistoryEmbeddingsProviderTest,
        Start_MultipleParallelSearchesWithSameQuery) {
-  base::test::ScopedFeatureList enabled_feature;
-  enabled_feature.InitWithFeatures(
-      {
-          {history_embeddings::kHistoryEmbeddings},
-#if BUILDFLAG(IS_CHROMEOS)
-          {chromeos::features::kFeatureManagementHistoryEmbedding},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-      },
-      /*disabled_features=*/{});
+  EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
+      .WillRepeatedly(testing::Return(true));
 
   // Start 1st search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
@@ -283,6 +255,8 @@ TEST_F(HistoryEmbeddingsProviderTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
       },
       /*disabled_features=*/{});
+  EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
+      .WillRepeatedly(testing::Return(true));
 
   // Start 1st search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
@@ -301,15 +275,8 @@ TEST_F(HistoryEmbeddingsProviderTest,
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, Start_Stop_SearchCompletesAfterStop) {
-  base::test::ScopedFeatureList enabled_feature;
-  enabled_feature.InitWithFeatures(
-      {
-          {history_embeddings::kHistoryEmbeddings},
-#if BUILDFLAG(IS_CHROMEOS)
-          {chromeos::features::kFeatureManagementHistoryEmbedding},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-      },
-      /*disabled_features=*/{});
+  EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
+      .WillRepeatedly(testing::Return(true));
 
   // Start search.
   history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);

@@ -21,6 +21,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -181,7 +182,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       prefs->GetInteger(history_clusters::prefs::kLastSelectedTab));
 
   bool enable_history_embeddings =
-      history_embeddings::IsHistoryEmbeddingEnabled();
+      history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile);
   source->AddBoolean("enableHistoryEmbeddings", enable_history_embeddings);
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},

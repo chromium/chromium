@@ -101,7 +101,10 @@ extern const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder;
 // Whether to enable the URL filter to skip blocked URLs to improve performance.
 extern const base::FeatureParam<bool> kUseUrlFilter;
 
-bool IsHistoryEmbeddingEnabled();
+// Whether the history embeddings feature is enabled. This only checks if the
+// feature flags are enabled and does not check the user's opt-in preference.
+// See chrome/browser/history_embeddings/history_embeddings_utils.h.
+bool IsHistoryEmbeddingsEnabled();
 
 }  // namespace history_embeddings
 

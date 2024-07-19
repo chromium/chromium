@@ -220,7 +220,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       query_id_(0u),
       query_id_weak_ptr_factory_(&query_id_),
       weak_ptr_factory_(this) {
-  if (!history_embeddings::IsHistoryEmbeddingEnabled()) {
+  if (!history_embeddings::IsHistoryEmbeddingsEnabled()) {
     // If the feature flag is disabled, skip initialization. Note we don't also
     // check the pref here, because the pref can change at runtime.
     return;

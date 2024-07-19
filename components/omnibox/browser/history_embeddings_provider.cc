@@ -41,7 +41,7 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
   done_ = true;
   matches_.clear();
 
-  if (!history_embeddings::IsHistoryEmbeddingEnabled()) {
+  if (!client_->IsHistoryEmbeddingsEnabled()) {
     return;
   }
 

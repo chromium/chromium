@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -34,6 +36,16 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     InitializeFeatureList();
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    optimization_guide::EnableSigninAndModelExecutionCapability(
+        browser()->profile());
+    browser()->profile()->GetPrefs()->SetInteger(
+        optimization_guide::prefs::GetSettingEnabledPrefName(
+            optimization_guide::UserVisibleFeatureKey::kHistorySearch),
+        static_cast<int>(
+            optimization_guide::prefs::FeatureOptInState::kEnabled));
   }
 
  protected:

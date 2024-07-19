@@ -115,7 +115,7 @@ const base::FeatureParam<bool> kUseUrlFilter(&kHistoryEmbeddings,
                                              "UseUrlFilter",
                                              false);
 
-bool IsHistoryEmbeddingEnabled() {
+bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&
          base::FeatureList::IsEnabled(kHistoryEmbeddings);
