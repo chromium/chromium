@@ -349,6 +349,15 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   virtual void PacketCaptureStartSignalReceived(dbus::Signal* signal) = 0;
   virtual void PacketCaptureStopSignalReceived(dbus::Signal* signal) = 0;
 
+  // A callback to handle the result of
+  // BluetoothStartBtsnoop/BluetoothStopBtsnoop.
+  using BluetoothBtsnoopCallback = base::OnceCallback<void(bool success)>;
+  // Starts capturing btsnoop logs, which is kept inside daemon-store
+  virtual void BluetoothStartBtsnoop(BluetoothBtsnoopCallback callback) = 0;
+  // Stops capturing btsnoop logs and copy it to the Downloads directory.
+  virtual void BluetoothStopBtsnoop(int fd,
+                                    BluetoothBtsnoopCallback callback) = 0;
+
  protected:
   // For creating a second instance of DebugDaemonClient on another thread for
   // private connections.

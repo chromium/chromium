@@ -129,6 +129,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void PacketCaptureStopSignalReceived(dbus::Signal* signal) override;
   void StopPacketCapture(const std::string& handle) override;
 
+  void BluetoothStartBtsnoop(BluetoothBtsnoopCallback callback) override;
+  void BluetoothStopBtsnoop(int fd, BluetoothBtsnoopCallback callback) override;
+
   // Sets debugging features mask for testing.
   virtual void SetDebuggingFeaturesStatus(int features_mask);
 

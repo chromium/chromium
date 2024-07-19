@@ -379,4 +379,17 @@ void FakeDebugDaemonClient::StopPacketCapture(const std::string& handle) {
   PacketCaptureStopSignalReceived(nullptr);
 }
 
+void FakeDebugDaemonClient::BluetoothStartBtsnoop(
+    BluetoothBtsnoopCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
+void FakeDebugDaemonClient::BluetoothStopBtsnoop(
+    int fd,
+    BluetoothBtsnoopCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
 }  // namespace ash
