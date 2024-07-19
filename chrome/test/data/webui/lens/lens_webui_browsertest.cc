@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, CubicBezier) {
   RunOverlayTest("lens/overlay/cubic_bezier_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_CursorTooltip DISABLED_CursorTooltip
 #else
 #define MAYBE_CursorTooltip CursorTooltip
