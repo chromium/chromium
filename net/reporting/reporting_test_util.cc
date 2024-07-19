@@ -245,6 +245,12 @@ void ReportingTestBase::SetV1EndpointInCache(
                                    url);
 }
 
+void ReportingTestBase::SetEnterpriseEndpointInCache(
+    const ReportingEndpointGroupKey& group_key,
+    const GURL& url) {
+  cache()->SetEnterpriseEndpointForTesting(group_key, url);
+}
+
 bool ReportingTestBase::EndpointExistsInCache(
     const ReportingEndpointGroupKey& group_key,
     const GURL& url) {

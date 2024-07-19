@@ -1127,6 +1127,24 @@ TEST_P(ReportingCacheTest, GetCandidateEndpointsForDelivery) {
   EXPECT_EQ(kGroupKey21_, candidate_endpoints[0].group_key);
 }
 
+TEST_P(ReportingCacheTest, GetCandidateEnterpriseEndpointsForDelivery) {
+  const ReportingEndpointGroupKey kEnterpriseGroupKey_ =
+      ReportingEndpointGroupKey(kIsolationInfo1_.network_anonymization_key(),
+                                *kReportingSource_, kOrigin2_, kGroup1_,
+                                ReportingTargetType::kEnterprise);
+
+  cache()->SetEnterpriseEndpointForTesting(kEnterpriseGroupKey_, kUrl1_);
+  cache()->SetEnterpriseEndpointForTesting(kEnterpriseGroupKey_, kUrl2_);
+
+  std::vector<ReportingEndpoint> candidate_endpoints =
+      cache()->GetCandidateEndpointsForDelivery(kEnterpriseGroupKey_);
+  ASSERT_EQ(2u, candidate_endpoints.size());
+  EXPECT_EQ(kEnterpriseGroupKey_, candidate_endpoints[0].group_key);
+  EXPECT_EQ(kUrl1_, candidate_endpoints[0].info.url);
+  EXPECT_EQ(kEnterpriseGroupKey_, candidate_endpoints[1].group_key);
+  EXPECT_EQ(kUrl2_, candidate_endpoints[1].info.url);
+}
+
 TEST_P(ReportingCacheTest, GetCandidateEndpointsFromDocumentForDelivery) {
   const base::UnguessableToken reporting_source_1 =
       base::UnguessableToken::Create();
@@ -1148,8 +1166,7 @@ TEST_P(ReportingCacheTest, GetCandidateEndpointsFromDocumentForDelivery) {
                                 kOrigin1_, kGroup1_,
                                 ReportingTargetType::kDeveloper);
 
-  SetV1EndpointInCache(document_group_key_1, reporting_source_1,
-                       kIsolationInfo1_, kEndpoint1_);
+  SetEnterpriseEndpointInCache(document_group_key_1, kEndpoint1_);
   SetV1EndpointInCache(document_group_key_2, reporting_source_1,
                        kIsolationInfo1_, kEndpoint2_);
   SetV1EndpointInCache(document_group_key_3, reporting_source_2,
@@ -2133,8 +2150,7 @@ TEST_P(ReportingCacheTest, ReportingTargetType) {
 
   cache()->SetV1EndpointForTesting(kDeveloperGroupKey_, *kReportingSource_,
                                    kIsolationInfo1_, kUrl1_);
-  cache()->SetV1EndpointForTesting(kEnterpriseGroupKey_, *kReportingSource_,
-                                   kIsolationInfo1_, kUrl1_);
+  cache()->SetEnterpriseEndpointForTesting(kEnterpriseGroupKey_, kUrl1_);
 
   std::vector<ReportingEndpoint> candidate_endpoints =
       cache()->GetCandidateEndpointsForDelivery(kDeveloperGroupKey_);

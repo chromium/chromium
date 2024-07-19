@@ -54,6 +54,11 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   // V1 document endpoint.
   bool IsDocumentEndpoint() const { return reporting_source.has_value(); }
 
+  // True if this endpoint "group" is set by the enterprise policy.
+  bool IsEnterpriseEndpoint() const {
+    return target_type == ReportingTargetType::kEnterprise;
+  }
+
   // The NetworkAnonymizationKey the group is scoped to. Needed to prevent
   // leaking third party contexts across sites.
   NetworkAnonymizationKey network_anonymization_key;

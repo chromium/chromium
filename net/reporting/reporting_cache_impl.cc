@@ -704,6 +704,17 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
     const ReportingEndpointGroupKey& group_key) {
   base::Time now = clock().Now();
   ConsistencyCheckClients();
+
+  if (group_key.IsEnterpriseEndpoint()) {
+    std::vector<ReportingEndpoint> endpoints_out;
+    for (const ReportingEndpoint& endpoint : enterprise_endpoints_) {
+      if (endpoint.group_key == group_key) {
+        endpoints_out.push_back(endpoint);
+      }
+    }
+    return endpoints_out;
+  }
+
   // If |group_key| has a defined |reporting_source| field, then this method is
   // being called for reports with an associated source. We need to first look
   // for a matching V1 endpoint, based on |reporting_source| and |group_name|.
@@ -902,6 +913,17 @@ void ReportingCacheImpl::SetV1EndpointForTesting(
   }
   context_->NotifyEndpointsUpdatedForOrigin(
       FilterEndpointsByOrigin(document_endpoints_, group_key.origin));
+}
+
+void ReportingCacheImpl::SetEnterpriseEndpointForTesting(
+    const ReportingEndpointGroupKey& group_key,
+    const GURL& url) {
+  DCHECK(group_key.IsEnterpriseEndpoint());
+
+  ReportingEndpoint::EndpointInfo info;
+  info.url = url;
+  ReportingEndpoint new_endpoint(group_key, info);
+  enterprise_endpoints_.push_back(std::move(new_endpoint));
 }
 
 void ReportingCacheImpl::SetEndpointForTesting(

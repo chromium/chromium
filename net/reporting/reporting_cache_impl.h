@@ -145,6 +145,9 @@ class ReportingCacheImpl : public ReportingCache {
                                const base::UnguessableToken& reporting_source,
                                const IsolationInfo& isolation_info,
                                const GURL& url) override;
+  void SetEnterpriseEndpointForTesting(
+      const ReportingEndpointGroupKey& group_key,
+      const GURL& url) override;
   IsolationInfo GetIsolationInfoForEndpoint(
       const ReportingEndpoint& endpoint) const override;
 
@@ -395,6 +398,10 @@ class ReportingCacheImpl : public ReportingCache {
   // token. This contains only V1 document endpoints.
   std::map<base::UnguessableToken, std::vector<ReportingEndpoint>>
       document_endpoints_;
+
+  // Endpoints set by the enterprise policy.
+  // TODO(crbug.com/353957526): Implement functions to add enterprise endpoints.
+  std::vector<ReportingEndpoint> enterprise_endpoints_;
 
   // Isolation info for each reporting source. Used for determining credentials
   // to send when delivering reports. This contains only V1 document endpoints.

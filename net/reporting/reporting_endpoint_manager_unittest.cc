@@ -249,6 +249,11 @@ class TestReportingCache : public ReportingCache {
                                const GURL& url) override {
     NOTREACHED_IN_MIGRATION();
   }
+  void SetEnterpriseEndpointForTesting(
+      const ReportingEndpointGroupKey& group_key,
+      const GURL& url) override {
+    NOTREACHED_NORETURN();
+  }
   IsolationInfo GetIsolationInfoForEndpoint(
       const ReportingEndpoint& endpoint) const override {
     NOTREACHED_IN_MIGRATION();

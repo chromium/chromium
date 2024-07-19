@@ -331,6 +331,11 @@ class NET_EXPORT ReportingCache {
       const IsolationInfo& isolation_info,
       const GURL& url) = 0;
 
+  // Sets an enterprise endpoint.
+  virtual void SetEnterpriseEndpointForTesting(
+      const ReportingEndpointGroupKey& group_key,
+      const GURL& url) = 0;
+
   // Gets the isolation info associated with `reporting_source`, used when
   // determining which credentials to send for a given report. If
   // `reporting_source` is nullopt, as when a report is being delivered to a V0

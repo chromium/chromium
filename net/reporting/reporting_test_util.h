@@ -224,6 +224,11 @@ class ReportingTestBase : public TestWithTaskEnvironment {
                             const IsolationInfo& isolation_info,
                             const GURL& url);
 
+  // Sets an enterprise endpoint with the given group_key and url as origin in
+  // the enterprise endpoints vector.
+  void SetEnterpriseEndpointInCache(const ReportingEndpointGroupKey& group_key,
+                                    const GURL& url);
+
   // Returns whether an endpoint with the given properties exists in the cache.
   bool EndpointExistsInCache(const ReportingEndpointGroupKey& group_key,
                              const GURL& url);
