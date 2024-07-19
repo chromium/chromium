@@ -126,7 +126,7 @@
     </activity>
     <provider android:name="androidx.core.content.FileProvider"
               android:exported="false"
-              android:authorities="org.chromium.android_webview.shell.fileprovider"
+              android:authorities="org.chromium.android_webview.shell.net_logs_provider"
               android:grantUriPermissions="true">
               <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
                   android:resource="@xml/provider_paths" />
