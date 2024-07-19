@@ -78,25 +78,6 @@ class CreditCardFormEventLogger;
 
 }  // namespace autofill_metrics
 
-// Use <Phone><WebOTP><OTC> as the bit pattern to identify the metrics state.
-enum class PhoneCollectionMetricState {
-  kNone = 0,    // Site did not collect phone, not use OTC, not use WebOTP
-  kOTC = 1,     // Site used OTC only
-  kWebOTP = 2,  // Site used WebOTP only
-  kWebOTPPlusOTC = 3,  // Site used WebOTP and OTC
-  kPhone = 4,          // Site collected phone, not used neither WebOTP nor OTC
-  kPhonePlusOTC = 5,   // Site collected phone number and used OTC
-  kPhonePlusWebOTP = 6,         // Site collected phone number and used WebOTP
-  kPhonePlusWebOTPPlusOTC = 7,  // Site collected phone number and used both
-  kMaxValue = kPhonePlusWebOTPPlusOTC,
-};
-
-namespace phone_collection_metric {
-constexpr uint32_t kOTCUsed = 1 << 0;
-constexpr uint32_t kWebOTPUsed = 1 << 1;
-constexpr uint32_t kPhoneCollected = 1 << 2;
-}  // namespace phone_collection_metric
-
 // Enum for the value patterns metric. Don't renumerate existing value. They are
 // used for metrics.
 enum class ValuePatternsMetric {
@@ -303,15 +284,6 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Returns the last form the autofill manager considered in this frame.
   virtual const FormData& last_query_form() const;
-
-  // Exposed to ContentAutofillDriver to help with recording WebOTP metrics.
-  bool has_parsed_forms() const { return has_parsed_forms_; }
-  bool has_observed_phone_number_field() const {
-    return has_observed_phone_number_field_;
-  }
-  bool has_observed_one_time_code_field() const {
-    return has_observed_one_time_code_field_;
-  }
 
   // Reports whether a document collects phone numbers, uses one time code, uses
   // WebOTP. There are cases that the reporting is not expected:
@@ -661,6 +633,7 @@ class BrowserAutofillManager : public AutofillManager {
   // ones?
   bool user_did_type_ = false;
 
+  // TODO(crbug.com/354043809): Move out of BAM.
   // Does |this| have any parsed forms?
   bool has_parsed_forms_ = false;
   // Is there a field with autocomplete="one-time-code" observed?
@@ -697,18 +670,6 @@ class BrowserAutofillManager : public AutofillManager {
   // interaction and re-used throughout the context of this manager.
   AutofillMetrics::PaymentsSigninState signin_state_for_metrics_ =
       AutofillMetrics::PaymentsSigninState::kUnknown;
-
-  // Helps with measuring whether phone number is collected and whether it is in
-  // conjunction with WebOTP or OneTimeCode (OTC).
-  // value="0" label="Phone Not Collected, WebOTP Not Used, OTC Not Used"
-  // value="1" label="Phone Not Collected, WebOTP Not Used, OTC Used"
-  // value="2" label="Phone Not Collected, WebOTP Used, OTC Not Used"
-  // value="3" label="Phone Not Collected, WebOTP Used, OTC Used"
-  // value="4" label="Phone Collected, WebOTP Not Used, OTC Not Used"
-  // value="5" label="Phone Collected, WebOTP Not Used, OTC Used"
-  // value="6" label="Phone Collected, WebOTP Used, OTC Not Used"
-  // value="7" label="Phone Collected, WebOTP Used, OTC Used"
-  uint32_t phone_collection_metric_state_ = 0;
 
   // List of callbacks to be called for sending blur votes. Only one callback is
   // stored per FormSignature. We rely on FormSignatures rather than

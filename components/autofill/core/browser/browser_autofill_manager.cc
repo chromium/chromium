@@ -3149,28 +3149,33 @@ void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
   // send the verification code to a phone number that was collected beforehand
   // and uses the WebOTP API for authentication purpose without user manually
   // entering the code.
-  if (!has_parsed_forms() && !used_web_otp) {
+  if (!has_parsed_forms_ && !used_web_otp) {
     return;
   }
 
-  if (has_observed_phone_number_field()) {
-    phone_collection_metric_state_ |= phone_collection_metric::kPhoneCollected;
+  constexpr uint32_t kOtcUsed = 1 << 0;
+  constexpr uint32_t kWebOtpUsed = 1 << 1;
+  constexpr uint32_t kPhoneCollected = 1 << 2;
+  constexpr uint32_t kMaxValue = kOtcUsed | kWebOtpUsed | kPhoneCollected;
+
+  uint32_t phone_collection_metric_state = 0;
+  if (has_observed_phone_number_field_) {
+    phone_collection_metric_state |= kPhoneCollected;
   }
-  if (has_observed_one_time_code_field()) {
-    phone_collection_metric_state_ |= phone_collection_metric::kOTCUsed;
+  if (has_observed_one_time_code_field_) {
+    phone_collection_metric_state |= kOtcUsed;
   }
   if (used_web_otp) {
-    phone_collection_metric_state_ |= phone_collection_metric::kWebOTPUsed;
+    phone_collection_metric_state |= kWebOtpUsed;
   }
 
   ukm::UkmRecorder* recorder = client().GetUkmRecorder();
   ukm::SourceId source_id = client().GetUkmSourceId();
   AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
-      recorder, source_id, phone_collection_metric_state_);
+      recorder, source_id, phone_collection_metric_state);
 
-  base::UmaHistogramEnumeration(
-      "Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
-      static_cast<PhoneCollectionMetricState>(phone_collection_metric_state_));
+  base::UmaHistogramExactLinear("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
+                                phone_collection_metric_state, kMaxValue + 1);
 }
 
 void BrowserAutofillManager::ProcessFieldLogEventsInForm(

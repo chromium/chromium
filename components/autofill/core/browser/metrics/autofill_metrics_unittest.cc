@@ -5674,6 +5674,19 @@ TEST_F(AutofillMetricsTest, FrameDoesNotHavePhoneNumberField) {
 // In addition, WebOTP will not ship on iOS.
 #if !BUILDFLAG(IS_IOS)
 
+// Use <Phone><WebOTP><OTC> as the bit pattern to identify the metrics state.
+enum class PhoneCollectionMetricState {
+  kNone = 0,    // Site did not collect phone, not use OTC, not use WebOTP
+  kOTC = 1,     // Site used OTC only
+  kWebOTP = 2,  // Site used WebOTP only
+  kWebOTPPlusOTC = 3,  // Site used WebOTP and OTC
+  kPhone = 4,          // Site collected phone, not used neither WebOTP nor OTC
+  kPhonePlusOTC = 5,   // Site collected phone number and used OTC
+  kPhonePlusWebOTP = 6,         // Site collected phone number and used WebOTP
+  kPhonePlusWebOTPPlusOTC = 7,  // Site collected phone number and used both
+  kMaxValue = kPhonePlusWebOTPPlusOTC,
+};
+
 struct WebOTPPhoneCollectionMetricsTestCase {
   std::vector<const char*> autocomplete_field;
   PhoneCollectionMetricState phone_collection_metric_state;
