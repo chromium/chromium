@@ -49,6 +49,25 @@ const wchar_t kAppContainerSid[] =
     L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
     L"924012148-2839372144";
 
+constexpr ACProfileRegistration GetProfileRegistration() {
+#if defined(ARCH_CPU_ARM64)
+  return ACProfileRegistration::kNoFirewall;
+#else
+  return ACProfileRegistration::kDefault;
+#endif  // defined(ARCH_CPU_ARM64)
+}
+
+void DeleteProfile(const wchar_t* package_name) {
+  switch (GetProfileRegistration()) {
+    case ACProfileRegistration::kDefault:
+      AppContainerBase::Delete(package_name);
+      break;
+    case ACProfileRegistration::kNoFirewall:
+      AppContainerBase::DeleteNoFirewall(package_name);
+      break;
+  }
+}
+
 std::wstring GenerateRandomPackageName() {
   return base::ASCIIToWide(base::StringPrintf(
       "%016" PRIX64 "%016" PRIX64, base::RandUint64(), base::RandUint64()));
@@ -159,7 +178,7 @@ std::wstring GetAppContainerProfileName() {
 ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   std::wstring profile_name = GetAppContainerProfileName();
   ResultCode ret = policy->GetConfig()->AddAppContainerProfile(
-      profile_name.c_str(), ACProfileRegistration::kDefault);
+      profile_name.c_str(), GetProfileRegistration());
   if (SBOX_ALL_OK != ret)
     return ret;
   ret = policy->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
@@ -200,7 +219,7 @@ class AppContainerTest : public ::testing::Test {
                                MITIGATION_HEAP_TERMINATE));
     ASSERT_EQ(SBOX_ALL_OK,
               policy_->GetConfig()->AddAppContainerProfile(
-                  package_name_.c_str(), ACProfileRegistration::kDefault));
+                  package_name_.c_str(), GetProfileRegistration()));
     created_profile_ = true;
   }
 
@@ -209,7 +228,7 @@ class AppContainerTest : public ::testing::Test {
       ::TerminateProcess(scoped_process_info_.process_handle(), 0);
     }
     if (created_profile_) {
-      AppContainerBase::Delete(package_name_.c_str());
+      DeleteProfile(package_name_.c_str());
     }
   }
 
@@ -276,8 +295,7 @@ TEST(LowBoxTest, DenyOpenEventForLowBox) {
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(test_str.c_str()));
 }
 
-// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
-TEST_F(AppContainerTest, DISABLED_CheckIncompatibleOptions) {
+TEST_F(AppContainerTest, CheckIncompatibleOptions) {
   if (!created_profile_) {
     return;
   }
@@ -305,8 +323,7 @@ TEST_F(AppContainerTest, DISABLED_CheckIncompatibleOptions) {
                                  MITIGATION_HEAP_TERMINATE));
 }
 
-// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
-TEST_F(AppContainerTest, DISABLED_NoCapabilities) {
+TEST_F(AppContainerTest, NoCapabilities) {
   if (!created_profile_) {
     return;
   }
@@ -325,8 +342,7 @@ TEST_F(AppContainerTest, DISABLED_NoCapabilities) {
                    security_capabilities.get(), FALSE);
 }
 
-// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
-TEST_F(AppContainerTest, DISABLED_NoCapabilitiesRestricted) {
+TEST_F(AppContainerTest, NoCapabilitiesRestricted) {
   if (!created_profile_) {
     return;
   }
@@ -345,8 +361,7 @@ TEST_F(AppContainerTest, DISABLED_NoCapabilitiesRestricted) {
                    security_capabilities.get(), TRUE);
 }
 
-// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
-TEST_F(AppContainerTest, DISABLED_WithCapabilities) {
+TEST_F(AppContainerTest, WithCapabilities) {
   if (!created_profile_) {
     return;
   }
@@ -368,8 +383,7 @@ TEST_F(AppContainerTest, DISABLED_WithCapabilities) {
                    security_capabilities.get(), FALSE);
 }
 
-// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
-TEST_F(AppContainerTest, DISABLED_WithCapabilitiesRestricted) {
+TEST_F(AppContainerTest, WithCapabilitiesRestricted) {
   if (!created_profile_) {
     return;
   }
@@ -391,8 +405,7 @@ TEST_F(AppContainerTest, DISABLED_WithCapabilitiesRestricted) {
                    security_capabilities.get(), TRUE);
 }
 
-// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
-TEST_F(AppContainerTest, DISABLED_WithImpersonationCapabilities) {
+TEST_F(AppContainerTest, WithImpersonationCapabilities) {
   if (!created_profile_) {
     return;
   }
@@ -422,8 +435,7 @@ TEST_F(AppContainerTest, DISABLED_WithImpersonationCapabilities) {
                    &impersonation_security_capabilities, FALSE);
 }
 
-// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
-TEST_F(AppContainerTest, DISABLED_NoCapabilitiesLPAC) {
+TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
@@ -459,8 +471,7 @@ SBOX_TESTS_COMMAND int CheckIsAppContainer(int argc, wchar_t** argv) {
   return SBOX_TEST_FAILED;
 }
 
-// TODO: crbug.com/352667603 - Enable again once the test is no longer flaky.
-TEST(AppContainerLaunchTest, DISABLED_CheckLPACACE) {
+TEST(AppContainerLaunchTest, CheckLPACACE) {
   if (!features::IsAppContainerSandboxSupported())
     return;
   TestRunner runner;
@@ -468,11 +479,10 @@ TEST(AppContainerLaunchTest, DISABLED_CheckLPACACE) {
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"LoadDLL"));
 
-  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
+  DeleteProfile(GetAppContainerProfileName().c_str());
 }
 
-// TODO: crbug.com/35666722 - Enable again once the test is no longer flaky.
-TEST(AppContainerLaunchTest, DISABLED_IsAppContainer) {
+TEST(AppContainerLaunchTest, IsAppContainer) {
   if (!features::IsAppContainerSandboxSupported())
     return;
   TestRunner runner;
@@ -480,7 +490,7 @@ TEST(AppContainerLaunchTest, DISABLED_IsAppContainer) {
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckIsAppContainer"));
 
-  AppContainerBase::Delete(GetAppContainerProfileName().c_str());
+  DeleteProfile(GetAppContainerProfileName().c_str());
 }
 
 TEST(AppContainerLaunchTest, IsNotAppContainer) {
