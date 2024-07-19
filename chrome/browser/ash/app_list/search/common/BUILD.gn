@@ -25,6 +25,7 @@ static_library("common") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
@@ -34,8 +35,10 @@ static_library("common") {
     "//url",
   ]
 
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/app_list/search/ranking" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/ranking",
+  ]
 }
 
 source_set("unit_tests") {
@@ -49,6 +52,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//base",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ui",
     "//testing/gmock",
     "//testing/gtest",

@@ -217,6 +217,7 @@ source_set("app_service") {
       "//chrome/browser/apps/app_service/promise_apps/proto",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_list/internal_app",
+      "//chrome/browser/ash/app_list/search",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/apps",
@@ -286,6 +287,7 @@ source_set("app_service") {
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_list/internal_app",
+      "//chrome/browser/ash/app_list/search",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/app_mode/web_app",

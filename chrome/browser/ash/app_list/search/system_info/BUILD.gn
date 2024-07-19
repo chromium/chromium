@@ -27,6 +27,7 @@ static_library("system_info") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/vector_icons",
     "//chrome/browser/profiles:profile",
@@ -46,6 +47,8 @@ static_library("system_info") {
     "//ui/base",
     "//ui/gfx",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
 }
 
 source_set("unit_tests") {
@@ -63,6 +66,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/profiles:profile",

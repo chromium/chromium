@@ -2881,6 +2881,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/annotator:browser_tests",
     "//chrome/browser/ash/app_list/app_service:browser_tests",
     "//chrome/browser/ash/app_list/arc:browser_tests",
+    "//chrome/browser/ash/app_list/search:browser_tests",
     "//chrome/browser/ash/app_list/search/files:browser_tests",
     "//chrome/browser/ash/app_mode:browser_tests",
     "//chrome/browser/ash/app_restore:browser_tests",

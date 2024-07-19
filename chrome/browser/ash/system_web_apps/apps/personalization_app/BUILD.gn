@@ -87,6 +87,7 @@ static_library("personalization_app") {
     "//ash/webui/personalization_app/resources",
     "//base:i18n",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/login/users/default_user_image",
@@ -117,6 +118,8 @@ static_library("personalization_app") {
     "//ui/gfx:color_utils",
     "//ui/gfx/codec",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
 }
 
 static_library("test_support") {

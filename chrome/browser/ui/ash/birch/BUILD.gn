@@ -40,6 +40,7 @@ static_library("birch") {
     "//ash/public/cpp",
     "//base",
     "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/file_suggest",

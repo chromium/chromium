@@ -48,6 +48,7 @@ source_set("unit_tests") {
     ":util",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/app_list/search/util:proto",
     "//chrome/browser/ui",

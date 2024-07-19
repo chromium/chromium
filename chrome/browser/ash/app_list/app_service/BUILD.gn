@@ -45,6 +45,7 @@ static_library("app_service") {
     "//chrome/browser/ash",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/crosapi",
@@ -65,6 +66,8 @@ static_library("app_service") {
     "//ui/gfx",
     "//ui/views",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
 }
 
 source_set("unit_tests") {

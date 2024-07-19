@@ -37,6 +37,7 @@ static_library("local_image_search") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
@@ -48,6 +49,8 @@ static_library("local_image_search") {
     "//services/screen_ai/public/mojom",
     "//sql",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
 }
 
 source_set("unit_tests") {
@@ -65,6 +68,7 @@ source_set("unit_tests") {
     ":local_image_search",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ui",
     "//chromeos/dbus/machine_learning",
     "//sql",

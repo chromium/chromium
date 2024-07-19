@@ -20,6 +20,7 @@ static_library("games") {
     "//base",
     "//chrome/browser/apps/app_discovery_service",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:app_icon_resources",
@@ -30,6 +31,8 @@ static_library("games") {
     "//ui/gfx",
     "//url",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
 }
 
 source_set("unit_tests") {
@@ -46,6 +49,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/apps/app_discovery_service",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/app_list/test:test_support",

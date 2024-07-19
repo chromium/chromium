@@ -5286,6 +5286,7 @@ static_library("browser") {
       "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_list/search",
       "//chrome/browser/ash/app_list/search/arc",
       "//chrome/browser/ash/app_list/search/essential_search",
       "//chrome/browser/ash/app_list/search/files",
@@ -5649,6 +5650,7 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_list/search",
       "//chrome/browser/ash/app_list/search/arc",
       "//chrome/browser/ash/app_list/search/files",
       "//chrome/browser/ash/app_list/search/omnibox",

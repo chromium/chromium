@@ -35,6 +35,7 @@ static_library("arc") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/extensions",
@@ -50,6 +51,8 @@ static_library("arc") {
     "//ui/base",
     "//ui/gfx",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
 }
 
 source_set("unit_tests") {
@@ -68,6 +71,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/arc",
