@@ -207,7 +207,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   }
 
   private openLanguageMenu_() {
-    this.$.voiceSelectionMenu.get().close();
     this.showLanguageMenuDialog_ = true;
   }
 
