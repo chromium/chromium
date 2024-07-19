@@ -272,7 +272,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     // Should only be used after inflation.
     private final Lazy<BottomSheetController> mBottomSheetController;
-    private final boolean mContextMenuEnabled;
 
     private TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
     private ExternalNavigationDelegateImpl mNavigationDelegate;
@@ -305,7 +304,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param shareDelegateSupplier Supplies the share delegate.
      * @param activityType The type of the current activity.
      * @param bottomSheetController Controls the bottom sheet.
-     * @param contextMenuEnabled Whether the context menu will be enabled.
      * @param browserControlsManager Manages the browser controls.
      */
     private CustomTabDelegateFactory(
@@ -332,7 +330,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
             Lazy<BottomSheetController> bottomSheetController,
-            boolean contextMenuEnabled,
             BrowserControlsManager browserControlsManager) {
         mActivity = activity;
         mShouldHideBrowserControls = shouldHideBrowserControls;
@@ -358,7 +355,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mActivityType = activityType;
         mBottomSheetController = bottomSheetController;
         mBrowserControlsManager = browserControlsManager;
-        mContextMenuEnabled = contextMenuEnabled;
     }
 
     @Inject
@@ -406,7 +402,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 shareDelegateSupplier,
                 activityType,
                 bottomSheetController,
-                !intentDataProvider.isAuthView(),
                 browserControlsManager);
     }
 
@@ -439,7 +434,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 null,
                 ActivityType.CUSTOM_TAB,
                 null,
-                false,
                 null);
     }
 
@@ -518,8 +512,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
     @Override
     public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
-        if (!mContextMenuEnabled) return null;
-
         @ChromeContextMenuPopulator.ContextMenuMode
         int contextMenuMode = getContextMenuMode(mActivityType);
         return new ChromeContextMenuPopulatorFactory(

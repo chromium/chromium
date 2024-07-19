@@ -35,10 +35,8 @@ public interface TabDelegateFactory {
      * Creates the {@link ContextMenuPopulatorFactory} the tab will be initialized with.
      *
      * @param tab The associated {@link Tab}.
-     * @return The {@link ContextMenuPopulatorFactory} to be used for this tab. {@code null} if the
-     *     context menu feature is to be disabled.
+     * @return The {@link ContextMenuPopulatorFactory} to be used for this tab.
      */
-    @Nullable
     ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab);
 
     /**

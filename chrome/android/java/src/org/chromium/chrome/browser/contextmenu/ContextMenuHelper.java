@@ -96,7 +96,6 @@ public class ContextMenuHelper {
                 || windowAndroid == null
                 || windowAndroid.getActivity().get() == null
                 || mPopulatorFactory == null
-                || !mPopulatorFactory.isEnabled()
                 || mCurrentContextMenu != null) {
             return;
         }

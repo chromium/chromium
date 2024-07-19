@@ -19,13 +19,5 @@ public interface ContextMenuPopulatorFactory {
     ContextMenuPopulator createContextMenuPopulator(
             Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate);
 
-    /**
-     * Whether the factory is enabled. Can be overriden to conditionally disable context menu on
-     * certain embedders.
-     */
-    default boolean isEnabled() {
-        return true;
-    }
-
     void onDestroy();
 }
