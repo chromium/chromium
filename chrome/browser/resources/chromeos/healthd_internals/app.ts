@@ -129,9 +129,6 @@ export class HealthdInternalsAppElement extends PolymerElement {
   // this index will always be -1 and no page will be displayed.
   private selectedIndex: number = -1;
 
-  // The interval ID used for cancelling the running intervals.
-  private fetchDataInternalId: number|undefined = undefined;
-
   // Return true if the menu tabs are not displayed.
   private areTabsHidden(): boolean {
     return !this.pageList.length;

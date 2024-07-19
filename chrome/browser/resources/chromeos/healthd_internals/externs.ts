@@ -26,7 +26,7 @@ export interface HealthdApiCpuResult {
 }
 
 export interface HealthdApiPhysicalCpuResult {
-  modelName: string|undefined;
+  modelName?: string;
   logicalCpus: HealthdApiLogicalCpuResult[];
 }
 

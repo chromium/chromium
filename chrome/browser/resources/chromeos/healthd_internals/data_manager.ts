@@ -81,7 +81,7 @@ export class DataManager {
   private readonly cpuUsageHelper: CpuUsageHelper = new CpuUsageHelper();
 
   // The data fetching interval ID used for cancelling the running interval.
-  private fetchDataInternalId: number|undefined = undefined;
+  private fetchDataInternalId?: number = undefined;
 
   // The duration (in milliseconds) that the data will be retained.
   private dataRetentionDuration: number;
