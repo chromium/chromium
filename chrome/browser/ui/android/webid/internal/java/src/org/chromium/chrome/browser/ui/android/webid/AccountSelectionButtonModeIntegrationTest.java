@@ -341,6 +341,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 mAccountSelection.getMediator().getHeaderType(), HeaderType.REQUEST_PERMISSION);
         clickContinueButton();
 
+        // User is now signed in and shown the verifying UI.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.VERIFY);
         verify(mMockBridge, never()).onDismissed(anyInt());
         verify(mMockBridge).onAccountSelected(any(), any());
     }
@@ -369,7 +371,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
         clickFirstAccountInAccountsList();
 
-        // Because this is a returning account, we should immediately sign in now.
+        // Because this is a returning account, user is now signed in and shown the verifying UI.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.VERIFY);
         verify(mMockBridge, never()).onDismissed(anyInt());
         verify(mMockBridge).onAccountSelected(any(), any());
     }
@@ -398,7 +401,8 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
         assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
         clickFirstAccountInAccountsList();
 
-        // Because requestPermission is false, we should immediately sign in now.
+        // Because requestPermission is false, user is now signed in and shown the verifying UI.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.VERIFY);
         verify(mMockBridge, never()).onDismissed(anyInt());
         verify(mMockBridge).onAccountSelected(any(), any());
     }

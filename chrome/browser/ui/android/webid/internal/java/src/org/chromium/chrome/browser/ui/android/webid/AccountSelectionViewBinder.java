@@ -737,13 +737,6 @@ class AccountSelectionViewBinder {
             String idpUrl,
             @RpContext.EnumType int rpContext,
             @RpMode.EnumType int rpMode) {
-        if (type == HeaderProperties.HeaderType.VERIFY) {
-            return resources.getString(getVerifyHeaderStringId());
-        }
-        if (type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
-            return resources.getString(getVerifyHeaderAutoReauthnStringId());
-        }
-
         @StringRes int titleStringId;
         if (rpMode == RpMode.BUTTON) {
             switch (rpContext) {
@@ -763,6 +756,13 @@ class AccountSelectionViewBinder {
                             R.string.account_selection_button_mode_sheet_title_explicit_signin;
             }
             return String.format(resources.getString(titleStringId), idpUrl);
+        }
+
+        if (type == HeaderProperties.HeaderType.VERIFY) {
+            return resources.getString(getVerifyHeaderStringId());
+        }
+        if (type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
+            return resources.getString(getVerifyHeaderAutoReauthnStringId());
         }
 
         switch (rpContext) {

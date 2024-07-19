@@ -57,9 +57,7 @@ import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -553,51 +551,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     }
 
     @Test
-    public void testShowVerifySheetExplicitSignin() {
-        for (int rpContext : RP_CONTEXTS) {
-            when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
-                    .thenReturn(true);
-            mMediator.showAccounts(
-                    mTestEtldPlusOne,
-                    mTestEtldPlusOne2,
-                    Arrays.asList(mNewUserAccount),
-                    mIdpMetadata,
-                    mClientIdMetadata,
-                    /* isAutoReauthn= */ false,
-                    rpContext,
-                    /* requestPermission= */ true);
-            mMediator.showVerifySheet(mAnaAccount);
-
-            assertEquals(1, mSheetAccountItems.size());
-            assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
-            verify(mMockDelegate).onAccountsDisplayed();
-        }
-    }
-
-    @Test
-    public void testShowVerifySheetAutoReauthn() {
-        for (int rpContext : RP_CONTEXTS) {
-            when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
-                    .thenReturn(true);
-            // showVerifySheet is called in showAccounts when isAutoReauthn is true
-            mMediator.showAccounts(
-                    mTestEtldPlusOne,
-                    mTestEtldPlusOne2,
-                    Arrays.asList(mAnaAccount),
-                    mIdpMetadata,
-                    mClientIdMetadata,
-                    /* isAutoReauthn= */ true,
-                    rpContext,
-                    /* requestPermission= */ true);
-
-            assertEquals(1, mSheetAccountItems.size());
-            assertEquals(
-                    HeaderType.VERIFY_AUTO_REAUTHN, mModel.get(ItemProperties.HEADER).get(TYPE));
-            verify(mMockDelegate).onAccountsDisplayed();
-        }
-    }
-
-    @Test
     public void testShowFailureDialog() {
         int count = 0;
         for (int rpContext : RP_CONTEXTS) {
@@ -826,84 +779,10 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         verify(mMockBottomSheetController, times(1)).requestShowContent(mBottomSheetContent, true);
     }
 
-    @Test
-    public void testShowLoadingDialog() {
-        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
-        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne1, RpContext.SIGN_IN);
-        assertEquals(0, mSheetAccountItems.size());
-        assertEquals(HeaderType.LOADING, mModel.get(ItemProperties.HEADER).get(TYPE));
-        verify(mMockDelegate, never()).onAccountsDisplayed();
-
-        // For loading dialog, we expect header + spinner.
-        assertEquals(2, countAllItems());
-        assertTrue(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
-        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
-
-        // Switching to accounts dialog should disable the spinner.
-        mMediator.showAccounts(
-                mTestEtldPlusOne,
-                mTestEtldPlusOne2,
-                Arrays.asList(mAnaAccount, mBobAccount),
-                mIdpMetadata,
-                mClientIdMetadata,
-                /* isAutoReauthn= */ false,
-                RpContext.SIGN_IN,
-                /* requestPermission= */ true);
-        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
-
-        // For accounts dialog, we expect header + two accounts.
-        assertEquals(3, countAllItems());
-        assertTrue(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
-        assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
-    }
-
-    @Test
-    public void testShowRequestPermissionDialog() {
-        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
-        mMediator.showAccounts(
-                mTestEtldPlusOne,
-                mTestEtldPlusOne2,
-                Arrays.asList(mNewUserAccount),
-                mIdpMetadata,
-                mClientIdMetadata,
-                /* isAutoReauthn= */ false,
-                RpContext.SIGN_IN,
-                /* requestPermission= */ true);
-        mMediator.showRequestPermissionSheet(mNewUserAccount);
-
-        // For request permission dialog, we expect header + account chip + disclosure text +
-        // continue button.
-        assertEquals(4, countAllItems());
-
-        // There is no sheet account items because the account is shown in an account chip instead.
-        assertEquals(0, mSheetAccountItems.size());
-        assertEquals(HeaderType.REQUEST_PERMISSION, mModel.get(ItemProperties.HEADER).get(TYPE));
-        assertTrue(containsItemOfType(mModel, ItemProperties.ACCOUNT_CHIP));
-        assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
-        assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
-    }
-
     private void pressBack() {
         if (mBottomSheetContent.handleBackPress()) return;
 
         mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
-    }
-
-    private int countAllItems() {
-        int count = 0;
-        for (PropertyKey key : mModel.getAllProperties()) {
-            if (containsItemOfType(mModel, key)) {
-                // Do not increase count if spinner is disabled.
-                if (key == ItemProperties.SPINNER_ENABLED
-                        && !mModel.get(ItemProperties.SPINNER_ENABLED)) continue;
-                count += 1;
-            }
-        }
-        return count + mSheetAccountItems.size();
-    }
-
-    private static boolean containsItemOfType(PropertyModel model, PropertyKey key) {
-        return model.get((WritableObjectPropertyKey<PropertyModel>) key) != null;
     }
 
     private static int countListItemsOfType(ModelList list, int searchType) {

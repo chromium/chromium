@@ -17,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
@@ -218,8 +219,8 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("add_account_btn");
         static final WritableObjectPropertyKey<PropertyModel> ACCOUNT_CHIP =
                 new WritableObjectPropertyKey<>("account_chip");
-        static final WritableObjectPropertyKey<Boolean> SPINNER_ENABLED =
-                new WritableObjectPropertyKey<>();
+        static final WritableBooleanPropertyKey SPINNER_ENABLED =
+                new WritableBooleanPropertyKey("spinner_enabled");
 
         static final PropertyKey[] ALL_KEYS = {
             CONTINUE_BUTTON,

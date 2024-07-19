@@ -349,8 +349,13 @@ class AccountSelectionMediator {
         mSheetAccountItems.clear();
         if (accounts == null) return;
         // In the request permission dialog, account is shown as an account chip instead of in the
-        // accounts list.
-        if (mHeaderType == HeaderType.REQUEST_PERMISSION) return;
+        // accounts list. In the button mode verifying dialog, we do not show accounts.
+        if (mRpMode == RpMode.BUTTON
+                && (mHeaderType == HeaderType.REQUEST_PERMISSION
+                        || mHeaderType == HeaderType.VERIFY
+                        || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN)) {
+            return;
+        }
 
         for (Account account : accounts) {
             final PropertyModel model = createAccountItem(account, areAccountsClickable);
@@ -651,7 +656,12 @@ class AccountSelectionMediator {
                 mHeaderType == HeaderType.REQUEST_PERMISSION
                         ? createAccountItem(mSelectedAccount, /* isAccountClickable= */ false)
                         : null);
-        mModel.set(ItemProperties.SPINNER_ENABLED, mHeaderType == HeaderType.LOADING);
+        mModel.set(
+                ItemProperties.SPINNER_ENABLED,
+                mRpMode == RpMode.BUTTON
+                        && (mHeaderType == HeaderType.LOADING
+                                || mHeaderType == HeaderType.VERIFY
+                                || mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN));
 
         mBottomSheetContent.computeAndUpdateAccountListHeight();
         // When a user opens a page that invokes the FedCM API in a new tab, the tab will be hidden

@@ -22,6 +22,7 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
@@ -31,7 +32,10 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -211,5 +215,22 @@ public class AccountSelectionJUnitTestBase {
                         .with(AccountProperties.ACCOUNT, account)
                         .with(AccountProperties.ON_CLICK_LISTENER, mAccountCallback)
                         .build());
+    }
+
+    int countAllItems() {
+        int count = 0;
+        for (PropertyKey key : mModel.getAllProperties()) {
+            if (containsItemOfType(mModel, key)) {
+                count += 1;
+            }
+        }
+        return count + mSheetAccountItems.size();
+    }
+
+    static boolean containsItemOfType(PropertyModel model, PropertyKey key) {
+        if (key == ItemProperties.SPINNER_ENABLED) {
+            return model.get((WritableBooleanPropertyKey) key);
+        }
+        return model.get((WritableObjectPropertyKey<PropertyModel>) key) != null;
     }
 }
