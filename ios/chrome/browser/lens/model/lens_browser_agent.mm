@@ -18,24 +18,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-namespace {
-
-// Closes the active WebState in `browser` (if non-null).
-void CloseActiveWebStateInBrowser(base::WeakPtr<Browser> weak_browser) {
-  Browser* browser = weak_browser.get();
-  if (!browser) {
-    return;
-  }
-
-  WebStateList* web_state_list = browser->GetWebStateList();
-  const int tab_close_index = web_state_list->active_index();
-  DCHECK_NE(tab_close_index, WebStateList::kInvalidIndex);
-  web_state_list->CloseWebStateAt(tab_close_index,
-                                  WebStateList::CLOSE_USER_ACTION);
-}
-
-}  // namespace
-
 LensBrowserAgent::LensBrowserAgent(Browser* browser) : browser_(browser) {
   browser->AddObserver(this);
 }
@@ -45,7 +27,7 @@ LensBrowserAgent::~LensBrowserAgent() = default;
 #pragma mark - Public
 
 bool LensBrowserAgent::CanGoBackToLensViewFinder() const {
-  return CurrentResultsEntrypoint().has_value();
+  return CurrentResultsEntrypoint() == LensEntrypoint::NewTabPage;
 }
 
 void LensBrowserAgent::GoBackToLensViewFinder() const {
@@ -56,18 +38,13 @@ void LensBrowserAgent::GoBackToLensViewFinder() const {
     return;
   }
 
-  base::WeakPtr<Browser> weak_browser = browser_->AsWeakPtr();
-  ProceduralBlock completion = ^{
-    CloseActiveWebStateInBrowser(weak_browser);
-  };
-
   id<LensCommands> lens_commands_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), LensCommands);
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
           initWithEntryPoint:lens_entrypoint.value()
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromLeft
-      presentationCompletion:completion];
+      presentationCompletion:nil];
   [lens_commands_handler openLensInputSelection:command];
 }
 

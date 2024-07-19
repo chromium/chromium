@@ -69,20 +69,17 @@ bool WebNavigationBrowserAgent::CanGoForward() {
 
 void WebNavigationBrowserAgent::GoBack() {
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
-  if (!active_web_state) {
+  if (!active_web_state ||
+      !active_web_state->GetNavigationManager()->CanGoBack()) {
     return;
   }
 
-  if (active_web_state->GetNavigationManager()->CanGoBack()) {
-    web_navigation_util::GoBack(active_web_state);
-    return;
-  }
+  web_navigation_util::GoBack(active_web_state);
 
-  // We are at the bottom of the navigation stack. Check to see if Lens back
-  // navigation should bring the user back to the camera.
+  // If the previous page was an eligible Lens Web Page, then display the LVF.
   const LensBrowserAgent* lens_browser_agent =
       LensBrowserAgent::FromBrowser(browser_);
-  if (lens_browser_agent) {
+  if (lens_browser_agent && lens_browser_agent->CanGoBackToLensViewFinder()) {
     lens_browser_agent->GoBackToLensViewFinder();
   }
 }
