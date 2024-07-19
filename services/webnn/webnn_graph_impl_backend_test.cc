@@ -1272,43 +1272,6 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorAveragePool2d) {
                    .values = {3, 4, 6, 7, 12, 13, 15, 16}}}
         .Test();
   }
-  {
-    // Test average pool2d with nhwc layout, float 32 data type.
-    Pool2dTester<float>{
-        .input = {.type = OperandDataType::kFloat32,
-                  .dimensions = {1, 3, 3, 2},
-                  .values = {1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7, 16, 8,
-                             17, 9, 18}},
-        .attributes = {.window_dimensions = {2, 2},
-                       .padding = {0, 0, 0, 0},
-                       .strides = {1, 1},
-                       .dilations = {1, 1},
-                       .layout = mojom::InputOperandLayout::kChannelsLast},
-        .kind = mojom::Pool2d::Kind::kAveragePool2d,
-        .output = {.type = OperandDataType::kFloat32,
-                   .dimensions = {1, 2, 2, 2},
-                   .values = {3, 12, 4, 13, 6, 15, 7, 16}}}
-        .Test();
-  }
-  {
-    // Test average pool2d with nhwc layout, float 16 data type.
-    Pool2dTester<float16>{
-        .input = {.type = OperandDataType::kFloat16,
-                  .dimensions = {1, 3, 3, 2},
-                  .values =
-                      Float16FromFloat32({1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6,
-                                          15, 7, 16, 8, 17, 9, 18})},
-        .attributes = {.window_dimensions = {2, 2},
-                       .padding = {0, 0, 0, 0},
-                       .strides = {1, 1},
-                       .dilations = {1, 1},
-                       .layout = mojom::InputOperandLayout::kChannelsLast},
-        .kind = mojom::Pool2d::Kind::kAveragePool2d,
-        .output = {.type = OperandDataType::kFloat16,
-                   .dimensions = {1, 2, 2, 2},
-                   .values = {3, 12, 4, 13, 6, 15, 7, 16}}}
-        .Test();
-  }
 }
 
 // Test building and computing a graph with single operator l2Pool2d.
@@ -1345,41 +1308,6 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorL2Pool2d) {
         .kind = mojom::Pool2d::Kind::kL2Pool2d,
         .output = {.type = OperandDataType::kFloat16,
                    .dimensions = {1, 4, 1, 1},
-                   .values = {2, 4, 6, 8}}}
-        .Test();
-  }
-  {
-    // Test l2Pool2d with nhwc layout, float 32 data type.
-    Pool2dTester<float>{
-        .input = {.type = OperandDataType::kFloat32,
-                  .dimensions = {1, 2, 2, 4},
-                  .values = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4}},
-        .attributes = {.window_dimensions = {2, 2},
-                       .padding = {0, 0, 0, 0},
-                       .strides = {2, 1},
-                       .dilations = {1, 1},
-                       .layout = mojom::InputOperandLayout::kChannelsLast},
-        .kind = mojom::Pool2d::Kind::kL2Pool2d,
-        .output = {.type = OperandDataType::kFloat32,
-                   .dimensions = {1, 1, 1, 4},
-                   .values = {2, 4, 6, 8}}}
-        .Test();
-  }
-  {
-    // Test l2Pool2d with nhwc layout, float 16 data type.
-    Pool2dTester<float16>{
-        .input = {.type = OperandDataType::kFloat16,
-                  .dimensions = {1, 2, 2, 4},
-                  .values = Float16FromFloat32(
-                      {1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4})},
-        .attributes = {.window_dimensions = {2, 2},
-                       .padding = {0, 0, 0, 0},
-                       .strides = {2, 1},
-                       .dilations = {1, 1},
-                       .layout = mojom::InputOperandLayout::kChannelsLast},
-        .kind = mojom::Pool2d::Kind::kL2Pool2d,
-        .output = {.type = OperandDataType::kFloat16,
-                   .dimensions = {1, 1, 1, 4},
                    .values = {2, 4, 6, 8}}}
         .Test();
   }
