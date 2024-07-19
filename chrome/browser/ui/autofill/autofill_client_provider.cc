@@ -23,7 +23,7 @@ namespace autofill {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-AndroidAutofillAvailabilityStatus getAndroidAutofillAvailabilityStatus(
+AndroidAutofillAvailabilityStatus GetAndroidAutofillAvailabilityStatus(
     PrefService& prefs) {
   return static_cast<AndroidAutofillAvailabilityStatus>(
       Java_AutofillClientProviderUtils_getAndroidAutofillFrameworkAvailability(
@@ -31,9 +31,30 @@ AndroidAutofillAvailabilityStatus getAndroidAutofillAvailabilityStatus(
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+void RecordAvailabilityStatus(AndroidAutofillAvailabilityStatus availability) {
+  base::UmaHistogramEnumeration("Autofill.AndroidAutofillAvailabilityStatus",
+                                availability);
+}
+
+// Counts how often the Chrome pref is reset because an platform autofill
+// isn't allowed or doesn't fulfill all preconditions.
+void RecordWhetherAndroidPrefResets(PrefService& prefs,
+                                    bool uses_platform_autofill) {
+  const bool will_reset_pref =
+      prefs.GetBoolean(prefs::kAutofillUsingVirtualViewStructure) &&
+      !uses_platform_autofill;
+  base::UmaHistogramBoolean("Autofill.ResetAutofillPrefToChrome",
+                            will_reset_pref);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 bool UsesVirtualViewStructureForAutofill(PrefService& prefs) {
 #if BUILDFLAG(IS_ANDROID)
-  switch (getAndroidAutofillAvailabilityStatus(prefs)) {
+  const AndroidAutofillAvailabilityStatus availability =
+      GetAndroidAutofillAvailabilityStatus(prefs);
+  RecordAvailabilityStatus(availability);
+  switch (availability) {
     case AndroidAutofillAvailabilityStatus::kAvailable:
       return true;
     case AndroidAutofillAvailabilityStatus::kSettingTurnedOff:
@@ -57,6 +78,7 @@ bool UsesVirtualViewStructureForAutofill(PrefService& prefs) {
 AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
     : uses_platform_autofill_(UsesVirtualViewStructureForAutofill(*prefs)) {
 #if BUILDFLAG(IS_ANDROID)
+  RecordWhetherAndroidPrefResets(*prefs, uses_platform_autofill_);
   // Ensure the pref is reset if platform autofill is restricted.
   prefs->SetBoolean(prefs::kAutofillUsingVirtualViewStructure,
                     uses_platform_autofill_);

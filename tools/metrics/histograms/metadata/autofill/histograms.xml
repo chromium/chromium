@@ -789,6 +789,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.AndroidAutofillAvailabilityStatus"
+    enum="AndroidAutofillAvailabilityStatus" expires_after="2024-12-14">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Clank only. Logs whether Android Autofill was available. If not, it splits
+    the reasons why. Only one reason is recorded (e.g. the pref isn't checked if
+    a policy makes it impossible to set the pref). The reasons are not ordered.
+    Emitted only once per cold start of Chrome when the first tab is created.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
     enum="AutofilledFieldUserEditingStatus" expires_after="2024-11-17">
@@ -4807,6 +4819,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the reason for skipping filling a field in the renderer. Emitted every
     time a field is passed to ShouldSkipFillField in form_autofill_util.cc.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ResetAutofillPrefToChrome" enum="Boolean"
+    expires_after="2024-12-14">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Clank only. Logs whether the user decided to use 3P password managers but a
+    precondition prevented their use so Chrome fell back to using the built-in
+    password manager. Emitted only once per cold start of Chrome when the first
+    tab is created.
   </summary>
 </histogram>
 

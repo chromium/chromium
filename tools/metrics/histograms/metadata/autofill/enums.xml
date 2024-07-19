@@ -26,6 +26,22 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AndroidAutofillAvailabilityStatus">
+  <summary>
+    Describes whether Android Autofill was available. If not, it splits the
+    reasons why. Only one reason is recorded (e.g. the pref isn't checked if a
+    policy makes it impossible to set the pref).
+  </summary>
+  <int value="0" label="Available and turned on in Chrome settings"/>
+  <int value="1" label="Not allowed by policy"/>
+  <int value="2" label="Android OS version is too old"/>
+  <int value="3" label="The system's AutofillManager is not available"/>
+  <int value="4" label="The system does not support autofill"/>
+  <int value="5" label="The system's AutofillService cannot be determined."/>
+  <int value="6" label="The user chose Google to as AutofillService"/>
+  <int value="7" label="The user turned the Chrome setting off"/>
+</enum>
+
 <enum name="AndroidAutofillPrefillRequestState">
   <summary>
     Describes the state of a prefill request for a given, cacheable, form.

@@ -11,7 +11,7 @@ namespace autofill {
 // prevent autofill, the first that applies is used. The initial set of values
 // is ordered by strength of the set (e.g. a policy prevents version checks).
 //
-// This metric may be recorded in metrics. Don't reorder or reuse values.
+// This metric is recorded in metrics. Don't reorder or reuse values.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.autofill
 enum class AndroidAutofillAvailabilityStatus {
 
@@ -38,6 +38,8 @@ enum class AndroidAutofillAvailabilityStatus {
 
   // The user did not enable Android autofill in settings.
   kSettingTurnedOff = 7,
+
+  kMaxValue = kSettingTurnedOff
 };
 
 }  // namespace autofill
