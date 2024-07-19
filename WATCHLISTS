@@ -1757,9 +1757,6 @@
     'page_load_metrics' : {
       'filepath': '/page_load_metrics/'
     },
-    "palette": {
-      'filepath': 'ash/system/palette'
-    },
     'panels': {
       'filepath': 'chrome/browser/ui/panels'\
                   '|chrome/browser/ui/cocoa/panels'\
@@ -3111,7 +3108,6 @@
                            'loading-reviews+metrics@chromium.org',
                            'speed-metrics-reviews@chromium.org',
                            'haoliuk+watch@chromium.org'],
-    'palette': ['cros-system-ui-productivity-eng+reviews@google.com'],
     'panels': ['dimich@chromium.org',
                'jennb@chromium.org',
                'jianli@chromium.org'],
