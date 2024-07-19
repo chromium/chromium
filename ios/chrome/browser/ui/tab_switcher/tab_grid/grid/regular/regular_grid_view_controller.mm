@@ -187,8 +187,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   _inactiveTabsCount = count;
 
   if (IsInactiveTabButtonRefactoringEnabled()) {
-    BOOL inactiveTabsButtonVisible = count != 0;
-    [self updateInactiveTabsButtonVisible:inactiveTabsButtonVisible];
+    [self updateInactiveTabsButton];
   } else {
     // Update the layout.
     [self updateTabsSectionHeaderType];
@@ -213,9 +212,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   _inactiveTabsDaysThreshold = daysThreshold;
 
   if (IsInactiveTabButtonRefactoringEnabled()) {
-    BOOL inactiveTabsButtonVisible =
-        daysThreshold != kInactiveTabsDisabledByUser;
-    [self updateInactiveTabsButtonVisible:inactiveTabsButtonVisible];
+    [self updateInactiveTabsButton];
   } else {
     // Update the header.
     if (oldDaysThreshold == kInactiveTabsDisabledByUser ||
@@ -247,9 +244,11 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 #pragma mark - Private
 
-// Updates the inactive tabs button based on its `visible` state (i.e.
-// reconfigure, show or remove).
-- (void)updateInactiveTabsButtonVisible:(BOOL)visible {
+// Updates the inactive tabs button (reconfigure, show or remove) based on its
+// visible state.
+- (void)updateInactiveTabsButton {
+  BOOL visible = _inactiveTabsDaysThreshold != kInactiveTabsDisabledByUser &&
+                 _inactiveTabsCount != 0;
   GridSnapshot* snapshot = [self.diffableDataSource snapshot];
   if (visible) {
     GridItemIdentifier* item =
