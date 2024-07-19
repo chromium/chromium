@@ -206,7 +206,15 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
     }
     return Strategy::Next(*next_node_iterator, start_block);
   };
-
+  // If the first node in the paragraph is non editable, the position has
+  // enclosing node as its anchor node. The following while loop breaks out
+  // without iterating over next node if next_node_iterator is an enclosing
+  // block. Move to next node here since it is needed only for the start_node.
+  if (RuntimeEnabledFeatures::
+          HandleDeletionWithNonEditableContentAtBlockBoundaryEnabled() &&
+      start_node == start_block) {
+    next_node_iterator = nextNode();
+  }
   while (next_node_iterator) {
     if (boundary_crossing_rule == kCannotCrossEditingBoundary &&
         !NodeIsUserSelectAll(next_node_iterator) &&
@@ -214,8 +222,17 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
       break;
     if (boundary_crossing_rule == kCanSkipOverEditingBoundary) {
       while (next_node_iterator &&
-             IsEditable(*next_node_iterator) != start_node_is_editable)
-        next_node_iterator = nextNode();
+             IsEditable(*next_node_iterator) != start_node_is_editable) {
+        if (RuntimeEnabledFeatures::
+                HandleDeletionWithNonEditableContentAtBlockBoundaryEnabled()) {
+          candidate_node = next_node_iterator;
+          candidate_type = PositionAnchorType::kAfterAnchor;
+          next_node_iterator =
+              Strategy::NextSkippingChildren(*next_node_iterator, start_block);
+        } else {
+          next_node_iterator = nextNode();
+        }
+      }
       if (!next_node_iterator ||
           !next_node_iterator->IsDescendantOf(highest_root))
         break;

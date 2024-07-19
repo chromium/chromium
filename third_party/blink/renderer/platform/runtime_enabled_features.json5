@@ -2081,6 +2081,10 @@
       status: "test",
     },
     {
+      name: "HandleDeletionWithNonEditableContentAtBlockBoundary",
+      status: "stable",
+    },
+    {
       name: "HandwritingRecognition",
       status: {
         "ChromeOS_Ash": "stable",

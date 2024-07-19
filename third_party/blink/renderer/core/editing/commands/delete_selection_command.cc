@@ -255,9 +255,15 @@ void DeleteSelectionCommand::InitializePositionData(
     return;
   }
   if (!IsEditablePosition(end)) {
-    Node* highest_root = HighestEditableRoot(start);
-    DCHECK(highest_root);
-    end = LastEditablePositionBeforePositionInRoot(end, *highest_root);
+    if (!RuntimeEnabledFeatures::
+            HandleDeletionWithNonEditableContentAtBlockBoundaryEnabled() ||
+        !(end.IsAfterAnchor() ||
+          Position::LastPositionInNode(*(end.AnchorNode()))
+              .IsEquivalent(end))) {
+      Node* highest_root = HighestEditableRoot(start);
+      DCHECK(highest_root);
+      end = LastEditablePositionBeforePositionInRoot(end, *highest_root);
+    }
   }
 
   upstream_start_ = MostBackwardCaretPosition(start);
@@ -1206,8 +1212,14 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
   // If selection has not been set to a custom selection when the command was
   // created, use the current ending selection.
   if (!has_selection_to_delete_) {
-    selection_to_delete_ =
-        SelectionForUndoStep::From(EndingVisibleSelection().AsSelection());
+    if (RuntimeEnabledFeatures::
+            HandleDeletionWithNonEditableContentAtBlockBoundaryEnabled()) {
+      selection_to_delete_ =
+          SelectionForUndoStep::From(EndingSelection().AsSelection());
+    } else {
+      selection_to_delete_ =
+          SelectionForUndoStep::From(EndingVisibleSelection().AsSelection());
+    }
   }
 
   if (!selection_to_delete_.IsValidFor(GetDocument()) ||

@@ -5,6 +5,6 @@
 <script>
 test(() => assert_selection('<div contenteditable><p>^line1<button contenteditable="false">hello</button></p><p>line2|</p></div>',
   'insertUnorderedList',
-  '<div contenteditable><p><ul><li>^line1</li></ul><button contenteditable="false">hello</button></p><p><ul><li>line|2</li></ul></p></div>'),
+  '<div contenteditable><p><ul><li>^line1<button contenteditable="false">hello</button></li><li>line2|</li></ul></p></div>'),
   'No time out when inserting a list over selected paragraphs that has a non-editable child element');
 </script>
