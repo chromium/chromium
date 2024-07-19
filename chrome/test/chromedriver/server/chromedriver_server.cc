@@ -319,41 +319,47 @@ int main(int argc, char *argv[]) {
   if (cmd_line->HasSwitch("h") || cmd_line->HasSwitch("help")) {
     std::string options;
     const char* const kOptionAndDescriptions[] = {
-      "port=PORT",
-      "port to listen on",
-      "adb-port=PORT",
-      "adb server port",
-      "log-path=FILE",
-      "write server log to file instead of stderr, "
-      "increases log level to INFO",
-      "log-level=LEVEL",
-      "set log level: ALL, DEBUG, INFO, WARNING, SEVERE, OFF",
-      "verbose",
-      "log verbosely (equivalent to --log-level=ALL)",
-      "silent",
-      "log nothing (equivalent to --log-level=OFF)",
-      "append-log",
-      "append log file instead of rewriting",
-      "replayable",
-      "(experimental) log verbosely and don't truncate long "
-      "strings so that the log can be replayed.",
-      "version",
-      "print the version number and exit",
-      "url-base",
-      "base URL path prefix for commands, e.g. wd/url",
-      "readable-timestamp",
-      "add readable timestamps to log",
-      "enable-chrome-logs",
-      "show logs from the browser (overrides other logging options)",
-      "bidi-mapper-path",
-      "custom bidi mapper path",
+        "port=PORT",
+        "port to listen on",
+        "adb-port=PORT",
+        "adb server port",
+        "log-path=FILE",
+        "write server log to file instead of stderr, "
+        "increases log level to INFO",
+        "log-level=LEVEL",
+        "set log level: ALL, DEBUG, INFO, WARNING, SEVERE, OFF",
+        "verbose",
+        "log verbosely (equivalent to --log-level=ALL)",
+        "silent",
+        "log nothing (equivalent to --log-level=OFF)",
+        "append-log",
+        "append log file instead of rewriting",
+        "replayable",
+        "(experimental) log verbosely and don't truncate long "
+        "strings so that the log can be replayed.",
+        "version",
+        "print the version number and exit",
+        "url-base",
+        "base URL path prefix for commands, e.g. wd/url",
+        "readable-timestamp",
+        "add readable timestamps to log",
+        "enable-chrome-logs",
+        "show logs from the browser (overrides other logging options)",
+        "bidi-mapper-path",
+        "custom bidi mapper path",
     // TODO(crbug.com/40118868): Revisit the macro expression once build flag
     // switch of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-      "disable-dev-shm-usage",
-      "do not use /dev/shm "
-      "(add this switch if seeing errors related to shared memory)",
+        "disable-dev-shm-usage",
+        "do not use /dev/shm "
+        "(add this switch if seeing errors related to shared memory)",
 #endif
+        // TODO(crbug.com/354135326): This is a temporary flag needed to
+        // smooothly migrate the web platform tests to auto-assigned port.
+        // This switch will be removed in M132. Don't rely on it!
+        "ignore-explicit-port",
+        "(experimental) ignore the port specified explicitly, "
+        "find a free port instead",
     };
     for (size_t i = 0; i < std::size(kOptionAndDescriptions) - 1; i += 2) {
       options += base::StringPrintf(
@@ -392,6 +398,9 @@ int main(int argc, char *argv[]) {
       return 1;
     }
     port = static_cast<uint16_t>(cmd_line_port);
+  }
+  if (cmd_line->HasSwitch("ignore-explicit-port")) {
+    port = 0;
   }
   if (cmd_line->HasSwitch("adb-port")) {
     if (!base::StringToInt(cmd_line->GetSwitchValueASCII("adb-port"),
