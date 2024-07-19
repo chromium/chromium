@@ -3233,7 +3233,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "target_url": "[]"
+                        "target_urls": "[]"
                     },
                     "enable_features": [
                         "BoostRenderProcessForLoading"
