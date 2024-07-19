@@ -173,6 +173,13 @@ public class EdgeToEdgeControllerTest {
                         mLayoutManager);
         assertNotNull(mEdgeToEdgeControllerImpl);
         verify(mOsWrapper, times(1)).setDecorFitsSystemWindows(any(), eq(false));
+        verify(mOsWrapper, times(1))
+                .setPadding(
+                        any(),
+                        eq(0),
+                        intThat(Matchers.greaterThan(0)),
+                        eq(0),
+                        intThat(Matchers.greaterThan(0)));
         verify(mInsetObserver, times(1)).addInsetsConsumer(any());
         EdgeToEdgeControllerFactory.setHas3ButtonNavBar(false);
     }
@@ -335,7 +342,7 @@ public class EdgeToEdgeControllerTest {
         // Check the Navigation Bar color, as an indicator that we really changed the window.
         assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
         // Pad the top and the bottom to keep it all normal.
-        verify(mOsWrapper, times(1))
+        verify(mOsWrapper, times(2))
                 .setPadding(
                         any(),
                         eq(0),

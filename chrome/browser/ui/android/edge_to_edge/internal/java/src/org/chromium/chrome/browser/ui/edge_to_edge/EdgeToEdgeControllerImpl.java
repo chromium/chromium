@@ -144,8 +144,13 @@ public class EdgeToEdgeControllerImpl
                 : "The inset observer should have non-null insets by the time the"
                         + " EdgeToEdgeControllerImpl is initialized.";
         mSystemInsets = getSystemInsets(mInsetObserver.getLastRawWindowInsets());
+        View contentView = mActivity.findViewById(ROOT_UI_VIEW_ID);
+        assert contentView != null : "Root view for Edge To Edge not found!";
+
+        adjustEdges(mIsDrawingToEdge, contentView);
 
         mEdgeToEdgeOSWrapper.setDecorFitsSystemWindows(mActivity.getWindow(), false);
+        drawToEdge(EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab));
     }
 
     @VisibleForTesting
