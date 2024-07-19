@@ -512,7 +512,8 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
           account_password_store_.value()
               ? account_password_store_.value()->CreateSyncControllerDelegate()
               : nullptr,
-          std::make_unique<password_manager::PasswordLocalDataBatchUploader>(),
+          std::make_unique<password_manager::PasswordLocalDataBatchUploader>(
+              profile_password_store_.value(), account_password_store_.value()),
           pref_service_.value(), identity_manager_.value(), sync_service));
 
       // Couple password sharing invitations with password data type.
