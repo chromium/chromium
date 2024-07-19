@@ -44,16 +44,35 @@ ZWPTextInputWrapperV3::ZWPTextInputWrapperV3(
 ZWPTextInputWrapperV3::~ZWPTextInputWrapperV3() = default;
 
 void ZWPTextInputWrapperV3::Reset() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // There is no explicit reset API in v3. See [1].
+  // So use disable+enable to force a reset.
+  //
+  // TODO(crbug.com/352352898) Calling enable below as per text-input-v3 will
+  // reset all state including surrounding text but chromium expects reset to
+  // only clear preedit, see WaylandInputMethodContext::Reset(). This needs to
+  // be addressed on the protocol side and/or chromium side so that they match.
+  // If no reset is implemented at all, it can lead to bad user experience,
+  // e.g. preedit being duplicated if composition is aborted on the chromium
+  // side by clicking in the input field. So the logic below is still needed
+  // until a proper fix is in place.
+  //
+  // [1]
+  // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/merge_requests/34
+  zwp_text_input_v3_disable(obj_.get());
+  zwp_text_input_v3_commit(obj_.get());
+  zwp_text_input_v3_enable(obj_.get());
+  zwp_text_input_v3_commit(obj_.get());
 }
 
 void ZWPTextInputWrapperV3::Activate(WaylandWindow* window,
                                      TextInputClient::FocusReason reason) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  zwp_text_input_v3_enable(obj_.get());
+  zwp_text_input_v3_commit(obj_.get());
 }
 
 void ZWPTextInputWrapperV3::Deactivate() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  zwp_text_input_v3_disable(obj_.get());
+  zwp_text_input_v3_commit(obj_.get());
 }
 
 void ZWPTextInputWrapperV3::ShowInputPanel() {
@@ -86,12 +105,18 @@ void ZWPTextInputWrapperV3::SetContentType(ui::TextInputType type,
 void ZWPTextInputWrapperV3::OnEnter(void* data,
                                     struct zwp_text_input_v3* text_input,
                                     struct wl_surface* surface) {
+  // Same as text-input-v1, we don't use this for text-input focus changes and
+  // instead use wayland keyboard enter/leave events to activate or deactivate
+  // text-input.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void ZWPTextInputWrapperV3::OnLeave(void* data,
                                     struct zwp_text_input_v3* text_input,
                                     struct wl_surface* surface) {
+  // Same as text-input-v1, we don't use this for text-input focus changes and
+  // instead use wayland keyboard enter/leave events to activate or deactivate
+  // text-input.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
