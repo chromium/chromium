@@ -39,6 +39,7 @@ static_library("web_app") {
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/remote_commands/crd",
+    "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/image_decoder",
     "//chromeos/ash/components/settings",
     "//components/prefs",

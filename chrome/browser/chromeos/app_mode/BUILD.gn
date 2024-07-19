@@ -1,0 +1,167 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ppapi/buildflags/buildflags.gni")
+
+assert(is_chromeos)
+
+static_library("app_mode") {
+  sources = [
+    "chrome_kiosk_app_installer.cc",
+    "chrome_kiosk_app_installer.h",
+    "chrome_kiosk_app_launcher.cc",
+    "chrome_kiosk_app_launcher.h",
+    "chrome_kiosk_external_loader_broker.cc",
+    "chrome_kiosk_external_loader_broker.h",
+    "kiosk_app_external_loader.cc",
+    "kiosk_app_external_loader.h",
+    "kiosk_app_service_launcher.cc",
+    "kiosk_app_service_launcher.h",
+    "kiosk_browser_session.cc",
+    "kiosk_browser_session.h",
+    "kiosk_browser_window_handler.cc",
+    "kiosk_browser_window_handler.h",
+    "kiosk_metrics_service.cc",
+    "kiosk_metrics_service.h",
+    "kiosk_policies.cc",
+    "kiosk_policies.h",
+    "kiosk_settings_navigation_throttle.cc",
+    "kiosk_settings_navigation_throttle.h",
+    "kiosk_troubleshooting_controller.cc",
+    "kiosk_troubleshooting_controller.h",
+    "startup_app_launcher_update_checker.cc",
+    "startup_app_launcher_update_checker.h",
+    "web_kiosk_app_installer.cc",
+    "web_kiosk_app_installer.h",
+    "web_kiosk_browser_controller_base.cc",
+    "web_kiosk_browser_controller_base.h",
+  ]
+
+  if (enable_plugins) {
+    sources += [
+      "kiosk_session_plugin_handler.cc",
+      "kiosk_session_plugin_handler.h",
+      "kiosk_session_plugin_handler_delegate.h",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "kiosk_troubleshooting_controller_ash.cc",
+      "kiosk_troubleshooting_controller_ash.h",
+    ]
+  }
+
+  public_deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/dbus/power",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ppapi/buildflags",
+    "//ui/base",
+    "//url",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/pref_registry",
+    "//components/user_manager",
+    "//components/webapps/browser:constants",
+    "//extensions/browser/updater",
+    "//ui/base:types",
+    "//ui/views",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash",
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//components/services/app_service/public/cpp:instance_update",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "chrome_kiosk_external_loader_broker_unittest.cc",
+    "kiosk_app_service_launcher_unittest.cc",
+    "kiosk_browser_session_unittest.cc",
+    "kiosk_policies_unittest.cc",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [ "chrome_kiosk_app_launcher_unittest.cc" ]
+  }
+
+  if (enable_plugins) {
+    sources += [ "kiosk_session_plugin_handler_unittest.cc" ]
+  }
+
+  deps = [
+    ":app_mode",
+    "//base",
+    "//base/test:test_support",
+    "//build:buildflag_header_h",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/web_applications",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/dbus/power",
+    "//components/services/app_service",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:event_constants",
+    "//ui/gfx/geometry",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash",
+      "//ash:test_support",
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//ash/public/cpp:test_support",
+      "//chrome/browser/ash/app_mode",
+      "//chrome/browser/ash/app_mode:test_support",
+      "//chrome/browser/ash/login/users:test_support",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/test_support",
+      "//chrome/browser/ash/system_web_apps/types",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//components/services/app_service/public/cpp:instance_update",
+    ]
+  }
+}

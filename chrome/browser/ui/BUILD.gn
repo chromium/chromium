@@ -3820,6 +3820,7 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos/app_mode",
     ]
     sources += [
       "chromeos/window_pin_util.h",
@@ -3868,6 +3869,7 @@ static_library("ui") {
       "//chrome/app:generated_resources",
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/cros_apps",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/ui/views/editor_menu",

@@ -2210,6 +2210,7 @@ if (!is_android) {
     if (is_chromeos) {
       deps += [
         "//chrome/browser/chromeos:browser_tests",
+        "//chrome/browser/chromeos/app_mode",
         "//chromeos/dbus/dlp:dlp",
         "//components/onc",
         "//ui/chromeos",
@@ -5612,6 +5613,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:test_support",
+      "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",

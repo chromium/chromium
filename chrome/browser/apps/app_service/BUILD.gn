@@ -101,6 +101,11 @@ source_set("app_service") {
       "//third_party/smhasher:murmurhash2",
       "//ui/wm/public",
     ]
+
+    # Needed only to allow circular includes.
+    deps += [ "//chrome/browser/chromeos/app_mode" ]
+
+    allow_circular_includes_from += [ "//chrome/browser/chromeos/app_mode" ]
   }
 
   if (is_chromeos_ash) {

@@ -16,34 +16,6 @@ assert(use_ozone)
 source_set("chromeos") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   sources = [
-    "app_mode/chrome_kiosk_app_installer.cc",
-    "app_mode/chrome_kiosk_app_installer.h",
-    "app_mode/chrome_kiosk_app_launcher.cc",
-    "app_mode/chrome_kiosk_app_launcher.h",
-    "app_mode/chrome_kiosk_external_loader_broker.cc",
-    "app_mode/chrome_kiosk_external_loader_broker.h",
-    "app_mode/kiosk_app_external_loader.cc",
-    "app_mode/kiosk_app_external_loader.h",
-    "app_mode/kiosk_app_service_launcher.cc",
-    "app_mode/kiosk_app_service_launcher.h",
-    "app_mode/kiosk_browser_session.cc",
-    "app_mode/kiosk_browser_session.h",
-    "app_mode/kiosk_browser_window_handler.cc",
-    "app_mode/kiosk_browser_window_handler.h",
-    "app_mode/kiosk_metrics_service.cc",
-    "app_mode/kiosk_metrics_service.h",
-    "app_mode/kiosk_policies.cc",
-    "app_mode/kiosk_policies.h",
-    "app_mode/kiosk_settings_navigation_throttle.cc",
-    "app_mode/kiosk_settings_navigation_throttle.h",
-    "app_mode/kiosk_troubleshooting_controller.cc",
-    "app_mode/kiosk_troubleshooting_controller.h",
-    "app_mode/startup_app_launcher_update_checker.cc",
-    "app_mode/startup_app_launcher_update_checker.h",
-    "app_mode/web_kiosk_app_installer.cc",
-    "app_mode/web_kiosk_app_installer.h",
-    "app_mode/web_kiosk_browser_controller_base.cc",
-    "app_mode/web_kiosk_browser_controller_base.h",
     "arc/arc_external_protocol_dialog.cc",
     "arc/arc_external_protocol_dialog.h",
     "arc/arc_web_contents_data.cc",
@@ -382,18 +354,8 @@ source_set("chromeos") {
     "//ui/native_theme",
   ]
 
-  if (enable_plugins) {
-    sources += [
-      "app_mode/kiosk_session_plugin_handler.cc",
-      "app_mode/kiosk_session_plugin_handler.h",
-      "app_mode/kiosk_session_plugin_handler_delegate.h",
-    ]
-  }
-
   if (is_chromeos_ash) {
     sources += [
-      "app_mode/kiosk_troubleshooting_controller_ash.cc",
-      "app_mode/kiosk_troubleshooting_controller_ash.h",
       "extensions/login_screen/login/cleanup/cleanup_manager_ash.cc",
       "extensions/login_screen/login/cleanup/cleanup_manager_ash.h",
       "extensions/login_screen/login/cleanup/clipboard_cleanup_handler.cc",
@@ -631,10 +593,6 @@ source_set("unit_tests") {
 
   sources = [
     "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
-    "app_mode/chrome_kiosk_external_loader_broker_unittest.cc",
-    "app_mode/kiosk_app_service_launcher_unittest.cc",
-    "app_mode/kiosk_browser_session_unittest.cc",
-    "app_mode/kiosk_policies_unittest.cc",
     "arc/arc_external_protocol_dialog_unittest.cc",
     "arc/open_with_menu_unittest.cc",
     "container_app/container_app_tab_helper_unittest.cc",
@@ -746,6 +704,7 @@ source_set("unit_tests") {
     "//url",
 
     # Unit tests from subdirectories.
+    "//chrome/browser/chromeos/app_mode:unit_tests",
     "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",
@@ -753,13 +712,8 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/tast_support:unit_tests",
   ]
 
-  if (enable_plugins) {
-    sources += [ "app_mode/kiosk_session_plugin_handler_unittest.cc" ]
-  }
-
   if (is_chromeos_ash) {
     sources += [
-      "app_mode/chrome_kiosk_app_launcher_unittest.cc",
       "extensions/login_screen/login/cleanup/extension_cleanup_handler_unittest.cc",
       "extensions/login_screen/login/cleanup/lacros_cleanup_handler_unittest.cc",
       "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler_unittest.cc",
