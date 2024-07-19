@@ -29,6 +29,7 @@ export class TestBluetoothInternalsHandler extends TestBrowserProxy {
       // <if expr="chromeos_ash">
       'restartSystemBluetooth',
       // </if>
+      'startBtsnoop',
     ]);
 
     this.receiver_ = new BluetoothInternalsHandlerReceiver(this);
@@ -70,6 +71,11 @@ export class TestBluetoothInternalsHandler extends TestBrowserProxy {
   async requestLocationServices() {
     this.methodCalled('requestLocationServices');
     return {};
+  }
+
+  async startBtsnoop() {
+    this.methodCalled('startBtsnoop');
+    return {btsnoop: null};
   }
 
   // <if expr="chromeos_ash">

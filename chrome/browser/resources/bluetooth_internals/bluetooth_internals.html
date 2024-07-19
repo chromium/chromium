@@ -73,6 +73,24 @@
   </div>
 </template>
 
+<if expr="chromeos_ash">
+<template id="btsnoop-template">
+  <div>
+    <div>
+      Capture a bluetooth snoop log and save it to your Downloads directory.
+    </div>
+    <div>
+      Since the logs might contain sensitive information, please don't share
+      it with untrustworthy parties.
+    </div>
+    <div>
+      <button id="btmon-start-btn"></button>
+      <span id="btmon-status-bar"></span>
+    </div>
+  </div>
+</template>
+</if>
+
 <dialog id="need-location-services-on">
   Chrome needs location access to scan for devices. Location access is
   <a id="need-location-services-on-services-link">
