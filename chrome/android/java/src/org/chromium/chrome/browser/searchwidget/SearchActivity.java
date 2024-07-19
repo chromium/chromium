@@ -768,7 +768,8 @@ public class SearchActivity extends AsyncInitializationActivity
                 templateSvc != null
                         && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url);
         boolean isNative =
-                NativePage.isNativePageUrl(url, /* incognito= */ false, /* isPdf= */ false);
+                NativePage.isNativePageUrl(
+                        url, /* incognito= */ false, /* hasPdfDownload= */ false);
 
         int targetType =
                 isNative

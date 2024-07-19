@@ -113,7 +113,7 @@ public class NativePageTest {
                 NativePage.nativePageType(url1, candidatePage, false, true));
 
         Assert.assertEquals(
-                "Native page should not be created without isPdf param",
+                "Native page should not be created without associated pdf download",
                 NativePageType.NONE,
                 NativePage.nativePageType(url1, candidatePage, false, false));
     }
