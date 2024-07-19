@@ -12,12 +12,21 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:orientation="vertical">
 
-     <androidx.recyclerview.widget.RecyclerView
-          android:id="@+id/sheet_item_list"
-          android:layout_width="match_parent"
-          android:layout_height="0dp"
-          android:layout_weight="1"
-          android:layout_marginEnd="@dimen/all_plus_addresses_bottom_sheet_padding"
-          android:layout_marginStart="@dimen/all_plus_addresses_bottom_sheet_padding" />
+    <TextView
+        android:id="@+id/sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginStart="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginTop="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sheet_item_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginEnd="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginStart="@dimen/all_plus_addresses_bottom_sheet_padding" />
 
 </LinearLayout>

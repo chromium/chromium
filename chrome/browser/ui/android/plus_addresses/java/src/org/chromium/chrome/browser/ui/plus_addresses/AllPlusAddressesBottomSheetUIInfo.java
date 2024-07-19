@@ -13,14 +13,24 @@ import java.util.List;
 
 @JNINamespace("plus_addresses")
 class AllPlusAddressesBottomSheetUIInfo {
+    private String mTitle;
     private List<PlusProfile> mProfiles;
 
     @CalledByNative
     AllPlusAddressesBottomSheetUIInfo() {}
 
     @CalledByNative
+    void setTitle(@JniType("std::u16string") String title) {
+        mTitle = title;
+    }
+
+    @CalledByNative
     void setPlusProfiles(@JniType("std::vector") List<PlusProfile> profiles) {
         mProfiles = profiles;
+    }
+
+    String getTitle() {
+        return mTitle;
     }
 
     List<PlusProfile> getPlusProfiles() {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.plus_addresses;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.TITLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.VISIBLE;
 
 import org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ItemType;
@@ -21,6 +22,8 @@ class AllPlusAddressesBottomSheetMediator {
     }
 
     void showPlusProfiles(AllPlusAddressesBottomSheetUIInfo uiInfo) {
+        mModel.set(TITLE, uiInfo.getTitle());
+
         mModel.get(PLUS_PROFILES).clear();
         for (PlusProfile profile : uiInfo.getPlusProfiles()) {
             final PropertyModel model = PlusProfileProperties.createPlusProfileModel(profile);

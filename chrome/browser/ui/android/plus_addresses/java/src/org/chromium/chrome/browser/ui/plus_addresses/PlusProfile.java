@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import java.util.Objects;
+
 // Android plain old Java object class that is used to display the user's plus addresses in the all
 // plus addresses bottom sheet.
 @JNINamespace("plus_addresses")
@@ -30,5 +32,19 @@ class PlusProfile {
 
     public String getOrigin() {
         return mOrigin;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof PlusProfile)) return false;
+        PlusProfile other = (PlusProfile) obj;
+        return Objects.equals(mPlusAddress, other.mPlusAddress)
+                && Objects.equals(mOrigin, other.mOrigin);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * Objects.hashCode(mPlusAddress) + Objects.hashCode(mOrigin);
     }
 }

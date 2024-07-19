@@ -69,7 +69,9 @@ generate_jni("jni_headers") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetModuleTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetViewTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContentTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediatorTest.java",

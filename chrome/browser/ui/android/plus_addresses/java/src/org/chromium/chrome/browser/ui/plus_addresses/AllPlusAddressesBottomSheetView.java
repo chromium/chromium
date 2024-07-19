@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,6 +42,10 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
         } else {
             mBottomSheetController.hideContent(this, true);
         }
+    }
+
+    void setTitle(String title) {
+        ((TextView) mContentView.findViewById(R.id.sheet_title)).setText(title);
     }
 
     void setSheetItemListAdapter(RecyclerView.Adapter adapter) {

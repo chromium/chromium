@@ -11,7 +11,9 @@
 #include "base/check_deref.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
+#include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/AllPlusAddressesBottomSheetBridge_jni.h"
@@ -60,6 +62,10 @@ void AllPlusAddressesBottomSheetView::Show(
 
   base::android::ScopedJavaLocalRef<jobject> ui_info =
       Java_AllPlusAddressesBottomSheetUIInfo_Constructor(env);
+  Java_AllPlusAddressesBottomSheetUIInfo_setTitle(
+      env, ui_info,
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_TITLE_ANDROID));
   Java_AllPlusAddressesBottomSheetUIInfo_setPlusProfiles(env, ui_info,
                                                          java_profiles);
 

@@ -9,7 +9,11 @@ import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBott
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -31,16 +35,21 @@ class AllPlusAddressesBottomSheetCoordinator {
         AllPlusAddressesBottomSheetView view =
                 new AllPlusAddressesBottomSheetView(context, sheetController);
 
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(model.get(PLUS_PROFILES));
-        adapter.registerType(
-                PLUS_PROFILE,
-                AllPlusAddressesBottomSheetViewBinder::createPlusAddressView,
-                AllPlusAddressesBottomSheetViewBinder::bindPlusAddressView);
-        view.setSheetItemListAdapter(adapter);
+        view.setSheetItemListAdapter(createSheetItemListAdapter(model.get(PLUS_PROFILES)));
         PropertyModelChangeProcessor.create(
                 model,
                 view,
                 AllPlusAddressesBottomSheetViewBinder::bindAllPlusAddressesBottomSheet);
+    }
+
+    @VisibleForTesting
+    static RecyclerView.Adapter createSheetItemListAdapter(ModelList profiles) {
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(profiles);
+        adapter.registerType(
+                PLUS_PROFILE,
+                AllPlusAddressesBottomSheetViewBinder::createPlusAddressView,
+                AllPlusAddressesBottomSheetViewBinder::bindPlusAddressView);
+        return adapter;
     }
 
     void showPlusProfiles(AllPlusAddressesBottomSheetUIInfo uiInfo) {
