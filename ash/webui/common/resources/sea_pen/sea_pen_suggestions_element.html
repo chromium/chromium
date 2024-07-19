@@ -29,17 +29,16 @@
     padding: 6px 12px;
   }
 
-  #title {
-    color: var(--cros-sys-on_surface);
-    font-family: var(--cros-button-1-font-family);
-    line-height: var(--cros-button-1-line-height);
-    font-size: var(--cros-button-1-font-size);
-    font-weight: var(--cros-button-1-font-weight);
-    margin-inline-end: 10px;
+  #container cr-button.shuffle {
+    background-color: transparent;
+    border: none;
+  }
+
+  #shuffle iron-icon {
+    margin-inline-start: 4px;
   }
 </style>
 <div id="container">
-  <div id="title">Styles:</div>
   <iron-selector
       id="suggestionSelector"
       selected="0"
@@ -52,8 +51,10 @@
       </cr-button>
     </template>
   </iron-selector>
-  <cr-icon-button id="shuffle"
-      iron-icon="personalization-shared:refresh"
+  <cr-button id="shuffle"
+      class="shuffle"
       on-click="onShuffleClicked_">
-  </cr-icon-button>
+    [[i18n('seaPenFreeformMoreSuggestionsButton')]]
+    <iron-icon icon="personalization-shared:refresh"></iron-icon>
+  </cr-button>
 </div>

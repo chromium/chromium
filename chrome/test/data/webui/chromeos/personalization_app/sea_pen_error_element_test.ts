@@ -17,7 +17,10 @@ suite('SeaPenErrorElementTest', function() {
   let seaPenErrorElement: SeaPenErrorElement|null;
 
   setup(() => {
-    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    loadTimeData.overrideValues({
+      isSeaPenEnabled: true,
+      isSeaPenTextInputEnabled: false,
+    });
   });
 
   teardown(async () => {
@@ -36,6 +39,28 @@ suite('SeaPenErrorElementTest', function() {
     assertTrue(!!errorMessage);
     assertEquals(
         seaPenErrorElement.i18n('seaPenErrorNoInternet'),
+        errorMessage!.innerText);
+
+    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
+                          'iron-icon') as HTMLElement;
+    assertTrue(!!errorIllo);
+    assertEquals(
+        errorIllo.getAttribute('icon'),
+        'personalization-shared-illo:network_error');
+  });
+
+  test('display no network error state for freeform', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+    seaPenErrorElement = initElement(
+        SeaPenErrorElement,
+        {thumbnailResponseStatusCode: MantaStatusCode.kNoInternetConnection});
+    await waitAfterNextRender(seaPenErrorElement);
+
+    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage);
+    assertEquals(
+        seaPenErrorElement.i18n('seaPenFreeformErrorNoInternet'),
         errorMessage!.innerText);
 
     const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(

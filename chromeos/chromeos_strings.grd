@@ -3338,6 +3338,41 @@
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_CLOSE_BUTTON" desc="The button to close the introduction dialog.">
           Got it
         </message>
+
+        <!-- Freeform prompts -->
+        <message name="IDS_SEA_PEN_FREEFORM_WALLPAPER_TEMPLATES_LABEL" desc="Label for the Wallpaper AI templates feature.">
+          AI Wallpapers
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_PROMPTS_LABEL" desc="Label for a list of sample prompts, used to help users write prompts to generate AI images.">
+          Sample prompts
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_RESULTS_LABEL" desc="Label for a list of generated AI images.">
+          Results
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SHUFFLE" desc="Label for a button that shuffles a list">
+          Shuffle
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_INPUT_PLACEHOLDER" desc="Default text for an input field that is used to generate AI images.">
+          Describe the wallpaper you want to create or use a sample prompt
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
+          Make sure you're connected to the internet and try again.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these wallpapers.">
+          Powered by Google AI
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS" desc="Section heading that shows previously-generated wallpapers.">
+          Previous prompts
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS_TOOLTIP" desc="Tooltip for IDS_SEA_PEN_FREEFORM_PREVIOUS_PROMPTS">
+          Your 2 most recent prompts. You can only use these prompts while you're on this page.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_MORE_SUGGESTIONS_BUTTON" desc="Description for a button that will show more options">
+          More
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_PROMPTING_GUIDE" desc="A link to a guide with instructions on how to write a prompt to generate AI images.">
+          Prompting guide
+        </message>
         <message name="IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION" desc="Description shown in each template page to help users navigate to freeform page.">
           You can also <ph name="BEGIN_LINK_FREEFORM_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/sea-pen/freeform"&gt;</ph>write your own prompt<ph name="END_LINK_FREEFORM_SUBPAGE">&lt;/a&gt;</ph>
         </message>
@@ -4242,7 +4277,7 @@
           A painting of a <ph name="ART_FEATURE">$1<ex>field of flowers </ex></ph> in the <ph name="ART_MOVEMENT">$2<ex>avant-garde</ex></ph> style
         </message>
         <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_FIELD" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
-          field of flowers 
+          field of flowers
         </message>
         <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_SWAMP" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
           swamp

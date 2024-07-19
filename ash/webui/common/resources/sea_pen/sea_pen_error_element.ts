@@ -52,7 +52,9 @@ export class SeaPenErrorElement extends SeaPenErrorElementBase {
   private getErrorMessage_(statusCode: MantaStatusCode): string {
     switch (statusCode) {
       case MantaStatusCode.kNoInternetConnection:
-        return this.i18n('seaPenErrorNoInternet');
+        return isSeaPenTextInputEnabled() ?
+            this.i18n('seaPenFreeformErrorNoInternet') :
+            this.i18n('seaPenErrorNoInternet');
       case MantaStatusCode.kPerUserQuotaExceeded:
       case MantaStatusCode.kResourceExhausted:
         return this.i18n('seaPenErrorResourceExhausted');

@@ -59,17 +59,19 @@
       <cr-button id="resultsTab"
           aria-pressed="[[isResultsTabSelected_(freeformTab_)]]"
           on-click="onTabSelected_">
-        <div class="text">Results</div>
+        <div class="text">[[i18n('seaPenFreeformResultsLabel')]]</div>
       </cr-button>
       <cr-button id="samplePromptsTab"
           aria-pressed="[[isSamplePromptsTabSelected_(freeformTab_)]]"
           on-click="onTabSelected_">
-        <div class="text">Sample prompts</div>
+        <div class="text">[[i18n('seaPenFreeformSamplePromptsLabel')]]</div>
       </cr-button>
     </div>
   </template>
   <template is="dom-if" if="[[!isTabContainerEnabled_(seaPenQuery_)]]" restamp>
-    <h2 id="samplesTitle" class="wallpaper-collections-heading">Sample Prompts</h2>
+    <h2 id="samplesTitle" class="wallpaper-collections-heading">
+      [[i18n('seaPenFreeformSamplePromptsLabel')]]
+    </h2>
   </template>
   <div id="endElement">
     <template is="dom-if" if="[[isSamplePromptsTabSelected_(freeformTab_)]]">
@@ -78,14 +80,13 @@
           on-click="onShuffleClicked_">
         <iron-icon icon="personalization-shared:refresh" slot="prefix-icon">
         </iron-icon>
-        <!-- TODO(b/345856242): translate the string. -->
-        <p>Shuffle</p>
+        <p>[[i18n('seaPenFreeformShuffle')]]</p>
       </cr-button>
     </template>
   </div>
   <template is="dom-if" if="[[!isSamplePromptsTabSelected_(freeformTab_)]]">
     <h2 id="seaPenImagesHeading" class="wallpaper-collections-heading">
-      [[i18n('seaPenWallpaperPoweredByGoogle')]]
+      [[i18n('seaPenFreeformPoweredByGoogle')]]
     </h2>
   </template>
 </div>

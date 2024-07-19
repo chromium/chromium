@@ -21,7 +21,7 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/sea_pen/constants.js';
-import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
+import {isSeaPenEnabled, isSeaPenTextInputEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {cleanUpSeaPenQueryStates} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {logSeaPenTemplateSelect} from 'chrome://resources/ash/common/sea_pen/sea_pen_metrics_logger.js';
@@ -246,11 +246,19 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         break;
       case Paths.SEA_PEN_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        breadcrumbs.push(this.i18n('seaPenLabel'));
+        if (isSeaPenTextInputEnabled()) {
+          breadcrumbs.push(this.i18n('seaPenFreeformWallpaperTemplatesLabel'));
+        } else {
+          breadcrumbs.push(this.i18n('seaPenLabel'));
+        }
         break;
       case Paths.SEA_PEN_RESULTS:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        breadcrumbs.push(this.i18n('seaPenLabel'));
+        if (isSeaPenTextInputEnabled()) {
+          breadcrumbs.push(this.i18n('seaPenFreeformWallpaperTemplatesLabel'));
+        } else {
+          breadcrumbs.push(this.i18n('seaPenLabel'));
+        }
         if (this.seaPenTemplateId && isNonEmptyArray(this.seaPenTemplates_)) {
           const template = this.seaPenTemplates_.find(
               template => template.id.toString() === this.seaPenTemplateId);
@@ -261,8 +269,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         break;
       case Paths.SEA_PEN_FREEFORM:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        // TODO(b/345856242): update the final string.
-        breadcrumbs.push('AI Prompting');
+        breadcrumbs.push(this.i18n('seaPenLabel'));
         break;
       case Paths.USER:
         breadcrumbs.push(this.i18n('avatarLabel'));

@@ -417,6 +417,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       });
 
   test('show breadcrumbs for SeaPen templates', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_COLLECTION,
     });
@@ -430,7 +431,25 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     ]);
   });
 
+  test(
+      'show breadcrumbs for SeaPen templates with freeform enabled',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+          'path': Paths.SEA_PEN_COLLECTION,
+        });
+
+        const breadcrumbContainer =
+            breadcrumbElement.shadowRoot!.getElementById('selector');
+        assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+        assertBreadcrumbs(breadcrumbContainer, [
+          breadcrumbElement.i18n('wallpaperLabel'),
+          breadcrumbElement.i18n('seaPenFreeformWallpaperTemplatesLabel'),
+        ]);
+      });
+
   test('show breadcrumbs for SeaPen results content', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_RESULTS,
       'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
@@ -467,6 +486,46 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertDeepEquals({}, queryParams);
   });
 
+  test(
+      'show breadcrumbs for SeaPen results content with freeform enabled',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+          'path': Paths.SEA_PEN_RESULTS,
+          'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
+        });
+
+        const breadcrumbContainer =
+            breadcrumbElement.shadowRoot!.getElementById('selector');
+        assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+        assertBreadcrumbs(breadcrumbContainer, [
+          breadcrumbElement.i18n('wallpaperLabel'),
+          breadcrumbElement.i18n('seaPenFreeformWallpaperTemplatesLabel'),
+          'Airbrushed',
+        ]);
+
+        const original = PersonalizationRouterElement.instance;
+        const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
+          PersonalizationRouterElement.instance = () => {
+            return {
+              goToRoute(path: Paths, queryParams: Object = {}) {
+                resolve([path, queryParams]);
+                PersonalizationRouterElement.instance = original;
+              },
+            } as PersonalizationRouterElement;
+          };
+        });
+
+        // current breadcrumbs: Home > Wallpaper > Sea Pen > Park
+        // navigate to Sea Pen subpage when Sea Pen breadcrumb is clicked on.
+        const seaPenBreadcrumb =
+            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');
+        seaPenBreadcrumb!.click();
+        const [path, queryParams] = await goToRoutePromise;
+        assertEquals(Paths.SEA_PEN_COLLECTION, path);
+        assertDeepEquals({}, queryParams);
+      });
+
   test('show breadcrumbs for SeaPen freeform', async () => {
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_FREEFORM,
@@ -475,10 +534,9 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    // TODO(b/345856242): Update final string for freeform label.
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
-      'AI Prompting',
+      breadcrumbElement.i18n('seaPenLabel'),
     ]);
   });
 

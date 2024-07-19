@@ -825,9 +825,9 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
   }
 
   private getSeaPenTemplatesTileLabel_(): string {
-    // TODO(b/345856242): update the final string.
-    return isSeaPenTextInputEnabled() ? 'AI Templates' :
-                                        this.i18n('seaPenLabel');
+    return isSeaPenTextInputEnabled() ?
+        this.i18n('seaPenFreeformWallpaperTemplatesLabel') :
+        this.i18n('seaPenLabel');
   }
 
   private getOnlineTileSecondaryText_(item: Tile): string {

@@ -132,11 +132,19 @@
 
   #historyTitle {
     color: var(--cros-sys-on_surface);
+    display: flex;
     font: var(--cros-body-0-font);
     height: 24px;
     margin-block-start: 0;
     margin-block-end: 0;
     padding: 6px 10px 6px;
+  }
+
+  #historyTooltip {
+    --iron-icon-stroke-color: var(--cros-sys-secondary);
+    --iron-icon-width: 16px;
+    height: 24px;
+    margin-inline-start: 4px;
   }
 </style>
 <template is="dom-if" if="[[showError_]]" restamp>
@@ -203,8 +211,14 @@
       </template>
     </iron-list>
     <template is="dom-if" if="[[showHistory_]]" restamp>
-      <!-- TODO: b/345856242 - Finalize strings -->
-      <h2 id="historyTitle">Previous History</h2>
+      <h2 id="historyTitle">
+        [[i18n('seaPenFreeformPreviousPrompts')]]
+        <iron-icon
+          id="historyTooltip"
+          title="[[i18n('seaPenFreeformPreviousPromptsTooltip')]]"
+          icon="sea-pen:info">
+      </iron-icon>
+      </h2>
       <template is="dom-repeat" items="[[textQueryHistory_]]">
         <h2 id="queryHistoryHeading[[index]]"
             class="wallpaper-collections-heading">
