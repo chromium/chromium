@@ -6,6 +6,8 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_FEATURE_CONFIG_BUILDER_H_
 
 #include "components/optimization_guide/proto/descriptors.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "components/optimization_guide/proto/redaction.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 
 namespace optimization_guide {
@@ -39,6 +41,18 @@ proto::SubstitutedString FieldSubstitution(const std::string& tmpl,
 
 // Make a template for "url: {page_url}".
 proto::SubstitutedString PageUrlSubstitution();
+
+// Constructs a simple redact rule, which exempts text from UserInput.
+proto::RedactRules SimpleRedactRule(
+    const std::string& regex,
+    proto::RedactBehavior behavior =
+        proto::RedactBehavior::REDACT_IF_ONLY_IN_OUTPUT,
+    std::optional<std::string> replacement = std::nullopt);
+
+// Constructs a simple compose config.
+// Generates "ctx:{user input}" and "execute:{user input}{page_url}".
+// Outputs to a ComposeResponse::output field.
+proto::OnDeviceModelExecutionFeatureConfig SimpleComposeConfig();
 
 }  // namespace optimization_guide
 

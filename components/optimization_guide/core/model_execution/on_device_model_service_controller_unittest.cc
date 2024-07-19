@@ -40,6 +40,8 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/redaction.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -144,9 +146,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
       WriteFeatureConfig(*params.config, params.config2,
                          params.validation_config);
     } else {
-      proto::OnDeviceModelExecutionFeatureConfig default_config;
+      auto default_config = SimpleComposeConfig();
       default_config.set_can_skip_text_safety(true);
-      PopulateConfigForFeature(kFeature, default_config);
       WriteFeatureConfig(default_config, std::nullopt,
                          params.validation_config);
     }
@@ -197,49 +198,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
             .SetModelMetadata(any)
             .Build();
     test_controller_->MaybeUpdateSafetyModel(*model_info);
-  }
-
-  void PopulateConfigForFeature(
-      ModelBasedCapabilityKey feature,
-      proto::OnDeviceModelExecutionFeatureConfig& config) {
-    config.set_feature(ToModelExecutionFeatureProto(feature));
-    auto& input_config = *config.mutable_input_config();
-    input_config.set_request_base_name(proto::ComposeRequest().GetTypeName());
-
-    // Execute call prefixes with execute:.
-    auto& substitution = *input_config.add_execute_substitutions();
-    substitution.set_string_template("execute:%s%s");
-    *substitution.add_substitutions()->add_candidates()->mutable_proto_field() =
-        UserInputField();
-    *substitution.add_substitutions()->add_candidates()->mutable_proto_field() =
-        PageUrlField();
-
-    // Context call prefixes with context:.
-    auto& context_substitution =
-        *input_config.add_input_context_substitutions();
-    context_substitution.set_string_template("ctx:%s");
-    *context_substitution.add_substitutions()
-         ->add_candidates()
-         ->mutable_proto_field() = UserInputField();
-
-    auto& output_config = *config.mutable_output_config();
-    output_config.set_proto_type(proto::ComposeResponse().GetTypeName());
-    *output_config.mutable_proto_field() = OutputField();
-  }
-
-  proto::RedactRule& PopulateConfigForFeatureWithRedactRule(
-      proto::OnDeviceModelExecutionFeatureConfig& config,
-      const std::string& regex,
-      proto::RedactBehavior behavior =
-          proto::RedactBehavior::REDACT_IF_ONLY_IN_OUTPUT) {
-    PopulateConfigForFeature(kFeature, config);
-    auto& output_config = *config.mutable_output_config();
-    auto& redact_rules = *output_config.mutable_redact_rules();
-    redact_rules.mutable_fields_to_check()->Add(UserInputField());
-    auto& redact_rule = *redact_rules.add_rules();
-    redact_rule.set_regex(regex);
-    redact_rule.set_behavior(behavior);
-    return redact_rule;
   }
 
   void RecreateServiceController() {
@@ -403,11 +361,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
         {{"enable_adaptation", "true"}}}},
       {});
 
-  proto::OnDeviceModelExecutionFeatureConfig config_compose, config_test;
+  auto config_compose = SimpleComposeConfig();
   config_compose.set_can_skip_text_safety(true);
+  auto config_test = SimpleComposeConfig();
+  config_test.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
   config_test.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(ModelBasedCapabilityKey::kCompose, config_compose);
-  PopulateConfigForFeature(ModelBasedCapabilityKey::kTest, config_test);
 
   Initialize({.config = config_compose, .config2 = config_test});
 
@@ -495,11 +453,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
         {{"enable_adaptation", "false"}}}},
       {});
 
-  proto::OnDeviceModelExecutionFeatureConfig config_compose, config_test;
+  auto config_compose = SimpleComposeConfig();
   config_compose.set_can_skip_text_safety(true);
+  auto config_test = SimpleComposeConfig();
+  config_test.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
   config_test.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(ModelBasedCapabilityKey::kCompose, config_compose);
-  PopulateConfigForFeature(ModelBasedCapabilityKey::kTest, config_test);
 
   Initialize({.config = config_compose, .config2 = config_test});
 
@@ -565,9 +523,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitWithFeaturesAndParameters(
       {{features::internal::kModelAdaptationCompose, {}}}, {});
 
-  proto::OnDeviceModelExecutionFeatureConfig config_compose;
+  auto config_compose = SimpleComposeConfig();
   config_compose.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(ModelBasedCapabilityKey::kCompose, config_compose);
 
   Initialize({.config = config_compose});
 
@@ -928,8 +885,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1157,8 +1113,7 @@ TEST(SafetyConfigTest, SafeWithRequiredScores) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyPasses) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1211,8 +1166,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyPasses) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyFails) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1260,8 +1214,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyFails) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1315,8 +1268,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1367,8 +1319,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1422,8 +1373,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckIgnoredInDarkMode) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "false"}});
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1475,8 +1425,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1531,8 +1480,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1690,8 +1638,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1752,8 +1699,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
 
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1812,8 +1758,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RawOutputCheckFailsWithUnsafeText) {
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
 
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1873,8 +1818,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
 
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1926,8 +1870,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -1979,8 +1922,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkModeNoFeatureConfig) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
   Initialize({.config = config});
 
@@ -2611,9 +2553,10 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeatureWithRedactRule(config, "bar");
+  *config.mutable_output_config()->mutable_redact_rules() =
+      SimpleRedactRule("bar");
   Initialize({.config = config});
 
   // `foo` doesn't match the redaction, so should be returned.
@@ -2654,10 +2597,10 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeatureWithRedactRule(config, "bar",
-                                         proto::RedactBehavior::REJECT);
+  *config.mutable_output_config()->mutable_redact_rules() =
+      SimpleRedactRule("bar", proto::RedactBehavior::REJECT);
   Initialize({.config = config});
 
   auto session1 = test_controller_->CreateSession(
@@ -2692,9 +2635,10 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeatureWithRedactRule(config, "bar");
+  *config.mutable_output_config()->mutable_redact_rules() =
+      SimpleRedactRule("bar");
   // Add a rule that identifies `previous_response` of `rewrite_params`.
   auto& output_config = *config.mutable_output_config();
   auto& redact_rules = *output_config.mutable_redact_rules();
@@ -2718,10 +2662,10 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeatureWithRedactRule(config, "bar")
-      .set_replacement_string("[redacted]");
+  *config.mutable_output_config()->mutable_redact_rules() =
+      SimpleRedactRule("bar", proto::REDACT_IF_ONLY_IN_OUTPUT, "[redacted]");
   Initialize({.config = config});
 
   // Output contains redacted text (and  input doesn't), so redact.
@@ -2948,9 +2892,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
 
   base::HistogramTester histogram_tester;
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(kFeature, config);
   Initialize({.config = config});
 
   fake_settings_.set_execute_result({
@@ -2981,9 +2924,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
   feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
 
   base::HistogramTester histogram_tester;
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(kFeature, config);
   *config.mutable_text_safety_fallback_config()
        ->mutable_input_url_proto_field() = UserInputField();
   Initialize({.config = config});
@@ -3061,9 +3003,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
 
   base::HistogramTester histogram_tester;
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(kFeature, config);
   // Create an empty ts fallback config which is valid and will call the
   // fallback.
   config.mutable_text_safety_fallback_config();
@@ -3143,9 +3084,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
 
   base::HistogramTester histogram_tester;
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(kFeature, config);
   // Create an empty ts fallback config which is valid and will call the
   // fallback.
   config.mutable_text_safety_fallback_config();
@@ -3199,9 +3139,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
 
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(kFeature, config);
   // Create an empty ts fallback config which is valid and will call the
   // fallback.
   config.mutable_text_safety_fallback_config();
@@ -3283,9 +3222,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(kFeature, config);
   config.mutable_sampling_params()->set_top_k(4);
   config.mutable_sampling_params()->set_temperature(1.5);
   Initialize({.config = config});
@@ -3305,9 +3243,8 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
 
 TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   // Session sampling params should have precedence over feature ones.
-  proto::OnDeviceModelExecutionFeatureConfig config;
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(kFeature, config);
   config.mutable_sampling_params()->set_top_k(4);
   config.mutable_sampling_params()->set_temperature(1.5);
   Initialize({.config = config});
@@ -3339,8 +3276,7 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
            {{"on_device_text_safety_token_interval", "0"}}},
       },
       {});
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -3415,8 +3351,7 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
            {{"on_device_text_safety_token_interval", "3"}}},
       },
       {});
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -3475,11 +3410,11 @@ TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
         {{"enable_adaptation", "false"}}}},
       {});
 
-  proto::OnDeviceModelExecutionFeatureConfig config_compose, config_test;
+  auto config_compose = SimpleComposeConfig();
   config_compose.set_can_skip_text_safety(true);
+  auto config_test = SimpleComposeConfig();
+  config_test.set_feature(proto::MODEL_EXECUTION_FEATURE_TEST);
   config_test.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(ModelBasedCapabilityKey::kCompose, config_compose);
-  PopulateConfigForFeature(ModelBasedCapabilityKey::kTest, config_test);
 
   Initialize({.config = config_compose,
               .config2 = config_test,
@@ -3530,8 +3465,7 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
           base::NumberToString(GetParam())}}}},
       {});
 
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  PopulateConfigForFeature(kFeature, config);
+  auto config = SimpleComposeConfig();
   config.set_can_skip_text_safety(false);
   Initialize({.config = config});
 
@@ -3757,9 +3691,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.RunUntilIdle();
 
   // Write an empty validation config and send a new model update.
-  proto::OnDeviceModelExecutionFeatureConfig default_config;
+  auto default_config = SimpleComposeConfig();
   default_config.set_can_skip_text_safety(true);
-  PopulateConfigForFeature(kFeature, default_config);
   WriteFeatureConfig(default_config);
 
   on_device_component_state_manager_.SetReady(temp_dir(), "0.0.2");
