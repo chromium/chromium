@@ -161,7 +161,9 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
                                        int picker_view_width)
     : delegate_(delegate), picker_view_width_(picker_view_width) {
   SetUseDefaultFillLayout(true);
-  GetViewAccessibility().SetRole(ax::mojom::Role::kGrid);
+  GetViewAccessibility().SetProperties(
+      ax::mojom::Role::kGrid,
+      l10n_util::GetStringUTF16(IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
   SetProperty(views::kElementIdentifierKey, kPickerEmojiBarElementId);
   SetBackground(views::CreateThemedRoundedRectBackground(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));

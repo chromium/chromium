@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.ExpectSpeechPattern("happy");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("row 1 column 1");
-  sm_.ExpectSpeechPattern("Table * 1 by 5");
+  sm_.ExpectSpeechPattern("Table Emojis and GIFs, 1 by 5");
 
   sm_.Call([view]() { view->GetItemsForTesting()[1]->RequestFocus(); });
 
