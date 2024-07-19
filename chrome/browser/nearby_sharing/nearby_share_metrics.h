@@ -73,6 +73,9 @@ void RecordNearbyShareEstablishConnectionMetrics(
     bool cancelled,
     base::TimeDelta time_to_connect);
 
+void RecordNearbyShareInitialConnectionMedium(
+    nearby::connections::mojom::Medium medium);
+
 void RecordNearbyShareTimeFromInitiateSendToRemoteDeviceNotificationMetric(
     base::TimeDelta time);
 

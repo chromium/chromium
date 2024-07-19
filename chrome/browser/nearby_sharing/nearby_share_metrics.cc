@@ -511,6 +511,13 @@ void RecordNearbyShareEstablishConnectionMetrics(
   }
 }
 
+void RecordNearbyShareInitialConnectionMedium(
+    nearby::connections::mojom::Medium medium) {
+  CHECK(IsTransferMedium(medium));
+  base::UmaHistogramEnumeration("Nearby.Share.Connection.InitialMedium",
+                                GetUpgradedMediumForMetrics(medium));
+}
+
 void RecordNearbyShareTimeFromInitiateSendToRemoteDeviceNotificationMetric(
     base::TimeDelta time) {
   base::UmaHistogramTimes(

@@ -1458,6 +1458,7 @@ void NearbySharingServiceImpl::OnInitialMedium(const std::string& endpoint_id,
   if (!share_target_map_.contains(endpoint_id)) {
     return;
   }
+  RecordNearbyShareInitialConnectionMedium(medium);
   auto share_target = share_target_map_[endpoint_id];
   for (auto& observer : observers_) {
     observer.OnInitialMedium(share_target, medium);

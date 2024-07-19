@@ -1462,6 +1462,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Connection.InitialMedium"
+    enum="NearbyShareUpgradedMedium" expires_after="2025-04-30">
+  <owner>dclasson@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records what the initial medium is when connection is established, which
+    will either be Bluetooth (true in most cases) or Wifi LAN (true only when
+    ChromeOS is sending and discovery happens using mDNS). Note that this metric
+    is not emitted for receiving Nearby Shares, and Wifi LAN is only supported
+    as an initial medium for sending Nearby Shares (as mDNS discovery is
+    supported, but advertising isn't).
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.Connection.TimeToEstablishOutgoingConnection"
     units="ms" expires_after="2025-04-30">
   <owner>pushi@google.com</owner>
