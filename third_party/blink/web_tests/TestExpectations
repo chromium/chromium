@@ -7614,3 +7614,6 @@ crbug.com/353790533 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context
 crbug.com/352093460 external/wpt/webtransport/stats.https.any.worker.html [ Failure Pass ]
 crbug.com/352093460 external/wpt/webtransport/stats.https.any.serviceworker.html [ Failure Pass ]
 
+# Gardener 2024-07-19
+crbug.com/354060896 [ Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/media/track/track-css-window-color.html [ Failure Pass ]
+crbug.com/354061998 [ Win11-arm64 ] http/tests/cookies/partitioned-cookies/ancestor-chain-same-site-subresource-to-cross-site.https.html [ Failure Pass ]
