@@ -102,6 +102,18 @@ class HistoryAnswerFeatureTypeMap {
   static std::string_view ToString() { return "HistoryAnswer"; }
 };
 
+class ProductSpecificationsFeatureTypeMap {
+ public:
+  using LoggingData = proto::ProductSpecificationsLoggingData;
+  using Quality = proto::ProductSpecificationsQuality;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_product_specifications();
+  }
+
+  static std::string_view ToString() { return "ProductSpecifications"; }
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_QUALITY_FEATURE_TYPE_MAP_H_

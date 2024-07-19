@@ -42,6 +42,10 @@ std::optional<UserVisibleFeatureKey> GetModelExecutionFeature(
       return std::nullopt;
     case proto::LogAiDataRequest::FeatureCase::kHistoryQuery:
       return UserVisibleFeatureKey::kHistorySearch;
+    case proto::LogAiDataRequest::FeatureCase::kProductSpecifications:
+      // TODO(b/354025626): Add a UserVisibleFeature Key for
+      // ProductSpecifications.
+      return std::nullopt;
     case proto::LogAiDataRequest::FeatureCase::kTabOrganization:
       return UserVisibleFeatureKey::kTabOrganization;
     case proto::LogAiDataRequest::FeatureCase::kWallpaperSearch:

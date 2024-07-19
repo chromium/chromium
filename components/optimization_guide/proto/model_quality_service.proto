@@ -16,6 +16,7 @@ import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/compose.proto";
 import "components/optimization_guide/proto/features/history_answer.proto";
 import "components/optimization_guide/proto/features/history_query.proto";
+import "components/optimization_guide/proto/features/product_specifications.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
 import "components/optimization_guide/proto/features/wallpaper_search.proto";
 
@@ -39,6 +40,8 @@ message LogAiDataRequest {
     HistoryQueryLoggingData history_query = 7;
 
     HistoryAnswerLoggingData history_answer = 8;
+
+    ProductSpecificationsLoggingData product_specifications = 9;
 
     DefaultLoggingData default = 1000;
   }
