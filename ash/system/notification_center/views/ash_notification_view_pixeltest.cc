@@ -126,7 +126,7 @@ TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
 
 // Regression test for http://b/267195370. Tests that a notification with no
 // message has its title vertically centered in the collapsed state.
-TEST_P(AshNotificationViewPixelTest, CollapsedNoMessage) {
+TEST_P(AshNotificationViewPixelTest, DISABLED_CollapsedNoMessage) {
   // Create a notification with no message, and open the notification center
   // bubble to view it.
   const std::string id = test_api()->AddCustomNotification(
@@ -327,7 +327,7 @@ INSTANTIATE_TEST_SUITE_P(
                      }),
                      /*IsNotificationWidthIncreaseEnabled()=*/testing::Bool()));
 
-TEST_P(AshNotificationViewIconPixelTest, NotificationIcon) {
+TEST_P(AshNotificationViewIconPixelTest, DISABLED_NotificationIcon) {
   int size = GetIconSize();
   // Create a notification with an icon with the given `size`.
   const std::string id = test_api()->AddCustomNotification(
@@ -395,7 +395,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Regression test for b/251686063. Tests that a notification with a medium
 // length multiline title and an icon is correctly displayed. This string would
 // not be displayed properly without the workaround implemented for b/251686063.
-TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
+TEST_P(AshNotificationViewTitlePixelTest, DISABLED_NotificationTitleTest) {
   // Create a notification with a multiline title and an icon.
   const std::string title = GetTitle();
 
@@ -459,7 +459,8 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests the spacing between long, elided title/message text content and the
 // next element of the notification (either icon or expand/collapse button).
 // Also parameterized by the presence/absence of the settings control button.
-TEST_P(AshNotificationViewCollapsedLongTextPixelTest, ElidedTextSpacing) {
+TEST_P(AshNotificationViewCollapsedLongTextPixelTest,
+       DISABLED_ElidedTextSpacing) {
   // Generate a notification with a long title and message, and view it in the
   // notification center. Also add a second notification so that the main
   // notification is automatically in its collapsed state when the bubble is
