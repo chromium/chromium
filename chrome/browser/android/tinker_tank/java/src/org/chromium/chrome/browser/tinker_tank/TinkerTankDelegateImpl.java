@@ -15,7 +15,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  * implementation.
  */
 public class TinkerTankDelegateImpl implements TinkerTankDelegate {
-    public static boolean enabled() {
+    @Override
+    public boolean isEnabled() {
         return false;
     }
 

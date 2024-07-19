@@ -15,9 +15,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  * build rules.
  */
 public interface TinkerTankDelegate {
-    public default boolean isEnabled() {
-        return false;
-    }
+    public boolean isEnabled();
 
     public void maybeShowBottomSheet(
             Activity activity,
