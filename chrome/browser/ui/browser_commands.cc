@@ -2290,7 +2290,7 @@ void ExecLensRegionSearch(Browser* browser) {
         std::make_unique<lens::LensRegionSearchController>();
     lens_region_search_controller_data->lens_region_search_controller->Start(
         contents, lens::features::IsLensFullscreenSearchEnabled(),
-        is_google_dsp, entry_point);
+        /*force_open_in_new_tab=*/false, is_google_dsp, entry_point);
     browser->SetUserData(lens::LensRegionSearchControllerData::kDataKey,
                          std::move(lens_region_search_controller_data));
   }

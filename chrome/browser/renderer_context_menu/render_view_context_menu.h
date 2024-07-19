@@ -367,7 +367,7 @@ class RenderViewContextMenu
   void ExecExitFullscreen();
   void ExecCopyLinkText();
   void ExecCopyImageAt();
-  void ExecSearchLensForImage(bool is_image_translate);
+  void ExecSearchLensForImage(int event_flags, bool is_image_translate);
   void ExecAddANote();
   void ExecRegionSearch(int event_flags,
                         bool is_google_default_search_provider);
@@ -377,7 +377,7 @@ class RenderViewContextMenu
   void ExecControls();
   void ExecSaveVideoFrameAs();
   void ExecCopyVideoFrame();
-  void ExecSearchForVideoFrame();
+  void ExecSearchForVideoFrame(int event_flags);
   void ExecLiveCaption();
   void ExecRotateCW();
   void ExecRotateCCW();
@@ -396,7 +396,8 @@ class RenderViewContextMenu
   void ExecOpenInReadAnything();
 
   void MediaPlayerAction(const blink::mojom::MediaPlayerAction& action);
-  void SearchForVideoFrame(const SkBitmap& bitmap,
+  void SearchForVideoFrame(int event_flags,
+                           const SkBitmap& bitmap,
                            const gfx::Rect& region_bounds);
   void PluginActionAt(const gfx::Point& location,
                       blink::mojom::PluginActionType plugin_action);

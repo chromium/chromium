@@ -186,6 +186,7 @@ std::string CompanionTabHelper::GetTextQueryFromSearchUrl(
 void CompanionTabHelper::StartRegionSearch(
     content::WebContents* web_contents,
     bool use_fullscreen_capture,
+    bool force_open_in_new_tab,
     lens::AmbientSearchEntryPoint entry_point) {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (!lens_region_search_controller_) {
@@ -193,6 +194,7 @@ void CompanionTabHelper::StartRegionSearch(
         std::make_unique<lens::LensRegionSearchController>();
   }
   lens_region_search_controller_->Start(web_contents, use_fullscreen_capture,
+                                        force_open_in_new_tab,
                                         /*is_google_default_search_provider=*/
                                         true, entry_point);
 #endif
