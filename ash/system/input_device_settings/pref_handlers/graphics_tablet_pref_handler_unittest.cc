@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
-
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -449,6 +449,88 @@ TEST_F(GraphicsTabletPrefHandlerTest, InitializeSettings) {
   EXPECT_EQ(tablet_button_remappings,
             updated_settings->tablet_button_remappings);
   EXPECT_EQ(pen_button_remappings, updated_settings->pen_button_remappings);
+}
+
+TEST_F(GraphicsTabletPrefHandlerTest, TrimPenButtonList) {
+  // First initialize a graphics tablet with two buttons with some set of
+  // actions assigned.
+  mojom::GraphicsTablet graphics_tablet;
+  graphics_tablet.device_key = kGraphicsTabletKey1;
+  pref_handler_->InitializeGraphicsTabletSettings(pref_service_.get(),
+                                                  &graphics_tablet);
+
+  graphics_tablet.settings->pen_button_remappings.push_back(
+      mojom::ButtonRemapping::New(
+          "Button 1",
+          mojom::Button::NewCustomizableButton(
+              mojom::CustomizableButton::kRight),
+          mojom::RemappingAction::NewAcceleratorAction(kToggleOverview)));
+  graphics_tablet.settings->pen_button_remappings.push_back(
+      mojom::ButtonRemapping::New("Button 2",
+                                  mojom::Button::NewCustomizableButton(
+                                      mojom::CustomizableButton::kMiddle),
+                                  mojom::RemappingAction::NewAcceleratorAction(
+                                      kTakePartialScreenshot)));
+  pref_handler_->UpdateGraphicsTabletSettings(pref_service_.get(),
+                                              graphics_tablet);
+
+  // Update to have a button config now and check that only the applicable
+  // button is carried over AND the action that matches the button is carried
+  // over.
+  graphics_tablet.graphics_tablet_button_config =
+      mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnlyOneButton;
+  pref_handler_->InitializeGraphicsTabletSettings(pref_service_.get(),
+                                                  &graphics_tablet);
+
+  EXPECT_EQ(1u, graphics_tablet.settings->pen_button_remappings.size());
+  EXPECT_EQ("Front Button",
+            graphics_tablet.settings->pen_button_remappings[0]->name);
+  EXPECT_EQ(
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kRight),
+      graphics_tablet.settings->pen_button_remappings[0]->button);
+  EXPECT_EQ(
+      mojom::RemappingAction::NewAcceleratorAction(kToggleOverview),
+      graphics_tablet.settings->pen_button_remappings[0]->remapping_action);
+}
+
+TEST_F(GraphicsTabletPrefHandlerTest, TrimPenButtonListWithDefaultAction) {
+  // First initialize a graphics tablet with two buttons with some set of
+  // actions assigned.
+  mojom::GraphicsTablet graphics_tablet;
+  graphics_tablet.device_key = kGraphicsTabletKey1;
+  pref_handler_->InitializeGraphicsTabletSettings(pref_service_.get(),
+                                                  &graphics_tablet);
+
+  graphics_tablet.settings->pen_button_remappings.push_back(
+      mojom::ButtonRemapping::New("Button 1",
+                                  mojom::Button::NewCustomizableButton(
+                                      mojom::CustomizableButton::kRight),
+                                  nullptr));
+  graphics_tablet.settings->pen_button_remappings.push_back(
+      mojom::ButtonRemapping::New("Button 2",
+                                  mojom::Button::NewCustomizableButton(
+                                      mojom::CustomizableButton::kMiddle),
+                                  mojom::RemappingAction::NewAcceleratorAction(
+                                      kTakePartialScreenshot)));
+  pref_handler_->UpdateGraphicsTabletSettings(pref_service_.get(),
+                                              graphics_tablet);
+
+  // Update to have a button config now and check that only the applicable
+  // button is carried over AND the action that matches the button is carried
+  // over.
+  graphics_tablet.graphics_tablet_button_config =
+      mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnlyOneButton;
+  pref_handler_->InitializeGraphicsTabletSettings(pref_service_.get(),
+                                                  &graphics_tablet);
+
+  EXPECT_EQ(1u, graphics_tablet.settings->pen_button_remappings.size());
+  EXPECT_EQ("Front Button",
+            graphics_tablet.settings->pen_button_remappings[0]->name);
+  EXPECT_EQ(
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kRight),
+      graphics_tablet.settings->pen_button_remappings[0]->button);
+  EXPECT_FALSE(
+      graphics_tablet.settings->pen_button_remappings[0]->remapping_action);
 }
 
 }  // namespace ash

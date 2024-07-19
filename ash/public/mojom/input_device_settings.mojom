@@ -439,6 +439,9 @@ enum GraphicsTabletButtonConfig {
   // Graphics tablets that follow standard button configurations with four
   // tablet buttons.
   kWacomStandardFourButtons = 2,
+  // Graphics tablets that follow standard button configuration with no tablet
+  // buttons and only one applicable pen button.
+  kWacomStandardPenOnlyOneButton = 3,
 };
 
 // Contains the valid set of static shortcut actions.

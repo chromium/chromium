@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
 
+#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
@@ -153,6 +154,19 @@ GetWacomStandardPenButtonRemappingList() {
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kRight),
       mojom::RemappingAction::NewStaticShortcutAction(
           mojom::StaticShortcutAction::kMiddleClick)));
+  return array;
+}
+
+std::vector<mojom::ButtonRemappingPtr>
+GetWacomStandardPenOneButtonRemappingList() {
+  std::vector<mojom::ButtonRemappingPtr> array;
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_PEN_FRONT_BUTTON_NAME),
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kRight),
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kRightClick)));
   return array;
 }
 
@@ -970,11 +984,11 @@ GetGraphicsTabletMetadataList() {
           // Wacom One Pen Tablet S
           {{0x0531, 0x0100},
            {mojom::CustomizationRestriction::kAllowCustomizations,
-            mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly}},
+            mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnlyOneButton}},
           // Wacom One Pen tablet M
           {{0x0531, 0x0102},
            {mojom::CustomizationRestriction::kAllowCustomizations,
-            mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly}},
+            mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnlyOneButton}},
           // One by Wacom S
           {{0x056a, 0x037a},
            {mojom::CustomizationRestriction::kAllowCustomizations,
@@ -1668,6 +1682,8 @@ std::vector<mojom::ButtonRemappingPtr> GetPenButtonRemappingListForConfig(
     case mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly:
     case mojom::GraphicsTabletButtonConfig::kWacomStandardFourButtons:
       return GetWacomStandardPenButtonRemappingList();
+    case mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnlyOneButton:
+      return GetWacomStandardPenOneButtonRemappingList();
   }
 }
 
@@ -1676,6 +1692,7 @@ std::vector<mojom::ButtonRemappingPtr> GetTabletButtonRemappingListForConfig(
   switch (graphics_tablet_button_config) {
     case mojom::GraphicsTabletButtonConfig::kNoConfig:
     case mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly:
+    case mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnlyOneButton:
       return GetDefaultButtonRemappingList();
     case mojom::GraphicsTabletButtonConfig::kWacomStandardFourButtons:
       return GetWacomStandardFourButtonRemappingList();

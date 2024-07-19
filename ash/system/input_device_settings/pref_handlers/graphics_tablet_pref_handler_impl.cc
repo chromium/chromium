@@ -20,6 +20,49 @@
 
 namespace ash {
 
+namespace {
+
+// Graphics tablet metadata was previously added incorrectly for a set of
+// graphics tablets. This trims out the added buttons that do not exist that
+// were previously added via metadata.
+// TODO(dpad): Remove after 07/2025 (M139) as this trimming will no longer be
+// needed.
+void TrimButtonRemappingListForGraphicsTabletPen(
+    mojom::GraphicsTablet* graphics_tablet) {
+  CHECK(graphics_tablet);
+  if (graphics_tablet->graphics_tablet_button_config ==
+      mojom::GraphicsTabletButtonConfig::kNoConfig) {
+    return;
+  }
+
+  auto metadata_pen_button_list = GetPenButtonRemappingListForConfig(
+      graphics_tablet->graphics_tablet_button_config);
+  if (metadata_pen_button_list.size() ==
+      graphics_tablet->settings->pen_button_remappings.size()) {
+    return;
+  }
+
+  // For each pen button, if it matches a saved button, copy over the remapping
+  // action. The `metadata_pen_button_list` will be the final source of truth
+  // after this trimming happens.
+  for (auto& metadata_button_remapping : metadata_pen_button_list) {
+    for (const auto& saved_button_remapping :
+         graphics_tablet->settings->pen_button_remappings) {
+      if (metadata_button_remapping->button == saved_button_remapping->button) {
+        metadata_button_remapping->remapping_action =
+            saved_button_remapping->remapping_action
+                ? saved_button_remapping->remapping_action->Clone()
+                : nullptr;
+      }
+    }
+  }
+
+  graphics_tablet->settings->pen_button_remappings =
+      std::move(metadata_pen_button_list);
+}
+
+}  // namespace
+
 GraphicsTabletPrefHandlerImpl::GraphicsTabletPrefHandlerImpl() = default;
 GraphicsTabletPrefHandlerImpl::~GraphicsTabletPrefHandlerImpl() = default;
 
@@ -52,9 +95,11 @@ void GraphicsTabletPrefHandlerImpl::InitializeGraphicsTabletSettings(
     settings->pen_button_remappings = GetPenButtonRemappingListForConfig(
         graphics_tablet->graphics_tablet_button_config);
   }
+
   graphics_tablet->settings = std::move(settings);
   DCHECK(graphics_tablet->settings);
 
+  TrimButtonRemappingListForGraphicsTabletPen(graphics_tablet);
   UpdateGraphicsTabletSettings(pref_service, *graphics_tablet);
 }
 
