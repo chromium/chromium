@@ -123,6 +123,9 @@ RootCompositorFrameSinkImpl::Create(
   std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source;
   ExternalBeginFrameSourceMojo* external_begin_frame_source_mojo = nullptr;
   bool hw_support_for_multiple_refresh_rates = false;
+#if BUILDFLAG(IS_MAC)
+  bool created_external_begin_frame_source_mac = false;
+#endif
 #if !BUILDFLAG(IS_APPLE)
   bool wants_vsync_updates = false;
 #endif
@@ -170,6 +173,7 @@ RootCompositorFrameSinkImpl::Create(
             std::make_unique<ExternalBeginFrameSourceMac>(
                 restart_id, params->renderer_settings.display_id,
                 output_surface.get());
+        created_external_begin_frame_source_mac = true;
       } else {
         auto time_source = std::make_unique<DelayBasedTimeSource>(
             base::SingleThreadTaskRunner::GetCurrentDefault().get());
@@ -256,7 +260,7 @@ RootCompositorFrameSinkImpl::Create(
             &RootCompositorFrameSinkImpl::SetDisplayVSyncParameters,
             base::Unretained(impl.get())));
 
-    if (features::IsCVDisplayLinkBeginFrameSourceEnabled()) {
+    if (created_external_begin_frame_source_mac) {
       static_cast<ExternalBeginFrameSourceMac*>(
           impl->external_begin_frame_source())
           ->SetMultipleHWRefreshRatesCallback(base::BindRepeating(
