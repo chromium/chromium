@@ -109,7 +109,7 @@ class GoogleBottomBarActionsHandler {
         startGoogleAppActivityForResult(intent, "openGoogleAppVoiceSearch");
     }
 
-    void onSearchboxLensTap() {
+    void onSearchboxLensTap(View buttonView) {
         GoogleBottomBarLogger.logButtonClicked(SEARCHBOX_LENS);
         Tab tab = mTabProvider.get();
         if (tab == null) {
@@ -138,8 +138,9 @@ class GoogleBottomBarActionsHandler {
                             .build();
             lensController.startLens(window, lensIntentParams);
         } else {
-            // TODO(b/351763154) Show toast when Lens is not enabled
-            Log.e(TAG, "Can't open Lens as Lens is not enabled.");
+            showTooltip(
+                    buttonView,
+                    R.string.google_bottom_bar_searchbox_lens_not_enabled_tooltip_message);
         }
     }
 

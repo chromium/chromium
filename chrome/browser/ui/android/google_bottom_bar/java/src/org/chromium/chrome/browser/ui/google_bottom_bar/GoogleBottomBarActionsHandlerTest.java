@@ -611,7 +611,8 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
         ShadowLensController.sIsAvailable = false;
 
-        mGoogleBottomBarActionsHandler.onSearchboxLensTap();
+        Context context = mActivity;
+        mGoogleBottomBarActionsHandler.onSearchboxLensTap(new View(context));
 
         verify(ShadowLensController.getInstance(), never()).startLens(any(), any());
     }
@@ -623,7 +624,8 @@ public class GoogleBottomBarActionsHandlerTest {
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
         ShadowLensController.sIsAvailable = true;
 
-        mGoogleBottomBarActionsHandler.onSearchboxLensTap();
+        Context context = mActivity;
+        mGoogleBottomBarActionsHandler.onSearchboxLensTap(new View(context));
 
         verify(ShadowLensController.getInstance())
                 .startLens(any(), mLensIntentParamsArgumentCaptor.capture());

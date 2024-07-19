@@ -126,7 +126,7 @@ public class GoogleBottomBarViewCreator {
 
         searchboxView
                 .findViewById(R.id.google_bottom_bar_searchbox_lens_button)
-                .setOnClickListener(v -> mActionsHandler.onSearchboxLensTap());
+                .setOnClickListener(v -> mActionsHandler.onSearchboxLensTap(v));
         GoogleBottomBarLogger.logButtonShown(SEARCHBOX_LENS);
 
         return searchboxView;
