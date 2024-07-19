@@ -1115,8 +1115,6 @@ public class TabPersistentStore {
         SharedPreferences.Editor editor = ChromeSharedPreferences.getInstance().getEditor();
         editor.putInt(ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, activeTabId);
         editor.putInt(ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, activeTabState);
-        editor.putInt(ChromePreferenceKeys.REGULAR_TAB_COUNT, normalInfo.ids.size());
-        editor.putInt(ChromePreferenceKeys.INCOGNITO_TAB_COUNT, incognitoInfo.ids.size());
         editor.apply();
     }
 

@@ -60,6 +60,8 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown",
                 "Chrome.Segmentation.ShowQueryTiles",
                 "Chrome.SigninPromo.NTPImpressions",
+                "Chrome.StartSurface.IncognitoTabCount",
+                "Chrome.StartSurface.RegularTabCount",
                 "Chrome.UMA.OnPreCreateCounter",
                 "Chrome.UMA.OnResumeCounter",
                 "Chrome.VideoTutorials.ShareUrls",

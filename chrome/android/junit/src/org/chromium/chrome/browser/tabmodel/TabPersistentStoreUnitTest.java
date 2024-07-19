@@ -40,8 +40,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -372,17 +370,6 @@ public class TabPersistentStoreUnitTest {
                 "Incorrect URL for second incognito tab.",
                 INCOGNITO_TAB_STRING_2,
                 metadata.incognitoModelMetadata.urls.get(1));
-
-        assertEquals(
-                "Incorrect number of cached normal tab count.",
-                1,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.REGULAR_TAB_COUNT));
-        assertEquals(
-                "Incorrect number of cached incognito tab count.",
-                2,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.INCOGNITO_TAB_COUNT));
     }
 
     @Test
@@ -400,12 +387,6 @@ public class TabPersistentStoreUnitTest {
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(0));
-
-        assertEquals(
-                "Incorrect number of cached normal tab count.",
-                1,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.REGULAR_TAB_COUNT));
     }
 
     @Test
@@ -423,12 +404,6 @@ public class TabPersistentStoreUnitTest {
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(0));
-
-        assertEquals(
-                "Incorrect number of cached normal tab count.",
-                1,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.REGULAR_TAB_COUNT));
     }
 
     @Test
@@ -448,12 +423,6 @@ public class TabPersistentStoreUnitTest {
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(0));
-
-        assertEquals(
-                "Incorrect number of cached normal tab count.",
-                1,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.REGULAR_TAB_COUNT));
     }
 
     @Test
@@ -481,12 +450,6 @@ public class TabPersistentStoreUnitTest {
                 "Incorrect URL for regular tab.",
                 REGULAR_TAB_STRING_1,
                 metadata.normalModelMetadata.urls.get(1));
-
-        assertEquals(
-                "Incorrect number of cached normal tab count.",
-                2,
-                ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.REGULAR_TAB_COUNT));
     }
 
     @Test
