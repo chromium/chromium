@@ -63,6 +63,7 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/grit/components_resources.h"
 #import "components/plus_addresses/features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -662,9 +663,15 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                     requiresReauth:NO
         acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
-    if (popup_suggestion.feature_for_iph) {
+    suggestion.featureForIPH = SuggestionFeatureForIPH::kUnknown;
+    if (popup_suggestion.feature_for_iph ==
+        &feature_engagement::
+            kIPHAutofillExternalAccountProfileSuggestionFeature) {
       suggestion.featureForIPH =
-          base::SysUTF8ToNSString(popup_suggestion.feature_for_iph->name);
+          SuggestionFeatureForIPH::kAutofillExternalAccountProfile;
+    } else if (popup_suggestion.feature_for_iph ==
+               &feature_engagement::kIPHPlusAddressCreateSuggestionFeature) {
+      suggestion.featureForIPH = SuggestionFeatureForIPH::kPlusAddressCreation;
     }
 
     // Put "clear form" entry at the front of the suggestions.

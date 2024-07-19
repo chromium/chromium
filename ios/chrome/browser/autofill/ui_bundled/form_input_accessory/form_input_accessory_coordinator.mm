@@ -7,18 +7,21 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/not_fatal_until.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -85,6 +88,20 @@ constexpr base::TimeDelta kAutofillSuggestionTipDelay = base::Seconds(0.5);
 // Additional vertical offset for the IPH, so that it doesn't appear below the
 // Autofill strip at the top of the keyboard.
 const CGFloat kIPHVerticalOffset = -5;
+
+// Return the feature corresponding to the `feature_for_iph` enum.
+const base::Feature* FetchIPHFeatureFromEnum(
+    SuggestionFeatureForIPH feature_for_iph) {
+  switch (feature_for_iph) {
+    case SuggestionFeatureForIPH::kAutofillExternalAccountProfile:
+      return &feature_engagement::
+          kIPHAutofillExternalAccountProfileSuggestionFeature;
+    case SuggestionFeatureForIPH::kPlusAddressCreation:
+      return &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
+    case SuggestionFeatureForIPH::kUnknown:
+      NOTREACHED();
+  }
+}
 
 }  // namespace
 
@@ -353,18 +370,29 @@ const CGFloat kIPHVerticalOffset = -5;
   [self reset];
 }
 
-- (void)notifyAutofillSuggestionWithIPHSelected {
+- (void)notifyAutofillSuggestionWithIPHSelectedFor:
+    (SuggestionFeatureForIPH)featureForIPH {
   // The engagement tracker can change during testing (in feature engagement app
   // interface), therefore we retrive it here instead of storing it in the
   // mediator.
   feature_engagement::Tracker* tracker = self.featureEngagementTracker;
   if (tracker) {
-    tracker->NotifyEvent(
-        "autofill_external_account_profile_suggestion_accepted");
+    switch (featureForIPH) {
+      case SuggestionFeatureForIPH::kAutofillExternalAccountProfile:
+        tracker->NotifyEvent(
+            "autofill_external_account_profile_suggestion_accepted");
+        break;
+      case SuggestionFeatureForIPH::kPlusAddressCreation:
+        tracker->NotifyEvent("plus_address_create_suggestion_feature_used");
+        break;
+      case SuggestionFeatureForIPH::kUnknown:
+        NOTREACHED();
+    }
   }
 }
 
-- (void)showAutofillSuggestionIPHIfNeeded {
+- (void)showAutofillSuggestionIPHIfNeededFor:
+    (SuggestionFeatureForIPH)featureForIPH {
   if (self.bubblePresenter) {
     // Already showing a bubble.
     return;
@@ -373,7 +401,7 @@ const CGFloat kIPHVerticalOffset = -5;
   __weak __typeof(self) weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
-        [weakSelf tryPresentingBubble];
+        [weakSelf tryPresentingBubbleFor:featureForIPH];
       }),
       kAutofillSuggestionHighlightDelay);
 }
@@ -736,18 +764,38 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 // Returns a new bubble view controller presenter for password suggestion tip.
-- (BubbleViewControllerPresenter*)newBubbleViewControllerPresenter {
+- (BubbleViewControllerPresenter*)newBubbleViewControllerPresenterFor:
+    (SuggestionFeatureForIPH)featureForIPH {
+  NSString* text = nil;
+  NSString* voiceOverText = nil;
+  switch (featureForIPH) {
+    case SuggestionFeatureForIPH::kAutofillExternalAccountProfile:
+      text = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION);
+      voiceOverText = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION);
+      break;
+    case SuggestionFeatureForIPH::kPlusAddressCreation:
+      text = l10n_util::GetNSString(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_IOS);
+      voiceOverText = l10n_util::GetNSString(
+          IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER_IOS);
+      break;
+    case SuggestionFeatureForIPH::kUnknown:
+      NOTREACHED();
+  }
+
+  CHECK(text != nil);
+  CHECK(voiceOverText != nil);
+
   // Prepare the main arguments for the BubbleViewControllerPresenter
   // initializer.
-  NSString* text = l10n_util::GetNSString(
-      IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION);
-
   // Prepare the dismissal callback.
   __weak __typeof(self) weakSelf = self;
   CallbackWithIPHDismissalReasonType dismissalCallback =
       ^(IPHDismissalReasonType IPHDismissalReasonType,
         feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        [weakSelf IPHDidDismissWithSnoozeAction:snoozeAction];
+        [weakSelf IPHDidDismissWithSnoozeAction:snoozeAction
+                                     forFeature:featureForIPH];
       };
 
   // Create the BubbleViewControllerPresenter.
@@ -760,15 +808,14 @@ const CGFloat kIPHVerticalOffset = -5;
                   alignment:BubbleAlignmentTopOrLeading
                  bubbleType:BubbleViewTypeWithClose
           dismissalCallback:dismissalCallback];
-  bubbleViewControllerPresenter.voiceOverAnnouncement = l10n_util::GetNSString(
-      IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION);
+  bubbleViewControllerPresenter.voiceOverAnnouncement = voiceOverText;
   return bubbleViewControllerPresenter;
 }
 
 // Checks if the bubble should be presented and acts on it.
-- (void)tryPresentingBubble {
+- (void)tryPresentingBubbleFor:(SuggestionFeatureForIPH)featureForIPH {
   BubbleViewControllerPresenter* bubblePresenter =
-      [self newBubbleViewControllerPresenter];
+      [self newBubbleViewControllerPresenterFor:featureForIPH];
 
   // Get the anchor point for the bubble.
   CGRect anchorFrame = self.layoutGuide.layoutFrame;
@@ -784,9 +831,8 @@ const CGFloat kIPHVerticalOffset = -5;
 
   // Early return if the engagement tracker won't display the IPH.
   feature_engagement::Tracker* tracker = self.featureEngagementTracker;
-  const base::Feature& feature =
-      feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature;
-  if (!tracker || !tracker->ShouldTriggerHelpUI(feature)) {
+  const base::Feature* feature = FetchIPHFeatureFromEnum(featureForIPH);
+  if (!tracker || !tracker->ShouldTriggerHelpUI(*feature)) {
     return;
   }
 
@@ -801,12 +847,12 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 - (void)IPHDidDismissWithSnoozeAction:
-    (feature_engagement::Tracker::SnoozeAction)snoozeAction {
+            (feature_engagement::Tracker::SnoozeAction)snoozeAction
+                           forFeature:(SuggestionFeatureForIPH)featureForIPH {
   feature_engagement::Tracker* tracker = self.featureEngagementTracker;
   if (tracker) {
-    const base::Feature& feature =
-        feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature;
-    tracker->DismissedWithSnooze(feature, snoozeAction);
+    const base::Feature* feature = FetchIPHFeatureFromEnum(featureForIPH);
+    tracker->DismissedWithSnooze(*feature, snoozeAction);
   }
   self.bubblePresenter = nil;
 }

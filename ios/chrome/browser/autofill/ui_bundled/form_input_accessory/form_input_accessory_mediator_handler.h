@@ -11,6 +11,8 @@ namespace manual_fill {
 enum class ManualFillDataType;
 }
 
+enum class SuggestionFeatureForIPH;
+
 // Handler in charge of accessory mediator events.
 @protocol FormInputAccessoryMediatorHandler <NSObject>
 
@@ -18,10 +20,12 @@ enum class ManualFillDataType;
 - (void)resetFormInputView;
 
 // The mediator shows autofill suggestion tip if needed.
-- (void)showAutofillSuggestionIPHIfNeeded;
+- (void)showAutofillSuggestionIPHIfNeededFor:
+    (SuggestionFeatureForIPH)featureForIPH;
 
 // The mediator notifies that the autofill suggestion has been selected.
-- (void)notifyAutofillSuggestionWithIPHSelected;
+- (void)notifyAutofillSuggestionWithIPHSelectedFor:
+    (SuggestionFeatureForIPH)featureForIPH;
 
 // Invoked if manual fill for the `dataType` should be started immediately.
 - (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType;

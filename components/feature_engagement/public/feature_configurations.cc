@@ -2263,6 +2263,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 365, 365);
     return config;
   }
+
+  if (kIPHPlusAddressCreateSuggestionFeature.name == feature->name) {
+    // A config that allows a user education bubble to be shown for the plus
+    // address feature. Will be shown up to 9 times in the 90 day window with
+    // the exception of 2 times if the user accepted the suggestion.
+
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("plus_address_create_suggestion_feature_trigger",
+                    Comparator(LESS_THAN, 10), 90, 360);
+    config->used = EventConfig("plus_address_create_suggestion_feature_used",
+                               Comparator(LESS_THAN, 2), 90, 360);
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

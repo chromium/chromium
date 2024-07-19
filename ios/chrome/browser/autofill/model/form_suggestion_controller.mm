@@ -416,17 +416,19 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
       // different [FormSuggestion suggestionWithValue:...] to perform the copy.
       CHECK(!suggestion.metadata.is_single_username_form);
 
-      [suggestionsCopy
-          addObject:[FormSuggestion
-                               suggestionWithValue:suggestion.value
-                                        minorValue:suggestion.minorValue
-                                displayDescription:suggestion.displayDescription
-                                              icon:defaultIcon
-                                              type:suggestion.type
-                                 backendIdentifier:suggestion.backendIdentifier
-                                    requiresReauth:suggestion.requiresReauth
-                        acceptanceA11yAnnouncement:
-                            suggestion.acceptanceA11yAnnouncement]];
+      FormSuggestion* suggestionCopy = [FormSuggestion
+                 suggestionWithValue:suggestion.value
+                          minorValue:suggestion.minorValue
+                  displayDescription:suggestion.displayDescription
+                                icon:defaultIcon
+                                type:suggestion.type
+                   backendIdentifier:suggestion.backendIdentifier
+                      requiresReauth:suggestion.requiresReauth
+          acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement];
+      // TODO(crbug.com/353663764): Include `featureForIPH` in the
+      // `FormSuggestion` constructor.
+      suggestionCopy.featureForIPH = suggestion.featureForIPH;
+      [suggestionsCopy addObject:suggestionCopy];
     } else {
       [suggestionsCopy addObject:suggestion];
     }

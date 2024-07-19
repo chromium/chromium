@@ -707,10 +707,13 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   if (suggestions.count) {
     if (provider.type == SuggestionProviderTypeAutofill) {
       default_browser::NotifyAutofillSuggestionsShown(self.engagementTracker);
-    }
 
-    if (suggestions.firstObject.featureForIPH.length > 0) {
-      [self.handler showAutofillSuggestionIPHIfNeeded];
+      if (suggestions.firstObject.featureForIPH !=
+          SuggestionFeatureForIPH::kUnknown) {
+        [self.handler
+            showAutofillSuggestionIPHIfNeededFor:suggestions.firstObject
+                                                     .featureForIPH];
+      }
     }
   }
 }
@@ -749,13 +752,11 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   if (self.currentProvider.type == SuggestionProviderTypePassword) {
     default_browser::NotifyPasswordAutofillSuggestionUsed(
         self.engagementTracker);
-  }
-
-  if (formSuggestion.featureForIPH.length) {
-    // The IPH is only shown if the suggestion was the first one. It doesn't
-    // matter if the IPH was shown for this suggestion as we don't want to
-    // show more IPH's to the user.
-    [self.handler notifyAutofillSuggestionWithIPHSelected];
+  } else if (formSuggestion.featureForIPH !=
+             SuggestionFeatureForIPH::kUnknown) {
+    [self.handler
+        notifyAutofillSuggestionWithIPHSelectedFor:formSuggestion
+                                                       .featureForIPH];
   }
   [self.currentProvider didSelectSuggestion:formSuggestion];
 }

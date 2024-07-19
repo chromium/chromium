@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -16,6 +17,7 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/plus_addresses/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
@@ -493,17 +495,20 @@ TEST_F(FormSuggestionControllerTest, AutofillSuggestionIPH) {
                      type:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
-  suggestion.featureForIPH = @"YES";
+  suggestion.featureForIPH =
+      SuggestionFeatureForIPH::kAutofillExternalAccountProfile;
   NSArray* suggestions = @[ suggestion ];
   TestSuggestionProvider* provider =
       [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
+  provider.type = SuggestionProviderTypeAutofill;
   SetUpController(@[ provider ]);
   GURL url("http://foo.com");
   fake_web_state_.SetCurrentURL(url);
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
   autofill::FormActivityParams params;
 
-  OCMExpect([mock_handler_ showAutofillSuggestionIPHIfNeeded]);
+  OCMExpect([mock_handler_
+      showAutofillSuggestionIPHIfNeededFor:suggestion.featureForIPH]);
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
   [mock_handler_ verify];

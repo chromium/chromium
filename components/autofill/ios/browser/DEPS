@@ -1,5 +1,6 @@
 include_rules = [
   "+components/autofill/ios/common",
+  "+components/feature_engagement/public/feature_constants.h",
   "+components/grit/components_resources.h",
   "+components/plus_addresses/features.h",
   "+components/ukm/ios",

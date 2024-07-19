@@ -17,6 +17,17 @@ struct FormSuggestionMetadata {
   bool is_single_username_form = false;
 };
 
+// Enum class used to determine the feature for in-product help for the
+// suggestion.
+enum class SuggestionFeatureForIPH {
+  // Default value
+  kUnknown = 0,
+  // Denoting IPH for the external account profile suggestion.
+  kAutofillExternalAccountProfile = 1,
+  // Denoting IPH for the plus address create suggestion.
+  kPlusAddressCreation = 2
+};
+
 // Represents a user-selectable suggestion for a single field within a form
 // on a web page.
 @interface FormSuggestion : NSObject
@@ -45,7 +56,7 @@ struct FormSuggestionMetadata {
 @property(copy, readonly, nonatomic) NSString* acceptanceA11yAnnouncement;
 
 // If specified, shows in-product help for the suggestion.
-@property(copy, nonatomic) NSString* featureForIPH;
+@property(assign, nonatomic) SuggestionFeatureForIPH featureForIPH;
 
 // The `Suggestion::BackendId` associated with this suggestion. Would be GUID
 // for the addresses and credit cards where `identifier` > 0.

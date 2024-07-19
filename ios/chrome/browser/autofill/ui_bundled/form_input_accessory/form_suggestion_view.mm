@@ -194,7 +194,8 @@ constexpr CGFloat kScrollHintDuration = 0.5;
         accessoryTrailingView:self.accessoryTrailingView
                      delegate:self];
     [self.stackView addArrangedSubview:label];
-    if (idx == 0 && suggestion.featureForIPH.length > 0) {
+    if (idx == 0 &&
+        suggestion.featureForIPH != SuggestionFeatureForIPH::kUnknown) {
       // Track the first element.
       [self.layoutGuideCenter referenceView:label
                                   underName:kAutofillFirstSuggestionGuide];
