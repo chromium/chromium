@@ -165,7 +165,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
         // The error card exists.
-        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
         watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
@@ -178,7 +178,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         ManageSyncSettings fragment = startManageSyncPreferences();
         onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
     }
 
     @Test
@@ -202,7 +202,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         ManageSyncSettings fragment = startManageSyncPreferences();
         onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
         watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
@@ -225,7 +225,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
         // No error card exists right now.
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
         watchIdentityErrorCardShownHistogram.assertExpected();
 
         watchIdentityErrorCardShownHistogram =
@@ -237,7 +237,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         fakeSyncService.setRequiresClientUpgrade(true);
 
         // Error card is showing now.
-        onViewWaiting(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
         watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
@@ -267,7 +267,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
         // The error card exists right now.
         Assert.assertTrue(preference.isShown());
-        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
         watchIdentityErrorCardShownHistogram.assertExpected();
 
         // Expect no records now.
@@ -299,7 +299,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
         // The error card exists.
-        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
 
         FakeAccountManagerFacade fakeAccountManagerFacade =
                 spy((FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance());
@@ -315,10 +315,10 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
                 .updateCredentials(any(), any(), any());
 
         // Mimic the user tapping on the error card's button.
-        onView(withId(R.id.identity_error_card_button)).perform(click());
+        onView(withId(R.id.signin_settings_card_button)).perform(click());
 
         // No error card exists anymore.
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
     }
 
     @Test
@@ -336,7 +336,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
         // The error card exists.
-        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
 
         Intents.init();
         // Stub all external intents.
@@ -344,7 +344,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
         // Mimic the user tapping on the error card's button.
-        onView(withId(R.id.identity_error_card_button)).perform(click());
+        onView(withId(R.id.signin_settings_card_button)).perform(click());
 
         intended(IntentMatchers.hasDataString(startsWith("market")));
         Intents.release();

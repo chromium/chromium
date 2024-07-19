@@ -257,17 +257,17 @@ public class IdentityErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSignin();
 
         mSettingsActivityTestRule.startSettingsActivity();
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
     }
 
     private View getIdentityErrorCardView() {
-        ViewUtils.waitForVisibleView(withId(R.id.identity_error_card));
+        ViewUtils.waitForVisibleView(withId(R.id.signin_settings_card));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mSettingsActivityTestRule
                                     .getActivity()
-                                    .findViewById(R.id.identity_error_card);
+                                    .findViewById(R.id.signin_settings_card);
                         });
         Assert.assertNotNull("No identity error card view found.", view);
         return view;

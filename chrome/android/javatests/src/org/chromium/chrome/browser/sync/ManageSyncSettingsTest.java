@@ -1471,7 +1471,7 @@ public class ManageSyncSettingsTest {
         Assert.assertTrue(preference.isShown());
 
         // Mimic the user tapping on the error card's button.
-        onView(withId(R.id.identity_error_card_button)).perform(click());
+        onView(withId(R.id.signin_settings_card_button)).perform(click());
 
         // Passphrase dialog should open.
         final PassphraseDialogFragment passphraseFragment =

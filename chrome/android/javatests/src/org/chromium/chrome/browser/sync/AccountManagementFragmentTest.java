@@ -350,7 +350,7 @@ public class AccountManagementFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
-        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
         watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
@@ -363,7 +363,7 @@ public class AccountManagementFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
     }
 
     @Test
@@ -384,7 +384,7 @@ public class AccountManagementFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
         watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
@@ -406,7 +406,7 @@ public class AccountManagementFragmentTest {
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         // No error card exists right now.
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
         watchIdentityErrorCardShownHistogram.assertExpected();
 
         watchIdentityErrorCardShownHistogram =
@@ -418,7 +418,7 @@ public class AccountManagementFragmentTest {
         fakeSyncService.setRequiresClientUpgrade(true);
 
         // Error card is showing now.
-        onViewWaiting(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
         watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
@@ -441,7 +441,7 @@ public class AccountManagementFragmentTest {
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         // The error card exists right now.
-        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
         watchIdentityErrorCardShownHistogram.assertExpected();
 
         // Expect no records now.
@@ -454,7 +454,7 @@ public class AccountManagementFragmentTest {
         fakeSyncService.setRequiresClientUpgrade(false);
 
         // No error card exists anymore.
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
         watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
@@ -476,7 +476,7 @@ public class AccountManagementFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
         watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
@@ -493,7 +493,7 @@ public class AccountManagementFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         // The error card exists.
-        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
 
         FakeAccountManagerFacade fakeAccountManagerFacade =
                 spy((FakeAccountManagerFacade) AccountManagerFacadeProvider.getInstance());
@@ -509,10 +509,10 @@ public class AccountManagementFragmentTest {
                 .updateCredentials(any(), any(), any());
 
         // Mimic the user tapping on the error card's button.
-        onView(withId(R.id.identity_error_card_button)).perform(click());
+        onView(withId(R.id.signin_settings_card_button)).perform(click());
 
         // No error card exists anymore.
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
     }
 
     @Test
@@ -530,10 +530,10 @@ public class AccountManagementFragmentTest {
         SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         // The error card exists.
-        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
 
         // Mimic the user tapping on the error card's button.
-        onView(withId(R.id.identity_error_card_button)).perform(click());
+        onView(withId(R.id.signin_settings_card_button)).perform(click());
 
         final AccountManagementFragment fragment = mSettingsActivityTestRule.getFragment();
         // Passphrase dialog should open.
@@ -558,7 +558,7 @@ public class AccountManagementFragmentTest {
                 });
 
         // No error card exists anymore.
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
     }
 
     @Test
@@ -573,7 +573,7 @@ public class AccountManagementFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         // The error card exists.
-        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_settings_card)).check(matches(isDisplayed()));
 
         Intents.init();
         // Stub all external intents.
@@ -581,7 +581,7 @@ public class AccountManagementFragmentTest {
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
         // Mimic the user tapping on the error card's button.
-        onView(withId(R.id.identity_error_card_button)).perform(click());
+        onView(withId(R.id.signin_settings_card_button)).perform(click());
 
         intended(IntentMatchers.hasDataString(startsWith("market")));
         Intents.release();
