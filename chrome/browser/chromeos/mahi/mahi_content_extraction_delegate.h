@@ -34,12 +34,6 @@ class MahiContentExtractionDelegate {
       const MahiContentExtractionDelegate&) = delete;
   ~MahiContentExtractionDelegate();
 
-  // Returns true if it requires a new content extraction service, and false
-  // otherwise.
-  bool SetUpContentExtractionService();
-
-  void EnsureServiceIsConnected();
-
   // Requests the content extraction service to get content from the a11y
   // update. Returns nullptr if the content cannot be extracted.
   void ExtractContent(const WebContentState& web_content_state,
@@ -54,6 +48,14 @@ class MahiContentExtractionDelegate {
                       GetContentCallback callback);
 
  private:
+  // Returns true if it content extraction service is set up successfully, and
+  // false otherwise.
+  bool EnsureContentExtractionServiceIsSetUp();
+
+  // Returns true if content extraction service is connected and false
+  // otherwise.
+  bool EnsureServiceIsConnected();
+
   void OnGetContentSize(const base::UnguessableToken& page_id,
                         const base::Time& start_time,
                         mojom::ContentSizeResponsePtr response);
@@ -68,6 +70,13 @@ class MahiContentExtractionDelegate {
   // content extraction service with the screen ai main content extraction
   // model.
   void OnScreenAIServiceInitialized(bool successful);
+
+  // Binds mahi content extraction service with the Screen AI content extraction
+  // service.
+  void MaybeBindScreenAIContentExtraction();
+
+  bool screen_ai_service_initialized_ = false;
+  bool is_screen_ai_service_bound_ = false;
 
   mojo::Remote<mojom::ContentExtractionServiceFactory>
       remote_content_extraction_service_factory_;

@@ -70,7 +70,7 @@ MahiContentExtractionDelegate::MahiContentExtractionDelegate()
   }
 
   // Builds connection with mahi content extraction service.
-  SetUpContentExtractionService();
+  EnsureContentExtractionServiceIsSetUp();
   EnsureServiceIsConnected();
 
   // Builds connection with screen ai service.
@@ -85,10 +85,10 @@ MahiContentExtractionDelegate::MahiContentExtractionDelegate()
 
 MahiContentExtractionDelegate::~MahiContentExtractionDelegate() = default;
 
-bool MahiContentExtractionDelegate::SetUpContentExtractionService() {
+bool MahiContentExtractionDelegate::EnsureContentExtractionServiceIsSetUp() {
   if (remote_content_extraction_service_factory_ &&
       remote_content_extraction_service_factory_.is_bound()) {
-    return false;
+    return true;
   }
 
   content::ServiceProcessHost::Launch(
@@ -99,18 +99,22 @@ bool MahiContentExtractionDelegate::SetUpContentExtractionService() {
 
   remote_content_extraction_service_factory_.reset_on_disconnect();
 
-  return true;
+  return remote_content_extraction_service_factory_ &&
+         remote_content_extraction_service_factory_.is_bound();
 }
 
-void MahiContentExtractionDelegate::EnsureServiceIsConnected() {
+bool MahiContentExtractionDelegate::EnsureServiceIsConnected() {
   if (remote_content_extraction_service_ &&
       remote_content_extraction_service_.is_bound()) {
-    return;
+    return true;
   }
 
   remote_content_extraction_service_factory_->BindContentExtractionService(
       remote_content_extraction_service_.BindNewPipeAndPassReceiver());
   remote_content_extraction_service_.reset_on_disconnect();
+
+  return remote_content_extraction_service_ &&
+         remote_content_extraction_service_.is_bound();
 }
 
 void MahiContentExtractionDelegate::ExtractContent(
@@ -132,6 +136,13 @@ void MahiContentExtractionDelegate::ExtractContent(
           mojom::ExtractionMethods::New(/*use_algorithm=*/true,
                                         /*use_screen2x=*/true),
           /*updates=*/std::nullopt);
+
+  if (!EnsureContentExtractionServiceIsSetUp() || !EnsureServiceIsConnected()) {
+    std::move(callback).Run(nullptr);
+    LOG(ERROR) << "Remote content extraction service is not available.";
+    return;
+  }
+  MaybeBindScreenAIContentExtraction();
 
   remote_content_extraction_service_->ExtractContent(
       std::move(extraction_request),
@@ -155,6 +166,13 @@ void MahiContentExtractionDelegate::ExtractContent(
           mojom::ExtractionMethods::New(/*use_algorithm=*/true,
                                         /*use_screen2x=*/true),
           /*updates=*/std::make_optional(updates));
+
+  if (!EnsureContentExtractionServiceIsSetUp() || !EnsureServiceIsConnected()) {
+    std::move(callback).Run(nullptr);
+    LOG(ERROR) << "Remote content extraction service is not available.";
+    return;
+  }
+  MaybeBindScreenAIContentExtraction();
 
   remote_content_extraction_service_->ExtractContent(
       std::move(extraction_request),
@@ -193,15 +211,27 @@ void MahiContentExtractionDelegate::OnGetContent(
 
 void MahiContentExtractionDelegate::OnScreenAIServiceInitialized(
     bool successful) {
+  screen_ai_service_initialized_ = successful;
   if (!successful) {
-    LOG(ERROR) << "ScreenAI service unsuccessfuly initialized.";
+    LOG(ERROR) << "ScreenAI service was unsuccessfuly initialized.";
     return;
   }
 
-  CHECK(remote_content_extraction_service_factory_.is_bound());
-  // If initialization is successful, creates both a pending receiver and its
-  // corresponding pending remote so that we can build a direct communication
-  // between two utility processes.
+  MaybeBindScreenAIContentExtraction();
+}
+
+void MahiContentExtractionDelegate::MaybeBindScreenAIContentExtraction() {
+  // Screen AI service isn't initialize yet or Screen AI content extraction is
+  // already bound.
+  if (!screen_ai_service_initialized_ || is_screen_ai_service_bound_) {
+    return;
+  }
+
+  if (!EnsureContentExtractionServiceIsSetUp()) {
+    LOG(ERROR) << "Content extraction service isn't available.";
+    return;
+  }
+
   mojo::PendingReceiver<screen_ai::mojom::Screen2xMainContentExtractor>
       screen_ai_receiver;
   auto screen_ai_remote = screen_ai_receiver.InitWithNewPipeAndPassRemote();
@@ -211,6 +241,7 @@ void MahiContentExtractionDelegate::OnScreenAIServiceInitialized(
       ->BindMainContentExtractor(std::move(screen_ai_receiver));
   remote_content_extraction_service_factory_->OnScreen2xReady(
       std::move(screen_ai_remote));
+  is_screen_ai_service_bound_ = true;
 }
 
 }  // namespace mahi
