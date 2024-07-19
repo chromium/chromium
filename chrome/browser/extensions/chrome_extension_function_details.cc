@@ -33,9 +33,10 @@ Browser* ChromeExtensionFunctionDetails::GetCurrentBrowser() const {
     extensions::WindowController* window_controller =
         function_->dispatcher()->GetExtensionWindowController();
     if (window_controller) {
-      Browser* browser = window_controller->GetBrowser();
-      if (browser)
+      if (auto* browser = window_controller->GetBrowser();
+          browser && !browser->is_delete_scheduled()) {
         return browser;
+      }
     }
   }
 
