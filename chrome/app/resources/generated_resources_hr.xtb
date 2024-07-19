@@ -1961,7 +1961,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2412015533711271895">Tvoj roditelj ili skrbnik kaže da je u redu da koristiš to proširenje.</translation>
 <translation id="2412593942846481727">Dostupno je ažuriranje</translation>
 <translation id="2412753904894530585">Kerberos</translation>
-<translation id="2413009156320833859">Dodatno prilagodite svoj preglednik pomoću proširenja iz <ph name="BEGIN_LINK1" />Chrome Web Storea<ph name="END_LINK1" /></translation>
+<translation id="2413009156320833859">Dodatno prilagodite svoj preglednik pomoću proširenja iz <ph name="BEGIN_LINK1" />Chrome web-trgovine<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Nastavite pregledavati za modul <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Tamno</translation>
 <translation id="2415117815770324983">Odjavit ćete se s većine web-lokacija. Ostat ćete prijavljeni na Google račun.</translation>
@@ -2325,7 +2325,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2667144577800272420">Druge aplikacije postavljene su tako da otvaraju iste veze kao <ph name="APP_NAME" />. Time će se aplikacijama <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> onemogućiti da otvaraju podržane veze.</translation>
 <translation id="2667463864537187133">Upravljanje provjerom pravopisa</translation>
 <translation id="2668094785979141847">Kliknite za zatvaranje Google objektiva</translation>
-<translation id="2668604389652548400">Uklonite ga ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome Web Storea<ph name="END_LINK" />.</translation>
+<translation id="2668604389652548400">Uklonite ga ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />.</translation>
 <translation id="2669241540496514785">Aplikaciju <ph name="APP_NAME" /> nije moguće otvoriti</translation>
 <translation id="2669454659051515572">Svi koji upotrebljavaju ovaj uređaj mogu vidjeti preuzete datoteke</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> dijeli Chromeovu karticu.</translation>
@@ -6509,7 +6509,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5801051031414037185">Postavi telefon</translation>
 <translation id="5801568494490449797">Postavke</translation>
 <translation id="5803689677801500549">Ovdje će se pojaviti spremljene zaporke. Da biste uvezli zaporke na uslugu <ph name="BRAND" /> za <ph name="USER_EMAIL" />, <ph name="BEGIN_LINK" />odaberite CSV datoteku<ph name="END_LINK" />.</translation>
-<translation id="5804241973901381774">Dozvoljeno</translation>
+<translation id="5804241973901381774">Dopuštenja</translation>
 <translation id="5804259315582798390">Omogućivanje oporavka lokalnih podataka nije uspjelo</translation>
 <translation id="5805268472388605531">Pritisnite i zadržite tipke tipkovnice da biste vidjeli dijakritičke i posebne znakove</translation>
 <translation id="5805697420284793859">Upravitelj prozora</translation>
@@ -7389,7 +7389,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6476671549211161535">Pritisnite gumb koji nije lijeva ili desna tipka miša na uređaju <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Sinkronizacija obavijesti nije podržana za telefone na poslovnom profilu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Želite li zadržati opasnu datoteku?</translation>
-<translation id="6479881432656947268">Posjetite Chrome Web Store</translation>
+<translation id="6479881432656947268">Posjetite Chrome web-trgovinu</translation>
 <translation id="6480327114083866287">Upravlja <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Dijelite datoteke i drugo s uređajima u blizini. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6482559668224714696">Povećalo za cijeli zaslon</translation>
