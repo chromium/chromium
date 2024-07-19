@@ -504,28 +504,27 @@ SplitViewOverviewSessionExitPoint GetSplitViewOverviewSessionExitPoint(
   return SplitViewOverviewSessionExitPoint::kUnspecified;
 }
 
-// Returns true if any of the items in `grid` covers the entire workspace, false
+// Returns false if any of the items in `grid` covers the entire workspace, true
 // otherwise.
-bool ShouldImmediatelyInitDeskBar(OverviewGrid* grid) {
-  // Always immediately initialize the desk bar when doing app dragging or when
-  // immediately exiting.
+bool ShouldAnimateWallpaper(OverviewGrid* grid) {
+  // Do not animate wallpaper if enter exit type is immediate.
   const OverviewEnterExitType enter_exit_type =
       grid->overview_session()->enter_exit_overview_type();
   if (enter_exit_type == OverviewEnterExitType::kImmediateEnter ||
       enter_exit_type == OverviewEnterExitType::kImmediateEnterWithoutFocus ||
       enter_exit_type == OverviewEnterExitType::kImmediateExit) {
-    return true;
+    return false;
   }
 
-  // If one of the windows covers the workspace, we can create the desks bar
-  // immediately.
+  // If one of the windows covers the workspace, we can skip animating the
+  // wallpaper.
   for (const auto& overview_item : grid->window_list()) {
     if (CanCoverAvailableWorkspace(overview_item->GetWindow())) {
-      return true;
+      return false;
     }
   }
 
-  return false;
+  return true;
 }
 
 // Returns true if the birch bar should be shown in current state.
@@ -695,7 +694,8 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
 }
 
 void OverviewGrid::PrepareForOverview() {
-  if (ShouldImmediatelyInitDeskBar(this)) {
+  const bool should_animate_wallpaper = ShouldAnimateWallpaper(this);
+  if (!should_animate_wallpaper) {
     MaybeInitDesksWidget();
   }
 
@@ -705,9 +705,16 @@ void OverviewGrid::PrepareForOverview() {
       overview_session_->enter_exit_overview_type();
 
   if (features::IsForestFeatureEnabled()) {
+    auto animation_type =
+        ScopedOverviewWallpaperClipper::AnimationType::kEnterOverview;
+    if (!should_animate_wallpaper) {
+      animation_type = ScopedOverviewWallpaperClipper::AnimationType::kNone;
+    } else if (enter_exit_type == OverviewEnterExitType::kInformedRestore) {
+      animation_type =
+          ScopedOverviewWallpaperClipper::AnimationType::kEnterInformedRestore;
+    }
     scoped_overview_wallpaper_clipper_ =
-        std::make_unique<ScopedOverviewWallpaperClipper>(
-            this, enter_exit_type == OverviewEnterExitType::kInformedRestore);
+        std::make_unique<ScopedOverviewWallpaperClipper>(this, animation_type);
   }
 
   // TODO(b/326434696): Currently this will return false if there is no restore

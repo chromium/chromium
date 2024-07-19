@@ -31,7 +31,7 @@ struct AnimationSettings {
   gfx::Tween::Type tween_type;
 };
 
-constexpr AnimationSettings kEnterPineAnimationSettings{
+constexpr AnimationSettings kEnterInformedRestoreAnimationSettings{
     .duration = base::Milliseconds(800),
     .tween_type = gfx::Tween::EASE_IN_OUT_EMPHASIZED};
 
@@ -75,12 +75,20 @@ void RemoveWallpaperClipper(
 
 ScopedOverviewWallpaperClipper::ScopedOverviewWallpaperClipper(
     OverviewGrid* overview_grid,
-    bool in_pine)
+    AnimationType animation_type)
     : overview_grid_(overview_grid) {
   aura::Window* root_window = overview_grid_->root_window();
   WallpaperWidgetController* wallpaper_widget_controller =
       RootWindowController::ForWindow(root_window)
           ->wallpaper_widget_controller();
+
+  // Stop animating the wallpaper view layer. There may be an ongoing clip
+  // and/or rounded corner animation from the last overview exit. This ensures
+  // the callback completes before we make changes to the wallpaper again.
+  auto* wallpaper_view_layer =
+      wallpaper_widget_controller->wallpaper_view()->layer();
+  wallpaper_view_layer->GetAnimator()->StopAnimating();
+
   auto* wallpaper_underlay_layer =
       wallpaper_widget_controller->wallpaper_underlay_layer();
   // TODO(http://b/333952534): Remove this check once `wallpaper_underlay_layer`
@@ -88,9 +96,7 @@ ScopedOverviewWallpaperClipper::ScopedOverviewWallpaperClipper(
   CHECK(wallpaper_underlay_layer);
   wallpaper_underlay_layer->SetVisible(true);
 
-  RefreshWallpaperClipBounds(
-      in_pine ? AnimationType::kEnterPine : AnimationType::kEnterOverview,
-      base::DoNothing());
+  RefreshWallpaperClipBounds(animation_type, base::DoNothing());
 }
 
 ScopedOverviewWallpaperClipper::~ScopedOverviewWallpaperClipper() {
@@ -126,11 +132,17 @@ void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds(
   // always relative to their parent.
   wm::ConvertRectFromScreen(root_window, &target_clip_rect);
 
-  // If the animation type is none, directly set the clip rect if the target
-  // clip area is changed and run the callback.
+  // If the animation type is none, directly set the clip rect and rounded
+  // corners if the target properties are changed and run the callback.
   if (animation_type == AnimationType::kNone) {
     if (target_clip_rect != wallpaper_view_layer->GetTargetClipRect()) {
       wallpaper_view_layer->SetClipRect(target_clip_rect);
+    }
+
+    if (kWallpaperClipRoundedCornerRadii !=
+        wallpaper_view_layer->GetTargetRoundedCornerRadius()) {
+      wallpaper_view_layer->SetRoundedCornerRadius(
+          kWallpaperClipRoundedCornerRadii);
     }
 
     if (animation_end_callback) {
@@ -145,8 +157,8 @@ void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds(
 
   // Set animation settings according to animation type.
   switch (animation_type) {
-    case AnimationType::kEnterPine:
-      animation_settings = kEnterPineAnimationSettings;
+    case AnimationType::kEnterInformedRestore:
+      animation_settings = kEnterInformedRestoreAnimationSettings;
       rounded_corners = kWallpaperClipRoundedCornerRadii;
       break;
     case AnimationType::kEnterOverview:

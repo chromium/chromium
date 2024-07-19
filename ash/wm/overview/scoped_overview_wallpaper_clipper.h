@@ -18,8 +18,8 @@ class OverviewGrid;
 class ScopedOverviewWallpaperClipper {
  public:
   enum class AnimationType {
-    // Initial cropping animation when entering Pine session.
-    kEnterPine,
+    // Initial cropping animation when entering informed restore session.
+    kEnterInformedRestore,
     // Initial cropping animation when entering Overview.
     kEnterOverview,
     // Lift the bottom of clipping area to show birch bar in Overview.
@@ -31,13 +31,14 @@ class ScopedOverviewWallpaperClipper {
     kHideBirchBarByUser,
     // Update the clipping area when the birch bar is relayout.
     kRelayoutBirchBar,
-    // Restore animation when exiting Overview or Pine session.
+    // Restore animation when exiting Overview or informed restore session.
     kRestore,
     // No animation needed.
     kNone,
   };
 
-  ScopedOverviewWallpaperClipper(OverviewGrid* overview_grid, bool in_pine);
+  ScopedOverviewWallpaperClipper(OverviewGrid* overview_grid,
+                                 AnimationType animation_type);
   ScopedOverviewWallpaperClipper(const ScopedOverviewWallpaperClipper&) =
       delete;
   ScopedOverviewWallpaperClipper& operator=(

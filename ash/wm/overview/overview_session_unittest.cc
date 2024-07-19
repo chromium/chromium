@@ -11204,21 +11204,23 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 }
 
 // -----------------------------------------------------------------------------
-// OakTest:
+// OverviewWallpaperTest:
 
-// Test fixture to validate Overview behavior with forest enabled.
-class OakTest : public OverviewTestBase {
+// Test fixture to validate wallpaper changes within overview, including clip,
+// rounded corners, and the wallpaper underlay, which is a themed solid color
+// layer stacked below the wallpaper.
+class OverviewWallpaperTest : public OverviewTestBase {
  public:
-  OakTest() {
+  OverviewWallpaperTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kForestFeature, features::kSnapGroup,
                               features::kOsSettingsRevampWayfinding,
                               features::kDeskBarWindowOcclusionOptimization},
         /*disabled_features=*/{});
   }
-  OakTest(const OakTest&) = delete;
-  OakTest& operator=(const OakTest&) = delete;
-  ~OakTest() override = default;
+  OverviewWallpaperTest(const OverviewWallpaperTest&) = delete;
+  OverviewWallpaperTest& operator=(const OverviewWallpaperTest&) = delete;
+  ~OverviewWallpaperTest() override = default;
 
   gfx::Rect GetDisplayBoundsForRootWindow(aura::Window* root_window) {
     return display::Screen::GetScreen()
@@ -11262,7 +11264,7 @@ class OakTest : public OverviewTestBase {
 // correctly during overview sessions, restores fully upon exit, and that the
 // wallpaper underlay layer's visibility refreshes properly upon entering and
 // exiting overview.
-TEST_F(OakTest, WallpaperClipRectAndRoundedCorners) {
+TEST_F(OverviewWallpaperTest, WallpaperClipRectAndRoundedCorners) {
   const gfx::Rect display_bounds(
       GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
   auto* wallpaper_widget_controller =
@@ -11303,7 +11305,7 @@ TEST_F(OakTest, WallpaperClipRectAndRoundedCorners) {
 
 // Tests that the wallpaper clipping and wallpaper underlay layer refresh their
 // bounds appropriately on display change.
-TEST_F(OakTest, DisplayChange) {
+TEST_F(OverviewWallpaperTest, DisplayChange) {
   auto* wallpaper_widget_controller =
       Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
   auto* wallpaper_view_layer =
@@ -11340,7 +11342,7 @@ TEST_F(OakTest, DisplayChange) {
 
 // Tests that when rotating display, the bounds of the clip wallpaper will be
 // adjusted properly.
-TEST_F(OakTest, DisplayRotation) {
+TEST_F(OverviewWallpaperTest, DisplayRotation) {
   UpdateDisplay("900x600");
   auto* wallpaper_widget_controller =
       Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
@@ -11365,7 +11367,7 @@ TEST_F(OakTest, DisplayRotation) {
 
 // Verifies that wallpaper clipping and underlay layer visibility update
 // properly on multiple displays during overview transitions.
-TEST_F(OakTest, MultiDisplayTest) {
+TEST_F(OverviewWallpaperTest, MultiDisplayTest) {
   UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   ASSERT_EQ(3U, display_manager->GetNumDisplays());
@@ -11381,7 +11383,7 @@ TEST_F(OakTest, MultiDisplayTest) {
 
 // Tests that wallpaper clip rect updates properly on all displays on overview
 // grid effective bounds change (e.g., virtual desktop bar state changes).
-TEST_F(OakTest, WallpaperClipRefreshWithMultiDisplay) {
+TEST_F(OverviewWallpaperTest, WallpaperClipRefreshWithMultiDisplay) {
   UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   ASSERT_EQ(3U, display_manager->GetNumDisplays());
@@ -11411,7 +11413,7 @@ TEST_F(OakTest, WallpaperClipRefreshWithMultiDisplay) {
 
 // Tests that the wallpaper is clipped in partial overview mode and adjusts
 // correctly when the snapped window is resized.
-TEST_F(OakTest, PartialOverviewVisualsAndResize) {
+TEST_F(OverviewWallpaperTest, PartialOverviewVisualsAndResize) {
   const gfx::Rect display_bounds(
       GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
   auto* wallpaper_view_layer = GetWallpaperViewLayer();
@@ -11456,7 +11458,7 @@ TEST_F(OakTest, PartialOverviewVisualsAndResize) {
 
 // Tests that snapping a window in full Overview hides desks widgets; closing
 // the window restores full Overview and shows the desks widgets again.
-TEST_F(OakTest, HideDesksWidgetInPartialOverview) {
+TEST_F(OverviewWallpaperTest, HideDesksWidgetInPartialOverview) {
   std::unique_ptr<aura::Window> win1(
       CreateAppWindow(gfx::Rect(10, 10, 200, 100)));
   std::unique_ptr<aura::Window> win2(
@@ -11493,7 +11495,7 @@ TEST_F(OakTest, HideDesksWidgetInPartialOverview) {
 
 // Tests the no windows widget doesn't show during dragging to partial overview.
 // Regression test for http://b/313505530.
-TEST_F(OakTest, NoWindowsWidget) {
+TEST_F(OverviewWallpaperTest, NoWindowsWidget) {
   UpdateDisplay("800x600,800x600");
   const aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
@@ -11545,7 +11547,7 @@ TEST_F(OakTest, NoWindowsWidget) {
 // Tests that the wallpaper view layer clips correctly with animation upon
 // entering Overview mode and that both the wallpaper view layer and underlay
 // layer restore properly upon exiting.
-TEST_F(OakTest, WallpaperClipAnimation) {
+TEST_F(OverviewWallpaperTest, WallpaperClipAnimation) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   const gfx::Rect display_bounds(
@@ -11589,9 +11591,41 @@ TEST_F(OakTest, WallpaperClipAnimation) {
   EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
 }
 
+// Tests that we skip the wallpaper clipping when there is a maximized window.
+TEST_F(OverviewWallpaperTest, NoAnimationWithMaximizedWindow) {
+  std::unique_ptr<aura::Window> window1(CreateAppWindow());
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  WindowState::Get(window1.get())->OnWMEvent(&maximize_event);
+  ASSERT_TRUE(WindowState::Get(window1.get())->IsMaximized());
+
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // The wallpaper is completely occluded by the maximized window + shelf here,
+  // so we can optimize and skip the animation.
+  ToggleOverview();
+  ui::Layer* wallpaper_view_layer = GetWallpaperViewLayer();
+  ui::LayerAnimator* animator = wallpaper_view_layer->GetAnimator();
+  EXPECT_FALSE(animator->is_animating());
+
+  WaitForOverviewEnterAnimation();
+  VerifyLayersBoundsOnAllDisplays(/*in_overview=*/true);
+
+  // The wallpaper is visible in overview, so it has to animate.
+  ToggleOverview();
+  EXPECT_TRUE(animator->is_animating());
+  WaitForOverviewExitAnimation();
+
+  // The wallpaper is not tracked as an overview exit animation. Ensure it's
+  // animation is complete here. This is a no-op if the wallpaper animation
+  // completes before the overview exit animations.
+  ui::LayerAnimationStoppedWaiter().Wait(wallpaper_view_layer);
+  VerifyLayersBoundsOnAllDisplays(/*in_overview=*/false);
+}
+
 // Tests that the shelf's opaque background transitions from visible (default)
 // to invisible (overview) and back to visible (overview exit).
-TEST_F(OakTest, ShelfOpaqueBackground) {
+TEST_F(OverviewWallpaperTest, ShelfOpaqueBackground) {
   EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   ShelfWidget* shelf_widget = GetPrimaryShelf()->shelf_widget();
   ui::Layer* opaque_background_layer =
@@ -11608,8 +11642,8 @@ TEST_F(OakTest, ShelfOpaqueBackground) {
 }
 
 // Tests that wallpaper clip rect bounds update upon virtual desk bar state
-// changes, and that oak does not configure the desk bar background.
-TEST_F(OakTest, VirtualDesksBarStateChange) {
+// changes, and that desk bar background is not configured.
+TEST_F(OverviewWallpaperTest, VirtualDesksBarStateChange) {
   const gfx::Rect display_bounds(
       GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
   auto* wallpaper_widget_controller =
@@ -11657,7 +11691,7 @@ TEST_F(OakTest, VirtualDesksBarStateChange) {
 
 // Tests that the wallpaper clip does not intersect the desk bar when while
 // dragging an item. Regression test for http://b/339882124.
-TEST_F(OakTest, VerticalDeskBar) {
+TEST_F(OverviewWallpaperTest, VerticalDeskBar) {
   UpdateDisplay("800x1200");
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
 
@@ -11679,17 +11713,14 @@ TEST_F(OakTest, VerticalDeskBar) {
   // the wallpaper view is the size of the root window, it is also in root
   // window bounds, so a conversion is unnecessary.
   auto* desks_bar_view = GetOverviewSession()->grid_list()[0]->desks_bar_view();
-  auto* wallpaper_view_layer = Shell::GetPrimaryRootWindowController()
-                                   ->wallpaper_widget_controller()
-                                   ->wallpaper_view()
-                                   ->layer();
+  auto* wallpaper_view_layer = GetWallpaperViewLayer();
   const int desk_bar_bottom = desks_bar_view->GetBoundsInScreen().bottom();
   const int clip_top = wallpaper_view_layer->clip_rect().y();
   // A little overlap is ok since the desk bar has a transparent background.
   EXPECT_NEAR(desk_bar_bottom, clip_top, 30);
 }
 
-TEST_F(OakTest, CenterOverviewItems) {
+TEST_F(OverviewWallpaperTest, CenterOverviewItems) {
   auto window1 = CreateAppWindow(gfx::Rect(0, 0, 100, 50));
   auto window2 = CreateAppWindow(gfx::Rect(20, 10, 200, 100));
   auto window3 = CreateAppWindow(gfx::Rect(30, 20, 300, 200));
@@ -11726,7 +11757,7 @@ TEST_F(OakTest, CenterOverviewItems) {
 // Tests that the drop target bounds are configured to match the overview item
 // it is a placeholder for with the center overview items processing. See
 // regression at http://b/330386194.
-TEST_F(OakTest, DropTargetBounds) {
+TEST_F(OverviewWallpaperTest, DropTargetBounds) {
   // Pre-add a desk to prevent the desks bar from expanding when dragging
   // starts.
   auto* desks_controller = DesksController::Get();
