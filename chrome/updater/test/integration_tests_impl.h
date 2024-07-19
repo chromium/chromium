@@ -146,7 +146,8 @@ void SetPlatformPolicies(const base::Value::Dict& values);
 void SetMachineManaged(bool is_managed_device);
 
 // Expects to find no crashes. If there are any crashes, causes the test to
-// fail. Copies any crashes found to the isolate directory.
+// fail. Copies any crashes found to the isolate directory. In system scope,
+// this checks for crashes from both the system and the user updaters.
 void ExpectNoCrashes(UpdaterScope scope);
 
 // Copies the logs to a location where they can be retrieved by ResultDB.

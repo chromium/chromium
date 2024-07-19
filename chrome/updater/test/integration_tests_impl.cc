@@ -593,6 +593,9 @@ void CopyLog(const base::FilePath& src_dir, const std::string& infix) {
 }
 
 void ExpectNoCrashes(UpdaterScope scope) {
+  if (scope == UpdaterScope::kSystem) {
+    ExpectNoCrashes(UpdaterScope::kUser);
+  }
   std::optional<base::FilePath> database_path(GetCrashDatabasePath(scope));
   if (!database_path || !base::PathExists(*database_path)) {
     return;
@@ -603,7 +606,9 @@ void ExpectNoCrashes(UpdaterScope scope) {
     VLOG(2) << "No log destination folder, skip copying possible crash dumps.";
     return;
   }
-  dest_dir = dest_dir.AppendASCII(GetTestName());
+  dest_dir =
+      dest_dir.AppendASCII(GetTestName())
+          .AppendASCII(scope == UpdaterScope::kSystem ? "system" : "user");
   EXPECT_TRUE(base::CreateDirectory(dest_dir));
 
   int count = 0;

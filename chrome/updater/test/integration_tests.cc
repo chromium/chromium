@@ -236,11 +236,7 @@ class IntegrationTest : public ::testing::Test {
     VLOG(2) << __func__ << "completed.";
   }
 
-  // TODO: crbug/354012131 -- Remove the virtual specifier here, and the
-  //   override (in `IntegrationTestUserInSystem`), after
-  //   `ExpectNoCrashes(kSystem)` in integration_tests_impl.cc checks
-  //   both system and user scopes.
-  virtual void ExpectNoCrashes() { test_commands_->ExpectNoCrashes(); }
+  void ExpectNoCrashes() { test_commands_->ExpectNoCrashes(); }
 
   void CopyLog() { test_commands_->CopyLog(/*infix=*/""); }
 
@@ -3833,13 +3829,6 @@ class IntegrationTestUserInSystem : public IntegrationTest {
     test_server_ = std::make_unique<ScopedServer>();
     test_server_->ConfigureTestMode(user_test_commands_.get());
     test_server_->ConfigureTestMode(test_commands_.get());
-  }
-
-  // TODO: crbug/354012131 -- Remove this when `ExpectNoCrashes(kSystem)` in
-  //   integration_tests_impl.cc checks both system and user scopes.
-  void ExpectNoCrashes() override {
-    test_commands_->ExpectNoCrashes();
-    user_test_commands_->ExpectNoCrashes();
   }
 
   void InstallUserUpdater(const base::Value::List& switches = {}) {
