@@ -63,6 +63,79 @@ Specific features of `CrLitElement` include:
    in Polymer - i.e. property `fooBar` will be mapped to attribute `foo-bar`,
    not the Lit default of `foobar`
 
+## Lit Data Bindings and handling `-changed` events
+As noted above, `CrLitElement` forces an initial synchronous render in
+`connectedCallback()`. This means child elements may initialize properties
+with `notify: true` and then fire `-changed` events for these properties in
+`updated()` as soon as they are connected, which may occur before the parent
+element has finished its first update.
+
+One consequence of this is that `-changed` event handlers cannot assume that
+the element has completed its first update when the `-changed` event is
+received, and should not make any changes to the element's DOM until after
+waiting for the element's `updateComplete` promise. This means such handlers
+must either (1) be async and `await this.updateComplete;` before running any
+code that updates the element's DOM, or (2) only update properties on the
+parent in response to the child's property change, and perform resulting UI
+updates in the `updated()` lifecycle method instead.
+
+Note that if the parent property being updated is protected or private, a cast
+will be necessary to check for changes to the property in `changedProperties`.
+This is also demonstrated in the example below.
+
+Suppose the Lit child has a property with `notify: true` as follows:
+```
+static override get properties() {
+  return {
+    foo: {
+      type: Boolean,
+      notify: true,
+    },
+ };
+}
+```
+
+This property is also bound to a parent element that listens for the
+`-changed` event as follows:
+```
+<foo-child ?foo="${this.foo_}" on-foo-changed="${this.onFooChanged_}">
+</foo-child>
+<demo-child id="demo"></demo-child>
+```
+
+The parent TypeScript code could look like this:
+```
+static override get properties() {
+  return {
+    foo_: {type: Boolean},
+ };
+}
+
+protected foo_: boolean = true;
+
+onFooChanged_(e: CustomEvent<{value: boolean}>) {
+  // Updates the parent's property that is bound to the child.
+  this.foo_ = e.detail.value;
+}
+
+override updated(changedProperties: PropertyValues<this>) {
+  super.updated(changedProperties);
+
+  // Cast necessary to check for changes to protected/private properties.
+  const changedPrivateProperties =
+      changedProperties as Map<PropertyKey, unknown>;
+
+  // Updates the DOM when |foo_| changes.
+  if (changedPrivateProperties.has('foo_')) {
+    if (this.foo_) {
+      this.$.demo.show();
+    } else {
+      this.$.demo.hide();
+    }
+  }
+}
+```
+
 ## Lit and Polymer Data Bindings Compatibility
 Two-way bindings are not natively supported in Lit. As mentioned above,
 basic compatibility is provided by the `CrLitElement` base class’s
