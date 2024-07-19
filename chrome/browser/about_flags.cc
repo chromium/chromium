@@ -6919,6 +6919,13 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kProductSpecificationsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kProductSpecifications)},
 
+    {"product-specifications-multi-specifics",
+     commerce::flag_descriptions::kProductSpecificationsMultiSpecificsName,
+     commerce::flag_descriptions::
+         kProductSpecificationsMultiSpecificsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kProductSpecificationsMultiSpecifics)},
+
     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
      commerce::flag_descriptions::kShoppingListDescription,
      kOsAndroid | kOsDesktop, FEATURE_VALUE_TYPE(commerce::kShoppingList)},

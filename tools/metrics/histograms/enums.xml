@@ -18181,6 +18181,7 @@ from previous Chrome versions.
   <int value="-1134307340" label="stop-loading-in-background:enabled"/>
   <int value="-1133285806" label="MacLoopbackAudioForScreenShare:disabled"/>
   <int value="-1132704128" label="AndroidPaymentAppsFilter:disabled"/>
+  <int value="-1132486267" label="ProductSpecificationsMultiSpecifics:enabled"/>
   <int value="-1131848860" label="TilingWindowResize:enabled"/>
   <int value="-1131726331" label="BackGestureRefactorAndroid:disabled"/>
   <int value="-1130835436" label="SuspendStateMachine:disabled"/>
@@ -20899,6 +20900,7 @@ from previous Chrome versions.
   <int value="27442980" label="ArcGameModeFeature:enabled"/>
   <int value="27507364" label="apps-keep-chrome-alive"/>
   <int value="27632363" label="JourneysOmniboxHistoryClusterProvider:enabled"/>
+  <int value="27970819" label="ProductSpecificationsMultiSpecifics:disabled"/>
   <int value="28182289" label="CastStreamingVp8:disabled"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="31258497"

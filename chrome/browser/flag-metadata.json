@@ -7391,7 +7391,7 @@
     "expiry_milestone": 130
   },
   {
-    "name": "product-specifications-sync",
+    "name": "product-specifications-multi-specifics",
     "owners": [ "davidjm@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 130
   },
