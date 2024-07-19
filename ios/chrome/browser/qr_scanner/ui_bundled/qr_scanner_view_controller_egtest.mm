@@ -339,16 +339,16 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
            isPresentedBy:[QRScannerAppInterface.currentBrowserViewController
                                  presentedViewController]];
   GREYAssertNil(error, error.localizedDescription);
-  [[EarlGrey selectElementWithMatcher:grey_text([QRScannerAppInterface
-                                          dialogTitleForState:state])]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_text([QRScannerAppInterface
+                                              dialogTitleForState:state])];
 }
 
 // Checks that there is no visible alert with title corresponding to `state`.
 - (void)assertQRScannerIsNotPresentingADialogForState:(CameraState)state {
-  [[EarlGrey selectElementWithMatcher:grey_text([QRScannerAppInterface
-                                          dialogTitleForState:state])]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_text([QRScannerAppInterface
+                                                 dialogTitleForState:state])];
 }
 
 #pragma mark - Helpers for mocks
