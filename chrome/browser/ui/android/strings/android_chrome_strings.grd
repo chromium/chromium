@@ -1832,6 +1832,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NO_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user does not have any passwords saved to their Google account.">
         No saved passwords
       </message>
+      <message name="IDS_SAFETY_HUB_NO_COMPROMISED_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the checkup did not find any compromised passwords.">
+        No compromised passwords
+      </message>
       <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the user has no passwords saved and that Safety check will start checking for breached passwords when they save them.">
         Chrome can check your passwords when you save them
       </message>
@@ -1860,7 +1863,9 @@ Your Google account may have other forms of browsing history like searches and a
         To protect your privacy, permissions were removed from some sites
       </message>
       <message name="IDS_SAFETY_HUB_COMPROMISED_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the checkup found compromised passwords and that the user should change them immediately.">
-        You should change these now
+        {NUM_PASSWORDS, plural,
+        =1 {You should change this now}
+        other {You should change these now}}
       </message>
       <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_UNAVAILABLE_TITLE" desc="Title for the password check row in the Safety Check page indicating that the password checkup could not be completed.">
         Can't check passwords

@@ -137,7 +137,8 @@ public class SafetyHubModuleViewBinderTest {
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
 
-        String expectedTitle = mActivity.getString(R.string.safety_check_passwords_safe);
+        String expectedTitle =
+                mActivity.getString(R.string.safety_hub_no_compromised_passwords_title);
         String expectedSummary =
                 mActivity.getString(
                         R.string.safety_hub_password_check_time_recently, TEST_ACCOUNT_EMAIL);
@@ -183,7 +184,12 @@ public class SafetyHubModuleViewBinderTest {
                                 compromisedPasswordsCount,
                                 compromisedPasswordsCount);
         String expectedSummary =
-                mActivity.getString(R.string.safety_hub_compromised_passwords_summary);
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_compromised_passwords_summary,
+                                compromisedPasswordsCount,
+                                compromisedPasswordsCount);
         String expectedPrimaryButtonText =
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 

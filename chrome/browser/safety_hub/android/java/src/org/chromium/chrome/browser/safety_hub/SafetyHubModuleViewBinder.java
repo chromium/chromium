@@ -267,7 +267,11 @@ public class SafetyHubModuleViewBinder {
             summary =
                     preference
                             .getContext()
-                            .getString(R.string.safety_hub_compromised_passwords_summary);
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.safety_hub_compromised_passwords_summary,
+                                    compromisedPasswordsCount,
+                                    compromisedPasswordsCount);
 
             primaryButtonText =
                     preference
@@ -275,7 +279,10 @@ public class SafetyHubModuleViewBinder {
                             .getString(R.string.safety_hub_passwords_navigation_button);
             primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
         } else {
-            title = preference.getContext().getString(R.string.safety_check_passwords_safe);
+            title =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_no_compromised_passwords_title);
             if (account != null) {
                 summary =
                         preference
