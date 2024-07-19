@@ -19,21 +19,18 @@
     width: calc(100% - 38px);
   }
 
-  wallpaper-grid-item:not(:hover) + cr-icon-button.add-icon {
+  .container iron-icon.add-icon[icon='personalization-shared:circular-add'] {
+    --iron-icon-fill-color: white;
     display: none;
+    /* The icon icon is 20px. Subtract half of that to center the icon. */
+    left: calc(50% - 10px);
+    pointer-events: none;
+    position: absolute;
+    top: 22px;
   }
 
-  wallpaper-grid-item:hover + cr-icon-button.add-icon {
-    --cr-icon-button-fill-color: white;
-    --cr-icon-button-icon-size: 20px;
-    background-color: inherit;
+  .container:hover iron-icon.add-icon {
     display: block;
-    /* The icon button itself is 36 pixels. Subtract half of that to center the icon. */
-    left: calc(50% - 18px);
-    margin: 0;
-    position: absolute;
-    top: 32px;
-    z-index: 1;
   }
 
   .container {
@@ -55,8 +52,8 @@
           primary-text="[[sample.prompt]]"
           src="[[sample.preview]]">
       </wallpaper-grid-item>
-      <cr-icon-button class="add-icon" tabindex="-1" iron-icon="personalization-shared:plus">
-      </cr-icon-button>
+      <iron-icon class="add-icon" icon="personalization-shared:circular-add">
+    </iron-icon>
     </div>
   </template>
 </iron-list>
