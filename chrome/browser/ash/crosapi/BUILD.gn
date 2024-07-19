@@ -503,6 +503,9 @@ static_library("crosapi") {
     "//ui/views",
   ]
 
+  # Needed only to allow circular includes.
+  deps += [ "//chrome/browser/chromeos/echo" ]
+
   # local_printer_ash.cc includes
   # chrome/browser/ash/printing/print_management/printing_manager.h, which in
   # turn requires //chromeos/components/print_management/mojom to generate the
@@ -545,6 +548,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/system_web_apps/apps/media_app",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager/virtual_tasks",
+    "//chrome/browser/chromeos/echo",
   ]
 }
 

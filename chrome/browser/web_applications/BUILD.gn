@@ -588,6 +588,7 @@ source_set("web_applications") {
 
   if (is_chromeos) {
     deps += [
+      "//chrome/browser/chromeos/echo",
       "//chromeos/components/mgs",
       "//chromeos/constants:constants",
     ]

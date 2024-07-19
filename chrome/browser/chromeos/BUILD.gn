@@ -274,6 +274,7 @@ source_set("chromeos") {
     "//chrome/browser/apps/link_capturing",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/chromeos/arc",
+    "//chrome/browser/chromeos/echo",
     "//chrome/browser/chromeos/smart_reader",
     "//chrome/browser/chromeos/tast_support",
     "//chrome/browser/enterprise/data_controls",
