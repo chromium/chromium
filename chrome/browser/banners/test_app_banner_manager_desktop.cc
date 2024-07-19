@@ -19,6 +19,7 @@
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 
 namespace webapps {
 
@@ -96,7 +97,7 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
   if (base::Contains(result.errors,
                      InstallableStatusCode::MANIFEST_URL_CHANGED)) {
     installable_.reset();
-  } else if (!result.errors.empty()) {
+  } else if (blink::IsEmptyManifest(*result.manifest)) {
     // AppBannerManagerDesktop does not call
     // |OnDidPerformInstallableWebAppCheck| to complete the installability check
     // in this case, instead it early exits with failure.

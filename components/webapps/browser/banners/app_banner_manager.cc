@@ -399,14 +399,13 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   }
   UpdateState(State::ACTIVE);
 
-  if (!data.errors.empty()) {
+  // An empty manifest indicates some kind of unrecoverable error occurred.
+  if (blink::IsEmptyManifest(*data.manifest)) {
+    CHECK(!data.errors.empty());
     Stop(data.GetFirstError());
     return;
   }
-  // An empty manifest means there was a network error or a parsing error, and
-  // that case is caught in the InstallableDataFetcher and an error is produced
-  // & caught above.
-  CHECK(!blink::IsEmptyManifest(*data.manifest));
+
   CHECK(data.manifest->id.is_valid());
   web_app_data_.emplace(data.manifest->id, data.manifest->Clone(),
                         data.web_page_metadata->Clone(), *(data.manifest_url));

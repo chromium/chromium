@@ -66,9 +66,6 @@ void InstallableDataFetcher::OnDidGetManifest(
       result == blink::mojom::ManifestRequestResult::kManifestFailedToFetch ||
       result == blink::mojom::ManifestRequestResult::kManifestFailedToParse) {
     error = InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
-    // TODO(https://crbug.com/344987157): Consider not always blanking out the
-    // manifest for this case.
-    manifest = blink::mojom::Manifest::New();
   }
   page_data_->OnManifestFetched(std::move(manifest), manifest_url, error);
   std::move(finish_callback).Run(error);

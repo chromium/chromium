@@ -448,15 +448,16 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifest404) {
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));
 
-  NavigateAndRunInstallableManager(tester.get(), GetManifestParams(),
-                                   GetURLOfPageWithServiceWorkerAndManifest(
-                                       "/banners/manifest_missing.json"));
+  std::string path = GetURLOfPageWithServiceWorkerAndManifest(
+      "/banners/manifest_missing.json");
+  NavigateAndRunInstallableManager(tester.get(), GetManifestParams(), path);
   run_loop.Run();
 
   // The installable manager should return a manifest URL even if it 404s.
-  // However, the check should fail with a ManifestEmpty error.
-  EXPECT_TRUE(blink::IsEmptyManifest(tester->manifest()));
-
+  // Additionally a default manifest should be returned.
+  EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
+  EXPECT_TRUE(blink::IsDefaultManifest(tester->manifest(),
+                                       embedded_test_server()->GetURL(path)));
   EXPECT_FALSE(tester->manifest_url().is_empty());
   EXPECT_TRUE(tester->primary_icon_url().is_empty());
   EXPECT_EQ(nullptr, tester->primary_icon());
