@@ -675,6 +675,14 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   if (IsUrlNtp(currentWebState->GetVisibleURL())) {
     return;
   }
+
+  // Check index to determine which directions are supported.
+  int activeIndex = self.webStateList->active_index();
+  BOOL canGoBack = activeIndex > 0;
+  BOOL canGoForward = activeIndex < self.webStateList->count() - 1;
+  if (!canGoBack && !canGoForward) {
+    return;
+  }
   // Setup view constraints.
   NamedGuide* contentAreaGuide =
       [NamedGuide guideWithName:kContentAreaGuide
@@ -698,15 +706,12 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
           : topConstraintForTopEdgeSwipe;
   initialTopConstraint.active = YES;
 
-  // Check index to determine which directions are supported.
-  int activeIndex = self.webStateList->active_index();
   // Configure IPH view.
   ToolbarSwipeGestureInProductHelpView* toolbarSwipeGestureIPH =
       [[ToolbarSwipeGestureInProductHelpView alloc]
           initWithBubbleBoundingSize:guide.layoutFrame.size
-                           canGoBack:activeIndex > 0
-                             forward:activeIndex <
-                                     self.webStateList->count() - 1];
+                           canGoBack:canGoBack
+                             forward:canGoForward];
   [toolbarSwipeGestureIPH setTranslatesAutoresizingMaskIntoConstraints:NO];
   if (!CanGestureInProductHelpViewFitInGuide(toolbarSwipeGestureIPH, guide) ||
       !self.engagementTracker->ShouldTriggerHelpUI(feature)) {
