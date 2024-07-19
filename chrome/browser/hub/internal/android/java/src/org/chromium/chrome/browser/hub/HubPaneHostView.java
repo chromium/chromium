@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -32,6 +33,7 @@ public class HubPaneHostView extends FrameLayout {
 
     private FrameLayout mPaneFrame;
     private ButtonCompat mActionButton;
+    private ImageView mHairline;
     private @Nullable View mCurrentViewRoot;
     private @Nullable Animator mCurrentAnimator;
 
@@ -45,6 +47,7 @@ public class HubPaneHostView extends FrameLayout {
         super.onFinishInflate();
         mPaneFrame = findViewById(R.id.pane_frame);
         mActionButton = findViewById(R.id.host_action_button);
+        mHairline = findViewById(R.id.pane_top_hairline);
     }
 
     void setRootView(@Nullable View newRootView) {
@@ -106,6 +109,13 @@ public class HubPaneHostView extends FrameLayout {
 
         @StyleRes int textAppearance = HubColors.getTextAppearanceMedium(colorScheme);
         mActionButton.setTextAppearance(textAppearance);
+
+        @ColorInt int hairlineColor = HubColors.getHairlineColor(context, colorScheme);
+        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
+    }
+
+    void setHairlineVisibility(boolean visible) {
+        mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     private void tryAddViewToFrame(View rootView) {

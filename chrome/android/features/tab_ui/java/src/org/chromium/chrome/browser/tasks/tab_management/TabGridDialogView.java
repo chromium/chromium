@@ -9,6 +9,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -91,6 +92,7 @@ public class TabGridDialogView extends FrameLayout {
     private View mUngroupBar;
     private ViewGroup mSnackBarContainer;
     private ViewGroup mParent;
+    private ImageView mHairline;
     private TextView mUngroupBarTextView;
     private RelativeLayout mDialogContainerView;
     private PropertyModel mScrimPropertyModel;
@@ -210,6 +212,7 @@ public class TabGridDialogView extends FrameLayout {
         mBackgroundFrame.setLayoutParams(mContainerParams);
         mAnimationCardView = findViewById(R.id.dialog_animation_card_view);
         mSnackBarContainer = findViewById(R.id.dialog_snack_bar_container_view);
+        mHairline = findViewById(R.id.tab_grid_dialog_hairline);
         updateDialogWithOrientation(mContext.getResources().getConfiguration().orientation);
 
         prepareAnimation();
@@ -1025,6 +1028,14 @@ public class TabGridDialogView extends FrameLayout {
         mBackgroundDrawableColor = backgroundColor;
         DrawableCompat.setTint(mDialogContainerView.getBackground(), backgroundColor);
         DrawableCompat.setTint(mBackgroundFrame.getBackground(), backgroundColor);
+    }
+
+    void updateHairlineColor(@ColorInt int hairlineColor) {
+        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
+    }
+
+    void setHairlineVisibility(boolean visible) {
+        mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**

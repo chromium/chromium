@@ -67,6 +67,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             new ObservableSupplierImpl<>();
     protected final ObservableSupplierImpl<FullButtonData> mNewTabButtonDataSupplier =
             new ObservableSupplierImpl<>();
+    protected final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
+            new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
@@ -215,6 +217,11 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     @Override
     public @NonNull ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier() {
         return mReferenceButtonDataSupplier;
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
+        return mHairlineVisibilitySupplier;
     }
 
     @Override
@@ -516,6 +523,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         this::onTabClick,
+                        mHairlineVisibilitySupplier::set,
                         mIsIncognito,
                         getOnTabGroupCreationRunnable());
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);

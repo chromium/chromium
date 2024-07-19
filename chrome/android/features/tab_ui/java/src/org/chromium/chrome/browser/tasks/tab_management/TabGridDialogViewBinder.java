@@ -19,6 +19,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProp
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HAIRLINE_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.HEADER_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.IS_DIALOG_VISIBLE;
@@ -158,6 +160,14 @@ class TabGridDialogViewBinder {
                 int backgroundColorInt = model.get(DIALOG_BACKGROUND_COLOR);
                 viewHolder.dialogView.updateDialogContainerBackgroundColor(backgroundColorInt);
                 viewHolder.toolbarView.setBackgroundColorTint(backgroundColorInt);
+            }
+        } else if (HAIRLINE_COLOR == propertyKey) {
+            if (viewHolder.dialogView != null) {
+                viewHolder.dialogView.updateHairlineColor(model.get(HAIRLINE_COLOR));
+            }
+        } else if (HAIRLINE_VISIBILITY == propertyKey) {
+            if (viewHolder.dialogView != null) {
+                viewHolder.dialogView.setHairlineVisibility(model.get(HAIRLINE_VISIBILITY));
             }
         } else if (DIALOG_UNGROUP_BAR_BACKGROUND_COLOR == propertyKey) {
             if (viewHolder.dialogView != null) {

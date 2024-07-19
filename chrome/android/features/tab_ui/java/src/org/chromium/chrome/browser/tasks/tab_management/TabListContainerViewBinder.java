@@ -11,23 +11,18 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -44,14 +39,6 @@ class TabListContainerViewBinder {
             PropertyModel model, TabListRecyclerView view, PropertyKey propertyKey) {
         if (BLOCK_TOUCH_INPUT == propertyKey) {
             view.setBlockTouchInput(model.get(BLOCK_TOUCH_INPUT));
-        } else if (IS_INCOGNITO == propertyKey) {
-            Context context = view.getContext();
-            boolean isIncognito = model.get(IS_INCOGNITO);
-            final @ColorInt int primaryBackgroundColor = Color.TRANSPARENT;
-            view.setBackgroundColor(primaryBackgroundColor);
-            view.setToolbarHairlineColor(
-                    ThemeUtils.getToolbarHairlineColor(
-                            context, primaryBackgroundColor, isIncognito));
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
             int index = (Integer) model.get(INITIAL_SCROLL_INDEX);
             int offset = computeOffset(view, model);

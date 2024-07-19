@@ -12,10 +12,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
@@ -53,6 +55,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -629,6 +632,7 @@ public class TabGridDialogMediator
     }
 
     private void updateColorProperties(Context context, boolean isIncognito) {
+        @ColorInt
         int dialogBackgroundColor =
                 TabUiThemeProvider.getTabGridDialogBackgroundColor(context, isIncognito);
         ColorStateList tintList =
@@ -637,17 +641,27 @@ public class TabGridDialogMediator
                                 mContext, R.color.default_icon_color_light_tint_list)
                         : AppCompatResources.getColorStateList(
                                 mContext, R.color.default_icon_color_tint_list);
+        @ColorInt
         int ungroupBarBackgroundColor =
                 TabUiThemeProvider.getTabGridDialogUngroupBarBackgroundColor(context, isIncognito);
+        @ColorInt
         int ungroupBarHoveredBackgroundColor =
                 TabUiThemeProvider.getTabGridDialogUngroupBarHoveredBackgroundColor(
                         context, isIncognito);
+        @ColorInt
         int ungroupBarTextColor =
                 TabUiThemeProvider.getTabGridDialogUngroupBarTextColor(context, isIncognito);
+        @ColorInt
         int ungroupBarHoveredTextColor =
                 TabUiThemeProvider.getTabGridDialogUngroupBarHoveredTextColor(context, isIncognito);
+        @ColorInt
+        int hairlineColor =
+                isIncognito
+                        ? ContextCompat.getColor(context, R.color.divider_line_bg_color_light)
+                        : SemanticColorUtils.getDividerLineBgColor(context);
 
         mModel.set(TabGridDialogProperties.DIALOG_BACKGROUND_COLOR, dialogBackgroundColor);
+        mModel.set(TabGridDialogProperties.HAIRLINE_COLOR, hairlineColor);
         if (mSharedImageTilesCoordinator != null) {
             mSharedImageTilesCoordinator.updateBackgroundColor(dialogBackgroundColor);
         }

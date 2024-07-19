@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -21,6 +22,8 @@ public class HubPaneHostViewBinder {
             view.setActionButtonData(model.get(ACTION_BUTTON_DATA));
         } else if (key == COLOR_SCHEME) {
             view.setColorScheme(model.get(COLOR_SCHEME));
+        } else if (key == HAIRLINE_VISIBILITY) {
+            view.setHairlineVisibility(model.get(HAIRLINE_VISIBILITY));
         }
     }
 }

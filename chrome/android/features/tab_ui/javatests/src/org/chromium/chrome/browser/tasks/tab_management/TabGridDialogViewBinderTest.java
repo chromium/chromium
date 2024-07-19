@@ -102,6 +102,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private View mMainContent;
     private @Nullable View mShareButtonContainer;
     private @Nullable View mShareButton;
+    private ImageView mHairline;
     private ScrimCoordinator mScrimCoordinator;
     private GridLayoutManager mLayoutManager;
     private LinearLayoutManager mLinearLayoutManager;
@@ -141,6 +142,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                     LayoutInflater.from(getActivity())
                             .inflate(R.layout.tab_grid_dialog_layout, parentView, true);
                     mTabGridDialogView = parentView.findViewById(R.id.dialog_parent_view);
+                    mHairline = mTabGridDialogView.findViewById(R.id.tab_grid_dialog_hairline);
                     mLeftButton = mToolbarView.findViewById(R.id.toolbar_left_button);
                     mRightButton = mToolbarView.findViewById(R.id.toolbar_right_button);
                     mTitleTextView = mToolbarView.findViewById(R.id.title);
@@ -614,6 +616,21 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
 
         verify(mLinearLayoutManager, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .scrollToPositionWithOffset(eq(5), eq(0));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testHairline() {
+        mContentView.layout(0, 0, 100, 500);
+
+        assertEquals(View.GONE, mHairline.getVisibility());
+
+        mModel.set(TabGridDialogProperties.HAIRLINE_VISIBILITY, true);
+        assertEquals(View.VISIBLE, mHairline.getVisibility());
+
+        mModel.set(TabGridDialogProperties.HAIRLINE_VISIBILITY, false);
+        assertEquals(View.GONE, mHairline.getVisibility());
     }
 
     @Test

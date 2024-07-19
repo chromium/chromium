@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
 import android.view.View;
@@ -23,8 +24,11 @@ public class HubPaneHostMediator {
     private final @NonNull Callback<Pane> mOnPangeChangeCallback = this::onPaneChange;
     private final @NonNull Callback<FullButtonData> mOnActionButtonChangeCallback =
             this::onActionButtonChange;
+    private final @NonNull Callback<Boolean> mOnHairlineVisibilityChange =
+            this::onHairlineVisibilityChange;
     private final @NonNull PropertyModel mPropertyModel;
     private final @NonNull ObservableSupplier<Pane> mPaneSupplier;
+    private final @NonNull TransitiveObservableSupplier<Pane, Boolean> mHairlineVisibilitySupplier;
 
     private @Nullable TransitiveObservableSupplier<Pane, FullButtonData> mActionButtonDataSupplier;
 
@@ -34,6 +38,11 @@ public class HubPaneHostMediator {
         mPropertyModel = propertyModel;
         mPaneSupplier = paneSupplier;
         mPaneSupplier.addObserver(mOnPangeChangeCallback);
+
+        mHairlineVisibilitySupplier =
+                new TransitiveObservableSupplier<>(
+                        paneSupplier, p -> p.getHairlineVisibilitySupplier());
+        mHairlineVisibilitySupplier.addObserver(mOnHairlineVisibilityChange);
 
         if (HubFieldTrial.usesFloatActionButton()) {
             mActionButtonDataSupplier =
@@ -47,6 +56,7 @@ public class HubPaneHostMediator {
     public void destroy() {
         mPropertyModel.set(PANE_ROOT_VIEW, null);
         mPaneSupplier.removeObserver(mOnPangeChangeCallback);
+        mHairlineVisibilitySupplier.removeObserver(mOnHairlineVisibilityChange);
         if (mActionButtonDataSupplier != null) {
             mActionButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
             mActionButtonDataSupplier = null;
@@ -61,5 +71,9 @@ public class HubPaneHostMediator {
 
     private void onActionButtonChange(@Nullable FullButtonData actionButtonData) {
         mPropertyModel.set(ACTION_BUTTON_DATA, actionButtonData);
+    }
+
+    private void onHairlineVisibilityChange(@Nullable Boolean visible) {
+        mPropertyModel.set(HAIRLINE_VISIBILITY, Boolean.TRUE.equals(visible));
     }
 }

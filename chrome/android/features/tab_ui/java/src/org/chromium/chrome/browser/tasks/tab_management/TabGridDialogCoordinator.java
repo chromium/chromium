@@ -67,6 +67,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final Activity mActivity;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
     private ObservableSupplierImpl<Boolean> mShowingOrAnimationSupplier =
             new ObservableSupplierImpl<>(false);
     private TabContentManager mTabContentManager;
@@ -214,7 +215,16 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* onModelTokenChange= */ null,
                             /* allowDragAndDrop= */ true);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
+
+            mTabListOnScrollListener
+                    .getYOffsetNonZeroSupplier()
+                    .addObserver(
+                            (showHairline) ->
+                                    mModel.set(
+                                            TabGridDialogProperties.HAIRLINE_VISIBILITY,
+                                            showHairline));
             TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
+            recyclerView.addOnScrollListener(mTabListOnScrollListener);
 
             @LayoutRes
             int toolbar_res_id =
@@ -457,6 +467,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         if (tabs != null) {
             mShowingOrAnimationSupplier.set(true);
         }
+        mTabListOnScrollListener.postUpdate(mTabListCoordinator.getContainerView());
     }
 
     @Override

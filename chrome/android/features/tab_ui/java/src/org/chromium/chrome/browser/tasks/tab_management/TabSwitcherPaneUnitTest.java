@@ -26,7 +26,6 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -109,6 +108,7 @@ public class TabSwitcherPaneUnitTest {
     private ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mOnTabClickedCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mHairlineVisibilityCallbackCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
@@ -157,6 +157,7 @@ public class TabSwitcherPaneUnitTest {
                         any(),
                         mIsAnimatingSupplierCaptor.capture(),
                         mOnTabClickedCallbackCaptor.capture(),
+                        mHairlineVisibilityCallbackCaptor.capture(),
                         anyBoolean(),
                         any());
         when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
@@ -201,7 +202,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInitWithNativeBeforeCoordinatorCreation() {
         mTabSwitcherPane.initWithNative();
         mTabSwitcherPane.createTabSwitcherPaneCoordinator();
@@ -209,7 +209,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInitWithNativeAfterCoordinatorCreation() {
         mTabSwitcherPane.createTabSwitcherPaneCoordinator();
         verify(mTabSwitcherPaneCoordinator, never()).initWithNative();
@@ -219,13 +218,11 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPaneId() {
         assertEquals(PaneId.TAB_SWITCHER, mTabSwitcherPane.getPaneId());
     }
 
     @Test
-    @SmallTest
     public void testLoadHintColdWarmCold() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -253,7 +250,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLoadHintColdHotWarm() {
         when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
 
@@ -280,7 +276,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLoadHintColdHot_TabStateNotInitialized() {
         when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
         when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(false);
@@ -307,7 +302,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLoadHintColdWarmHotCold() {
         when(mTabGroupModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
 
@@ -340,13 +334,11 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetRootView() {
         assertNotNull(mTabSwitcherPane.getRootView());
     }
 
     @Test
-    @SmallTest
     public void testNewTabButton() {
         FullButtonData buttonData = mTabSwitcherPane.getActionButtonDataSupplier().get();
 
@@ -364,7 +356,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testReferenceButton() {
         DisplayButtonData buttonData = mTabSwitcherPane.getReferenceButtonDataSupplier().get();
 
@@ -378,7 +369,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBackPress() {
         ObservableSupplier<Boolean> handlesBackPressSupplier =
                 mTabSwitcherPane.getHandleBackPressChangedSupplier();
@@ -396,7 +386,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateFadeOutAnimatorNoTab() {
         assertEquals(
                 HubLayoutAnimationType.FADE_OUT,
@@ -406,7 +395,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateFadeInAnimatorNoTab() {
         assertEquals(
                 HubLayoutAnimationType.FADE_IN,
@@ -416,7 +404,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateFadeOutAnimatorListMode() {
         createSelectedTab();
         when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.LIST);
@@ -428,7 +415,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateFadeInAnimatorListMode() {
         createSelectedTab();
         when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.LIST);
@@ -440,7 +426,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateExpandTabAnimator() {
         createSelectedTab();
         mTabSwitcherPane.initWithNative();
@@ -453,7 +438,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateShrinkTabAnimator() {
         createSelectedTab();
         mTabSwitcherPane.initWithNative();
@@ -466,7 +450,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPriceTracking() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         assertNotNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
@@ -509,7 +492,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowTabListEditor() {
         MenuOrKeyboardActionHandler handler = mTabSwitcherPane.getMenuOrKeyboardActionHandler();
         assertNotNull(handler);
@@ -533,7 +515,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetDialogVisibilitySupplier() {
         assertNull(mTabSwitcherPane.getTabGridDialogVisibilitySupplier());
 
@@ -545,7 +526,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCustomViewManager() {
         assertNotNull(mTabSwitcherPane.getTabSwitcherCustomViewManager());
 
@@ -564,7 +544,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetTabListModelSize() {
         assertEquals(0, mTabSwitcherPane.getTabSwitcherTabListModelSize());
 
@@ -578,7 +557,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetRecyclerViewPosition() {
         RecyclerViewPosition position = new RecyclerViewPosition(1, 5);
         mTabSwitcherPane.setTabSwitcherRecyclerViewPosition(position);
@@ -592,7 +570,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testResetWithTabList() {
         assertFalse(mTabSwitcherPane.resetWithTabList(null, false));
 
@@ -616,7 +593,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnTabClickedCallback() {
         mTabSwitcherPane.initWithNative();
         mTabSwitcherPane.createTabSwitcherPaneCoordinator();
@@ -632,7 +608,21 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
+    public void testHairlineVisibilitySupplier() {
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+
+        var hairlineVisibilitySupplier = mTabSwitcherPane.getHairlineVisibilitySupplier();
+        assertNull(hairlineVisibilitySupplier.get());
+
+        mHairlineVisibilityCallbackCaptor.getValue().onResult(true);
+        assertTrue(hairlineVisibilitySupplier.get());
+
+        mHairlineVisibilityCallbackCaptor.getValue().onResult(false);
+        assertFalse(hairlineVisibilitySupplier.get());
+    }
+
+    @Test
     public void testPriceDropRecord() {
         mTabModel.addTab(TAB_ID);
         mTabSwitcherPane.initWithNative();
@@ -655,7 +645,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAnimationListener() {
         mTabModel.addTab(TAB_ID);
         mTabSwitcherPane.initWithNative();
@@ -672,7 +661,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnTabGroupHide_shown() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(mTabGroupModelFilter)
@@ -690,7 +678,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnTabGroupHide_nullButton() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(mTabGroupModelFilter)
@@ -708,7 +695,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnTabGroupHide_nullController() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(mTabGroupModelFilter)
@@ -726,7 +712,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnTabGroupHide_notHiding() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(mTabGroupModelFilter)
@@ -744,7 +729,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnTabGroupHide_ungroup() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(mTabGroupModelFilter)
@@ -762,7 +746,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddAndRemoveTabGroupObserver() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(mTabGroupModelFilter).addTabGroupObserver(any());
@@ -774,7 +757,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnCreation_shown() {
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
@@ -786,7 +768,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnCreation_nullButton() {
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
@@ -798,7 +779,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnCreation_noGroups() {
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
@@ -810,7 +790,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnCreation_nullController() {
         mTabSwitcherPane.setPaneHubController(null);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
@@ -822,7 +801,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnCreation_animating() {
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
@@ -840,7 +818,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIphOnShown_shown() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         mTabSwitcherPane.setPaneHubController(mPaneHubController);

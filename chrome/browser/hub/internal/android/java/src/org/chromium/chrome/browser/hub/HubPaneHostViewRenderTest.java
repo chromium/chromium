@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
 import android.app.Activity;
@@ -43,7 +44,7 @@ public class HubPaneHostViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(4)
+                    .setRevision(5)
                     .build();
 
     private Activity mActivity;
@@ -80,6 +81,7 @@ public class HubPaneHostViewRenderTest {
                     @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(mActivity);
                     View rootView = solidColorView(defaultBgColor);
                     mPropertyModel.set(COLOR_SCHEME, HubColorScheme.DEFAULT);
+                    mPropertyModel.set(HAIRLINE_VISIBILITY, true);
                     mPropertyModel.set(PANE_ROOT_VIEW, rootView);
                     mPropertyModel.set(ACTION_BUTTON_DATA, enabledButtonData);
                 });

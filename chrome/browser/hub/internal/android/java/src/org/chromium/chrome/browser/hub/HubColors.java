@@ -132,4 +132,17 @@ public final class HubColors {
         int[] colors = new int[] {selectedColor, normalColor};
         return new ColorStateList(SELECTED_AND_NORMAL_STATES, colors);
     }
+
+    /** Returns the color of the hairline for a color scheme. */
+    public static @ColorInt int getHairlineColor(Context context, @HubColorScheme int colorScheme) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                return SemanticColorUtils.getDividerLineBgColor(context);
+            case HubColorScheme.INCOGNITO:
+                return ContextCompat.getColor(context, R.color.divider_line_bg_color_light);
+            default:
+                assert false;
+                return Color.TRANSPARENT;
+        }
+    }
 }

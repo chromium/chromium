@@ -12,9 +12,6 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableBooleanPropertyKey BLOCK_TOUCH_INPUT =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
-            new PropertyModel.WritableBooleanPropertyKey();
-
     public static final PropertyModel.ReadableObjectPropertyKey<BrowserControlsStateProvider>
             BROWSER_CONTROLS_STATE_PROVIDER = new PropertyModel.WritableObjectPropertyKey<>();
 
@@ -46,7 +43,6 @@ class TabListContainerProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BLOCK_TOUCH_INPUT,
-                IS_INCOGNITO,
                 BROWSER_CONTROLS_STATE_PROVIDER,
                 INITIAL_SCROLL_INDEX,
                 MODE,

@@ -102,6 +102,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabSwitcherMessageManager mMessageManager;
     @Mock private TabSwitcherResetHandler mResetHandler;
     @Mock private Callback<Integer> mOnTabClickedCallback;
+    @Mock private Callback<Boolean> mHairlineVisibilityCallback;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private Tracker mTracker;
     @Mock private BottomSheetController mBottomSheetController;
@@ -180,6 +181,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
+                        mHairlineVisibilityCallback,
                         TabListMode.GRID,
                         /* supportsEmptyState= */ true,
                         /* onTabGroupCreation= */ null,

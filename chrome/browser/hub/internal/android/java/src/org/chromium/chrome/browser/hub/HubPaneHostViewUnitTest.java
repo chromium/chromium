@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
 import android.app.Activity;
@@ -18,9 +19,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,6 +55,7 @@ public class HubPaneHostViewUnitTest {
     private Activity mActivity;
     private HubPaneHostView mPaneHost;
     private Button mActionButton;
+    private ImageView mHairline;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -68,6 +70,7 @@ public class HubPaneHostViewUnitTest {
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         mPaneHost = (HubPaneHostView) inflater.inflate(R.layout.hub_pane_host_layout, null, false);
         mActionButton = mPaneHost.findViewById(R.id.host_action_button);
+        mHairline = mPaneHost.findViewById(R.id.pane_top_hairline);
         mActivity.setContentView(mPaneHost);
 
         mPropertyModel = new PropertyModel(HubPaneHostProperties.ALL_KEYS);
@@ -75,7 +78,6 @@ public class HubPaneHostViewUnitTest {
     }
 
     @Test
-    @MediumTest
     public void testActionButtonVisibility() {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
@@ -91,7 +93,6 @@ public class HubPaneHostViewUnitTest {
     }
 
     @Test
-    @MediumTest
     public void testActionButtonCallback() {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
@@ -111,7 +112,6 @@ public class HubPaneHostViewUnitTest {
     }
 
     @Test
-    @MediumTest
     public void testEmptyActionButtonCallbackDisablesButton() {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
@@ -125,7 +125,6 @@ public class HubPaneHostViewUnitTest {
     }
 
     @Test
-    @MediumTest
     public void testSetRootView() {
         View root1 = new View(mActivity);
         View root2 = new View(mActivity);
@@ -157,7 +156,6 @@ public class HubPaneHostViewUnitTest {
     }
 
     @Test
-    @MediumTest
     public void testSetRootView_alphaRestored() {
         View root1 = new View(mActivity);
         View root2 = new View(mActivity);
@@ -171,6 +169,17 @@ public class HubPaneHostViewUnitTest {
         mPropertyModel.set(PANE_ROOT_VIEW, null);
         mPropertyModel.set(PANE_ROOT_VIEW, root1);
         assertEquals(1, root1.getAlpha(), /* delta= */ 0);
+    }
+
+    @Test
+    public void testHairlineVisibility() {
+        assertEquals(View.GONE, mHairline.getVisibility());
+
+        mPropertyModel.set(HAIRLINE_VISIBILITY, true);
+        assertEquals(View.VISIBLE, mHairline.getVisibility());
+
+        mPropertyModel.set(HAIRLINE_VISIBILITY, false);
+        assertEquals(View.GONE, mHairline.getVisibility());
     }
 
     /** Order of children does not matter. */

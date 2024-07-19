@@ -158,6 +158,13 @@ public class TabGroupsPane implements Pane {
         return mReferenceButtonSupplier;
     }
 
+    @NonNull
+    @Override
+    public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
+        // TODO(crbug.com/353993190): Implement this.
+        return new ObservableSupplierImpl<Boolean>();
+    }
+
     @Nullable
     @Override
     public HubLayoutAnimationListener getHubLayoutAnimationListener() {

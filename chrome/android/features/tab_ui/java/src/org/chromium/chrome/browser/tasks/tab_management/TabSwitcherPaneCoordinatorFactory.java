@@ -120,6 +120,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param isVisibleSupplier Supplies visibility information to the tab switcher.
      * @param isAnimatingSupplier Supplies animation information to the tab switcher.
      * @param onTabClickCallback Callback to be invoked with the tab ID of the selected tab.
+     * @param setHairlineVisibilityCallback Callback to be invoked to show or hide the hairline.
      * @param isIncognito Whether this is for the incognito tab switcher.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @return a {@link TabSwitcherPaneCoordinator} to use.
@@ -130,6 +131,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
             @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
             @NonNull Callback<Integer> onTabClickCallback,
+            @NonNull Callback<Boolean> setHairlineVisibilityCallback,
             boolean isIncognito,
             @Nullable Runnable onTabGroupCreation) {
         int token = mMessageManagerTokenHolder.acquireToken();
@@ -150,6 +152,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 isVisibleSupplier,
                 isAnimatingSupplier,
                 onTabClickCallback,
+                setHairlineVisibilityCallback,
                 mMode,
                 /* supportsEmptyState= */ !isIncognito,
                 onTabGroupCreation,

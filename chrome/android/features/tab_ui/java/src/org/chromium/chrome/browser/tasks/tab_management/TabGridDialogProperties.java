@@ -101,6 +101,10 @@ class TabGridDialogProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
             COLOR_ICON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableIntPropertyKey HAIRLINE_COLOR =
+            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey HAIRLINE_VISIBILITY =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BINDING_TOKEN,
@@ -141,5 +145,7 @@ class TabGridDialogProperties {
                 IS_INCOGNITO,
                 COLOR_ICON_CLICK_LISTENER,
                 ANIMATION_BACKGROUND_COLOR,
+                HAIRLINE_COLOR,
+                HAIRLINE_VISIBILITY,
             };
 }

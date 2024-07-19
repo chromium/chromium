@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.View;
@@ -119,6 +120,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final TabSwitcherMessageManager mMessageManager;
     private final ModalDialogManager mModalDialogManager;
     private final Runnable mOnDestroyed;
+    private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
 
     /** Lazily initialized when shown. */
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
@@ -141,6 +143,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param isVisibleSupplier The supplier of the pane's visibility.
      * @param isAnimatingSupplier Whether the pane is animating into or out of view.
      * @param onTabClickCallback Callback to invoke when a tab is clicked.
+     * @param setHairlineVisibilityCallback Callback to be invoked to show or hide the hairline.
      * @param mode The {@link TabListMode} to use.
      * @param supportsEmptyState Whether empty state UI should be shown when the model is empty.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
@@ -162,6 +165,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
             @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
             @NonNull Callback<Integer> onTabClickCallback,
+            @NonNull Callback<Boolean> setHairlineVisibilityCallback,
             @TabListMode int mode,
             boolean supportsEmptyState,
             @Nullable Runnable onTabGroupCreation,
@@ -270,8 +274,13 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mTabListCoordinator = tabListCoordinator;
             tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);
 
+            mTabListOnScrollListener
+                    .getYOffsetNonZeroSupplier()
+                    .addObserver(setHairlineVisibilityCallback);
             TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();
             recyclerView.setVisibility(View.VISIBLE);
+            recyclerView.setBackgroundColor(Color.TRANSPARENT);
+            recyclerView.addOnScrollListener(mTabListOnScrollListener);
             mContainerViewChangeProcessor =
                     PropertyModelChangeProcessor.create(
                             containerViewModel, recyclerView, TabListContainerViewBinder::bind);
@@ -349,6 +358,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mTabListCoordinator.resetWithListOfTabs(
                 tabList == null ? null : tabs, /* quickMode= */ false);
         mMessageManager.afterReset(tabs.size());
+        mTabListOnScrollListener.postUpdate(mTabListCoordinator.getContainerView());
     }
 
     /** Performs soft cleanup which removes thumbnails to relieve memory usage. */

@@ -31,6 +31,15 @@ found in the LICENSE file.
             android:layout_below="@id/tab_grid_dialog_toolbar_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+        <ImageView
+            android:id="@+id/tab_grid_dialog_hairline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tab_grid_dialog_toolbar_container"
+            android:src="@drawable/toolbar_hairline"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no"
+            android:visibility="gone"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

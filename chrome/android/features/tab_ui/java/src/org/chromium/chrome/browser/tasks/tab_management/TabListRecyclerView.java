@@ -6,23 +6,15 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -43,32 +35,13 @@ import java.util.List;
 /** A custom RecyclerView implementation for the tab grid, to handle show/hide logic in class. */
 class TabListRecyclerView extends RecyclerView
         implements TabListMediator.TabGridAccessibilityHelper {
-    private static final String SHADOW_VIEW_TAG = "TabListViewShadow";
-
-    private class TabListOnScrollListener extends RecyclerView.OnScrollListener {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            final int yOffset = recyclerView.computeVerticalScrollOffset();
-            if (yOffset == 0) {
-                setShadowVisibility(false);
-                return;
-            }
-
-            if (dy == 0 || recyclerView.getScrollState() == SCROLL_STATE_SETTLING) return;
-
-            setShadowVisibility(yOffset > 0);
-        }
-    }
-
     private boolean mBlockTouchInput;
     private ImageView mShadowImageView;
-    private TabListOnScrollListener mScrollListener;
     // Null unless item animations are disabled.
     @Nullable private RecyclerView.ItemAnimator mDisabledAnimatorHolder;
     // Null if there is no runnable to execute on the next layout.
     @Nullable private Runnable mOnNextLayoutRunnable;
 
-    private int mToolbarHairlineColor;
     private TabListItemAnimator mTabListItemAnimator;
 
     /** Basic constructor to use during inflation from xml. */
@@ -147,79 +120,6 @@ class TabListRecyclerView extends RecyclerView
             mTabListItemAnimator =
                     new TabListItemAnimator(skipRemovalDelay, rearrangeUseStandardEasing);
             setItemAnimator(mTabListItemAnimator);
-        }
-    }
-
-    /**
-     * Updates the toolbar hairline drawable color appropriately for the regular and incognito tab
-     * models.
-     *
-     * @param color The toolbar hairline color.
-     */
-    void setToolbarHairlineColor(@ColorInt int color) {
-        mToolbarHairlineColor = color;
-        // If the drawable is already initialized, update its color when switching between regular
-        // and incognito tab models.
-        if (mShadowImageView != null) {
-            mShadowImageView.setImageTintList(ColorStateList.valueOf(color));
-        }
-    }
-
-    void setShadowVisibility(boolean shouldShowShadow) {
-        if (mShadowImageView == null) {
-            Context context = getContext();
-            mShadowImageView = new ImageView(context);
-            Drawable drawable = context.getDrawable(R.drawable.toolbar_hairline);
-            mShadowImageView.setImageDrawable(drawable);
-            mShadowImageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            mShadowImageView.setTag(SHADOW_VIEW_TAG);
-            Resources res = context.getResources();
-            int shadowHeight = res.getDimensionPixelSize(R.dimen.toolbar_hairline_height);
-            if (getParent() instanceof FrameLayout) {
-                // Add shadow for grid tab switcher.
-                FrameLayout.LayoutParams params =
-                        new FrameLayout.LayoutParams(
-                                LayoutParams.MATCH_PARENT, shadowHeight, Gravity.TOP);
-                mShadowImageView.setLayoutParams(params);
-                FrameLayout parent = (FrameLayout) getParent();
-                parent.addView(mShadowImageView);
-            } else if (getParent() instanceof RelativeLayout) {
-                // Add shadow for tab grid dialog.
-                RelativeLayout parent = (RelativeLayout) getParent();
-                View toolbar = parent.getChildAt(0);
-                if (!(toolbar instanceof TabGridDialogToolbarView)) return;
-
-                RelativeLayout.LayoutParams params =
-                        new RelativeLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT, shadowHeight);
-                params.addRule(RelativeLayout.BELOW, toolbar.getId());
-                parent.addView(mShadowImageView, params);
-            }
-        }
-
-        mShadowImageView.setImageTintList(ColorStateList.valueOf(mToolbarHairlineColor));
-        if (shouldShowShadow && mShadowImageView.getVisibility() != VISIBLE) {
-            mShadowImageView.setVisibility(VISIBLE);
-        } else if (!shouldShowShadow && mShadowImageView.getVisibility() != GONE) {
-            mShadowImageView.setVisibility(GONE);
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        mScrollListener = new TabListOnScrollListener();
-        addOnScrollListener(mScrollListener);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (mScrollListener != null) {
-            removeOnScrollListener(mScrollListener);
-            mScrollListener = null;
         }
     }
 
