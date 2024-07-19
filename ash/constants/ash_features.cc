@@ -3220,6 +3220,16 @@ BASE_FEATURE(kWelcomeExperience,
              "WelcomeExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// kWelcomeExperienceTestUnsupportedDevices enables the new device Welcome
+// Experience to be tested on external devices that are not officially
+// supported. When enabled, users will be able to initiate and complete
+// the enhanced Welcome Experience flow using these unsupported external
+// devices. This flag is intended for testing purposes and should be disabled
+// disabled in production environments.
+BASE_FEATURE(kWelcomeExperienceTestUnsupportedDevices,
+             "WelcomeExperienceTestUnsupportedDevices",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Welcome Tour that walks new users through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4836,6 +4846,11 @@ bool IsWallpaperPerDeskEnabled() {
 bool IsWelcomeExperienceEnabled() {
   return IsPeripheralCustomizationEnabled() &&
          base::FeatureList::IsEnabled(kWelcomeExperience);
+}
+
+bool IsWelcomeExperienceTestUnsupportedDevicesEnabled() {
+  return IsWelcomeExperienceEnabled() &&
+         base::FeatureList::IsEnabled(kWelcomeExperienceTestUnsupportedDevices);
 }
 
 bool IsWelcomeTourChromeVoxSupported() {

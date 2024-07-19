@@ -4439,6 +4439,9 @@ extern const char kWakeOnWifiAllowedDescription[];
 extern const char kWelcomeExperienceName[];
 extern const char kWelcomeExperienceDescription[];
 
+extern const char kWelcomeExperienceTestUnsupportedDevicesName[];
+extern const char kWelcomeExperienceTestUnsupportedDevicesDescription[];
+
 extern const char kWelcomeTourName[];
 extern const char kWelcomeTourDescription[];
 

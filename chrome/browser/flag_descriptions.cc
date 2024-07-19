@@ -7647,6 +7647,16 @@ const char kWelcomeExperienceName[] = "Welcome Experience";
 const char kWelcomeExperienceDescription[] =
     "Enables a new Welcome Experience for first-time peripheral connections.";
 
+const char kWelcomeExperienceTestUnsupportedDevicesName[] =
+    "Welcome Experience test unsupported devices";
+const char kWelcomeExperienceTestUnsupportedDevicesDescription[] =
+    "kWelcomeExperienceTestUnsupportedDevices enables the new device Welcome "
+    "Experience to be tested on external devices that are not officially "
+    "supported. When enabled, users will be able to initiate and complete "
+    "the enhanced Welcome Experience flow using these unsupported external "
+    "devices. This flag is intended for testing purposes and should be "
+    "disabled in production environments.";
+
 const char kWelcomeTourName[] = "Welcome Tour";
 const char kWelcomeTourDescription[] =
     "Enables the Welcome Tour that walks new users through ChromeOS System UI.";

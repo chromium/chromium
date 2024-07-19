@@ -1029,6 +1029,8 @@ BASE_DECLARE_FEATURE(kWallpaperGooglePhotosSharedAlbums);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWallpaperPerDesk);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWelcomeExperience);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kWelcomeExperienceTestUnsupportedDevices);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWelcomeTour);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWelcomeTourChromeVoxSupported);
@@ -1468,6 +1470,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsWallpaperGooglePhotosSharedAlbumsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperPerDeskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeExperienceEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsWelcomeExperienceTestUnsupportedDevicesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourChromeVoxSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourForceUserEligibilityEnabled();
