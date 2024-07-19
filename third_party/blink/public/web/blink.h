@@ -112,10 +112,6 @@ BLINK_EXPORT void MemoryPressureNotificationToAllIsolates(
 BLINK_EXPORT void SetBatterySaverModeForAllIsolates(
     bool battery_saver_mode_enabled);
 
-// Send isolate background/foreground notification to worker thread isolates.
-BLINK_EXPORT void IsolateInBackgroundNotification();
-BLINK_EXPORT void IsolateInForegroundNotification();
-
 // Logs stats. Intended to be called during shutdown.
 BLINK_EXPORT void LogStatsDuringShutdown();
 
