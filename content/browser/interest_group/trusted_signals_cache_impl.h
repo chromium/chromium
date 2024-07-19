@@ -166,7 +166,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // over the network after a post task.
   scoped_refptr<Handle> RequestTrustedBiddingSignals(
       const url::Origin& main_frame_origin,
-      const url::Origin& owner,
+      const url::Origin& interest_group_owner,
       const std::string& interest_group_name,
       blink::mojom::InterestGroup_ExecutionMode execution_mode,
       const url::Origin& joining_origin,
@@ -205,9 +205,13 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // at least.
   struct FetchKey {
     FetchKey();
+    // `script_origin` is the origin of the script that will receive the
+    // response. For bidding signals fetches, it's the interest group owner. For
+    // scoring signals fetches, it's the seller origin (component or top-level,
+    // depending on which seller will be receiving the signals).
     FetchKey(const url::Origin& main_frame_origin,
              SignalsType signals_type,
-             const url::Origin& owner,
+             const url::Origin& script_origin,
              const GURL& trusted_signals_url);
     FetchKey(const FetchKey&);
     FetchKey(FetchKey&&);
@@ -222,7 +226,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     // Order here matches comparison order in operator<(), and is based on a
     // guess on what order will result in the most performant comparisons.
 
-    url::Origin owner;
+    url::Origin script_origin;
     SignalsType signals_type;
 
     // The origin of the frame running the auction that needs the signals. This
@@ -277,7 +281,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     // pooled together, if the other values match, and the interest group names
     // will be stored as a value in the BiddingCacheEntry, rather than as part
     // of the key.
-    BiddingCacheKey(const url::Origin& owner,
+    BiddingCacheKey(const url::Origin& interest_group_owner,
                     std::optional<std::string> interest_group_name,
                     const GURL& trusted_signals_url,
                     const url::Origin& main_frame_origin,

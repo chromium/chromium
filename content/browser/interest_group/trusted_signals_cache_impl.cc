@@ -88,9 +88,9 @@ TrustedSignalsCacheImpl::FetchKey::FetchKey() = default;
 TrustedSignalsCacheImpl::FetchKey::FetchKey(
     const url::Origin& main_frame_origin,
     SignalsType signals_type,
-    const url::Origin& owner,
+    const url::Origin& script_origin,
     const GURL& trusted_signals_url)
-    : owner(owner),
+    : script_origin(script_origin),
       signals_type(signals_type),
       main_frame_origin(main_frame_origin),
       trusted_signals_url(trusted_signals_url) {}
@@ -106,9 +106,10 @@ TrustedSignalsCacheImpl::FetchKey& TrustedSignalsCacheImpl::FetchKey::operator=(
 TrustedSignalsCacheImpl::FetchKey::~FetchKey() = default;
 
 bool TrustedSignalsCacheImpl::FetchKey::operator<(const FetchKey& other) const {
-  return std::tie(owner, signals_type, main_frame_origin, trusted_signals_url) <
-         std::tie(other.owner, other.signals_type, other.main_frame_origin,
-                  other.trusted_signals_url);
+  return std::tie(script_origin, signals_type, main_frame_origin,
+                  trusted_signals_url) <
+         std::tie(other.script_origin, other.signals_type,
+                  other.main_frame_origin, other.trusted_signals_url);
 }
 
 struct TrustedSignalsCacheImpl::Fetch {
@@ -134,6 +135,40 @@ struct TrustedSignalsCacheImpl::Fetch {
 
   std::unique_ptr<TrustedSignalsFetcher> fetcher;
 };
+
+TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey() = default;
+
+TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(
+    const url::Origin& interest_group_owner,
+    std::optional<std::string> interest_group_name,
+    const GURL& trusted_signals_url,
+    const url::Origin& main_frame_origin,
+    const url::Origin& joining_origin,
+    base::Value::Dict additional_params)
+    : interest_group_name(std::move(interest_group_name)),
+      fetch_key(main_frame_origin,
+                SignalsType::kBidding,
+                interest_group_owner,
+                trusted_signals_url),
+      joining_origin(joining_origin),
+      additional_params(std::move(additional_params)) {}
+
+TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(BiddingCacheKey&&) =
+    default;
+
+TrustedSignalsCacheImpl::BiddingCacheKey::~BiddingCacheKey() = default;
+
+TrustedSignalsCacheImpl::BiddingCacheKey&
+TrustedSignalsCacheImpl::BiddingCacheKey::operator=(BiddingCacheKey&&) =
+    default;
+
+bool TrustedSignalsCacheImpl::BiddingCacheKey::operator<(
+    const BiddingCacheKey& other) const {
+  return std::tie(interest_group_name, fetch_key, joining_origin,
+                  additional_params) <
+         std::tie(other.interest_group_name, other.fetch_key,
+                  other.joining_origin, other.additional_params);
+}
 
 struct TrustedSignalsCacheImpl::BiddingCacheEntry {
   BiddingCacheEntry(const std::string& interest_group_name,
@@ -223,40 +258,6 @@ struct TrustedSignalsCacheImpl::BiddingCacheEntry {
   // same interest group).
   bool is_group_by_origin = false;
 };
-
-TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey() = default;
-
-TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(
-    const url::Origin& owner,
-    std::optional<std::string> interest_group_name,
-    const GURL& trusted_signals_url,
-    const url::Origin& main_frame_origin,
-    const url::Origin& joining_origin,
-    base::Value::Dict additional_params)
-    : interest_group_name(std::move(interest_group_name)),
-      fetch_key(main_frame_origin,
-                SignalsType::kBidding,
-                owner,
-                trusted_signals_url),
-      joining_origin(joining_origin),
-      additional_params(std::move(additional_params)) {}
-
-TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(BiddingCacheKey&&) =
-    default;
-
-TrustedSignalsCacheImpl::BiddingCacheKey::~BiddingCacheKey() = default;
-
-TrustedSignalsCacheImpl::BiddingCacheKey&
-TrustedSignalsCacheImpl::BiddingCacheKey::operator=(BiddingCacheKey&&) =
-    default;
-
-bool TrustedSignalsCacheImpl::BiddingCacheKey::operator<(
-    const BiddingCacheKey& other) const {
-  return std::tie(interest_group_name, fetch_key, joining_origin,
-                  additional_params) <
-         std::tie(other.interest_group_name, other.fetch_key,
-                  other.joining_origin, other.additional_params);
-}
 
 class TrustedSignalsCacheImpl::CompressionGroupData : public Handle {
  public:
@@ -447,7 +448,7 @@ TrustedSignalsCacheImpl::CreateMojoPipe() {
 scoped_refptr<TrustedSignalsCacheImpl::Handle>
 TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
     const url::Origin& main_frame_origin,
-    const url::Origin& owner,
+    const url::Origin& interest_group_owner,
     const std::string& interest_group_name,
     blink::mojom::InterestGroup_ExecutionMode execution_mode,
     const url::Origin& joining_origin,
@@ -459,7 +460,7 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
   bool is_group_by_origin =
       execution_mode ==
       blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
-  BiddingCacheKey cache_key(owner,
+  BiddingCacheKey cache_key(interest_group_owner,
                             is_group_by_origin
                                 ? std::nullopt
                                 : std::make_optional(interest_group_name),
