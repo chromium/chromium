@@ -1354,7 +1354,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   LocalFrameView* DocumentFrameView() const;
   virtual Element* AnchorElement() const { return nullptr; }
   virtual Element* ActionElement() const { return nullptr; }
-  virtual AtomicString Language() const;
+
+  // For non-root nodes, this returns the language attribute value. For the
+  // root node (kRootWebArea), this returns the first non-empty value from the
+  // following list: the language attribute in the <html> element, the language
+  // specified in the <meta> tag, the Accept-Language HTTP header, the default
+  // language of the browser's UI.
+  AtomicString Language() const;
   virtual bool HasAttribute(const QualifiedName&) const { return false; }
   virtual const AtomicString& GetAttribute(const QualifiedName&) const {
     return g_null_atom;

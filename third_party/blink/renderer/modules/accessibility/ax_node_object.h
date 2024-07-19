@@ -299,7 +299,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   LayoutObject* GetLayoutObject() const final;
 
   // DOM and layout tree access.
-  AtomicString Language() const override;
   bool HasAttribute(const QualifiedName&) const override;
   const AtomicString& GetAttribute(const QualifiedName&) const override;
 

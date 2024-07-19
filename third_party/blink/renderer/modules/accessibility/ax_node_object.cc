@@ -5973,34 +5973,6 @@ LayoutObject* AXNodeObject::GetLayoutObject() const {
   return layout_object_;
 }
 
-// TODO(chrishall): consider merging this with AXObject::Language in followup.
-AtomicString AXNodeObject::Language() const {
-  if (!GetNode())
-    return AXObject::Language();
-
-  // If it's the root, get the computed language for the document element,
-  // because the root LayoutObject doesn't have the right value.
-  if (IsWebArea()) {
-    Element* document_element = GetDocument()->documentElement();
-    if (!document_element)
-      return g_empty_atom;
-
-    // Ensure we return only the first language tag. ComputeInheritedLanguage
-    // consults ContentLanguage which can be set from 2 different sources.
-    // DocumentLoader::DidInstallNewDocument from HTTP headers which truncates
-    // until the first comma.
-    // HttpEquiv::Process from <meta> tag which does not truncate.
-    // TODO(chrishall): Consider moving this comma handling to setter side.
-    AtomicString lang = document_element->ComputeInheritedLanguage();
-    Vector<String> languages;
-    String(lang).Split(',', languages);
-    if (!languages.empty())
-      return AtomicString(languages[0].StripWhiteSpace());
-  }
-
-  return AXObject::Language();
-}
-
 bool AXNodeObject::HasAttribute(const QualifiedName& attribute) const {
   Element* element = GetElement();
   if (!element)

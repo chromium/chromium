@@ -6429,54 +6429,49 @@ LocalFrameView* AXObject::DocumentFrameView() const {
 }
 
 AtomicString AXObject::Language() const {
-  // This method is used when the style engine is either not available on this
-  // object, e.g. for canvas fallback content, or is unable to determine the
-  // document's language. We use the following signals to detect the element's
-  // language, in decreasing priority:
-  // 1. The [language of a node] as defined in HTML, if known.
-  // 2. The list of languages the browser sends in the [Accept-Language] header.
-  // 3. The browser's default language.
-
   const AtomicString& lang = GetAttribute(html_names::kLangAttr);
-  if (!lang.empty())
+  if (!lang.empty()) {
     return lang;
-
-  // Only fallback for the root node, propagating this value down the tree is
-  // handled browser side within AXNode::GetLanguage.
-  //
-  // TODO(chrishall): Consider moving this to AXNodeObject as
-  // the web area node is currently an AXNodeObject.
-  if (IsWebArea()) {
-    const Document* document = GetDocument();
-    if (document) {
-      // Fall back to the first content language specified in the meta tag.
-      // This is not part of what the HTML5 Standard suggests but it still
-      // appears to be necessary.
-      if (document->ContentLanguage()) {
-        const String content_languages = document->ContentLanguage();
-        Vector<String> languages;
-        content_languages.Split(',', languages);
-        if (!languages.empty())
-          return AtomicString(languages[0].StripWhiteSpace());
-      }
-
-      if (document->GetPage()) {
-        // Use the first accept language preference if present.
-        const String accept_languages =
-            document->GetPage()->GetChromeClient().AcceptLanguages();
-        Vector<String> languages;
-        accept_languages.Split(',', languages);
-        if (!languages.empty())
-          return AtomicString(languages[0].StripWhiteSpace());
-      }
-    }
-
-    // As a last resort, return the default language of the browser's UI.
-    AtomicString default_language = DefaultLanguage();
-    return default_language;
   }
 
-  return g_null_atom;
+  // Return early for non-root nodes. The root node's language can't be set by
+  // the author so we need to determine its language below.
+  if (!IsWebArea()) {
+    return g_null_atom;
+  }
+
+  // Return the language of the <html> element if present.
+  const Document* document = GetDocument();
+  DCHECK(document);
+  if (Element* html_element = document->documentElement()) {
+    if (const AtomicString& html_lang =
+            html_element->getAttribute(html_names::kLangAttr)) {
+      return html_lang;
+    }
+  }
+
+  // Fall back to the content language specified in the meta tag.
+  // This is not part of what the HTML5 Standard suggests but it still
+  // appears to be necessary.
+  if (const String languages = document->ContentLanguage()) {
+    String first_language = languages.Substring(0, languages.Find(","));
+    if (!first_language.empty()) {
+      return AtomicString(first_language.StripWhiteSpace());
+    }
+  }
+
+  // Use the first accept language preference if present.
+  if (Page* page = document->GetPage()) {
+    const String languages = page->GetChromeClient().AcceptLanguages();
+    String first_language = languages.Substring(0, languages.Find(","));
+    if (!first_language.empty()) {
+      return AtomicString(first_language.StripWhiteSpace());
+    }
+  }
+
+  // As a last resort, return the default language of the browser's UI.
+  AtomicString default_language = DefaultLanguage();
+  return default_language;
 }
 
 //
