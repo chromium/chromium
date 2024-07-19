@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("device_activity") {
+  sources = [
+    "device_activity_sampler.cc",
+    "device_activity_sampler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/proto:metric_data_proto",
+    "//ui/base/idle",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "device_activity_sampler_unittest.cc" ]
+
+  deps = [
+    ":device_activity",
+    "//base/test:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/idle",
+    "//ui/base/idle:test_support",
+  ]
+}

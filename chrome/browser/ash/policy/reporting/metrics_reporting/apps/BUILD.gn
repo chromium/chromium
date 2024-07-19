@@ -1,0 +1,80 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("apps") {
+  sources = [
+    "app_events_observer.cc",
+    "app_events_observer.h",
+    "app_metric_reporting_utils.cc",
+    "app_metric_reporting_utils.h",
+    "app_platform_metrics_retriever.cc",
+    "app_platform_metrics_retriever.h",
+    "app_usage_observer.cc",
+    "app_usage_observer.h",
+    "app_usage_telemetry_periodic_collector.cc",
+    "app_usage_telemetry_periodic_collector.h",
+    "app_usage_telemetry_sampler.cc",
+    "app_usage_telemetry_sampler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/login/session",
+    "//components/prefs",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/services/app_service",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/protos",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_events_observer_unittest.cc",
+    "app_metric_reporting_utils_unittest.cc",
+    "app_platform_metrics_retriever_unittest.cc",
+    "app_usage_observer_unittest.cc",
+    "app_usage_telemetry_periodic_collector_unittest.cc",
+    "app_usage_telemetry_sampler_unittest.cc",
+  ]
+
+  deps = [
+    ":apps",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/login/session",
+    "//components/prefs",
+    "//components/reporting/metrics/fakes:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//components/services/app_service/public/protos",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/compositor",
+  ]
+}

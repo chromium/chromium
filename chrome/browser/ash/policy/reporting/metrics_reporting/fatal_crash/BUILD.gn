@@ -1,0 +1,65 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("fatal_crash") {
+  sources = [
+    "chrome_fatal_crash_events_observer.cc",
+    "chrome_fatal_crash_events_observer.h",
+    "fatal_crash_events_observer.cc",
+    "fatal_crash_events_observer.h",
+    "fatal_crash_events_observer_reported_local_id_manager.cc",
+    "fatal_crash_events_observer_reported_local_id_manager.h",
+    "fatal_crash_events_observer_settings_for_test.cc",
+    "fatal_crash_events_observer_settings_for_test.h",
+    "fatal_crash_events_observer_uploaded_crash_info_manager.cc",
+    "fatal_crash_events_observer_uploaded_crash_info_manager.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/policy/reporting/event_based_logs",
+    "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/util:status",
+    "//components/user_manager:common",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fatal_crash_events_observer_test_util.cc",
+    "fatal_crash_events_observer_test_util.h",
+    "fatal_crash_events_observer_unittest.cc",
+  ]
+
+  deps = [
+    ":fatal_crash",
+    "//ash:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/user_manager",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

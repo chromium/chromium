@@ -3335,6 +3335,7 @@ static_library("ui") {
       "//chrome/browser/ash/policy/external_data/handlers",
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/policy/remote_commands",
+      "//chrome/browser/ash/policy/reporting/metrics_reporting",
       "//chrome/browser/ash/power",
       "//chrome/browser/ash/power/ml",
       "//chrome/browser/ash/printing",

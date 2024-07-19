@@ -14,8 +14,9 @@ component("debug_daemon") {
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/common",
-    "//dbus",
   ]
+
+  public_deps = [ "//dbus" ]
 
   sources = [
     "binary_log_files_reader.cc",

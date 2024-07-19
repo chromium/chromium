@@ -21,8 +21,9 @@ source_set("hermes_clients") {
     "//base",
     "//chromeos/dbus/common",
     "//components/device_event_log",
-    "//dbus",
   ]
+
+  public_deps = [ "//dbus" ]
 
   sources = [
     "constants.cc",
