@@ -966,7 +966,6 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
     LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
     auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
         layer_tree_impl, ScrollbarOrientation::kVertical, false, true);
-    scrollbar->draw_properties().opacity = 1.f;
     // SetupScrollbarLayerCommon will register the scrollbar, which sets the
     // layer's opacity to 0. An effect node for the scrollbar layer object needs
     // to be registered in the EffectTree before this happens.
@@ -992,7 +991,7 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
     UIResourceBitmap bitmap(gfx::Size(1, 1), true);
     host_impl_->CreateUIResource(ui_resource_id, bitmap);
     scrollbar->set_track_ui_resource_id(ui_resource_id);
-    scrollbar->SetFluentThumbColor(SkColor4f::FromColor(SK_ColorRED));
+    scrollbar->SetThumbColor(SkColors::kRed);
     scrollbar->set_is_web_test(true);
     UpdateDrawProperties(host_impl_->active_tree());
 
@@ -13955,8 +13954,11 @@ TEST_P(LayerTreeHostImplTest, ScrollAnimatedUpdateInnerViewport) {
 TEST_P(FluentOverlayScrollbarOpacityLayerTreeHostImplTest,
        PaintedOverlayScrollbarTrackOpacityTest) {
   auto* scrollbar = CreateAndRegisterPaintedScrollbarLayer();
+  // Make the scrollbar visible.
+  scrollbar->SetOverlayScrollbarLayerOpacityAnimated(1.f);
+  UpdateDrawProperties(host_impl_->active_tree());
 
-  scrollbar->draw_properties().opacity = 1;
+  EXPECT_EQ(1.f, scrollbar->draw_properties().opacity);
   int const step = GetParam();
   float const thickness_scale_step =
       (1 - scrollbar->GetIdleThicknessScale()) / kParamSteps;
