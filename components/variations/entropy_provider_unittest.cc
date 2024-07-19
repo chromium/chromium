@@ -197,9 +197,9 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
                                                  entropy_provider),
   };
 
-  for (size_t i = 0; i < std::size(trials); ++i) {
+  for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
-      trials[i]->AppendGroup(std::string(), 1);
+      trial->AppendGroup(std::string(), 1);
   }
 
   // The trials are most likely to give different results since they have
@@ -223,9 +223,9 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
                                                  entropy_provider),
   };
 
-  for (size_t i = 0; i < std::size(trials); ++i) {
+  for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
-      trials[i]->AppendGroup(std::string(), 1);
+      trial->AppendGroup(std::string(), 1);
   }
 
   // The trials are most likely to give different results since they have
@@ -245,9 +245,9 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
                                                  entropy_provider, kCustomSeed),
   };
 
-  for (size_t i = 0; i < std::size(trials); ++i) {
+  for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
-      trials[i]->AppendGroup(std::string(), 1);
+      trial->AppendGroup(std::string(), 1);
   }
 
   // Normally, these trials should produce different groups, but if the same
@@ -269,9 +269,9 @@ TEST(EntropyProviderTest,
                                                  entropy_provider, kCustomSeed),
   };
 
-  for (size_t i = 0; i < std::size(trials); ++i) {
+  for (const scoped_refptr<base::FieldTrial>& trial : trials) {
     for (int j = 0; j < 100; ++j)
-      trials[i]->AppendGroup(std::string(), 1);
+      trial->AppendGroup(std::string(), 1);
   }
 
   // Normally, these trials should produce different groups, but if the same
@@ -284,9 +284,9 @@ TEST(EntropyProviderTest, SHA1Entropy) {
                              GenerateSHA1Entropy("there", "1") };
 
   EXPECT_NE(results[0], results[1]);
-  for (size_t i = 0; i < std::size(results); ++i) {
-    EXPECT_LE(0.0, results[i]);
-    EXPECT_GT(1.0, results[i]);
+  for (double result : results) {
+    EXPECT_LE(0.0, result);
+    EXPECT_GT(1.0, result);
   }
 
   EXPECT_EQ(GenerateSHA1Entropy("yo", "1"),
@@ -301,9 +301,9 @@ TEST(EntropyProviderTest, NormalizedMurmurHashEntropy) {
       GenerateNormalizedMurmurHashEntropy({4321, kMaxLowEntropySize}, "1")};
 
   EXPECT_NE(results[0], results[1]);
-  for (size_t i = 0; i < std::size(results); ++i) {
-    EXPECT_LE(0.0, results[i]);
-    EXPECT_GT(1.0, results[i]);
+  for (double result : results) {
+    EXPECT_LE(0.0, result);
+    EXPECT_GT(1.0, result);
   }
 
   EXPECT_EQ(
@@ -333,16 +333,16 @@ TEST(EntropyProviderTest, NormalizedMurmurHashEntropyProviderResults) {
 }
 
 TEST(EntropyProviderTest, SHA1EntropyIsUniform) {
-  for (size_t i = 0; i < std::size(kTestTrialNames); ++i) {
-    SHA1EntropyGenerator entropy_generator(kTestTrialNames[i]);
-    PerformEntropyUniformityTest(kTestTrialNames[i], entropy_generator);
+  for (const char* name : kTestTrialNames) {
+    SHA1EntropyGenerator entropy_generator(name);
+    PerformEntropyUniformityTest(name, entropy_generator);
   }
 }
 
 TEST(EntropyProviderTest, NormalizedMurmurHashEntropyIsUniform) {
-  for (size_t i = 0; i < std::size(kTestTrialNames); ++i) {
-    NormalizedMurmurHashEntropyGenerator entropy_generator(kTestTrialNames[i]);
-    PerformEntropyUniformityTest(kTestTrialNames[i], entropy_generator);
+  for (const char* name : kTestTrialNames) {
+    NormalizedMurmurHashEntropyGenerator entropy_generator(name);
+    PerformEntropyUniformityTest(name, entropy_generator);
   }
 }
 

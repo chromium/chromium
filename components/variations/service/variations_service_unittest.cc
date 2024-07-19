@@ -532,12 +532,12 @@ TEST_F(VariationsServiceTest, SeedNotStoredWhenNonOKStatus) {
           &prefs_, network_tracker_),
       &prefs_, GetMetricsStateManager(), true, &synthetic_trial_registry);
   service.set_intercepts_fetch(false);
-  for (size_t i = 0; i < std::size(non_ok_status_codes); ++i) {
+  for (const net::HttpStatusCode code : non_ok_status_codes) {
     EXPECT_TRUE(prefs_.FindPreference(prefs::kVariationsCompressedSeed)
                     ->IsDefaultValue());
     service.test_url_loader_factory()->ClearResponses();
     service.test_url_loader_factory()->AddResponse(
-        service.interception_url().spec(), "", non_ok_status_codes[i]);
+        service.interception_url().spec(), "", code);
     service.DoActualFetch();
 
     EXPECT_TRUE(prefs_.FindPreference(prefs::kVariationsCompressedSeed)
@@ -634,7 +634,7 @@ TEST_F(VariationsServiceTest, InstanceManipulations) {
   std::string serialized_seed = SerializeSeed(CreateTestSeed());
   VariationsService::EnableFetchForTesting();
   SyntheticTrialRegistry synthetic_trial_registry;
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (const auto& test_case : cases) {
     TestVariationsService service(
         std::make_unique<web_resource::TestRequestAllowedNotifier>(
             &prefs_, network_tracker_),
@@ -642,13 +642,13 @@ TEST_F(VariationsServiceTest, InstanceManipulations) {
     service.set_intercepts_fetch(false);
 
     AddOKResponseWithIM(service.interception_url(), serialized_seed,
-                        cases[i].im, service.test_url_loader_factory());
+                        test_case.im, service.test_url_loader_factory());
 
     service.DoActualFetch();
 
-    EXPECT_EQ(cases[i].seed_stored, service.seed_stored());
-    EXPECT_EQ(cases[i].delta_compressed, service.delta_compressed_seed());
-    EXPECT_EQ(cases[i].gzip_compressed, service.gzip_compressed_seed());
+    EXPECT_EQ(test_case.seed_stored, service.seed_stored());
+    EXPECT_EQ(test_case.delta_compressed, service.delta_compressed_seed());
+    EXPECT_EQ(test_case.gzip_compressed, service.gzip_compressed_seed());
   }
 }
 
@@ -689,7 +689,7 @@ TEST_F(VariationsServiceTest, Observer) {
       &prefs_, GetMetricsStateManager(), UIStringOverrider(),
       &synthetic_trial_registry);
 
-  struct {
+  struct TestCase {
     int normal_count;
     int best_effort_count;
     int critical_count;
@@ -701,22 +701,20 @@ TEST_F(VariationsServiceTest, Observer) {
       {1, 1, 1, 0, 1},  {1, 1, 0, 1, 0}, {1, 0, 1, 0, 1},
   };
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (const TestCase& test_case : cases) {
     TestVariationsServiceObserver observer;
     service.AddObserver(&observer);
 
     SeedSimulationResult result;
-    result.normal_group_change_count = cases[i].normal_count;
-    result.kill_best_effort_group_change_count = cases[i].best_effort_count;
-    result.kill_critical_group_change_count = cases[i].critical_count;
+    result.normal_group_change_count = test_case.normal_count;
+    result.kill_best_effort_group_change_count = test_case.best_effort_count;
+    result.kill_critical_group_change_count = test_case.critical_count;
     service.NotifyObservers(result);
 
-    EXPECT_EQ(cases[i].expected_best_effort_notifications,
-              observer.best_effort_changes_notified())
-        << i;
-    EXPECT_EQ(cases[i].expected_crtical_notifications,
-              observer.crticial_changes_notified())
-        << i;
+    EXPECT_EQ(test_case.expected_best_effort_notifications,
+              observer.best_effort_changes_notified());
+    EXPECT_EQ(test_case.expected_crtical_notifications,
+              observer.crticial_changes_notified());
 
     service.RemoveObserver(&observer);
   }

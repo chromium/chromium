@@ -25,8 +25,8 @@ TEST(HashingTest, HashName) {
                       {"abcdefghijklmonpqrstuvwxyz", 787728696u},
                       {"0123456789ABCDEF", 348858318U}};
 
-  for (size_t i = 0; i < std::size(known_hashes); ++i) {
-    EXPECT_EQ(known_hashes[i].hash_value, HashName(known_hashes[i].name));
+  for (const auto& hash_case : known_hashes) {
+    EXPECT_EQ(hash_case.hash_value, HashName(hash_case.name));
   }
 }
 

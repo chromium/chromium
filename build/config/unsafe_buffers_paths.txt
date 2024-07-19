@@ -97,6 +97,7 @@
 +components/sync_preferences/
 +components/sync_sessions/
 +components/sync_user_events/
++components/variations/
 -courgette/
 -crypto/
 -data/

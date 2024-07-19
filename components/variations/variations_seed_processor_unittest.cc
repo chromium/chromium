@@ -669,15 +669,16 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
     const char* disable_feature;
     bool expected_feature_off_state;
     bool expected_feature_on_state;
-  } test_cases[] = {
+  } test_cases_raw[] = {
       {nullptr, nullptr, false, true},
       {kFeatureOnByDefault.name, nullptr, false, true},
       {kFeatureOffByDefault.name, nullptr, true, true},
       {nullptr, kFeatureOnByDefault.name, false, false},
       {nullptr, kFeatureOffByDefault.name, false, true},
   };
+  const auto test_cases = base::span(test_cases_raw);
 
-  for (size_t i = 0; i < std::size(test_cases); i++) {
+  for (size_t i = 0; i < test_cases.size(); i++) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]", i));
 
@@ -751,7 +752,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
     const char* expected_group;
     bool expected_feature_state;
     bool expected_trial_activated;
-  } test_cases[] = {
+  } test_cases_raw[] = {
       // Check what happens without and command-line forcing flags - that the
       // |one_hundred_percent_group| gets correctly selected and does the right
       // thing w.r.t. to affecting the feature / activating the trial.
@@ -802,8 +803,9 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
       {ToRawRef(kFeatureOnByDefault), "", kFeatureOnByDefault.name,
        DISABLE_GROUP, kForcedOffGroup, false, true},
   };
+  const auto test_cases = base::span(test_cases_raw);
 
-  for (size_t i = 0; i < std::size(test_cases); i++) {
+  for (size_t i = 0; i < test_cases.size(); i++) {
     const auto& test_case = test_cases[i];
     const int group = test_case.one_hundred_percent_group;
     SCOPED_TRACE(base::StringPrintf(
