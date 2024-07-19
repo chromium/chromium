@@ -6208,6 +6208,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PER_DEVICE_OPEN_APP_LABEL" translateable="false" desc="The label for the row in settings which when clicked, opens the companion app for the connected device.">
     Open <ph name="APP_NAME">$1<ex>SteelSeries</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_INSTALL_APP_LABEL" desc="Label for the row that displays an app the user can install for their device.">
+    Install <ph name="APP_NAME">$1<ex>SteelSeries</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_INSTALL_APP_BUTTON" desc="Label for the button used to initiate an app installation.">
+    Install
+  </message>
 
   <!-- Device Keyboard page (OS settings) -->
   <message name="IDS_SETTINGS_KEYBOARD_TITLE" desc="In Device Settings, the title of the keyboard settings subpage.">

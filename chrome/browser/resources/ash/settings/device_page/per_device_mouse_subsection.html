@@ -42,13 +42,12 @@
     <template is="dom-if" if="[[showInstallAppRow(mouse.appInfo)]]">
       <div class="app-info-container">
         <div class="app-info">
-          Install <span id="appName">[[mouse.appInfo.appName]]</span>
+          <span id="appName">[[computeInstallAppLabel(mouse.appInfo)]]</span>
         </div>
         <cr-button id="installButton"
             on-click="onInstallCompanionAppButtonClicked"
-            aria-labelledby="appName"
-            deep-link-focus-id$="[[Setting.kPowerwash]]">
-           Install
+            aria-labelledby="appName">
+          $i18n{installAppButton}
         </cr-button>
       </div>
     </template>

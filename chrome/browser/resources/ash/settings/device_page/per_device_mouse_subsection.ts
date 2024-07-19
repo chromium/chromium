@@ -444,6 +444,13 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     }
     return this.i18n('openAppLabel', this.mouse.appInfo?.appName);
   }
+
+  private computeInstallAppLabel(): string {
+    if (!this.mouse?.appInfo) {
+      return '';
+    }
+    return this.i18n('installAppLabel', this.mouse.appInfo?.appName);
+  }
 }
 
 declare global {
