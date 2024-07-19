@@ -18,46 +18,39 @@ import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
-import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type ActionType = chrome.automation.ActionType;
+type AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
+type Rect = chrome.automation.Rect;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
-/** @implements {ChromeVoxRangeObserver} */
-export class RangeAutomationHandler extends BaseAutomationHandler {
-  /** @private */
-  constructor() {
-    super(null);
+export class RangeAutomationHandler extends BaseAutomationHandler
+    implements ChromeVoxRangeObserver {
+  private lastAttributeTarget_?: AutomationNode;
+  private lastAttributeOutput_?: Output;
+  private delayedAttributeOutputId_ = -1;
 
-    /** @private {AutomationNode} */
-    this.lastAttributeTarget_;
+  private static instance: RangeAutomationHandler;
 
-    /** @private {Output} */
-    this.lastAttributeOutput_;
-
-    /** @private {number} */
-    this.delayedAttributeOutputId_ = -1;
-
+  private constructor() {
+    super();
     ChromeVoxRange.addObserver(this);
   }
 
-  static init() {
+  static init(): void {
     if (RangeAutomationHandler.instance) {
-      throw 'Error: Trying to create two copies of singleton RangeAutomationHandler';
+      throw new Error(
+        'Trying to create two copies of singleton RangeAutomationHandler');
     }
     RangeAutomationHandler.instance = new RangeAutomationHandler();
   }
 
-  /**
-   * @param {CursorRange} newRange
-   * @param {boolean=} opt_fromEditing
-   */
-  onCurrentRangeChanged(newRange, opt_fromEditing) {
+  onCurrentRangeChanged(newRange: CursorRange, _fromEditing?: boolean): void {
     if (this.node_) {
       this.removeAllListeners();
-      this.node_ = null;
+      this.node_ = undefined;
     }
 
     if (!newRange || !newRange.start.node || !newRange.end.node) {
@@ -69,7 +62,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
         newRange.start.node;
 
     // Some re-targeting is needed for cases like tables.
-    let retarget = this.node_;
+    let retarget: AutomationNode | undefined = this.node_;
     while (retarget && retarget !== retarget.root) {
       // Table headers require retargeting for events because they often have
       // event types we care about e.g. sort direction.
@@ -104,7 +97,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     this.addListener_(EventType.COLLAPSED, this.onEventIfInRange);
     this.addListener_(EventType.CONTROLS_CHANGED, this.onControlsChanged);
     this.addListener_(EventType.EXPANDED, this.onEventIfInRange);
-    this.addListener_(EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated);
+    this.addListener_(EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated_);
     this.addListener_(EventType.INVALID_STATUS_CHANGED, this.onEventIfInRange);
     this.addListener_(EventType.LOCATION_CHANGED, this.onLocationChanged);
     this.addListener_(EventType.RELATED_NODE_CHANGED, this.onAttributeChanged);
@@ -114,8 +107,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     this.addListener_(EventType.SORT_CHANGED, this.onAttributeChanged);
   }
 
-  /** @param {!ChromeVoxEvent} evt */
-  onEventIfInRange(evt) {
+  onEventIfInRange(evt: ChromeVoxEvent): void {
     if (BaseAutomationHandler.disallowEventFromAction(evt)) {
       return;
     }
@@ -126,8 +118,9 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     }
 
     // TODO: we need more fine grained filters for attribute changes.
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (prev.contentEquals(CursorRange.fromNode(evt.target)) ||
-        evt.target.state.focused) {
+        evt.target.state![StateType.FOCUSED]) {
       const prevTarget = this.lastAttributeTarget_;
 
       // Re-target to active descendant if it exists.
@@ -143,14 +136,13 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
 
       // If the target or an ancestor is controlled by another control, we may
       // want to delay the output.
-      let maybeControlledBy = evt.target;
+      let maybeControlledBy: AutomationNode | undefined = evt.target;
       while (maybeControlledBy) {
         if (maybeControlledBy.controlledBy &&
             maybeControlledBy.controlledBy.find(n => Boolean(n.autoComplete))) {
           clearTimeout(this.delayedAttributeOutputId_);
-          this.delayedAttributeOutputId_ = setTimeout(() => {
-            this.lastAttributeOutput_.go();
-          }, DesktopAutomationHandler.ATTRIBUTE_DELAY_MS);
+          this.delayedAttributeOutputId_ = setTimeout(
+            () => this.lastAttributeOutput_!.go(), ATTRIBUTE_DELAY_MS);
           return;
         }
         maybeControlledBy = maybeControlledBy.parent;
@@ -160,12 +152,12 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     }
   }
 
-  /** @param {!ChromeVoxEvent} evt */
-  onAttributeChanged(evt) {
+  onAttributeChanged(evt: ChromeVoxEvent): void {
     // Don't report changes on editable nodes since they interfere with text
     // selection changes. Users can query via Search+k for the current state
     // of the text field (which would also report the entire value).
-    if (evt.target.state[StateType.EDITABLE]) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (evt.target.state![StateType.EDITABLE]) {
       return;
     }
 
@@ -205,11 +197,8 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     this.onEventIfInRange(evt);
   }
 
-  /**
-   * Provides all feedback once a checked state changed event fires.
-   * @param {!ChromeVoxEvent} evt
-   */
-  onCheckedStateChanged(evt) {
+  /** Provides all feedback once a checked state changed event fires. */
+  onCheckedStateChanged(evt: ChromeVoxEvent): void {
     if (!AutomationPredicate.checkable(evt.target)) {
       return;
     }
@@ -217,17 +206,17 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     const event =
         new CustomAutomationEvent(EventType.CHECKED_STATE_CHANGED, evt.target, {
           eventFrom: evt.eventFrom,
-          eventFromAction: evt.eventFromAction,
+          eventFromAction:
+              (evt as CustomAutomationEvent).eventFromAction as ActionType,
           intents: evt.intents,
         });
     this.onEventIfInRange(event);
   }
 
-  /** @param {!ChromeVoxEvent} event */
-  onControlsChanged(event) {
+  onControlsChanged(event: ChromeVoxEvent): void {
     if (event.target.role === RoleType.TAB) {
       new Output()
-          .withSpeech(CursorRange.fromNode(event.target), null, event.type)
+          .withSpeech(CursorRange.fromNode(event.target), undefined, event.type)
           .go();
     }
   }
@@ -235,9 +224,8 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
   /**
    * Updates the focus ring if the location of the current range, or
    * an descendant of the current range, changes.
-   * @param {!ChromeVoxEvent} evt
    */
-  onLocationChanged(evt) {
+  onLocationChanged(evt: ChromeVoxEvent): void {
     const cur = ChromeVoxRange.current;
     if (!cur || !cur.isValid()) {
       if (FocusBounds.get().length) {
@@ -252,38 +240,35 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     const startRect = cur.start.node.location;
     const endRect = cur.end.node.location;
     const found =
-        oldFocusBounds.some(rect => this.areRectsEqual_(rect, startRect)) &&
-        oldFocusBounds.some(rect => this.areRectsEqual_(rect, endRect));
+        oldFocusBounds.some(
+            (rect: Rect) => this.areRectsEqual_(rect, startRect)) &&
+        oldFocusBounds.some(
+            (rect: Rect) => this.areRectsEqual_(rect, endRect));
     if (found) {
       return;
     }
 
-    new Output().withLocation(cur, null, evt.type).go();
+    new Output().withLocation(cur, undefined, evt.type).go();
   }
 
-  /**
-   * Called when an image frame is received on a node.
-   * @param {!ChromeVoxEvent} evt The event.
-   * @private
-   */
-  onImageFrameUpdated(evt) {
+  /** Called when an image frame is received on a node. */
+  private onImageFrameUpdated_(evt: ChromeVoxEvent): void {
     const target = evt.target;
     if (target.imageDataUrl) {
       ChromeVox.braille.writeRawImage(target.imageDataUrl);
     }
   }
 
-  /**
-   * @param {!chrome.accessibilityPrivate.ScreenRect} rectA
-   * @param {!chrome.accessibilityPrivate.ScreenRect} rectB
-   * @return {boolean} Whether the rects are the same.
-   * @private
-   */
-  areRectsEqual_(rectA, rectB) {
+  private areRectsEqual_(rectA: Rect, rectB: Rect): boolean {
     return rectA.left === rectB.left && rectA.top === rectB.top &&
         rectA.width === rectB.width && rectA.height === rectB.height;
   }
 }
 
-/** @type {RangeAutomationHandler} */
-RangeAutomationHandler.instance;
+// Local to module.
+
+/**
+ * Time to wait before announcing attribute changes that are otherwise too
+ * disruptive.
+ */
+const ATTRIBUTE_DELAY_MS = 1500;

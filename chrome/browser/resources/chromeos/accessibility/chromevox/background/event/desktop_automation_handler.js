@@ -948,11 +948,4 @@ DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = 50;
  */
 DesktopAutomationHandler.MIN_ALERT_DELAY_MS = 50;
 
-/**
- * Time to wait before announcing attribute changes that are otherwise too
- * disruptive.
- * @const {number}
- */
-DesktopAutomationHandler.ATTRIBUTE_DELAY_MS = 1500;
-
 TestImportManager.exportForTesting(DesktopAutomationHandler);
