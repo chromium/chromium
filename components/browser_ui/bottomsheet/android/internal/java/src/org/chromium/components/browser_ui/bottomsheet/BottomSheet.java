@@ -1290,10 +1290,15 @@ class BottomSheet extends FrameLayout
 
     /**
      * Called when the sheet content has changed, to update dependent state and notify observers.
+     *
      * @param content The new sheet content, or null if the sheet has no content.
      */
     protected void onSheetContentChanged(@Nullable final BottomSheetContent content) {
         mSheetContent = content;
+
+        boolean shouldLongPressMoveSheet =
+                content == null ? false : content.shouldLongPressMoveSheet();
+        mGestureDetector.setShouldLongPressMoveSheet(shouldLongPressMoveSheet);
 
         if (content != null && isFullHeightWrapContent()) {
             // Listen for layout/size changes.

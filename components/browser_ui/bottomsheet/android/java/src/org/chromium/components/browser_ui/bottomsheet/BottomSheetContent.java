@@ -238,4 +238,17 @@ public interface BottomSheetContent {
     default boolean canSuppressInAnyState() {
         return false;
     }
+
+    /**
+     * Whether long press gestures should move the bottom sheet.
+     *
+     * <p>Should NOT be overridden to return `true` if the bottom sheet contains any UI that
+     * responds to long presses. Otherwise bugs will occur when long press is used. See
+     * crbug.com/41384419.
+     *
+     * @return True if long press should move the bottom sheet.
+     */
+    default boolean shouldLongPressMoveSheet() {
+        return false;
+    }
 }
