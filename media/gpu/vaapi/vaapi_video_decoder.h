@@ -203,7 +203,10 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       base::TimeDelta timestamp);
 
   bool IsConfiguredForTesting() const {
-    return !supported_vaapi_configs_for_testing_.empty();
+    // Mock instances of |vaapi_wrapper_| and |decoder_| are created and
+    // injected to VaapiVideoDecoder for testing purposes.
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return !!vaapi_wrapper_ && !!decoder_;
   }
 
   // The video decoder's state.
@@ -296,8 +299,6 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   bool ignore_resolution_changes_to_smaller_for_testing_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  using SupportedVideoDecoderConfigs = std::vector<SupportedVideoDecoderConfig>;
-  SupportedVideoDecoderConfigs supported_vaapi_configs_for_testing_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   // WeakPtr of *|this| and its factory, bound to |decoder_task_runner_|.

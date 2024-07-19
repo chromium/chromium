@@ -261,7 +261,6 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
                       VAImplementation::kMesaGallium);
 #endif
   }
-  DCHECK_EQ(IsConfiguredForTesting(), !!vaapi_wrapper_);
   const VideoCodecProfile profile = config.profile();
   if (!IsConfiguredForTesting()) {
     auto vaapi_wrapper_or_error = VaapiWrapper::CreateForVideoCodec(
@@ -294,7 +293,6 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   encryption_scheme_ = transcryption_ ? EncryptionScheme::kUnencrypted
                                       : config.encryption_scheme();
 
-  DCHECK_EQ(IsConfiguredForTesting(), !!decoder_);
   if (!IsConfiguredForTesting()) {
     auto accel_status = CreateAcceleratedVideoDecoder();
     if (!accel_status.is_ok()) {
