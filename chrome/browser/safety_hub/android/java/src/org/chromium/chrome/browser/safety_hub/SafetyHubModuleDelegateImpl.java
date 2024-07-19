@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
@@ -73,7 +74,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     }
 
     @Override
-    public UpdateStatusProvider.UpdateStatus getUpdateStatus() {
+    public @Nullable UpdateStatusProvider.UpdateStatus getUpdateStatus() {
         return SafetyHubFetchServiceFactory.getForProfile(mProfile).getUpdateStatus();
     }
 
@@ -103,10 +104,11 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     }
 
     @Override
-    public int getAccountPasswordsCount(PasswordStoreBridge passwordStoreBridge) {
+    public int getAccountPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge) {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        if (!PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
+        if (passwordStoreBridge == null
+                || !PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
                 || !passwordManagerHelper.canUseUpm()) return INVALID_PASSWORD_COUNT;
 
         if (usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile))) {
@@ -150,7 +152,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     }
 
     @Override
-    public String getAccountEmail() {
+    public @Nullable String getAccountEmail() {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         return CoreAccountInfo.getEmailFrom(
                 signinManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN));

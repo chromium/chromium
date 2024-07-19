@@ -105,7 +105,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mNotificationPermissionReviewBridge =
                 NotificationPermissionReviewBridge.getForProfile(getProfile());
         mSafetyHubFetchService = SafetyHubFetchServiceFactory.getForProfile(getProfile());
-        mPasswordStoreBridge = new PasswordStoreBridge(getProfile());
         mSigninManager = IdentityServicesProvider.get().getSigninManager(getProfile());
 
         setUpAccountPasswordCheckModule();
@@ -167,7 +166,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 SafetyHubModuleViewBinder::bindPasswordCheckProperties);
         mSafetyHubFetchService.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
-        mPasswordStoreBridge.addObserver(this, true);
+        if (mDelegate.isSignedIn()) {
+            mPasswordStoreBridge = new PasswordStoreBridge(getProfile());
+            mPasswordStoreBridge.addObserver(this, true);
+        }
     }
 
     private void setUpUpdateCheckModule() {
@@ -391,7 +393,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mUnusedSitePermissionsBridge.removeObserver(this);
         mSafetyHubFetchService.removeObserver(this);
         mSigninManager.removeSignInStateObserver(this);
-        mPasswordStoreBridge.removeObserver(this);
+        if (mPasswordStoreBridge != null) {
+            mPasswordStoreBridge.removeObserver(this);
+        }
     }
 
     @Override
@@ -424,11 +428,19 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     @Override
     public void onSignedIn() {
+        if (mPasswordStoreBridge == null) {
+            mPasswordStoreBridge = new PasswordStoreBridge(getProfile());
+            mPasswordStoreBridge.addObserver(this, true);
+        }
         updatePasswordCheckPreference();
     }
 
     @Override
     public void onSignedOut() {
+        if (mPasswordStoreBridge != null) {
+            mPasswordStoreBridge.removeObserver(this);
+            mPasswordStoreBridge = null;
+        }
         updatePasswordCheckPreference();
     }
 

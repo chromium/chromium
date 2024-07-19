@@ -50,7 +50,7 @@ public interface SafetyHubModuleDelegate {
      * @param passwordStoreBridge Provides access to stored passwords.
      * @return the total passwords count for Account-level passwords.
      */
-    int getAccountPasswordsCount(PasswordStoreBridge passwordStoreBridge);
+    int getAccountPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge);
 
     /**
      * Open the sign-in bottomsheet or sync promo page based on {@link
