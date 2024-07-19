@@ -6,24 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [
-    "app_list_syncable_service_test_base.cc",
-    "app_list_syncable_service_test_base.h",
-    "fake_app_list_model_updater.cc",
-    "fake_app_list_model_updater.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/browser/ash/app_list:test_support",
-    "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ui",
-  ]
-}
-
 static_library("test_support") {
   testonly = true
 

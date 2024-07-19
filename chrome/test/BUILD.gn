@@ -8697,7 +8697,7 @@ test("unit_tests") {
       "//chrome/browser/ash/app_list/arc:unit_tests",
       "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/app_list/search/ranking:proto",
-      "//chrome/browser/ash/app_list/search/test:unit_tests",
+      "//chrome/browser/ash/app_list/search/test:test_support",
       "//chrome/browser/ash/app_list/search/util:proto",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/apps",

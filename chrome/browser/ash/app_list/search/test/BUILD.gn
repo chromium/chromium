@@ -6,37 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [
-    "ranking_test_util.cc",
-    "ranking_test_util.h",
-    "search_controller_test_util.cc",
-    "search_controller_test_util.h",
-    "search_metrics_test_util.cc",
-    "search_metrics_test_util.h",
-    "test_ranker_manager.cc",
-    "test_ranker_manager.h",
-    "test_search_controller.cc",
-    "test_search_controller.h",
-    "test_search_provider.cc",
-    "test_search_provider.h",
-  ]
-
-  deps = [
-    "//ash/public/cpp",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ash/app_list/search",
-    "//chrome/browser/ash/app_list/search/ranking",
-    "//chrome/browser/ash/app_list/search/test:test_support",
-    "//chrome/browser/ui",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
 static_library("test_support") {
   testonly = true
 

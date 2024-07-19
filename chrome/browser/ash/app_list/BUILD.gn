@@ -190,9 +190,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/search/omnibox:unit_tests",
     "//chrome/browser/ash/app_list/search/ranking:unit_tests",
     "//chrome/browser/ash/app_list/search/system_info:unit_tests",
-    "//chrome/browser/ash/app_list/search/test:unit_tests",
     "//chrome/browser/ash/app_list/search/util:unit_tests",
-    "//chrome/browser/ash/app_list/test:unit_tests",
   ]
 }
 
