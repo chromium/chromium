@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Sinlge tab module"/>
   <int value="1" label="Price change module"/>
   <int value="2" label="Tab resumption module"/>
+  <int value="3" label="Safety hub module"/>
 </enum>
 
 </enums>

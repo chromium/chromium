@@ -34,6 +34,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ModuleType">
   <variant name="PriceChange"/>
+  <variant name="SafetyHub"/>
   <variant name="SingleTab"/>
   <variant name="TabResumption"/>
 </variants>
