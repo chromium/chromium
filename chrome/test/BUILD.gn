@@ -2207,6 +2207,7 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [
+        "//chrome/browser/chromeos:browser_tests",
         "//chromeos/dbus/dlp:dlp",
         "//components/onc",
         "//ui/chromeos",
@@ -4967,7 +4968,6 @@ if (!is_android) {
         "//chrome/browser/ash/system_web_apps/types:types",
         "//chrome/browser/ash/video_conference",
         "//chrome/browser/chromeos:test_support",
-        "//chrome/browser/chromeos/smart_reader:browser_tests",
         "//chrome/browser/enterprise/connectors/device_trust:features",
         "//chrome/browser/enterprise/connectors/device_trust/common",
         "//chrome/browser/image_decoder",

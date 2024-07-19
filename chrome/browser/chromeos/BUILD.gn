@@ -836,6 +836,19 @@ source_set("unit_tests") {
   }
 }
 
+group("browser_tests") {
+  testonly = true
+
+  deps = []
+
+  if (is_chromeos_ash) {
+    deps += [
+      # Browser tests from subdirectories.
+      "//chrome/browser/chromeos/smart_reader:browser_tests",
+    ]
+  }
+}
+
 proto_library("system_stack_sampled_metrics_status_proto") {
   sources = [ "//third_party/cros_system_api/proto/stack_sampled_metrics_status//stack_sampled_metrics_status.proto" ]
 
