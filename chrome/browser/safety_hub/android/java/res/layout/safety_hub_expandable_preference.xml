@@ -10,15 +10,14 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:paddingVertical="12dp"
     android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
     android:paddingStart="?android:attr/listPreferredItemPaddingStart"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="16dp">
+        android:layout_height="wrap_content">
 
         <FrameLayout
             android:id="@+id/icon_frame"
@@ -58,6 +57,7 @@ found in the LICENSE file.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@android:id/title"
+                android:layout_marginTop="4dp"
                 android:layout_alignStart="@android:id/title"
                 android:scrollbars="none"
                 style="@style/PreferenceSummary" />
@@ -76,7 +76,7 @@ found in the LICENSE file.
         android:id="@+id/buttons_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
         android:gravity="end"
         android:layout_weight="1">
             <org.chromium.ui.widget.ButtonCompat
