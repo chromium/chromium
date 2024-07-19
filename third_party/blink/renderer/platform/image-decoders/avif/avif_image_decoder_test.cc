@@ -1118,7 +1118,9 @@ TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndData) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-TEST(StaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
+// TODO(b/338342146): Re-enable this test once libavif and the test images are
+// updated to the ISO specification.
+TEST(StaticAVIFTests, DISABLED_GetIsoGainmapInfoAndDataHdrToSdr) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1172,7 +1174,9 @@ TEST(StaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
   EXPECT_TRUE(gainmap_frame);
 }
 
-TEST(StaticAVIFTests, GetIsoGainmapColorSpaceSameICC) {
+// TODO(b/338342146): Re-enable this test once libavif and the test images are
+// updated to the ISO specification.
+TEST(StaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceSameICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1205,7 +1209,9 @@ void ExpectMatrixNear(const skcms_Matrix3x3& lhs,
   }
 }
 
-TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
+// TODO(b/338342146): Re-enable this test once libavif and the test images are
+// updated to the ISO specification.
+TEST(StaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentICC) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
@@ -1236,7 +1242,9 @@ TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
   ExpectMatrixNear(matrix, SkNamedGamut::kDisplayP3, 0.001);
 }
 
-TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
+// TODO(b/338342146): Re-enable this test once libavif and the test images are
+// updated to the ISO specification.
+TEST(StaticAVIFTests, DISABLED_GetIsoGainmapColorSpaceDifferentCICP) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGainmapHdrImages,
