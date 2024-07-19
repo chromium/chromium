@@ -54,6 +54,7 @@ static_library("scanning") {
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/web_applications",
@@ -82,6 +83,7 @@ static_library("scanning") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/printing",
   ]
 }
 

@@ -1286,6 +1286,7 @@ source_set("extensions") {
       "//chrome/browser/ash/plugin_vm",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/handlers",
+      "//chrome/browser/ash/printing",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/remote_apps",
       "//chrome/browser/ash/system_logs",

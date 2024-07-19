@@ -41,6 +41,7 @@ static_library("autotest_private") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/power/ml/smart_dim",
+    "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
