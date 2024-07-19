@@ -14,6 +14,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+import {NONE_SELECTED} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -57,7 +58,7 @@ export class ExceptionTabbedAddDialogElement extends
     return {
       selectedTab_: {
         type: Number,
-        value: ExceptionAddDialogTabs.MANUAL,
+        value: NONE_SELECTED,
       },
 
       tabNames_: {
@@ -81,6 +82,8 @@ export class ExceptionTabbedAddDialogElement extends
   private onSitesPopulated_(e: CustomEvent<{length: number}>) {
     if (e.detail.length > 0) {
       this.selectedTab_ = ExceptionAddDialogTabs.CURRENT_SITES;
+    } else if (this.selectedTab_ === NONE_SELECTED) {
+      this.selectedTab_ = ExceptionAddDialogTabs.MANUAL;
     }
     this.$.dialog.showModal();
   }
