@@ -22,6 +22,7 @@
 #include "ash/system/video_conference/video_conference_utils.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -37,6 +38,7 @@
 #include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
+#include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -1040,11 +1042,25 @@ void CameraEffectsController::InitializeEffectControls() {
                             VcEffectId::kPortraitRelighting),
         /*effect_id=*/VcEffectId::kPortraitRelighting);
 
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    std::string face_retouch_override = command_line->GetSwitchValueASCII(
+        media::switches::kFaceRetouchOverride);
+    bool is_studio_look_enabled =
+        face_retouch_override ==
+            media::switches::kFaceRetouchForceEnabledWithRelighting ||
+        face_retouch_override ==
+            media::switches::kFaceRetouchForceEnabledWithoutRelighting;
+
     auto effect_state = std::make_unique<VcEffectState>(
-        /*icon=*/&kVideoConferencePortraitRelightOnIcon,
+        /*icon=*/is_studio_look_enabled
+            ? &kVideoConferenceStudioLookIcon
+            : &kVideoConferencePortraitRelightOnIcon,
         /*label_text=*/
         l10n_util::GetStringUTF16(
-            IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME),
+            is_studio_look_enabled
+                ? IDS_ASH_VIDEO_CONFERENCE_BUBBLE_STUDIO_LOOK_NAME
+                : IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME),
         /*accessible_name_id=*/
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME,
         /*button_callback=*/

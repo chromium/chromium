@@ -1774,6 +1774,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME" desc="Text for name of the portrait relight effect in the VC bubble, which is a toggle and effectively adjusts the users lighting.">
         Improve lighting
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_STUDIO_LOOK_NAME" desc="Text for name of the studio look effect in the VC bubble, which is a toggle for enabling or disabling face retouching and portrait relighting.">
+        Studio Look
+      </message>
         <message name="IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME" desc="Text for name of the 'Create With AI' button in the VC bubble, which invokes the webui for the creation.">
         Create with AI
       </message>
