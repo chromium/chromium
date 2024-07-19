@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/contextual_panel/model",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/contextual_panel/sample/model",
+    "//ios/chrome/browser/contextual_panel/utils",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",

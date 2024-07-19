@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/scoped_iph_feature_list.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -217,8 +219,15 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
 // Tests that tapping the entrypoint opens the panel if it's closed and vice
 // versa.
 TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
+  const base::HistogramTester histogram_tester;
   ContextualPanelTabHelper* tab_helper = ContextualPanelTabHelper::FromWebState(
       web_state_list_.GetActiveWebState());
+
+  // Set the metrics data for the current entrypoint appearing.
+  ContextualPanelTabHelper::EntrypointMetricsData metrics_data;
+  metrics_data.entrypoint_item_type = ContextualPanelItemType::SamplePanelItem;
+  metrics_data.appearance_time = base::Time::Now() - base::Seconds(10);
+  tab_helper->SetMetricsData(metrics_data);
 
   [[mocked_contextual_sheet_handler_ expect] openContextualSheet];
   [[mocked_entrypoint_help_handler_ expect]
@@ -238,6 +247,23 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestEntrypointTapped) {
 
   [mocked_contextual_sheet_handler_ verify];
   [mocked_entrypoint_help_handler_ verify];
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Regular",
+                                      EntrypointInteractionType::Tapped, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem",
+      EntrypointInteractionType::Tapped, 1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.EntrypointTapped",
+                                      ContextualPanelItemType::SamplePanelItem,
+                                      1);
+
+  histogram_tester.ExpectTimeBucketCount(
+      "IOS.ContextualPanel.Entrypoint.Regular.UptimeBeforeTap",
+      base::Seconds(10), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem.UptimeBeforeTap",
+      base::Seconds(10), 1);
 }
 
 TEST_F(ContextualPanelEntrypointMediatorTest, TestTabHelperDestroyed) {
@@ -259,6 +285,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestTabHelperDestroyed) {
 
 // Tests that if one configuration is provided, the entrypoint becomes shown.
 TEST_F(ContextualPanelEntrypointMediatorTest, TestOneConfiguration) {
+  const base::HistogramTester histogram_tester;
   [[mocked_entrypoint_help_handler_ expect]
       dismissContextualPanelEntrypointIPHAnimated:NO];
 
@@ -283,6 +310,16 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestOneConfiguration) {
   EXPECT_EQ(&configuration, entrypoint_consumer_.currentConfiguration.get());
 
   [mocked_entrypoint_help_handler_ verify];
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.EntrypointDisplayed",
+                                      ContextualPanelItemType::SamplePanelItem,
+                                      1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Regular",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
 }
 
 // Tests that -disconnect doesn't crash and that nothing is observing the tab
@@ -299,6 +336,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestDisconnect) {
 }
 
 TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
+  const base::HistogramTester histogram_tester;
   [[mocked_entrypoint_help_handler_ expect]
       dismissContextualPanelEntrypointIPHAnimated:NO];
 
@@ -338,9 +376,26 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
 
   [mocked_entrypoint_help_handler_ verify];
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.EntrypointDisplayed",
+                                      ContextualPanelItemType::SamplePanelItem,
+                                      1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Regular",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Large",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Large.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
 }
 
 TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
+  const base::HistogramTester histogram_tester;
   std::unique_ptr<SamplePanelItemConfiguration> configuration =
       std::make_unique<SamplePanelItemConfiguration>();
   configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
@@ -397,4 +452,20 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
 
   [mocked_entrypoint_help_handler_ verify];
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.EntrypointDisplayed",
+                                      ContextualPanelItemType::SamplePanelItem,
+                                      1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.Regular",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.Regular.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
+
+  histogram_tester.ExpectUniqueSample("IOS.ContextualPanel.Entrypoint.IPH",
+                                      EntrypointInteractionType::Displayed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ContextualPanel.Entrypoint.IPH.SamplePanelItem",
+      EntrypointInteractionType::Displayed, 1);
 }

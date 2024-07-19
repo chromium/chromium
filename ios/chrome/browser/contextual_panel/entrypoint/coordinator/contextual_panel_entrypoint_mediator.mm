@@ -6,6 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
@@ -125,6 +127,7 @@
         ContextualPanelDismissedReason::UserDismissed);
     [_contextualSheetHandler closeContextualSheet];
   } else {
+    [self logEntrypointFirstTapMetrics];
     [_contextualSheetHandler openContextualSheet];
   }
 
@@ -174,6 +177,19 @@
     return;
   }
 
+  // Update old active web state's visible time.
+  if (status.old_active_web_state) {
+    ContextualPanelTabHelper* contextualPanelTabHelper =
+        ContextualPanelTabHelper::FromWebState(status.old_active_web_state);
+    std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
+        metricsData = contextualPanelTabHelper->GetMetricsData();
+    if (metricsData && metricsData->appearance_time) {
+      metricsData->time_visible +=
+          base::Time::Now() - metricsData->appearance_time.value();
+      metricsData->appearance_time = std::nullopt;
+    }
+  }
+
   // Return early if no new webstates are active.
   if (!status.new_active_web_state) {
     return;
@@ -204,9 +220,19 @@
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
 
+  if (![self metricsData]) {
+    ContextualPanelTabHelper::EntrypointMetricsData metricsData;
+    metricsData.entrypoint_item_type = config->item_type;
+    contextualPanelTabHelper->SetMetricsData(metricsData);
+  } else if (![self metricsData]->appearance_time) {
+    [self metricsData]->appearance_time = base::Time::Now();
+  }
+
   [self.consumer setEntrypointConfig:config];
   [self.consumer transitionToSmallEntrypoint];
   [self.consumer showEntrypoint];
+
+  [self logEntrypointFirstDisplayMetrics];
 
   [self.consumer
       transitionToContextualPanelOpenedState:
@@ -222,6 +248,7 @@
 
   if ([self canShowLargeEntrypointWithConfig:config]) {
     [self startLargeEntrypointTimers];
+    return;
   }
 }
 
@@ -241,9 +268,17 @@
     return;
   }
 
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>& metricsData =
+      [self metricsData];
+  if (metricsData) {
+    metricsData->largeEntrypointWasShown = true;
+  }
   contextualPanelTabHelper->SetLoudMomentEntrypointShown(true);
   [self.delegate disableFullscreen];
   [self.consumer transitionToLargeEntrypoint];
+
+  // Large entrypoint has been displayed so fire loud display metrics here.
+  [self logEntrypointLoudDisplayMetrics];
 
   __weak ContextualPanelEntrypointMediator* weakSelf = self;
 
@@ -302,7 +337,16 @@
     return;
   }
 
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>& metricsData =
+      [self metricsData];
+  if (metricsData) {
+    metricsData->iphWasShown = true;
+  }
+
   contextualPanelTabHelper->SetLoudMomentEntrypointShown(true);
+
+  // IPH was shown, so fire loud display metrics here.
+  [self logEntrypointLoudDisplayMetrics];
 
   __weak ContextualPanelEntrypointMediator* weakSelf = self;
   _transitionToDefaultEntrypointTimer = std::make_unique<base::OneShotTimer>();
@@ -339,10 +383,12 @@
   CGPoint anchorPoint =
       [self.delegate helpAnchorUsingBottomOmnibox:isBottomOmnibox];
 
-  return [_entrypointHelpHandler
+  BOOL shown = [_entrypointHelpHandler
       maybeShowContextualPanelEntrypointIPHWithConfig:config
                                           anchorPoint:anchorPoint
                                       isBottomOmnibox:isBottomOmnibox];
+
+  return shown;
 }
 
 - (void)dismissEntrypointIPHAnimated:(BOOL)animated {
@@ -369,6 +415,171 @@
   return !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
          !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
          [self.delegate canShowLargeContextualPanelEntrypoint:self];
+}
+
+- (std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&)metricsData {
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+  return contextualPanelTabHelper->GetMetricsData();
+}
+
+#pragma mark - Metrics helpers
+
+// Logs metrics that should be fired when the entrypoint is displayed for the
+// first time.
+- (void)logEntrypointFirstDisplayMetrics {
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
+      optionalMetricsData = [self metricsData];
+  if (!optionalMetricsData ||
+      optionalMetricsData->entrypoint_regular_display_metrics_fired) {
+    return;
+  }
+
+  ContextualPanelTabHelper::EntrypointMetricsData& metricsData =
+      optionalMetricsData.value();
+
+  metricsData.entrypoint_regular_display_metrics_fired = true;
+
+  base::UmaHistogramEnumeration("IOS.ContextualPanel.EntrypointDisplayed",
+                                metricsData.entrypoint_item_type);
+
+  std::string entrypointTypeHistogramName =
+      "IOS.ContextualPanel.Entrypoint.Regular";
+  base::UmaHistogramEnumeration(entrypointTypeHistogramName,
+                                EntrypointInteractionType::Displayed);
+
+  std::string blockTypeEntrypointTypeHistogramName = base::StringPrintf(
+      "IOS.ContextualPanel.Entrypoint.Regular.%s",
+      StringForItemType(metricsData.entrypoint_item_type).c_str());
+  base::UmaHistogramEnumeration(blockTypeEntrypointTypeHistogramName,
+                                EntrypointInteractionType::Displayed);
+}
+
+// Log any metrics that should be logged when a loud entrypoint is displayed.
+- (void)logEntrypointLoudDisplayMetrics {
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
+      optionalMetricsData = [self metricsData];
+  if (!optionalMetricsData ||
+      optionalMetricsData->entrypoint_loud_display_metrics_fired) {
+    return;
+  }
+
+  ContextualPanelTabHelper::EntrypointMetricsData& metricsData =
+      optionalMetricsData.value();
+
+  std::string entrypointTypeString =
+      [self loudEntrypointTypeStringForMetrics:metricsData];
+
+  // Either the IPH or Large entrypoint should have been shown by now.
+  if (entrypointTypeString == "") {
+    return;
+  }
+
+  metricsData.entrypoint_loud_display_metrics_fired = true;
+
+  std::string entrypointTypeHistogramName = base::StringPrintf(
+      "IOS.ContextualPanel.Entrypoint.%s", entrypointTypeString.c_str());
+  base::UmaHistogramEnumeration(entrypointTypeHistogramName,
+                                EntrypointInteractionType::Displayed);
+
+  std::string blockTypeEntrypointTypeHistogramName = base::StringPrintf(
+      "IOS.ContextualPanel.Entrypoint.%s.%s", entrypointTypeString.c_str(),
+      StringForItemType(metricsData.entrypoint_item_type).c_str());
+  base::UmaHistogramEnumeration(blockTypeEntrypointTypeHistogramName,
+                                EntrypointInteractionType::Displayed);
+}
+
+// Logs any metrics fired the first time a given entrypoint is opened via
+// tapping.
+- (void)logEntrypointFirstTapMetrics {
+  std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
+      optionalMetricsData = [self metricsData];
+  if (!optionalMetricsData ||
+      optionalMetricsData->entrypoint_tap_metrics_fired) {
+    return;
+  }
+
+  ContextualPanelTabHelper::EntrypointMetricsData& metricsData =
+      optionalMetricsData.value();
+
+  base::TimeDelta visibleTimeThisIteration =
+      (metricsData.appearance_time)
+          ? (base::Time::Now() - metricsData.appearance_time.value())
+          : base::Seconds(0);
+  base::TimeDelta visibleTime =
+      metricsData.time_visible + visibleTimeThisIteration;
+
+  metricsData.entrypoint_tap_metrics_fired = true;
+
+  // Fire metrics saying the entrypoint was tapped.
+  base::UmaHistogramEnumeration("IOS.ContextualPanel.EntrypointTapped",
+                                metricsData.entrypoint_item_type);
+
+  // Always fire the regular tap events because the regular display events are
+  // also always fired.
+  base::UmaHistogramEnumeration("IOS.ContextualPanel.Entrypoint.Regular",
+                                EntrypointInteractionType::Tapped);
+
+  std::string blockTypeEntrypointTypeHistogramName = base::StringPrintf(
+      "IOS.ContextualPanel.Entrypoint.Regular.%s",
+      StringForItemType(metricsData.entrypoint_item_type).c_str());
+  base::UmaHistogramEnumeration(blockTypeEntrypointTypeHistogramName,
+                                EntrypointInteractionType::Tapped);
+
+  // Fire metrics for the time to tap.
+  base::UmaHistogramTimes(
+      "IOS.ContextualPanel.Entrypoint.Regular.UptimeBeforeTap", visibleTime);
+
+  std::string blockTypeEntrypointTypeUptimeHistogramName = base::StringPrintf(
+      "IOS.ContextualPanel.Entrypoint.Regular.%s.UptimeBeforeTap",
+      StringForItemType(metricsData.entrypoint_item_type).c_str());
+  base::UmaHistogramTimes(blockTypeEntrypointTypeUptimeHistogramName,
+                          visibleTime);
+
+  // Additionally fire metrics for the loud entrypoint variant, if one was
+  // shown.
+  std::string entrypointTypeString =
+      [self loudEntrypointTypeStringForMetrics:metricsData];
+  if (entrypointTypeString == "") {
+    return;
+  }
+  std::string loudEntrypointTypeHistogramName = base::StringPrintf(
+      "IOS.ContextualPanel.Entrypoint.%s", entrypointTypeString.c_str());
+  base::UmaHistogramEnumeration(loudEntrypointTypeHistogramName,
+                                EntrypointInteractionType::Tapped);
+
+  std::string blockTypeLoudEntrypointTypeHistogramName = base::StringPrintf(
+      "IOS.ContextualPanel.Entrypoint.%s.%s", entrypointTypeString.c_str(),
+      StringForItemType(metricsData.entrypoint_item_type).c_str());
+  base::UmaHistogramEnumeration(blockTypeLoudEntrypointTypeHistogramName,
+                                EntrypointInteractionType::Tapped);
+
+  // Time to tap metrics:
+  std::string loudEntrypointTypeUptimeHistogramName =
+      base::StringPrintf("IOS.ContextualPanel.Entrypoint.%s.UptimeBeforeTap",
+                         entrypointTypeString.c_str());
+  base::UmaHistogramTimes(loudEntrypointTypeUptimeHistogramName, visibleTime);
+
+  std::string blockTypeLoudEntrypointTypeUptimeHistogramName =
+      base::StringPrintf(
+          "IOS.ContextualPanel.Entrypoint.%s.%s.UptimeBeforeTap",
+          entrypointTypeString.c_str(),
+          StringForItemType(metricsData.entrypoint_item_type).c_str());
+  base::UmaHistogramTimes(blockTypeLoudEntrypointTypeUptimeHistogramName,
+                          visibleTime);
+}
+
+// Which type of loud entrypoint was displayed to be used in metric names.
+- (std::string)loudEntrypointTypeStringForMetrics:
+    (ContextualPanelTabHelper::EntrypointMetricsData&)metricsData {
+  if (metricsData.iphWasShown) {
+    return "IPH";
+  } else if (metricsData.largeEntrypointWasShown) {
+    return "Large";
+  } else {
+    return "";
+  }
 }
 
 @end

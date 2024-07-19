@@ -13667,6 +13667,15 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h:ContextualPanelDismissedReason) -->
 
+<!-- LINT.IfChange(IOSContextualPanelEntrypointInteractionType) -->
+
+<enum name="IOSContextualPanelEntrypointInteractionType">
+  <int value="0" label="Displayed"/>
+  <int value="1" label="Tapped"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h:EntrypointInteractionType) -->
+
 <!-- LINT.IfChange(IOSContextualPanelInfoBlockImpression) -->
 
 <enum name="IOSContextualPanelInfoBlockImpression">
@@ -13680,6 +13689,15 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h:PanelBlockImpressionType) -->
+
+<!-- LINT.IfChange(IOSContextualPanelItemType) -->
+
+<enum name="IOSContextualPanelItemType">
+  <int value="0" label="Sample Panel Item"/>
+  <int value="1" label="Price Insights Item"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h:ContextualPanelItemType) -->
 
 <!-- LINT.IfChange(IOSContextualPanelModelRelevance) -->
 

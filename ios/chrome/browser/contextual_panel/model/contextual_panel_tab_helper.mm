@@ -92,6 +92,16 @@ void ContextualPanelTabHelper::SetLoudMomentEntrypointShown(bool shown) {
   loud_moment_entrypoint_shown_for_curent_page_navigation_ = shown;
 }
 
+std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
+ContextualPanelTabHelper::GetMetricsData() {
+  return metrics_data_;
+}
+
+void ContextualPanelTabHelper::SetMetricsData(
+    ContextualPanelTabHelper::EntrypointMetricsData data) {
+  metrics_data_ = data;
+}
+
 bool ContextualPanelTabHelper::ShouldRefreshData(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -127,6 +137,7 @@ void ContextualPanelTabHelper::DidStartNavigation(
     CloseContextualPanel();
   }
 
+  metrics_data_ = std::nullopt;
   loud_moment_entrypoint_shown_for_curent_page_navigation_ = false;
 
   // Clear the configs and notify the observers.

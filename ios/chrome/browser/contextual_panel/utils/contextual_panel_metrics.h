@@ -43,8 +43,20 @@ enum class ContextualPanelDismissedReason {
   TabChanged = 1,
   NavigationInitiated = 2,
   BlockInteraction = 3,
-  kMaxValue = BlockInteraction
+  kMaxValue = BlockInteraction,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelDismissedReason)
+
+// Values of the UMA IOS.ContextualPanel.Entrypoint histograms. Must be
+// kept up to date with IOSContextualPanelEntrypointInteractionType in
+// enums.xml. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(EntrypointInteractionType)
+enum class EntrypointInteractionType {
+  Displayed = 0,
+  Tapped = 1,
+  kMaxValue = Tapped,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelEntrypointInteractionType)
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UTILS_CONTEXTUAL_PANEL_METRICS_H_

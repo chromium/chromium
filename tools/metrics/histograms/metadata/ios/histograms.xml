@@ -389,6 +389,108 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ContextualPanel.Entrypoint.{EntrypointType}"
+    enum="IOSContextualPanelEntrypointInteractionType"
+    expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The result of displaying a Contextual Panel entrypoint with the given type
+    of entrypoint. Fired the first time the corresponding action was taken for a
+    page load. Note that this means it could be fired multiple times with
+    different actions on the same page. Also, the Regular variants are always
+    fired as all entrypoints start out as Regular. Then either Large or IPH will
+    be fired if the entrypoint was Large or showed an IPH.
+  </summary>
+  <token key="EntrypointType">
+    <variant name="IPH" summary="IPH entrypoint type"/>
+    <variant name="Large" summary="Large entrypoint type"/>
+    <variant name="Regular" summary="Regular entrypoint type"/>
+  </token>
+</histogram>
+
+<histogram
+    name="IOS.ContextualPanel.Entrypoint.{EntrypointType}.UptimeBeforeTap"
+    units="ms" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The time a Contextual Panel entrypoint for the given entrypoint type was
+    displayed before it was first tapped. Fired the first time a given page's
+    entrypoint was tapped. The Regular variants are always fired as all
+    entrypoints start out as Regular. Then either Large or IPH will be fired if
+    the entrypoint was Large or showed an IPH.
+  </summary>
+  <token key="EntrypointType">
+    <variant name="IPH" summary="IPH entrypoint type"/>
+    <variant name="Large" summary="Large entrypoint type"/>
+    <variant name="Regular" summary="Regular entrypoint type"/>
+  </token>
+</histogram>
+
+<histogram
+    name="IOS.ContextualPanel.Entrypoint.{EntrypointType}.{ContextualPanelItemType}"
+    enum="IOSContextualPanelEntrypointInteractionType"
+    expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The result of displaying a Contextual Panel entrypoint for the given
+    infoblock type and entrypoint type. Fired the first time the corresponding
+    action was taken for a page load. Note that this means it could be fired
+    multiple times with different actions on the same page. Also, the Regular
+    variants are always fired as all entrypoints start out as Regular. Then
+    either Large or IPH will be fired if the entrypoint becomes Large or shows
+    an IPH.
+  </summary>
+  <token key="EntrypointType">
+    <variant name="IPH" summary="IPH entrypoint type"/>
+    <variant name="Large" summary="Large entrypoint type"/>
+    <variant name="Regular" summary="Regular entrypoint type"/>
+  </token>
+  <token key="ContextualPanelItemType" variants="ContextualPanelItemType"/>
+</histogram>
+
+<histogram
+    name="IOS.ContextualPanel.Entrypoint.{EntrypointType}.{ContextualPanelItemType}.UptimeBeforeTap"
+    units="ms" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The time a Contextual Panel entrypoint for the given infoblock type and
+    entrypoint type was displayed before it was first tapped. Fired the first
+    time a given page's entrypoint was tapped. The Regular variants are always
+    fired as all entrypoints start out as Regular. Then either Large or IPH will
+    be fired if the entrypoint becomes Large or shows an IPH.
+  </summary>
+  <token key="EntrypointType">
+    <variant name="IPH" summary="IPH entrypoint type"/>
+    <variant name="Large" summary="Large entrypoint type"/>
+    <variant name="Regular" summary="Regular entrypoint type"/>
+  </token>
+  <token key="ContextualPanelItemType" variants="ContextualPanelItemType"/>
+</histogram>
+
+<histogram name="IOS.ContextualPanel.EntrypointDisplayed"
+    enum="IOSContextualPanelItemType" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the info block type the first time entrypoint is displayed for each
+    navigation.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ContextualPanel.EntrypointTapped"
+    enum="IOSContextualPanelItemType" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the info block type the first time entrypoint is opened via tap for
+    each navigation.
+  </summary>
+</histogram>
+
 <histogram
     name="IOS.ContextualPanel.InfoBlockImpression.{ContextualPanelItemType}"
     enum="IOSContextualPanelInfoBlockImpression" expires_after="2025-06-30">
