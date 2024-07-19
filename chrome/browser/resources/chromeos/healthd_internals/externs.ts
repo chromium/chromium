@@ -22,6 +22,7 @@ export interface HealthdApiCpuResult {
   architecture: string;
   numTotalThreads: string;
   physicalCpus: HealthdApiPhysicalCpuResult[];
+  temperatureChannels: HealthdApiTemperatureChannelResult[];
 }
 
 export interface HealthdApiPhysicalCpuResult {
@@ -44,6 +45,11 @@ export interface HealthdApiCpuExecutionTimeUserHz {
   user: string;
   system: string;
   idle: string;
+}
+
+export interface HealthdApiTemperatureChannelResult {
+  label?: string;
+  temperatureCelsius: number;
 }
 
 /**

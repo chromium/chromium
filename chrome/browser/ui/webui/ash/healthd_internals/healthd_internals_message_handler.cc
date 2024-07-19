@@ -29,7 +29,7 @@ std::string Convert(mojom::ThermalSensorInfo::ThermalSensorSource source) {
     case mojom::ThermalSensorInfo::ThermalSensorSource::kEc:
       return "EC";
     case mojom::ThermalSensorInfo::ThermalSensorSource::kSysFs:
-      return "Sysfs";
+      return "SysFs";
     case mojom::ThermalSensorInfo::ThermalSensorSource::kUnmappedEnumField:
       return "Unknown";
   }
@@ -87,27 +87,51 @@ base::Value::List ConvertLogicalCpus(
   return out_logical_cpus;
 }
 
+base::Value::List ConvertPhysicalCpus(
+    const std::vector<mojom::PhysicalCpuInfoPtr>& physical_cpus) {
+  base::Value::List out_physical_cpus;
+  for (const auto& physical_cpu : physical_cpus) {
+    if (!physical_cpu) {
+      continue;
+    }
+    base::Value::Dict out_physical_cpu;
+    if (physical_cpu->model_name.has_value()) {
+      out_physical_cpu.Set("modelName", physical_cpu->model_name.value());
+    }
+    out_physical_cpu.Set("logicalCpus",
+                         ConvertLogicalCpus(physical_cpu->logical_cpus));
+    out_physical_cpus.Append(std::move(out_physical_cpu));
+  }
+  return out_physical_cpus;
+}
+
+base::Value::List ConvertTemperatureChannels(
+    const std::vector<mojom::CpuTemperatureChannelPtr>& temperature_channels) {
+  base::Value::List out_temperature_channels;
+  for (const auto& temperature_channel : temperature_channels) {
+    if (!temperature_channel) {
+      continue;
+    }
+    base::Value::Dict out_temperature_channel;
+    if (temperature_channel->label.has_value()) {
+      out_temperature_channel.Set("label", temperature_channel->label.value());
+    }
+    out_temperature_channel.Set("temperatureCelsius",
+                                temperature_channel->temperature_celsius);
+    out_temperature_channels.Append(std::move(out_temperature_channel));
+  }
+  return out_temperature_channels;
+}
+
 base::Value::Dict ConvertCpuValue(const mojom::CpuInfoPtr& info) {
   base::Value::Dict out_cpu;
   if (info) {
     out_cpu.Set("architecture", Convert(info->architecture));
     out_cpu.Set("numTotalThreads",
                 base::NumberToString(info->num_total_threads));
-
-    base::Value::List out_physical_cpus;
-    for (const auto& physical_cpu : info->physical_cpus) {
-      if (!physical_cpu) {
-        continue;
-      }
-      base::Value::Dict out_physical_cpu;
-      if (physical_cpu->model_name.has_value()) {
-        out_physical_cpu.Set("modelName", physical_cpu->model_name.value());
-      }
-      out_physical_cpu.Set("logicalCpus",
-                           ConvertLogicalCpus(physical_cpu->logical_cpus));
-      out_physical_cpus.Append(std::move(out_physical_cpu));
-    }
-    out_cpu.Set("physicalCpus", (std::move(out_physical_cpus)));
+    out_cpu.Set("physicalCpus", ConvertPhysicalCpus(info->physical_cpus));
+    out_cpu.Set("temperatureChannels",
+                ConvertTemperatureChannels(info->temperature_channels));
   }
   return out_cpu;
 }

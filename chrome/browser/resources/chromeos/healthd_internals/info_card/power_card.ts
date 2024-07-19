@@ -9,17 +9,17 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {HealthdApiTelemetryResult} from '../externs.js';
 
 import type {HealthdInternalsInfoCardElement} from './info_card.js';
-import {getTemplate} from './power_thermal_card.html.js';
+import {getTemplate} from './power_card.html.js';
 
-export interface HealthdInternalsPowerThermalCardElement {
+export interface HealthdInternalsPowerCardElement {
   $: {
     infoCard: HealthdInternalsInfoCardElement,
   };
 }
 
-export class HealthdInternalsPowerThermalCardElement extends PolymerElement {
+export class HealthdInternalsPowerCardElement extends PolymerElement {
   static get is() {
-    return 'healthd-internals-power-thermal-card';
+    return 'healthd-internals-power-card';
   }
 
   static get template() {
@@ -30,22 +30,20 @@ export class HealthdInternalsPowerThermalCardElement extends PolymerElement {
     super.connectedCallback();
 
     this.$.infoCard.appendCardRow('BATTERY');
-    this.$.infoCard.appendCardRow('THERMALS');
   }
 
   updateTelemetryData(data: HealthdApiTelemetryResult) {
     this.$.infoCard.updateDisplayedInfo(0, data.battery);
-    this.$.infoCard.updateDisplayedInfo(1, data.thermals);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'healthd-internals-power-thermal-card':
-        HealthdInternalsPowerThermalCardElement;
+    'healthd-internals-power-card':
+        HealthdInternalsPowerCardElement;
   }
 }
 
 customElements.define(
-    HealthdInternalsPowerThermalCardElement.is,
-    HealthdInternalsPowerThermalCardElement);
+    HealthdInternalsPowerCardElement.is,
+    HealthdInternalsPowerCardElement);
