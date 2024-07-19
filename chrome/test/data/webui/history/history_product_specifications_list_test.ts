@@ -356,4 +356,24 @@ suite('ProductSpecificationsListTest', () => {
     assertEquals(1, newItems!.length);
     assertDeepEquals('example2', newItems[0]!.item.name);
   });
+
+  test('empty message renders when list empty', async function() {
+    // Reset shoppingAPI to return no product sets.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    shoppingServiceApi.reset();
+    shoppingServiceApi.setResultFor(
+        'getAllProductSpecificationsSets', Promise.resolve({sets: []}));
+    productSpecificationsList =
+        document.createElement('product-specifications-lists');
+    document.body.appendChild(productSpecificationsList);
+    await ensureLazyLoaded();
+    await flushTasks();
+
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertEquals(0, items.length);
+    const emptyMessage = productSpecificationsList.shadowRoot!.querySelector(
+        '.centered-message');
+    assertTrue(!!emptyMessage);
+  });
 });

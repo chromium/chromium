@@ -174,11 +174,17 @@
   </message>
 
   <!-- For Product Specifications -->
+  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY" desc="Text shown for product specifications tab when no sets are present." translateable="false">
+    No Product Specifications sets
+  </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_HEADER" desc="Header text for product specifications tab in history." translateable="false">
     Product Specifications lists
   </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_HISTORY_REMOVE" desc="Text for deleting a single row in Product Specifications history" translateable="false">
     Remove from lists
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_INFO" desc="Info disclaimer text for product specifications tab in history." translateable="false">
+    Tabs you delete from your product specifications tables will still show up in your Chrome history.
   </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_MENU_ARIA_LABEL" desc="Aria label for menu button for a row in Product Specifications history" translateable="false">
     More actions for product set <ph name="PRODUCT_SPECIFICATIONS_SET_NAME"><ex>e-bikes</ex>$1</ph>

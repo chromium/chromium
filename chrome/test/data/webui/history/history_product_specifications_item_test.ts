@@ -38,7 +38,9 @@ suite('ProductSpecificationsItemTest', () => {
 
   test('render labels', async () => {
     const label = productSpecificationsItem.$.link.textContent!;
-    assertEquals('Analyze example1 · 1 items ex1', label.trim());
+    assertEquals('Analyze example1 · 1 items', label.trim());
+    const url = productSpecificationsItem.$.url.textContent!;
+    assertEquals('chrome://compare/?id=ex1', url.trim());
   });
 
   test('checkbox fires event', async () => {

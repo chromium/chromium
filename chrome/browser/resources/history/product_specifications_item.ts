@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_icons.html.js';
 import './searched_label.js';
 
@@ -36,6 +37,7 @@ export interface ProductSpecificationsItemElement {
     'checkbox': CrCheckboxElement,
     'link': HTMLElement,
     'menu': HTMLElement,
+    'url': HTMLElement,
   };
 }
 
@@ -106,6 +108,11 @@ export class ProductSpecificationsItemElement extends PolymerElement {
   private getMenuAriaLabel_(): string {
     return loadTimeData.getStringF(
         'productSpecificationsMenuAriaLabel', this.item.name);
+  }
+
+  private getUrl_(): string {
+    // TODO: b/353981858 - consider sending url from shopping api.
+    return 'chrome://compare/?id=' + this.item.uuid.value;
   }
 
   createFocusRow(): FocusRow {

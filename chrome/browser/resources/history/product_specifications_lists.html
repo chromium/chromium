@@ -4,11 +4,21 @@
     overflow: auto;
   }
 
-  .history-cards {
-    margin-block-start: var(--first-card-padding-top);
+  #product-specifications-info-text {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 auto;
+    padding: 6px 10px 8px;
+    color: var(--cr-secondary-text-color);
+    font-size: 11px;
+    font-weight: 400;
   }
 
-  #history-item-container {
+  .history-cards {
+    margin-block-start: 4px;
+  }
+
+  #product-list-container {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
@@ -19,18 +29,18 @@
   }
 
   #card-title-header {
-    display: block;
-    font-size: 16px;
-    font-weight: 400;
-    letter-spacing: .25px;
-    padding-bottom: 4px;
-    padding-top: 8px;
-    margin: 0 20px;
     margin-bottom: var(--card-first-last-item-padding);
   }
 </style>
-
-<div class="history-cards" id="history-item-container">
+<div id="product-specifications-info-text" class="history-cards">
+  $i18n{productSpecificationsInfo}
+</div>
+<div class="centered-message"
+    hidden$="[[hasResults_(displayedItems_.length)]]">
+  $i18n{productSpecificationsEmpty}
+</div>
+<div class="history-cards" id="product-list-container"
+    hidden$="[[!hasResults_(displayedItems_.length)]]">
   <div id="card-title-header" class="card-title" role="row">
     <div role="rowheader">
       <div role="heading" aria-level="2">

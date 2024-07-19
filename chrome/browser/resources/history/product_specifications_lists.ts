@@ -4,6 +4,7 @@
 import './product_specifications_item.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
 
 import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
@@ -117,6 +118,10 @@ export class ProductSpecificationsListsElement extends PolymerElement {
       this.focusGrid_!.addRow(row);
     }
     this.focusGrid_!.ensureRowActive(0);
+  }
+
+  private hasResults_(): boolean {
+    return this.displayedItems_.length > 0;
   }
 
   getSelectedItemCount() {
