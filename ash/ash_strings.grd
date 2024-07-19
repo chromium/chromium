@@ -8321,9 +8321,6 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_RESTORE_BUTTON" desc="Label of the restore button for the informed restore dialog.">
         Open
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_TITLE" translateable="false" desc="Title of the informed restore dialog context menu.">
-        Continue where you left off
-      </message>
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ASK_OPTION" translateable="false" desc="Ask every time option for the informed restore dialog context menu.">
         Ask every time
       </message>
@@ -8333,11 +8330,11 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_NEVER_OPTION" translateable="false" desc="Do not restore option for the informed restore dialog context menu.">
         Off
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_EXTRA_INFO" translateable="false" desc="Text in the informed restore dialog's context menu. Gives users some information about the full restore setting.">
-        Change will be applied next time when you sign in. You can also change settings in Settings > System preferences > On startup.
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_EXTRA_INFO" desc="Text in the informed restore dialog's context menu. Gives users some information about the full restore setting.">
+        Changes will be applied the next time you sign in. Update anytime in Settings > System preferences > Startup.
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_DESCRIPTION" translateable="false" desc="Description of the onboarding message if the user had Restore set to Ask every time.">
-        Get started with options to resume your last opened windows and tabs along with personalized suggestions.
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_DESCRIPTION" desc="Description of the onboarding message, which shows up the first time a user has restore data.">
+        Easily continue where you left off by opening your previous windows and tabs. You’ll also see personalized suggestions for things to do next.
       </message>
       <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_ON_ACCEPT" desc="Label of the accept button if the user had Restore set to Ask every time.">
         Got it
@@ -8348,11 +8345,11 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_RESTORE_OFF_CANCEL" desc="Label of the cancel button if the user had Restore off.">
         No thanks
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_TOAST" translateable="false" desc="Label of the toast the user sees, if the user had Restore off and they clicked accept in the onboarding dialog.">
-        Your windows and apps will be restored next time when you sign in
+      <message name="IDS_ASH_INFORMED_RESTORE_ONBOARDING_TOAST" desc="Label of the toast the user sees, if the user had Restore off and they clicked accept in the onboarding dialog.">
+        You’ll see previously opened windows and apps the next time you sign in
       </message>
-      <message name="IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE" translateable="false" desc="Text of the informed restore education nudge.">
-        You can go back to Overview at anytime to get back to suggestions
+      <message name="IDS_ASH_INFORMED_RESTORE_EDUCATION_NUDGE" desc="Text of the informed restore education nudge.">
+        To see personalized suggestions for things to do next, press the Overview key
       </message>
       <message name="IDS_ASH_BIRCH_CALENDAR_ONGOING_SUBTITLE" desc="Subtitle for the suggestion chip for an ongoing calendar event (e.g. a meeting that is happening right now)">
         Now · Ends <ph name="END_TIME">$1<ex>11:20 AM</ex></ph>

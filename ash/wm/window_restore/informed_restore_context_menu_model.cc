@@ -17,7 +17,7 @@ namespace ash {
 InformedRestoreContextMenuModel::InformedRestoreContextMenuModel()
     : ui::SimpleMenuModel(this) {
   const int group = 0;
-  AddTitleWithStringId(IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_TITLE);
+  AddTitleWithStringId(IDS_ASH_INFORMED_RESTORE_DIALOG_TITLE);
   AddRadioItemWithStringId(
       static_cast<int>(full_restore::RestoreOption::kAskEveryTime),
       IDS_ASH_INFORMED_RESTORE_DIALOG_CONTEXT_MENU_ASK_OPTION, group);
