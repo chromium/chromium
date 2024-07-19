@@ -47,7 +47,7 @@ found in the LICENSE file.
       android:id="@+id/google_bottom_bar_searchbox_lens_button"
       android:layout_width="@dimen/google_bottom_bar_button_size"
       android:layout_height="@dimen/google_bottom_bar_button_size"
-      android:src="@drawable/lens_icon"
+      android:src="@drawable/bottom_bar_searchbox_lens_icon"
       android:gravity="center_vertical"
       android:layout_gravity="center_vertical"
       android:background="@android:color/transparent"

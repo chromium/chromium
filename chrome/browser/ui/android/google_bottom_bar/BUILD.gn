@@ -49,6 +49,7 @@ android_resources("java_resources") {
     "java/res/drawable/bottom_bar_home_icon.xml",
     "java/res/drawable/bottom_bar_page_insights_icon.xml",
     "java/res/drawable/bottom_bar_searchbox_background.xml",
+    "java/res/drawable/bottom_bar_searchbox_lens_icon.xml",
     "java/res/drawable/bottom_bar_searchbox_mic_icon.xml",
     "java/res/drawable/bottom_bar_searchbox_superg_icon.xml",
     "java/res/layout/bottom_bar_button_even_layout.xml",
