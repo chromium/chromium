@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -420,11 +421,36 @@ void LocaleSwitchScreen::SwitchLocale() {
 }
 
 void LocaleSwitchScreen::HideImpl() {
+  // It can happen that we advance to one of the onboarding screens in tests
+  // directly without waiting for the LocaleSwitchScreen to properly exit.
+  //
+  // If `timeout_waiter_` is not running it means that we either already exited
+  // the screen in a regular way or `SwitchLocale` is being executed. The latter
+  // can happen only in tests and it is explicitly handled in the
+  // `LocaleSwitchScreen::OnLanguageChangedCallback`.
+  //
+  // If `timeout_waiter_` is still running it means that either locale or
+  // account capabilities haven't been fetched yet and we need to stop the
+  // timer, stop observing `IdentintyManager` and cancel the ongoing request to
+  // fetch the locale.
+  if (timeout_waiter_.IsRunning()) {
+    CHECK_IS_TEST();
+    timeout_waiter_.Stop();
+    identity_manager_observer_.Reset();
+    AbandonPeopleAPICall();
+  }
   session_refresher_.reset();
 }
 
 void LocaleSwitchScreen::OnLanguageChangedCallback(
     const locale_util::LanguageSwitchResult& result) {
+  // Return early when the screen is already hidden for tests. Check comment in
+  // `LocaleSwitchScreen::HideImpl` for more information.
+  if (is_hidden()) {
+    CHECK_IS_TEST();
+    return;
+  }
+
   if (!result.success) {
     exit_callback_.Run(Result::kSwitchFailed);
     return;
