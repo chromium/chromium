@@ -1288,6 +1288,7 @@ policies:
   1287: ReportingEndpoints
   1288: PrintingLPACSandboxEnabled
   1289: ShowGeminiIntroScreenEnabled
+  1290: DeviceRestrictionSchedule
 
 atomic_groups:
   1: Homepage

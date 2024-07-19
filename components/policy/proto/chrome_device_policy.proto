@@ -2076,4 +2076,5 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto DeviceExtensionsSystemLogEnabled = 1252;
   optional BooleanPolicyProto DeviceAllowEnterpriseRemoteAccessConnections =
       1268;
+  optional StringPolicyProto DeviceRestrictionSchedule = 1290;
 }
