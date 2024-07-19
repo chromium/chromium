@@ -283,6 +283,7 @@ if (!is_android && !is_mac) {
           "app/chrome_main.cc",
           "app/chrome_main_delegate.cc",
           "app/chrome_main_delegate.h",
+          "app/startup_timestamps.h",
         ]
 
         deps += [
@@ -425,6 +426,7 @@ if (is_win) {
       "app/chrome_main.cc",
       "app/chrome_main_delegate.cc",
       "app/chrome_main_delegate.h",
+      "app/startup_timestamps.h",
     ]
 
     output_name = "chrome"
@@ -1144,6 +1146,7 @@ if (is_win) {
       "app/chrome_main_delegate.h",
       "app/chrome_main_mac.h",
       "app/chrome_main_mac.mm",
+      "app/startup_timestamps.h",
     ]
 
     deps = [
@@ -1645,6 +1648,7 @@ if (is_android) {
       "app/android/chrome_main_delegate_android.h",
       "app/chrome_main_delegate.cc",
       "app/chrome_main_delegate.h",
+      "app/startup_timestamps.h",
     ]
 
     libs = [

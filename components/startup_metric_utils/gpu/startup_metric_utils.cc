@@ -74,6 +74,12 @@ void GpuStartupMetricRecorder::RecordGpuInitialized(base::TimeTicks ticks) {
                         "Startup.GPU.LoadTime.ChromeMainToGpuInitialized",
                         GetCommon().chrome_main_entry_ticks_,
                         gpu_initialized_ticks_);
+  if (!GetCommon().preread_end_ticks_.is_null() &&
+      !GetCommon().preread_begin_ticks_.is_null()) {
+    UmaHistogramWithTrace(
+        &base::UmaHistogramLongTimes, "Startup.GPU.LoadTime.PreReadFile",
+        GetCommon().preread_begin_ticks_, GetCommon().preread_end_ticks_);
+  }
 }
 
 }  // namespace startup_metric_utils

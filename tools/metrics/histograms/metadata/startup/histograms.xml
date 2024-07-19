@@ -1023,6 +1023,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.{Process}.LoadTime.PreReadFile" units="ms"
+    expires_after="2025-01-05">
+  <owner>spvw@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Time that it took to call base::PreReadFile() during main DLL
+    initialization. Only recorded on Windows. Recorded once on {Process} process
+    startup, as early as possible, but only if base::PreReadFile() was called.
+  </summary>
+  <token key="Process">
+    <variant name="Browser"/>
+    <variant name="GPU"/>
+    <variant name="Renderer"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

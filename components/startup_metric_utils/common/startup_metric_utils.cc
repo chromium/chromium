@@ -63,6 +63,15 @@ void CommonStartupMetricRecorder::RecordChromeMainEntryTime(
   DCHECK(!chrome_main_entry_ticks_.is_null());
 }
 
+void CommonStartupMetricRecorder::RecordPreReadTime(base::TimeTicks start_ticks,
+                                                    base::TimeTicks end_ticks) {
+  preread_begin_ticks_ = start_ticks;
+  preread_end_ticks_ = end_ticks;
+  // These aren't necessarily non-null after setting, because if the process in
+  // question did not PreRead (if `--no-pre-read-main-dll` was passed, for
+  // example), they will be null.
+}
+
 void CommonStartupMetricRecorder::ResetSessionForTesting() {
 #if DCHECK_IS_ON()
   GetSessionLog().clear();

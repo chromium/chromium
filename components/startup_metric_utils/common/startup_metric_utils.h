@@ -40,6 +40,11 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   // function is invoked.
   void RecordChromeMainEntryTime(base::TimeTicks ticks);
 
+  // Call this with the time immediately before/after base::PreReadFile() is
+  // called on the main DLL on startup.
+  void RecordPreReadTime(base::TimeTicks start_ticks,
+                         base::TimeTicks end_ticks);
+
   // Returns the TimeTicks corresponding to main entry as recorded by
   // |RecordMainEntryPointTime|. Returns a null TimeTicks if a value has not
   // been recorded yet. This method is expected to be called from the UI
@@ -84,6 +89,9 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   base::TimeTicks application_start_ticks_;
 
   base::TimeTicks chrome_main_entry_ticks_;
+
+  base::TimeTicks preread_begin_ticks_;
+  base::TimeTicks preread_end_ticks_;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)

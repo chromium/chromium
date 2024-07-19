@@ -92,7 +92,7 @@ void ChromeOSTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
 
 content::ContentMainDelegate*
 ChromeOSTestLauncherDelegate::CreateContentMainDelegate() {
-  return new ChromeOSTestChromeMainDelegate(base::TimeTicks::Now());
+  return new ChromeOSTestChromeMainDelegate();
 }
 
 void ChromeOSTestLauncherDelegate::PreSharding() {}

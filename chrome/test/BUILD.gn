@@ -145,6 +145,7 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "../app/startup_timestamps.h",
     "../browser/autofill/automated_tests/cache_replayer.cc",
     "../browser/autofill/automated_tests/cache_replayer.h",
     "../browser/component_updater/privacy_sandbox_attestations_component_installer_test_util.cc",
@@ -12696,6 +12697,7 @@ if (is_chromeos) {
       "//chrome/app/chrome_exe_main_aura.cc",
       "//chrome/app/chrome_main_delegate.cc",
       "//chrome/app/chrome_main_delegate.h",
+      "//chrome/app/startup_timestamps.h",
       "base/chromeos/test_chrome_base.cc",
       "base/chromeos/test_chrome_base.h",
       "base/chromeos/test_chrome_main.cc",

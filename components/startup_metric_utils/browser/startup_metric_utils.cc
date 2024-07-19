@@ -350,6 +350,14 @@ void BrowserStartupMetricRecorder::RecordBrowserMainMessageLoopStart(
         GetCommon().application_start_ticks_,
         GetCommon().chrome_main_entry_ticks_);
   }
+
+  // PreReadFile time.
+  if (!GetCommon().preread_end_ticks_.is_null() &&
+      !GetCommon().preread_begin_ticks_.is_null()) {
+    UmaHistogramWithTraceAndTemperature(
+        &base::UmaHistogramLongTimes, "Startup.Browser.LoadTime.PreReadFile",
+        GetCommon().preread_begin_ticks_, GetCommon().preread_end_ticks_);
+  }
 }
 
 void BrowserStartupMetricRecorder::RecordBrowserMainLoopFirstIdle(

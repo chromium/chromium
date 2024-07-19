@@ -745,23 +745,26 @@ void InitLogging(const std::string& process_type) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
+void RecordMainStartupMetrics(const StartupTimestamps& timestamps) {
   const base::TimeTicks now = base::TimeTicks::Now();
 
 #if BUILDFLAG(IS_WIN)
-  DUMP_WILL_BE_CHECK(!application_start_time.is_null());
-  startup_metric_utils::GetCommon().RecordApplicationStartTime(
-      application_start_time);
-#elif BUILDFLAG(IS_ANDROID)
+  startup_metric_utils::GetCommon().RecordPreReadTime(
+      timestamps.preread_begin_ticks, timestamps.preread_end_ticks);
+#endif
+
   // On Android the main entry point time is the time when the Java code starts.
   // This happens before the shared library containing this code is even loaded.
   // The Java startup code has recorded that time, but the C++ code can't fetch
   // it from the Java side until it has initialized the JNI. See
   // ChromeMainDelegateAndroid.
-#else
-  // On other platforms, |application_start_time| == |now| since the application
-  // starts with ChromeMain().
-  startup_metric_utils::GetCommon().RecordApplicationStartTime(now);
+#if !BUILDFLAG(IS_ANDROID)
+  // On all other platforms, `timestamps.exe_entry_point_ticks` contains the exe
+  // entry point time (on some platforms this is ChromeMain, on some it is
+  // before).
+  CHECK(!timestamps.exe_entry_point_ticks.is_null());
+  startup_metric_utils::GetCommon().RecordApplicationStartTime(
+      timestamps.exe_entry_point_ticks);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
@@ -821,15 +824,17 @@ bool IsCanaryDev() {
 
 }  // namespace
 
+#if BUILDFLAG(IS_ANDROID)
 ChromeMainDelegate::ChromeMainDelegate()
-    : ChromeMainDelegate(base::TimeTicks()) {}
+    : ChromeMainDelegate(StartupTimestamps{}) {}
+#endif
 
-ChromeMainDelegate::ChromeMainDelegate(base::TimeTicks exe_entry_point_ticks) {
+ChromeMainDelegate::ChromeMainDelegate(const StartupTimestamps& timestamps) {
   // Record startup metrics in the browser process. For component builds, there
   // is no way to know the type of process (process command line is not yet
   // initialized), so the function below will also be called in renderers.
   // This doesn't matter as it simply sets global variables.
-  RecordMainStartupMetrics(exe_entry_point_ticks);
+  RecordMainStartupMetrics(timestamps);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

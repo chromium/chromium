@@ -238,7 +238,7 @@ void ChromeTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
 #if !BUILDFLAG(IS_ANDROID)
 content::ContentMainDelegate*
 ChromeTestLauncherDelegate::CreateContentMainDelegate() {
-  return new ChromeTestChromeMainDelegate(base::TimeTicks::Now());
+  return new ChromeTestChromeMainDelegate();
 }
 #endif
 

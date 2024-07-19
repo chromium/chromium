@@ -142,6 +142,7 @@ static_library("test_support") {
   sources = [
     "chrome_main_delegate.cc",
     "chrome_main_delegate.h",
+    "startup_timestamps.h",
   ]
 
   deps = [

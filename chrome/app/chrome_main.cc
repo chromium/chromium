@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
+#include "chrome/app/startup_timestamps.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_result_codes.h"
@@ -38,13 +39,12 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/dcheck_is_on.h"
-#include "base/debug/handle_hooks_win.h"
-#include "base/win/current_module.h"
-
 #include <timeapi.h>
 
+#include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/debug/handle_hooks_win.h"
+#include "base/win/current_module.h"
 #include "base/win/win_util.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/chrome_constants.h"
@@ -92,7 +92,9 @@ void ShowOldHeadlessWarningMaybe(const base::CommandLine* command_line) {
 extern "C" {
 DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
                                  sandbox::SandboxInterfaceInfo* sandbox_info,
-                                 int64_t exe_entry_point_ticks);
+                                 int64_t exe_main_entry_point_ticks,
+                                 int64_t preread_begin_ticks,
+                                 int64_t preread_end_ticks);
 }
 #elif BUILDFLAG(IS_POSIX)
 extern "C" {
@@ -108,10 +110,11 @@ ChromeMain(int argc, const char** argv);
 #if BUILDFLAG(IS_WIN)
 DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
                                  sandbox::SandboxInterfaceInfo* sandbox_info,
-                                 int64_t exe_entry_point_ticks) {
+                                 int64_t exe_entry_point_ticks,
+                                 int64_t preread_begin_ticks,
+                                 int64_t preread_end_ticks) {
 #elif BUILDFLAG(IS_POSIX)
 int ChromeMain(int argc, const char** argv) {
-  int64_t exe_entry_point_ticks = 0;
 #else
 #error Unknown platform.
 #endif
@@ -131,10 +134,15 @@ int ChromeMain(int argc, const char** argv) {
   // Note: The EXE is patched separately, in chrome/app/chrome_exe_main_win.cc.
   base::debug::HandleHooks::AddIATPatch(CURRENT_MODULE());
 #endif  // !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
-#endif  // BUILDFLAG(IS_WIN)
-
+  StartupTimestamps timestamps{
+      base::TimeTicks::FromInternalValue(exe_entry_point_ticks),
+      base::TimeTicks::FromInternalValue(preread_begin_ticks),
+      base::TimeTicks::FromInternalValue(preread_end_ticks)};
+  ChromeMainDelegate chrome_main_delegate(timestamps);
+#else  // BUILDFLAG(IS_WIN)
   ChromeMainDelegate chrome_main_delegate(
-      base::TimeTicks::FromInternalValue(exe_entry_point_ticks));
+      {.exe_entry_point_ticks = base::TimeTicks::Now()});
+#endif
   content::ContentMainParams params(&chrome_main_delegate);
 
 #if BUILDFLAG(IS_WIN)

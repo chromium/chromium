@@ -8,6 +8,7 @@
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_main_delegate.h"
+#include "chrome/app/startup_timestamps.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chromeos/test_chrome_base.h"
 
@@ -17,7 +18,8 @@ __attribute__((visibility("default"))) int ChromeMain(int argc,
 }
 
 int ChromeMain(int argc, const char** argv) {
-  ChromeMainDelegate chrome_main_delegate(base::TimeTicks::Now());
+  ChromeMainDelegate chrome_main_delegate(
+      {.exe_entry_point_ticks = base::TimeTicks::Now()});
   content::ContentMainParams params(&chrome_main_delegate);
 
   params.argc = argc;

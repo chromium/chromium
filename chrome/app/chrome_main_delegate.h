@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/startup_timestamps.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/chrome_content_client.h"
 #include "components/memory_system/memory_system.h"
@@ -39,11 +40,15 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   static const char* const kNonWildcardDomainNonPortSchemes[];
   static const size_t kNonWildcardDomainNonPortSchemesSize;
 
+#if BUILDFLAG(IS_ANDROID)
   ChromeMainDelegate();
+#endif
 
-  // |exe_entry_point_ticks| is the time at which the main function of the
-  // executable was entered, or null if not available.
-  explicit ChromeMainDelegate(base::TimeTicks exe_entry_point_ticks);
+  // `timestamps.exe_entry_point_ticks` is the time at which the main function
+  // of the executable was entered. On Windows, StartupTimestamps contains
+  // timing information for calls to base::PreReadFile. `timestamps`' lifetime
+  // does not need to last beyond the constructor call.
+  explicit ChromeMainDelegate(const StartupTimestamps& timestamps);
 
   ChromeMainDelegate(const ChromeMainDelegate&) = delete;
   ChromeMainDelegate& operator=(const ChromeMainDelegate&) = delete;

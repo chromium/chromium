@@ -6,7 +6,9 @@
 #define CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_TEST_LAUNCHER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/app/chrome_main_delegate.h"
+#include "chrome/app/startup_timestamps.h"
 #include "content/public/test/test_launcher.h"
 
 class ChromeOSTestSuite;
@@ -29,10 +31,8 @@ class ChromeOSTestSuiteRunner {
 // Acts like normal ChromeMainDelegate but injects behaviour for crosint tests.
 class ChromeOSTestChromeMainDelegate : public ChromeMainDelegate {
  public:
-  // |time| is the time at which the main function of the
-  // executable was entered, or null if not available.
-  explicit ChromeOSTestChromeMainDelegate(base::TimeTicks time)
-      : ChromeMainDelegate(time) {}
+  ChromeOSTestChromeMainDelegate()
+      : ChromeMainDelegate({.exe_entry_point_ticks = base::TimeTicks::Now()}) {}
 
   // ChromeMainDelegateOverrides.
   content::ContentBrowserClient* CreateContentBrowserClient() override;

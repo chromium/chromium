@@ -168,8 +168,7 @@ class InternalsObjectRendererInjector : public ChromeContentRendererClient {
 
 class FuzzerChromeMainDelegate : public ChromeTestChromeMainDelegate {
  public:
-  explicit FuzzerChromeMainDelegate(base::TimeTicks time)
-      : ChromeTestChromeMainDelegate(time) {}
+  FuzzerChromeMainDelegate() = default;
   content::ContentRendererClient* CreateContentRendererClient() override {
     return new InternalsObjectRendererInjector();
   }
@@ -181,8 +180,7 @@ class FuzzerTestLauncherDelegate : public content::TestLauncherDelegate {
                              std::vector<std::string>&& libfuzzer_arguments)
       : fuzzer_(std::move(fuzzer)),
         libfuzzer_arguments_(std::move(libfuzzer_arguments)) {
-    content_main_delegate_ =
-        std::make_unique<FuzzerChromeMainDelegate>(base::TimeTicks::Now());
+    content_main_delegate_ = std::make_unique<FuzzerChromeMainDelegate>();
   }
 
   int RunTestSuite(int argc, char** argv) override {

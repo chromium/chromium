@@ -69,6 +69,13 @@ void RendererStartupMetricRecorder::RecordRunLoopStart(base::TimeTicks ticks) {
       &base::UmaHistogramMediumTimes,
       "Startup.Renderer.LoadTime.ChromeMainToRendererStartRunLoop",
       GetCommon().chrome_main_entry_ticks_, run_loop_start_ticks_);
+
+  if (!GetCommon().preread_end_ticks_.is_null() &&
+      !GetCommon().preread_begin_ticks_.is_null()) {
+    UmaHistogramWithTrace(
+        &base::UmaHistogramLongTimes, "Startup.Renderer.LoadTime.PreReadFile",
+        GetCommon().preread_begin_ticks_, GetCommon().preread_end_ticks_);
+  }
 }
 
 }  // namespace startup_metric_utils
