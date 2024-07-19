@@ -78,7 +78,7 @@ ShoppingUserModel::GetModelConfig() {
       /*negative_label=*/kLegacyNegativeLabel);
 
   writer.AddPredictedResultTTLInOutputConfig(
-      /*top_label_to_ttl_list=*/{}, /*default_ttl=*/7,
+      /*top_label_to_ttl_list=*/{}, /*default_ttl=*/2,
       /*time_unit=*/proto::TimeUnit::DAY);
 
   return std::make_unique<ModelConfig>(std::move(shopping_user_metadata),
