@@ -14,7 +14,6 @@
 :host {
   font-size: 12px;
   max-width: 537px;
-  white-space: pre;
 }
 
 #promoAndDismissContainer {
@@ -33,8 +32,9 @@
 #promoContainer {
   align-items: center;
   display: flex;
-  overflow-x: clip;
+  overflow-x: hidden;
   padding-inline-end: 8px;
+  white-space: pre;
 }
 
 :host([shown-middle-slot-promo-id_]) #promoContainer {
