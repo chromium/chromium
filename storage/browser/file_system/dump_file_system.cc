@@ -26,6 +26,11 @@
 // children, and file_content_path is empty if the file is a directory.
 //
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
