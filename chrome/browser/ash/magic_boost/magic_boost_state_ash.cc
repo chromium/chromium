@@ -143,7 +143,7 @@ void MagicBoostStateAsh::OnHMREnabledUpdated() {
   // disclaimer UI.
   if (enabled && (consent_status == chromeos::HMRConsentStatus::kUnset ||
                   consent_status == chromeos::HMRConsentStatus::kDeclined)) {
-    AsyncWriteConsentStatus(chromeos::HMRConsentStatus::kPendingDisclaimer);
+    AsyncWriteConsentStatus(chromeos::HMRConsentStatus::kPending);
   }
 }
 

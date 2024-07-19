@@ -161,7 +161,7 @@ ReadWriteCardsManagerImpl::GetControllers(
 
   if (hmr_consent_status.has_value()) {
     CHECK(hmr_consent_status == HMRConsentStatus::kApproved ||
-          hmr_consent_status == HMRConsentStatus::kPendingDisclaimer);
+          hmr_consent_status == HMRConsentStatus::kPending);
   }
 
   return GetQuickAnswersAndMahiControllers(params);

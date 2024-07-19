@@ -12,18 +12,6 @@
 
 namespace chromeos {
 
-// HMR consent is two phases. These are flows and state transitions.
-//
-// Flow A (Mini Card):
-// 1. Mini card is shown (kUnset -> kPendingDisclaimer | kDeclined)
-// 2. Disclaimer dialog is shown (kPendingDisclaimer -> kApproved | kDeclined)
-//
-// *: If a user has pressed [No Thanks] in the mini card, kDeclined is set.
-//
-// Flow B (Settings):
-// 1. A user toggles HMR settings in Settings UI
-//    (kUnset | kDeclined -> kPendingDisclaimer)
-// 2. Disclaimer dialog is shown (kPendingDisclaimer -> kApproved | kDeclined)
 enum class HMRConsentStatus : int {
   // User has agreed to consent by pressing the accept button on the disclaimer
   // UI.
@@ -32,10 +20,9 @@ enum class HMRConsentStatus : int {
   // disclaimer UI or the opt-in card.
   kDeclined = 1,
   // This state is being used when the feature is turned on through the Settings
-  // app or a mini card and consent status is unset. In this case, we will show
-  // the disclaimer UI when users try to access the Mahi feature through the
-  // Mahi menu card.
-  kPendingDisclaimer = 2,
+  // app and consent status is unset. In this case, we will show the disclaimer
+  // UI when users try to access the Mahi feature through the Mahi menu card.
+  kPending = 2,
   // Users hasn't accept nor decline the consent.
   kUnset = 3,
 };
