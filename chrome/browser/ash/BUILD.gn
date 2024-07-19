@@ -2274,6 +2274,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/browser/ui/ash/keyboard:ash_test_support",
+    "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",

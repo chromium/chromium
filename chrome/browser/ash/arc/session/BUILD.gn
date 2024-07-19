@@ -164,6 +164,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/ui:test_support",
+    "//chrome/browser/ui/ash/multi_user",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/concierge",

@@ -102,6 +102,7 @@ static_library("file_manager") {
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/pdf:pdf_service",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/multi_user",
     "//chrome/common",
     "//chrome/services/media_gallery_util/public/cpp",
     "//chrome/services/media_gallery_util/public/mojom",

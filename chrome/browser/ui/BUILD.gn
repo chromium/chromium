@@ -2235,16 +2235,6 @@ static_library("ui") {
       "ash/login_screen_client_impl.cc",
       "ash/login_screen_client_impl.h",
       "ash/login_screen_shown_observer.h",
-      "ash/multi_user/multi_profile_support.cc",
-      "ash/multi_user/multi_profile_support.h",
-      "ash/multi_user/multi_user_context_menu.h",
-      "ash/multi_user/multi_user_context_menu_chromeos.cc",
-      "ash/multi_user/multi_user_util.cc",
-      "ash/multi_user/multi_user_util.h",
-      "ash/multi_user/multi_user_window_manager_helper.cc",
-      "ash/multi_user/multi_user_window_manager_helper.h",
-      "ash/multi_user/multi_user_window_manager_stub.cc",
-      "ash/multi_user/multi_user_window_manager_stub.h",
       "ash/network/enrollment_dialog_view.cc",
       "ash/network/enrollment_dialog_view.h",
       "ash/network/mobile_data_notifications.cc",
@@ -3432,6 +3422,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/holding_space",
       "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/ash/lobster",
+      "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -3813,6 +3804,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/download_status",
       "//chrome/browser/ui/ash/game_dashboard",
       "//chrome/browser/ui/ash/global_media_controls",
+      "//chrome/browser/ui/ash/multi_user",
     ]
 
     if (is_chrome_branded) {
