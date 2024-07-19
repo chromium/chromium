@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.privacy_guide;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 
@@ -13,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,20 +26,46 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 
 /** JUnit tests of the class {@link AdTopicsFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AdTopicsFragmentTest {
+    @Rule public JniMocker mocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefService mPrefService;
+
     private FragmentScenario mScenario;
     private MaterialSwitchWithText mAdTopicsButton;
+    private final UserActionTester mActionTester = new UserActionTester();
 
-    // TODO(b/353975355): Add more tests for Ad Topics step in privacy guide
-    private void initFragmentWithDefaultState() {
+    @Before
+    public void setUp() {
+        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+    }
+
+    @After
+    public void tearDown() {
+        if (mScenario != null) {
+            mScenario.close();
+        }
+        mActionTester.tearDown();
+    }
+
+    private void initFragmentWithAdTopicsState(boolean isAdTopicsOn) {
+        when(mPrefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED))
+                .thenReturn(isAdTopicsOn);
         mScenario =
                 FragmentScenario.launchInContainer(
                         AdTopicsFragment.class,
@@ -58,8 +89,28 @@ public class AdTopicsFragmentTest {
     }
 
     @Test
-    public void testIsSwitchOffByDefault() {
-        initFragmentWithDefaultState();
+    public void testIsSwitchOffWhenAdTopicsOff() {
+        initFragmentWithAdTopicsState(false);
         assertFalse(mAdTopicsButton.isChecked());
+    }
+
+    @Test
+    public void testIsSwitchOffWhenAdTopicsOn() {
+        initFragmentWithAdTopicsState(true);
+        assertTrue(mAdTopicsButton.isChecked());
+    }
+
+    @Test
+    public void testTurnAdTopicsOn() {
+        initFragmentWithAdTopicsState(false);
+        mAdTopicsButton.performClick();
+        verify(mPrefService).setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, true);
+    }
+
+    @Test
+    public void testTurnAdTopicsOff() {
+        initFragmentWithAdTopicsState(true);
+        mAdTopicsButton.performClick();
+        verify(mPrefService).setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, false);
     }
 }

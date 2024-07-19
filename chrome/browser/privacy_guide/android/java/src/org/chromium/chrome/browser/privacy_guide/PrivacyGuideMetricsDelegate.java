@@ -306,9 +306,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.AD_TOPICS:
                 {
-                    // TODO(b/347054774): Dynamically retrieve Ad Topics API state using
-                    // PrivacyGuideUtils.
-                    mInitialAdTopicsState = false;
+                    mInitialAdTopicsState = PrivacyGuideUtils.isAdTopicsEnabled(mProfile);
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.WELCOME:
@@ -364,7 +362,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.AD_TOPICS:
                 {
-                    // TODO(b/347054774): Record metrics for Ad Topics API.
+                    // TODO(b/353975503): Record metrics for Ad Topics API.
                     break;
                 }
             default:
@@ -521,7 +519,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.AD_TOPICS:
                 {
-                    // TODO(b/347054774): Record metrics for Ad Topics API.
+                    // TODO(b/353975503): Record metrics for Ad Topics API.
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.DONE:

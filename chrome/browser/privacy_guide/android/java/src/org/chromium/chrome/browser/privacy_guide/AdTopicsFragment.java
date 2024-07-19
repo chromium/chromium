@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** Controls the behavior of the Topics privacy guide page. */
 public class AdTopicsFragment extends PrivacyGuideBasePage {
@@ -22,8 +24,13 @@ public class AdTopicsFragment extends PrivacyGuideBasePage {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         MaterialSwitchWithText adTopicsSwitch = view.findViewById(R.id.ad_topics_switch);
-        // TODO (b/347054774): Replace `false` with a helper method that sets switch based on Ad
-        // Topics state
-        adTopicsSwitch.setChecked(false);
+        adTopicsSwitch.setChecked(PrivacyGuideUtils.isAdTopicsEnabled(getProfile()));
+
+        adTopicsSwitch.setOnCheckedChangeListener(
+                (button, isChecked) -> {
+                    // TODO(b/353975503): Record metrics for onAdTopicsChange
+                    UserPrefs.get(getProfile())
+                            .setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, isChecked);
+                });
     }
 }

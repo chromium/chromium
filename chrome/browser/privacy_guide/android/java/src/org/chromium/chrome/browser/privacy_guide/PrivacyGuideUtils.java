@@ -59,6 +59,10 @@ class PrivacyGuideUtils {
         return UserPrefs.get(profile).getBoolean(Pref.SEARCH_SUGGEST_ENABLED);
     }
 
+    static boolean isAdTopicsEnabled(Profile profile) {
+        return UserPrefs.get(profile).getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
+    }
+
     static @SafeBrowsingState int getSafeBrowsingState(Profile profile) {
         return new SafeBrowsingBridge(profile).getSafeBrowsingState();
     }
