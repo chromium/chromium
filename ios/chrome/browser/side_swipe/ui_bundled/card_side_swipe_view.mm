@@ -386,7 +386,12 @@ const CGFloat kResizeFactor = 4;
   // because ActivateWebStateAt triggers behavior that depends on the view
   // hierarchy being reassembled, which happens in
   // sideSwipeViewDismissAnimationDidEnd.
-  _webStateList->ActivateWebStateAt(destinationWebStateIndex);
+  if (destinationWebStateIndex < _webStateList->count()) {
+    // It seems possible that sometimes `destinationWebStateIndex` is bigger
+    // than the last tab, probably because tabs were programmatically closed
+    // during the swipe. See crbug.com/333961615.
+    _webStateList->ActivateWebStateAt(destinationWebStateIndex);
+  }
 }
 
 @end
