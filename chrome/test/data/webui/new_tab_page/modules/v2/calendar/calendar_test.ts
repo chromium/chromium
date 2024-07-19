@@ -113,6 +113,30 @@ suite('NewTabPageModulesCalendarTest', () => {
     assertTrue(expandedEvent!.hasAttribute('expanded'));
   });
 
+  test('prioritize event with other attendee', async () => {
+    const events: CalendarEvent[] = [];
+    const mockTime = (new Date('2024-07-01T03:00:00')).valueOf();
+    windowProxy.setResultFor('now', mockTime);
+    events.push(createEvent(0, {
+      startTime: toTime(new Date(mockTime + (30 * 60000))),
+      endTime: toTime(new Date(mockTime + (60 * 60000))),
+      hasOtherAttendee: false,
+    }));
+    events.push(createEvent(1, {
+      startTime: toTime(new Date(mockTime + (30 * 60000))),
+      endTime: toTime(new Date(mockTime + (60 * 60000))),
+    }));
+    element.events = events;
+    await microtasksFinished();
+
+    // Assert.
+    const eventElements =
+        element.shadowRoot!.querySelectorAll('ntp-calendar-event');
+    assertEquals(eventElements.length, 2);
+    const expandedEvent = eventElements[1];
+    assertTrue(expandedEvent!.hasAttribute('expanded'));
+  });
+
   test('do not expand any meetings if they are all over', async () => {
     const events: CalendarEvent[] = [];
     const mockTime = (new Date('2024-07-01T03:00:00')).valueOf();

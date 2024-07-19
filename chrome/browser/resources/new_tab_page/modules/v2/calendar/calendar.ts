@@ -111,6 +111,11 @@ export class CalendarElement extends CrLitElement {
       return +eventB.isAccepted - +eventA.isAccepted;
     }
 
+    // Check if there are other attendees.
+    if (eventA.hasOtherAttendee !== eventB.hasOtherAttendee) {
+      return +eventB.hasOtherAttendee - +eventA.hasOtherAttendee;
+    }
+
     // If there is still a tie, return in the order they will show in the
     // list, which is what is returned by the API (startTime with
     // unspecified tie breaker).

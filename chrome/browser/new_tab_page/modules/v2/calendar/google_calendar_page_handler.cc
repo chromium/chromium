@@ -104,6 +104,7 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
   event->conference_url =
       GURL("https://foo.com/conference" + base::NumberToString(index));
   event->is_accepted = true;
+  event->has_other_attendee = false;
   return event;
 }
 
@@ -244,6 +245,7 @@ void GoogleCalendarPageHandler::OnRequestComplete(
       formatted_event->is_accepted =
           event->self_response_status() ==
           google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted;
+      formatted_event->has_other_attendee = event->has_other_attendee();
       result.push_back(std::move(formatted_event));
     }
   }

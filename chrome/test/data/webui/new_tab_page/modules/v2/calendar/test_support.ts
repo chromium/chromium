@@ -38,6 +38,7 @@ export function createEvent(
         attachments: createAttachments(3),
         conferenceUrl: {url: `https://foo.com/conference${index}`},
         isAccepted: true,
+        hasOtherAttendee: true,
       },
       overrides);
 }

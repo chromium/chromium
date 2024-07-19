@@ -45,13 +45,19 @@ base::Value::List CreateAttachments() {
   return attachments;
 }
 
-base::Value::List CreateAttendees(bool is_accepted) {
-  return base::Value::List().Append(
-      base::Value::Dict()
-          .Set("email", "test@test.com")
-          .Set("displayName", "Foo Test")
-          .Set("self", true)
-          .Set("responseStatus", is_accepted ? "accepted" : "needsAction"));
+base::Value::List CreateAttendees(bool is_accepted, bool has_other_attendee) {
+  return base::Value::List()
+      .Append(
+          base::Value::Dict()
+              .Set("email", "test@test.com")
+              .Set("displayName", "Foo Test")
+              .Set("self", true)
+              .Set("responseStatus", is_accepted ? "accepted" : "needsAction"))
+      .Append(base::Value::Dict()
+                  .Set("email", "test@test2.com")
+                  .Set("displayName", "Bar Test")
+                  .Set("responseStatus",
+                       has_other_attendee ? "accepted" : "declined"));
 }
 
 base::Value::Dict CreateConferenceData() {
@@ -91,7 +97,7 @@ base::Value::Dict CreateEvent(int index) {
                                   /*is_end_time*/ true))
       .Set("conferenceData", CreateConferenceData())
       .Set("attachments", CreateAttachments())
-      .Set("attendees", CreateAttendees(index % 2 == 0));
+      .Set("attendees", CreateAttendees(index % 2 == 0, index % 2 == 0));
 }
 
 bool CreateEventsJson(std::string* json) {
@@ -301,6 +307,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
     EXPECT_EQ(response[i]->conference_url,
               GURL("https://foo.com/conference" + base::NumberToString(i)));
     EXPECT_TRUE(response[i]->is_accepted);
+    EXPECT_FALSE(response[i]->has_other_attendee);
   }
 }
 
@@ -346,6 +353,7 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
     EXPECT_EQ(response[i]->conference_url->spec(),
               "https://meet.google.com/jbe-test");
     EXPECT_EQ(response[i]->is_accepted, (i + 1) % 2 == 0);
+    EXPECT_EQ(response[i]->has_other_attendee, (i + 1) % 2 == 0);
 
     for (int j = 0; j < 2; j++) {
       ASSERT_EQ(response[i]->attachments.size(), 2u);
