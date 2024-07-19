@@ -29,6 +29,7 @@
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
 #import "components/password_manager/core/browser/stub_password_manager_driver.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/ios/constants.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
@@ -701,6 +702,9 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
   histogram_tester.ExpectUniqueSample(
       "PasswordGeneration.Event",
       autofill::password_generation::PASSWORD_ACCEPTED, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.iOS.AcceptedGeneratedPasswordSource",
+      AcceptedGeneratedPasswordSourceType::kSuggestion, 1);
 }
 
 // Tests that triggering password generation on the last focused field triggers
