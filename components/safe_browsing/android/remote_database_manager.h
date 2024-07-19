@@ -80,7 +80,7 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   ~RemoteSafeBrowsingDatabaseManager() override;
 
   // Requests currently outstanding.  This owns the ptrs.
-  std::vector<raw_ptr<ClientRequest, VectorExperimental>> current_requests_;
+  std::vector<std::unique_ptr<ClientRequest>> current_requests_;
 
   // Whether the service is running. 'enabled_' is used by the
   // RemoteSafeBrowsingDatabaseManager on the IO thread during normal
