@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/embedder/default_model/android_home_module_ranker.h"
 
 #include "components/segmentation_platform/embedder/default_model/default_model_test_base.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,7 +21,7 @@ class AndroidHomeModuleRankerTest : public DefaultModelTestBase {
     DefaultModelTestBase::SetUp();
     bool isAndroidHomeModuleRankerV2Enabled = base::FeatureList::IsEnabled(
         features::kSegmentationPlatformAndroidHomeModuleRankerV2);
-    input_size = isAndroidHomeModuleRankerV2Enabled ? 9 : 6;
+    input_size = isAndroidHomeModuleRankerV2Enabled ? 12 : 8;
   }
 
   void TearDown() override { DefaultModelTestBase::TearDown(); }
@@ -39,8 +40,8 @@ TEST_F(AndroidHomeModuleRankerTest, ExecuteModelWithInputForAllModules) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
   std::vector<float> input(input_size, 0);
-  ExpectClassifierResults(
-      input, {kPriceChange, kSingleTab, kTabResumptionForAndroidHome});
+  ExpectClassifierResults(input, {kPriceChange, kSingleTab,
+                                  kTabResumptionForAndroidHome, kSafetyHub});
 }
 
 TEST_F(AndroidHomeModuleRankerTest,
@@ -53,8 +54,9 @@ TEST_F(AndroidHomeModuleRankerTest,
   input[0] = 1;
   input[2] = 1;
   input[4] = 1;
-  ExpectClassifierResults(
-      input, {kPriceChange, kSingleTab, kTabResumptionForAndroidHome});
+  input[6] = 1;
+  ExpectClassifierResults(input, {kSafetyHub, kPriceChange, kSingleTab,
+                                  kTabResumptionForAndroidHome});
 }
 
 TEST_F(AndroidHomeModuleRankerTest,
@@ -67,8 +69,9 @@ TEST_F(AndroidHomeModuleRankerTest,
   input[1] = 1;
   input[3] = 1;
   input[5] = 1;
-  ExpectClassifierResults(
-      input, {kSingleTab, kTabResumptionForAndroidHome, kPriceChange});
+  input[7] = 1;
+  ExpectClassifierResults(input, {kSingleTab, kTabResumptionForAndroidHome,
+                                  kPriceChange, kSafetyHub});
 }
 
 }  // namespace segmentation_platform
