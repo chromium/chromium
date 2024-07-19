@@ -52,6 +52,7 @@ source_set("app_icon") {
     deps += [
       "//ash/components/arc/mojom",
       "//ash/public/cpp",
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/image_decoder",
       "//chrome/browser/resources:component_extension_resources_grit",

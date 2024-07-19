@@ -65,6 +65,7 @@ static_library("guest_os") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/apps/app_service/app_icon:util",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/arc/adbd",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/borealis",
@@ -112,6 +113,7 @@ static_library("guest_os") {
 
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/arc/adbd",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/bruschetta",

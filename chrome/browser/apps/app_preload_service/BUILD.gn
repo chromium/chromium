@@ -47,10 +47,16 @@ source_set("app_preload_service") {
   ]
 
   # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular includes.
-  deps += [ "//chrome/browser/ash/extensions" ]
+  deps += [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/extensions",
+  ]
 
   # TODO(crbug.com/40251079): Remove circular dependencies.
-  allow_circular_includes_from = [ "//chrome/browser/ash/extensions" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/extensions",
+  ]
 }
 
 source_set("unit_tests") {

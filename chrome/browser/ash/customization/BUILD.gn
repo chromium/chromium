@@ -20,6 +20,7 @@ static_library("customization") {
     "//ash",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/net",

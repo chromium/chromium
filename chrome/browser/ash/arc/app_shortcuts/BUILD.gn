@@ -19,6 +19,7 @@ static_library("app_shortcuts") {
     "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/ranking",

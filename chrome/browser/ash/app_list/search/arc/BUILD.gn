@@ -33,6 +33,7 @@ static_library("arc") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search",

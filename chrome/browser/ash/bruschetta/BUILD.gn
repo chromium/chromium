@@ -58,6 +58,7 @@ static_library("bruschetta") {
     "//ash/constants",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/guest_os/virtual_machines",
@@ -75,7 +76,10 @@ static_library("bruschetta") {
     "//ui/base",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/crostini" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/crostini",
+  ]
 }
 
 static_library("test_support") {

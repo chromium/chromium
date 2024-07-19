@@ -336,6 +336,7 @@ static_library("crosapi") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_restore",
@@ -518,6 +519,7 @@ static_library("crosapi") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",

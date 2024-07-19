@@ -54,6 +54,7 @@ static_library("extensions") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/crosapi:browser_util",
@@ -86,6 +87,7 @@ static_library("extensions") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/extensions/users_private",
     "//chrome/browser/ash/login/demo_mode",

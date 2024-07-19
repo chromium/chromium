@@ -46,6 +46,7 @@ static_library("demo_mode") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/assistant",
@@ -77,6 +78,7 @@ static_library("demo_mode") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/assistant",

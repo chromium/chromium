@@ -215,6 +215,7 @@ source_set("app_service") {
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_service/promise_apps/proto",
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/app_list/search",
@@ -285,6 +286,7 @@ source_set("app_service") {
 
     # TODO(crbug.com/40251079): Remove circular dependencies.
     allow_circular_includes_from += [
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/app_list/search",

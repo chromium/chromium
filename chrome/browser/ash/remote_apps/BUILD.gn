@@ -29,6 +29,7 @@ static_library("remote_apps") {
     "//base:i18n",
     "//cc/paint",
     "//chrome/app:generated_resources",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common/apps/platform_apps/api",

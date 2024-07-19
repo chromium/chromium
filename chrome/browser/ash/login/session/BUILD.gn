@@ -44,6 +44,7 @@ static_library("session") {
     "//ash/webui/shimless_rma",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/accessibility/live_caption",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/crostini",

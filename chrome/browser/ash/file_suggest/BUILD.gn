@@ -32,6 +32,7 @@ static_library("file_suggest") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search/files",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/app_list/search/ranking:proto",
@@ -50,6 +51,7 @@ static_library("file_suggest") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search/files",
     "//chrome/browser/ash/app_list/search/ranking",
   ]

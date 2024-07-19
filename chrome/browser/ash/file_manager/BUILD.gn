@@ -141,6 +141,7 @@ static_library("file_manager") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/bruschetta",
@@ -197,6 +198,7 @@ static_library("file_manager") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/crostini",

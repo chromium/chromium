@@ -79,6 +79,7 @@ static_library("search") {
     "//ash/webui/shortcut_customization_ui/backend",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
     "//base",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search/ranking",
   ]
 
@@ -122,6 +123,7 @@ static_library("search") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/app_list/search/util",

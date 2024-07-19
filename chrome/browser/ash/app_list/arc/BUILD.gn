@@ -68,6 +68,7 @@ static_library("arc") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/image_decoder",
@@ -101,6 +102,8 @@ static_library("arc") {
     "//ui/gfx/codec",
     "//ui/gfx/geometry",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list" ]
 }
 
 source_set("unit_tests") {

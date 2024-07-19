@@ -103,6 +103,7 @@ static_library("crostini") {
     "//ash/resources/vector_icons",
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/crostini/throttle",
@@ -144,6 +145,7 @@ static_library("crostini") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/guest_os/public",
   ]

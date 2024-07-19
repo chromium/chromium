@@ -20,11 +20,14 @@ static_library("reorder") {
     "//ash/strings",
     "//base",
     "//base:i18n",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ui/ash",
     "//components/sync/model",
     "//third_party/icu",
     "//ui/base",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list" ]
 }
 
 source_set("unit_tests") {
@@ -35,6 +38,7 @@ source_set("unit_tests") {
   deps = [
     ":reorder",
     "//ash/public/cpp",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ui",
     "//components/crx_file",
     "//testing/gtest",

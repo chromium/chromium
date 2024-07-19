@@ -2879,6 +2879,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/accessibility:browser_tests",
     "//chrome/browser/ash/account_manager:browser_tests",
     "//chrome/browser/ash/annotator:browser_tests",
+    "//chrome/browser/ash/app_list:browser_tests",
     "//chrome/browser/ash/app_list/app_service:browser_tests",
     "//chrome/browser/ash/app_list/arc:browser_tests",
     "//chrome/browser/ash/app_list/search:browser_tests",

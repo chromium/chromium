@@ -36,6 +36,7 @@ static_library("android_sms") {
     "//ash/constants",
     "//base",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",

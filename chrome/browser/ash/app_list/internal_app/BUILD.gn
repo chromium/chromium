@@ -18,6 +18,7 @@ static_library("internal_app") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/profiles:profile",

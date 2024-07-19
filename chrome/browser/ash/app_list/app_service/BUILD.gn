@@ -67,7 +67,10 @@ static_library("app_service") {
     "//ui/views",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search",
+  ]
 }
 
 source_set("unit_tests") {

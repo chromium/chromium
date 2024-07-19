@@ -1244,6 +1244,7 @@ source_set("extensions") {
       "//ash/webui/settings/public/constants:mojom",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/account_manager",
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
@@ -1348,6 +1349,7 @@ source_set("extensions") {
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/web_app",
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/input_method",
       "//chrome/browser/ash/app_restore",
