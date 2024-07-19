@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 
 namespace storage {
@@ -88,8 +87,7 @@ class FileSystemURL;
 // if an error is found before the first progress callback invocation, the
 // progress callback may NOT be invoked for the copy.
 //
-class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveHookDelegate
-    : public base::SupportsWeakPtr<CopyOrMoveHookDelegate> {
+class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveHookDelegate {
  public:
   enum class ErrorAction { kDefault, kSkip };
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
