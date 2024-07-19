@@ -14,13 +14,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "components/input/cursor_manager.h"
+#include "components/input/touch_emulator.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
-#include "components/input/cursor_manager.h"
-#include "components/input/touch_emulator.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/dip_util.h"
 
@@ -711,12 +712,39 @@ void RenderWidgetHostInputEventRouter::RouteMouseWheelEvent(
   event_targeter_->FindTargetAndDispatch(root_view, *event, latency);
 }
 
+// TODO(crbug.com/346629231): Temporary for debugging.
+static const char* PhaseToString(blink::WebMouseWheelEvent::Phase phase) {
+  switch (phase) {
+    case blink::WebMouseWheelEvent::kPhaseNone:
+      return "PhaseNone";
+    case blink::WebMouseWheelEvent::kPhaseBegan:
+      return "PhaseBegan";
+    case blink::WebMouseWheelEvent::kPhaseStationary:
+      return "PhaseStationary";
+    case blink::WebMouseWheelEvent::kPhaseChanged:
+      return "PhaseChanged";
+    case blink::WebMouseWheelEvent::kPhaseEnded:
+      return "PhaseEnded";
+    case blink::WebMouseWheelEvent::kPhaseCancelled:
+      return "PhaseCancelled";
+    case blink::WebMouseWheelEvent::kPhaseMayBegin:
+      return "PhaseMayBegin";
+    case blink::WebMouseWheelEvent::kPhaseBlocked:
+      return "PhaseMayBlocked";
+  }
+}
+
 void RenderWidgetHostInputEventRouter::DispatchMouseWheelEvent(
     RenderWidgetHostViewInput* root_view,
     RenderWidgetHostViewInput* target,
     const blink::WebMouseWheelEvent& mouse_wheel_event,
     const ui::LatencyInfo& latency,
     const std::optional<gfx::PointF>& target_location) {
+  TRACE_EVENT("input",
+              "RenderWidgetHostInputEventRouter::DispatchMouseWheelEvent",
+              "phase", PhaseToString(mouse_wheel_event.phase), "target",
+              static_cast<void*>(target), "wheel_target_",
+              static_cast<void*>(wheel_target_));
   if (!root_view->IsPointerLocked()) {
     if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseBegan) {
       wheel_target_ = target;
@@ -1159,6 +1187,14 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
          event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate ||
          event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd);
 
+  TRACE_EVENT_INSTANT("input", "Values", "target_view",
+                      static_cast<void*>(target_view), "resending_view",
+                      static_cast<void*>(resending_view),
+                      "bubbling_gesture_scroll_target_",
+                      static_cast<void*>(bubbling_gesture_scroll_target_),
+                      "bubbling_gesture_scroll_origin_",
+                      static_cast<void*>(bubbling_gesture_scroll_origin_));
+
   ui::LatencyInfo latency_info;
 
   if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
@@ -1169,6 +1205,8 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
     if (target_view == touchscreen_gesture_target_.get() ||
         target_view == touchpad_gesture_target_ ||
         target_view == touch_target_) {
+      TRACE_EVENT_INSTANT0("input", "EarlyOut-GestureInProgress",
+                           TRACE_EVENT_SCOPE_THREAD);
       return false;
     }
 
@@ -1176,6 +1214,8 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
     // ongoing bubbling.
     if (bubbling_gesture_scroll_target_ &&
         bubbling_gesture_scroll_target_ != resending_view) {
+      TRACE_EVENT_INSTANT0("input", "EarlyOut-Reentry",
+                           TRACE_EVENT_SCOPE_THREAD);
       return false;
     }
 
@@ -1229,6 +1269,8 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
   if (resending_view == bubbling_gesture_scroll_target_) {
     ReportBubblingScrollToSameView(event, resending_view);
     CancelScrollBubbling();
+    TRACE_EVENT_INSTANT0("input", "EarlyOut-SameView",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
   }
 
@@ -1244,6 +1286,8 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
       // bubbled to the root, a wrapping scroll begin will have already been
       // sent to the root.
       if (touchscreen_pinch_state_.IsInPinch()) {
+        TRACE_EVENT_INSTANT0("input", "EarlyOut-IsInPinch",
+                             TRACE_EVENT_SCOPE_THREAD);
         return true;
       }
     } else if (event.GetType() ==
