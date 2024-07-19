@@ -106,6 +106,12 @@
   Browser* browser = self.browser;
   CHECK(browser, kLensOverlayNotFatalUntil);
 
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(lowMemoryWarningReceived)
+             name:UIApplicationDidReceiveMemoryWarningNotification
+           object:nil];
+
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(LensOverlayCommands)];
@@ -115,6 +121,11 @@
   if (Browser* browser = self.browser) {
     [browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   }
+
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIApplicationDidReceiveMemoryWarningNotification
+              object:nil];
 
   [super stop];
 }
@@ -297,4 +308,20 @@
   return snapshotTabHelper->GenerateSnapshotWithoutOverlays();
 }
 
+- (void)lowMemoryWarningReceived {
+  // Preserve the UI if it's currently visible to the user.
+  if ([self isLensOverlayVisible]) {
+    return;
+  }
+
+  [self destroyLensUI:NO];
+}
+
+- (BOOL)isLensOverlayVisible {
+  if (_associatedTabHelper) {
+    return _associatedTabHelper->IsLensOverlayShown();
+  }
+
+  return NO;
+}
 @end

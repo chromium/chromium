@@ -21,6 +21,9 @@ class LensOverlayTabHelper : public web::WebStateUserData<LensOverlayTabHelper>,
   LensOverlayTabHelper& operator=(const LensOverlayTabHelper&) = delete;
 
   // Whether the lens overlay is displayed by the current tab helper.
+  bool IsLensOverlayShown() { return is_showing_lens_overlay_; }
+
+  // Whether the lens overlay is displayed by the current tab helper.
   void SetLensOverlayShown(bool is_showing_lens_overlay) {
     is_showing_lens_overlay_ = is_showing_lens_overlay;
   }
