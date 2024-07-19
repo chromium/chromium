@@ -102,6 +102,10 @@ void SidePanelControllerViews::DidFinishNavigation(
 
   if (CanShowOnURL(entry->GetURL())) {
     CreateAndRegisterEntry();
+    if (customize_chrome_ui_) {
+      customize_chrome_ui_->AttachedTabStateUpdated(
+          NewTabPageUI::IsNewTabPageOrigin(entry->GetURL()));
+    }
   } else {
     DeregisterEntry();
   }
@@ -196,6 +200,16 @@ SidePanelControllerViews::CreateCustomizeChromeWebView() {
     customize_chrome_ui_->ScrollToSection(*section_);
     section_.reset();
   }
+
+  // Immediately apply the tab's state to the customize chrome UI.
+  content::NavigationEntry* entry =
+      tab_->GetContents()->GetController().GetLastCommittedEntry();
+  if (!entry) {
+    entry = tab_->GetContents()->GetController().GetVisibleEntry();
+  }
+  customize_chrome_ui_->AttachedTabStateUpdated(
+      NewTabPageUI::IsNewTabPageOrigin(entry->GetURL()));
+
   return customize_chrome_web_view;
 }
 

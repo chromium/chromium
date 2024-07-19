@@ -157,6 +157,7 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
   MOCK_METHOD(void,
               ScrollToSection,
               (side_panel::mojom::CustomizeChromeSection));
+  MOCK_METHOD(void, AttachedTabStateUpdated, (bool));
 
   mojo::Receiver<side_panel::mojom::CustomizeChromePage> receiver_{this};
 };
@@ -753,6 +754,20 @@ TEST_F(CustomizeChromePageHandlerTest, ScrollToSection) {
   mock_page_.FlushForTesting();
 
   EXPECT_EQ(side_panel::mojom::CustomizeChromeSection::kAppearance, section);
+}
+
+TEST_F(CustomizeChromePageHandlerTest, AttachedTabStateUpdated) {
+  bool kIsSourceTabFirstPartyNtpValue = false;
+
+  bool isSourceTabFirstPartyNtp;
+  EXPECT_CALL(mock_page_, AttachedTabStateUpdated)
+      .Times(1)
+      .WillOnce(SaveArg<0>(&isSourceTabFirstPartyNtp));
+
+  handler().AttachedTabStateUpdated(kIsSourceTabFirstPartyNtpValue);
+  mock_page_.FlushForTesting();
+
+  EXPECT_EQ(kIsSourceTabFirstPartyNtpValue, isSourceTabFirstPartyNtp);
 }
 
 TEST_F(CustomizeChromePageHandlerTest, ScrollToUnspecifiedSection) {

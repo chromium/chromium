@@ -282,6 +282,16 @@ void CustomizeChromeUI::ScrollToSection(CustomizeChromeSection section) {
   }
 }
 
+void CustomizeChromeUI::AttachedTabStateUpdated(
+    bool is_source_tab_first_party_ntp) {
+  if (customize_chrome_page_handler_) {
+    customize_chrome_page_handler_->AttachedTabStateUpdated(
+        is_source_tab_first_party_ntp);
+  } else {
+    is_source_tab_first_party_ntp_ = is_source_tab_first_party_ntp;
+  }
+}
+
 base::WeakPtr<CustomizeChromeUI> CustomizeChromeUI::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -367,6 +377,11 @@ void CustomizeChromeUI::CreatePageHandler(
   if (section_.has_value()) {
     customize_chrome_page_handler_->ScrollToSection(*section_);
     section_.reset();
+  }
+  if (is_source_tab_first_party_ntp_.has_value()) {
+    customize_chrome_page_handler_->AttachedTabStateUpdated(
+        is_source_tab_first_party_ntp_.value());
+    is_source_tab_first_party_ntp_.reset();
   }
 }
 

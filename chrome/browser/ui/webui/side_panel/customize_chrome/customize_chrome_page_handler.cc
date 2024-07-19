@@ -123,6 +123,11 @@ void CustomizeChromePageHandler::ScrollToSection(
   page_->ScrollToSection(mojo_section);
 }
 
+void CustomizeChromePageHandler::AttachedTabStateUpdated(
+    bool is_source_tab_first_party_ntp) {
+  page_->AttachedTabStateUpdated(is_source_tab_first_party_ntp);
+}
+
 void CustomizeChromePageHandler::SetDefaultColor() {
   theme_service_->UseDeviceTheme(false);
   theme_service_->UseDefaultTheme();

@@ -73,7 +73,11 @@ class CustomizeChromePageHandler
 
   ~CustomizeChromePageHandler() override;
 
+  // Passes ScrollToSection calls to the CustomizeChromePage.
   void ScrollToSection(CustomizeChromeSection section);
+
+  // Passes AttachedTabStateUpdated calls to the CustomizeChromePage.
+  void AttachedTabStateUpdated(bool is_source_tab_first_party_ntp);
 
   // side_panel::mojom::CustomizeChromePageHandler:
   void SetDefaultColor() override;

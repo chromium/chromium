@@ -189,4 +189,6 @@ interface CustomizeChromePage {
   // Scrolls side panel to |section|. Possibly a response to a call to
   // |CustomizeChromePageHandler.UpdateScrollToSection()|.
   ScrollToSection(CustomizeChromeSection section);
+  // Sets Information about the tab that is attached to the CustomizeChromePage.
+  AttachedTabStateUpdated(bool is_source_tab_first_party_ntp);
 };
