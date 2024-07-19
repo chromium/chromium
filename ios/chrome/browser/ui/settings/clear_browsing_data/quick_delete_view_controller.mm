@@ -145,6 +145,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updateBottomSheetHeight];
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  // Update the bottomsheet height when trait collection changed (for example
+  // when the user uses large font).
+  if (self.traitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
+    [self updateBottomSheetHeight];
+  }
+}
+
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
@@ -269,6 +279,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 // table view might have a different height after the browsing data summary is
 // updated.
 - (void)updateBottomSheetHeight {
+  // Trigger any pending layout updates.
+  [self.view layoutIfNeeded];
+
   _tableViewHeightConstraint.constant = _tableView.contentSize.height;
   [self setUpBottomSheetDetents];
 }
