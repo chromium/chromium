@@ -28,10 +28,6 @@
 @interface LensOverlayCoordinator () <LensOverlayCommands,
                                       UISheetPresentationControllerDelegate,
                                       LensOverlayResultConsumer>
-
-// The tab helper for the instance for the active web state.
-@property(nonatomic, readonly, assign) LensOverlayTabHelper* tabHelper;
-
 @end
 
 @implementation LensOverlayCoordinator {
@@ -50,6 +46,9 @@
   LensResultPageViewController* _resultViewController;
   /// The mediator for lens results.
   LensResultPageMediator* _resultMediator;
+
+  /// The tab helper associated with the current UI.
+  LensOverlayTabHelper* _associatedTabHelper;
 }
 
 #pragma mark - properties
@@ -98,22 +97,6 @@
   _mediator.resultConsumer = self;
 }
 
-- (LensOverlayTabHelper*)tabHelper {
-  if (!self.browser || !self.browser->GetWebStateList() ||
-      !self.browser->GetWebStateList()->GetActiveWebState()) {
-    return nullptr;
-  }
-
-  web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  LensOverlayTabHelper* tabHelper =
-      LensOverlayTabHelper::FromWebState(activeWebState);
-
-  CHECK(tabHelper, kLensOverlayNotFatalUntil);
-
-  return tabHelper;
-}
-
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -145,12 +128,13 @@
     [self destroyLensUI:NO];
   }
 
-  if (LensOverlayTabHelper* tabHelper = self.tabHelper) {
-    // The instance that creates the Lens UI designates itself as the command
-    // handler for the associated tab.
-    tabHelper->SetLensOverlayCommandsHandler(self);
-    tabHelper->SetLensOverlayShown(true);
-  }
+  _associatedTabHelper = [self activeTabHelper];
+  CHECK(_associatedTabHelper, kLensOverlayNotFatalUntil);
+
+  // The instance that creates the Lens UI designates itself as the command
+  // handler for the associated tab.
+  _associatedTabHelper->SetLensOverlayCommandsHandler(self);
+  _associatedTabHelper->SetLensOverlayShown(true);
 
   UIImage* snapshot = [self captureSnapshot];
   [self createUIWithSnapshot:snapshot];
@@ -178,8 +162,11 @@
 }
 
 - (void)destroyLensUI:(BOOL)animated {
-  if (LensOverlayTabHelper* tabHelper = self.tabHelper) {
-    tabHelper->SetLensOverlayShown(false);
+  // The reason the UI is destroyed can be that Omnient gets associated to a
+  // different tab. In this case mark the stale tab helper as not shown.
+  if (_associatedTabHelper) {
+    _associatedTabHelper->SetLensOverlayShown(false);
+    _associatedTabHelper = nil;
   }
 
   if (_containerViewController.presentingViewController) {
@@ -271,6 +258,23 @@
   [self stopResultPage];
   _containerViewController = nil;
   _mediator = nil;
+}
+
+// The tab helper for the active web state.
+- (LensOverlayTabHelper*)activeTabHelper {
+  if (!self.browser || !self.browser->GetWebStateList() ||
+      !self.browser->GetWebStateList()->GetActiveWebState()) {
+    return nullptr;
+  }
+
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  LensOverlayTabHelper* tabHelper =
+      LensOverlayTabHelper::FromWebState(activeWebState);
+
+  CHECK(tabHelper, kLensOverlayNotFatalUntil);
+
+  return tabHelper;
 }
 
 // Captures a screenshot of the active web state.
