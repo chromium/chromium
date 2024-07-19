@@ -216,6 +216,7 @@ class LcppDataMap {
   static bool CreateOrClearTablesIfNecessary(sql::Database* db);
 
   void InitializeOnDBSequence();
+  void InitializeAfterDBInitialization();
 
   // Record LCP element locators after a page has finished loading and LCP has
   // been determined.
@@ -247,11 +248,19 @@ class LcppDataMap {
   const std::map<std::string, LcppData>& GetAllCachedForTesting();
   const std::map<std::string, LcppOrigin>& GetAllCachedOriginForTesting();
 
+  scoped_refptr<sqlite_proto::TableManager> manager_;
   const LoadingPredictorConfig config_;
   std::unique_ptr<DataTable> data_table_;
-  DataMap data_map_;
+  std::unique_ptr<DataMap> data_map_;
   std::unique_ptr<OriginTable> origin_table_;
   std::unique_ptr<OriginMap> origin_map_;
+  // This member is accessed from both the db thread (InitializeOnDBSequence)
+  // and the UI thread (ResourcePrefetchPredictor::CreateCaches ->
+  // InitializeAfterDBInitialize).
+  // This is accessed from each thread only once and the order is guaranteed.
+  // TODO(crbug.com/353548219): Consider more better structure.
+  std::map<std::string, LcppOrigin> needs_update_on_initialize_;
+  bool initialized_ = false;
 };
 
 }  // namespace predictors

@@ -1135,16 +1135,20 @@ class LcppDataMapTest : public testing::Test {
  public:
   void InitializeDB(const LoadingPredictorConfig& config) {
     config_ = config;
-    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
     predictor_database_ =
-        std::make_unique<PredictorDatabase>(&profile_, task_runner_);
-    resource_prefetch_predictor_tables_ =
-        predictor_database_->resource_prefetch_tables();
+        std::make_unique<PredictorDatabase>(&profile_, db_task_runner);
     lcpp_data_map_ = std::make_unique<LcppDataMap>(
-        resource_prefetch_predictor_tables_, config);
-    task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                             lcpp_data_map_->InitializeOnDBSequence();
-                           }));
+        predictor_database_->resource_prefetch_tables(), config);
+    db_task_runner->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&LcppDataMap::InitializeOnDBSequence,
+                       base::Unretained(lcpp_data_map_.get())),
+        base::BindOnce(&LcppDataMap::InitializeAfterDBInitialization,
+                       base::Unretained(lcpp_data_map_.get())));
     content::RunAllTasksUntilIdle();
   }
 
@@ -1172,7 +1176,7 @@ class LcppDataMapTest : public testing::Test {
 
   void UpdateKeyValueDataDirectly(const std::string& key,
                                   const LcppData& data) {
-    lcpp_data_map_->data_map_.UpdateData(key, data);
+    lcpp_data_map_->data_map_->UpdateData(key, data);
   }
 
   double SumOfLcppStringFrequencyStatData(
@@ -1274,11 +1278,8 @@ class LcppDataMapTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   TestingProfile profile_;
   std::unique_ptr<PredictorDatabase> predictor_database_;
-  scoped_refptr<ResourcePrefetchPredictorTables>
-      resource_prefetch_predictor_tables_;
 
   LoadingPredictorConfig config_;
   std::unique_ptr<LcppDataMap> lcpp_data_map_;

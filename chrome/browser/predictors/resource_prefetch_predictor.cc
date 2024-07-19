@@ -410,6 +410,7 @@ void ResourcePrefetchPredictor::CreateCaches(
 
   host_redirect_data_ = std::move(host_redirect_data);
   origin_data_ = std::move(origin_data);
+  lcpp_data->InitializeAfterDBInitialization();
   lcpp_data_ = std::move(lcpp_data);
 
   ConnectToHistoryService();
