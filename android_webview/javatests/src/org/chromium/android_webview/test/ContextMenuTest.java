@@ -23,6 +23,7 @@ import android.view.KeyEvent;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -109,6 +110,7 @@ public class ContextMenuTest extends AwParameterizedTest {
 
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
+        DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "testLink");
 
         DOMUtils.longPressNode(mAwContents.getWebContents(), "testLink");
 
@@ -125,6 +127,7 @@ public class ContextMenuTest extends AwParameterizedTest {
 
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
+        DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "testLink");
 
         DOMUtils.longPressNode(mAwContents.getWebContents(), "testLink");
 
@@ -134,7 +137,7 @@ public class ContextMenuTest extends AwParameterizedTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"AndroidWebView"})
     public void testOpenInBrowser() throws Throwable {
         try {
@@ -148,6 +151,7 @@ public class ContextMenuTest extends AwParameterizedTest {
 
             final String url = mWebServer.setResponse(FILE, DATA, null);
             loadUrlSync(url);
+            DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "testLink");
 
             DOMUtils.longPressNode(mAwContents.getWebContents(), "testLink");
 
@@ -160,11 +164,12 @@ public class ContextMenuTest extends AwParameterizedTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"AndroidWebView"})
     public void testDismissContextMenuOnBack() throws Throwable {
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
+        DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "testLink");
 
         DOMUtils.longPressNode(mAwContents.getWebContents(), "testLink");
 
@@ -183,11 +188,12 @@ public class ContextMenuTest extends AwParameterizedTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     @Feature({"AndroidWebView"})
     public void testDismissContextMenuOnClick() throws Throwable {
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
+        DOMUtils.waitForNonZeroNodeBounds(mAwContents.getWebContents(), "testLink");
 
         DOMUtils.longPressNode(mAwContents.getWebContents(), "testLink");
 
