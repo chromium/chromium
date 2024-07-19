@@ -974,8 +974,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return;
         }
 
-        ReturnToChromeUtil.recordClickTabSwitcher(
-                isInOverviewMode(), getTabModelSelector().getCurrentTab());
+        ReturnToChromeUtil.recordClickTabSwitcher(getTabModelSelector().getCurrentTab());
 
         showOverview();
     }

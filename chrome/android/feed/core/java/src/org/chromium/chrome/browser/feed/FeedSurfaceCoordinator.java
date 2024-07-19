@@ -109,7 +109,6 @@ public class FeedSurfaceCoordinator
     private final boolean mUseStaggeredLayout;
 
     // FeedReliabilityLogger params.
-    private final @SurfaceType int mSurfaceType;
     private final long mEmbeddingSurfaceCreatedTimeNs;
 
     private FeedSurfaceMediator mMediator;
@@ -371,7 +370,6 @@ public class FeedSurfaceCoordinator
      * @param launchOrigin The origin of what launched the feed.
      * @param privacyPreferencesManager Manages the privacy preferences.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
-     * @param surfaceType Type of UI surface embedding the feed. Used for reliability logging.
      * @param embeddingSurfaceCreatedTimeNs Timestamp of creation of the UI surface.
      * @param swipeRefreshLayout The layout to support pull-to-refresh.
      * @param overScrollDisabled Whether the overscroll effect is disabled.
@@ -398,7 +396,6 @@ public class FeedSurfaceCoordinator
             @NewTabPageLaunchOrigin int launchOrigin,
             PrivacyPreferencesManagerImpl privacyPreferencesManager,
             @NonNull Supplier<Toolbar> toolbarSupplier,
-            @SurfaceType int surfaceType,
             long embeddingSurfaceCreatedTimeNs,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout,
             boolean overScrollDisabled,
@@ -424,7 +421,6 @@ public class FeedSurfaceCoordinator
         mViewportView = viewportView;
         mActionDelegate = actionDelegate;
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
-        mSurfaceType = surfaceType;
         mEmbeddingSurfaceCreatedTimeNs = embeddingSurfaceCreatedTimeNs;
         mWebFeedHasContent = false;
         mSectionHeaderIndex = 0;
@@ -837,7 +833,8 @@ public class FeedSurfaceCoordinator
                 mReliabilityLogger =
                         new FeedReliabilityLogger(
                                 launchLogger, userInteractionLogger, cardOpeningLogger);
-                launchLogger.logUiStarting(mSurfaceType, mEmbeddingSurfaceCreatedTimeNs);
+                launchLogger.logUiStarting(
+                        SurfaceType.NEW_TAB_PAGE, mEmbeddingSurfaceCreatedTimeNs);
             }
 
         } else {

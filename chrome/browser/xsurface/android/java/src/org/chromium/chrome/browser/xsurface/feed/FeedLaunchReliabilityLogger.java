@@ -22,7 +22,7 @@ public interface FeedLaunchReliabilityLogger {
     public @interface SurfaceType {
         int UNSPECIFIED = 0;
         int NEW_TAB_PAGE = 1;
-        int START_SURFACE = 2;
+        @Deprecated int START_SURFACE = 2;
     }
 
     @IntDef({

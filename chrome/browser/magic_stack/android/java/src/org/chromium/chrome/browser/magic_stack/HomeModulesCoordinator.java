@@ -248,7 +248,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
         mProfileSupplier.removeObserver(mOnProfileAvailableObserver);
         mOnProfileAvailableObserver = null;
-        HomeModulesMetricsUtils.recordProfileReadyDelay(getHostSurfaceType(), delay);
+        HomeModulesMetricsUtils.recordProfileReadyDelay(delay);
     }
 
     /** Reacts when the home modules' specific module type is disabled or enabled. */
@@ -307,14 +307,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     @Override
     public void onModuleClicked(@ModuleType int moduleType, int modulePosition) {
-        int hostSurface = mModuleDelegateHost.getHostSurfaceType();
         HomeModulesMetricsUtils.recordModuleClicked(
-                hostSurface, moduleType, modulePosition, mModuleDelegateHost.isHomeSurface());
-    }
-
-    @Override
-    public int getHostSurfaceType() {
-        return mModuleDelegateHost.getHostSurfaceType();
+                moduleType, modulePosition, mModuleDelegateHost.isHomeSurface());
     }
 
     @Override
@@ -371,7 +365,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                 });
         int position = mMediator.findModuleIndexInRecyclerView(moduleType, mAdapter.getItemCount());
         HomeModulesMetricsUtils.recordModuleShown(
-                getHostSurfaceType(), moduleType, position, mModuleDelegateHost.isHomeSurface());
+                moduleType, position, mModuleDelegateHost.isHomeSurface());
     }
 
     /**

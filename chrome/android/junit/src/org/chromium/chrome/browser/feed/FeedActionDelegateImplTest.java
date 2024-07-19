@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -89,7 +88,6 @@ public final class FeedActionDelegateImplTest {
                         mMockSnackbarManager,
                         mMockNavigationDelegate,
                         mMockBookmarkModel,
-                        BrowserUiUtils.HostSurface.NOT_SET,
                         mTabModelSelector,
                         mProfile,
                         mBottomSheetController);

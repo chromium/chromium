@@ -47,20 +47,17 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
 
     private boolean mIsDestroyed;
     private SnackbarController mTileRemovedSnackbarController;
-    @BrowserUiUtils.HostSurface private int mHostSurface;
 
     public TileGroupDelegateImpl(
             Context context,
             Profile profile,
             SuggestionsNavigationDelegate navigationDelegate,
-            SnackbarManager snackbarManager,
-            @BrowserUiUtils.HostSurface int hostSurface) {
+            SnackbarManager snackbarManager) {
         mContext = context;
         mSnackbarManager = snackbarManager;
         mNavigationDelegate = navigationDelegate;
         mMostVisitedSites =
                 SuggestionsDependencyFactory.getInstance().createMostVisitedSites(profile);
-        mHostSurface = hostSurface;
     }
 
     @Override
@@ -75,7 +72,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     public void openMostVisitedItem(int windowDisposition, Tile item) {
         assert !mIsDestroyed;
 
-        recordClickMvTiles(windowDisposition, mHostSurface);
+        recordClickMvTiles(windowDisposition);
 
         String url = item.getUrl().getSpec();
 
@@ -98,7 +95,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     public void openMostVisitedItemInGroup(int windowDisposition, Tile item) {
         assert !mIsDestroyed;
 
-        recordClickMvTiles(windowDisposition, mHostSurface);
+        recordClickMvTiles(windowDisposition);
 
         String url = item.getUrl().getSpec();
 
@@ -180,20 +177,15 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
 
     /**
      * Records user clicking on MV tiles in New tab page or Start surface.
+     *
      * @param windowDisposition How to open (new window, current tab, etc).
-     * @param hostSurface The corresponding item of the host name in {@link
-     *                    BrowserUiUtils.HostSurface} which indicates the page
-     *                    where the Mv tiles located.
      */
-    private void recordClickMvTiles(
-            int windowDisposition, @BrowserUiUtils.HostSurface int hostSurface) {
+    private void recordClickMvTiles(int windowDisposition) {
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
-            BrowserUiUtils.recordModuleClickHistogram(
-                    hostSurface, ModuleTypeOnStartAndNtp.MOST_VISITED_TILES);
+            BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.MOST_VISITED_TILES);
         }
         if (MVTilesClickForUserAction.contains(windowDisposition)) {
-            RecordUserAction.record(
-                    "Suggestions.Tile.Tapped." + BrowserUiUtils.getHostName(hostSurface));
+            RecordUserAction.record("Suggestions.Tile.Tapped.NewTabPage");
         }
     }
 }

@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -55,8 +54,6 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
             ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
         ModuleDelegateHost moduleDelegateHost =
                 ((HomeModulesCoordinator) moduleDelegate).getModuleDelegateHost();
-        boolean isShownOnNtp = moduleDelegate.getHostSurfaceType() == HostSurface.NEW_TAB_PAGE;
-
         assert mTabContentManagerSupplier.hasValue();
         Callback<Integer> singleTabCardClickedCallback =
                 (tabId) -> {
@@ -74,7 +71,7 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
 
         // If the host surface is NTP and there isn't a last visited Tab to track, don't create the
         // single Tab module.
-        if (isShownOnNtp && moduleDelegate.getTrackingTab() == null) {
+        if (moduleDelegate.getTrackingTab() == null) {
             return false;
         }
         SingleTabSwitcherCoordinator singleTabSwitcherCoordinator =
@@ -83,7 +80,7 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
                         /* container= */ null,
                         mTabModelSelectorSupplier.get(),
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                        isShownOnNtp ? moduleDelegate.getTrackingTab() : null,
+                        moduleDelegate.getTrackingTab(),
                         singleTabCardClickedCallback,
                         seeMoreLinkClickedCallback,
                         snapshotParentViewRunnable,

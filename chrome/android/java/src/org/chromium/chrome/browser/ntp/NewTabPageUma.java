@@ -193,8 +193,7 @@ public class NewTabPageUma {
             }
         }
         if (isNtp) {
-            BrowserUiUtils.recordModuleClickHistogram(
-                    BrowserUiUtils.HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.OMNIBOX);
+            BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.OMNIBOX);
         }
     }
 

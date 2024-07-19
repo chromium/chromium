@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -262,9 +261,6 @@ public final class ReturnToChromeUtil {
         if (transitionAfterMask == PageTransition.TYPED
                 || transitionAfterMask == PageTransition.GENERATED) {
             RecordUserAction.record("MobileOmniboxUse.StartSurface");
-            BrowserUiUtils.recordModuleClickHistogram(
-                    BrowserUiUtils.HostSurface.START_SURFACE, ModuleTypeOnStartAndNtp.OMNIBOX);
-
             // These are not duplicated here with the recording in LocationBarLayout#loadUrl.
             RecordUserAction.record("MobileOmniboxUse");
             LocaleManager.getInstance()
@@ -495,18 +491,13 @@ public final class ReturnToChromeUtil {
     /**
      * Records user clicks on the tab switcher button in New tab page or Start surface.
      *
-     * @param isInOverview Whether the current tab is in overview mode.
      * @param currentTab Current tab or null if none exists.
      */
-    public static void recordClickTabSwitcher(boolean isInOverview, @Nullable Tab currentTab) {
-        if (isInOverview) {
-            BrowserUiUtils.recordModuleClickHistogram(
-                    HostSurface.START_SURFACE, ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON);
-        } else if (currentTab != null
+    public static void recordClickTabSwitcher(@Nullable Tab currentTab) {
+        if (currentTab != null
                 && !currentTab.isIncognito()
                 && UrlUtilities.isNtpUrl(currentTab.getUrl())) {
-            BrowserUiUtils.recordModuleClickHistogram(
-                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON);
+            BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.TAB_SWITCHER_BUTTON);
         }
     }
 

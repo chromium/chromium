@@ -16,11 +16,11 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
 /** The utility class for magic stack. */
 public class HomeModulesMetricsUtils {
+    @VisibleForTesting static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
     @VisibleForTesting static final String HISTOGRAM_OS_PREFIX = "MagicStack.Clank.";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK = ".Module.Click";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
@@ -166,19 +166,14 @@ public class HomeModulesMetricsUtils {
     /**
      * Records a module is shown.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      * @param modulePosition The position of the module on the recyclerview.
      * @param isShownAtStartup Whether the host surface is a home surface which is shown at startup.
      */
     public static void recordModuleShown(
-            @HostSurface int hostSurface,
-            @ModuleType int moduleType,
-            int modulePosition,
-            boolean isShownAtStartup) {
-        recordUma(hostSurface, moduleType, HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION);
+            @ModuleType int moduleType, int modulePosition, boolean isShownAtStartup) {
+        recordUma(moduleType, HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION);
         recordUmaWithPosition(
-                hostSurface,
                 HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION,
                 moduleType,
                 modulePosition,
@@ -188,139 +183,110 @@ public class HomeModulesMetricsUtils {
     /**
      * Records the context menu is shown.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      */
-    public static void recordContextMenuShown(
-            @HostSurface int hostSurface, @ModuleType int moduleType) {
-        recordUma(hostSurface, moduleType, HISTOGRAM_CONTEXT_MENU_SHOWN);
+    public static void recordContextMenuShown(@ModuleType int moduleType) {
+        recordUma(moduleType, HISTOGRAM_CONTEXT_MENU_SHOWN);
     }
 
     /**
      * Records the context menu "remove module" item is clicked.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      */
-    public static void recordContextMenuRemoveModule(
-            @HostSurface int hostSurface, @ModuleType int moduleType) {
-        recordUma(hostSurface, moduleType, HISTOGRAM_CONTEXT_MENU_REMOVE_MODULE);
+    public static void recordContextMenuRemoveModule(@ModuleType int moduleType) {
+        recordUma(moduleType, HISTOGRAM_CONTEXT_MENU_REMOVE_MODULE);
     }
 
     /**
      * Records the context menu item "customize" is clicked.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      */
-    public static void recordContextMenuCustomizeSettings(
-            @HostSurface int hostSurface, @ModuleType int moduleType) {
-        recordUma(hostSurface, moduleType, HISTOGRAM_CONTEXT_MENU_OPEN_CUSTOMIZE_SETTINGS);
+    public static void recordContextMenuCustomizeSettings(@ModuleType int moduleType) {
+        recordUma(moduleType, HISTOGRAM_CONTEXT_MENU_OPEN_CUSTOMIZE_SETTINGS);
     }
 
     /**
      * Records the duration from building a module to the time when it returns a successful fetching
      * data response.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      * @param durationMs The time duration.
      */
-    public static void recordFetchDataDuration(
-            @HostSurface int hostSurface, @ModuleType int moduleType, long durationMs) {
-        recordUma(hostSurface, moduleType, HISTOGRAM_MODULE_FETCH_DATA_DURATION_MS, durationMs);
+    public static void recordFetchDataDuration(@ModuleType int moduleType, long durationMs) {
+        recordUma(moduleType, HISTOGRAM_MODULE_FETCH_DATA_DURATION_MS, durationMs);
     }
 
     /**
      * Records the duration from building a module to the time when it returns a response of no data
      * to show.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      * @param durationMs The time duration.
      */
-    public static void recordFetchDataFailedDuration(
-            @HostSurface int hostSurface, @ModuleType int moduleType, long durationMs) {
-        recordUma(
-                hostSurface,
-                moduleType,
-                HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS,
-                durationMs);
+    public static void recordFetchDataFailedDuration(@ModuleType int moduleType, long durationMs) {
+        recordUma(moduleType, HISTOGRAM_MODULE_FETCH_DATA_FAILED_DURATION_MS, durationMs);
     }
 
     /**
      * Records the duration from building a module to the time when it returns a response after
      * timeout.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      * @param durationMs The time duration.
      */
-    public static void recordFetchDataTimeOutDuration(
-            @HostSurface int hostSurface, @ModuleType int moduleType, long durationMs) {
-        recordUma(
-                hostSurface,
-                moduleType,
-                HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_DURATION_MS,
-                durationMs);
+    public static void recordFetchDataTimeOutDuration(@ModuleType int moduleType, long durationMs) {
+        recordUma(moduleType, HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_DURATION_MS, durationMs);
     }
 
     /**
      * Records the types of modules which didn't respond before the timer timeout.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      */
-    public static void recordFetchDataTimeOutType(
-            @HostSurface int hostSurface, @ModuleType int moduleType) {
-        recordUma(hostSurface, moduleType, HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_TYPE);
+    public static void recordFetchDataTimeOutType(@ModuleType int moduleType) {
+        recordUma(moduleType, HISTOGRAM_MODULE_FETCH_DATA_TIMEOUT_TYPE);
     }
 
     /**
      * Records the duration from building the first module to the time when the recyclerview becomes
      * visible, i.e., the first highest ranking module returns valid data.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param durationMs The time duration.
      */
-    public static void recordFirstModuleShownDuration(
-            @HostSurface int hostSurface, long durationMs) {
-        recordUma(hostSurface, HISTOGRAM_FIRST_MODULE_SHOWN_DURATION_MS, durationMs);
+    public static void recordFirstModuleShownDuration(long durationMs) {
+        recordUma(HISTOGRAM_FIRST_MODULE_SHOWN_DURATION_MS, durationMs);
     }
 
     /**
      * Records the duration from calling the segmentation API to fetch a ranking to the time when a
      * response returns.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param durationMs The time duration.
      */
-    public static void recordSegmentationFetchRankingDuration(
-            @HostSurface int hostSurface, long durationMs) {
-        recordUma(hostSurface, HISTOGRAM_MODULE_SEGMENTATION_FETCH_RANKING_DURATION_MS, durationMs);
+    public static void recordSegmentationFetchRankingDuration(long durationMs) {
+        recordUma(HISTOGRAM_MODULE_SEGMENTATION_FETCH_RANKING_DURATION_MS, durationMs);
     }
 
     /**
      * Records the time spent between triggering to show modules and beginning to fetch the module
      * list when the profile is ready.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param durationMs The time duration.
      */
-    public static void recordProfileReadyDelay(@HostSurface int hostSurface, long durationMs) {
-        recordUma(hostSurface, HISTOGRAM_MODULE_PROFILE_READY_DELAY_MS, durationMs);
+    public static void recordProfileReadyDelay(long durationMs) {
+        recordUma(HISTOGRAM_MODULE_PROFILE_READY_DELAY_MS, durationMs);
     }
 
     /**
      * Records the total count of times that magic stack being scrollable or not, and, when it is
      * scrollable, the number of times it has been scrolled.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param isScrollable True if the home modules are scrollable.
      * @param hasScrolled True if home modules has been scrolled.
      */
-    public static void recordHomeModulesScrollState(
-            @HostSurface int hostSurface, boolean isScrollable, boolean hasScrolled) {
+    public static void recordHomeModulesScrollState(boolean isScrollable, boolean hasScrolled) {
         String umaName;
         if (isScrollable) {
             if (hasScrolled) {
@@ -332,8 +298,7 @@ public class HomeModulesMetricsUtils {
             umaName = HISTOGRAM_MAGIC_STACK_NOT_SCROLLABLE;
         }
         StringBuilder builder = new StringBuilder();
-        builder.append(HISTOGRAM_OS_PREFIX);
-        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(HISTOGRAM_PREFIX);
         builder.append(umaName);
         String name = builder.toString();
         RecordHistogram.recordCount1MHistogram(name, 1);
@@ -342,20 +307,15 @@ public class HomeModulesMetricsUtils {
     /**
      * Records the type and position of the module when the home modules are clicked.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      * @param modulePosition The position of the module which got clicked.
      * @param isShownAtStartup Whether the host surface is a home surface which is shown at startup.
      */
     public static void recordModuleClicked(
-            @HostSurface int hostSurface,
-            @ModuleType int moduleType,
-            int modulePosition,
-            boolean isShownAtStartup) {
-        BrowserUiUtils.recordModuleClickHistogram(hostSurface, ModuleTypeOnStartAndNtp.MAGIC_STACK);
-        recordUma(hostSurface, moduleType, HISTOGRAM_MAGIC_STACK_MODULE_CLICK);
+            @ModuleType int moduleType, int modulePosition, boolean isShownAtStartup) {
+        BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.MAGIC_STACK);
+        recordUma(moduleType, HISTOGRAM_MAGIC_STACK_MODULE_CLICK);
         recordUmaWithPosition(
-                hostSurface,
                 HISTOGRAM_MAGIC_STACK_MODULE_CLICK_WITH_POSITION,
                 moduleType,
                 modulePosition,
@@ -366,22 +326,14 @@ public class HomeModulesMetricsUtils {
      * Records the type and position of the module when the home modules are added to the magic
      * stack.
      *
-     * @param hostSurface The type of the host surface of the magic stack.
      * @param moduleType The type of module.
      * @param modulePosition The position of the module when it is built in home modules.
      * @param isShownAtStartup Whether the host surface is a home surface which is shown at startup.
      */
     public static void recordModuleBuiltPosition(
-            @HostSurface int hostSurface,
-            @ModuleType int moduleType,
-            int modulePosition,
-            boolean isShownAtStartup) {
+            @ModuleType int moduleType, int modulePosition, boolean isShownAtStartup) {
         recordUmaWithPosition(
-                hostSurface,
-                HISTOGRAM_MAGIC_STACK_MODULE_BUILD,
-                moduleType,
-                modulePosition,
-                isShownAtStartup);
+                HISTOGRAM_MAGIC_STACK_MODULE_BUILD, moduleType, modulePosition, isShownAtStartup);
     }
 
     /**
@@ -406,17 +358,14 @@ public class HomeModulesMetricsUtils {
         return ChromeFeatureList.sMagicStackAndroid.isEnabled();
     }
 
-    // TODO(b/340578084): Clean up all deprecated metrics.
     private static void recordUmaWithPosition(
-            @HostSurface int hostSurface,
             String umaName,
             @ModuleType int moduleType,
             int modulePosition,
             boolean isShownAtStartup) {
         assert 0 <= modulePosition && modulePosition < ModuleType.NUM_ENTRIES;
         StringBuilder builder = new StringBuilder();
-        builder.append(HISTOGRAM_OS_PREFIX);
-        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(HISTOGRAM_PREFIX);
         if (isShownAtStartup) {
             builder.append(HISTOGRAM_MAGIC_STACK_HOST_SURFACE_STARTUP);
         } else {
@@ -430,30 +379,25 @@ public class HomeModulesMetricsUtils {
                 name, modulePosition, HomeModulesCoordinator.MAXIMUM_MODULE_SIZE);
     }
 
-    private static void recordUma(
-            @HostSurface int hostSurface, @ModuleType int moduleType, String umaName) {
+    private static void recordUma(@ModuleType int moduleType, String umaName) {
         StringBuilder builder = new StringBuilder();
-        builder.append(HISTOGRAM_OS_PREFIX);
-        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(HISTOGRAM_PREFIX);
         builder.append(umaName);
         String name = builder.toString();
         RecordHistogram.recordEnumeratedHistogram(name, moduleType, ModuleType.NUM_ENTRIES);
     }
 
-    private static void recordUma(@HostSurface int hostSurface, String umaName, long timeMs) {
+    private static void recordUma(String umaName, long timeMs) {
         StringBuilder builder = new StringBuilder();
-        builder.append(HISTOGRAM_OS_PREFIX);
-        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(HISTOGRAM_PREFIX);
         builder.append(umaName);
         String name = builder.toString();
         RecordHistogram.recordTimesHistogram(name, timeMs);
     }
 
-    private static void recordUma(
-            @HostSurface int hostSurface, @ModuleType int moduleType, String umaName, long timeMs) {
+    private static void recordUma(@ModuleType int moduleType, String umaName, long timeMs) {
         StringBuilder builder = new StringBuilder();
-        builder.append(HISTOGRAM_OS_PREFIX);
-        builder.append(BrowserUiUtils.getHostName(hostSurface));
+        builder.append(HISTOGRAM_PREFIX);
         builder.append(umaName);
         builder.append(getModuleName(moduleType));
         String name = builder.toString();

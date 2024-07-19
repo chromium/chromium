@@ -43,7 +43,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
@@ -78,8 +77,6 @@ public class HomeModulesMediatorUnitTest {
     private ModuleProviderBuilder[] mModuleProviderBuilderList;
     private ModuleProvider[] mModuleProviders;
     private HomeModulesConfigManager mHomeModulesConfigManager;
-
-    private @HostSurface int mHostSurface = HostSurface.START_SURFACE;
     private HomeModulesMediator mMediator;
 
     @Before
@@ -96,7 +93,6 @@ public class HomeModulesMediatorUnitTest {
             mListItems[i] = new ListItem(mModuleTypeList[i], Mockito.mock(PropertyModel.class));
             mModuleProviders[i] = Mockito.mock(ModuleProvider.class);
         }
-        when(mModuleDelegate.getHostSurfaceType()).thenReturn(mHostSurface);
         mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
         mMediator =
                 new HomeModulesMediator(

@@ -282,7 +282,7 @@ public class IdentityDiscController
      * histograms.
      */
     private void recordIdentityDiscUsed() {
-        BrowserUiUtils.recordIdentityDiscClicked(/* isStartSurface= */ false, mIsTabNtp);
+        BrowserUiUtils.recordIdentityDiscClicked(mIsTabNtp);
 
         assert isProfileInitialized();
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());

@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -352,8 +351,7 @@ public class MostVisitedTilesLayoutTest {
                 new SuggestionsUiDelegateImpl(null, profile, null, activity.getSnackbarManager());
 
         TileGroup.Delegate delegate =
-                new TileGroupDelegateImpl(
-                        activity, profile, null, null, BrowserUiUtils.HostSurface.NOT_SET) {
+                new TileGroupDelegateImpl(activity, profile, null, null) {
                     @Override
                     public void onLoadingComplete(List<Tile> tiles) {
                         super.onLoadingComplete(tiles);

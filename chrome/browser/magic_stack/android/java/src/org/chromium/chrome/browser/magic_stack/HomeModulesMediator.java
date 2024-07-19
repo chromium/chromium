@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
@@ -81,7 +80,6 @@ public class HomeModulesMediator {
     private Callback<Boolean> mSetVisibilityCallback;
     private long[] mShowModuleStartTimeMs;
     private List<Integer> mModuleListToShow;
-    private @HostSurface int mHostSurface;
     private SegmentationPlatformService mSegmentationPlatformService;
     private Set<Integer> mEnabledModuleSet;
 
@@ -128,8 +126,7 @@ public class HomeModulesMediator {
             long durationMs) {
         // Record only if ranking is fetched from segmentation service.
         if (durationMs > 0) {
-            HomeModulesMetricsUtils.recordSegmentationFetchRankingDuration(
-                    mModuleDelegateHost.getHostSurfaceType(), durationMs);
+            HomeModulesMetricsUtils.recordSegmentationFetchRankingDuration(durationMs);
         }
         if (moduleList == null) {
             onHomeModulesShownCallback.onResult(false);
@@ -166,7 +163,6 @@ public class HomeModulesMediator {
         assert mModel.size() == 0;
         mIsFetchingModules = true;
         mIsShown = true;
-        mHostSurface = moduleDelegate.getHostSurfaceType();
         mModuleListToShow = moduleList;
         cacheRanking(mModuleListToShow);
 
@@ -255,8 +251,7 @@ public class HomeModulesMediator {
         int index = mModuleTypeToRankingIndexMap.get(moduleType);
         long duration = SystemClock.elapsedRealtime() - mShowModuleStartTimeMs[index];
         if (!mIsFetchingModules) {
-            HomeModulesMetricsUtils.recordFetchDataTimeOutDuration(
-                    mHostSurface, moduleType, duration);
+            HomeModulesMetricsUtils.recordFetchDataTimeOutDuration(moduleType, duration);
             return;
         }
 
@@ -300,10 +295,9 @@ public class HomeModulesMediator {
                 // module to clean up.
                 hideModuleOnDataFetchFailed(moduleType);
             }
-            HomeModulesMetricsUtils.recordFetchDataFailedDuration(
-                    mHostSurface, moduleType, duration);
+            HomeModulesMetricsUtils.recordFetchDataFailedDuration(moduleType, duration);
         } else {
-            HomeModulesMetricsUtils.recordFetchDataDuration(mHostSurface, moduleType, duration);
+            HomeModulesMetricsUtils.recordFetchDataDuration(moduleType, duration);
         }
     }
 
@@ -370,7 +364,7 @@ public class HomeModulesMediator {
             if (hasResult == null) {
                 // Case 1: no response received.
                 @ModuleType int moduleType = mModuleListToShow.get(mModuleResultsWaitingIndex);
-                HomeModulesMetricsUtils.recordFetchDataTimeOutType(mHostSurface, moduleType);
+                HomeModulesMetricsUtils.recordFetchDataTimeOutType(moduleType);
                 hideModuleOnDataFetchFailed(moduleType);
             } else if (hasResult) {
                 // Case 2: received a response with data to show.
@@ -395,14 +389,14 @@ public class HomeModulesMediator {
         mModel.add(item);
 
         HomeModulesMetricsUtils.recordModuleBuiltPosition(
-                mHostSurface, item.type, mModel.size() - 1, mModuleDelegateHost.isHomeSurface());
+                item.type, mModel.size() - 1, mModuleDelegateHost.isHomeSurface());
 
         if (mModel.size() == 1) {
             mSetVisibilityCallback.onResult(true);
 
             // We use the build time of the first module as the starting time.
             long duration = SystemClock.elapsedRealtime() - mShowModuleStartTimeMs[0];
-            HomeModulesMetricsUtils.recordFirstModuleShownDuration(mHostSurface, duration);
+            HomeModulesMetricsUtils.recordFirstModuleShownDuration(duration);
         }
     }
 
@@ -528,7 +522,7 @@ public class HomeModulesMediator {
         }
 
         HomeModulesMetricsUtils.recordHomeModulesScrollState(
-                mHostSurface, mModel.size() > 1, hasHomeModulesBeenScrolled);
+                mModel.size() > 1, hasHomeModulesBeenScrolled);
     }
 
     /** Asks all of the modules being shown to reload their data if necessary. */
@@ -640,8 +634,7 @@ public class HomeModulesMediator {
                     // hidden, exit now.
                     long durationMs = SystemClock.elapsedRealtime() - segmentationServiceCallTimeMs;
                     if (mHomeModulesConfigManager == null) {
-                        HomeModulesMetricsUtils.recordSegmentationFetchRankingDuration(
-                                mModuleDelegateHost.getHostSurfaceType(), durationMs);
+                        HomeModulesMetricsUtils.recordSegmentationFetchRankingDuration(durationMs);
                         return;
                     }
                     buildModulesAndShow(

@@ -85,7 +85,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -1115,11 +1114,6 @@ class StartSurfaceMediator
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     boolean isHomepageShown() {
         return mIsHomepageShown;
-    }
-
-    @Override
-    public int getHostSurfaceType() {
-        return HostSurface.START_SURFACE;
     }
 
     @Override

@@ -58,14 +58,11 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private final Profile mProfile;
     private final BottomSheetController mBottomSheetController;
 
-    @BrowserUiUtils.HostSurface private int mHostSurface;
-
     public FeedActionDelegateImpl(
             Activity activity,
             SnackbarManager snackbarManager,
             NativePageNavigationDelegate navigationDelegate,
             BookmarkModel bookmarkModel,
-            @BrowserUiUtils.HostSurface int hostSurface,
             TabModelSelector tabModelSelector,
             Profile profile,
             BottomSheetController bottomSheetController) {
@@ -73,7 +70,6 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         mNavigationDelegate = navigationDelegate;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
-        mHostSurface = hostSurface;
         mTabModelSelector = tabModelSelector;
         mProfile = profile;
         mBottomSheetController = bottomSheetController;
@@ -124,7 +120,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                     });
         }
 
-        BrowserUiUtils.recordModuleClickHistogram(mHostSurface, ModuleTypeOnStartAndNtp.FEED);
+        BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.FEED);
     }
 
     @Override
@@ -138,7 +134,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                 WindowOpenDisposition.CURRENT_TAB,
                 new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_BOOKMARK));
 
-        BrowserUiUtils.recordModuleClickHistogram(mHostSurface, ModuleTypeOnStartAndNtp.FEED);
+        BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.FEED);
     }
 
     @Override

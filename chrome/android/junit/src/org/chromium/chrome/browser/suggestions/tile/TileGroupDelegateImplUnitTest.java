@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -73,11 +72,7 @@ public class TileGroupDelegateImplUnitTest {
 
         mTileGroupDelegateImpl =
                 new TileGroupDelegateImpl(
-                        mContext,
-                        mProfile,
-                        mNavigationDelegate,
-                        mSnackbarManager,
-                        BrowserUiUtils.HostSurface.NEW_TAB_PAGE);
+                        mContext, mProfile, mNavigationDelegate, mSnackbarManager);
     }
 
     @After

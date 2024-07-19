@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.features.tasks.MostVisitedTileNavigationDelegate;
 import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.features.tasks.TasksView;
@@ -690,12 +689,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 new MostVisitedSuggestionsUiDelegate(
                         mView, navigationDelegate, profile, mSnackbarManager);
         mTileGroupDelegate =
-                new TileGroupDelegateImpl(
-                        mActivity,
-                        profile,
-                        navigationDelegate,
-                        mSnackbarManager,
-                        BrowserUiUtils.HostSurface.START_SURFACE);
+                new TileGroupDelegateImpl(mActivity, profile, navigationDelegate, mSnackbarManager);
 
         mMostVisitedCoordinator.initWithNative(
                 profile, mSuggestionsUiDelegate, mTileGroupDelegate, enabled -> {});

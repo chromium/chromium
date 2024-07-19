@@ -10,17 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.url.GURL;
 
 /** The interface of the host surface which owns the magic stack. */
 public interface ModuleDelegateHost {
-
-    /** Gets the type of the host surface. */
-    @HostSurface
-    int getHostSurfaceType();
-
     /** Gets the starting position of the context menu which is shown by long clicking a module. */
     @NonNull
     Point getContextMenuStartPoint();

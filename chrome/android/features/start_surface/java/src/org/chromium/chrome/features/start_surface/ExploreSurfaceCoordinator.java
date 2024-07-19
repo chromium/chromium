@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.WindowAndroid;
@@ -112,7 +111,6 @@ public class ExploreSurfaceCoordinator {
                         launchOrigin,
                         PrivacyPreferencesManagerImpl.getInstance(),
                         toolbarSupplier,
-                        SurfaceType.START_SURFACE,
                         embeddingSurfaceConstructedTimeNs,
                         swipeRefreshLayout,
                         /* overScrollDisabled= */ true,
@@ -190,7 +188,6 @@ public class ExploreSurfaceCoordinator {
                     snackbarManager,
                     mExploreSurfaceNavigationDelegate,
                     bookmarkModel,
-                    BrowserUiUtils.HostSurface.START_SURFACE,
                     tabModelSelector,
                     mProfile,
                     bottomSheetController);
