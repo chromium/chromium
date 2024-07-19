@@ -47,6 +47,15 @@
   [super tearDown];
 }
 
+- (void)updateLastSignInToPastDate {
+  base::TimeDelta marginBetweenLastSigninAndIdentityConfirmationPrompt =
+      base::Days(20);
+  [ChromeEarlGrey
+      setTimeValue:base::Time::FromDeltaSinceWindowsEpoch(
+                       marginBetweenLastSigninAndIdentityConfirmationPrompt)
+       forUserPref:prefs::kLastSigninTimestamp];
+}
+
 - (void)testViewAccountMenu {
   // Sign in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -107,6 +116,7 @@
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:secondaryIdentity];
+  [self updateLastSignInToPastDate];
 
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -125,6 +135,7 @@
   // Add multiple identities and sign in with one of them.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [self updateLastSignInToPastDate];
 
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -147,6 +158,7 @@
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:secondaryIdentity];
+  [self updateLastSignInToPastDate];
 
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -170,6 +182,28 @@
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
   // Confirm the snackbar does not show.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(snackbarMessage),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Verifies identity confirmation snackbar on startup does not show after a
+// recent sign-in.
+- (void)testRecentSignin_IdentityConfirmationToast {
+  // Add multiple identities and sign in with one of them.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:secondaryIdentity];
+
+  // Background then foreground the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Confirm the snackbar does not show.
+  NSString* snackbarMessage = l10n_util::GetNSStringF(
+      IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+      base::SysNSStringToUTF16(fakeIdentity.userGivenName));
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_text(snackbarMessage),
                                           grey_sufficientlyVisible(), nil)]

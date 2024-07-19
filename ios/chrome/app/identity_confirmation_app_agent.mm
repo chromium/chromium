@@ -32,6 +32,11 @@ namespace {
 // time it was prompted.
 const base::TimeDelta kTimeBetweenIdentityConfirmationSnackbarPrompts =
     base::Days(14);
+
+// The amount of time (2 weeks) to allow showing the snackbar again since last
+// time the user has signed in.
+const base::TimeDelta kTimeBetweenLastSigninAndIdentityConfirmationPrompt =
+    base::Days(14);
 }  // namespace
 
 @implementation IdentityConfirmationAppAgent {
@@ -117,10 +122,13 @@ const base::TimeDelta kTimeBetweenIdentityConfirmationSnackbarPrompts =
     return;
   }
 
-  // TODO(crbug.com/336720134): Limit the frequency of the snackbar based on the
-  // last sign-in date.
-
   PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+  base::Time lastSignin = prefService->GetTime(prefs::kLastSigninTimestamp);
+  if (base::Time::Now() - lastSignin <
+      kTimeBetweenLastSigninAndIdentityConfirmationPrompt) {
+    return;
+  }
+
   const base::Time lastPrompted =
       prefService->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
   if (base::Time::Now() - lastPrompted <
