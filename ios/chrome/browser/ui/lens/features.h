@@ -35,4 +35,7 @@ extern const char kLensTranslateToggleMode[];
 // Integer that maps to the translate toggle mode enum.
 int LensTranslateToggleMode();
 
+// Whether to enable the Lens web page load optimization.
+BASE_DECLARE_FEATURE(kLensWebPageLoadOptimizationEnabled);
+
 #endif  // IOS_CHROME_BROWSER_UI_LENS_FEATURES_H_

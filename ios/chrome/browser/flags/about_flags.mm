@@ -1954,6 +1954,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillVcnEnrollRequestTimeout,
          kAutofillVcnEnrollRequestTimeoutOptions,
          "AutofillVcnEnrollRequestTimeout")},
+    {"lens-web-page-load-optimization-enabled",
+     flag_descriptions::kLensWebPageLoadOptimizationEnabledName,
+     flag_descriptions::kLensWebPageLoadOptimizationEnabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensWebPageLoadOptimizationEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

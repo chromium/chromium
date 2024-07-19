@@ -698,6 +698,11 @@ const char kLensWebPageEarlyTransitionEnabledName[] =
 const char kLensWebPageEarlyTransitionEnabledDescription[] =
     "Enables earlier transitions from Lens UI to web page.";
 
+const char kLensWebPageLoadOptimizationEnabledName[] =
+    "Lens web page load optimization";
+const char kLensWebPageLoadOptimizationEnabledDescription[] =
+    "Enables optmized loading for the Lens web page.";
+
 const char kLinkedServicesSettingIosName[] = "Linked Services Setting";
 const char kLinkedServicesSettingIosDescription[] =
     "Add Linked Services Setting to the Sync Settings page.";

@@ -5768,6 +5768,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "lens-web-page-load-optimization-enabled",
+    "owners": ["cmyang@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "link-cross-device-internals",
     "owners": [ "chromeos-cross-device-eng@google.com", "dclasson@chromium.org" ],
     "expiry_milestone": 125

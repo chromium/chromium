@@ -38,3 +38,7 @@ int LensTranslateToggleMode() {
   return base::GetFieldTrialParamByFeatureAsInt(kLensTranslateToggleModeEnabled,
                                                 kLensTranslateToggleMode, 0);
 }
+
+BASE_FEATURE(kLensWebPageLoadOptimizationEnabled,
+             "LensWebPageLoadOptimizationEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
