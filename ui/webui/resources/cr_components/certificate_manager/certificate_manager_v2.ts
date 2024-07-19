@@ -35,8 +35,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// import type {CertificateEnterpriseCertsV2Element} from
-// './certificate_enterprise_certs_v2.js';
 import type {CertificateListV2Element} from './certificate_list_v2.js';
 import {getTemplate} from './certificate_manager_v2.html.js';
 import type {CertManagementMetadata, ImportResult} from './certificate_manager_v2.mojom-webui.js';

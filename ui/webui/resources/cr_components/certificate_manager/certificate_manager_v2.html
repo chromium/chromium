@@ -5,10 +5,14 @@
     height: 100%;
   }
 
-  cr-tabs {
-    --cr-tabs-font-size: inherit;
-    --cr-tabs-height: 40px;
-    margin-bottom: 24px;
+  .card {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+  }
+
+  h2, h3 {
+    font-weight: 400;
   }
 
   .push-left {
@@ -22,7 +26,6 @@
   #main {
     flex: 1;
     overflow: auto;
-    padding: 16px;
   }
 
   cr-menu-selector {
@@ -72,7 +75,7 @@
   <iron-pages id="main" attr-for-selected="path" fallback-selection="localcerts"
       selected="[[selectedPage_]]">
 
-    <div id="clientCertSection" path="clientcerts">
+    <div id="clientCertSection" class="cr-centered-card-container" path="clientcerts">
       <h2>[[i18n('certificateManagerV2ClientCerts')]]</h2>
       [[i18n("certificateManagerV2ClientCertsDescription")]]
 
@@ -115,50 +118,53 @@
       </if>
     </div>
 
-    <div id="localCertSection" path="localcerts">
+    <div id="localCertSection" class="cr-centered-card-container" path="localcerts">
       <h2>[[i18n('certificateManagerV2LocalCerts')]]</h2>
       [[i18n("certificateManagerV2LocalCertsDescription")]]
 
       <!-- TODO(crbug.com/40928765): Allow user modifications of trust settings
         here when allowed by enterprise.  -->
       <h3>[[i18n("certificateManagerV2Platform")]]</h3>
-      <div class="cr-row">
-        <div class="cr-padded-text">
-          <div>
-            [[i18n("certificateManagerV2PlatformCertsToggleLabel")]]
+      <div class="card">
+        <div class="cr-row">
+          <div class="cr-padded-text">
+            <div>
+              [[i18n("certificateManagerV2PlatformCertsToggleLabel")]]
+            </div>
+            <div id="numSystemCerts" class="cr-secondary-text"
+                hidden="[[!importOsCertsEnabled_]]">
+              [[numSystemCertsString_]]
+            </div>
           </div>
-          <div id="numSystemCerts" class="cr-secondary-text"
-              hidden="[[!importOsCertsEnabled_]]">
-            [[numSystemCertsString_]]
-          </div>
+          <cr-toggle id="importOsCerts" class="push-left"
+              aria-label="Toggle operating system certificate imports"
+              checked="[[importOsCertsEnabled_]]" disabled>
+          </cr-toggle>
+
+          <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
+              class="enterprise-icon" hidden="[[!importOsCertsEnabledManaged_]]">
+          </cr-icon>
         </div>
-        <cr-toggle id="importOsCerts" class="push-left"
-            aria-label="Toggle operating system certificate imports"
-            checked="[[importOsCertsEnabled_]]" disabled>
-        </cr-toggle>
 
-        <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
-            class="enterprise-icon" hidden="[[!importOsCertsEnabledManaged_]]">
-        </cr-icon>
-      </div>
-
-      <cr-link-row id="viewOsImportedCerts"
-          label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
-          on-click="onPlatformCertsLinkRowClick_"
-          hidden="[[!importOsCertsEnabled_]]">
-      </cr-link-row>
-      <if expr="is_win or is_macosx">
-        <cr-link-row external id="manageOsImportedCerts"
-            label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
-            on-click="onManageCertsExternal_"
+        <cr-link-row id="viewOsImportedCerts"
+            label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
+            on-click="onPlatformCertsLinkRowClick_"
             hidden="[[!importOsCertsEnabled_]]">
         </cr-link-row>
-      </if>
+        <if expr="is_win or is_macosx">
+          <cr-link-row external id="manageOsImportedCerts"
+              label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
+              on-click="onManageCertsExternal_"
+              hidden="[[!importOsCertsEnabled_]]">
+          </cr-link-row>
+        </if>
+      </div>
 
       <template is="dom-if" if="[[showCustomSection_(certManagementMetadata_)]]">
         <div id="customCertsSection">
           <h3>[[i18n("certificateManagerV2CustomCertsTitle")]]</h3>
           <cr-link-row id="adminCertsInstalledLinkRow"
+              class="card"
               label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
               sub-label="[[numPolicyCertsString_]]"
               on-click="onAdminCertsInstalledLinkRowClick_">
@@ -168,7 +174,7 @@
     </div>
 
     <!-- Chrome Root Store section -->
-    <div id="crsCertSection" path="crscerts">
+    <div id="crsCertSection" class="cr-centered-card-container" path="crscerts">
       <h2>[[i18n('certificateManagerV2CRSCerts')]]</h2>
       [[i18n("certificateManagerV2CRSCertsDescription")]]
       <!-- TODO(crbug.com/40928765): Add Learn More link -->
