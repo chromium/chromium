@@ -335,9 +335,9 @@ bool DoesPredictionCorrespondToField(
 
 // Returns the first element of |fields| which corresponds to |prediction|, or
 // null if there is no such element.
-ProcessedField* FindField(std::vector<ProcessedField>* processed_fields,
+ProcessedField* FindField(std::vector<ProcessedField>& processed_fields,
                           const PasswordFieldPrediction& prediction) {
-  for (ProcessedField& processed_field : *processed_fields) {
+  for (ProcessedField& processed_field : processed_fields) {
     if (DoesPredictionCorrespondToField(*processed_field.field, prediction)) {
       return &processed_field;
     }
@@ -380,9 +380,17 @@ const FormFieldData* FindConfirmationPasswordField(
              : nullptr;
 }
 
+bool HasPasswordFieldsWithUserInput(
+    const std::vector<ProcessedField>& processed_fields) {
+  return base::ranges::any_of(
+      processed_fields, [](const ProcessedField& field) {
+        return field.is_password && !field.field->user_input().empty();
+      });
+}
+
 // Tries to parse |processed_fields| based on server |predictions|. Uses |mode|
 // to decide which of two username hints are relevant, if present.
-void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
+void ParseUsingPredictions(std::vector<ProcessedField>& processed_fields,
                            const FormPredictions& predictions,
                            FormDataParser::Mode mode,
                            SignificantFields* result) {
@@ -479,10 +487,11 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
 
   if (result->is_single_username) {
     if (mode == FormDataParser::Mode::kSaving &&
-        (result->password || result->new_password)) {
-      // Contradicting predictions were received: the form was predicted to be
-      // both a single username form and a password form. Prioritize saving
-      // the password.
+        HasPasswordFieldsWithUserInput(processed_fields)) {
+      // Saving is no-op for single username forms. Therefore, in saving mode in
+      // case of doubt (where the form contains password fields with user
+      // input), ignore the SINGLE_USERNAME prediction to allow saving the
+      // password value.
       result->username = nullptr;
       result->is_single_username = false;
     } else {
@@ -1118,7 +1127,7 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
 
   // (1) First, try to parse with server predictions.
   if (predictions_) {
-    ParseUsingPredictions(&processed_fields, *predictions_, mode,
+    ParseUsingPredictions(processed_fields, *predictions_, mode,
                           &significant_fields);
     if (significant_fields.username) {
       method = UsernameDetectionMethod::kServerSidePrediction;

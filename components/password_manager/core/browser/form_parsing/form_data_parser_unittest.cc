@@ -2959,21 +2959,24 @@ TEST_F(FormParserTest, SingleUsernamePrediction) {
   });
 }
 
-// Password predictions should have priority over single username predictions
-// when the form is parsed for saving to avoid losing the password.
-TEST_F(FormParserTest, BothSingleUsernameAndPasswordPredictions) {
+// When the form has both user input in password fields and single
+// username prediction, the later should be ignored  when the form is parsed
+// for saving to avoid losing the password.
+TEST_F(FormParserTest, BothSingleUsernameAndPassword) {
   CheckTestData({
       {
           .description_for_logging =
-              "Form with both SINGLE_USERNAME and PASSWORD predictions.",
+              "Form with a SINGLE_USERNAME prediction and "
+              "user-typed password value.",
           .fields =
               {
                   {.role = ElementRole::USERNAME,
+                   .user_input = u"typed_username",
                    .form_control_type = FormControlType::kInputText,
                    .predicted_type = autofill::SINGLE_USERNAME},
                   {.role_saving = ElementRole::CURRENT_PASSWORD,
-                   .form_control_type = FormControlType::kInputPassword,
-                   .predicted_type = autofill::PASSWORD},
+                   .user_input = u"typed_password",
+                   .form_control_type = FormControlType::kInputPassword},
               },
           .fallback_only = false,
       },
