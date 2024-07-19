@@ -7912,19 +7912,28 @@
   {
     "name": "safety-check-unused-site-permissions",
     "owners": ["sideyilmaz@chromium.org"],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "safety-hub",
     "owners": [
       "sideyilmaz@chromium.org"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 132
   },
   {
     "name": "safety-hub-abusive-notification-revocation",
     "owners": ["skrakowi@chromium.org", "chrome-counter-abuse-alerts@google.com"],
     "expiry_milestone": 130
+  },
+  {
+    "name": "safety-hub-magic-stack",
+    "owners": [
+      "rubindl@chromium.org",
+      "sideyilmaz@chromium.org",
+      "chrome-privacy-controls@google.com"
+    ],
+    "expiry_milestone": 132
   },
   {
     "name": "sanitizer-api",

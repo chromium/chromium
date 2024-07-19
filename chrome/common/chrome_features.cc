@@ -1133,6 +1133,13 @@ BASE_FEATURE(kSafetyHub,
 #endif  // BUILDFLAG(IS_ANDROID)
 );
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables Safety Hub card in magic stack.
+BASE_FEATURE(kSafetyHubMagicStack,
+             "SafetyHubMagicStack",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.
 BASE_FEATURE(kSafetyHubTrustSafetySentimentSurvey,
              "TrustSafetySentimentSurveyForSafetyHub",

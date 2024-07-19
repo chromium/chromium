@@ -3219,6 +3219,13 @@ const char kSafetyHubName[] = "Safety Check v2";
 const char kSafetyHubDescription[] =
     "When enabled, Safety Check v2 will be visible in settings.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kSafetyHubMagicStackName[] = "Safety Check v2 - Magic Stack";
+const char kSafetyHubMagicStackDescription[] =
+    "When enabled, a magic stack card will be visible for Safety Check v2 if "
+    "trigger conditions are met.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kSafetyHubAbusiveNotificationRevocationName[] =
     "Include abusive notification sites in the Permissions Module of Safety "
     "Hub";
