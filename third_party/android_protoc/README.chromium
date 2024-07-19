@@ -2,6 +2,7 @@ Name: Protocol Buffers - Google's data interchange format
 Short Name: protobuf
 URL: https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protoc-3.13.0-linux-x86_64.zip
 Version: 3.13.0
+Revision: fde7cf7358ec7cd69e8db9be4f1fa6a5c431386a
 License: BSD
 License File: LICENSE
 Security Critical: no
