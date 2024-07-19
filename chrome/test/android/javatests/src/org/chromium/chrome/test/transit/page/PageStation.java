@@ -19,6 +19,7 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
@@ -52,13 +53,14 @@ public class PageStation extends Station {
      */
     public static class Builder<T extends PageStation> {
         private final Function<Builder<T>, T> mFactoryMethod;
-        private boolean mIncognito;
         private boolean mIsEntryPoint;
+        private Boolean mIncognito;
         private Integer mNumTabsBeingOpened;
         private Integer mNumTabsBeingSelected;
         private Tab mTabAlreadySelected;
         private String mPath;
         private String mTitle;
+        private List<Facility<T>> mFacilities;
 
         public Builder(Function<Builder<T>, T> factoryMethod) {
             mFactoryMethod = factoryMethod;
@@ -85,6 +87,8 @@ public class PageStation extends Station {
             assert numTabsBeingSelected > 0
                     : "Use withIsSelectingTab() if the PageStation is still in the current tab";
             mNumTabsBeingSelected = numTabsBeingSelected;
+            // Commonly already set via initFrom().
+            mTabAlreadySelected = null;
             return this;
         }
 
@@ -105,8 +109,29 @@ public class PageStation extends Station {
             return this;
         }
 
+        public Builder<T> withFacility(Facility<T> facility) {
+            if (mFacilities == null) {
+                mFacilities = new ArrayList<>();
+            }
+            mFacilities.add(facility);
+            return this;
+        }
+
         public Builder<T> initFrom(PageStation previousStation) {
-            mIncognito = previousStation.isIncognito();
+            if (mIncognito == null) {
+                mIncognito = previousStation.mIncognito;
+            }
+            if (mNumTabsBeingOpened == null) {
+                mNumTabsBeingOpened = 0;
+            }
+            if (mNumTabsBeingSelected == null) {
+                mNumTabsBeingSelected = 0;
+            }
+            if (mTabAlreadySelected == null && mNumTabsBeingSelected == 0) {
+                mTabAlreadySelected = previousStation.getLoadedTab();
+            }
+            // Cannot copy over facilities because we have no way to clone them. It's also not
+            // obvious that we should...
             return this;
         }
 
@@ -138,9 +163,8 @@ public class PageStation extends Station {
 
     /** Use {@link #newPageStationBuilder()} or the PageStation's subclass |newBuilder()|. */
     protected <T extends PageStation> PageStation(Builder<T> builder) {
-
         // incognito is optional and defaults to false
-        mIncognito = builder.mIncognito;
+        mIncognito = builder.mIncognito == null ? false : builder.mIncognito;
 
         // isEntryPoint is optional and defaults to false
         mIsEntryPoint = builder.mIsEntryPoint;
@@ -165,6 +189,12 @@ public class PageStation extends Station {
 
         // title is optional
         mTitle = builder.mTitle;
+
+        if (builder.mFacilities != null) {
+            for (Facility<T> facility : builder.mFacilities) {
+                addInitialFacility(facility);
+            }
+        }
     }
 
     /**
@@ -309,22 +339,19 @@ public class PageStation extends Station {
         return travelToSync(destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
     }
 
-    /** Loads a |url| in the same tab and waits to transition to the given |destination|. */
-    public <T extends PageStation> T loadPageProgramatically(
-            Builder<T> destinationBuilder, String url) {
-        T destination =
-                destinationBuilder
-                        .initFrom(this)
-                        .withIsOpeningTabs(0)
-                        .withTabAlreadySelected(getLoadedTab())
-                        .withPath(url)
-                        .build();
-
-        return loadPageProgramatically(destination, url);
+    /** Loads a |url| in the same tab and waits to transition. */
+    public PageStation loadPageProgrammatically(String url) {
+        return loadPageProgrammatically(url, PageStation.newPageStationBuilder());
     }
 
-    /** Loads a |url| in the same tab and waits to transition to the given |destination|. */
-    public <T extends PageStation> T loadPageProgramatically(T destination, String url) {
+    /** Loads a |url| in the same tab and waits to transition. */
+    public <T extends PageStation> T loadPageProgrammatically(String url, Builder<T> builder) {
+        builder.initFrom(this);
+        if (builder.mPath == null) {
+            builder.mPath = url;
+        }
+
+        T destination = builder.build();
         Runnable r =
                 () -> {
                     @PageTransition

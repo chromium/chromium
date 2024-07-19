@@ -29,7 +29,7 @@ public class PopupOnClickPageStation extends WebPageStation {
         Builder<PopupOnClickPageStation> builder = new Builder<>(PopupOnClickPageStation::new);
 
         String url = activityTestRule.getTestServer().getURL(PATH);
-        return currentPageStation.loadPageProgramatically(builder, url);
+        return currentPageStation.loadPageProgrammatically(url, builder);
     }
 
     @Override
@@ -57,6 +57,7 @@ public class PopupOnClickPageStation extends WebPageStation {
      * message to be shown.
      */
     public PopupBlockedMessageFacility clickLinkAndExpectPopupBlockedMessage() {
-        return enterFacilitySync(new PopupBlockedMessageFacility(1), mLinkToPopup::click);
+        return enterFacilitySync(
+                new PopupBlockedMessageFacility<PopupOnClickPageStation>(1), mLinkToPopup::click);
     }
 }

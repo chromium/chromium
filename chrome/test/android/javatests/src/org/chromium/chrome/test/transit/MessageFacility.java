@@ -45,7 +45,7 @@ import java.util.List;
  *
  * <p>Subclass for specific messages types to specify expected title, button text and behavior.
  */
-public class MessageFacility extends Facility<PageStation> {
+public class MessageFacility<HostStationT extends PageStation> extends Facility<HostStationT> {
     public static final Matcher<View> MESSAGE_TITLE_MATCHER = withId(R.id.message_title);
     public static final Matcher<View> MESSAGE_PRIMARY_BUTTON_MATCHER =
             withId(R.id.message_primary_button);

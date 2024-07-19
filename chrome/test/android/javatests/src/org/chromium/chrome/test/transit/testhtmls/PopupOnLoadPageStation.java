@@ -30,18 +30,15 @@ public class PopupOnLoadPageStation extends WebPageStation {
     public static Pair<PopupOnLoadPageStation, PopupBlockedMessageFacility>
             loadInCurrentTabExpectBlocked(
                     ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
-        PopupOnLoadPageStation newPage =
-                new Builder<PopupOnLoadPageStation>(PopupOnLoadPageStation::new)
-                        .initFrom(currentPageStation)
-                        .withIsOpeningTabs(0)
-                        .withTabAlreadySelected(currentPageStation.getLoadedTab())
-                        .build();
-        PopupBlockedMessageFacility popupBlockedMessage =
-                newPage.addInitialFacility(new PopupBlockedMessageFacility(2));
         // TODO(crbug.com/329307093): Add condition that no new tabs were opened.
-
         String url = activityTestRule.getTestServer().getURL(PATH);
-        currentPageStation.loadPageProgramatically(newPage, url);
+        PopupBlockedMessageFacility<PopupOnLoadPageStation> popupBlockedMessage =
+                new PopupBlockedMessageFacility<>(2);
+        PopupOnLoadPageStation newPage =
+                currentPageStation.loadPageProgrammatically(
+                        url,
+                        new Builder<PopupOnLoadPageStation>(PopupOnLoadPageStation::new)
+                                .withFacility(popupBlockedMessage));
 
         return Pair.create(newPage, popupBlockedMessage);
     }
@@ -53,16 +50,14 @@ public class PopupOnLoadPageStation extends WebPageStation {
      */
     public static WebPageStation loadInCurrentTabExpectPopups(
             ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
-        // Don't expect popup_test.html to be loaded at the end of the transition, but two.html.
-        WebPageStation newPage =
+        // TODO(crbug.com/329307093): Add condition that two new tabs were opened.
+        String url = activityTestRule.getTestServer().getURL(PATH);
+        return currentPageStation.loadPageProgrammatically(
+                url,
                 NavigatePageStations.newNavigateTwoPageBuilder()
-                        .initFrom(currentPageStation)
                         .withIsOpeningTabs(2)
                         .withIsSelectingTabs(2)
-                        .build();
-        // TODO(crbug.com/329307093): Add condition that two new tabs were opened.
-
-        String url = activityTestRule.getTestServer().getURL(PATH);
-        return currentPageStation.loadPageProgramatically(newPage, url);
+                        // Expect popup_test.html to open two.html in foreground.
+                        .withPath("two.html"));
     }
 }

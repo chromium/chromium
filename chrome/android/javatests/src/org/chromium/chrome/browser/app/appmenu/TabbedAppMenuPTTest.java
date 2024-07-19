@@ -156,9 +156,9 @@ public class TabbedAppMenuPTTest {
                 mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
         WebPageStation pageOne =
-                incognitoNtp.loadPageProgramatically(
-                        NavigatePageStations.newNavigateOnePageBuilder(),
-                        sActivityTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE));
+                incognitoNtp.loadPageProgrammatically(
+                        sActivityTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE),
+                        NavigatePageStations.newNavigateOnePageBuilder());
         IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
         verifyPresentItems(menu);

@@ -11,7 +11,8 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.transit.MessageFacility;
 
 /** Represents a "Pop-up blocked" message. */
-public class PopupBlockedMessageFacility extends MessageFacility {
+public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
+        extends MessageFacility<HostStationT> {
 
     public static final ViewElement ALWAYS_SHOW_BUTTON = primaryButtonViewElement("Always show");
 

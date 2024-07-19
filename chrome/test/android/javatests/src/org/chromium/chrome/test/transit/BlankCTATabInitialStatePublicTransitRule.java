@@ -70,7 +70,7 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
      */
     public RegularNewTabPageStation startOnNtp() {
         WebPageStation blankPage = startOnBlankPage();
-        return blankPage.loadPageProgramatically(
-                RegularNewTabPageStation.newBuilder(), UrlConstants.NTP_URL);
+        return blankPage.loadPageProgrammatically(
+                UrlConstants.NTP_URL, RegularNewTabPageStation.newBuilder());
     }
 }
