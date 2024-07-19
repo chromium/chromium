@@ -66,6 +66,10 @@ BrowserPrintingContextFactoryForTest::CreatePrintingContext(
   if (cancel_on_ask_user_for_settings_) {
     context->SetAskUserForSettingsCanceled();
   }
+
+  if (fail_on_ask_user_for_settings_) {
+    context->SetAskUserForSettingsFails();
+  }
 #endif
 
   context->SetUserSettings(*test::MakeUserModifiedPrintSettings(printer_name_));
@@ -142,6 +146,10 @@ void BrowserPrintingContextFactoryForTest::SetFailErrorOnUseDefaultSettings() {
 void BrowserPrintingContextFactoryForTest::
     SetCancelErrorOnAskUserForSettings() {
   cancel_on_ask_user_for_settings_ = true;
+}
+
+void BrowserPrintingContextFactoryForTest::SetFailErrorOnAskUserForSettings() {
+  fail_on_ask_user_for_settings_ = true;
 }
 #endif
 

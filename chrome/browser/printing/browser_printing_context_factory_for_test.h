@@ -47,6 +47,7 @@ class BrowserPrintingContextFactoryForTest
   void SetFailErrorOnUseDefaultSettings();
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   void SetCancelErrorOnAskUserForSettings();
+  void SetFailErrorOnAskUserForSettings();
 #endif
   void SetOnNewDocumentCallback(
       TestPrintingContext::OnNewDocumentCallback callback);
@@ -76,6 +77,7 @@ class BrowserPrintingContextFactoryForTest
   bool fail_on_use_default_settings_ = false;
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   bool cancel_on_ask_user_for_settings_ = false;
+  bool fail_on_ask_user_for_settings_ = false;
 #endif
   TestPrintingContext::OnNewDocumentCallback on_new_document_callback_;
 };

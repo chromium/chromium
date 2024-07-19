@@ -106,6 +106,10 @@ mojom::ResultCode TestPrintingContext::AskUserForSettingsImpl(
     // Pretend the user hit the Cancel button.
     return mojom::ResultCode::kCanceled;
   }
+  if (ask_user_for_settings_fails_) {
+    // Pretend the system print dialog fails.
+    return mojom::ResultCode::kFailed;
+  }
 
   // Allow for test-specific user modifications.
   if (user_settings_.has_value()) {

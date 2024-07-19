@@ -1004,6 +1004,10 @@ class SystemAccessProcessPrintBrowserTestBase
   void PrimeForCancelInAskUserForSettings() {
     test_printing_context_factory()->SetCancelErrorOnAskUserForSettings();
   }
+
+  void PrimeForFailInAskUserForSettings() {
+    test_printing_context_factory()->SetFailErrorOnAskUserForSettings();
+  }
 #endif
 
   void PrimeForFailInUpdatePrinterSettings() {
@@ -2623,6 +2627,53 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     EXPECT_FALSE(print_backend_service_use_detected());
   }
   EXPECT_EQ(error_dialog_shown_count(), 0u);
+  EXPECT_EQ(did_print_document_count(), 0);
+  EXPECT_EQ(print_job_destruction_count(), 0);
+}
+
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
+                       StartBasicPrintAskUserForSettingsFails) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForFailInAskUserForSettings();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // The expected events for this are:
+  // 1.  Get the default settings.
+  // 2.  Ask the user for settings, which indicates a failure from system print
+  //     dialog.  No further printing calls are made.
+  // 3.  An error dialog is displayed.
+  // No print job is created because of such an early failure.
+  SetNumExpectedMessages(/*num=*/3);
+
+  StartBasicPrint(web_contents);
+
+  WaitUntilCallbackReceived();
+
+  if (UseService()) {
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+    EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
+    EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kFailed);
+#else
+    EXPECT_TRUE(did_use_default_settings());
+    EXPECT_TRUE(did_get_settings_with_ui());
+#endif
+  } else {
+    EXPECT_TRUE(did_use_default_settings());
+    EXPECT_TRUE(did_get_settings_with_ui());
+
+    // `PrintBackendService` should never be used when printing in-browser.
+    EXPECT_FALSE(print_backend_service_use_detected());
+  }
+  EXPECT_EQ(error_dialog_shown_count(), 1u);
   EXPECT_EQ(did_print_document_count(), 0);
   EXPECT_EQ(print_job_destruction_count(), 0);
 }
