@@ -26,6 +26,10 @@
 #include "media/renderers/video_renderer_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 using ::testing::NiceMock;
 
 namespace base {
@@ -278,6 +282,11 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   // different behavior around exiting the seek.
   void OnBufferingStateChangeForSeek(BufferingState state,
                                      BufferingStateChangeReason reason);
+
+#if BUILDFLAG(IS_WIN)
+  // MediaFoundationAudioDecoder calls CoInitialize() when creating the decoder.
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif  // BUILDFLAG(IS_WIN)
 
   CreateVideoDecodersCB prepend_video_decoders_cb_;
   CreateAudioDecodersCB prepend_audio_decoders_cb_;

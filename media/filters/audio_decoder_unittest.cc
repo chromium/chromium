@@ -48,6 +48,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_com_initializer.h"
 #include "media/filters/win/media_foundation_audio_decoder.h"
 #endif
 
@@ -402,6 +403,11 @@ class AudioDecoderTest
   TestParams params_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+
+#if BUILDFLAG(IS_WIN)
+  // MediaFoundationAudioDecoder calls CoInitialize() when creating the decoder.
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif  // BUILDFLAG(IS_WIN)
 
   NullMediaLog media_log_;
   scoped_refptr<DecoderBuffer> data_;
