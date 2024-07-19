@@ -297,6 +297,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.TimeInSelectFileDialog" units="ms"
+    expires_after="2024-10-31">
+  <owner>fdoray@chromium.org</owner>
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Duration of a call to ui::ExecuteSelectFile. This includes the time to
+    open/close the file select dialog and the time spent by the user in it.
+    Eliminating hangs that occur when opening the file select dialog should move
+    this metric. Reported every time ui::ExecuteSelectFile is called via
+    UtilWinImpl::CallExecuteSelectFile.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

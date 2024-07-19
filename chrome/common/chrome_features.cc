@@ -1699,6 +1699,11 @@ BASE_FEATURE(kUserTypeByDeviceTypeMetricsProvider,
 BASE_FEATURE(kWin10AcceleratedDefaultBrowserFlow,
              "Win10AcceleratedDefaultBrowserFlow",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, a UI pump is requested for the UtilWin utility process.
+BASE_FEATURE(kUtilWinProcessUsesUiPump,
+             "UtilWinProcessUsesUiPump",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables writing basic system profile to the persistent histograms files

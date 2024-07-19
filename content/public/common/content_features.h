@@ -210,6 +210,7 @@ enum class SkiaFontServiceTypefaceType {
 };
 extern const base::FeatureParam<SkiaFontServiceTypefaceType>
     kSkiaFontServiceTypefaceType;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kUtilityWithUiPumpInitializesCom);
 #endif  // BUILDFLAG(IS_WIN)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisableProcessReuse);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerStaticRouter);

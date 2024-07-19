@@ -85,6 +85,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/native_library.h"
 #include "base/rand_util.h"
+#include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "content/utility/sandbox_delegate_data.mojom.h"
@@ -340,6 +341,14 @@ int UtilityMain(MainFunctionParams parameters) {
   }
 
 #elif BUILDFLAG(IS_WIN)
+  std::optional<base::win::ScopedCOMInitializer> scoped_com_initializer;
+  if (message_pump_type == base::MessagePumpType::UI &&
+      base::FeatureList::IsEnabled(
+          features::kUtilityWithUiPumpInitializesCom)) {
+    scoped_com_initializer.emplace();
+    CHECK(scoped_com_initializer->Succeeded());
+  }
+
   g_utility_target_services = parameters.sandbox_info->target_services;
 
   // Call hooks with data provided by UtilitySandboxedProcessLauncherDelegate.
