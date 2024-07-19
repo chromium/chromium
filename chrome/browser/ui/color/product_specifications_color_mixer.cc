@@ -14,6 +14,16 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
                                         const ui::ColorProviderKey& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorProductSpecificationsButtonBackground] = {ui::kColorSysSurface2};
+  mixer[kColorProductSpecificationsDisclosureBackground] = {
+      ui::kColorPrimaryBackground};
+  mixer[kColorProductSpecificationsDisclosureForeground] = {
+      ui::kColorPrimaryForeground};
+  mixer[kColorProductSpecificationsDisclosureGradientEnd] = {
+      ui::kColorSysGradientTertiary};
+  mixer[kColorProductSpecificationsDisclosureGradientStart] = {
+      ui::kColorSysGradientPrimary};
+  mixer[kColorProductSpecificationsDisclosureSummaryBackground] = {
+      ui::kColorSysSurface4};
   mixer[kColorProductSpecificationsDivider] = {ui::kColorSysDivider};
   mixer[kColorProductSpecificationsIcon] = {ui::kColorIcon};
   mixer[kColorProductSpecificationsPageBackground] = {ui::kColorSysSurface2};

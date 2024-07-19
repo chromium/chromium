@@ -25,7 +25,10 @@ build_webui("build") {
     "table.ts",
   ]
 
-  css_files = [ "loading_state.css" ]
+  css_files = [
+    "loading_state.css",
+    "disclosure/app.css",
+  ]
 
   mojo_files_deps = [
     "//ui/webui/resources/cr_components/commerce:mojo_bindings_ts__generator",

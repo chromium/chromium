@@ -389,6 +389,11 @@
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
   /* Product Specifications colors */ \
   E_CPONLY(kColorProductSpecificationsButtonBackground) \
+  E_CPONLY(kColorProductSpecificationsDisclosureBackground) \
+  E_CPONLY(kColorProductSpecificationsDisclosureForeground) \
+  E_CPONLY(kColorProductSpecificationsDisclosureGradientEnd) \
+  E_CPONLY(kColorProductSpecificationsDisclosureGradientStart) \
+  E_CPONLY(kColorProductSpecificationsDisclosureSummaryBackground) \
   E_CPONLY(kColorProductSpecificationsDivider) \
   E_CPONLY(kColorProductSpecificationsIcon) \
   E_CPONLY(kColorProductSpecificationsPageBackground) \
