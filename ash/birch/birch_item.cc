@@ -917,9 +917,10 @@ void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
 
 // static
 std::u16string BirchLostMediaItem::GetSubtitle(bool is_video_conference_tab) {
-  // TODO(b/340347606): Add strings to ash_strings.grd.
-  return (is_video_conference_tab ? u"Ongoing · Switch to tab"
-                                  : u"Playing · Switch to tab");
+  return l10n_util::GetStringUTF16(
+      is_video_conference_tab
+          ? IDS_ASH_BIRCH_LOST_MEDIA_VIDEO_CONFERENCE_TAB_SUBTITLE
+          : IDS_ASH_BIRCH_LOST_MEDIA_MEDIA_TAB_SUBTITLE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
