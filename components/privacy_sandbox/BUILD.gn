@@ -47,6 +47,8 @@ source_set("tracking_protection_onboarding") {
 
   deps = [
     ":features",
+    ":privacy_sandbox_notice_constants",
+    ":privacy_sandbox_notice_storage",
     ":tracking_protection_prefs",
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
@@ -236,6 +238,8 @@ if (use_blink) {
     ]
     deps = [
       ":privacy_sandbox",
+      ":privacy_sandbox_notice_constants",
+      ":privacy_sandbox_notice_storage",
       ":privacy_sandbox_prefs",
       "//base/test:test_support",
       "//components/browsing_topics:test_support",
@@ -269,6 +273,7 @@ source_set("unit_tests") {
 
   deps = [
     ":features",
+    ":privacy_sandbox_notice_constants",
     ":privacy_sandbox_notice_storage",
     ":privacy_sandbox_prefs",
     ":tracking_protection_onboarding",

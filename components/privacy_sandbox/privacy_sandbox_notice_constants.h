@@ -7,6 +7,9 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_CONSTANTS_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_CONSTANTS_H_
 
+#include <string_view>
+
+#include "base/containers/fixed_flat_set.h"
 namespace privacy_sandbox {
 
 inline constexpr int kPrivacySandboxNoticeSchemaVersion = 1;
@@ -27,20 +30,21 @@ inline constexpr char kFull3PCDWithIPPClankBrApp[] =
     "Full3PCDWithIPPClankBrApp";
 inline constexpr char kFull3PCDWithIPPClankCCT[] = "Full3PCDWithIPPClankCCT";
 
-// Full 3PCD with IPP silent notice names.
-inline constexpr char kFull3PCDSilentWithIPPIPH[] =
-    "Full3PCDSilentWithIPPDesktopIPH";
-inline constexpr char kFull3PCDSilentWithIPPClankBrApp[] =
-    "Full3PCDSilentWithIPPClankBrApp";
-inline constexpr char kFull3PCDSilentWithIPPClankCCT[] =
-    "Full3PCDSilentWithIPPClankCCT";
-
 // Topics Consent modal names.
 inline constexpr char kTopicsConsentModal[] = "TopicsConsentDesktopModal";
 inline constexpr char kTopicsConsentModalClankBrApp[] =
     "TopicsConsentModalClankBrApp";
 inline constexpr char kTopicsConsentModalClankCCT[] =
     "TopicsConsentModalClankCCT";
+
+inline constexpr auto kPrivacySandboxNoticeNames =
+    base::MakeFixedFlatSet<std::string_view>(
+        {kFull3PCDIPH, kFull3PCDClankBrApp, kFull3PCDClankCCT,
+         kTopicsConsentModal, kTopicsConsentModalClankBrApp,
+         kTopicsConsentModalClankCCT, kFull3PCDWithIPPIPH,
+         kFull3PCDWithIPPClankBrApp, kFull3PCDWithIPPClankCCT,
+         kFull3PCDSilentIPH, kFull3PCDSilentClankBrApp,
+         kFull3PCDSilentClankCCT});
 
 }  // namespace privacy_sandbox
 

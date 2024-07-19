@@ -16,8 +16,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
-#include "privacy_sandbox_notice_constants.h"
-#include "privacy_sandbox_notice_storage.h"
 
 namespace privacy_sandbox {
 namespace {
@@ -92,6 +90,12 @@ void SetSchemaVersion(PrefService* pref_service, std::string_view notice) {
       kPrivacySandboxNoticeSchemaVersion);
 }
 
+void CheckNoticeNameEligibility(std::string_view notice_name) {
+  CHECK(privacy_sandbox::kPrivacySandboxNoticeNames.contains(notice_name))
+      << "Notice name " << notice_name
+      << " does not exist in privacy_sandbox_notice_constants.h";
+}
+
 }  // namespace
 
 // PrivacySandboxNoticeData definitions.
@@ -109,6 +113,7 @@ void PrivacySandboxNoticeStorage::RegisterProfilePrefs(
 void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
     PrefService* pref_service,
     std::string_view notice) {
+  CheckNoticeNameEligibility(notice);
   auto notice_data = ReadNoticeData(pref_service, notice);
 
   NoticeStartupState startup_state;
@@ -161,6 +166,7 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
 std::optional<PrivacySandboxNoticeData>
 PrivacySandboxNoticeStorage::ReadNoticeData(PrefService* pref_service,
                                             std::string_view notice) {
+  CheckNoticeNameEligibility(notice);
   const base::Value::Dict& pref_data =
       pref_service->GetDict(kPrivacySandboxNoticeDataPath);
   if (!pref_data.contains(notice)) {
@@ -226,6 +232,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     std::string_view notice,
     NoticeActionTaken notice_action_taken,
     base::Time notice_action_taken_time) {
+  CheckNoticeNameEligibility(notice);
   ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
   auto notice_data = ReadNoticeData(pref_service, notice);
 
@@ -292,6 +299,7 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
 void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
                                                  std::string_view notice,
                                                  base::Time notice_shown_time) {
+  CheckNoticeNameEligibility(notice);
   ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
   // Only set notice first shown if it hasn't previously been set.
   if (!pref_service->GetDict(kPrivacySandboxNoticeDataPath)
@@ -315,6 +323,7 @@ void PrivacySandboxNoticeStorage::MigratePrivacySandboxNoticeData(
     PrefService* pref_service,
     const PrivacySandboxNoticeData& input,
     std::string_view notice) {
+  CheckNoticeNameEligibility(notice);
   ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
 
   SetSchemaVersion(pref_service, notice);
