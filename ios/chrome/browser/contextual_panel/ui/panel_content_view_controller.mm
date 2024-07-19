@@ -187,6 +187,10 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   logo.translatesAutoresizingMaskIntoConstraints = NO;
   logo.spacing = 5;
 
+  logo.isAccessibilityElement = true;
+  logo.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_CONTEXTUAL_PANEL_BRANDING_ACCESSIBILITY_LABEL);
+
   [_headerView.contentView addSubview:logo];
   [NSLayoutConstraint activateConstraints:@[
     [logo.centerXAnchor
@@ -212,6 +216,8 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   _appearanceTime = base::Time::Now();
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  _headerView);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -220,7 +226,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   base::UmaHistogramTimes("IOS.ContextualPanel.VisibleTime",
                           base::Time::Now() - _appearanceTime);
 
-  // First alert all visible cells that the will disappear.
+  // First alert all visible cells that they will disappear.
   for (NSIndexPath* indexPath in _collectionView.indexPathsForVisibleItems) {
     UICollectionViewCell* cell =
         [_collectionView cellForItemAtIndexPath:indexPath];
