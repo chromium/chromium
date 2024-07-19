@@ -4365,6 +4365,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_DEVICE_BUSY" desc="Settings > Internet > Message when the cellular modem is busy applying updates (e.g., installing an eSIM profile).">
     Applying changes...
   </message>
+  <message name="IDS_SETTINGS_INTERNET_DEVICE_FLASHING" desc="Settings > Internet > Message when the cellular modem is busy updating firmware.">
+    Modem firmware update in progress. Don't turn off your device.
+  </message>
   <message name="IDS_SETTINGS_INTERNET_JOIN_TYPE" desc="Title for the network configuration dialog for a new network.">
     Join <ph name="TYPE">$1<ex>WiFi</ex></ph> network
   </message>

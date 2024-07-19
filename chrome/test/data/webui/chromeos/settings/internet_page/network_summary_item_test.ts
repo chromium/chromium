@@ -193,6 +193,72 @@ suite('<network-summary-item>', () => {
             .querySelector<CrToggleElement>('#deviceEnabledButton')!.disabled);
   });
 
+  test('Cellular modem flashing operation', () => {
+    netSummaryItem.setProperties({
+      deviceState: {
+        inhibitReason: InhibitReason.kNotInhibited,
+        deviceState: DeviceStateType.kDisabled,
+        isFlashing: true,
+        type: NetworkType.kCellular,
+        simAbsent: false,
+      },
+      activeNetworkState: {
+        connectionState: ConnectionStateType.kNotConnected,
+        guid: '',
+        type: NetworkType.kCellular,
+        typeState: {cellular: {networkTechnology: ''}},
+      },
+    });
+
+    flush();
+    assertFalse(
+        netSummaryItem.shadowRoot!
+            .querySelector<CrToggleElement>('#deviceEnabledButton')!.checked);
+    assertTrue(
+        netSummaryItem.shadowRoot!
+            .querySelector<CrToggleElement>('#deviceEnabledButton')!.disabled);
+
+    const networkStateText =
+        netSummaryItem.shadowRoot!.querySelector<HTMLElement>('#networkState');
+    assertTrue(!!networkStateText);
+    assertEquals(
+        netSummaryItem.i18n('internetDeviceFlashing'),
+        networkStateText.textContent!.trim());
+
+
+    netSummaryItem.setProperties({
+      deviceState: {
+        inhibitReason: InhibitReason.kNotInhibited,
+        deviceState: DeviceStateType.kDisabled,
+        isFlashing: false,
+        type: NetworkType.kCellular,
+        simAbsent: false,
+      },
+      activeNetworkState: {
+        connectionState: ConnectionStateType.kNotConnected,
+        guid: '',
+        type: NetworkType.kCellular,
+        typeState: {cellular: {networkTechnology: ''}},
+      },
+    });
+
+    flush();
+
+    assertFalse(
+        netSummaryItem.shadowRoot!
+            .querySelector<CrToggleElement>('#deviceEnabledButton')!.checked);
+    assertFalse(
+        netSummaryItem.shadowRoot!
+            .querySelector<CrToggleElement>('#deviceEnabledButton')!.disabled);
+
+    const newNetworkStateText =
+        netSummaryItem.shadowRoot!.querySelector<HTMLElement>('#networkState');
+    assertTrue(!!newNetworkStateText);
+    assertEquals(
+        netSummaryItem.i18n('deviceOff'),
+        newNetworkStateText.textContent!.trim());
+  });
+
   test('Toggle should be disabled when device state is unavailable', () => {
     netSummaryItem.setProperties({
       deviceState: {

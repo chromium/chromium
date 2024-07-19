@@ -801,6 +801,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetConfigName", IDS_SETTINGS_INTERNET_CONFIG_NAME},
       {"internetDetailPageTitle", IDS_SETTINGS_INTERNET_DETAIL},
       {"internetDeviceBusy", IDS_SETTINGS_INTERNET_DEVICE_BUSY},
+      {"internetDeviceFlashing", IDS_SETTINGS_INTERNET_DEVICE_FLASHING},
       {"internetJoinType", IDS_SETTINGS_INTERNET_JOIN_TYPE},
       {"internetKnownNetworksPageTitle", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS},
       {"internetYourDeviceHotspots",
