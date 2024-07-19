@@ -802,6 +802,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[arc::prefs::kArcEnabled] = settings_api::PrefType::kBoolean;
   (*s_allowlist)[arc::prefs::kArcLastSetAppLocale] =
       settings_api::PrefType::kString;
+  (*s_allowlist)[arc::prefs::kArcPackagesIsUpToDate] =
+      settings_api::PrefType::kBoolean;
 
   // App Notifications
   (*s_allowlist)[::ash::prefs::kAppNotificationBadgingEnabled] =
