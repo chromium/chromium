@@ -22,14 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="AppDisplayModes">
-<!-- Should be kept in sync with variants DisplayModes in
-  tools/metrics/histograms/metadata/ash/histograms.xml.
--->
+<!-- LINT.IfChange(AshDisplayModes) -->
 
+<variants name="AppDisplayModes">
   <variant name="ClamshellMode" summary="Clamshell mode"/>
   <variant name="TabletMode" summary="Tablet mode"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/ash/histograms.xml:AshDisplayModes) -->
 
 <variants name="AppInstallSurface">
   <variant name="" summary="All surfaces"/>
@@ -145,17 +145,17 @@ chromium-metrics-reviews@google.com.
   <variant name="Swipe" summary="Open launcher by swiping on the shelf"/>
 </variants>
 
-<variants name="LauncherSearchSessionConclusionVariants">
-<!-- Should be kept in sync with enum LauncherSearchSessionConclusion in
-  tools/metrics/histograms/metadata/apps/enums.xml.
--->
+<!-- LINT.IfChange(LauncherSearchSessionConclusion) -->
 
+<variants name="LauncherSearchSessionConclusionVariants">
   <variant name="" summary="All variants"/>
   <variant name=".AnswerCardSeen"
       summary="An answer card makes an impression then launcher is dismissed"/>
   <variant name=".Launch" summary="A result is launched"/>
   <variant name=".Quit" summary="Launcher is dismissed"/>
 </variants>
+
+<!-- LINT.ThenChange(//ash/public/cpp/app_list/app_list_metrics.cc:SearchSessionConclusion) -->
 
 <variants name="LauncherUISurface">
   <variant name=".AppsSearch" summary="App tiles search"/>

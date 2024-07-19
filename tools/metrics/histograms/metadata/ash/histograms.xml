@@ -228,14 +228,14 @@ chromium-metrics-reviews@google.com.
       summary="The device is shut down gracefully by the user."/>
 </variants>
 
-<variants name="DisplayModes">
-<!-- Should be kept in sync with variants AppDisplayModes in
-  tools/metrics/histograms/metadata/apps/histograms.xml.
--->
+<!-- LINT.IfChange(AshDisplayModes) -->
 
+<variants name="DisplayModes">
   <variant name="ClamshellMode" summary="Clamshell mode"/>
   <variant name="TabletMode" summary="Tablet mode"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/apps/histograms.xml:AshDisplayModes) -->
 
 <variants name="DriveFsSearchType">
   <variant name="Modified" summary="Most recently modified files"/>

@@ -537,15 +537,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Unknown"/>
 </enum>
 
-<enum name="LauncherSearchSessionConclusion">
-<!-- Should be kept in sync with LauncherSearchSessionConclusionVariants in
-  tools/metrics/histograms/metadata/apps/histograms.xml.
--->
+<!-- LINT.IfChange(LauncherSearchSessionConclusion) -->
 
+<enum name="LauncherSearchSessionConclusion">
   <int value="0" label="Quit"/>
   <int value="1" label="Launch"/>
   <int value="2" label="AnswerCardSeen"/>
 </enum>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/apps/histograms.xml:LauncherSearchSessionConclusion) -->
 
 <enum name="LauncherUserAction">
   <summary>

@@ -174,10 +174,9 @@ chromium-metrics-reviews@google.com.
       summary="from the Tab resumption module on the NTP"/>
 </variants>
 
-<variants name="TopChromeWebUIName">
-<!-- This should be in sync with ../page/histograms.xml:WebUIName
-  TODO(crbug.com/40802368): share <variants> across histograms.xml files -->
+<!-- LINT.IfChange(TopChromeWebUIName) -->
 
+<variants name="TopChromeWebUIName">
   <variant name=""/>
   <variant name=".BookmarksSidePanel"/>
   <variant name=".CompanionSidePanelUntrusted"/>
@@ -197,6 +196,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabSearch"/>
   <variant name=".UserNotesSidePanel"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:TopChromeWebUIName) -->
 
 <variants name="WebContentsObserverMethods">
   <variant name="DidChangeVisibleSecurityState"/>

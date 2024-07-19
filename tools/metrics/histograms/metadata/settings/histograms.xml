@@ -22,11 +22,9 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="SettingsAllPermissionTypes">
-<!-- Should be kept in sync with variants AllPermissionTypes in
-  tools/metrics/histograms/metadata/permissions/histograms.xml.
--->
+<!-- LINT.IfChange(AllPermissionTypes) -->
 
+<variants name="SettingsAllPermissionTypes">
   <variant name="AR"/>
   <variant name="AudioAndVideoCapture"/>
   <variant name="AudioCapture"/>
@@ -51,6 +49,8 @@ chromium-metrics-reviews@google.com.
   <variant name="VR"/>
   <variant name="WindowPlacement"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:AllPermissionTypes) -->
 
 <histogram name="Settings.AdvancedSpellcheck.OnStartup2" enum="BooleanEnabled"
     expires_after="2024-10-13">

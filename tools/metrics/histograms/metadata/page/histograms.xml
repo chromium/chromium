@@ -93,11 +93,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".GoogleSearch" summary="SRP navigations"/>
 </variants>
 
-<variants name="PagePreloadingTriggerType">
-<!-- Should be kept in sync with variants PreloadingTriggerType in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
+<!-- LINT.IfChange(PagePreloadingTriggerType) -->
 
+<variants name="PagePreloadingTriggerType">
   <variant name=".Embedder_BookmarkBar"/>
   <variant name=".Embedder_DefaultSearchEngine"/>
   <variant name=".Embedder_DirectURLInput"/>
@@ -106,6 +104,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".SpeculationRuleFromAutoSpeculationRules"/>
   <variant name=".SpeculationRuleFromIsolatedWorld"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/histograms.xml:PagePreloadingTriggerType) -->
 
 <variants name="PrivacySandboxAdsApi">
   <variant name="AttributionReporting"/>
@@ -117,11 +117,9 @@ chromium-metrics-reviews@google.com.
   <variant name="Topics"/>
 </variants>
 
-<variants name="RequestDestination">
-<!-- Should be kept in sync with variants BlinkRequestDestination in
-  tools/metrics/histograms/metadata/blink/histograms.xml.
--->
+<!-- LINT.IfChange(BlinkRequestDestination) -->
 
+<variants name="RequestDestination">
   <variant name="audio"/>
   <variant name="audioworklet"/>
   <variant name="document"/>
@@ -147,6 +145,8 @@ chromium-metrics-reviews@google.com.
   <variant name="xslt"/>
 </variants>
 
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/blink/histograms.xml:BlinkRequestDestination) -->
+
 <variants name="RTTBucketSuffix">
   <variant name="" summary="any"/>
   <variant name=".RTT200To450" summary="RTT between 200 to 450ms"/>
@@ -154,6 +154,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".RTTUnder200" summary="RTT less than 200ms"/>
   <variant name=".RTTUnkown" summary="RTT unkown"/>
 </variants>
+
+<!-- LINT.IfChange(TopChromeWebUIName) -->
 
 <variants name="WebUIName">
   <variant name=""/>
@@ -175,6 +177,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabSearch"/>
   <variant name=".UserNotesSidePanel"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/others/histograms.xml:TopChromeWebUIName) -->
 
 <variants name="Window">
   <variant name="SessionWindow"/>

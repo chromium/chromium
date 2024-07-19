@@ -72,6 +72,7 @@ constexpr char kAppListSortDiscoveryDurationAfterNudgeClamshell[] =
 constexpr char kAppListSortDiscoveryDurationAfterNudgeTablet[] =
     "Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2.TabletMode";
 
+// LINT.IfChange(SearchSessionConclusion)
 std::string SearchSessionConclusionToString(
     SearchSessionConclusion conclusion) {
   switch (conclusion) {
@@ -83,6 +84,7 @@ std::string SearchSessionConclusionToString(
       return "AnswerCardSeen";
   }
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/apps/enums.xml:LauncherSearchSessionConclusion)
 
 bool IsAppListShowSourceUserTriggered(AppListShowSource show_source) {
   switch (show_source) {

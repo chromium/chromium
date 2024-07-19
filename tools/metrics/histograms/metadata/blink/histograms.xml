@@ -22,11 +22,9 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="BlinkRequestDestination">
-<!-- Should be kept in sync with variants RequestDestination in
-  tools/metrics/histograms/metadata/page/histograms.xml.
--->
+<!-- LINT.IfChange(BlinkRequestDestination) -->
 
+<variants name="BlinkRequestDestination">
   <variant name="audio"/>
   <variant name="audioworklet"/>
   <variant name="document"/>
@@ -51,6 +49,8 @@ chromium-metrics-reviews@google.com.
   <variant name="worker"/>
   <variant name="xslt"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:BlinkRequestDestination) -->
 
 <variants name="PreloadTrigger">
   <variant name="" summary="All preloads"/>

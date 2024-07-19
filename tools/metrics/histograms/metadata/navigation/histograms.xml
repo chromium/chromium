@@ -50,11 +50,9 @@ chromium-metrics-reviews@google.com.
   <variant name="WillStartRequest"/>
 </variants>
 
-<variants name="PreloadingTriggerType">
-<!-- Should be kept in sync with variants PagePreloadingTriggerType in
-  tools/metrics/histograms/metadata/page/histograms.xml.
--->
+<!-- LINT.IfChange(PagePreloadingTriggerType) -->
 
+<variants name="PreloadingTriggerType">
   <variant name=".Embedder_BookmarkBar"/>
   <variant name=".Embedder_DefaultSearchEngine"/>
   <variant name=".Embedder_DirectURLInput"/>
@@ -63,6 +61,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".SpeculationRuleFromAutoSpeculationRules"/>
   <variant name=".SpeculationRuleFromIsolatedWorld"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:PagePreloadingTriggerType) -->
 
 <variants name="RegularOrMHTMLType">
   <variant name="MHTML"/>
