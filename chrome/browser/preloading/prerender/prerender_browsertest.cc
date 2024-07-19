@@ -867,7 +867,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Verify that NewTabPage prerender rejects non https url.
 IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
-                       DISABLED_NewTabPagePrerenderNonHttps) {
+                       NewTabPagePrerenderNonHttps) {
   // Navigate to an initial page.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(chrome::kChromeUINewTabURL)));
