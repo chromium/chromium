@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.util.Size;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 
 import androidx.annotation.DrawableRes;
@@ -132,25 +134,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
                 mDialogView = containerView.findViewById(R.id.dialog_parent_view);
                 mDialogView.setupScrimCoordinator(scrimCoordinator);
-
-                if (isDataSharingAndroidEnabled) {
-                    LayoutInflater.from(activity)
-                            .inflate(
-                                    R.layout.data_sharing_group_bar,
-                                    mDialogView.findViewById(R.id.dialog_container_view),
-                                    /* attachToRoot= */ true);
-                    ViewGroup manageBar = mDialogView.findViewById(R.id.dialog_data_sharing_manage);
-                    mSharedImageTilesCoordinator =
-                            new SharedImageTilesCoordinator(mDialogView.getContext());
-                    manageBar.addView(mSharedImageTilesCoordinator.getView(), 0);
-
-                    mDataSharingBottomSheetGroup =
-                            (ViewGroup)
-                                    LayoutInflater.from(activity)
-                                            .inflate(R.layout.data_sharing_bottom_sheet, null);
-                    mShareBottomSheetContent =
-                            new TabGridDialogShareBottomSheetContent(mDataSharingBottomSheetGroup);
-                }
             }
 
             if (!activity.isDestroyed() && !activity.isFinishing()) {
@@ -158,6 +141,16 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         new SnackbarManager(activity, mDialogView.getSnackBarContainer(), null);
             } else {
                 mSnackbarManager = null;
+            }
+
+            if (isDataSharingAndroidEnabled) {
+                mSharedImageTilesCoordinator = new SharedImageTilesCoordinator(activity);
+                mDataSharingBottomSheetGroup =
+                        (ViewGroup)
+                                LayoutInflater.from(activity)
+                                        .inflate(R.layout.data_sharing_bottom_sheet, null);
+                mShareBottomSheetContent =
+                        new TabGridDialogShareBottomSheetContent(mDataSharingBottomSheetGroup);
             }
 
             Runnable showShareBottomSheetRunnable =
@@ -235,6 +228,17 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     (TabGridDialogToolbarView)
                             LayoutInflater.from(activity)
                                     .inflate(toolbar_res_id, recyclerView, false);
+            if (isDataSharingAndroidEnabled) {
+                FrameLayout imageTilesContainer =
+                        toolbarView.findViewById(R.id.image_tiles_container);
+                View imageTilesView = mSharedImageTilesCoordinator.getView();
+                var layoutParams =
+                        new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.WRAP_CONTENT,
+                                FrameLayout.LayoutParams.WRAP_CONTENT,
+                                Gravity.CENTER);
+                imageTilesContainer.addView(imageTilesView, layoutParams);
+            }
 
             mModelChangeProcessor =
                     PropertyModelChangeProcessor.create(

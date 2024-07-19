@@ -1993,6 +1993,13 @@ public class TabGridDialogTest {
         waitForThumbnailsToFetch(
                 (RecyclerView) dialogView.findViewById(R.id.tab_list_recycler_view));
         mRenderTestRule.render(dialogView, "3_tabs_portrait_2_row_toolbar_share_button");
+
+        onView(allOf(isDescendantOfA(withId(R.id.dialog_parent_view)), withId(R.id.share_button)))
+                .perform(click());
+        // Dismiss the bottom sheet.
+        Espresso.pressBack();
+
+        mRenderTestRule.render(dialogView, "3_tabs_portrait_2_row_toolbar_image_tiles");
     }
 
     private void openDialogFromTabSwitcherAndVerify(

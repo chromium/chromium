@@ -64,7 +64,6 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     private FrameLayout mTestParent;
     private View mSourceView;
     private View mUngroupBar;
-    private View mDataSharingBar;
     private View mAnimationCardView;
     private View mBackgroundFrameView;
     private TextView mUngroupBarTextView;
@@ -87,9 +86,6 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
                             mTabGridDialogView.findViewById(R.id.dialog_container_view);
                     mUngroupBar = mTabGridDialogContainer.findViewById(R.id.dialog_ungroup_bar);
                     mUngroupBarTextView = mUngroupBar.findViewById(R.id.dialog_ungroup_bar_text);
-                    mDataSharingBar =
-                            mTabGridDialogContainer.findViewById(
-                                    R.id.dialog_data_sharing_group_bar);
                     mContainerParams =
                             (FrameLayout.LayoutParams) mTabGridDialogContainer.getLayoutParams();
                     mAnimationCardView =

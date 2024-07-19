@@ -48,7 +48,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChromeImageButton;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -124,8 +123,6 @@ public class TabGridDialogView extends FrameLayout {
     @ColorInt private int mUngroupBarTextColor;
     @ColorInt private int mUngroupBarHoveredTextColor;
     private Integer mBindingToken;
-    private boolean mShouldShowShare;
-    private boolean mIsTabGroupShared;
 
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -892,17 +889,6 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     /**
-     * Update whether the share bar should be shown.
-     *
-     * @param shouldShowShare Whether the share bar should be shown in the view.
-     */
-    void updateShouldShowShare(boolean shouldShowShare) {
-        assert getVisibility() != VISIBLE
-                : "ShouldShowShare state only changes when the dialog is hidden.";
-        mShouldShowShare = shouldShowShare;
-    }
-
-    /**
      * Reset the dialog content with {@code toolbarView} and {@code recyclerView}.
      *
      * @param toolbarView The toolbarview to be added to dialog.
@@ -915,27 +901,6 @@ public class TabGridDialogView extends FrameLayout {
         mRecyclerViewContainer.addView(recyclerView);
 
         recyclerView.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * Refresh the share bar view without resetting the whole dialog.
-     *
-     * @param isTabGroupShared Whether the tab group is shared.
-     */
-    void refreshShareBar(boolean isTabGroupShared) {
-        mIsTabGroupShared = isTabGroupShared;
-        ViewGroup manageBar = mDialogContainerView.findViewById(R.id.dialog_data_sharing_manage);
-
-        // Check for conditions which the sharebar should not show.
-        if (manageBar == null || !mShouldShowShare) {
-            return;
-        }
-
-        if (mIsTabGroupShared) {
-            manageBar.setVisibility(View.VISIBLE);
-        } else {
-            manageBar.setVisibility(View.GONE);
-        }
     }
 
     void refreshScrim() {
@@ -1092,32 +1057,6 @@ public class TabGridDialogView extends FrameLayout {
     void setBindingToken(Integer bindingToken) {
         assert mBindingToken == null || bindingToken == null;
         mBindingToken = bindingToken;
-    }
-
-    /**
-     * Set click listener for the share bar image tiles.
-     *
-     * @param listener {@link android.view.View.OnClickListener} for the View.
-     */
-    void setShareImageTilesOnClickListener(OnClickListener listener) {
-        ViewGroup imageTilesView =
-                mDialogContainerView.findViewById(R.id.dialog_data_sharing_shared_image_tiles);
-        if (imageTilesView != null) {
-            imageTilesView.setOnClickListener(listener);
-        }
-    }
-
-    /**
-     * Set click listener for the share bar manage add button.
-     *
-     * @param listener {@link android.view.View.OnClickListener} for the button.
-     */
-    void setShareManageAddOnClickListener(OnClickListener listener) {
-        ChromeImageButton manageAddButton =
-                mDialogContainerView.findViewById(R.id.dialog_data_sharing_manage_add);
-        if (manageAddButton != null) {
-            manageAddButton.setOnClickListener(listener);
-        }
     }
 
     Integer getBindingToken() {

@@ -61,6 +61,13 @@ found in the LICENSE file.
                     android:paddingBottom="@dimen/share_button_padding_top_bottom"
                     app:verticalInset="0dp" />
             </FrameLayout>
+            <FrameLayout
+                android:id="@+id/image_tiles_container"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/min_touch_target_size"
+                android:minWidth="@dimen/min_touch_target_size"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone"/>
             <include layout="@layout/toolbar_new_tab_and_menu_button"/>
         </LinearLayout>
         <LinearLayout

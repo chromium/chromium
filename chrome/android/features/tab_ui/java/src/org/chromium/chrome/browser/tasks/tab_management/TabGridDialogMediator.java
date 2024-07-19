@@ -452,9 +452,6 @@ public class TabGridDialogMediator
         mModel.set(
                 TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER,
                 getShareBarClickListener());
-        mModel.set(
-                TabGridDialogProperties.SHARE_MANAGE_ADD_CLICK_LISTENER,
-                getShareBarClickListener());
     }
 
     void hideDialog(boolean showAnimation) {
@@ -985,7 +982,6 @@ public class TabGridDialogMediator
             updateColorProperties(mContext, isIncognito);
             newFilter.addObserver(mTabModelObserver);
             ((TabGroupModelFilter) newFilter).addTabGroupObserver(mTabGroupModelFilterObserver);
-            mModel.set(TabGridDialogProperties.SHOULD_SHOW_SHARE, !isIncognito);
         }
     }
 

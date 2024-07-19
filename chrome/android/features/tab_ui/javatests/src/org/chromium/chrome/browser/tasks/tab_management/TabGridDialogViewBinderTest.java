@@ -102,6 +102,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private View mMainContent;
     private @Nullable View mShareButtonContainer;
     private @Nullable View mShareButton;
+    private @Nullable View mImageTilesContainer;
     private ImageView mHairline;
     private ScrimCoordinator mScrimCoordinator;
     private GridLayoutManager mLayoutManager;
@@ -152,12 +153,15 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                     mMainContent = mToolbarView.findViewById(R.id.main_content);
                     mShareButtonContainer = mToolbarView.findViewById(R.id.share_button_container);
                     mShareButton = mToolbarView.findViewById(R.id.share_button);
+                    mImageTilesContainer = mToolbarView.findViewById(R.id.image_tiles_container);
                     if (isDataSharingEnabled) {
                         assertNotNull(mShareButtonContainer);
                         assertNotNull(mShareButton);
+                        assertNotNull(mImageTilesContainer);
                     } else {
                         assertNull(mShareButtonContainer);
                         assertNull(mShareButton);
+                        assertNull(mImageTilesContainer);
                     }
                     mScrimCoordinator =
                             new ScrimCoordinator(getActivity(), null, parentView, Color.RED);
@@ -597,6 +601,39 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
         assertEquals(mShareButton.getVisibility(), View.VISIBLE);
 
         mShareButton.performClick();
+
+        verify(mOnClickListener).onClick(any());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(DATA_SHARING_ANDROID)
+    public void testImageTiles_Incognito() {
+        mModel.set(TabGridDialogProperties.IS_INCOGNITO, true);
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+
+        assertEquals(mImageTilesContainer.getVisibility(), View.GONE);
+
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, false);
+        assertEquals(mImageTilesContainer.getVisibility(), View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(DATA_SHARING_ANDROID)
+    public void testImageTiles_NonIncognito() {
+        mModel.set(TabGridDialogProperties.IS_INCOGNITO, false);
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, false);
+        mModel.set(TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER, mOnClickListener);
+
+        assertEquals(mImageTilesContainer.getVisibility(), View.GONE);
+
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+        assertEquals(mImageTilesContainer.getVisibility(), View.VISIBLE);
+
+        mImageTilesContainer.performClick();
 
         verify(mOnClickListener).onClick(any());
     }
