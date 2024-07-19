@@ -53,25 +53,6 @@ namespace gpu {
 
 namespace {
 
-size_t NumPlanes(DXGI_FORMAT dxgi_format) {
-  switch (dxgi_format) {
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
-      return 2;
-    case DXGI_FORMAT_R8_UNORM:
-    case DXGI_FORMAT_R8G8_UNORM:
-    case DXGI_FORMAT_R16_UNORM:
-    case DXGI_FORMAT_R16G16_UNORM:
-    case DXGI_FORMAT_R8G8B8A8_UNORM:
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return 1;
-    default:
-      NOTREACHED_NORETURN() << "Unsupported DXGI format: " << dxgi_format;
-  }
-}
-
 bool BindEGLImageToTexture(GLenum texture_target, void* egl_image) {
   if (!egl_image) {
     LOG(ERROR) << "EGL image is null";
@@ -1033,11 +1014,10 @@ D3DImageBacking::ProduceSkiaGraphite(
     LOG(ERROR) << "Could not create Dawn Representation";
     return nullptr;
   }
-  const bool is_yuv_plane = NumPlanes(d3d11_texture_desc_.Format) > 1;
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-      is_yuv_plane, /*legacy_plane_index=*/0, array_slice_);
+      array_slice_);
 }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 

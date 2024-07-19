@@ -210,7 +210,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   const gfx::ScopedIOSurface io_surface_;
   const gfx::Size io_surface_size_;
   const uint32_t io_surface_format_;
-  const size_t io_surface_num_planes_;
   const gfx::GenericSharedMemoryId io_surface_id_;
 
   // DawnSharedTextureHolder that keeps an internal cache of per-device

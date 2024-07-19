@@ -49,8 +49,6 @@ SkiaGraphiteDawnImageRepresentation::Create(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    bool is_yuv_plane,
-    int legacy_plane_index,
     int array_slice) {
   CHECK(dawn_representation);
   const bool is_dcomp_surface =
@@ -60,12 +58,11 @@ SkiaGraphiteDawnImageRepresentation::Create(
   const bool supports_multiplanar_copy =
       SupportsMultiplanarCopy(context_state.get());
   wgpu::TextureUsage supported_tex_usages = SupportedDawnTextureUsage(
-      backing->format(), is_yuv_plane, is_dcomp_surface,
+      backing->format(), backing->format().is_multi_plane(), is_dcomp_surface,
       supports_multiplanar_rendering, supports_multiplanar_copy);
   return base::WrapUnique(new SkiaGraphiteDawnImageRepresentation(
       std::move(dawn_representation), recorder, std::move(context_state),
-      manager, backing, tracker, is_yuv_plane, legacy_plane_index, array_slice,
-      supported_tex_usages));
+      manager, backing, tracker, array_slice, supported_tex_usages));
 }
 
 SkiaGraphiteDawnImageRepresentation::SkiaGraphiteDawnImageRepresentation(
@@ -75,16 +72,12 @@ SkiaGraphiteDawnImageRepresentation::SkiaGraphiteDawnImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    bool is_yuv_plane,
-    int legacy_plane_index,
     int array_slice,
     wgpu::TextureUsage supported_tex_usages)
     : SkiaGraphiteImageRepresentation(manager, backing, tracker),
       dawn_representation_(std::move(dawn_representation)),
       context_state_(std::move(context_state)),
       recorder_(recorder),
-      is_yuv_plane_(is_yuv_plane),
-      legacy_plane_index_(legacy_plane_index),
       array_slice_(array_slice),
       supported_tex_usages_(supported_tex_usages) {
   CHECK(dawn_representation_);
@@ -128,17 +121,7 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
           supports_multiplanar_copy);
       backend_textures.emplace_back(plane_size, plane_info, texture.Get());
     }
-  } else if (is_yuv_plane_) {
-    // Legacy multi-planar NV12 - format() is either R8 or RG8.
-    SkISize plane_size = gfx::SizeToSkISize(size());
-    skgpu::graphite::DawnTextureInfo plane_info = DawnBackendTextureInfo(
-        format(), readonly, /*is_yuv_plane=*/true, legacy_plane_index_,
-        array_slice_, /*mipmapped=*/false, /*scanout_dcomp_surface=*/false,
-        supports_multiplanar_rendering, supports_multiplanar_copy);
-    backend_textures = {
-        skgpu::graphite::BackendTexture(plane_size, plane_info, texture.Get())};
   } else {
-    CHECK(format().is_single_plane() && !format().IsLegacyMultiplanar());
     backend_textures = {skgpu::graphite::BackendTexture(texture.Get())};
   }
 

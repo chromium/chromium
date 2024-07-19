@@ -1002,7 +1002,6 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       io_surface_size_(IOSurfaceGetWidth(io_surface_.get()),
                        IOSurfaceGetHeight(io_surface_.get())),
       io_surface_format_(IOSurfaceGetPixelFormat(io_surface_.get())),
-      io_surface_num_planes_(IOSurfaceGetPlaneCount(io_surface_.get())),
       io_surface_id_(io_surface_id),
       dawn_texture_holder_(std::make_unique<DawnSharedTextureHolder>()),
       gl_target_(gl_target),
@@ -1473,13 +1472,11 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
       LOG(ERROR) << "Could not create Dawn Representation";
       return nullptr;
     }
-    const bool is_yuv_plane = io_surface_num_planes_ > 1;
     // Use GPU main recorder since this should only be called for
     // fulfilling Graphite promise images on GPU main thread.
     return SkiaGraphiteDawnImageRepresentation::Create(
         std::move(dawn_representation), context_state,
-        context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-        is_yuv_plane);
+        context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
   NOTREACHED_NORETURN();
 #endif
