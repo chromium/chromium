@@ -5,15 +5,20 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_ACCOUNT_INFO_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_ACCOUNT_INFO_VIEW_H_
 
+#include <memory>
+
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 class AuthenticatorGpmPinSheetModelBase;
 
-// Represents the footer in the Web Authentication request dialog for GPM
-// passkey pin views. It consists of the profile picture, email and a display
-// name of the account.
-// TODO(rgod): Remove the class, it's not really needed.
+// Represents the header in the Web Authentication request dialog for GPM
+// passkeys. It consists of the profile picture and the email label of the
+// account.
 class AuthenticatorGpmAccountInfoView : public views::View {
   METADATA_HEADER(AuthenticatorGpmAccountInfoView, views::View)
  public:
@@ -26,6 +31,9 @@ class AuthenticatorGpmAccountInfoView : public views::View {
       const AuthenticatorGpmAccountInfoView&) = delete;
 
   ~AuthenticatorGpmAccountInfoView() override;
+
+ private:
+  std::unique_ptr<views::BoxLayoutView> row_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_ACCOUNT_INFO_VIEW_H_

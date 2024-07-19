@@ -88,7 +88,7 @@ ProfileAttributesEntry* GetProfileAttributesEntryForDialogModel(
       .GetProfileAttributesWithPath(profile->GetPath());
 }
 
-constexpr int kAvatarIconSize = 32;
+constexpr int kAvatarIconSize = 20;
 
 }  // namespace
 
@@ -1635,7 +1635,10 @@ AuthenticatorGpmPinSheetModelBase::AuthenticatorGpmPinSheetModelBase(
     Mode mode)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden),
-      mode_(mode) {}
+      mode_(mode) {
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PIN_LIGHT,
+                                IDR_WEBAUTHN_GPM_PIN_DARK);
+}
 
 AuthenticatorGpmPinSheetModelBase::~AuthenticatorGpmPinSheetModelBase() =
     default;
@@ -1644,12 +1647,6 @@ std::u16string AuthenticatorGpmPinSheetModelBase::GetGpmAccountEmail() const {
   ProfileAttributesEntry* entry =
       GetProfileAttributesEntryForDialogModel(dialog_model());
   return entry ? entry->GetUserName() : std::u16string();
-}
-
-std::u16string AuthenticatorGpmPinSheetModelBase::GetGpmAccountName() const {
-  ProfileAttributesEntry* entry =
-      GetProfileAttributesEntryForDialogModel(dialog_model());
-  return entry ? entry->GetGAIAName() : std::u16string();
 }
 
 gfx::Image AuthenticatorGpmPinSheetModelBase::GetGpmAccountImage() const {

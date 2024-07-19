@@ -17,9 +17,7 @@
 #include "ui/views/layout/box_layout_view.h"
 
 namespace {
-constexpr int kBetweenChildSpacing = 12;
-constexpr int kHorizontalInset = 16;
-constexpr int kVerticalInset = 12;
+constexpr int kHorizontalPadding = 4;
 }  // namespace
 
 BEGIN_METADATA(AuthenticatorGpmAccountInfoView)
@@ -29,32 +27,20 @@ AuthenticatorGpmAccountInfoView::AuthenticatorGpmAccountInfoView(
     AuthenticatorGpmPinSheetModelBase* sheet_model) {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
+          views::BoxLayout::Orientation::kVertical));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  layout->set_inside_border_insets(
-      gfx::Insets::VH(kVerticalInset, kHorizontalInset));
-  layout->set_between_child_spacing(kBetweenChildSpacing);
 
+  row_ = std::make_unique<views::BoxLayoutView>();
+  row_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  row_->SetBetweenChildSpacing(kHorizontalPadding);
   auto image_view = std::make_unique<views::ImageView>();
   image_view->SetImage(sheet_model->GetGpmAccountImage().AsImageSkia());
-  AddChildView(std::move(image_view));
-
-  auto label_column = std::make_unique<views::BoxLayoutView>();
-  label_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  label_column->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-  label_column->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
-
-  label_column->AddChildView(std::make_unique<views::Label>(
-      sheet_model->GetGpmAccountName(), views::style::CONTEXT_LABEL,
-      views::style::STYLE_BODY_4_BOLD));
-  auto* email_label = label_column->AddChildView(
+  row_->AddChildView(std::move(image_view));
+  row_->AddChildView(
       std::make_unique<views::Label>(sheet_model->GetGpmAccountEmail()));
-  email_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_EMAIL);
-  AddChildView(std::move(label_column));
+  AddChildView(row_.get());
 }
 
 AuthenticatorGpmAccountInfoView::~AuthenticatorGpmAccountInfoView() = default;

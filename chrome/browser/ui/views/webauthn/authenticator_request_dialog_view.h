@@ -70,9 +70,6 @@ class AuthenticatorRequestDialogView
     return sheet_;
   }
 
-  // views::View:
-  void AddedToWidget() override;
-
   // views::DialogDelegateView:
   bool Accept() override;
   bool Cancel() override;
@@ -106,7 +103,6 @@ class AuthenticatorRequestDialogView
   void ManageDevicesButtonPressed();
   void ForgotGPMPinPressed();
   void GPMPinOptionChosen(bool is_arbitrary);
-  void UpdateFooter();
 
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 

@@ -724,7 +724,6 @@ class AuthenticatorGpmPinSheetModelBase : public AuthenticatorSheetModelBase {
   ~AuthenticatorGpmPinSheetModelBase() override;
 
   std::u16string GetGpmAccountEmail() const;
-  std::u16string GetGpmAccountName() const;
   gfx::Image GetGpmAccountImage() const;
 
   std::u16string pin() const { return pin_; }
