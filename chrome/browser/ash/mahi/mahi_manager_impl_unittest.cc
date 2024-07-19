@@ -162,8 +162,6 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
-  base::AutoReset<bool> ignore_mahi_secret_key_ =
-      ash::switches::SetIgnoreMahiSecretKeyForTest();
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<FakeMahiBrowserDelegateAsh> fake_mahi_browser_delegate_ash_;
@@ -266,39 +264,6 @@ TEST_F(MahiManagerImplTest, ShowEducationalNudge) {
   // Notifying that a refresh is not available should have no effect.
   NotifyRefreshAvailability(/*available=*/false);
   EXPECT_TRUE(IsMahiNudgeShown());
-}
-
-class MahiManagerImplFeatureKeyTest : public NoSessionAshTestBase {
- public:
-  MahiManagerImplFeatureKeyTest() {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(ash::switches::kMahiFeatureKey, "hello");
-  }
-
-  // NoSessionAshTestBase::
-  void SetUp() override {
-    NoSessionAshTestBase::SetUp();
-    magic_boost_state_ = std::make_unique<MagicBoostStateAsh>();
-    mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
-    CreateUserSessions(1);
-  }
-
-  void TearDown() override {
-    mahi_manager_impl_.reset();
-    magic_boost_state_.reset();
-    NoSessionAshTestBase::TearDown();
-  }
-
- protected:
-  std::unique_ptr<MagicBoostStateAsh> magic_boost_state_;
-  std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
-
- private:
-  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
-};
-
-TEST_F(MahiManagerImplFeatureKeyTest, IsNotEnabledIfFeatureKeyIsWrong) {
-  EXPECT_FALSE(mahi_manager_impl_->IsEnabled());
 }
 
 }  // namespace ash

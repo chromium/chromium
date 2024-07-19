@@ -1684,10 +1684,11 @@ struct BrowserInitParams {
   [MinVersion=84]
   bool is_orca_use_l10n_strings_enabled@84;
 
+  // Deprecated in M118. Do not use.
   // Set to true if the Mahi feature is supported and the feature key check has
   // been satisfied.
   [MinVersion=85]
-  bool is_mahi_supported_with_correct_feature_key@85;
+  bool is_mahi_supported_with_correct_feature_key_deprecated@85;
 
   // Set to true when both the
   // `chromeos::features::kFileSystemProviderContentCache` and
@@ -1804,8 +1805,9 @@ struct BrowserPostLoginParams {
   [MinVersion=1]
   bool is_current_user_ephemeral@19;
 
+  // Deprecated in M118. Do not use.
   // Set to true if the Mahi feature is supported and the feature key check has
   // been satisfied.
   [MinVersion=2]
-  bool is_mahi_supported_with_correct_feature_key@20;
+  bool is_mahi_supported_with_correct_feature_key_deprecated@20;
 };

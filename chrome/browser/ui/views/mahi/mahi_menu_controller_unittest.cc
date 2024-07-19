@@ -100,8 +100,6 @@ class MahiMenuControllerTest : public ChromeViewsTestBase,
   base::test::ScopedFeatureList feature_list_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::AutoReset<bool> ignore_mahi_secret_key_ =
-      ash::switches::SetIgnoreMahiSecretKeyForTest();
   // Providing a mock MahiMediaAppEvnetsProxy to satisfy MahiMenuController.
   testing::NiceMock<::ash::MockMahiMediaAppEventsProxy>
       mock_mahi_media_app_events_proxy_;
@@ -259,38 +257,5 @@ TEST_P(MahiMenuControllerTest, DistillableMetrics) {
 INSTANTIATE_TEST_SUITE_P(All,
                          MahiMenuControllerTest,
                          /*IsMagicBoostEnabled()=*/testing::Bool());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class MahiMenuControllerFeatureKeyTest : public ChromeViewsTestBase {
- public:
-  MahiMenuControllerFeatureKeyTest() {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(ash::switches::kMahiFeatureKey, "hello");
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
-  // Providing a mock MahiMediaAppEvnetsProxy to satisfy MahiMenuController.
-  testing::NiceMock<::ash::MockMahiMediaAppEventsProxy>
-      mock_mahi_media_app_events_proxy_;
-  chromeos::ScopedMahiMediaAppEventsProxySetter
-      scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};
-};
-
-TEST_F(MahiMenuControllerFeatureKeyTest, DoesNotShowWidgetIfFeatureKeyIsWrong) {
-  ReadWriteCardsUiController read_write_cards_ui_controller;
-  ::mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager;
-  fake_mahi_web_contents_manager.set_focused_web_content_is_distillable(true);
-  ::mahi::ScopedMahiWebContentsManagerForTesting
-      scoped_mahi_web_contents_manager(&fake_mahi_web_contents_manager);
-  MahiMenuController menu_controller(read_write_cards_ui_controller);
-
-  menu_controller.OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
-                                  /*selected_text=*/"",
-                                  /*surrounding_text=*/"");
-
-  EXPECT_THAT(menu_controller.menu_widget_for_test(), IsNull());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace chromeos::mahi

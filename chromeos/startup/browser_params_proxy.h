@@ -176,8 +176,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsOrcaUseL10nStringsEnabled() const;
 
-  bool IsMahiSupportedWithCorrectFeatureKey() const;
-
   bool IsOrcaInternationalizeEnabled() const;
 
  private:

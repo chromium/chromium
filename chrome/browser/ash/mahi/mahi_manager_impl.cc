@@ -468,7 +468,7 @@ void MahiManagerImpl::OpenMahiPanel(int64_t display_id,
 }
 
 bool MahiManagerImpl::IsEnabled() {
-  return IsSupportedWithCorrectFeatureKey() &&
+  return chromeos::features::IsMahiEnabled() &&
          chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false);
 }
 

@@ -59,8 +59,6 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
 
   static MahiManager* Get();
 
-  static bool IsSupportedWithCorrectFeatureKey();
-
   // Gets information about the content on the corresponding surface.
   virtual std::u16string GetContentTitle() = 0;
   virtual gfx::ImageSkia GetContentIcon() = 0;

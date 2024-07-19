@@ -1003,9 +1003,6 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
   params->is_current_user_ephemeral = IsCurrentUserEphemeral();
   params->enable_lacros_tts_support =
       tts_crosapi_util::ShouldEnableLacrosTtsSupport();
-
-  params->is_mahi_supported_with_correct_feature_key =
-      chromeos::MahiManager::IsSupportedWithCorrectFeatureKey();
 }
 
 mojom::BrowserInitParamsPtr GetBrowserInitParams(

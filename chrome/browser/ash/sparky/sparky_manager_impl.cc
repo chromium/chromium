@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/sparky/sparky_delegate_impl.h"
 #include "chromeos/ash/components/sparky/system_info_delegate_impl.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
@@ -165,7 +167,8 @@ void SparkyManagerImpl::OnContextMenuClicked(
 
 bool SparkyManagerImpl::IsEnabled() {
   // TODO (b/333479467): Update with new pref for this feature.
-  return IsSupportedWithCorrectFeatureKey() &&
+  return chromeos::features::IsSparkyEnabled() &&
+         ash::switches::IsSparkySecretKeyMatched() &&
          Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
              ash::prefs::kHmrEnabled);
 }

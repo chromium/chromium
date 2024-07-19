@@ -43,7 +43,7 @@ void MahiMenuController::OnContextMenuShown(Profile* profile) {}
 void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
                                          const std::string& selected_text,
                                          const std::string& surrounding_text) {
-  if (!chromeos::MahiManager::IsSupportedWithCorrectFeatureKey() ||
+  if (!chromeos::features::IsMahiEnabled() ||
       !::mahi::MahiWebContentsManager::Get()->GetPrefValue()) {
     return;
   }
@@ -86,7 +86,7 @@ void MahiMenuController::OnDismiss(bool is_other_command_executed) {
 }
 
 void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
-  if (!chromeos::MahiManager::IsSupportedWithCorrectFeatureKey() ||
+  if (!chromeos::features::IsMahiEnabled() ||
       !::mahi::MahiWebContentsManager::Get()->GetPrefValue()) {
     return;
   }

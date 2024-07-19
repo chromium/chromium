@@ -41,31 +41,6 @@ MahiManager* MahiManager::Get() {
   return g_instance;
 }
 
-// static
-bool MahiManager::IsSupportedWithCorrectFeatureKey() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::features::IsMahiEnabled()) {
-    return false;
-  }
-
-  // Allow Google accounts to bypass the secret key check.
-  if (user_manager::UserManager::IsInitialized() &&
-      gaia::IsGoogleInternalAccountEmail(user_manager::UserManager::Get()
-                                             ->GetActiveUser()
-                                             ->GetAccountId()
-                                             .GetUserEmail())) {
-    return true;
-  }
-
-  // TODO(b/345644229): Remove this when sparky is deprecated.
-  return ash::switches::IsMahiSecretKeyMatched() ||
-         ash::switches::IsSparkySecretKeyMatched();
-#else
-  return chromeos::BrowserParamsProxy::Get()
-      ->IsMahiSupportedWithCorrectFeatureKey();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 MahiManager::MahiManager() {
   DCHECK(!g_instance);
   g_instance = this;

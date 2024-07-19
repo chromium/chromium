@@ -330,10 +330,9 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          chrome::kOrcaSuggestionLearnMoreURL);
 
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
-  html_source->AddBoolean(
-      "isMahiEnabled",
-      chromeos::MahiManager::IsSupportedWithCorrectFeatureKey() &&
-          !chromeos::features::IsMagicBoostEnabled());
+  html_source->AddBoolean("isMahiEnabled",
+                          chromeos::features::IsMahiEnabled() &&
+                              !chromeos::features::IsMagicBoostEnabled());
 
   html_source->AddBoolean("isMagicBoostFeatureEnabled",
                           chromeos::features::IsMagicBoostEnabled());
