@@ -26,17 +26,6 @@ found in the LICENSE file.
         <item name="android:textColor">@color/answers_description_text_positive</item>
     </style>
 
-    <style name="TextAppearance.OmniboxAnswerCardPrimaryMedium" parent="TextAppearance.AccentMediumStyle">
-        <!-- textFontWeight isn't supported pre-P, and there are no good
-        workarounds that work well with TextAppearanceSpan, which has buggy
-        support for font weights when not explicitly using textFontWeight.
-         Pre-P users (<10% at time of writing) will see weight 400 text.-->
-        <item name="android:textFontWeight" tools:targetApi="p">500</item>
-        <item name="android:textSize">@dimen/rich_answer_card_headline_size</item>
-        <item name="leading">@dimen/rich_answer_card_headline_leading</item>
-        <item name="android:textColor">@macro/default_text_color</item>
-    </style>
-
     <style name="OmniboxIcon" parent="LocationBarButton">
         <item name="android:layout_width">@dimen/location_bar_status_icon_width</item>
         <item name="android:layout_height">match_parent</item>

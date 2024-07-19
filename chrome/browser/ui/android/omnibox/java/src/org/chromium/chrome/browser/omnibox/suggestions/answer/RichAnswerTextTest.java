@@ -69,7 +69,7 @@ public class RichAnswerTextTest {
                 new TextAppearanceSpan(
                         mContext,
                         org.chromium.chrome.browser.omnibox.R.style
-                                .TextAppearance_OmniboxAnswerCardPrimaryMedium);
+                                .TextAppearance_Headline2Thick_Primary);
     }
 
     @Test

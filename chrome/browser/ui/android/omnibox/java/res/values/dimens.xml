@@ -125,8 +125,4 @@ found in the LICENSE file.
     <dimen name="status_view_verbose_highlight_width">94dp</dimen>
     <dimen name="status_view_verbose_highlight_height">40dp</dimen>
     <dimen name="location_bar_status_icon_area_size">32dp</dimen>
-
-    <!-- Text style dimensions. -->
-    <dimen name="rich_answer_card_headline_size">20sp</dimen>
-    <dimen name="rich_answer_card_headline_leading">24</dimen>
 </resources>

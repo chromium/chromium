@@ -29,7 +29,7 @@ public class OmniboxAnswerAction extends OmniboxAction {
                 hint,
                 accessibilityHint,
                 NO_ICON,
-                R.style.TextAppearance_TextMediumThick_Primary_Baseline);
+                R.style.TextAppearance_ChipText);
     }
 
     @Override

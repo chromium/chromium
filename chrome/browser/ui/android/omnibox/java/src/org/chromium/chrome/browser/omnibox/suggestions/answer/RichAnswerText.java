@@ -208,7 +208,7 @@ class RichAnswerText implements AnswerText {
         int largeRes =
                 useRichAnswerCard
                         ? org.chromium.chrome.browser.omnibox.R.style
-                                .TextAppearance_OmniboxAnswerCardPrimaryMedium
+                                .TextAppearance_Headline2Thick_Primary
                         : org.chromium.chrome.browser.omnibox.R.style
                                 .TextAppearance_TextLarge_Primary;
         if (answerType != AnswerType.ANSWER_TYPE_DICTIONARY
