@@ -64,6 +64,25 @@ static_library("dlp") {
     "//ui/views",
     "//ui/wm/public",
     "//url",
+
+    # TODO(b/354095042): Use targets having headers directly included from
+    # chrome/browser/ash/policy/dlp/files_policy_notification_manager.cc
+    # instead after fixing cyclic dependency.
+    "//ash/components/arc/mojom:mojom",
+    "//chrome/app/vector_icons:vector_icons",
+    "//chromeos/ash/components/dbus:vm_applications_apps_proto",
+    "//chromeos/ash/components/drivefs",
+    "//components/paint_preview/buildflags",
+
+    # TODO(b/354095042): Use targets having headers directly included from
+    # chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.cc
+    # instead after fixing cyclic dependency.
+    "//components/enterprise/buildflags",
+
+    # TODO(b/354095042): Use targets having headers directly included from
+    # chrome/browser/ash/policy/dlp/dlp_content_manager_ash.cc
+    # instead after fixing cyclic dependency.
+    "//components/enterprise/data_controls/core:dlp_policy_event_proto",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/policy/dlp/dialogs" ]
