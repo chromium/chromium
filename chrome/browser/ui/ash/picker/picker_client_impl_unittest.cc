@@ -572,7 +572,7 @@ TEST_F(PickerClientImplEditorTest,
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kBlocked);
+      ash::input_method::EditorMode::kHardBlocked);
 
   EXPECT_TRUE(client.CacheEditorContext().is_null());
 }
@@ -583,7 +583,7 @@ TEST_F(PickerClientImplEditorTest,
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kBlocked);
+      ash::input_method::EditorMode::kSoftBlocked);
 
   EXPECT_TRUE(client.CacheEditorContext().is_null());
 }
@@ -644,7 +644,7 @@ TEST_F(PickerClientImplEditorTest,
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
   GetEditorMediator(profile()).OverrideEditorModeForTesting(
-      ash::input_method::EditorMode::kBlocked);
+      ash::input_method::EditorMode::kSoftBlocked);
   ui::FakeTextInputClient text_input_client(&ime(),
                                             {.type = ui::TEXT_INPUT_TYPE_TEXT});
   text_input_client.Focus();

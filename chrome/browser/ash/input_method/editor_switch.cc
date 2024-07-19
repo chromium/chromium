@@ -425,8 +425,12 @@ bool EditorSwitch::CanBeTriggered() const {
 }
 
 EditorMode EditorSwitch::GetEditorMode() const {
+  if (!IsAllowedForUse()) {
+    return EditorMode::kHardBlocked;
+  }
+
   if (!CanBeTriggered()) {
-    return EditorMode::kBlocked;
+    return EditorMode::kSoftBlocked;
   }
 
   ConsentStatus current_consent_status = GetConsentStatusFromInteger(

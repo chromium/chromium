@@ -200,7 +200,8 @@ void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
     const gfx::Rect& anchor_bounds,
     EditorContext context) {
   switch (context.mode) {
-    case EditorMode::kBlocked:
+    case EditorMode::kHardBlocked:
+    case EditorMode::kSoftBlocked:
       break;
     case EditorMode::kWrite:
       editor_menu_widget_ = EditorMenuView::CreateWidget(
@@ -219,7 +220,8 @@ void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
       editor_menu_widget_->ShowInactive();
       break;
   }
-  if (card_session_ != nullptr && context.mode != EditorMode::kBlocked) {
+  if (card_session_ != nullptr && context.mode != EditorMode::kSoftBlocked &&
+      context.mode != EditorMode::kHardBlocked) {
     card_session_->manager().LogEditorMode(context.mode);
   }
 }
@@ -256,7 +258,7 @@ EditorMenuControllerImpl::EditorCardSession::~EditorCardSession() {
 
 void EditorMenuControllerImpl::EditorCardSession::OnEditorModeChanged(
     const EditorMode& mode) {
-  if (mode == EditorMode::kBlocked) {
+  if (mode == EditorMode::kHardBlocked || mode == EditorMode::kSoftBlocked) {
     controller_->DismissCard();
   }
 }

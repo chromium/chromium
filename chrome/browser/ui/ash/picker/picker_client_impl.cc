@@ -314,9 +314,13 @@ void PickerClientImpl::StopCrosQuery() {
 PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
   ash::input_method::EditorMediator* editor_mediator =
       GetEditorMediator(profile_);
-  if (editor_mediator == nullptr ||
-      editor_mediator->GetEditorMode() ==
-          ash::input_method::EditorMode::kBlocked) {
+  if (editor_mediator == nullptr) {
+    return {};
+  }
+
+  ash::input_method::EditorMode editor_mode = editor_mediator->GetEditorMode();
+  if (editor_mode == ash::input_method::EditorMode::kSoftBlocked ||
+      editor_mode == ash::input_method::EditorMode::kHardBlocked) {
     return {};
   }
 
@@ -331,9 +335,14 @@ void PickerClientImpl::GetSuggestedEditorResults(
   ash::input_method::EditorMediator* editor_mediator =
       GetEditorMediator(profile_);
   if (editor_mediator == nullptr ||
-      editor_mediator->GetEditorMode() ==
-          ash::input_method::EditorMode::kBlocked ||
       editor_mediator->panel_manager() == nullptr) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  ash::input_method::EditorMode editor_mode = editor_mediator->GetEditorMode();
+  if (editor_mode == ash::input_method::EditorMode::kHardBlocked ||
+      editor_mode == ash::input_method::EditorMode::kSoftBlocked) {
     std::move(callback).Run({});
     return;
   }

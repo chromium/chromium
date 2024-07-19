@@ -42,8 +42,10 @@ crosapi::mojom::EditorPanelPresetQueryCategory ToEditorPanelQueryCategory(
 
 crosapi::mojom::EditorPanelMode GetEditorPanelMode(EditorMode editor_mode) {
   switch (editor_mode) {
-    case EditorMode::kBlocked:
-      return crosapi::mojom::EditorPanelMode::kBlocked;
+    case EditorMode::kHardBlocked:
+      return crosapi::mojom::EditorPanelMode::kHardBlocked;
+    case EditorMode::kSoftBlocked:
+      return crosapi::mojom::EditorPanelMode::kSoftBlocked;
     case EditorMode::kConsentNeeded:
       return crosapi::mojom::EditorPanelMode::kPromoCard;
     case EditorMode::kRewrite:
@@ -92,7 +94,8 @@ void EditorPanelManager::GetEditorPanelContext(
     GetEditorPanelContextCallback callback) {
   const auto editor_panel_mode = GetEditorPanelMode(delegate_->GetEditorMode());
 
-  if (editor_panel_mode != crosapi::mojom::EditorPanelMode::kBlocked &&
+  if (editor_panel_mode != crosapi::mojom::EditorPanelMode::kSoftBlocked &&
+      editor_panel_mode != crosapi::mojom::EditorPanelMode::kHardBlocked &&
       editor_client_remote_.is_bound()) {
     editor_client_remote_->GetPresetTextQueries(
         base::BindOnce(&EditorPanelManager::OnGetPresetTextQueriesResult,
@@ -102,7 +105,7 @@ void EditorPanelManager::GetEditorPanelContext(
   }
 
   auto context = crosapi::mojom::EditorPanelContext::New();
-  context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kBlocked;
+  context->editor_panel_mode = editor_panel_mode;
   std::move(callback).Run(std::move(context));
 }
 
@@ -170,7 +173,8 @@ void EditorPanelManager::LogEditorMode(crosapi::mojom::EditorPanelMode mode) {
     logger->LogEditorState(EditorStates::kNativeUIShown);
   }
 
-  if (mode == crosapi::mojom::EditorPanelMode::kBlocked) {
+  if (mode == crosapi::mojom::EditorPanelMode::kHardBlocked ||
+      mode == crosapi::mojom::EditorPanelMode::kSoftBlocked) {
     logger->LogEditorState(EditorStates::kBlocked);
     for (EditorBlockedReason blocked_reason : delegate_->GetBlockedReasons()) {
       logger->LogEditorState(ToEditorStatesMetric(blocked_reason));

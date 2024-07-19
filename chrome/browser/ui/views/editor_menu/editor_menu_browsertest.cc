@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kBlocked));
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kSoftBlocked));
 
   EXPECT_EQ(GetControllerImpl()->editor_menu_widget_for_testing(), nullptr);
 }

@@ -19,9 +19,12 @@ namespace {
 
 EditorMode ToEditorMode(ash::input_method::EditorMode mode) {
   switch (mode) {
-    case ash::input_method::EditorMode::kBlocked:
+    case ash::input_method::EditorMode::kHardBlocked:
+      return EditorMode::kHardBlocked;
+    case ash::input_method::EditorMode::kSoftBlocked:
+      return EditorMode::kSoftBlocked;
     case ash::input_method::EditorMode::kConsentNeeded:
-      return EditorMode::kBlocked;
+      return EditorMode::kPromoCard;
     case ash::input_method::EditorMode::kRewrite:
       return EditorMode::kRewrite;
     case ash::input_method::EditorMode::kWrite:

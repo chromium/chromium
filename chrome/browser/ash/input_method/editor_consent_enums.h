@@ -44,7 +44,20 @@ enum class ConsentStatus : int {
 };
 
 // TODO: b: - Migrate EditorMode and EditorOpportunityMode out of this file.
-enum class EditorMode { kBlocked, kConsentNeeded, kRewrite, kWrite };
+enum class EditorMode {
+  // Blocked because it does not meet hard requirements such as user age,
+  // country and policy.
+  kHardBlocked,
+  // Temporarily blocked because it does not meet transient requirements such as
+  // internet connection, device mode.
+  kSoftBlocked,
+  // Mode that requires users to provide consent before using the feature.
+  kConsentNeeded,
+  // Feature in rewrite mode.
+  kRewrite,
+  // Feature in write mode.
+  kWrite
+};
 
 enum class EditorOpportunityMode {
   kInvalidInput,

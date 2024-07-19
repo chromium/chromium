@@ -248,7 +248,8 @@ void EditorMediator::HandleTrigger(
       }
       metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
-    case EditorMode::kBlocked:
+    case EditorMode::kHardBlocked:
+    case EditorMode::kSoftBlocked:
       mako_bubble_coordinator_.CloseUI();
   }
 }

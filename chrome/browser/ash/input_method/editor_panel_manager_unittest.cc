@@ -71,7 +71,7 @@ class EditorPanelManagerDelegateForTesting
     return &metrics_recorder_;
   }
   // not used.
-  EditorMode GetEditorMode() const override { return EditorMode::kBlocked; }
+  EditorMode GetEditorMode() const override { return EditorMode::kSoftBlocked; }
 
  private:
   EditorOpportunityMode opportunity_mode_;
@@ -135,7 +135,7 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedWriteMode) {
   EditorPanelManager manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
-  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kBlocked);
+  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kSoftBlocked);
 
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Write",
                                      EditorStates::kNativeUIShowOpportunity, 1);
@@ -168,7 +168,7 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
   EditorPanelManager manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
-  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kBlocked);
+  manager.LogEditorMode(crosapi::mojom::EditorPanelMode::kSoftBlocked);
 
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Rewrite",
                                      EditorStates::kNativeUIShowOpportunity, 1);

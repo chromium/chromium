@@ -10,7 +10,8 @@
 namespace chromeos::editor_menu {
 
 enum EditorMode {
-  kBlocked,
+  kHardBlocked,
+  kSoftBlocked,
   kWrite,
   kRewrite,
   kPromoCard,

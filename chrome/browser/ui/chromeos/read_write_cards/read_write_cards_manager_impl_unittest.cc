@@ -362,7 +362,7 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultBlocked) {
       base::BindOnce(&ExpectControllersEqual,
                      "Wrong controller is fetched when editor mode is kBlocked",
                      std::vector<ReadWriteCardController*>{}),
-      editor_menu::EditorMode::kBlocked);
+      editor_menu::EditorMode::kSoftBlocked);
 
   if (IsMahiEnabled()) {
     EXPECT_EQ(

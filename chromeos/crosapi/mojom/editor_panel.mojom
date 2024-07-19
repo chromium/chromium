@@ -2,22 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 module crosapi.mojom;
 
 [Stable, Extensible]
 enum EditorPanelMode {
   // Editor panel should not be shown (due to consent rejected or other
-  // restrictions).
-  [Default] kBlocked = 0,
+  // restrictions). This mode is deprecated.
+  [Default] kBlocked_DEPRECATED = 0,
   // Editor panel should be shown in write mode.
   kWrite = 1,
   // Editor panel should be shown in rewrite mode.
   kRewrite = 2,
-  // Editor panel feature promo card should be shown (to inform the user about
-  // the feature and ask if they want to learn more).
+  // Editor panel feature promo card should be shown (to inform the user
+  // about the feature and ask if they want to learn more).
   kPromoCard = 3,
+  // Editor panel is blocked because the it does not meet hard
+  // requirements such as policy, age and country.
+  [MinVersion=6] kHardBlocked = 4,
+  // Editor panel is temporarily blocked because the it does not meet
+  // transient requirements such as internet connection.
+  [MinVersion=6] kSoftBlocked = 5,
 };
 
 [Stable, Extensible]

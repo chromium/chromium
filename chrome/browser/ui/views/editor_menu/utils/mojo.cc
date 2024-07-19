@@ -40,8 +40,10 @@ PresetQueryCategory FromMojoPresetQueryCategory(
 
 EditorPanelMode ToMojoEditorMode(EditorMode mode) {
   switch (mode) {
-    case EditorMode::kBlocked:
-      return EditorPanelMode::kBlocked;
+    case EditorMode::kHardBlocked:
+      return EditorPanelMode::kHardBlocked;
+    case EditorMode::kSoftBlocked:
+      return EditorPanelMode::kSoftBlocked;
     case EditorMode::kWrite:
       return EditorPanelMode::kWrite;
     case EditorMode::kRewrite:
@@ -53,14 +55,20 @@ EditorPanelMode ToMojoEditorMode(EditorMode mode) {
 
 EditorMode FromMojoEditorMode(EditorPanelMode mode) {
   switch (mode) {
-    case EditorPanelMode::kBlocked:
-      return EditorMode::kBlocked;
+    case EditorPanelMode::kHardBlocked:
+      return EditorMode::kHardBlocked;
+    case EditorPanelMode::kSoftBlocked:
+      return EditorMode::kSoftBlocked;
     case EditorPanelMode::kWrite:
       return EditorMode::kWrite;
     case EditorPanelMode::kRewrite:
       return EditorMode::kRewrite;
     case EditorPanelMode::kPromoCard:
       return EditorMode::kPromoCard;
+    case EditorPanelMode::kBlocked_DEPRECATED:
+      LOG(ERROR) << "Reach DEPRECATED blocked editor mode, return HardBlocked "
+                    "mode instead";
+      return EditorMode::kHardBlocked;
   }
 }
 

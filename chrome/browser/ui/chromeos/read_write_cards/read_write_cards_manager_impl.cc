@@ -135,11 +135,12 @@ ReadWriteCardsManagerImpl::GetControllers(
   // controller.
   if (should_show_editor_menu) {
     // Use editor menu if available.
-    if (editor_mode != editor_menu::EditorMode::kBlocked) {
+    if (editor_mode != editor_menu::EditorMode::kHardBlocked &&
+        editor_mode != editor_menu::EditorMode::kSoftBlocked) {
       return {editor_menu_controller_->GetWeakPtr()};
     }
 
-    editor_menu_controller_->LogEditorMode(editor_menu::EditorMode::kBlocked);
+    editor_menu_controller_->LogEditorMode(editor_mode);
   }
 
   // Otherwise, use Quick Answers and Mahi if available.
