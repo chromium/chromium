@@ -544,9 +544,8 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
       gpu::SyncToken shared_image_sync_token;
       raster_interface->GenUnverifiedSyncTokenCHROMIUM(
           shared_image_sync_token.GetData());
-      shared_image_interface->DestroySharedImage(
-          shared_image_sync_token,
-          std::move(owning_thread_data().client_shared_image));
+      owning_thread_data().client_shared_image->UpdateDestructionSyncToken(
+          shared_image_sync_token);
     }
     if (raster_interface) {
       if (owning_thread_data().texture_id_for_read_access) {
@@ -669,14 +668,16 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
       has_read_ref_on_texture);
 
   scoped_refptr<StaticBitmapImage> image;
+  auto client_shared_image = GetClientSharedImage();
+  uint32_t texture_target = client_shared_image->GetTextureTarget();
 
   // If its cross thread, then the sync token was already verified.
-  image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      GetClientSharedImage()->mailbox(), GetSyncToken(), texture_id_for_image,
-      image_info, GetClientSharedImage()->GetTextureTarget(),
-      is_origin_top_left_, context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback),
-      supports_display_compositing_, is_overlay_candidate_);
+  image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+      std::move(client_shared_image), GetSyncToken(), texture_id_for_image,
+      image_info, texture_target, is_origin_top_left_,
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      std::move(release_callback), supports_display_compositing_,
+      is_overlay_candidate_);
 
   DCHECK(image);
   return image;
@@ -1006,13 +1007,8 @@ CanvasResourceSwapChain::~CanvasResourceSwapChain() {
 
   // No synchronization is needed here because the GL SharedImageRepresentation
   // will keep the backing alive on the service until the textures are deleted.
-  auto* sii =
-      context_provider_wrapper_->ContextProvider()->SharedImageInterface();
-  DCHECK(sii);
-  sii->DestroySharedImage(gpu::SyncToken(),
-                          std::move(front_buffer_shared_image_));
-  sii->DestroySharedImage(gpu::SyncToken(),
-                          std::move(back_buffer_shared_image_));
+  front_buffer_shared_image_->UpdateDestructionSyncToken(gpu::SyncToken());
+  back_buffer_shared_image_->UpdateDestructionSyncToken(gpu::SyncToken());
 }
 
 bool CanvasResourceSwapChain::IsValid() const {
@@ -1039,9 +1035,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       },
       base::RetainedRef(this));
 
-  return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      back_buffer_shared_image_->mailbox(), GetSyncToken(), shared_texture_id,
-      image_info, back_buffer_shared_image_->GetTextureTarget(),
+  return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+      back_buffer_shared_image_, GetSyncToken(), shared_texture_id, image_info,
+      back_buffer_shared_image_->GetTextureTarget(),
       true /*is_origin_top_left*/, context_provider_wrapper_,
       owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
