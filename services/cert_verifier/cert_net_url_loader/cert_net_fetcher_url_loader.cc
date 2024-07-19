@@ -56,6 +56,11 @@
 //   * Signals completion of requests through RequestCore's WaitableEvent.
 //   * Attaches requests to Jobs for the purpose of de-duplication
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 
 #include <memory>
