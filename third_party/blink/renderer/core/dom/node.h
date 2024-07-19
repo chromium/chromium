@@ -30,6 +30,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/counters_attachment_context.h"
@@ -1028,6 +1029,13 @@ class CORE_EXPORT Node : public EventTarget {
   bool HasNodePart() const { return GetFlag(kHasNodePart); }
   void SetHasNodePart() { SetFlag(kHasNodePart); }
   void ClearHasNodePart() { ClearFlag(kHasNodePart); }
+
+  // This method calls Document::AddConsoleMessage but also attaches this
+  // node to the console message so developers can see the relevant element
+  // in DevTools.
+  void AddConsoleMessage(mojom::blink::ConsoleMessageSource source,
+                         mojom::blink::ConsoleMessageLevel level,
+                         const String& message);
 
  private:
  private:

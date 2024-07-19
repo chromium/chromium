@@ -10222,13 +10222,4 @@ void Element::setHTMLUnsafe(const String& html,
                        ForceHtml::kForce, exception_state);
 }
 
-void Element::AddConsoleMessage(mojom::blink::ConsoleMessageSource source,
-                                mojom::blink::ConsoleMessageLevel level,
-                                const String& message) {
-  auto* console_message =
-      MakeGarbageCollected<ConsoleMessage>(source, level, message);
-  console_message->SetNodes(GetDocument().GetFrame(), {GetDomNodeId()});
-  GetDocument().AddConsoleMessage(console_message);
-}
-
 }  // namespace blink

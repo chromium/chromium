@@ -1565,7 +1565,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
             ProcessEndTag(&end_select);
             ProcessStartTag(token);
 
-            tree_.OpenElements()->Top()->AddConsoleMessage(
+            tree_.OpenElements()->TopNode()->AddConsoleMessage(
                 mojom::blink::ConsoleMessageSource::kJavaScript,
                 mojom::blink::ConsoleMessageLevel::kWarning,
                 "A " + token->GetName() +
@@ -1609,7 +1609,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
             // SelectParserRelaxation/StylableSelect flags are removed.
             UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                               WebFeature::kSelectParserDroppedTag);
-            tree_.OpenElements()->Top()->AddConsoleMessage(
+            tree_.OpenElements()->TopNode()->AddConsoleMessage(
                 mojom::blink::ConsoleMessageSource::kJavaScript,
                 mojom::blink::ConsoleMessageLevel::kWarning,
                 "A " + token->GetName() +
