@@ -1153,9 +1153,10 @@ std::string TemplateURLRef::HandleReplacements(
         // on both the server and local configuration to attach the prefetch
         // param. If this approach works well, remove the prefetchSource
         // component.
+        bool is_search_prefetch = !search_terms_args.prefetch_param.empty();
         bool should_attach_prefetch_param =
             base::FeatureList::IsEnabled(switches::kPrefetchParameterFix) &&
-            !search_terms_args.prefetch_param.empty();
+            is_search_prefetch;
         if (should_attach_prefetch_param) {
           // Ensure the prefetch param is attached even if gs_lcrp is not
           // needed.
@@ -1165,34 +1166,42 @@ std::string TemplateURLRef::HandleReplacements(
 
         const size_t searchbox_stats_size =
             search_terms_args.searchbox_stats.ByteSizeLong();
-        if (searchbox_stats_size > 0) {
-          // Get the base URL without substituting gs_lcrp to avoid infinite
-          // recursion and unwanted replacement respectively. We need the URL to
-          // find out if it meets all gs_lcrp requirements (e.g. HTTPS protocol
-          // check). See TemplateURLRef::SearchTermsArgs for more details.
-          SearchTermsArgs sanitized_search_terms_args(search_terms_args);
-          // Clear the proto. Its empty state has a serialized size of zero.
-          sanitized_search_terms_args.searchbox_stats.Clear();
-          GURL base_url(ReplaceSearchTerms(sanitized_search_terms_args,
-                                           search_terms_data, nullptr));
-          if (base_url.SchemeIsCryptographic()) {
-            TRACE_EVENT0(
-                "omnibox",
-                "TemplateURLRef::HandleReplacement:serialize_searchbox_stats");
-            std::vector<uint8_t> serialized_searchbox_stats(
-                searchbox_stats_size);
-            search_terms_args.searchbox_stats.SerializeWithCachedSizesToArray(
-                &serialized_searchbox_stats[0]);
-            std::string encoded_searchbox_stats;
-            base::Base64UrlEncode(serialized_searchbox_stats,
-                                  base::Base64UrlEncodePolicy::OMIT_PADDING,
-                                  &encoded_searchbox_stats);
-            HandleReplacement("gs_lcrp", encoded_searchbox_stats, replacement,
-                              &url);
-            base::UmaHistogramCounts1000(
-                "Omnibox.SearchboxStats.Length",
-                static_cast<int>(encoded_searchbox_stats.length()));
-          }
+        if (searchbox_stats_size == 0) {
+          break;
+        }
+
+        // Don't have to attach the searchbox stats to prefetch requests.
+        if (is_search_prefetch &&
+            base::FeatureList::IsEnabled(
+                switches::kRemoveSearchboxStatsParamFromPrefetchRequests)) {
+          break;
+        }
+
+        // Get the base URL without substituting gs_lcrp to avoid infinite
+        // recursion and unwanted replacement respectively. We need the URL to
+        // find out if it meets all gs_lcrp requirements (e.g. HTTPS protocol
+        // check). See TemplateURLRef::SearchTermsArgs for more details.
+        SearchTermsArgs sanitized_search_terms_args(search_terms_args);
+        // Clear the proto. Its empty state has a serialized size of zero.
+        sanitized_search_terms_args.searchbox_stats.Clear();
+        GURL base_url(ReplaceSearchTerms(sanitized_search_terms_args,
+                                         search_terms_data, nullptr));
+        if (base_url.SchemeIsCryptographic()) {
+          TRACE_EVENT0(
+              "omnibox",
+              "TemplateURLRef::HandleReplacement:serialize_searchbox_stats");
+          std::vector<uint8_t> serialized_searchbox_stats(searchbox_stats_size);
+          search_terms_args.searchbox_stats.SerializeWithCachedSizesToArray(
+              &serialized_searchbox_stats[0]);
+          std::string encoded_searchbox_stats;
+          base::Base64UrlEncode(serialized_searchbox_stats,
+                                base::Base64UrlEncodePolicy::OMIT_PADDING,
+                                &encoded_searchbox_stats);
+          HandleReplacement("gs_lcrp", encoded_searchbox_stats, replacement,
+                            &url);
+          base::UmaHistogramCounts1000(
+              "Omnibox.SearchboxStats.Length",
+              static_cast<int>(encoded_searchbox_stats.length()));
         }
         break;
       }

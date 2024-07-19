@@ -142,6 +142,19 @@ class PrerenderHostRegistryObserverImpl
     loop.Run();
   }
 
+  GURL WaitForNextTrigger() {
+    EXPECT_FALSE(waiting_next_);
+    GURL triggered_url;
+    base::RunLoop loop;
+    waiting_next_ =
+        base::BindLambdaForTesting([&triggered_url, &loop](const GURL& url) {
+          triggered_url = url;
+          loop.Quit();
+        });
+    loop.Run();
+    return triggered_url;
+  }
+
   void NotifyOnTrigger(const GURL& url, base::OnceClosure callback) {
     ASSERT_FALSE(waiting_.contains(url));
     if (triggered_.contains(url)) {
@@ -151,12 +164,18 @@ class PrerenderHostRegistryObserverImpl
     waiting_[url] = std::move(callback);
   }
 
+  base::flat_set<GURL> GetTriggeredUrls() const { return triggered_; }
+
   void OnTrigger(const GURL& url) override {
     if (triggered_.contains(url)) {
       ASSERT_FALSE(waiting_.contains(url));
       return;
     }
     triggered_.insert(url);
+
+    if (waiting_next_) {
+      std::move(waiting_next_).Run(url);
+    }
 
     auto iter = waiting_.find(url);
     if (iter != waiting_.end()) {
@@ -176,6 +195,7 @@ class PrerenderHostRegistryObserverImpl
       observation_{this};
 
   base::flat_map<GURL, base::OnceClosure> waiting_;
+  base::OnceCallback<void(const GURL&)> waiting_next_;
 
   // Set when prerendering is triggered. Doesn't yet support the case where
   // prerendering is triggered, canceled, and then re-triggered for the same
@@ -196,12 +216,21 @@ void PrerenderHostRegistryObserver::WaitForTrigger(const GURL& url) {
   impl_->WaitForTrigger(url);
 }
 
+GURL PrerenderHostRegistryObserver::WaitForNextTrigger() {
+  TRACE_EVENT("test", "PrerenderHostRegistryObserver::WaitForNextTrigger");
+  return impl_->WaitForNextTrigger();
+}
+
 void PrerenderHostRegistryObserver::NotifyOnTrigger(
     const GURL& url,
     base::OnceClosure callback) {
   TRACE_EVENT("test", "PrerenderHostRegistryObserver::NotifyOnTrigger", "url",
               url);
   impl_->NotifyOnTrigger(url, std::move(callback));
+}
+
+base::flat_set<GURL> PrerenderHostRegistryObserver::GetTriggeredUrls() const {
+  return impl_->GetTriggeredUrls();
 }
 
 class PrerenderHostObserverImpl : public PrerenderHost::Observer {

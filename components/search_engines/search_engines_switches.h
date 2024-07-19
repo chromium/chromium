@@ -104,6 +104,12 @@ BASE_DECLARE_FEATURE(kSearchEnginePromoDialogRewrite);
 // component. See crbug.com/345275145.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kPrefetchParameterFix);
+
+// Kill switch to revert the fix of dropping searchbox stats (gs_lcrp) from
+// prefetch requests. See crbug.com/350939001.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kRemoveSearchboxStatsParamFromPrefetchRequests);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_

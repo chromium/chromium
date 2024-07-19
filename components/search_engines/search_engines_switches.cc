@@ -98,4 +98,9 @@ BASE_FEATURE(kPrefetchParameterFix,
              "PrefetchParameterFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kRemoveSearchboxStatsParamFromPrefetchRequests,
+             "RemoveSearchboxStatsParamFromPrefetchRequests",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace switches

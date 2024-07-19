@@ -61,6 +61,11 @@ class TemplateURLTest : public testing::Test {
       const std::string& value,
       const std::string& content_type = std::string());
 
+ protected:
+  void TestReplaceSearcboxStats(bool is_prefetch,
+                                const std::string& prefetch_param,
+                                const std::string& gs_lcrp_param);
+
   TestingSearchTermsData search_terms_data_;
 };
 
@@ -751,47 +756,12 @@ TEST_F(TemplateURLTest, ReplaceSearchTermsMultipleEncodings) {
   }
 }
 
-// Tests replacing searchbox stats (gs_lcrp) in various scenarios.
-class TemplateURLPrefetchSourceTest
-    : public TemplateURLTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
-  TemplateURLPrefetchSourceTest() {
-    if (std::get<0>(GetParam())) {
-      feature_list_.InitAndEnableFeature({switches::kPrefetchParameterFix});
-    } else {
-      feature_list_.InitAndDisableFeature({switches::kPrefetchParameterFix});
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TemplateURLPrefetchSourceTest,
-    ::testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
-      return base::StringPrintf(
-          "%s_%s",
-          std::get<0>(info.param) ? "prefetch_param_fix_enabled"
-                                  : "prefetch_param_fix_disabled",
-          std::get<1>(info.param) ? "is_prefetch_request"
-                                  : "not_prefetch_request");
-    });
-
-TEST_P(TemplateURLPrefetchSourceTest, ReplaceSearchboxStats) {
-  base::HistogramTester histogram_tester;
-
-  bool prefetch_parameter_fix_feature_enabled = std::get<0>(GetParam());
-  bool is_prefetch_request = std::get<1>(GetParam());
-  std::string prefetch_param_value = is_prefetch_request ? "test" : "";
-  std::string prefetch_param_pair =
-      (prefetch_parameter_fix_feature_enabled && is_prefetch_request)
-          ? "pf=test&"
-          : "";
-
+// Tests replacing prefetch parameters (pf) and searchbox stats (gs_lcrp) in
+// various scenarios.
+void TemplateURLTest::TestReplaceSearcboxStats(
+    bool is_prefetch,
+    const std::string& expected_prefetch_param,
+    const std::string& expected_gs_lcrp_param) {
   omnibox::metrics::ChromeSearchboxStats searchbox_stats;
   searchbox_stats.set_client_name("chrome");
   searchbox_stats.set_zero_prefix_enabled(true);
@@ -806,15 +776,17 @@ TEST_P(TemplateURLPrefetchSourceTest, ReplaceSearchboxStats) {
       // HTTPS and non-empty gs_lcrp: Success.
       {u"foo", searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}&{google:assistedQueryStats}",
-       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE&" + prefetch_param_pair},
+       "https://foo/?q=foo&" + expected_gs_lcrp_param +
+           expected_prefetch_param},
       // Non-Google HTTPS and non-empty gs_lcrp: Success.
       {u"foo", searchbox_stats, "https://bar/",
        "https://foo/?q={searchTerms}&{google:assistedQueryStats}",
-       "https://foo/?q=foo&gs_lcrp=EgZjaHJvbWWwAgE&" + prefetch_param_pair},
+       "https://foo/?q=foo&" + expected_gs_lcrp_param +
+           expected_prefetch_param},
       // No HTTPS: Failure.
       {u"foo", searchbox_stats, "http://foo/",
        "{google:baseURL}?q={searchTerms}&{google:assistedQueryStats}",
-       "http://foo/?q=foo&" + prefetch_param_pair},
+       "http://foo/?q=foo&" + expected_prefetch_param},
       // No {google:assistedQueryStats}: Failure.
       {u"foo", searchbox_stats, "https://foo/",
        "{google:baseURL}?q={searchTerms}", "https://foo/?q=foo"},
@@ -828,16 +800,102 @@ TEST_P(TemplateURLPrefetchSourceTest, ReplaceSearchboxStats) {
     ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
     TemplateURLRef::SearchTermsArgs search_terms_args(entry.search_term);
     search_terms_args.searchbox_stats.MergeFrom(entry.searchbox_stats);
-    search_terms_args.prefetch_param = prefetch_param_value;
+    search_terms_args.prefetch_param = is_prefetch ? "test" : "";
     search_terms_data_.set_google_base_url(entry.base_url);
     GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
                                                  search_terms_data_));
     ASSERT_TRUE(result.is_valid());
     EXPECT_EQ(entry.expected_result, result.spec());
   }
-  // Expect correct histograms to have been logged.
-  histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
-  histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
+}
+
+TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
+  // Test the params on non-prefetch requests. kPrefetchParameterFix and
+  // kRemoveSearchboxStatsParamFromPrefetchRequests shouldn't affect the
+  // results.
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {}, {switches::kPrefetchParameterFix,
+             switches::kRemoveSearchboxStatsParamFromPrefetchRequests});
+    TestReplaceSearcboxStats(false, "", "gs_lcrp=EgZjaHJvbWWwAgE&");
+    histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
+    histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {switches::kPrefetchParameterFix},
+        {switches::kRemoveSearchboxStatsParamFromPrefetchRequests});
+    TestReplaceSearcboxStats(false, "", "gs_lcrp=EgZjaHJvbWWwAgE&");
+    histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
+    histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {switches::kRemoveSearchboxStatsParamFromPrefetchRequests},
+        {switches::kPrefetchParameterFix});
+    TestReplaceSearcboxStats(false, "", "gs_lcrp=EgZjaHJvbWWwAgE&");
+    histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
+    histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {switches::kPrefetchParameterFix,
+         switches::kRemoveSearchboxStatsParamFromPrefetchRequests},
+        {});
+    TestReplaceSearcboxStats(false, "", "gs_lcrp=EgZjaHJvbWWwAgE&");
+    histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
+    histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
+  }
+
+  // Test the params on prefetch requests. kPrefetchParameterFix and
+  // kRemoveSearchboxStatsParamFromPrefetchRequests should control the results.
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {}, {switches::kPrefetchParameterFix,
+             switches::kRemoveSearchboxStatsParamFromPrefetchRequests});
+    TestReplaceSearcboxStats(true, "", "gs_lcrp=EgZjaHJvbWWwAgE&");
+    histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
+    histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {switches::kPrefetchParameterFix},
+        {switches::kRemoveSearchboxStatsParamFromPrefetchRequests});
+    TestReplaceSearcboxStats(true, "pf=test&", "gs_lcrp=EgZjaHJvbWWwAgE&");
+    histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 2);
+    histogram_tester.ExpectBucketCount("Omnibox.SearchboxStats.Length", 15, 2);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {switches::kRemoveSearchboxStatsParamFromPrefetchRequests},
+        {switches::kPrefetchParameterFix});
+    TestReplaceSearcboxStats(true, "", "");
+    histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 0);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {switches::kPrefetchParameterFix,
+         switches::kRemoveSearchboxStatsParamFromPrefetchRequests},
+        {});
+    TestReplaceSearcboxStats(true, "pf=test&", "");
+    histogram_tester.ExpectTotalCount("Omnibox.SearchboxStats.Length", 0);
+  }
 }
 
 // Tests replacing cursor position.

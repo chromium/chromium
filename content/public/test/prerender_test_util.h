@@ -40,9 +40,16 @@ class PrerenderHostRegistryObserver {
   // on a RunLoop until a prerender of |gurl| is triggered.
   void WaitForTrigger(const GURL& gurl);
 
+  // Blocks on a RunLoop until a next prerender is triggered. Returns a URL of
+  // the prerender.
+  GURL WaitForNextTrigger();
+
   // Invokes |callback| immediately if |gurl| was ever triggered before.
   // Otherwise invokes |callback| when a prerender for |gurl| is triggered.
   void NotifyOnTrigger(const GURL& gurl, base::OnceClosure callback);
+
+  // Returns a set of URLs that have been triggered so far.
+  base::flat_set<GURL> GetTriggeredUrls() const;
 
  private:
   std::unique_ptr<PrerenderHostRegistryObserverImpl> impl_;
