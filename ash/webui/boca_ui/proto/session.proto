@@ -4,8 +4,8 @@ syntax = "proto3";
 
 package boca;
 
-import "ash/webui/boca_ui/proto/roster.proto";
 import "ash/webui/boca_ui/proto/bundle.proto";
+import "ash/webui/boca_ui/proto/roster.proto";
 
 // Below copied proto are due to exist in `protobuf_full` source not
 // `protobuf_lite`. The former cannot be included into chrome due to its large
@@ -16,12 +16,15 @@ message Duration {
 }
 
 // Copied from //third_party/protobuf/src/google/protobuf/timestamp.proto
+// Measured as seconds + nanos from the epoch (00:00:00 UTC on 1 January 1970).
 message Timestamp {
   int64 seconds = 1;
   int32 nanos = 2;
 }
 
 message Session {
+  reserved 8;
+
   string session_id = 1;
 
   UserIdentity teacher = 2;
@@ -38,7 +41,7 @@ message Session {
 
   Duration duration = 11;
 
-  CaptionsConfig teacher_device_captions_config = 8;
+  TeacherCaptionsConfig teacher_captions_config = 12;
 
   bool save_transcript = 9;
 
@@ -82,6 +85,8 @@ message CaptionsConfig {
 }
 
 message StudentStatus {
+  reserved 2;
+
   enum StudentState {
     STUDENT_STATE_UNKNOWN = 0;
 
@@ -91,20 +96,40 @@ message StudentStatus {
 
     ACTIVE = 3;
 
-    STOLEN_BY_OTHER_TEACHER = 4;
+    REMOVED_BY_OTHER_SESSION = 4;
+
+    REMOVED_BY_BEING_TEACHER = 5;
   }
 
   StudentState state = 1;
 
-  StudentActivity activity = 2;
+  map<string, StudentDevice> devices = 3;
+
+  Timestamp raised_hand_time = 4;
 }
 
-message StudentActivity {
+message StudentDevice {
+  DeviceInfo info = 1;
+
+  enum StudentDeviceState {
+    STUDENT_DEVICE_STATE_UNKNOWN = 0;
+
+    ACTIVE = 1;
+  }
+
+  StudentDeviceState state = 2;
+
+  StudentDeviceActivity activity = 3;
+}
+
+message DeviceInfo {
+  string device_id = 1;
+}
+
+message StudentDeviceActivity {
   ActiveTab active_tab = 1;
 
   CaptionsActivity captions_activity = 2;
-
-  Timestamp raised_hand_time = 3;
 }
 
 message ActiveTab {
@@ -123,4 +148,18 @@ message CaptionsActivity {
   Timestamp time_enabled = 2;
 
   Timestamp time_disabled = 3;
+}
+
+message TeacherCaptionsConfig {
+  string capturing_audio_device_id = 1;
+
+  map<string, DeviceCaptionsConfig> device_captions_configs = 2;
+}
+
+message DeviceCaptionsConfig {
+  DeviceInfo device_info = 1;
+
+  bool captions_enabled = 2;
+
+  string language_code = 3;
 }
