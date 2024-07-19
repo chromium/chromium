@@ -471,8 +471,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         int compromisedPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
         int totalPasswordsCount = mDelegate.getAccountPasswordsCount(mPasswordStoreBridge);
+        boolean isPasswordSavingEnabled =
+                UserPrefs.get(getProfile()).getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE);
         boolean disabledByPolicy =
-                UserPrefs.get(getProfile()).isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
+                UserPrefs.get(getProfile()).isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE)
+                        && !isPasswordSavingEnabled;
 
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
