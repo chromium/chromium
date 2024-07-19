@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCRIPTED_IDLE_TASK_CONTROLLER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCRIPTED_IDLE_TASK_CONTROLLER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_SCRIPTED_IDLE_TASK_CONTROLLER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_SCRIPTED_IDLE_TASK_CONTROLLER_H_
 
 #include "base/task/delayed_task_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/idle_deadline.h"
+#include "third_party/blink/renderer/core/scheduler/idle_deadline.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
@@ -117,4 +117,4 @@ class CORE_EXPORT ScriptedIdleTaskController
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCRIPTED_IDLE_TASK_CONTROLLER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_SCRIPTED_IDLE_TASK_CONTROLLER_H_

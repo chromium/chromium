@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/dom/idle_deadline.h"
+#include "third_party/blink/renderer/core/scheduler/idle_deadline.h"
 
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/platform/platform.h"

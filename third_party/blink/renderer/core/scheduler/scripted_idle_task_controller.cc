@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/dom/scripted_idle_task_controller.h"
+#include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
