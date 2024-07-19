@@ -417,9 +417,7 @@ WebGPUSwapBufferProvider::SwapBuffer::SwapBuffer(
       access_finished_token(creation_token) {}
 
 WebGPUSwapBufferProvider::SwapBuffer::~SwapBuffer() {
-  if (context_provider) {
-    shared_image->UpdateDestructionSyncToken(access_finished_token);
-  }
+  shared_image->UpdateDestructionSyncToken(access_finished_token);
 }
 
 gpu::SharedImageUsageSet
