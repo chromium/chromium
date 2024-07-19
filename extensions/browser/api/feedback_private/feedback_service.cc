@@ -97,6 +97,8 @@ std::string_view GetAttachmentName(debugd::FeedbackBinaryLogType log_type) {
   switch (log_type) {
     case debugd::WIFI_FIRMWARE_DUMP:
       return "wifi_firmware_dumps.tar.zst";
+    case debugd::BLUETOOTH_FIRMWARE_DUMP:
+      return "bluetooth_firmware_dumps.tar.zst";
   }
 }
 #endif
