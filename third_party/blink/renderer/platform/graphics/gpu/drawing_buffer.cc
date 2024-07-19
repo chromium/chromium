@@ -415,7 +415,8 @@ bool DrawingBuffer::PrepareTransferableResource(
   ScopedStateRestorer scoped_state_restorer(this);
   bool force_gpu_result = false;
   return PrepareTransferableResourceInternal(
-      bitmap_registrar, out_resource, out_release_callback, force_gpu_result);
+      bitmap_registrar, /*client_si=*/nullptr, out_resource,
+      out_release_callback, force_gpu_result);
 }
 
 DrawingBuffer::CheckForDestructionResult
@@ -454,6 +455,7 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
 
 bool DrawingBuffer::PrepareTransferableResourceInternal(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
+    scoped_refptr<gpu::ClientSharedImage>* client_si,
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback,
     bool force_gpu_result) {
@@ -467,7 +469,7 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
         bitmap_registrar, out_resource, out_release_callback);
   }
 
-  return FinishPrepareTransferableResourceGpu(out_resource,
+  return FinishPrepareTransferableResourceGpu(out_resource, client_si,
                                               out_release_callback);
 }
 
@@ -546,6 +548,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
 
 bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     viz::TransferableResource* out_resource,
+    scoped_refptr<gpu::ClientSharedImage>* client_si,
     viz::ReleaseCallback* out_release_callback) {
   DCHECK(state_restorer_);
   if (webgl_version_ > kWebGL1) {
@@ -622,6 +625,10 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
 
   // Populate the output mailbox and callback.
   {
+    if (client_si) {
+      *client_si = color_buffer_for_mailbox->shared_image;
+    }
+
     *out_resource = viz::TransferableResource::MakeGpu(
         color_buffer_for_mailbox->shared_image,
         color_buffer_for_mailbox->texture_target,
@@ -711,9 +718,9 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   viz::TransferableResource transferable_resource;
   viz::ReleaseCallback release_callback;
   constexpr bool force_gpu_result = true;
-  if (!PrepareTransferableResourceInternal(nullptr, &transferable_resource,
-                                           &release_callback,
-                                           force_gpu_result)) {
+  if (!PrepareTransferableResourceInternal(
+          nullptr, nullptr, &transferable_resource, &release_callback,
+          force_gpu_result)) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
@@ -825,12 +832,21 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   viz::TransferableResource out_resource;
   viz::ReleaseCallback out_release_callback;
   const bool force_gpu_result = true;
-  if (!PrepareTransferableResourceInternal(
-          nullptr, &out_resource, &out_release_callback, force_gpu_result)) {
+  scoped_refptr<gpu::ClientSharedImage> client_si;
+  if (!PrepareTransferableResourceInternal(nullptr, &client_si, &out_resource,
+                                           &out_release_callback,
+                                           force_gpu_result)) {
     return nullptr;
   }
+  // If PrepareTransferableResourceInternal() succeeded, the ClientSI must be
+  // valid:
+  // * We forced a GPU resource to be created, meaning that
+  //   FinishPrepareTransferableResourceGpu() will have been invoked
+  // * FinishPrepareTransferableResourceGpu() always populates `client_si` if it
+  //   returns true
+  CHECK(client_si);
   return ExternalCanvasResource::Create(
-      out_resource, std::move(out_release_callback),
+      client_si, out_resource, std::move(out_release_callback),
       context_provider_->GetWeakPtr(), /*resource_provider=*/nullptr,
       filter_quality_,
       /*is_origin_top_left=*/opengl_flip_y_extension_);

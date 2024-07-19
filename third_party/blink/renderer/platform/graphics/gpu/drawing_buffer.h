@@ -498,6 +498,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   bool PrepareTransferableResourceInternal(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
+      scoped_refptr<gpu::ClientSharedImage>* client_si,
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback,
       bool force_gpu_result);
@@ -505,6 +506,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Helper functions to be called only by PrepareTransferableResourceInternal.
   bool FinishPrepareTransferableResourceGpu(
       viz::TransferableResource* out_resource,
+      scoped_refptr<gpu::ClientSharedImage>* client_si,
       viz::ReleaseCallback* out_release_callback);
   bool FinishPrepareTransferableResourceSoftware(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
