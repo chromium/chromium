@@ -23,7 +23,7 @@ import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_mouse_buttons_subpage.html.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, InputDeviceSettingsProviderInterface, MetaKey, Mouse, MousePolicies} from './input_device_settings_types.js';
+import {ActionChoice, InputDeviceSettingsProviderInterface, MetaKey, Mouse, MouseButtonConfig, MousePolicies} from './input_device_settings_types.js';
 import {getPrefPolicyFields} from './input_device_settings_utils.js';
 
 const SettingsCustomizeMouseButtonsSubpageElementBase =
@@ -131,7 +131,7 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
     }
     this.inputDeviceSettingsProvider_.startObserving(this.selectedMouse.id);
     getAnnouncerInstance().announce(
-        this.i18n('customizeMouseButtonsNudgeHeader') + ' ' +
+        this.getcustomizeMouseButtonsNudgeHeader_() + ' ' +
         this.getDescription_());
   }
 
@@ -206,6 +206,14 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
     }
     return this.i18n(
         'customizeButtonSubpageDescription', this.selectedMouse!.name);
+  }
+
+  private getcustomizeMouseButtonsNudgeHeader_(): string {
+    if (this.selectedMouse?.mouseButtonConfig !== MouseButtonConfig.kNoConfig) {
+      return this.i18n('customizeMouseButtonsNudgeHeaderWithMetadata');
+    } else {
+      return this.i18n('customizeMouseButtonsNudgeHeaderWithoutMetadata');
+    }
   }
 }
 

@@ -3051,8 +3051,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE" desc="Title of Customize mouse buttons page">
     Customize mouse buttons
   </message>
-  <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER" desc="Header in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their mice.">
+  <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER_WITHOUT_METADATA" desc="Header for mouse without metadata in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their mice.">
     Add or locate buttons on your mouse
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER_WITH_METADATA" desc="Header for mouse with metadata in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their mice.">
+    Locate buttons on your mouse
   </message>
   <message name="IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_NUDGE_HEADER" desc="Header in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their graphics tablet.">
     Add or locate buttons on your tablet

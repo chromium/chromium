@@ -476,7 +476,7 @@ export const fakeMice: Mouse[] = [
     name: 'MX Anywhere 2S',
     isExternal: false,
     customizationRestriction: CustomizationRestriction.kDisableKeyEventRewrites,
-    mouseButtonConfig: MouseButtonConfig.kNoConfig,
+    mouseButtonConfig: MouseButtonConfig.kFiveKey,
     settings: {
       swapRight: false,
       sensitivity: 1,

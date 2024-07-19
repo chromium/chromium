@@ -146,4 +146,30 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
         'cr-policy-pref-indicator');
     assertFalse(isVisible(policyIndicator));
   });
+
+  test(
+      'verify mouse button nudge header with metadata or no metadata',
+      async () => {
+        // On the first mouse subpage without metadata.
+        assertEquals(
+            Router.getInstance().currentRoute, routes.CUSTOMIZE_MOUSE_BUTTONS);
+        assertEquals(
+            'Add or locate buttons on your mouse',
+            page.shadowRoot!.querySelector<HTMLDivElement>(
+                                '.help-title')!.textContent!.trim());
+        // Go to the second mouse subpage with metadata.
+        const url = new URLSearchParams({
+          'mouseId': encodeURIComponent(fakeMice[1]!.id),
+        });
+        await Router.getInstance().setCurrentRoute(
+            routes.CUSTOMIZE_MOUSE_BUTTONS,
+            /* dynamicParams= */ url, /* removeSearch= */ true);
+        await flushTasks();
+        assertEquals(
+            Router.getInstance().currentRoute, routes.CUSTOMIZE_MOUSE_BUTTONS);
+        assertEquals(
+            'Locate buttons on your mouse',
+            page.shadowRoot!.querySelector<HTMLDivElement>(
+                                '.help-title')!.textContent!.trim());
+      });
 });
