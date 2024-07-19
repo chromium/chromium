@@ -207,7 +207,8 @@ bool D3D11VideoDecoder::ResetD3DVideoDecoder() {
                  config_.profile() == HEVCPROFILE_MAIN10 ||
                  (config_.color_space_info().GuessGfxColorSpace().IsHDR() &&
                   config_.codec() != VideoCodec::kH264 &&
-                  config_.profile() != HEVCPROFILE_MAIN)
+                  config_.profile() != HEVCPROFILE_MAIN &&
+                  config_.profile() != HEVCPROFILE_MAIN_STILL_PICTURE)
              ? 10
              : 8);
   }

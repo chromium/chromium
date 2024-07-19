@@ -6,6 +6,7 @@
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
+#include "media/base/video_codecs.h"
 #include "media/gpu/windows/format_utils.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
@@ -99,7 +100,11 @@ GUID GetD3D12VideoDecodeGUID(VideoCodecProfile profile,
     case VP9PROFILE_PROFILE2:
       return D3D12_VIDEO_DECODE_PROFILE_VP9_10BIT_PROFILE2;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    // Per DirectX Video Acceleration Specification for High Efficiency Video
+    // Coding - 7.4, DXVA_ModeHEVC_VLD_Main GUID can be used for both main and
+    // main still picture profile.
     case HEVCPROFILE_MAIN:
+    case HEVCPROFILE_MAIN_STILL_PICTURE:
       return D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN;
     case HEVCPROFILE_MAIN10:
       return D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN10;
