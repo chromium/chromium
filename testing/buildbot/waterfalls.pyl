@@ -1168,13 +1168,8 @@
           'panther_on_14',
         ],
         'os_type': 'android',
-        # TODO(crbug.com/352811552): Use the same test suites as Pie arm64
-        # until the builder is stable.
         'test_suites': {
-          'gtest_tests': 'android_pie_rel_gtests',
-          # TODO(crbug.com/40142574): Re-enable this if/when additional capacity
-          # has been deployed.
-          #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
+          'gtest_tests': 'android_14_device_fyi_gtests',
           'scripts': 'chromium_android_scripts',
         }
       },

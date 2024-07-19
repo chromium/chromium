@@ -67,6 +67,16 @@ targets.legacy_basic_suite(
     },
 )
 
+# Test suites that need to run on hardware that is close to real Android device.
+# See https://crbug.com/40204012#comment5 for details.
+targets.legacy_basic_suite(
+    name = "android_hardware_specific_gtests",
+    tests = {
+        "cc_unittests": targets.legacy_test_config(),
+        "viz_unittests": targets.legacy_test_config(),
+    },
+)
+
 targets.legacy_basic_suite(
     name = "android_isolated_scripts",
     tests = {
@@ -74,6 +84,26 @@ targets.legacy_basic_suite(
             args = [
                 "--platform=android",
             ],
+        ),
+    },
+)
+
+# Used when the device capacity is limited, e.g. for CQ.
+# TODO(crbug.com/352811552): Revisit after Android 14 on device promoted to CQ.
+targets.legacy_basic_suite(
+    name = "android_limited_capacity_gtests",
+    tests = {
+        "android_browsertests": targets.legacy_test_config(),
+        "blink_platform_unittests": targets.legacy_test_config(),
+        "content_browsertests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+        "webview_instrumentation_test_apk": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 9,
+            ),
         ),
     },
 )

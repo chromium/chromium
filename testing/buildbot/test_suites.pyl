@@ -68,6 +68,11 @@
       },
     },
 
+    'android_hardware_specific_gtests': {
+      'cc_unittests': {},
+      'viz_unittests': {},
+    },
+
     'android_isolated_scripts': {
       'content_shell_crash_test': {
         'args': [
@@ -76,6 +81,25 @@
         'resultdb': {
           'enable': True,
           'result_format': 'single',
+        },
+      },
+    },
+
+    'android_limited_capacity_gtests': {
+      'android_browsertests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
+      'content_browsertests': {
+        'swarming': {
+          'shards': 20,
+        },
+      },
+      'webview_instrumentation_test_apk': {
+        'swarming': {
+          'shards': 9,
         },
       },
     },
@@ -6628,6 +6652,22 @@
       'jni_zero_sample_apk_test_suite': {},
       'linux_flavor_specific_chromium_gtests': {},
       'minidump_uploader_tests': {},
+      'system_webview_shell_instrumentation_tests': {},
+      'webview_trichrome_64_cts_tests_suite': {
+        'variants': [
+          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
+          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
+        ],
+      },
+      'webview_ui_instrumentation_tests': {},
+    },
+
+    'android_14_device_fyi_gtests': {
+      'android_hardware_specific_gtests': {},
+      'android_limited_capacity_gtests': {},
+      'android_smoke_tests': {},
+      'android_trichrome_smoke_tests': {},
+      'chrome_public_tests': {},
       'system_webview_shell_instrumentation_tests': {},
       'webview_trichrome_64_cts_tests_suite': {
         'variants': [
