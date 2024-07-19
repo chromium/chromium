@@ -46,7 +46,7 @@ constexpr int kMinimumWordLength = 4;
 // For each group the set of short tokens (tokens shorter than
 // |kMinimumWordLength|) is computed as well.
 struct UsernameFieldData {
-  WebInputElement input_element;
+  FieldRendererId renderer_id;
   std::u16string developer_value;
   base::flat_set<std::u16string> developer_short_tokens;
   std::u16string user_value;
@@ -100,11 +100,9 @@ void AppendValueAndShortTokens(
 
 // For the given |input_element|, compute developer and user value, along with
 // sets of short tokens, and returns it.
-UsernameFieldData ComputeUsernameFieldData(
-    const blink::WebInputElement& input_element,
-    const FormFieldData& field) {
+UsernameFieldData ComputeUsernameFieldData(const FormFieldData& field) {
   UsernameFieldData field_data;
-  field_data.input_element = input_element;
+  field_data.renderer_id = field.renderer_id();
 
   AppendValueAndShortTokens(field.name(), &field_data.developer_value,
                             &field_data.developer_short_tokens);
@@ -144,7 +142,7 @@ void InferUsernameFieldData(
       if (field_data.name() == element_name) {
         next_element_range_begin = i + 1;
         possible_usernames_data->push_back(
-            ComputeUsernameFieldData(input_element, field_data));
+            ComputeUsernameFieldData(field_data));
         break;
       }
     }
@@ -220,8 +218,7 @@ void FindWordsFromCategoryInForm(
   for (const UsernameFieldData& field_data : possible_usernames_data) {
     if (ContainsWordFromCategory(field_data, category)) {
       if (fields_found == 0) {
-        chosen_field_renderer_id =
-            form_util::GetFieldRendererId(field_data.input_element);
+        chosen_field_renderer_id = field_data.renderer_id;
       }
       fields_found++;
     }
