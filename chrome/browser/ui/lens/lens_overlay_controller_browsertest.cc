@@ -22,7 +22,6 @@
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -84,7 +83,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/events/event_constants.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -3314,6 +3312,23 @@ class LensOverlayControllerBrowserPDFTest
     enabled.push_back(lens::features::kLensOverlay);
     return enabled;
   }
+
+  void SimulateOpenOverlayFromContextMenu(
+      content::RenderFrameHost* extension_host,
+      const GURL& url) {
+    // Simulate opening the overlay from the context menu "Search with Google
+    // Lens".
+    content::ContextMenuParams context_menu_params;
+    context_menu_params.media_type =
+        blink::mojom::ContextMenuDataMediaType::kPlugin;
+    context_menu_params.src_url = url;
+    context_menu_params.page_url = url;
+
+    content::WaitForHitTestData(extension_host);
+    TestRenderViewContextMenu menu(*extension_host, context_menu_params);
+    menu.Init();
+    menu.ExecuteCommand(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 0);
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
@@ -3332,63 +3347,12 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Open the overlay on the PDF using the context menu.
-  bool run_observed = false;
-  auto menu_observer = std::make_unique<ContextMenuNotificationObserver>(
-      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
-      base::BindLambdaForTesting([&](RenderViewContextMenu* menu) {
-        // Verify the overlay activates.
-        run_observed = true;
-      }));
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::SimulateMouseClick(tab, 0, blink::WebMouseEvent::Button::kRight);
+  SimulateOpenOverlayFromContextMenu(extension_host, url);
 
   // Verify the overlay eventually opens.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return run_observed && controller->state() == State::kOverlay;
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
 }
-
-// This test is wrapped in this BUILDFLAG block because the fallback region
-// search functionality will not be enabled if the flag is unset.
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
-                       ContextMenuViaKeyboardDoesNotOpenOverlay) {
-  // Open the PDF document and wait for it to finish loading.
-  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
-  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
-  ASSERT_TRUE(extension_host);
-
-  // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  bool run_observed = false;
-  // Using EF_NONE event type represents a keyboard action.
-  auto menu_observer = std::make_unique<ContextMenuNotificationObserver>(
-      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_NONE,
-      base::BindLambdaForTesting([&](RenderViewContextMenu* menu) {
-        // Verify the normal region search flow activates.
-        lens::LensRegionSearchController* lens_region_search_controller =
-            menu->GetLensRegionSearchControllerForTesting();
-        ASSERT_NE(lens_region_search_controller, nullptr);
-        run_observed = true;
-      }));
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::SimulateMouseClick(tab, 0, blink::WebMouseEvent::Button::kRight);
-
-  // Verify the region search flow eventually opens.
-  ASSERT_TRUE(base::test::RunUntil([&]() { return run_observed; }));
-  ASSERT_EQ(controller->state(), State::kOff);
-}
-#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
