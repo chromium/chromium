@@ -25,6 +25,7 @@ static_library("sparky") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/sparky/storage",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/sparky",
