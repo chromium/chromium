@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -208,10 +209,17 @@ class WebUIContentsPreoloadManagerPageLoadMetricsTest
   }
 };
 
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/353803591): the page metrics propagation is stopped due
+// to first_image_paint being earlier than first_paint.
+#define MAYBE_RequestToFCP DISABLED_RequestToFCP
+#else
+#define MAYBE_RequestToFCP RequestToFCP
+#endif
 // Tests that the time from the WebUI request is requested to when First
 // Contentful Paint (FCP) is recorded.
 IN_PROC_BROWSER_TEST_F(WebUIContentsPreoloadManagerPageLoadMetricsTest,
-                       RequestToFCP) {
+                       MAYBE_RequestToFCP) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       chrome::kNonTabWebUIRequestToFCPHistogramName, 0);
