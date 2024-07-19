@@ -1,6 +1,7 @@
 Name: Speech Rule Engine
 URL: https://github.com/zorkow/speech-rule-engine
 Version: 2.3.0-beta
+Revision: eefaee8bfe5639bbfa936fda1009e4682433a6af
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
