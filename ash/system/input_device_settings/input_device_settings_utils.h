@@ -143,6 +143,11 @@ ASH_EXPORT bool IsChromeOSKeyboard(const mojom::Keyboard& keyboard);
 ASH_EXPORT bool IsSplitModifierKeyboard(const mojom::Keyboard& keyboard);
 ASH_EXPORT bool IsSplitModifierKeyboard(int keyboard_id);
 
+// Rewrites `device_key` to a known, supported device key if the
+// `kWelcomeExperienceTestUnsupportedDevices` flag is enabled.
+ASH_EXPORT std::string GetDeviceKeyForMetadataRequest(
+    const std::string& device_key);
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_UTILS_H_

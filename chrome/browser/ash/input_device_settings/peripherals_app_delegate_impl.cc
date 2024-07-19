@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
@@ -90,7 +91,8 @@ std::string BuildRequestBody(const std::string& device_key) {
 
   *peripherals_proto.mutable_device_context() = GetExampleClientContext();
   *peripherals_proto.mutable_user_context() = GetExampleClientUserContext();
-  *peripherals_proto.mutable_device() = device_key;
+  *peripherals_proto.mutable_device() =
+      GetDeviceKeyForMetadataRequest(device_key);
   return peripherals_proto.SerializeAsString();
 }
 

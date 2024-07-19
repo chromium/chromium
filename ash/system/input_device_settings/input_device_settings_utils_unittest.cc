@@ -7,9 +7,11 @@
 #include <cstdint>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -667,6 +669,28 @@ TEST_F(ButtonRemappingConversionTest, RedactButtonNames) {
       button_remapping_dict,
       mojom::CustomizationRestriction::kAllowCustomizations);
   EXPECT_EQ("REDACTED", button_remapping->name);
+}
+
+class GetDeviceKeyForMetadataRequestTest : public testing::Test {
+ public:
+  GetDeviceKeyForMetadataRequestTest() = default;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(GetDeviceKeyForMetadataRequestTest, DeviceKeyRewrittenWhenFlagEnabled) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kPeripheralCustomization, features::kWelcomeExperience,
+       features::kWelcomeExperienceTestUnsupportedDevices},
+      {});
+  auto device_key = GetDeviceKeyForMetadataRequest("040e:0726");
+  EXPECT_EQ("0111_185a", device_key);
+}
+
+TEST_F(GetDeviceKeyForMetadataRequestTest, DeviceKeyUnchangedWhenFlagDisabled) {
+  auto device_key = GetDeviceKeyForMetadataRequest("040e:0726");
+  EXPECT_EQ("040e:0726", device_key);
 }
 
 }  // namespace ash

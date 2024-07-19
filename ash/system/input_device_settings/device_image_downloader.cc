@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/system/input_device_settings/device_image.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
@@ -71,7 +72,7 @@ GURL DeviceImageDownloader::GetResourceUrlFromDeviceKey(
     DeviceImageDestination destination) {
   CHECK(!device_key.empty());
 
-  std::string formatted_key = device_key;
+  std::string formatted_key = GetDeviceKeyForMetadataRequest(device_key);
   std::replace(formatted_key.begin(), formatted_key.end(), ':', '_');
 
   // Format strings for building image URLs based on destination.
