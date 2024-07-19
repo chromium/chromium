@@ -36,6 +36,9 @@ constexpr CGFloat kCornerRadius = 10;
         [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
     self.layer.cornerRadius = kCornerRadius;
     self.accessibilityIdentifier = kInactiveTabsButtonAccessibilityIdentifier;
+    self.isAccessibilityElement = YES;
+    self.accessibilityTraits = UIAccessibilityTraitButton;
+    [self updateAccessibilityLabel];
 
     UIView* contentView = self.contentView;
 
@@ -134,6 +137,8 @@ constexpr CGFloat kCornerRadius = 10;
   NSString* countText =
       count > 99 ? @"99+" : [NSString stringWithFormat:@"%ld", count];
   _countLabel.text = countText;
+
+  [self updateAccessibilityLabel];
 }
 
 - (void)setDaysThreshold:(NSInteger)daysThreshold {
@@ -141,6 +146,8 @@ constexpr CGFloat kCornerRadius = 10;
   _subtitleLabel.text =
       l10n_util::GetNSStringF(IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
                               base::NumberToString16(daysThreshold));
+
+  [self updateAccessibilityLabel];
 }
 
 #pragma mark - UICollectionViewCell
@@ -237,6 +244,18 @@ constexpr CGFloat kCornerRadius = 10;
   disclosureIndicator.translatesAutoresizingMaskIntoConstraints = NO;
 
   return disclosureIndicator;
+}
+
+// Updates the accessibility label of the cell.
+- (void)updateAccessibilityLabel {
+  self.accessibilityLabel = [NSString
+      stringWithFormat:@"%@, %@, %ld",
+                       l10n_util::GetNSString(
+                           IDS_IOS_INACTIVE_TABS_BUTTON_TITLE),
+                       l10n_util::GetNSStringF(
+                           IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
+                           base::NumberToString16(self.daysThreshold)),
+                       self.count];
 }
 
 @end
