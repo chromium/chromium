@@ -94,6 +94,13 @@ class NavigationTransitionData {
     return cache_hit_or_miss_reason_;
   }
 
+  int copy_output_request_sequence() const {
+    return copy_output_request_sequence_number_;
+  }
+  void increment_copy_output_request_sequence() {
+    ++copy_output_request_sequence_number_;
+  }
+
  private:
   // Whether this screenshot is supplied by the embedder.
   bool is_copied_from_embedder_ = false;
@@ -108,6 +115,12 @@ class NavigationTransitionData {
   // the browser process from Viz.
   std::optional<blink::SameDocNavigationScreenshotDestinationToken>
       same_document_navigation_entry_screenshot_token_;
+
+  // Tracks copy output requests sent for this navigation entry. The embedder
+  // increments this number when the entry is committed so that the results of
+  // stale copy output requests will be ignored, preventing them from
+  // interfering with future requests.
+  int copy_output_request_sequence_number_ = 0;
 
   // TODO(https://crbug.com/40262175): We might want to move the
   // `NavigationEntryScreenshot` here as well when we make the screenshot

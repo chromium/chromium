@@ -96,25 +96,6 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
     return;
   }
 
-  if (entry == nav_controller_->GetLastCommittedEntry()) {
-    // TODO(crbug.com/40278616): We shouldn't cache the screenshot into
-    // the navigation entry if the entry is re-navigated after we send out the
-    // copy request. See the two cases below.
-    //
-    // Consider a fast swipe that triggers history navigation A->B->A, where the
-    // second A commits before the GPU responds with the first screenshotting(A)
-    // task. Currently `entry == controller->GetLastCommittedEntry()` guards
-    // against this stale screenshot; however we should combine with the case
-    // below and guard them together (see comments on the crbug).
-    //
-    // Consider a fast swipe that triggers history navigation A->B->A->B, where
-    // the second B commits before the GPU responds with the first
-    // screenshotting(A) task. We should discard A's screenshot because it is
-    // stale. Currently the capture code does not handle this case. We need to
-    // discard the stale screenshot.
-    return;
-  }
-
   // A navigation entry without a screenshot will be removed from the cache
   // first (thus not tracked). Impossible to overwrite for a cached entry.
   CHECK(!entry->GetUserData(NavigationEntryScreenshot::kUserDataKey));

@@ -83,9 +83,19 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
                          base::WeakPtr<NavigationRequest> navigation_request,
                          int navigation_entry_id,
                          bool is_copied_from_embedder,
+                         int copy_output_request_sequence,
                          const SkBitmap& bitmap) {
   if (!controller) {
     // The tab was destroyed by the time we receive the bitmap from the GPU.
+    return;
+  }
+
+  NavigationEntryImpl* entry =
+      controller->GetEntryWithUniqueID(navigation_entry_id);
+  if (!entry ||
+      entry->navigation_transition_data().copy_output_request_sequence() !=
+          copy_output_request_sequence) {
+    // The entry has changed state since this request occurred so ignore it.
     return;
   }
 
@@ -105,7 +115,7 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
     // The GPU is not able to produce a valid bitmap. This is an error case.
     LOG(ERROR) << "Cannot generate a valid bitmap for entry "
                << navigation_entry_id;
-    if (auto* entry = controller->GetEntryWithUniqueID(navigation_entry_id)) {
+    if (entry) {
       entry->navigation_transition_data().set_cache_hit_or_miss_reason(
           CacheHitOrMissReason::kCapturedEmptyBitmap);
     }
@@ -195,6 +205,13 @@ void RemoveScreenshotFromDestination(
         cache->RemoveScreenshot(destination_entry);
     CHECK(successfully_removed);
   }
+
+  // Also ensure that any existing in-flight CopyOutputRequests will be
+  // invalidated and their callbacks ignored. This ensures that new
+  // CopyOutputRequests can be made without interference / double-caching.
+  NavigationEntryImpl::FromNavigationEntry(destination_entry)
+      ->navigation_transition_data()
+      .increment_copy_output_request_sequence();
 }
 
 }  // namespace
@@ -307,13 +324,16 @@ bool NavigationTransitionUtils::
       NOTREACHED_NORETURN();
   }
 
+  int request_sequence = navigation_controller.GetLastCommittedEntry()
+                             ->navigation_transition_data()
+                             .copy_output_request_sequence();
   bool copied_via_delegate =
       navigation_request.GetDelegate()->MaybeCopyContentAreaAsBitmap(
           base::BindOnce(
               &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
               navigation_request.GetWeakPtr(),
               navigation_controller.GetLastCommittedEntry()->GetUniqueID(),
-              /*is_copied_from_embedder=*/true));
+              /*is_copied_from_embedder=*/true, request_sequence));
 
   if (!copied_via_delegate && only_use_embedder_screenshot) {
     InvokeTestCallbackForNoScreenshot(navigation_request);
@@ -344,7 +364,7 @@ bool NavigationTransitionUtils::
           &CacheScreenshotImpl, navigation_controller.GetWeakPtr(),
           navigation_request.GetWeakPtr(),
           navigation_controller.GetLastCommittedEntry()->GetUniqueID(),
-          /*is_copied_from_embedder=*/false));
+          /*is_copied_from_embedder=*/false, request_sequence));
 
   ++g_num_copy_requests_issued_for_testing;
 
@@ -400,12 +420,16 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
 
   CHECK(GetHostFrameSinkManager());
 
+  int request_sequence = nav_controller.GetLastCommittedEntry()
+                             ->navigation_transition_data()
+                             .copy_output_request_sequence();
+
   GetHostFrameSinkManager()->SetOnCopyOutputReadyCallback(
       destination_token,
       base::BindOnce(&CacheScreenshotImpl, nav_controller.GetWeakPtr(),
                      navigation_request.GetWeakPtr(),
                      nav_controller.GetLastCommittedEntry()->GetUniqueID(),
-                     /*is_copied_from_embedder=*/false));
+                     /*is_copied_from_embedder=*/false, request_sequence));
 }
 
 }  // namespace content
