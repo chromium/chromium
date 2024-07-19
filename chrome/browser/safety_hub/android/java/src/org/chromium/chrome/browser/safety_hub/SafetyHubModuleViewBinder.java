@@ -585,17 +585,23 @@ public class SafetyHubModuleViewBinder {
             @SafetyHubModuleProperties.ModuleOption int option,
             @SafetyHubModuleProperties.ModuleState int state,
             boolean managed) {
-        // Modules in warning state that are not controlled by policy should appear first in the
-        // list. Safe or info states should always have less priority than warning states. If
-        // multiple modules have the same state, fallback to the order in {@link
+        // Modules are ordered based on the severity of their {@link
+        // SafetyHubModuleProperties.ModuleState}. Modules in warning state that are not controlled
+        // by policy should appear first in the list. Followed by unavailable, info then safe
+        // states.
+        // If multiple modules have the same state, fallback to the order in {@link
         // SafetyHubModuleProperties.ModuleOption}.
         switch (state) {
             case SafetyHubModuleProperties.ModuleState.SAFE:
             case SafetyHubModuleProperties.ModuleState.INFO:
             case SafetyHubModuleProperties.ModuleState.UNAVAILABLE:
-                return option + SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES;
+                return option + (state * SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES);
             case SafetyHubModuleProperties.ModuleState.WARNING:
-                return option + (managed ? SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES : 0);
+                return option
+                        + (managed
+                                ? (SafetyHubModuleProperties.ModuleState.INFO
+                                        * SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES)
+                                : (state * SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES));
             default:
                 throw new IllegalArgumentException();
         }
