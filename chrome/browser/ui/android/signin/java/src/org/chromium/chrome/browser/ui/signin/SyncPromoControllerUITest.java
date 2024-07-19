@@ -310,7 +310,6 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testBookmarkSyncPromoContinueButtonLaunchesSyncFlowIfSyncDataLeft()
@@ -348,6 +347,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    // Disabled on Automotive since the choose account button doesn't exist on Automotive.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSigninFlow() throws Throwable {
@@ -376,6 +376,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    // Disabled on Automotive since the choose account button doesn't exist on Automotive.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisableFeatures({
         SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,

@@ -58,6 +58,7 @@ import java.io.IOException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+// TODO(crbug.com/354128847): Fix NPE when launching DeviceLockActivity on automotive.
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class AccountPickerBottomSheetRenderTest {
     private static final String TEST_EMAIL1 = "test.account1@gmail.com";

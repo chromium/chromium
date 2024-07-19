@@ -81,9 +81,8 @@ import org.chromium.ui.test.util.ViewUtils;
 @DoNotBatch(reason = "This test relies on native initialization")
 @Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// The upgrade promo does not get displayed when Google Play Services are not available.
-// TODO(crbug.com/41496906): Tests temporarily disabled for automotive. They should be
-// re-enabled once the new sign-in flow is implemented for automotive.
+// The upgrade promo does not get displayed when Google Play Services are not available or on
+// Android Automotive.
 @Restriction({
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02

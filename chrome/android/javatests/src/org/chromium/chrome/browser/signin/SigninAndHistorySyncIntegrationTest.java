@@ -21,6 +21,9 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +45,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -49,7 +53,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -68,17 +72,14 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncFeatureMap;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
 @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-// TODO(crbug.com/41496906): Tests temporarily disabled for automotive. They should be
-// re-enabled once the new sign-in flow is implemented for automotive.
-@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class SigninAndHistorySyncIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -105,6 +106,7 @@ public class SigninAndHistorySyncIntegrationTest {
     private @SigninAccessPoint int mSigninAccessPoint = SigninAccessPoint.NTP_SIGNED_OUT_ICON;
 
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
+    @Mock private DeviceLockActivityLauncherImpl mDeviceLockActivityLauncher;
 
     @Before
     public void setUp() {
@@ -119,6 +121,17 @@ public class SigninAndHistorySyncIntegrationTest {
         when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(false);
         when(mHistorySyncHelperMock.isHistorySyncDisabledByCustodian()).thenReturn(false);
         when(mHistorySyncHelperMock.isHistorySyncDisabledByPolicy()).thenReturn(false);
+
+        // Skip device lock UI on automotive.
+        DeviceLockActivityLauncherImpl.setInstanceForTesting(mDeviceLockActivityLauncher);
+        doAnswer(
+                        invocation -> {
+                            IntentCallback callback = (IntentCallback) invocation.getArguments()[4];
+                            callback.onIntentCompleted(Activity.RESULT_OK, null);
+                            return null;
+                        })
+                .when(mDeviceLockActivityLauncher)
+                .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
     }
 
     @Test
@@ -222,9 +235,9 @@ public class SigninAndHistorySyncIntegrationTest {
         verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
 
         // Verify that the history opt-in dialog is shown and decline.
-        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
         // The user has just signed in, so the footer shouldn't show the email.
-        onView(withId(R.id.history_sync_footer))
+        onViewWaiting(withId(R.id.history_sync_footer))
                 .inRoot(isDialog())
                 .check(
                         matches(
@@ -319,7 +332,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.NONE);
 
-        // Verifies that the expanded sign-in bottom-sheet is shown, and select an account.
+        // Select an account on the shown expanded sign-in bottom-sheet.
         onView(
                         allOf(
                                 withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()),
@@ -329,6 +342,10 @@ public class SigninAndHistorySyncIntegrationTest {
 
         // Verify signed-in state.
         mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        if (BuildInfo.getInstance().isAutomotive) {
+            verify(mDeviceLockActivityLauncher)
+                    .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
+        }
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
@@ -352,7 +369,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
 
-        // Verifies that the expanded sign-in bottom-sheet is shown, and select add account.
+        // Select "Add Account" on the shown expanded sign-in bottom-sheet.
         onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
                 .perform(click());
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
@@ -539,17 +556,23 @@ public class SigninAndHistorySyncIntegrationTest {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SignIn.Started", mSigninAccessPoint);
-        // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
+
+        // Start sign-in from the collapsed sign-in bottom-sheet shown.
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
                                 withParent(withId(R.id.account_picker_state_collapsed)),
                                 isCompletelyDisplayed()))
                 .perform(click());
+
         signinStartedWatcher.assertExpected();
 
         // Verify signed-in state.
         mSigninTestRule.waitForSignin(accountInfo);
+        if (BuildInfo.getInstance().isAutomotive) {
+            verify(mDeviceLockActivityLauncher)
+                    .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
+        }
     }
 
     private void verifyNoAccountBottomSheetAndSignin() {
@@ -561,15 +584,21 @@ public class SigninAndHistorySyncIntegrationTest {
                 AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail(),
                 /* isMinorModeEnabled= */ false);
 
+        // Start sign-in from the 0-account sign-in bottom-sheet shown.
         onView(
                         allOf(
                                 withId(R.id.account_picker_continue_as_button),
                                 withParent(withId(R.id.account_picker_state_no_account)),
                                 isCompletelyDisplayed()))
                 .perform(click());
+
         signinStartedWatcher.assertExpected();
 
         mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        if (BuildInfo.getInstance().isAutomotive) {
+            verify(mDeviceLockActivityLauncher)
+                    .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
+        }
     }
 
     // `checkDialogRoot` should be set to true for tests that fail due to Espresso using the wrong
@@ -584,7 +613,7 @@ public class SigninAndHistorySyncIntegrationTest {
             onViewWaiting(withId(R.id.button_primary), /* checkRootDialog= */ true)
                     .perform(click());
         } else {
-            onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
+            onViewWaiting(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
             onViewWaiting(withId(R.id.button_primary)).perform(click());
         }
 
