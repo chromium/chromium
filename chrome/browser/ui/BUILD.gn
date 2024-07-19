@@ -3872,6 +3872,7 @@ static_library("ui") {
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/app_mode",
       "//chrome/browser/chromeos/arc",
+      "//chrome/browser/chromeos/container_app",
       "//chrome/browser/chromeos/cros_apps",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/ui/views/editor_menu",
