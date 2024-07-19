@@ -791,6 +791,38 @@ void OnListFamilyMembersResponse(
 
 #pragma mark - private
 
+// Creates, if needed, and presents saved passwords settings. Assumes all modal
+// dialods are dismissed and `baseViewController` is available to present.
+- (void)showSavedPasswordsSettingsAfterModalDismissFromViewController:
+            (UIViewController*)baseViewController
+                                                     showCancelButton:
+                                                         (BOOL)
+                                                             showCancelButton {
+  if (!baseViewController) {
+    // TODO(crbug.com/41352590): Don't pass base view controller through
+    // dispatched command.
+    baseViewController = self.currentInterface.viewController;
+  }
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController
+        showSavedPasswordsSettingsFromViewController:baseViewController
+                                    showCancelButton:showCancelButton];
+    return;
+  }
+  Browser* browser = self.mainInterface.browser;
+  self.settingsNavigationController = [SettingsNavigationController
+      savePasswordsControllerForBrowser:browser
+                               delegate:self
+                       showCancelButton:showCancelButton];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
 // Creates a `SettingsNavigationController` (if it doesn't already exist) and
 // `PasswordCheckupCoordinator` for `referrer`, then starts the
 // `PasswordCheckupCoordinator`.
@@ -2206,29 +2238,15 @@ using UserFeedbackDataCallback =
 - (void)showSavedPasswordsSettingsFromViewController:
             (UIViewController*)baseViewController
                                     showCancelButton:(BOOL)showCancelButton {
-  if (!baseViewController) {
-    // TODO(crbug.com/41352590): Don't pass base view controller through
-    // dispatched command.
-    baseViewController = self.currentInterface.viewController;
-  }
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  [self dismissModalDialogsWithCompletion:nil];
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController
-        showSavedPasswordsSettingsFromViewController:baseViewController
-                                    showCancelButton:showCancelButton];
-    return;
-  }
-  Browser* browser = self.mainInterface.browser;
-  self.settingsNavigationController = [SettingsNavigationController
-      savePasswordsControllerForBrowser:browser
-                               delegate:self
-                       showCancelButton:showCancelButton];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
+  // Wait for dismiss to complete before trying to present a new view.
+  __weak SceneController* weakSelf = self;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf
+        showSavedPasswordsSettingsAfterModalDismissFromViewController:
+            baseViewController
+                                                     showCancelButton:
+                                                         showCancelButton];
+  }];
 }
 
 // Shows the Password Checkup page for `referrer`.

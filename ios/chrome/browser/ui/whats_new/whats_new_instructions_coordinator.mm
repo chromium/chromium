@@ -66,7 +66,6 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.delegate dismissOnlyWhatsNewInstructionsCoordinator:self];
   [self.actionHandler didTapActionButton:self.item.type
                            primaryAction:self.item.primaryAction];
 }
