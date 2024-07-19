@@ -18,8 +18,8 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
 
     page = document.createElement('settings-customize-pen-buttons-subpage');
     page.graphicsTablets = fakeGraphicsTablets;
-    // Set the current route with mouseId as search param and notify
-    // the observer to update mouse settings.
+    // Set the current route with graphicsTabletId as search param and notify
+    // the observer to update graphics tablet settings.
     const url = new URLSearchParams(
         {'graphicsTabletId': encodeURIComponent(fakeGraphicsTablets[0]!.id)});
     await Router.getInstance().setCurrentRoute(
@@ -110,4 +110,30 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
     observed_devices = provider.getObservedDevices();
     assertEquals(0, observed_devices.length);
   });
+
+  test(
+      'verify pen button nudge header with metadata or no metadata',
+      async () => {
+        // On the first pen subpage without metadata.
+        assertEquals(
+            Router.getInstance().currentRoute, routes.CUSTOMIZE_PEN_BUTTONS);
+        assertEquals(
+            'Add or locate buttons on your pen',
+            page.shadowRoot!.querySelector<HTMLDivElement>(
+                                '.help-title')!.textContent!.trim());
+        // Go to the second pen subpage with metadata.
+        const url = new URLSearchParams({
+          'graphicsTabletId': encodeURIComponent(fakeGraphicsTablets[1]!.id),
+        });
+        await Router.getInstance().setCurrentRoute(
+            routes.CUSTOMIZE_PEN_BUTTONS,
+            /* dynamicParams= */ url, /* removeSearch= */ true);
+        await flushTasks();
+        assertEquals(
+            Router.getInstance().currentRoute, routes.CUSTOMIZE_PEN_BUTTONS);
+        assertEquals(
+            'Locate buttons on your pen',
+            page.shadowRoot!.querySelector<HTMLDivElement>(
+                                '.help-title')!.textContent!.trim());
+      });
 });

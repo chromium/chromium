@@ -22,7 +22,7 @@ import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_tablet_buttons_subpage.html.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, GraphicsTablet, InputDeviceSettingsProviderInterface, MetaKey} from './input_device_settings_types.js';
+import {ActionChoice, GraphicsTablet, GraphicsTabletButtonConfig, InputDeviceSettingsProviderInterface, MetaKey} from './input_device_settings_types.js';
 
 const SettingsCustomizeTabletButtonsSubpageElementBase =
     RouteObserverMixin(I18nMixin(PolymerElement));
@@ -106,7 +106,7 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
     }
     this.inputDeviceSettingsProvider_.startObserving(this.selectedTablet.id);
     getAnnouncerInstance().announce(
-        this.i18n('customizeTabletButtonsNudgeHeader') + ' ' +
+        this.getcustomizeTabletButtonsNudgeHeader_() + ' ' +
         this.getDescription_());
   }
 
@@ -174,6 +174,15 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
     }
     return this.i18n(
         'customizeTabletButtonSubpageDescription', this.selectedTablet!.name);
+  }
+
+  private getcustomizeTabletButtonsNudgeHeader_(): string {
+    if (this.selectedTablet?.graphicsTabletButtonConfig !==
+        GraphicsTabletButtonConfig.kNoConfig) {
+      return this.i18n('customizeTabletButtonsNudgeHeaderWithMetadata');
+    } else {
+      return this.i18n('customizeTabletButtonsNudgeHeaderWithoutMetadata');
+    }
   }
 }
 

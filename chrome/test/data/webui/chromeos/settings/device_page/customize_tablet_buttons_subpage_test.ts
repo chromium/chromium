@@ -106,4 +106,28 @@ suite('<settings-customize-tablet-buttons-subpage>', () => {
     observed_devices = provider.getObservedDevices();
     assertEquals(0, observed_devices.length);
   });
+
+  test(
+      'verify tablet button nudge header with metadata or no metadata',
+      async () => {
+        // On the first tablet subpage without metadata.
+        assertEquals(
+            Router.getInstance().currentRoute, routes.CUSTOMIZE_TABLET_BUTTONS);
+        assertEquals(
+            'Add or locate buttons on your tablet',
+            page.shadowRoot!.querySelector<HTMLDivElement>(
+                                '.help-title')!.textContent!.trim());
+        // Go to the second tablet subpage with metadata.
+        const url = new URLSearchParams({
+          'graphicsTabletId': encodeURIComponent(fakeGraphicsTablets[1]!.id),
+        });
+        await Router.getInstance().setCurrentRoute(
+            routes.CUSTOMIZE_TABLET_BUTTONS,
+            /* dynamicParams= */ url, /* removeSearch= */ true);
+        await flushTasks();
+        assertEquals(
+            'Locate buttons on your tablet',
+            page.shadowRoot!.querySelector<HTMLDivElement>(
+                                '.help-title')!.textContent!.trim());
+      });
 });
