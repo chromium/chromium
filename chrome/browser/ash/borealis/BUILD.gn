@@ -120,6 +120,13 @@ static_library("borealis") {
     "//ui/base",
     "//ui/display",
     "//url",
+
+    # TODO(crbug.com/354080679): Use target having
+    # chrome/browser/ash/guest_os/guest_os_stability_monitor.h after fixing
+    # cyclic dependency for
+    # obj/chrome/browser/ash/borealis/borealis/borealis_context.o.
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/seneschal",
   ]
 }
 
