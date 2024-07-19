@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/dawn_shared_texture_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -263,10 +264,20 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       const wgpu::Device& wait_dawn_device,
       bool write_access) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Uses either DXGISharedHandleState or internal |dawn_shared_texture_memory_|
+  // Uses either DXGISharedHandleState or internal |dawn_shared_texture_holder_|
   // depending on whether the texture has a shared handle or not.
-  wgpu::SharedTextureMemory& GetDawnSharedTextureMemory(
-      const wgpu::Device& device) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  wgpu::SharedTextureMemory GetSharedTextureMemory(const wgpu::Device& device)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Returns the number of ongoing accesses that were already present on this
+  // texture prior to beginning this access.
+  int TrackBeginAccessToWGPUTexture(wgpu::Texture texture)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Returns the number of ongoing accesses that will still be present on this
+  // texture after ending this access.
+  int TrackEndAccessToWGPUTexture(wgpu::Texture texture)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Texture could be nullptr if an empty backing is needed for testing.
   const Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
@@ -335,10 +346,16 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                  scoped_refptr<gfx::D3DSharedFence>>
       d3d11_signaled_fence_map_ GUARDED_BY(lock_);
 
-  // If a shared texture memory exists, it means Dawn produced the D3D12 side of
-  // the D3D11 texture created by ID3D12Device::OpenSharedHandle(). Only used if
-  // the backing doesn't have a shared handle e.g. for mappable D3D11 textures.
-  wgpu::SharedTextureMemory dawn_shared_texture_memory_ GUARDED_BY(lock_);
+  // DawnSharedTextureHolder that keeps an internal cache of per-device
+  // SharedTextureData that vends WebGPU textures for the underlying d3d
+  // texture. Only used if the backing doesn't have a shared handle.
+  DawnSharedTextureHolder dawn_shared_texture_holder_ GUARDED_BY(lock_);
+
+  // TODO(crbug.com/348598119, hitawala): Move texture begin/end access tracking
+  // to DawnSharedTextureHolder. Tracks the number of currently-ongoing accesses
+  // to a given WGPU texture.
+  base::flat_map<WGPUTexture, int> wgpu_texture_ongoing_accesses_
+      GUARDED_BY(lock_);
 
   // Signaled fences imported from Dawn at EndAccess. This can be reused if
   // D3DSharedFence::IsSameFenceAsHandle() is true for fence handle from Dawn.

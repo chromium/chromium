@@ -188,16 +188,31 @@ void DXGISharedHandleState::ReleaseKeyedMutex(
   }
 }
 
-wgpu::SharedTextureMemory& DXGISharedHandleState::GetDawnSharedTextureMemory(
-    WGPUDevice device) {
+wgpu::SharedTextureMemory DXGISharedHandleState::GetSharedTextureMemory(
+    const wgpu::Device& device) {
   base::AutoLock auto_lock(lock_);
-  return dawn_shared_texture_memory_cache_[device];
+  auto iter = dawn_shared_texture_memory_cache_.find(device.Get());
+  if (iter == dawn_shared_texture_memory_cache_.end()) {
+    return nullptr;
+  }
+  return iter->second;
 }
 
-void DXGISharedHandleState::EraseDawnSharedTextureMemory(WGPUDevice device) {
+void DXGISharedHandleState::MaybeCacheSharedTextureMemory(
+    const wgpu::Device& device,
+    wgpu::SharedTextureMemory memory) {
   base::AutoLock auto_lock(lock_);
-  DCHECK(dawn_shared_texture_memory_cache_.at(device).IsDeviceLost());
-  dawn_shared_texture_memory_cache_.erase(device);
+  CHECK(memory);
+  auto [iter, _] =
+      dawn_shared_texture_memory_cache_.try_emplace(device.Get(), memory);
+  CHECK_EQ(memory.Get(), iter->second.Get());
+}
+
+void DXGISharedHandleState::EraseDawnSharedTextureMemory(
+    const wgpu::Device& device) {
+  base::AutoLock auto_lock(lock_);
+  CHECK(dawn_shared_texture_memory_cache_.at(device.Get()).IsDeviceLost());
+  dawn_shared_texture_memory_cache_.erase(device.Get());
 }
 
 DXGISharedHandleManager::DXGISharedHandleManager() = default;
