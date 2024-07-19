@@ -28,20 +28,6 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
                                     public web::WebStateObserver,
                                     public SessionRestorationObserver {
  public:
-  // Scoped type representing a sync operation in progress.
-  class ScopedPauseSyncOperation {
-   public:
-    ~ScopedPauseSyncOperation();
-
-   private:
-    friend class TabGroupLocalUpdateObserver;
-
-    ScopedPauseSyncOperation(TabGroupLocalUpdateObserver* observer);
-
-    // The TabGroupLocalUpdateObserver on which the sync is in pause.
-    raw_ptr<TabGroupLocalUpdateObserver> observer_ = nullptr;
-  };
-
   TabGroupLocalUpdateObserver(BrowserList* browser_list,
                               TabGroupSyncService* sync_service);
   ~TabGroupLocalUpdateObserver() override;
@@ -53,10 +39,8 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
   // Ignores the synchronisation of `web_state` for its first navigation.
   void IgnoreNavigationForWebState(web::WebState* web_state);
 
-  // Pauses the propagation of local updates and returns a
-  // ScopedPauseSyncOperation. The pause will end when th
-  // ScopedPauseSyncOperation is destroyed.
-  ScopedPauseSyncOperation PauseSyncUpdate();
+  // Called to pause propagation of local updates to sync.
+  void SetSyncUpdatePaused(bool paused);
 
   // BrowserListObserver.
   void OnBrowserAdded(const BrowserList* browser_list,
@@ -84,11 +68,6 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
       const std::vector<web::WebState*>& restored_web_states) override;
 
  private:
-  friend class ScopedPauseSyncOperation;
-
-  // Pauses the propagation of local updates..
-  void SetSyncUpdatePaused(bool paused);
-
   // Start observing the web state list associated with `browser`, if browser is
   // active and its webstates.
   void StartObservingBrowser(Browser* browser);

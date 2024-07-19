@@ -30,23 +30,6 @@ using tab_groups::utils::LocalTabInfo;
 
 namespace tab_groups {
 
-#pragma mark - ScopedPauseSyncOperation
-
-TabGroupLocalUpdateObserver::ScopedPauseSyncOperation::ScopedPauseSyncOperation(
-    TabGroupLocalUpdateObserver* observer)
-    : observer_(observer) {
-  observer_->SetSyncUpdatePaused(true);
-}
-
-TabGroupLocalUpdateObserver::ScopedPauseSyncOperation::
-    ~ScopedPauseSyncOperation() {
-  if (observer_) {
-    observer_->SetSyncUpdatePaused(false);
-  }
-}
-
-#pragma mark - TabGroupLocalUpdateObserver
-
 TabGroupLocalUpdateObserver::TabGroupLocalUpdateObserver(
     BrowserList* browser_list,
     TabGroupSyncService* sync_service)
@@ -64,11 +47,6 @@ TabGroupLocalUpdateObserver::~TabGroupLocalUpdateObserver() = default;
 void TabGroupLocalUpdateObserver::IgnoreNavigationForWebState(
     web::WebState* web_state) {
   ignored_web_state_identifiers_.insert(web_state->GetUniqueIdentifier());
-}
-
-TabGroupLocalUpdateObserver::ScopedPauseSyncOperation
-TabGroupLocalUpdateObserver::PauseSyncUpdate() {
-  return ScopedPauseSyncOperation(this);
 }
 
 #pragma mark - BrowserListObserver

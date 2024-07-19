@@ -27,6 +27,13 @@
 
 namespace tab_groups {
 
+// A RAII class that pauses local tab model observers when required.
+class ScopedLocalObservationPauser {
+ public:
+  ScopedLocalObservationPauser() = default;
+  virtual ~ScopedLocalObservationPauser() = default;
+};
+
 // The core service class for handling tab group sync across devices. Provides
 // mutation methods to propagate local changes to remote and observer interface
 // to propagate remote changes to the local client.
@@ -146,6 +153,10 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   GetSavedTabGroupControllerDelegate() = 0;
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() = 0;
+
+  // Helper method to pause / resume local observer.
+  virtual std::unique_ptr<ScopedLocalObservationPauser>
+  CreateScopedLocalObserverPauser() = 0;
 
   // Add / remove observers.
   virtual void AddObserver(Observer* observer) = 0;

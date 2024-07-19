@@ -256,6 +256,20 @@ void SavedTabGroupModelListener::ResumeTrackingLocalTabGroup(
   local_tab_group_listeners_.at(group_id).ResumeTracking();
 }
 
+void SavedTabGroupModelListener::PauseLocalObservation() {
+  for (auto& pair : local_tab_group_listeners_) {
+    LocalTabGroupListener& listener = pair.second;
+    listener.PauseTracking();
+  }
+}
+
+void SavedTabGroupModelListener::ResumeLocalObservation() {
+  for (auto& pair : local_tab_group_listeners_) {
+    LocalTabGroupListener& listener = pair.second;
+    listener.ResumeTracking();
+  }
+}
+
 void SavedTabGroupModelListener::DisconnectLocalTabGroup(
     tab_groups::TabGroupId tab_group_id) {
   wrapper_service_->RemoveLocalTabGroupMapping(tab_group_id);

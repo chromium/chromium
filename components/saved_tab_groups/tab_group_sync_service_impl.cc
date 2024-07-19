@@ -65,6 +65,11 @@ void TabGroupSyncServiceImpl::SetCoordinator(
   }
 }
 
+std::unique_ptr<ScopedLocalObservationPauser>
+TabGroupSyncServiceImpl::CreateScopedLocalObserverPauser() {
+  return coordinator_->CreateScopedLocalObserverPauser();
+}
+
 void TabGroupSyncServiceImpl::AddObserver(
     TabGroupSyncService::Observer* observer) {
   observers_.AddObserver(observer);

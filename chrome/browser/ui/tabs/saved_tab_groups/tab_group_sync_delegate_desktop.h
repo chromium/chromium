@@ -38,6 +38,8 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
   std::vector<LocalTabID> GetLocalTabIdsForTabGroup(
       const LocalTabGroupID& local_tab_group_id) override;
   void CreateRemoteTabGroup(const LocalTabGroupID& local_tab_group_id) override;
+  std::unique_ptr<ScopedLocalObservationPauser>
+  CreateScopedLocalObserverPauser() override;
 
  private:
   raw_ptr<TabGroupSyncService> service_;

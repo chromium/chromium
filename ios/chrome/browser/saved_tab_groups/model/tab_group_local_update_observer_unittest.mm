@@ -43,9 +43,6 @@ using ::testing::AllOf;
 using ::testing::Property;
 using ::testing::Return;
 
-using ScopedPauseSyncOperation =
-    tab_groups::TabGroupLocalUpdateObserver::ScopedPauseSyncOperation;
-
 namespace tab_groups {
 
 namespace {
@@ -194,7 +191,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTab) {
 
 // Tests that the service is does not update the title when sync is paused.
 TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTabSyncPaused) {
-  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+  local_observer_->SetSyncUpdatePaused(true);
 
   WebStateList* web_state_list = browser_->GetWebStateList();
 
@@ -291,7 +288,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, ActivateRegularTab) {
 // Tests that the service is not updated when sync is paused and the navigation
 // of a tab is updated.
 TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdateSyncPaused) {
-  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+  local_observer_->SetSyncUpdatePaused(true);
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   web::FakeWebState* web_state = InsertWebState(web_state_list);
@@ -328,7 +325,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, AddTabToNewGroup) {
 // Tests that the service is not updated when sync is paused and a tab is added
 // to a group.
 TEST_F(TabGroupLocalUpdateObserverTest, AddTabSyncPaused) {
-  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+  local_observer_->SetSyncUpdatePaused(true);
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   web::FakeWebState* web_state = InsertWebState(web_state_list);
@@ -457,7 +454,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroup) {
 // Tests that the service is not updated when sync is pausded and a tab is
 // removed from a group.
 TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroupSyncPaused) {
-  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+  local_observer_->SetSyncUpdatePaused(true);
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   web::FakeWebState* web_state = InsertWebState(web_state_list);
@@ -525,7 +522,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, CreateNamedSyncedGroup) {
 
 // Tests that the service is not updated when sync is paused.
 TEST_F(TabGroupLocalUpdateObserverTest, CreateSyncedGroupSyncPaused) {
-  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+  local_observer_->SetSyncUpdatePaused(true);
 
   WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -567,7 +564,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, UpdateVisualData) {
 // Tests that the service is correctly updated when the visual data of a group
 // is updated.
 TEST_F(TabGroupLocalUpdateObserverTest, UpdateVisualDataSyncPaused) {
-  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+  local_observer_->SetSyncUpdatePaused(true);
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   InsertWebState(web_state_list);
@@ -610,7 +607,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, ReplaceTabInGroup) {
 // Tests that the service is not updated when sync is paused and a tab is
 // replaced in a group.
 TEST_F(TabGroupLocalUpdateObserverTest, ReplaceTabInGroupSyncPaused) {
-  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+  local_observer_->SetSyncUpdatePaused(true);
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -658,7 +655,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, InsertInGroup) {
 // Tests that the service is not updated when sync is pauded and a tab is
 // inserted in a group.
 TEST_F(TabGroupLocalUpdateObserverTest, InsertInGroupSyncPaused) {
-  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+  local_observer_->SetSyncUpdatePaused(true);
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);

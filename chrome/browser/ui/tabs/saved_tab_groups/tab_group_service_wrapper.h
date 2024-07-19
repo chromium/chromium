@@ -78,6 +78,8 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
   GetSavedTabGroupControllerDelegate() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() override;
+  std::unique_ptr<ScopedLocalObservationPauser>
+  CreateScopedLocalObserverPauser() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

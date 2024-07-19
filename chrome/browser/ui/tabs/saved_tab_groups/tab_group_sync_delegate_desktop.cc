@@ -11,6 +11,35 @@
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 
 namespace tab_groups {
+namespace {
+
+class ScopedLocalObservationPauserImpl : public ScopedLocalObservationPauser {
+ public:
+  explicit ScopedLocalObservationPauserImpl(
+      SavedTabGroupModelListener* listener);
+  ~ScopedLocalObservationPauserImpl() override;
+
+  // Disallow copy/assign.
+  ScopedLocalObservationPauserImpl(const ScopedLocalObservationPauserImpl&) =
+      delete;
+  ScopedLocalObservationPauserImpl& operator=(
+      const ScopedLocalObservationPauserImpl&) = delete;
+
+ private:
+  raw_ptr<SavedTabGroupModelListener> listener_;
+};
+
+ScopedLocalObservationPauserImpl::ScopedLocalObservationPauserImpl(
+    SavedTabGroupModelListener* listener)
+    : listener_(listener) {
+  listener_->PauseLocalObservation();
+}
+
+ScopedLocalObservationPauserImpl::~ScopedLocalObservationPauserImpl() {
+  listener_->ResumeLocalObservation();
+}
+
+}  // namespace
 
 TabGroupSyncDelegateDesktop::TabGroupSyncDelegateDesktop(
     TabGroupSyncService* service,
@@ -60,6 +89,11 @@ std::vector<LocalTabID> TabGroupSyncDelegateDesktop::GetLocalTabIdsForTabGroup(
 void TabGroupSyncDelegateDesktop::CreateRemoteTabGroup(
     const LocalTabGroupID& local_tab_group_id) {
   // TODO(b/346871861): Implement.
+}
+
+std::unique_ptr<ScopedLocalObservationPauser>
+TabGroupSyncDelegateDesktop::CreateScopedLocalObserverPauser() {
+  return std::make_unique<ScopedLocalObservationPauserImpl>(listener_.get());
 }
 
 }  // namespace tab_groups

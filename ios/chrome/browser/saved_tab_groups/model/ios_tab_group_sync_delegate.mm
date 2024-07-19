@@ -31,12 +31,39 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
-using ScopedPauseSyncOperation =
-    tab_groups::TabGroupLocalUpdateObserver::ScopedPauseSyncOperation;
 using tab_groups::utils::GetLocalTabGroupInfo;
 using tab_groups::utils::LocalTabGroupInfo;
 
 namespace tab_groups {
+namespace {
+
+class ScopedLocalObservationPauserImpl : public ScopedLocalObservationPauser {
+ public:
+  explicit ScopedLocalObservationPauserImpl(
+      TabGroupLocalUpdateObserver* local_observer);
+  ~ScopedLocalObservationPauserImpl() override;
+
+  // Disallow copy/assign.
+  ScopedLocalObservationPauserImpl(const ScopedLocalObservationPauserImpl&) =
+      delete;
+  ScopedLocalObservationPauserImpl& operator=(
+      const ScopedLocalObservationPauserImpl&) = delete;
+
+ private:
+  raw_ptr<TabGroupLocalUpdateObserver> local_observer_;
+};
+
+ScopedLocalObservationPauserImpl::ScopedLocalObservationPauserImpl(
+    TabGroupLocalUpdateObserver* local_observer)
+    : local_observer_(local_observer) {
+  local_observer_->SetSyncUpdatePaused(/*paused=*/true);
+}
+
+ScopedLocalObservationPauserImpl::~ScopedLocalObservationPauserImpl() {
+  local_observer_->SetSyncUpdatePaused(/*paused=*/false);
+}
+
+}  // namespace
 
 IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(
     BrowserList* browser_list,
@@ -70,6 +97,12 @@ void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
   }
 }
 
+std::unique_ptr<ScopedLocalObservationPauser>
+IOSTabGroupSyncDelegate::CreateScopedLocalObserverPauser() {
+  return std::make_unique<ScopedLocalObservationPauserImpl>(
+      local_update_observer_.get());
+}
+
 void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
     const SavedTabGroup& saved_tab_group) {
   if (saved_tab_group.saved_tabs().size() == 0) {
@@ -88,7 +121,7 @@ void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
     return;
   }
 
-  ScopedPauseSyncOperation lock = local_update_observer_->PauseSyncUpdate();
+  auto lock = CreateScopedLocalObserverPauser();
   WebStateList* web_state_list = browser->GetWebStateList();
 
   TabInsertionBrowserAgent* tab_insertion_browser_agent =
@@ -126,7 +159,7 @@ void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
 
 void IOSTabGroupSyncDelegate::CloseLocalTabGroup(
     const LocalTabGroupID& local_tab_group_id) {
-  ScopedPauseSyncOperation lock = local_update_observer_->PauseSyncUpdate();
+  auto lock = CreateScopedLocalObserverPauser();
 
   LocalTabGroupInfo tab_group_info =
       GetLocalTabGroupInfo(browser_list_, local_tab_group_id);
@@ -148,15 +181,14 @@ void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(
     // The group is closed locally.
     return;
   }
-  ScopedPauseSyncOperation observer_lock =
-      local_update_observer_->PauseSyncUpdate();
+  auto lock = CreateScopedLocalObserverPauser();
 
   const TabGroup* tab_group = tab_group_info.tab_group;
   const TabGroupRange& tab_group_range = tab_group->range();
   WebStateList* web_state_list = tab_group_info.web_state_list;
 
   // Start a batch operation.
-  WebStateList::ScopedBatchOperation lock =
+  WebStateList::ScopedBatchOperation observer_lock =
       web_state_list->StartBatchOperation();
 
   // Update the visual data.
@@ -288,7 +320,7 @@ void IOSTabGroupSyncDelegate::CreateRemoteTabGroup(
   WebStateList* web_state_list = tab_group_info.web_state_list;
   const TabGroupRange& tab_group_range = tab_group->range();
 
-  ScopedPauseSyncOperation lock = local_update_observer_->PauseSyncUpdate();
+  auto lock = CreateScopedLocalObserverPauser();
 
   // Generate and id for the synced tab group.
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();

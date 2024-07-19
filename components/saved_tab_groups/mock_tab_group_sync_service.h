@@ -67,6 +67,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
               GetSharedTabGroupControllerDelegate,
               ());
+  MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
+              CreateScopedLocalObserverPauser,
+              ());
 
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));

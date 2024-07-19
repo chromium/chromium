@@ -35,6 +35,11 @@ void TabGroupSyncCoordinatorImpl::HandleOpenTabGroupRequest(
                                                 std::move(context));
 }
 
+std::unique_ptr<ScopedLocalObservationPauser>
+TabGroupSyncCoordinatorImpl::CreateScopedLocalObserverPauser() {
+  return platform_delegate_->CreateScopedLocalObserverPauser();
+}
+
 void TabGroupSyncCoordinatorImpl::OnTabGroupAdded(const SavedTabGroup& group,
                                               TriggerSource source) {
   if (source != TriggerSource::REMOTE) {

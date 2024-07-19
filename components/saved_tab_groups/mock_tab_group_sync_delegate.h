@@ -18,6 +18,9 @@ class MockTabGroupSyncDelegate : public TabGroupSyncDelegate {
   MOCK_METHOD(void,
               HandleOpenTabGroupRequest,
               (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
+  MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
+              CreateScopedLocalObserverPauser,
+              ());
   MOCK_METHOD(void, CreateLocalTabGroup, (const SavedTabGroup&));
   MOCK_METHOD(void, UpdateLocalTabGroup, (const SavedTabGroup&));
   MOCK_METHOD(void, CloseLocalTabGroup, (const LocalTabGroupID&));

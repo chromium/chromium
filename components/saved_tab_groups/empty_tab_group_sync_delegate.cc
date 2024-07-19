@@ -18,6 +18,11 @@ void EmptyTabGroupSyncDelegate::HandleOpenTabGroupRequest(
     const base::Uuid& sync_tab_group_id,
     std::unique_ptr<TabGroupActionContext> context) {}
 
+std::unique_ptr<ScopedLocalObservationPauser>
+EmptyTabGroupSyncDelegate::CreateScopedLocalObserverPauser() {
+  return nullptr;
+}
+
 void EmptyTabGroupSyncDelegate::CreateLocalTabGroup(
     const SavedTabGroup& tab_group) {}
 

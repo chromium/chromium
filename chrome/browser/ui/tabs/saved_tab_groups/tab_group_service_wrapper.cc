@@ -277,6 +277,15 @@ TabGroupServiceWrapper::GetSharedTabGroupControllerDelegate() {
   return sync_service_->GetSharedTabGroupControllerDelegate();
 }
 
+std::unique_ptr<ScopedLocalObservationPauser>
+TabGroupServiceWrapper::CreateScopedLocalObserverPauser() {
+  if (ShouldUseSyncService()) {
+    return sync_service_->CreateScopedLocalObserverPauser();
+  } else {
+    return nullptr;
+  }
+}
+
 void TabGroupServiceWrapper::AddObserver(Observer* observer) {
   NOTIMPLEMENTED();
 }

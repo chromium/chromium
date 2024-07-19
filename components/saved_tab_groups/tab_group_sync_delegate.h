@@ -9,6 +9,7 @@
 
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 
 namespace tab_groups {
@@ -29,6 +30,10 @@ class TabGroupSyncDelegate {
   virtual void HandleOpenTabGroupRequest(
       const base::Uuid& sync_tab_group_id,
       std::unique_ptr<TabGroupActionContext> context) = 0;
+
+  // Called to pause / resume the local observer.
+  virtual std::unique_ptr<ScopedLocalObservationPauser>
+  CreateScopedLocalObserverPauser() = 0;
 
   // Called to create a local tab group for the given sync representation.
   virtual void CreateLocalTabGroup(const SavedTabGroup& tab_group) = 0;
