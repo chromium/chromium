@@ -1,0 +1,150 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("picker") {
+  sources = [
+    "picker_client_impl.cc",
+    "picker_client_impl.h",
+    "picker_file_suggester.cc",
+    "picker_file_suggester.h",
+    "picker_lacros_omnibox_search_provider.cc",
+    "picker_lacros_omnibox_search_provider.h",
+    "picker_thumbnail_loader.cc",
+    "picker_thumbnail_loader.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/files",
+    "//chrome/browser/ash/app_list/search/omnibox",
+    "//chrome/browser/ash/app_list/search/ranking",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/chromeos/launcher_search:search_util",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/constants",
+    "//components/optimization_guide/core",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//google_apis",
+    "//ipc",
+    "//services/data_decoder/public/cpp",
+    "//storage/browser",
+    "//storage/common",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "picker_client_impl_unittest.cc",
+    "picker_lacros_omnibox_search_provider_unittest.cc",
+  ]
+
+  deps = [
+    ":picker",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/drive:test_support",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/fileapi/test:test_support",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/chromeos/launcher_search:search_util",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/drivefs:test_support",
+    "//chromeos/constants",
+    "//chromeos/crosapi/mojom",
+    "//components/bookmarks/browser",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/display:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "picker_accessibility_browsertest.cc" ]
+
+  deps = [
+    ":picker",
+    "//ash",
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "picker_interactive_uitest.cc" ]
+
+    deps = [
+      ":picker",
+      "//ash",
+      "//base",
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/accessibility:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//content/test:test_support",
+      "//extensions/browser:test_support",
+      "//ui/base",
+      "//ui/base:test_support",
+    ]
+  }
+}

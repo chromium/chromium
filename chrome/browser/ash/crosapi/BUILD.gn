@@ -698,6 +698,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/desks",
+    "//chrome/browser/ui/ash/picker",
     "//chrome/common/printing",
     "//chrome/test:test_support",
     "//chromeos/ash/components/channel",

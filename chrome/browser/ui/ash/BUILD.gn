@@ -204,6 +204,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/lobster",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/network",
+    "//chrome/browser/ui/ash/picker",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
@@ -293,6 +294,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/network",
+    "//chrome/browser/ui/ash/picker",
   ]
 }
 
