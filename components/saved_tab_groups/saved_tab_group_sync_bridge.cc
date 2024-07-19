@@ -917,7 +917,6 @@ void SavedTabGroupSyncBridge::OnReadAllMetadata(
   // case their missing group ever arrives.
   tabs_missing_groups_ = LoadStoredEntries(std::move(stored_entries), model_,
                                            std::move(on_load_callback));
-  observation_.Observe(model_);
 
   // change_process() will ignore the following call in case of error.
   change_processor()->ModelReadyToSync(std::move(metadata_batch));

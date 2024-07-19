@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -83,6 +84,41 @@ class MockTabGroupModelObserver : public SavedTabGroupModelObserver {
               (const base::Uuid&, const std::optional<base::Uuid>&));
 
  private:
+  base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
+      observation_{this};
+};
+
+// Forwards SavedTabGroupModel's observer notifications to the bridge.
+class ModelObserverForwarder : public SavedTabGroupModelObserver {
+ public:
+  ModelObserverForwarder(SavedTabGroupModel& model,
+                         SharedTabGroupDataSyncBridge& bridge)
+      : model_(model), bridge_(bridge) {
+    observation_.Observe(&model);
+  }
+
+  ~ModelObserverForwarder() override = default;
+
+  // SavedTabGroupModelObserver overrides.
+  void SavedTabGroupAddedLocally(const base::Uuid& guid) override {
+    bridge_->SavedTabGroupAddedLocally(guid);
+  }
+
+  void SavedTabGroupRemovedLocally(
+      const SavedTabGroup& removed_group) override {
+    bridge_->SavedTabGroupRemovedLocally(removed_group);
+  }
+
+  void SavedTabGroupUpdatedLocally(
+      const base::Uuid& group_guid,
+      const std::optional<base::Uuid>& tab_guid) override {
+    bridge_->SavedTabGroupUpdatedLocally(group_guid, tab_guid);
+  }
+
+ private:
+  raw_ref<SavedTabGroupModel> model_;
+  raw_ref<SharedTabGroupDataSyncBridge> bridge_;
+
   base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
       observation_{this};
 };
@@ -175,6 +211,8 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
         processor_.CreateForwardingProcessor(), &pref_service_,
         base::BindOnce(&SavedTabGroupModel::LoadStoredEntries,
                        base::Unretained(saved_tab_group_model_.get())));
+    observer_forwarder_ = std::make_unique<ModelObserverForwarder>(
+        *saved_tab_group_model_, *bridge_);
     task_environment_.RunUntilIdle();
 
     return saved_tab_group_model_->is_loaded();
@@ -182,6 +220,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
 
   // Cleans up the bridge and the model, used to simulate browser restart.
   void ResetBridgeAndModel() {
+    observer_forwarder_.reset();
     mock_model_observer_.Reset();
     bridge_.reset();
     saved_tab_group_model_.reset();
@@ -221,6 +260,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   std::unique_ptr<syncer::ModelTypeStore> store_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SharedTabGroupDataSyncBridge> bridge_;
+  std::unique_ptr<ModelObserverForwarder> observer_forwarder_;
 };
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnClientTag) {
@@ -665,17 +705,6 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
           HasTabEntityData("tab 1", "http://google.com/1", "collaboration"),
           HasGroupEntityData("title", sync_pb::SharedTabGroup_Color_GREY,
                              "collaboration")));
-}
-
-TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldIgnoreNewNonSharedGroups) {
-  ASSERT_TRUE(InitializeBridgeAndModel());
-
-  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
-                      /*urls=*/{}, /*position=*/std::nullopt);
-
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  model()->Add(group);
-  ASSERT_TRUE(model()->Contains(group.saved_guid()));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {

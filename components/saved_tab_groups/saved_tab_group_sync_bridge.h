@@ -12,12 +12,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observation.h"
-#include "base/scoped_observation_traits.h"
 #include "components/saved_tab_groups/proto/saved_tab_group_data.pb.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
-#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
@@ -39,8 +36,7 @@ class SavedTabGroupModel;
 // conflicts between the data stored in the sync server and what is currently
 // stored in the SavedTabGroupModel. Once synchronized, this data is stored in
 // the ModelTypeStore for local persistence across sessions.
-class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
-                                public SavedTabGroupModelObserver {
+class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   using SavedTabGroupLoadCallback =
       base::OnceCallback<void(std::vector<SavedTabGroup>,
@@ -81,17 +77,15 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
-  // SavedTabGroupModelObserver
-  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
-  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
-  void SavedTabGroupUpdatedLocally(
-      const base::Uuid& group_guid,
-      const std::optional<base::Uuid>& tab_guid) override;
-  void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) override;
-  void SavedTabGroupReorderedLocally() override;
-  void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override;
+  void SavedTabGroupAddedLocally(const base::Uuid& guid);
+  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group);
+  void SavedTabGroupUpdatedLocally(const base::Uuid& group_guid,
+                                   const std::optional<base::Uuid>& tab_guid);
+  void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid);
+  void SavedTabGroupReorderedLocally();
+  void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid);
   void SavedTabGroupLastUserInteractionTimeUpdated(
-      const base::Uuid& group_guid) override;
+      const base::Uuid& group_guid);
 
   const std::vector<proto::SavedTabGroupData>&
   GetTabsMissingGroupsForTesting() {
@@ -191,10 +185,6 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
-  // Callback passed to `LoadStoredEntries` to start observing model after
-  // loading the stored entries.
-  void StartObservingModel();
-
   // Called to migrate the SavedTabGroupSpecfics to SavedTabGroupData.
   void MigrateSpecificsToSavedTabGroupData(
       SavedTabGroupLoadCallback on_load_callback,
@@ -223,10 +213,6 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // Used to store tabs whose groups were not added locally yet.
   std::vector<proto::SavedTabGroupData> tabs_missing_groups_;
-
-  // Observes the SavedTabGroupModel.
-  base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
-      observation_{this};
 
   // Only for metrics. Used to ensure that a certain metrics is recorded at max
   // once per chrome session.

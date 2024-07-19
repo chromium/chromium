@@ -9,7 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 
 class PrefService;
@@ -28,7 +31,7 @@ struct SyncDataTypeConfiguration;
 
 // Used to control sync bridges for Saved and Shared tab groups and dispatch
 // changes in the model to a corresponding bridge.
-class TabGroupSyncBridgeMediator {
+class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
  public:
   // `model` and `pref_service` must never be null and must outlive the current
   // object.
@@ -41,7 +44,7 @@ class TabGroupSyncBridgeMediator {
   TabGroupSyncBridgeMediator(const TabGroupSyncBridgeMediator&) = delete;
   TabGroupSyncBridgeMediator& operator=(const TabGroupSyncBridgeMediator&) =
       delete;
-  ~TabGroupSyncBridgeMediator();
+  ~TabGroupSyncBridgeMediator() override;
 
   // Delegates for sync initialization.
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -52,6 +55,18 @@ class TabGroupSyncBridgeMediator {
   // SavedTabGroupSyncBridge specific getters.
   bool IsSavedBridgeSyncing() const;
   std::optional<std::string> GetLocalCacheGuidForSavedBridge() const;
+
+  // SavedTabGroupModelObserver overrides.
+  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
+  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
+  void SavedTabGroupUpdatedLocally(
+      const base::Uuid& group_guid,
+      const std::optional<base::Uuid>& tab_guid) override;
+  void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) override;
+  void SavedTabGroupReorderedLocally() override;
+  void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override;
+  void SavedTabGroupLastUserInteractionTimeUpdated(
+      const base::Uuid& group_guid) override;
 
  private:
   // Populates loaded entries to the model when all data is loaded.
@@ -65,6 +80,10 @@ class TabGroupSyncBridgeMediator {
                              std::vector<SavedTabGroupTab> tabs);
 
   raw_ptr<SavedTabGroupModel> model_;
+
+  // Observes the SavedTabGroupModel.
+  base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
+      observation_{this};
 
   std::unique_ptr<SavedTabGroupSyncBridge> saved_bridge_;
   std::unique_ptr<SharedTabGroupDataSyncBridge> shared_bridge_;

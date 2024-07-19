@@ -13,6 +13,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -58,6 +60,59 @@ namespace {
 
 // Discard orphaned tabs after 30 days if the associated group cannot be found.
 constexpr base::TimeDelta kDiscardOrphanedTabsThreshold = base::Days(30);
+
+// Forwards SavedTabGroupModel's observer notifications to the bridge.
+class ModelObserverForwarder : public SavedTabGroupModelObserver {
+ public:
+  ModelObserverForwarder(SavedTabGroupModel& model,
+                         SavedTabGroupSyncBridge& bridge)
+      : model_(model), bridge_(bridge) {
+    observation_.Observe(&model);
+  }
+
+  ~ModelObserverForwarder() override = default;
+
+  // SavedTabGroupModelObserver overrides.
+  void SavedTabGroupAddedLocally(const base::Uuid& guid) override {
+    bridge_->SavedTabGroupAddedLocally(guid);
+  }
+
+  void SavedTabGroupRemovedLocally(
+      const SavedTabGroup& removed_group) override {
+    bridge_->SavedTabGroupRemovedLocally(removed_group);
+  }
+
+  void SavedTabGroupUpdatedLocally(
+      const base::Uuid& group_guid,
+      const std::optional<base::Uuid>& tab_guid) override {
+    bridge_->SavedTabGroupUpdatedLocally(group_guid, tab_guid);
+  }
+
+  void SavedTabGroupTabsReorderedLocally(
+      const base::Uuid& group_guid) override {
+    bridge_->SavedTabGroupTabsReorderedLocally(group_guid);
+  }
+
+  void SavedTabGroupReorderedLocally() override {
+    bridge_->SavedTabGroupReorderedLocally();
+  }
+
+  void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override {
+    bridge_->SavedTabGroupLocalIdChanged(group_guid);
+  }
+
+  void SavedTabGroupLastUserInteractionTimeUpdated(
+      const base::Uuid& group_guid) override {
+    bridge_->SavedTabGroupLastUserInteractionTimeUpdated(group_guid);
+  }
+
+ private:
+  raw_ref<SavedTabGroupModel> model_;
+  raw_ref<SavedTabGroupSyncBridge> bridge_;
+
+  base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
+      observation_{this};
+};
 
 // Do not check update times for specifics as adding tabs to a group through the
 // bridge will change the update times for the group object.
@@ -171,6 +226,8 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         processor_.CreateForwardingProcessor(), &pref_service_,
         base::DoNothing());
+    observer_forwarder_ = std::make_unique<ModelObserverForwarder>(
+        saved_tab_group_model_, *bridge_);
     task_environment_.RunUntilIdle();
   }
 
@@ -193,6 +250,7 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
   std::unique_ptr<syncer::ModelTypeStore> store_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SavedTabGroupSyncBridge> bridge_;
+  std::unique_ptr<ModelObserverForwarder> observer_forwarder_;
 };
 
 // Verify that when we add data into the sync bridge the SavedTabGroupModel will

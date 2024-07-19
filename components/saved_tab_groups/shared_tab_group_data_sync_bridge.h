@@ -11,11 +11,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
@@ -37,8 +35,7 @@ class SavedTabGroup;
 class SavedTabGroupModel;
 
 // Sync bridge implementation for SHARED_TAB_GROUP_DATA model type.
-class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge,
-                                     public SavedTabGroupModelObserver {
+class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   using SharedTabGroupLoadCallback =
       base::OnceCallback<void(std::vector<SavedTabGroup>,
@@ -79,17 +76,14 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge,
       const sync_pb::EntitySpecifics& entity_specifics) const override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
-  // SavedTabGroupModelObserver overrides.
-  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
-  void SavedTabGroupUpdatedLocally(
-      const base::Uuid& group_guid,
-      const std::optional<base::Uuid>& tab_guid) override;
-  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
+  void SavedTabGroupAddedLocally(const base::Uuid& guid);
+  void SavedTabGroupUpdatedLocally(const base::Uuid& group_guid,
+                                   const std::optional<base::Uuid>& tab_guid);
+  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group);
   // TODO(crbug.com/319521964): implement the following methods.
-  // void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid)
-  // override;
-  // void SavedTabGroupReorderedLocally() override;
-  // void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override;
+  // void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid);
+  // void SavedTabGroupReorderedLocally();
+  // void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid);
 
  private:
   // Loads the data already stored in the ModelTypeStore.
@@ -161,10 +155,6 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge,
   // The Model used to represent the current state of saved and shared tab
   // groups.
   raw_ptr<SavedTabGroupModel> model_;
-
-  // Observes changes to the `model_`.
-  base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
-      observation_{this};
 
   // Allows safe temporary use of the SharedTabGroupDataSyncBridge object if it
   // exists at the time of use.

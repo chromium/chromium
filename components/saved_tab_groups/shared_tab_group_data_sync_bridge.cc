@@ -288,9 +288,6 @@ SharedTabGroupDataSyncBridge::SharedTabGroupDataSyncBridge(
     : syncer::ModelTypeSyncBridge(std::move(change_processor)), model_(model) {
   CHECK(model_);
 
-  // It's safe to start observing changes to the model because they are ignored
-  // until the bridge is initialized.
-  observation_.Observe(model_);
   std::move(create_store_callback)
       .Run(syncer::SHARED_TAB_GROUP_DATA,
            base::BindOnce(&SharedTabGroupDataSyncBridge::OnStoreCreated,
@@ -546,10 +543,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
 
   const SavedTabGroup* group = model_->Get(guid);
   CHECK(group);
-  if (!group->is_shared_tab_group()) {
-    // Ignore changes for non-shared tab groups.
-    return;
-  }
+  CHECK(group->is_shared_tab_group());
 
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
@@ -583,10 +577,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
 
   const SavedTabGroup* group = model_->Get(group_guid);
   CHECK(group);
-  if (!group->is_shared_tab_group()) {
-    // Ignore changes for non-shared tab groups.
-    return;
-  }
+  CHECK(group->is_shared_tab_group());
 
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
@@ -614,10 +605,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
     return;
   }
 
-  if (!removed_group.is_shared_tab_group()) {
-    // Ignore changes for non-shared tab groups.
-    return;
-  }
+  CHECK(removed_group.is_shared_tab_group());
 
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
