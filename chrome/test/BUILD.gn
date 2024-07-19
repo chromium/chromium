@@ -4690,7 +4690,6 @@ if (!is_android) {
         "../browser/ui/ash/feature_discovery_duration_reporter_browsertest.cc",
         "../browser/ui/ash/float_controller_browsertest.cc",
         "../browser/ui/ash/google_one_offer_iph_tab_helper_browsertest.cc",
-        "../browser/ui/ash/network/network_portal_signin_controller_browsertest.cc",
         "../browser/ui/ash/picker/picker_accessibility_browsertest.cc",
         "../browser/ui/ash/projector/pending_screencast_manager_browsertest.cc",
         "../browser/ui/ash/projector/projector_client_impl_browsertest.cc",
@@ -4977,6 +4976,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/keyboard:ash_test_support",
         "//chrome/browser/ui/ash/multi_user",
         "//chrome/browser/ui/ash/multi_user:test_support",
+        "//chrome/browser/ui/ash/network",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/ui/chromeos/read_write_cards",
         "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
@@ -5154,6 +5154,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/global_media_controls:browser_tests",
         "//chrome/browser/ui/ash/holding_space:browser_tests",
         "//chrome/browser/ui/ash/keyboard:browser_tests",
+        "//chrome/browser/ui/ash/network:browser_tests",
       ]
     }
     if (safe_browsing_mode == 1) {
@@ -8580,11 +8581,6 @@ test("unit_tests") {
       "../browser/ui/ash/in_session_auth_dialog_client_unittest.cc",
       "../browser/ui/ash/media_client_impl_unittest.cc",
       "../browser/ui/ash/multitask_menu_nudge_unittest.cc",
-      "../browser/ui/ash/network/mobile_data_notifications_unittest.cc",
-      "../browser/ui/ash/network/network_portal_notification_controller_unittest.cc",
-      "../browser/ui/ash/network/network_portal_signin_controller_unittest.cc",
-      "../browser/ui/ash/network/network_state_notifier_unittest.cc",
-      "../browser/ui/ash/network/tether_notification_presenter_unittest.cc",
       "../browser/ui/ash/picker/picker_client_impl_unittest.cc",
       "../browser/ui/ash/picker/picker_lacros_omnibox_search_provider_unittest.cc",
       "../browser/ui/ash/projector/projector_client_impl_unittest.cc",
@@ -8885,6 +8881,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/holding_space:unit_tests",
       "//chrome/browser/ui/ash/keyboard:unit_tests",
       "//chrome/browser/ui/ash/multi_user:unit_tests",
+      "//chrome/browser/ui/ash/network:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
