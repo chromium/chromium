@@ -8482,8 +8482,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DrawCutoutEdgeToEdge",
-                        "DrawEdgeToEdge",
                         "DynamicSafeAreaInsets",
                         "DynamicSafeAreaInsetsOnScroll"
                     ]
