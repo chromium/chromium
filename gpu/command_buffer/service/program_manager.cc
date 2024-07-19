@@ -1156,7 +1156,7 @@ bool Program::Link(ShaderManager* manager,
 
     ExecuteProgramOutputBindCalls();
 
-    if (cache && gl::g_current_gl_driver->ext.b_GL_OES_get_program_binary) {
+    if (cache && feature_info().gl_version_info().IsAtLeastGLES(3, 0)) {
       glProgramParameteri(service_id(),
                           PROGRAM_BINARY_RETRIEVABLE_HINT,
                           GL_TRUE);
