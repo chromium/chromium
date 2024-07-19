@@ -6,19 +6,28 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
+
+import android.graphics.Bitmap;
+import android.graphics.Color;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
@@ -139,5 +148,37 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         assertTrue(containsItemOfType(mModel, ItemProperties.ACCOUNT_CHIP));
         assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
         assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+    }
+
+    @Test
+    public void testShowAccountsFetchesRpIcon() {
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                Callback<Bitmap> callback =
+                                        (Callback<Bitmap>) invocation.getArguments()[1];
+
+                                Bitmap brandIcon =
+                                        Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+                                brandIcon.eraseColor(Color.RED);
+                                callback.onResult(brandIcon);
+                                return null;
+                            }
+                        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(), any(Callback.class));
+
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mAnaAccount),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true);
+
+        assertNotNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
     }
 }

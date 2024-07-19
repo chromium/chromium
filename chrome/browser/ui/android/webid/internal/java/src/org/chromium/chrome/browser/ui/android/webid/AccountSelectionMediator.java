@@ -119,7 +119,8 @@ class AccountSelectionMediator {
     private String mRpForDisplay;
     private String mIdpForDisplay;
     private IdentityProviderMetadata mIdpMetadata;
-    private Bitmap mBrandIcon;
+    private Bitmap mIdpBrandIcon;
+    private Bitmap mRpBrandIcon;
     private ClientIdMetadata mClientMetadata;
     private @RpContext.EnumType int mRpContext;
     private IdentityCredentialTokenError mError;
@@ -315,7 +316,8 @@ class AccountSelectionMediator {
                 };
 
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                .with(HeaderProperties.IDP_BRAND_ICON, mBrandIcon)
+                .with(HeaderProperties.IDP_BRAND_ICON, mIdpBrandIcon)
+                .with(HeaderProperties.RP_BRAND_ICON, mRpBrandIcon)
                 .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
                 .with(HeaderProperties.IDP_FOR_DISPLAY, idpForDisplay)
                 .with(HeaderProperties.RP_FOR_DISPLAY, rpForDisplay)
@@ -388,39 +390,51 @@ class AccountSelectionMediator {
      */
     private void showPlaceholderIcon(IdentityProviderMetadata idpMetadata) {
         if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
-            mBrandIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-            Canvas brandIconCanvas = new Canvas(mBrandIcon);
+            mIdpBrandIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+            Canvas brandIconCanvas = new Canvas(mIdpBrandIcon);
             brandIconCanvas.drawColor(Color.TRANSPARENT);
         }
     }
 
-    private void showBrandIcon(IdentityProviderMetadata idpMetadata) {
-        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
+    private void fetchBrandIcon(String brandIconUrl, Callback<Bitmap> callback) {
+        if (!TextUtils.isEmpty(brandIconUrl)) {
             int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
             ImageFetcher.Params params =
                     ImageFetcher.Params.createNoResizing(
-                            new GURL(idpMetadata.getBrandIconUrl()),
+                            new GURL(brandIconUrl),
                             ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
                             brandIconIdealSize,
                             brandIconIdealSize);
 
-            mImageFetcher.fetchImage(
-                    params,
-                    bitmap -> {
-                        if (bitmap != null
-                                && bitmap.getWidth() == bitmap.getHeight()
-                                && bitmap.getWidth()
-                                        >= AccountSelectionBridge.getBrandIconMinimumSize()) {
-                            mBrandIcon = bitmap;
-                            updateHeader();
-                        }
-                    });
+            mImageFetcher.fetchImage(params, callback);
         }
     }
 
     private boolean isUnifiedAccountChooserEnabled() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.FEDCM_BUTTON_MODE_UNIFIED_ACCOUNT_CHOOSER);
+    }
+
+    private boolean isValidBrandIcon(Bitmap bitmap) {
+        return bitmap != null
+                && bitmap.getWidth() == bitmap.getHeight()
+                && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize();
+    }
+
+    private void updateIdpBrandIcon(Bitmap bitmap) {
+        if (!isValidBrandIcon(bitmap)) {
+            return;
+        }
+        mIdpBrandIcon = bitmap;
+        updateHeader();
+    }
+
+    private void updateRpBrandIcon(Bitmap bitmap) {
+        if (!isValidBrandIcon(bitmap)) {
+            return;
+        }
+        mRpBrandIcon = bitmap;
+        updateHeader();
     }
 
     void showVerifySheet(Account account) {
@@ -470,7 +484,12 @@ class AccountSelectionMediator {
                 rpContext,
                 requestPermission);
         setComponentShowTime(SystemClock.elapsedRealtime());
-        showBrandIcon(idpMetadata);
+
+        fetchBrandIcon(idpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
+        // RP brand icon is fetched here, but not shown until the request permission dialog.
+        if (mRpMode == RpMode.BUTTON) {
+            fetchBrandIcon(clientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
+        }
     }
 
     void showFailureDialog(
@@ -486,7 +505,7 @@ class AccountSelectionMediator {
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC;
         updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false);
         setComponentShowTime(SystemClock.elapsedRealtime());
-        showBrandIcon(idpMetadata);
+        fetchBrandIcon(idpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
     }
 
     void showErrorDialog(
@@ -504,7 +523,7 @@ class AccountSelectionMediator {
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_ERROR;
         updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false);
         setComponentShowTime(SystemClock.elapsedRealtime());
-        showBrandIcon(idpMetadata);
+        fetchBrandIcon(idpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
     }
 
     void showLoadingDialog(

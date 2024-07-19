@@ -2068,8 +2068,13 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         // is moved.
         GURL client_metadata_endpoint = idp_info->endpoints.client_metadata;
         std::string client_id = idp_info->provider->config->client_id;
+        int icon_ideal_size =
+            request_dialog_controller_->GetBrandIconIdealSize(rp_mode_);
+        int icon_minimum_size =
+            request_dialog_controller_->GetBrandIconMinimumSize(rp_mode_);
         network_manager_->FetchClientMetadata(
-            client_metadata_endpoint, client_id,
+            client_metadata_endpoint, client_id, icon_ideal_size,
+            icon_minimum_size,
             base::BindOnce(
                 &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
                 weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),

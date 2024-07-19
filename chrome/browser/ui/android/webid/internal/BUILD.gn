@@ -37,6 +37,7 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
@@ -65,6 +66,8 @@ android_resources("java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
+    "java/res/drawable/arrow_range.xml",
+    "java/res/drawable/globe.xml",
     "java/res/layout/account_selection_account_item.xml",
     "java/res/layout/account_selection_add_account_button.xml",
     "java/res/layout/account_selection_add_account_row_item.xml",

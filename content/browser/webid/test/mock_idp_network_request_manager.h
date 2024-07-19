@@ -29,10 +29,11 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
       FetchConfig,
       (const GURL&, blink::mojom::RpMode, int, int, FetchConfigCallback),
       (override));
-  MOCK_METHOD(void,
-              FetchClientMetadata,
-              (const GURL&, const std::string&, FetchClientMetadataCallback),
-              (override));
+  MOCK_METHOD(
+      void,
+      FetchClientMetadata,
+      (const GURL&, const std::string&, int, int, FetchClientMetadataCallback),
+      (override));
   MOCK_METHOD(void,
               SendAccountsRequest,
               (const GURL&, const std::string&, AccountsRequestCallback),

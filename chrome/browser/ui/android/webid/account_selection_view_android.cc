@@ -78,9 +78,13 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityCredentialTokenError(
 ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
     JNIEnv* env,
     const content::ClientMetadata& metadata) {
+  ScopedJavaLocalRef<jstring> java_brand_icon_url =
+      base::android::ConvertUTF8ToJavaString(env,
+                                             metadata.brand_icon_url.spec());
   return Java_ClientIdMetadata_Constructor(
       env, url::GURLAndroid::FromNativeGURL(env, metadata.terms_of_service_url),
-      url::GURLAndroid::FromNativeGURL(env, metadata.privacy_policy_url));
+      url::GURLAndroid::FromNativeGURL(env, metadata.privacy_policy_url),
+      java_brand_icon_url);
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(

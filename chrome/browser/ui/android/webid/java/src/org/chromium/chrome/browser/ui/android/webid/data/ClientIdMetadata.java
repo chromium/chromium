@@ -15,15 +15,18 @@ import org.chromium.url.GURL;
 public class ClientIdMetadata {
     private final GURL mTermsOfServiceUrl;
     private final GURL mPrivacyPolicyUrl;
+    private final String mBrandIconUrl;
 
     /**
      * @param termsOfServiceUrl URL for the terms of service for this client ID.
      * @param privacyPolicyUrl URL for the privacy policy for this client ID.
+     * @param brandIconUrl String of URL for the brand icon for this client ID.
      */
     @CalledByNative
-    public ClientIdMetadata(GURL termsOfServiceUrl, GURL privacyPolicyUrl) {
+    public ClientIdMetadata(GURL termsOfServiceUrl, GURL privacyPolicyUrl, String brandIconUrl) {
         mTermsOfServiceUrl = termsOfServiceUrl;
         mPrivacyPolicyUrl = privacyPolicyUrl;
+        mBrandIconUrl = brandIconUrl;
     }
 
     public GURL getTermsOfServiceUrl() {
@@ -32,5 +35,9 @@ public class ClientIdMetadata {
 
     public GURL getPrivacyPolicyUrl() {
         return mPrivacyPolicyUrl;
+    }
+
+    public String getBrandIconUrl() {
+        return mBrandIconUrl;
     }
 }

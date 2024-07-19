@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -697,13 +698,49 @@ class AccountSelectionViewBinder {
             if (brandIcon != null) {
                 Resources resources = view.getResources();
                 int iconSize =
-                        resources.getDimensionPixelSize(R.dimen.account_selection_sheet_icon_size);
+                        resources.getDimensionPixelSize(
+                                model.get(HeaderProperties.RP_MODE) == RpMode.BUTTON
+                                        ? R.dimen.account_selection_button_mode_sheet_icon_size
+                                        : R.dimen.account_selection_sheet_icon_size);
                 Drawable croppedBrandIcon =
                         createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
                 ImageView headerIconView = (ImageView) view.findViewById(R.id.header_idp_icon);
                 headerIconView.setImageDrawable(croppedBrandIcon);
                 headerIconView.setVisibility(View.VISIBLE);
             }
+        } else if (key == HeaderProperties.RP_BRAND_ICON) {
+            // RP icon is not shown in widget mode.
+            if (model.get(HeaderProperties.RP_MODE) == RpMode.WIDGET) return;
+
+            Bitmap brandIcon = model.get(HeaderProperties.RP_BRAND_ICON);
+            ImageView headerIconView = (ImageView) view.findViewById(R.id.header_rp_icon);
+            ImageView arrowRangeIcon = (ImageView) view.findViewById(R.id.arrow_range_icon);
+            if (brandIcon != null) {
+                Resources resources = view.getResources();
+                int iconSize =
+                        resources.getDimensionPixelSize(
+                                R.dimen.account_selection_button_mode_sheet_icon_size);
+                Drawable croppedBrandIcon =
+                        createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
+                headerIconView.setImageDrawable(croppedBrandIcon);
+            }
+            ColorStateList tint =
+                    brandIcon == null
+                            ? AppCompatResources.getColorStateList(
+                                    view.getContext(), R.color.default_icon_color_baseline)
+                            : null;
+            headerIconView.setImageTintList(tint);
+            arrowRangeIcon.setImageTintList(tint);
+            boolean isRpIconVisible =
+                    (model.get(HeaderProperties.IDP_BRAND_ICON) != null)
+                            && (model.get(HeaderProperties.TYPE)
+                                            == HeaderProperties.HeaderType.REQUEST_PERMISSION
+                                    || model.get(HeaderProperties.TYPE)
+                                            == HeaderProperties.HeaderType.VERIFY
+                                    || model.get(HeaderProperties.TYPE)
+                                            == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN);
+            headerIconView.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
+            arrowRangeIcon.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
         } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {
             // There is no explicit close button for button mode, user swipes to close instead.
             if (model.get(HeaderProperties.RP_MODE) == RpMode.BUTTON) return;

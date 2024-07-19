@@ -535,6 +535,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   void FetchClientMetadata(const GURL& endpoint,
                            const std::string& client_id,
+                           int rp_brand_icon_ideal_size,
+                           int rp_brand_icon_minimum_size,
                            FetchClientMetadataCallback callback) override {
     ++num_fetched_[FetchedEndpoint::CLIENT_METADATA];
 
@@ -670,11 +672,14 @@ class IdpNetworkRequestManagerParamChecker
 
   void FetchClientMetadata(const GURL& endpoint,
                            const std::string& client_id,
+                           int rp_brand_icon_ideal_size,
+                           int rp_brand_icon_minimum_size,
                            FetchClientMetadataCallback callback) override {
     if (expected_client_id_)
       EXPECT_EQ(expected_client_id_, client_id);
-    TestIdpNetworkRequestManager::FetchClientMetadata(endpoint, client_id,
-                                                      std::move(callback));
+    TestIdpNetworkRequestManager::FetchClientMetadata(
+        endpoint, client_id, rp_brand_icon_ideal_size,
+        rp_brand_icon_minimum_size, std::move(callback));
   }
 
   void SendAccountsRequest(const GURL& accounts_url,
@@ -3649,6 +3654,8 @@ class IdpNetworkRequestManagerClientMetadataTaskRunner
 
   void FetchClientMetadata(const GURL& client_metadata_endpoint_url,
                            const std::string& client_id,
+                           int rp_brand_icon_ideal_size,
+                           int rp_brand_icon_minimum_size,
                            FetchClientMetadataCallback callback) override {
     // Make copies because running the task might destroy
     // FederatedAuthRequestImpl and invalidate the references.
@@ -3658,7 +3665,9 @@ class IdpNetworkRequestManagerClientMetadataTaskRunner
     if (client_metadata_task_)
       std::move(client_metadata_task_).Run();
     TestIdpNetworkRequestManager::FetchClientMetadata(
-        client_metadata_endpoint_url_copy, client_id_copy, std::move(callback));
+        client_metadata_endpoint_url_copy, client_id_copy,
+        rp_brand_icon_ideal_size, rp_brand_icon_minimum_size,
+        std::move(callback));
   }
 
  private:

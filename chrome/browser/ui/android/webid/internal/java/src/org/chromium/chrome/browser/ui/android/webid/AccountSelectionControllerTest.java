@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.E
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
@@ -165,12 +166,15 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                         mTestConfigUrl,
                         mTestLoginUrl,
                         /* supportsAddAccount= */ false);
+        ClientIdMetadata clientMetadataNoBrandIconUrl =
+                new ClientIdMetadata(
+                        mTestUrlTermsOfService, mTestUrlPrivacyPolicy, /* brandIconUrl= */ "");
         mMediator.showAccounts(
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 idpMetadataNoBrandIconUrl,
-                mClientIdMetadata,
+                clientMetadataNoBrandIconUrl,
                 /* isAutoReauthn= */ false,
                 RpContext.SIGN_IN,
                 /* requestPermission= */ true);

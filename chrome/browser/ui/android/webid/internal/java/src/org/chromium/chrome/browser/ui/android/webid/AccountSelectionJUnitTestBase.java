@@ -79,6 +79,7 @@ public class AccountSelectionJUnitTestBase {
     GURL mTestUrlTermsOfService;
     GURL mTestUrlPrivacyPolicy;
     GURL mTestIdpBrandIconUrl;
+    GURL mTestRpBrandIconUrl;
     GURL mTestProfilePicUrl;
     GURL mTestConfigUrl;
     GURL mTestLoginUrl;
@@ -119,6 +120,7 @@ public class AccountSelectionJUnitTestBase {
         mTestUrlTermsOfService = JUnitTestGURLs.RED_1;
         mTestUrlPrivacyPolicy = JUnitTestGURLs.RED_2;
         mTestIdpBrandIconUrl = JUnitTestGURLs.RED_3;
+        mTestRpBrandIconUrl = JUnitTestGURLs.RED_3;
         mTestProfilePicUrl = new GURL("https://profile-picture.com");
         mTestConfigUrl = new GURL("https://idp.com/fedcm.json");
         mTestLoginUrl = new GURL("https://idp.com/login");
@@ -171,7 +173,11 @@ public class AccountSelectionJUnitTestBase {
                         /* pictureBitmap= */ null,
                         /* isSignIn= */ true);
 
-        mClientIdMetadata = new ClientIdMetadata(mTestUrlTermsOfService, mTestUrlPrivacyPolicy);
+        mClientIdMetadata =
+                new ClientIdMetadata(
+                        mTestUrlTermsOfService,
+                        mTestUrlPrivacyPolicy,
+                        mTestRpBrandIconUrl.getSpec());
         mTokenError = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestErrorUrl);
         mTokenErrorEmptyUrl = new IdentityCredentialTokenError(TEST_ERROR_CODE, mTestEmptyErrorUrl);
 

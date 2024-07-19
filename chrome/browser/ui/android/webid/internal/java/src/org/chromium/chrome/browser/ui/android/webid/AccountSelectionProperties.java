@@ -77,7 +77,9 @@ class AccountSelectionProperties {
         static final ReadableObjectPropertyKey<String> RP_FOR_DISPLAY =
                 new ReadableObjectPropertyKey<>("rp_for_display");
         static final ReadableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
-                new ReadableObjectPropertyKey<>("brand_icon");
+                new ReadableObjectPropertyKey<>("idp_brand_icon");
+        static final ReadableObjectPropertyKey<Bitmap> RP_BRAND_ICON =
+                new ReadableObjectPropertyKey<>("rp_brand_icon");
         static final ReadableObjectPropertyKey<HeaderType> TYPE =
                 new ReadableObjectPropertyKey<>("type");
         static final ReadableIntPropertyKey RP_CONTEXT = new ReadableIntPropertyKey("rp_context");
@@ -89,6 +91,7 @@ class AccountSelectionProperties {
             IDP_FOR_DISPLAY,
             RP_FOR_DISPLAY,
             IDP_BRAND_ICON,
+            RP_BRAND_ICON,
             TYPE,
             RP_CONTEXT,
             RP_MODE

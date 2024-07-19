@@ -22,6 +22,8 @@ found in the LICENSE file.
   <dimen name="account_selection_button_mode_sheet_account_chip_avatar_size">20dp</dimen>
   <dimen name="account_selection_button_mode_sheet_item_padding">16dp</dimen>
   <dimen name="account_selection_button_mode_sheet_icon_size">32dp</dimen>
+  <dimen name="account_selection_button_mode_sheet_arrow_range_icon_size">20dp</dimen>
+  <dimen name="account_selection_button_mode_sheet_arrow_range_horizontal_margin">11dp</dimen>
   <dimen name="account_selection_button_mode_sheet_add_account_icon_size">26dp</dimen>
   <dimen name="account_selection_button_mode_sheet_spinner_size">28dp</dimen>
   <dimen name="account_selection_button_mode_sheet_spinner_top_margin">50dp</dimen>

@@ -83,7 +83,9 @@ public class AccountSelectionIntegrationTestBase {
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/title2.html");
         mClientIdMetadata =
                 new ClientIdMetadata(
-                        new GURL(mTestUrlTermsOfService), new GURL(mTestUrlPrivacyPolicy));
+                        new GURL(mTestUrlTermsOfService),
+                        new GURL(mTestUrlPrivacyPolicy),
+                        EXAMPLE_ETLD_PLUS_ONE);
 
         runOnUiThreadBlocking(
                 () -> {

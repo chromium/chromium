@@ -55,8 +55,8 @@ namespace content {
 namespace {
 
 // Values for testing. Real minimum and ideal sizes are different.
-constexpr int kTestIdpBrandIconMinimumSize = 16;
-constexpr int kTestIdpBrandIconIdealSize = 32;
+constexpr int kTestBrandIconMinimumSize = 16;
+constexpr int kTestBrandIconIdealSize = 32;
 
 constexpr char kTestIdpUrl[] = "https://idp.test";
 constexpr char kTestRpUrl[] = "https://rp.test";
@@ -185,9 +185,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->FetchConfig(GURL(kTestConfigUrl), rp_mode,
-                         kTestIdpBrandIconIdealSize,
-                         kTestIdpBrandIconMinimumSize, std::move(callback));
+    manager->FetchConfig(GURL(kTestConfigUrl), rp_mode, kTestBrandIconIdealSize,
+                         kTestBrandIconMinimumSize, std::move(callback));
     run_loop.Run();
 
     return {parsed_fetch_status, parsed_idp_metadata};
@@ -275,8 +274,9 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->FetchClientMetadata(client_id_endpoint, client_id,
-                                 std::move(callback));
+    manager->FetchClientMetadata(
+        client_id_endpoint, client_id, kTestBrandIconIdealSize,
+        kTestBrandIconMinimumSize, std::move(callback));
     run_loop.Run();
     return data;
   }
@@ -862,7 +862,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingSelectBestSize) {
   }
   })";
 
-  ASSERT_EQ(32, kTestIdpBrandIconIdealSize);
+  ASSERT_EQ(32, kTestBrandIconIdealSize);
 
   FetchStatus fetch_status;
   IdentityProviderMetadata idp_metadata;
@@ -878,7 +878,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingSelectBestSize) {
 // config and it is smaller than the `idp_brand_icon_minimum_size` parameter
 // passed to IdpNetworkRequestManager::FetchConfig().
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingMinSize) {
-  ASSERT_EQ(16, kTestIdpBrandIconMinimumSize);
+  ASSERT_EQ(16, kTestBrandIconMinimumSize);
 
   {
     const char test_json[] = R"({
@@ -1416,10 +1416,16 @@ TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataValidUrls) {
   const std::string brand_icon_url = "http://rp.brand.icon";
 
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
-      /*client_id=*/"123",
-      R"({"privacy_policy_url": ")" + privacy_policy_url +
-          R"(", "terms_of_service_url": ")" + terms_of_service_url +
-          R"(", "brand_icon_url": ")" + brand_icon_url + R"("})");
+      /*client_id=*/"123", R"({"privacy_policy_url": ")" + privacy_policy_url +
+                               R"(", "terms_of_service_url": ")" +
+                               terms_of_service_url +
+                               R"(", "icons": [
+      {
+        "url":  ")" + brand_icon_url +
+                               R"(",
+        "size": 40
+      }
+    ]})");
   ASSERT_EQ(GURL(privacy_policy_url), data.privacy_policy_url);
   ASSERT_EQ(GURL(terms_of_service_url), data.terms_of_service_url);
   ASSERT_EQ(GURL(brand_icon_url), data.brand_icon_url);
@@ -1432,10 +1438,16 @@ TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataInvalidUrls) {
   const std::string brand_icon_url = "about:blank";
 
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
-      /*client_id=*/"123",
-      R"({"privacy_policy_url": ")" + privacy_policy_url +
-          R"(", "terms_of_service_url": ")" + terms_of_service_url +
-          R"(", "brand_icon_url": ")" + brand_icon_url + R"("})");
+      /*client_id=*/"123", R"({"privacy_policy_url": ")" + privacy_policy_url +
+                               R"(", "terms_of_service_url": ")" +
+                               terms_of_service_url +
+                               R"(", "icons": [
+      {
+        "url":  ")" + brand_icon_url +
+                               R"(",
+        "size": 40
+      }
+    ]})");
   ASSERT_EQ(GURL(), data.privacy_policy_url);
   ASSERT_EQ(GURL(), data.terms_of_service_url);
   ASSERT_EQ(GURL(), data.brand_icon_url);

@@ -273,6 +273,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   virtual void FetchClientMetadata(const GURL& endpoint,
                                    const std::string& client_id,
+                                   int rp_brand_icon_ideal_size,
+                                   int rp_brand_icon_minimum_size,
                                    FetchClientMetadataCallback);
 
   // Fetch accounts list for this user from the IDP.
