@@ -148,6 +148,7 @@
 #include "chrome/browser/ash/power/power_metrics_reporter.h"
 #include "chrome/browser/ash/power/renderer_freezer.h"
 #include "chrome/browser/ash/power/smart_charging/smart_charging_manager.h"
+#include "chrome/browser/ash/power/suspend_perf_reporter.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
@@ -1286,6 +1287,9 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
         chromeos::PowerManagerClient::Get(), g_browser_process->local_state());
 
+    suspend_perf_reporter_ = std::make_unique<SuspendPerfReporter>(
+        chromeos::PowerManagerClient::Get());
+
     g_browser_process->platform_part()->InitializeAutomaticRebootManager();
     user_removal_manager::RemoveUsersIfNeeded();
 
@@ -1575,6 +1579,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // DBusThreadManager is shut down.
   secure_dns_manager_.reset();
   network_pref_state_observer_.reset();
+  suspend_perf_reporter_.reset();
   power_metrics_reporter_.reset();
   renderer_freezer_.reset();
   fast_transition_observer_.reset();

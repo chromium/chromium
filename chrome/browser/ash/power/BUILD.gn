@@ -24,6 +24,8 @@ static_library("power") {
     "power_metrics_reporter.h",
     "renderer_freezer.cc",
     "renderer_freezer.h",
+    "suspend_perf_reporter.cc",
+    "suspend_perf_reporter.h",
   ]
 
   deps = [
@@ -55,6 +57,7 @@ source_set("unit_tests") {
     "extension_event_observer_unittest.cc",
     "power_data_collector_unittest.cc",
     "renderer_freezer_unittest.cc",
+    "suspend_perf_reporter_unittest.cc",
   ]
 
   deps = [
