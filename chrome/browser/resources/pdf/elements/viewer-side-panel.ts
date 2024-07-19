@@ -142,7 +142,7 @@ export class ViewerSidePanelElement extends CrLitElement {
 
   // Indicates the brush has changes and should be updated in
   // `this.pluginController_`.
-  private brushDirty_: boolean = true;
+  private brushDirty_: boolean = false;
   private currentType_: AnnotationBrushType = AnnotationBrushType.PEN;
 
   private brushes_: Map<AnnotationBrushType, AnnotationBrush>;
@@ -185,7 +185,9 @@ export class ViewerSidePanelElement extends CrLitElement {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedPrivateProperties.has('brushDirty_') && this.brushDirty_) {
+    if (changedPrivateProperties.has('brushDirty_') &&
+        (this.brushDirty_ ||
+         changedPrivateProperties.get('brushDirty_') === undefined)) {
       this.onBrushChanged_();
     }
   }
@@ -193,6 +195,10 @@ export class ViewerSidePanelElement extends CrLitElement {
   protected onBrushClick_(e: Event) {
     const targetElement = e.currentTarget as HTMLElement;
     const newType = targetElement.dataset['brush'] as AnnotationBrushType;
+    if (this.currentType_ === newType) {
+      return;
+    }
+
     this.currentType_ = newType;
     this.brushDirty_ = true;
   }
@@ -247,6 +253,13 @@ export class ViewerSidePanelElement extends CrLitElement {
     return this.currentType_ !== AnnotationBrushType.ERASER;
   }
 
+  protected getColorName_(): string {
+    assert(this.currentType_ !== AnnotationBrushType.ERASER);
+    return this.currentType_ === AnnotationBrushType.HIGHLIGHTER ?
+        'highlighterColors' :
+        'penColors';
+  }
+
   protected getCurrentBrushSizes_(): SizeOption[] {
     switch (this.currentType_) {
       case AnnotationBrushType.ERASER:
@@ -256,6 +269,13 @@ export class ViewerSidePanelElement extends CrLitElement {
       case AnnotationBrushType.PEN:
         return PEN_SIZES;
     }
+  }
+
+  protected getCurrentBrushColors_(): ColorOption[] {
+    assert(this.currentType_ !== AnnotationBrushType.ERASER);
+    return this.currentType_ === AnnotationBrushType.HIGHLIGHTER ?
+        HIGHLIGHTER_COLORS :
+        PEN_COLORS;
   }
 
   /**

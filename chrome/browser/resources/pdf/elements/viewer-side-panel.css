@@ -32,7 +32,7 @@
   width: 48px;
 }
 
-.color-item input:checked {
+.color-item input[checked] {
   border-radius: 18px;
   height: 36px;
   width: 36px;
