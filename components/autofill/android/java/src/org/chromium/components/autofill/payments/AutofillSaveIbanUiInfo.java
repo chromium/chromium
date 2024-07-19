@@ -4,6 +4,8 @@
 
 package org.chromium.components.autofill.payments;
 
+import android.text.TextUtils;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -82,6 +84,11 @@ public class AutofillSaveIbanUiInfo {
 
         /** Create the {@link AutofillSaveIbanUiInfo} object. */
         public AutofillSaveIbanUiInfo build() {
+            // The asserts are only checked in tests and in some Canary builds but not in
+            // production. This is intended as we don't want to crash Chrome production for the
+            // below checks.
+            assert mIbanLabel != null && !TextUtils.isEmpty(mIbanLabel)
+                    : "IBAN value cannot be null or empty.";
             return new AutofillSaveIbanUiInfo(mAcceptText, mCancelText, mIbanLabel, mTitleText);
         }
     }

@@ -4,8 +4,11 @@
 
 package org.chromium.components.autofill.payments;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +21,7 @@ public class AutofillSaveIbanUiInfoTest {
         return new AutofillSaveIbanUiInfo.Builder()
                 .withAcceptText("")
                 .withCancelText("")
-                .withIbanLabel("")
+                .withIbanLabel("FR76 3000 6000 0112 3456 7890 189")
                 .withTitleText("");
     }
 
@@ -49,5 +52,36 @@ public class AutofillSaveIbanUiInfoTest {
         AutofillSaveIbanUiInfo uiInfo = defaultBuilder().withTitleText("Save IBAN?").build();
 
         assertThat(uiInfo.getTitleText(), equalTo("Save IBAN?"));
+    }
+
+    @Test
+    public void uiInfo_noIbanLabel() {
+        AssertionError error =
+                assertThrows(
+                        AssertionError.class,
+                        () ->
+                                new AutofillSaveIbanUiInfo.Builder()
+                                        .withAcceptText("")
+                                        .withCancelText("")
+                                        .withTitleText("")
+                                        .build());
+
+        assertThat(error.getMessage()).isEqualTo("IBAN value cannot be null or empty.");
+    }
+
+    @Test
+    public void uiInfo_emptyIbanLabel() {
+        AssertionError error =
+                assertThrows(
+                        AssertionError.class,
+                        () ->
+                                new AutofillSaveIbanUiInfo.Builder()
+                                        .withAcceptText("")
+                                        .withCancelText("")
+                                        .withIbanLabel("")
+                                        .withTitleText("")
+                                        .build());
+
+        assertThat(error.getMessage()).isEqualTo("IBAN value cannot be null or empty.");
     }
 }
