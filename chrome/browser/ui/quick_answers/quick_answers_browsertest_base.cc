@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -23,11 +24,19 @@ constexpr char kDataUrlTemplate[] =
 
 }  // namespace
 
-QuickAnswersBrowserTestBase::QuickAnswersBrowserTestBase() = default;
+QuickAnswersBrowserTestBase::QuickAnswersBrowserTestBase() {
+  scoped_feature_list_.InitWithFeatureState(chromeos::features::kMagicBoost,
+                                            IsMagicBoostEnabled());
+}
+
 QuickAnswersBrowserTestBase::~QuickAnswersBrowserTestBase() = default;
 
 void QuickAnswersBrowserTestBase::SetUpOnMainThread() {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
+}
+
+bool QuickAnswersBrowserTestBase::IsMagicBoostEnabled() const {
+  return GetParam();
 }
 
 // `ShowMenu` generates a web page with `params.selected_text` at a position of

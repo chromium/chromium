@@ -14,7 +14,7 @@ using QuickAnswersControllerTest = quick_answers::QuickAnswersBrowserTestBase;
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, FeatureIneligible) {
+IN_PROC_BROWSER_TEST_P(QuickAnswersControllerTest, FeatureIneligible) {
   QuickAnswersState::Get()->SetEligibilityForTesting(false);
 
   ShowMenuParams params;
@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, FeatureIneligible) {
             controller()->GetQuickAnswersVisibility());
 }
 
-IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, PasswordField) {
+IN_PROC_BROWSER_TEST_P(QuickAnswersControllerTest, PasswordField) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
   ShowMenuParams params;
@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, PasswordField) {
             controller()->GetQuickAnswersVisibility());
 }
 
-IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, NoSelectedText) {
+IN_PROC_BROWSER_TEST_P(QuickAnswersControllerTest, NoSelectedText) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
   ShowMenu(ShowMenuParams());
@@ -52,7 +52,11 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, NoSelectedText) {
             controller()->GetQuickAnswersVisibility());
 }
 
-IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, QuickAnswersPending) {
+IN_PROC_BROWSER_TEST_P(QuickAnswersControllerTest, QuickAnswersPending) {
+  if (IsMagicBoostEnabled()) {
+    GTEST_SKIP() << "This test only applies when Magic Boost is disabled.";
+  }
+
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
   ShowMenuParams params;
@@ -63,3 +67,8 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, QuickAnswersPending) {
   ASSERT_EQ(QuickAnswersVisibility::kPending,
             controller()->GetQuickAnswersVisibility());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    QuickAnswersControllerTest,
+    ::testing::Bool());

@@ -5059,6 +5059,7 @@ if (!is_android) {
         "//chromeos/ash/services/network_config:in_process_instance",
         "//chromeos/components/kcer:chaps_proto",
         "//chromeos/components/kiosk:kiosk",
+        "//chromeos/components/magic_boost/public/cpp",
         "//chromeos/components/mahi/public/cpp",
         "//chromeos/components/mgs",
         "//chromeos/components/onc:test_support",
