@@ -128,6 +128,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
     // not provided.
     private boolean mCanUseGooglePlayServices;
     private boolean mRecordUndoSignin;
+    private boolean mSyncStartedRecorded;
     private boolean mIsSignedInWithoutSync;
     protected @SigninAccessPoint int mSigninAccessPoint;
     private ModalDialogManager mModalDialogManager;
@@ -326,8 +327,6 @@ public abstract class SyncConsentFragmentBase extends Fragment
         // By default this is set to true so that when system back button is pressed user action
         // is recorded in onDestroy().
         mRecordUndoSignin = true;
-        SigninMetricsUtils.logSyncConsentStarted(mSigninAccessPoint);
-        SigninMetricsUtils.logSigninUserActionForAccessPoint(mSigninAccessPoint);
     }
 
     @Override
@@ -900,6 +899,11 @@ public abstract class SyncConsentFragmentBase extends Fragment
                         mAccountManagerFacade.getCoreAccountInfos()));
 
         mSigninView.startAnimations();
+        if (!mSyncStartedRecorded) {
+            SigninMetricsUtils.logSyncConsentStarted(mSigninAccessPoint);
+            SigninMetricsUtils.logSigninUserActionForAccessPoint(mSigninAccessPoint);
+            mSyncStartedRecorded = true;
+        }
         if (mDeviceLockReady) {
             mDeviceLockPageCallback.run();
         }
