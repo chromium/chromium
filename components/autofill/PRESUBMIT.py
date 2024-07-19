@@ -8,6 +8,8 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+PRESUBMIT_VERSION = '2.0.0'
+
 import re
 
 def IsComponentsAutofillFile(f, name_suffix):
@@ -22,7 +24,7 @@ def IsComponentsAutofillFileAffected(input_api, name_suffix):
   return AnyAffectedFileMatches(
       input_api, lambda f: IsComponentsAutofillFile(f, name_suffix))
 
-def _CheckNoBaseTimeCalls(input_api, output_api):
+def CheckNoBaseTimeCalls(input_api, output_api):
   """Checks that no files call base::Time::Now()."""
   pattern = input_api.re.compile(r'(base::Time::Now)\(\)')
   files = []
@@ -42,7 +44,7 @@ def _CheckNoBaseTimeCalls(input_api, output_api):
         files) ]
   return []
 
-def _CheckNoFieldTypeCasts(input_api, output_api):
+def CheckNoFieldTypeCasts(input_api, output_api):
   """Checks that no files cast (e.g., raw integers to) FieldTypes."""
   pattern = input_api.re.compile(
       r'_cast<\s*FieldType\b',
@@ -63,7 +65,7 @@ def _CheckNoFieldTypeCasts(input_api, output_api):
         files) ]
   return []
 
-def _CheckFeatureNames(input_api, output_api):
+def CheckFeatureNames(input_api, output_api):
   """Checks that no features are enabled."""
 
   pattern = input_api.re.compile(
@@ -87,7 +89,7 @@ def _CheckFeatureNames(input_api, output_api):
 
   return warnings
 
-def _CheckWebViewExposedExperiments(input_api, output_api):
+def CheckWebViewExposedExperiments(input_api, output_api):
   """Checks that changes to autofill features are exposed to webview."""
 
   _PRODUCTION_SUPPORT_FILE = ('android_webview/java/src/org/chromium/' +
@@ -108,7 +110,7 @@ def _CheckWebViewExposedExperiments(input_api, output_api):
 
   return warnings
 
-def _CheckModificationOfLegacyRegexPatterns(input_api, output_api):
+def CheckModificationOfLegacyRegexPatterns(input_api, output_api):
   """Reminds to update internal regex patterns when legacy ones are modified."""
 
   if IsComponentsAutofillFileAffected(input_api, "legacy_regex_patterns.json"):
@@ -121,7 +123,7 @@ def _CheckModificationOfLegacyRegexPatterns(input_api, output_api):
 
   return []
 
-def _CheckModificationOfFormAutofillUtil(input_api, output_api):
+def CheckModificationOfFormAutofillUtil(input_api, output_api):
   """Reminds to keep form_autofill_util.cc and the iOS counterpart in sync."""
 
   if (IsComponentsAutofillFileAffected(input_api, "fill.ts") !=
@@ -137,7 +139,7 @@ def _CheckModificationOfFormAutofillUtil(input_api, output_api):
 
 # Checks that UniqueRendererForm(Control)Id() is not used and suggests to use
 # form_util::Get(Form|Field)RendererId() instead.
-def _CheckNoUsageOfUniqueRendererId(
+def CheckNoUsageOfUniqueRendererId(
         input_api, output_api):
   autofill_files_pattern = re.compile(
       r'(autofill|password_manager).*\.(mm|cc|h)')
@@ -159,25 +161,3 @@ def _CheckNoUsageOfUniqueRendererId(
       'Do not use (Form|Field)RendererId(*.UniqueRendererForm(Control)?Id()). '
       'Consider using form_util::Get(Form|Field)RendererId(*) instead.',
       warning_files)] if len(warning_files) else []
-
-def _CommonChecks(input_api, output_api):
-  """Checks common to both upload and commit."""
-  results = []
-  results.extend(_CheckNoBaseTimeCalls(input_api, output_api))
-  results.extend(_CheckNoFieldTypeCasts(input_api, output_api))
-  results.extend(_CheckFeatureNames(input_api, output_api))
-  results.extend(_CheckWebViewExposedExperiments(input_api, output_api))
-  results.extend(_CheckModificationOfLegacyRegexPatterns(input_api, output_api))
-  results.extend(_CheckModificationOfFormAutofillUtil(input_api, output_api))
-  results.extend(_CheckNoUsageOfUniqueRendererId(input_api, output_api))
-  return results
-
-def CheckChangeOnUpload(input_api, output_api):
-  results = []
-  results.extend(_CommonChecks(input_api, output_api))
-  return results
-
-def CheckChangeOnCommit(input_api, output_api):
-  results = []
-  results.extend(_CommonChecks(input_api, output_api))
-  return results

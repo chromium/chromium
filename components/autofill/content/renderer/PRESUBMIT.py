@@ -8,7 +8,9 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
-def _CheckNoBannedFunctions(input_api, output_api):
+PRESUBMIT_VERSION = '2.0.0'
+
+def CheckNoBannedFunctions(input_api, output_api):
     """Makes sure that banned functions are not used."""
     errors = []
     file_filter = lambda f: (
@@ -43,19 +45,3 @@ def _CheckNoBannedFunctions(input_api, output_api):
                         )
                     )
     return errors
-
-def _CommonChecks(input_api, output_api):
-  """Checks common to both upload and commit."""
-  results = []
-  results.extend(_CheckNoBannedFunctions(input_api, output_api))
-  return results
-
-def CheckChangeOnUpload(input_api, output_api):
-  results = []
-  results.extend(_CommonChecks(input_api, output_api))
-  return results
-
-def CheckChangeOnCommit(input_api, output_api):
-  results = []
-  results.extend(_CommonChecks(input_api, output_api))
-  return results
