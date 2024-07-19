@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -75,6 +77,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/share/share_history.h"
 #include "chrome/browser/share/share_ranking.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -128,6 +131,12 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/tpcd/metadata/browser/manager.h"
@@ -1528,13 +1537,20 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
   // are refreshed the next time, typically on the next browser restart.
   if (should_clear_sync_account_settings_) {
     should_clear_sync_account_settings_ = false;
-    syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(profile_);
-    if (sync_service) {
-      sync_service->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers({});
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_);
+    base::flat_set<std::string> gaia_ids =
+        signin::GetAllGaiaIdsForKeyedPreferences(
+            identity_manager,
+            signin::AccountsInCookieJarInfo() /* empty_cookies */);
+    if (syncer::SyncService* sync_service =
+            SyncServiceFactory::GetForProfile(profile_);
+        sync_service) {
+      sync_service->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
+          base::ToVector(gaia_ids, &signin::GaiaIdHash::FromGaiaId));
     }
     password_manager::features_util::KeepAccountStorageSettingsOnlyForUsers(
-        profile_->GetPrefs(), {});
+        profile_->GetPrefs(), std::move(gaia_ids).extract());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -7,13 +7,18 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 
 namespace signin {
@@ -80,6 +85,38 @@ bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
     PrefService& prefs) {
   return !signin::IsImplicitBrowserSigninOrExplicitDisabled(&manager, &prefs) &&
          !manager.HasPrimaryAccount(signin::ConsentLevel::kSync);
+}
+
+base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
+    const IdentityManager* identity_manager,
+    const AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
+  CHECK(accounts_in_cookie_jar_info.accounts_are_fresh);
+  // Get all accounts in Chrome; both signed in and signed out accounts in
+  // cookies.
+
+  // `base::flat_set` has an optimized constructor from a vector.
+  base::flat_set<std::string> gaia_ids(
+      base::ToVector(accounts_in_cookie_jar_info.signed_in_accounts,
+                     &gaia::ListedAccount::gaia_id));
+
+  for (const gaia::ListedAccount& account :
+       accounts_in_cookie_jar_info.signed_out_accounts) {
+    gaia_ids.insert(account.gaia_id);
+  }
+
+  // If there is a Primary account, also keep it even if it was removed (not in
+  // the cookie jar at all).
+  std::string primary_account_gaia_id =
+      identity_manager
+          ? identity_manager
+                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                .gaia
+          : std::string();
+  if (!primary_account_gaia_id.empty()) {
+    gaia_ids.insert(primary_account_gaia_id);
+  }
+
+  return gaia_ids;
 }
 
 }  // namespace signin

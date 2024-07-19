@@ -24,6 +24,7 @@
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -55,6 +56,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -1095,9 +1097,6 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordManagerSyncExplicitParamTest);
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-// Context: Clearing cookies resets the opt-in to its default state. For users
-// whose default is "false", this means account storage gets disabled, and no
-// password data can be uploaded after that.
 // This test verifies that if such users delete passwords along with cookies,
 // the password deletions are uploaded before the server connection is cut.
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
@@ -1135,7 +1134,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_EQ(fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS).size(),
             0u);
 
-  // The opt-in is back to its default state, false.
+  // The user is still opted in (because they are still signed in).
+  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+
+  // The preference is reset as the account is removed from Chrome.
+  SignOut();
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 }

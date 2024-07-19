@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/identity_utils.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
@@ -13,10 +14,13 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
@@ -58,10 +62,10 @@ class IdentityUtilsTest : public testing::Test {
       : identity_test_env_(/*test_url_loader_factory=*/nullptr,
                            &pref_service_) {}
 
-  void MakePrimaryAccountAvailable() {
+  AccountInfo MakePrimaryAccountAvailable() {
     static const std::string kTestEmail = "test@gmail.com";
-    identity_test_env_.MakePrimaryAccountAvailable(kTestEmail,
-                                                   ConsentLevel::kSignin);
+    return identity_test_env_.MakePrimaryAccountAvailable(
+        kTestEmail, ConsentLevel::kSignin);
   }
 
   void SetExplicitBrowserSigninPref(bool value) {
@@ -160,6 +164,65 @@ TEST_F(IdentityUtilsIsUsernameAllowedTest, MatchingWildcardPatterns) {
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern,
                      kNonMatchingDomainPattern);
   EXPECT_FALSE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));
+}
+
+TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
+  AccountsInCookieJarInfo cookie_info;
+  const int cookie_accounts_count = 3;
+  std::vector<gaia::ListedAccount> cookie_accounts(cookie_accounts_count);
+  for (int i = 0; i < cookie_accounts_count; ++i) {
+    cookie_accounts[i].gaia_id = base::NumberToString(i);
+  }
+
+  // No accounts in cookie, no identity manager.
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(/*identity_manager=*/nullptr,
+                                               cookie_info),
+              testing::UnorderedElementsAre());
+
+  // No accounts in cookie, empty identity manager.
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+              testing::UnorderedElementsAre());
+
+  // Signed in cookie, empty identity manager.
+  cookie_info.signed_in_accounts = {cookie_accounts[0]};
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+              testing::UnorderedElementsAre("0"));
+
+  // Signed out cookie, empty identity manager.
+  cookie_info.signed_in_accounts = {};
+  cookie_info.signed_out_accounts = {cookie_accounts[0]};
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+              testing::UnorderedElementsAre("0"));
+
+  // Signed out and signed in cookies, empty identity manager.
+  cookie_info.signed_in_accounts = {cookie_accounts[0], cookie_accounts[1]};
+  cookie_info.signed_out_accounts = {cookie_accounts[2]};
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+              testing::UnorderedElementsAre("0", "1", "2"));
+
+  AccountInfo account_info = MakePrimaryAccountAvailable();
+  gaia::ListedAccount cookie_for_primary_account;
+  cookie_for_primary_account.gaia_id = account_info.gaia;
+
+  // No accounts in cookie, primary account in identity manager.
+  cookie_info.signed_in_accounts = {};
+  cookie_info.signed_out_accounts = {};
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+              testing::UnorderedElementsAre(account_info.gaia));
+
+  // Primary account is valid in cookies.
+  cookie_info.signed_in_accounts = {cookie_for_primary_account,
+                                    cookie_accounts[0]};
+  cookie_info.signed_out_accounts = {cookie_accounts[1]};
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+              testing::UnorderedElementsAre(account_info.gaia, "0", "1"));
+
+  // Primary account is invalid in cookies.
+  cookie_info.signed_in_accounts = {cookie_accounts[0]};
+  cookie_info.signed_out_accounts = {cookie_accounts[1],
+                                     cookie_for_primary_account};
+  EXPECT_THAT(GetAllGaiaIdsForKeyedPreferences(identity_manager(), cookie_info),
+              testing::UnorderedElementsAre(account_info.gaia, "0", "1"));
 }
 
 class IdentityUtilsIsImplicitBrowserSigninOrExplicitDisabled

@@ -873,50 +873,66 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, HistoryDeletion) {
   EXPECT_FALSE(HasDataForType(kType));
 }
 
-// TODO(b/b/344531408): Delete this test when
-// `switches::kExplicitBrowserSigninUIOnDesktop` is launched.
+// ChromeOS users cannot sign out, their account preferences can never be
+// cleared.
+#if !BUILDFLAG(IS_CHROMEOS)
+
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        ClearingCookiesAlsoClearsPasswordAccountStorageOptIn) {
+  const char kTestEmail[] = "foo@gmail.com";
   PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
-  signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(GetProfile()), "foo@gmail.com",
-      signin::ConsentLevel::kSignin);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                      signin::ConsentLevel::kSignin);
 
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    password_manager::features_util::OptOutOfAccountStorage(prefs,
+                                                            sync_service);
+  } else {
     password_manager::features_util::OptInToAccountStorage(prefs, sync_service);
   }
-  ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      prefs, sync_service));
+  ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+                prefs, sync_service),
+            !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
+  signin::ClearPrimaryAccount(identity_manager);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
+  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                      signin::ConsentLevel::kSignin);
 
   EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
                 prefs, sync_service),
             switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 }
 
-// TODO(b/b/344531408): Delete this test when
-// `switches::kExplicitBrowserSigninUIOnDesktop` is launched.
 IN_PROC_BROWSER_TEST_F(
     BrowsingDataRemoverBrowserTest,
     ClearingCookiesWithFilterAlsoClearsPasswordAccountStorageOptIn) {
+  const char kTestEmail[] = "foo@gmail.com";
   PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
-  signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(GetProfile()), "foo@gmail.com",
-      signin::ConsentLevel::kSignin);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                      signin::ConsentLevel::kSignin);
 
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    password_manager::features_util::OptOutOfAccountStorage(prefs,
+                                                            sync_service);
+  } else {
     password_manager::features_util::OptInToAccountStorage(prefs, sync_service);
   }
-  ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      prefs, sync_service));
+  ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+                prefs, sync_service),
+            !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
   // Clearing cookies for some random domain should have no effect on the
   // opt-in.
+  signin::ClearPrimaryAccount(identity_manager);
   {
     std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
         BrowsingDataFilterBuilder::Create(
@@ -925,10 +941,14 @@ IN_PROC_BROWSER_TEST_F(
     RemoveWithFilterAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                             std::move(filter_builder));
   }
-  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      prefs, sync_service));
+  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                      signin::ConsentLevel::kSignin);
+  EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+                prefs, sync_service),
+            !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
   // Clearing cookies for google.com should clear the opt-in.
+  signin::ClearPrimaryAccount(identity_manager);
   {
     std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
         BrowsingDataFilterBuilder::Create(
@@ -937,18 +957,22 @@ IN_PROC_BROWSER_TEST_F(
     RemoveWithFilterAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                             std::move(filter_builder));
   }
+  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                      signin::ConsentLevel::kSignin);
   EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
                 prefs, sync_service),
             switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
+  const char kTestEmail[] = "foo@gmail.com";
   PrefService* prefs = GetProfile()->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
-  signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(GetProfile()), "foo@gmail.com",
-      signin::ConsentLevel::kSignin);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                      signin::ConsentLevel::kSignin);
 
   const GURL kFirstPartyURL("https://google.com");
   const GURL kCrossSiteURL("https://example.com");
@@ -957,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
     const url::Origin origin;
     const std::optional<net::CookiePartitionKey> cookie_partition_key;
     const std::optional<blink::StorageKey> storage_key;
-    bool expects_opted_in;
+    bool expects_keep_optin_pref;
   } test_cases[] = {
       {
           url::Origin::Create(kFirstPartyURL),
@@ -1004,25 +1028,35 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
     SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
     const auto& test_case = test_cases[i];
 
-    if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+      password_manager::features_util::OptOutOfAccountStorage(prefs,
+                                                              sync_service);
+    } else {
       password_manager::features_util::OptInToAccountStorage(prefs,
                                                              sync_service);
     }
-    ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-        prefs, sync_service));
-
+    ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+                  prefs, sync_service),
+              !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
+    signin::ClearPrimaryAccount(identity_manager);
     ClearSiteDataAndWait(test_case.origin, test_case.cookie_partition_key,
                          test_case.storage_key, {});
+    signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                        signin::ConsentLevel::kSignin);
 
-    if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-      // TODO(b/b/344531408): Delete the `expects_opted_in` field when
-      // `switches::kExplicitBrowserSigninUIOnDesktop` is launched.
-      ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+    if (test_case.expects_keep_optin_pref) {
+      EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
                     prefs, sync_service),
-                test_case.expects_opted_in);
+                !switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
+    } else {
+      EXPECT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+                    prefs, sync_service),
+                switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
     }
   }
 }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Storage Buckets
 

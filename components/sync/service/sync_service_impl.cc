@@ -9,6 +9,8 @@
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -28,6 +30,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
@@ -206,6 +209,23 @@ base::TimeDelta GetDeferredInitDelay() {
     }
   }
   return base::Seconds(10);
+}
+
+void MaybeClearAccountKeyedPreferences(
+    signin::IdentityManager* identity_manager,
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    SyncUserSettingsImpl& user_settings) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  if (accounts_in_cookie_jar_info.accounts_are_fresh) {
+    // Clear settings for accounts no longer in the cookie jar. On Android
+    // and iOS this is done when the account is removed from the OS instead.
+    std::vector<signin::GaiaIdHash> hashes =
+        base::ToVector(signin::GetAllGaiaIdsForKeyedPreferences(
+                           identity_manager, accounts_in_cookie_jar_info),
+                       &signin::GaiaIdHash::FromGaiaId);
+    user_settings.KeepAccountSettingsPrefsOnlyForUsers(hashes);
+  }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -1896,11 +1916,9 @@ void SyncServiceImpl::OnFirstSetupCompletePrefChange(
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SyncServiceImpl::OnAccountsCookieDeletedByUserAction() {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // Clear account settings. On Android and iOS this is done when accounts are
-  // removed from the OS instead.
-  user_settings_->KeepAccountSettingsPrefsOnlyForUsers({});
-#endif
+  // Pass an empty `signin::AccountsInCookieJarInfo` to simulate empty cookies.
+  MaybeClearAccountKeyedPreferences(
+      identity_manager_, signin::AccountsInCookieJarInfo(), *user_settings_);
 }
 
 void SyncServiceImpl::OnAccountsInCookieUpdated(
@@ -1910,27 +1928,24 @@ void SyncServiceImpl::OnAccountsInCookieUpdated(
                                         base::NullCallback());
 }
 
+void SyncServiceImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    return;
+  }
+
+  MaybeClearAccountKeyedPreferences(identity_manager_,
+                                    identity_manager_->GetAccountsInCookieJar(),
+                                    *user_settings_);
+}
+
 void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  if (accounts_in_cookie_jar_info.accounts_are_fresh) {
-    // Clear settings for accounts no longer in the cookie jar. On Android
-    // and iOS this is done when the account is removed from the OS instead.
-    std::vector<signin::GaiaIdHash> hashes;
-    for (const gaia::ListedAccount& account :
-         accounts_in_cookie_jar_info.signed_in_accounts) {
-      hashes.push_back(signin::GaiaIdHash::FromGaiaId(account.gaia_id));
-    }
-    for (const gaia::ListedAccount& account :
-         accounts_in_cookie_jar_info.signed_out_accounts) {
-      hashes.push_back(signin::GaiaIdHash::FromGaiaId(account.gaia_id));
-    }
-    user_settings_->KeepAccountSettingsPrefsOnlyForUsers(hashes);
-  }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  MaybeClearAccountKeyedPreferences(
+      identity_manager_, accounts_in_cookie_jar_info, *user_settings_);
 
   if (!engine_ || !engine_->IsInitialized()) {
     return;

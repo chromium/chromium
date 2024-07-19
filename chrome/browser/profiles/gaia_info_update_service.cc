@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,6 +28,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
@@ -40,28 +43,10 @@ void UpdateAccountsPrefs(
     return;
   }
 
-  // Get all accounts in Chrome; both signed in and signed out accounts.
-  base::flat_set<SigninPrefs::GaiaId> account_ids_in_chrome;
-  for (const auto& account : accounts_in_cookie_jar_info.signed_in_accounts) {
-    account_ids_in_chrome.insert(account.gaia_id);
-  }
-  for (const auto& account : accounts_in_cookie_jar_info.signed_out_accounts) {
-    account_ids_in_chrome.insert(account.gaia_id);
-  }
+  base::flat_set<std::string> account_ids_in_chrome =
+      signin::GetAllGaiaIdsForKeyedPreferences(&identity_manager,
+                                               accounts_in_cookie_jar_info);
 
-  // If there is a Primary account, also keep it even if it was removed (not in
-  // the cookie jar at all).
-  // Note: Make sure that `primary_account_info` and `account_ids_in_chrome`
-  // have the same lifetime, since `IdentityManager::GetPrimaryAccountInfo()`
-  // returns a copy, and `account_ids_in_chrome` is a set of
-  // `SigninPrefs::GaiaId` which are `std::string_view` (references); in order
-  // for the reference not to outlive the actual string.
-  CoreAccountInfo primary_account_info =
-      identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (!primary_account_info.IsEmpty()) {
-    // Set will make sure it is not duplicated if already added.
-    account_ids_in_chrome.insert(primary_account_info.gaia);
-  }
   // TODO(b/331767195): In case the prefs are needed for ChromeOS and Android
   // (platforms where the account is tied to the OS) in the future, we would
   // also need to keep the accounts that have an AccountInfo that is still
@@ -69,8 +54,12 @@ void UpdateAccountsPrefs(
   // above checks on cookies and primary account.
 
   SigninPrefs signin_prefs(pref_service);
-  size_t removed_count =
-      signin_prefs.RemoveAllAccountPrefsExcept(account_ids_in_chrome);
+  size_t removed_count = signin_prefs.RemoveAllAccountPrefsExcept(
+      // Convert `std::string` to `SigninPrefs::GaiaId`.
+      base::ToVector(account_ids_in_chrome,
+                     [](const std::string& gaia_id) -> SigninPrefs::GaiaId {
+                       return gaia_id;
+                     }));
 
   if (removed_count > 0) {
     // There is a maximum of 10 Gaia accounts on the web. If we add the Chrome
@@ -82,9 +71,9 @@ void UpdateAccountsPrefs(
     base::UmaHistogramExactLinear(kAccountsRemovedHistogramName, removed_count,
                                   kExclusiveMaxRemovedCount);
     std::string variant_histogram_name =
-        primary_account_info.IsEmpty()
-            ? base::StrCat({kAccountsRemovedHistogramName, ".SignedOut"})
-            : base::StrCat({kAccountsRemovedHistogramName, ".SignedIn"});
+        identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin)
+            ? base::StrCat({kAccountsRemovedHistogramName, ".SignedIn"})
+            : base::StrCat({kAccountsRemovedHistogramName, ".SignedOut"});
     base::UmaHistogramExactLinear(variant_histogram_name, removed_count,
                                   kExclusiveMaxRemovedCount);
   }
