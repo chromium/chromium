@@ -465,9 +465,9 @@ chromium-metrics-reviews@google.com.
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The percentage of managed JavaScript memory that has been collected by a
-    full garbage collection of the unified heap. Reported at the end of the
-    garbage collection cycle.
+    The percentage of managed JavaScript memory that survived after a full
+    garbage collection of the unified heap. Reported at the end of the garbage
+    collection cycle.
   </summary>
 </histogram>
 
@@ -476,7 +476,7 @@ chromium-metrics-reviews@google.com.
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The percentage of managed C++ memory that has been collected by a garbage
+    The percentage of managed C++ memory that survived after a garbage
     collection of the managed C++ heap. Reported at the end of the garbage
     collection cycle.
   </summary>
@@ -487,9 +487,55 @@ chromium-metrics-reviews@google.com.
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The percentage of managed JavaScript memory that has been collected by a
-    young generation garbage collection of the JavaScript heap. Reported at the
+    The percentage of managed JavaScript memory that survived after a young
+    generation garbage collection of the JavaScript heap. Reported at the end of
+    the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.CollectionWeight.Full" units="s/ms"
+    expires_after="M130">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of a full garbage collection of the unified heap,
+    normalized by the wall time since the last mark compact cycle. Reported at
+    the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.CollectionWeight.Full.Cpp" units="s/ms"
+    expires_after="M130">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of garbage collection of the managed C++ heap, normalized
+    by the wall time since the last mark compact cycle. Reported at the end of
+    the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.CollectionWeight.MainThread.Full" units="s/ms"
+    expires_after="M130">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of a full garbage collection of the unified heap on the
+    main thread only, normalized by the wall time since the last mark compact
+    cycle. This histogram ignores concurrent garbage collection. Reported at the
     end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.CollectionWeight.MainThread.Full.Cpp" units="s/ms"
+    expires_after="M130">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of garbage collection of the managed C++ heap on the main
+    thread only, normalized by the wall time since the last mark compact cycle.
+    This histogram ignores concurrent garbage collection. Reported at the end of
+    the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -939,6 +985,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.Memory.Freed.Full" units="KB"
+    expires_after="2024-12-08">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of allocated memory freed by a full garbage collection of the unified
+    heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.Memory.Freed.Full.Cpp" units="KB"
     expires_after="2024-12-08">
   <owner>omerkatz@chromium.org</owner>
@@ -946,6 +1002,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Amount of allocated memory freed by a garbage collection of the managed C++
     heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Objects.After.Full" units="KB"
+    expires_after="M130">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of used memory after a full garbage collection of the unified heap.
+    Reported at the end of the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -959,6 +1025,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.Objects.Before.Full" units="KB"
+    expires_after="M130">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of used memory before a full garbage collection of the unified heap.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.Objects.Before.Full.Cpp" units="KB"
     expires_after="M130">
   <owner>omerkatz@chromium.org</owner>
@@ -966,6 +1042,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Amount of used memory before a garbage collection of the managed C++ heap.
     Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Objects.Freed.Full" units="KB"
+    expires_after="2024-12-08">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of used memory freed by a full garbage collection of the unified
+    heap. Reported at the end of the garbage collection cycle.
   </summary>
 </histogram>
 
