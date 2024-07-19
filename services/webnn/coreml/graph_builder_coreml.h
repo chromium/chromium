@@ -172,6 +172,8 @@ class GraphBuilderCoreml {
                        uint64_t output_operand_id,
                        CoreML::Specification::MILSpec::Block& block,
                        std::string_view operand_op_name);
+  // TODO: crbug.com/345271830 - remove this after all callers check with
+  // `context_properties_.data_type_limits`.
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryOperation(
       SupportedDataType supported_data_type,
       std::string_view op_name,
@@ -179,6 +181,10 @@ class GraphBuilderCoreml {
       uint64_t output_operand_id,
       CoreML::Specification::MILSpec::Block& block,
       std::string_view operand_op_name);
+  void AddUnaryOperation(std::string_view op_name,
+                         uint64_t input_operand_id,
+                         uint64_t output_operand_id,
+                         CoreML::Specification::MILSpec::Block& block);
   template <typename T>
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryOperation(
       SupportedDataType supported_data_type,

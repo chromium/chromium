@@ -150,6 +150,7 @@ constexpr char kOpLogicalGreater[] = "greater";
 constexpr char kOpLogicalGreaterEqual[] = "greater_equal";
 constexpr char kOpLogicalLess[] = "less";
 constexpr char kOpLogicalLessEqual[] = "less_equal";
+constexpr char kOpLogicalNot[] = "logical_not";
 constexpr char kOpAbsTypeName[] = "abs";
 constexpr char kOpCeilTypeName[] = "ceil";
 constexpr char kOpCosTypeName[] = "cos";
@@ -1105,6 +1106,22 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddUnaryOperation(
   return base::ok();
 }
 
+void GraphBuilderCoreml::AddUnaryOperation(
+    std::string_view op_name,
+    uint64_t input_operand_id,
+    uint64_t output_operand_id,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(std::string(op_name));
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  PopulateNamedValueType(output_operand_id, *op->add_outputs());
+}
+
 template <typename T>
 base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddUnaryOperation(
     SupportedDataType supported_data_type,
@@ -1564,8 +1581,10 @@ base::expected<void, mojom::ErrorPtr>
 GraphBuilderCoreml::AddOperationForElementwiseUnary(
     const mojom::ElementWiseUnary& operation,
     CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
   const CoreML::Specification::MILSpec::DataType input_data_type =
-      GetOperandInfo(operation.input_operand_id).mil_data_type;
+      input_operand_info.mil_data_type;
 
   std::string operand_op_name = OpKindToString(operation.kind);
 
@@ -1686,10 +1705,24 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
           /*output_operand_id=*/operation.output_operand_id,
           mojom::ElementWiseBinary::Kind::kMul, block);
     }
-    case mojom::ElementWiseUnary::Kind::kLogicalNot:
+    case mojom::ElementWiseUnary::Kind::kLogicalNot: {
       CHECK_EQ(input_data_type,
                CoreML::Specification::MILSpec::DataType::UINT8);
-      return NewNotSupportedError(NotSupportedOperatorError(operation));
+      ASSIGN_OR_RETURN(uint64_t cast_to_bool_operand_id,
+                       GenerateInternalOperandInfo(
+                           CoreML::Specification::MILSpec::DataType::BOOL,
+                           input_operand_info.dimensions));
+      RETURN_IF_ERROR(AddOperationForCast(operation.input_operand_id,
+                                          cast_to_bool_operand_id, block));
+      ASSIGN_OR_RETURN(uint64_t logical_not_output_operand_id,
+                       GenerateInternalOperandInfo(
+                           CoreML::Specification::MILSpec::DataType::BOOL,
+                           input_operand_info.dimensions));
+      AddUnaryOperation(kOpLogicalNot, cast_to_bool_operand_id,
+                        logical_not_output_operand_id, block);
+      return AddOperationForCast(logical_not_output_operand_id,
+                                 operation.output_operand_id, block);
+    }
   }
 }
 

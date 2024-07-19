@@ -16,8 +16,8 @@ const kIntTypes = ['uint8', 'int8', 'uint32', 'int32', 'uint64', 'int64'];
 const kFloatTypes = ['float16', 'float32'];
 
 const findCompatibleType =
-    (dataType, context) => {
-      for (let supportedType of context.opSupportLimits().input.dataTypes) {
+    (dataType, supportedTypes) => {
+      for (let supportedType of supportedTypes) {
         if (kIntTypes.includes(dataType)) {
           if (kIntTypes.indexOf(supportedType) > kIntTypes.indexOf(dataType)) {
             return supportedType;
@@ -672,8 +672,8 @@ const createSingleInputOperand =
       // a supported type to pass the data, then cast back to original type.
       if (!context.opSupportLimits().input.dataTypes.includes(
               inputResources.type)) {
-        const compatible_type =
-            findCompatibleType(inputResources.type, context);
+        const compatible_type = findCompatibleType(
+            inputResources.type, context.opSupportLimits().input.dataTypes);
         if (compatible_type) {
           inputResources.castedType = compatible_type;
           dataType = compatible_type;
@@ -727,9 +727,17 @@ const buildOperationWithSingleInput =
       const namedOutputOperand = {};
       const inputOperand =
           createSingleInputOperand(context, builder, resources);
-      const outputOperand = resources.options ?
+      let outputOperand = resources.options ?
           builder[operationName](inputOperand, resources.options) :
           builder[operationName](inputOperand);
+      if (!context.opSupportLimits().output.dataTypes.includes(
+              resources.expected.type)) {
+        const compatibleType = findCompatibleType(
+            resources.expected.type,
+            context.opSupportLimits().output.dataTypes);
+        outputOperand = builder.cast(outputOperand, compatibleType);
+        resources.expected.castedType = compatibleType;
+      }
       namedOutputOperand[resources.expected.name] = outputOperand;
       return namedOutputOperand;
     };
@@ -748,10 +756,18 @@ const buildOperationWithTwoInputs =
       const namedOutputOperand = {};
       const [inputOperandA, inputOperandB] =
           createMultiInputOperands(context, builder, resources);
-      const outputOperand = resources.options ?
+      let outputOperand = resources.options ?
           builder[operationName](
               inputOperandA, inputOperandB, resources.options) :
           builder[operationName](inputOperandA, inputOperandB);
+      if (!context.opSupportLimits().output.dataTypes.includes(
+              resources.expected.type)) {
+        const compatibleType = findCompatibleType(
+            resources.expected.type,
+            context.opSupportLimits().output.dataTypes);
+        outputOperand = builder.cast(outputOperand, compatibleType);
+        resources.expected.castedType = compatibleType;
+      }
       namedOutputOperand[resources.expected.name] = outputOperand;
       return namedOutputOperand;
     };
@@ -979,7 +995,11 @@ const buildGraph = (operationName, context, builder, resources, buildFunc) => {
   } else {
     // matmul 1D with 1D produces a scalar which doesn't have its shape
     const shape = resources.expected.shape ? resources.expected.shape : [1];
-    outputs[resources.expected.name] = new TypedArrayDict[resources.expected.type](sizeOfShape(shape));
+    const expectedType = resources.expected.castedType ?
+        resources.expected.castedType :
+        resources.expected.type;
+    outputs[resources.expected.name] =
+        new TypedArrayDict[expectedType](sizeOfShape(shape));
   }
   return [namedOperands, inputs, outputs];
 };
