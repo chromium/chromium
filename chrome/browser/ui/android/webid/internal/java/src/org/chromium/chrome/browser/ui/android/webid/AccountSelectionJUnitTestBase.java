@@ -18,8 +18,10 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
@@ -103,6 +105,11 @@ public class AccountSelectionJUnitTestBase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(
+                ChromeFeatureList.FEDCM_BUTTON_MODE_UNIFIED_ACCOUNT_CHOOSER, false);
+        FeatureList.setTestValues(testValues);
 
         // Note that these are not actual ETLD+1 values, but this is irrelevant for the purposes of
         // this test.

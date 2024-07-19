@@ -309,6 +309,8 @@ public abstract class ChromeFeatureList {
     public static final String ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS =
             "EnablePasswordsAccountStorageForNonSyncingUsers";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
+    public static final String FEDCM_BUTTON_MODE_UNIFIED_ACCOUNT_CHOOSER =
+            "FedCmButtonModeUnifiedAccountChooser";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =

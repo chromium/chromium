@@ -22,6 +22,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -184,11 +185,14 @@ class AccountSelectionMediator {
                         View continueButton =
                                 contentView.findViewById(R.id.account_selection_continue_btn);
 
-                        boolean isSingleAccountChooser = mAccounts != null && mAccounts.size() == 1;
+                        boolean isDefaultSingleAccountChooser =
+                                mAccounts != null
+                                        && mAccounts.size() == 1
+                                        && !isUnifiedAccountChooserEnabled();
                         View focusView =
                                 continueButton != null
                                                 && continueButton.isShown()
-                                                && !isSingleAccountChooser
+                                                && !isDefaultSingleAccountChooser
                                                 && getSheetType() == SheetType.ACCOUNT_SELECTION
                                         ? continueButton
                                         : contentView.findViewById(R.id.header);
@@ -414,6 +418,11 @@ class AccountSelectionMediator {
         }
     }
 
+    private boolean isUnifiedAccountChooserEnabled() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.FEDCM_BUTTON_MODE_UNIFIED_ACCOUNT_CHOOSER);
+    }
+
     void showVerifySheet(Account account) {
         if (mHeaderType == HeaderType.SIGN_IN || mHeaderType == HeaderType.REQUEST_PERMISSION) {
             mHeaderType = HeaderType.VERIFY;
@@ -574,13 +583,14 @@ class AccountSelectionMediator {
                         && mHeaderType == HeaderType.SIGN_IN
                         && areAccountsClickable
                         && mIdpMetadata.supportsAddAccount();
-        boolean isSingleAccountChooser = accounts != null && accounts.size() == 1;
+        boolean isDefaultSingleAccountChooser =
+                accounts != null && accounts.size() == 1 && !isUnifiedAccountChooserEnabled();
 
         updateAccounts(
                 mIdpForDisplay,
                 accounts,
                 areAccountsClickable,
-                supportsAddAccount && !isSingleAccountChooser);
+                supportsAddAccount && !isDefaultSingleAccountChooser);
         updateHeader();
 
         boolean isDataSharingConsentVisible = false;
@@ -605,7 +615,7 @@ class AccountSelectionMediator {
             continueButtonCallback = this::onLoginToIdP;
         }
 
-        if (supportsAddAccount && isSingleAccountChooser) {
+        if (supportsAddAccount && isDefaultSingleAccountChooser) {
             assert !isDataSharingConsentVisible;
             assert mSelectedAccount == null;
             mSelectedAccount = accounts.get(0);
@@ -650,7 +660,9 @@ class AccountSelectionMediator {
         // For multiple account choosers, the add account button is added as an account row.
         mModel.set(
                 ItemProperties.ADD_ACCOUNT_BUTTON,
-                supportsAddAccount && isSingleAccountChooser ? createAddAccountBtnItem() : null);
+                supportsAddAccount && isDefaultSingleAccountChooser
+                        ? createAddAccountBtnItem()
+                        : null);
         mModel.set(
                 ItemProperties.ACCOUNT_CHIP,
                 mHeaderType == HeaderType.REQUEST_PERMISSION
