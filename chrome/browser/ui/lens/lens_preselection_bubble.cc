@@ -28,6 +28,12 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace lens {
+namespace {
+
+// The minimum y value in screen coordinates for the preselection bubble.
+const int kPreselectionBubbleMinY = 8;
+
+}  // namespace
 
 LensPreselectionBubble::LensPreselectionBubble(views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE) {
@@ -70,8 +76,11 @@ gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
     const gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
     const int x =
         anchor_bounds.x() + (anchor_bounds.width() - bubble_size.width()) / 2;
-    // Take bubble out of its original bounds to cross "line of death".
-    const int y = anchor_bounds.bottom() - bubble_size.height() / 2;
+    // Take bubble out of its original bounds to cross "line of death". However,
+    // if there is no line of death, we set the bubble to below the top of the
+    // screen.
+    const int y = std::max(kPreselectionBubbleMinY,
+                           anchor_bounds.bottom() - bubble_size.height() / 2);
     return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
   }
   return gfx::Rect();
