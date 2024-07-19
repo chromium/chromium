@@ -14,8 +14,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-import java.util.List;
-
 /**
  * Coordinator for the all plus addresses bottom sheet UI component.
  *
@@ -45,7 +43,7 @@ class AllPlusAddressesBottomSheetCoordinator {
                 AllPlusAddressesBottomSheetViewBinder::bindAllPlusAddressesBottomSheet);
     }
 
-    void showPlusProfiles(List<PlusProfile> profiles) {
-        mMeditor.showPlusProfiles(profiles);
+    void showPlusProfiles(AllPlusAddressesBottomSheetUIInfo uiInfo) {
+        mMeditor.showPlusProfiles(uiInfo);
     }
 }

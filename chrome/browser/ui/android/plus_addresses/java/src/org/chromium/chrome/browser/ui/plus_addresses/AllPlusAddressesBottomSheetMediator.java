@@ -12,8 +12,6 @@ import org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheet
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.List;
-
 /** Mediator for the all plus addresses bottom sheet UI component. */
 class AllPlusAddressesBottomSheetMediator {
     private final PropertyModel mModel;
@@ -22,9 +20,9 @@ class AllPlusAddressesBottomSheetMediator {
         mModel = model;
     }
 
-    void showPlusProfiles(List<PlusProfile> profiles) {
+    void showPlusProfiles(AllPlusAddressesBottomSheetUIInfo uiInfo) {
         mModel.get(PLUS_PROFILES).clear();
-        for (PlusProfile profile : profiles) {
+        for (PlusProfile profile : uiInfo.getPlusProfiles()) {
             final PropertyModel model = PlusProfileProperties.createPlusProfileModel(profile);
             mModel.get(PLUS_PROFILES).add(new ListItem(ItemType.PLUS_PROFILE, model));
         }

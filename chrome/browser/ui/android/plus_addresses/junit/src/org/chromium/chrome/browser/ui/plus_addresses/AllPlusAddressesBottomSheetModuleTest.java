@@ -45,7 +45,6 @@ public class AllPlusAddressesBottomSheetModuleTest {
     private static final int WIDTH = 2000;
     private static final int HEIGHT = 2000;
     private static final PlusProfile PROFILE_1 = new PlusProfile("google.com", "example@gmail.com");
-    private static final List<PlusProfile> TEST_PROFILES = List.of(PROFILE_1);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -55,6 +54,7 @@ public class AllPlusAddressesBottomSheetModuleTest {
 
     private Activity mActivity;
     private AllPlusAddressesBottomSheetCoordinator mCoordinator;
+    private AllPlusAddressesBottomSheetUIInfo mUIInfo;
 
     @Before
     public void setUp() {
@@ -62,11 +62,13 @@ public class AllPlusAddressesBottomSheetModuleTest {
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mCoordinator =
                 new AllPlusAddressesBottomSheetCoordinator(mActivity, mBottomSheetController);
+        mUIInfo = new AllPlusAddressesBottomSheetUIInfo();
+        mUIInfo.setPlusProfiles(List.of(PROFILE_1));
     }
 
     @Test
     public void testShowPlusProfiles() {
-        mCoordinator.showPlusProfiles(TEST_PROFILES);
+        mCoordinator.showPlusProfiles(mUIInfo);
         verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
 
         AllPlusAddressesBottomSheetView view = mViewCaptor.getValue();

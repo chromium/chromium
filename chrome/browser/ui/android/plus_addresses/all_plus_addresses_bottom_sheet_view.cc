@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_view.h"
 
+#include <vector>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check_deref.h"
@@ -13,6 +15,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/AllPlusAddressesBottomSheetBridge_jni.h"
+#include "chrome/browser/ui/android/plus_addresses/jni_headers/AllPlusAddressesBottomSheetUIInfo_jni.h"
 #include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusProfile_jni.h"
 
 namespace plus_addresses {
@@ -47,14 +50,21 @@ void AllPlusAddressesBottomSheetView::Show(
   }
 
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_profiles;
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_profiles(
+      profiles.size());
+
   for (const PlusProfile& profile : profiles) {
     java_profiles.emplace_back(Java_PlusProfile_Constructor(
         env, profile.plus_address, GetOriginFromPlusProfile(profile)));
   }
 
+  base::android::ScopedJavaLocalRef<jobject> ui_info =
+      Java_AllPlusAddressesBottomSheetUIInfo_Constructor(env);
+  Java_AllPlusAddressesBottomSheetUIInfo_setPlusProfiles(env, ui_info,
+                                                         java_profiles);
+
   Java_AllPlusAddressesBottomSheetBridge_showPlusAddresses(env, java_object,
-                                                           java_profiles);
+                                                           ui_info);
 }
 
 base::android::ScopedJavaGlobalRef<jobject>
