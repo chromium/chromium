@@ -450,13 +450,6 @@ export class SiteListElement extends SiteListElementBase {
         this.activeDialogAnchor_);
   }
 
-  private onResetEntry_() {
-    // Removing the last visible item should focus the list's header.
-    if (this.getFilteredSites_().length === 1) {
-      this.$.listHeader.focus();
-    }
-  }
-
   private closeActionMenu_() {
     this.actionMenuSite_ = null;
     this.activeDialogAnchor_ = null;
