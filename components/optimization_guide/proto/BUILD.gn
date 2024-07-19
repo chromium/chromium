@@ -100,3 +100,13 @@ proto_library("tab_organization_proto_descriptor") {
   generate_descriptor = "tab_organization.descriptor"
   proto_deps = [ ":optimization_guide_proto" ]
 }
+
+proto_library("history_answer_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/history_answer.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "history_answer.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}
