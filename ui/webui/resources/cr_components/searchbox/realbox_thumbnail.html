@@ -29,11 +29,9 @@
   /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
   .overlay {
     position: absolute;
-    z-index: 101;
     justify-content: center;
     align-items: center;
     background-color: #0000000D;
-    border-radius: 12px;
     display: flex;
     width: 100%;
     height: 100%;
@@ -54,13 +52,14 @@
   }
 
   :host(:focus-visible) #container {
-    box-shadow: 0 0 0 3px #4285F4;
+    border: solid 3px #4285F4;
+    box-sizing: border-box;
   }
 
   #remove {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
-    color: white;
+    --cr-icon-button-fill-color: white;
     background-color: transparent;
   }
   </style>
