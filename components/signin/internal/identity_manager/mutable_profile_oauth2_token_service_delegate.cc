@@ -21,6 +21,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/webdata/token_service_table.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
@@ -461,14 +462,16 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
-    const std::map<std::string, std::string>& db_tokens) {
+    const std::map<std::string, TokenServiceTable::TokenWithBindingKey>&
+        db_tokens) {
   VLOG(1) << "MutablePO2TS::LoadAllCredentialsIntoMemory; " << db_tokens.size()
           << " redential(s).";
 
   ScopedBatchChange batch(this);
-  for (const auto& db_token : db_tokens) {
-    std::string prefixed_account_id = db_token.first;
-    std::string refresh_token = db_token.second;
+  for (const auto& [prefixed_account_id, token_with_key] : db_tokens) {
+    std::string refresh_token = token_with_key.token;
+    std::vector<uint8_t> wrapped_binding_key =
+        token_with_key.wrapped_binding_key;
 
     CoreAccountId account_id = RemoveAccountIdPrefix(prefixed_account_id);
     if (account_id.empty()) {
@@ -515,6 +518,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       if (account_id == loading_primary_account_id_) {
         RevokeCredentialsOnServer(refresh_token);
         refresh_token = GaiaConstants::kInvalidRefreshToken;
+        wrapped_binding_key = std::vector<uint8_t>();
         PersistCredentials(account_id, refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                            ,
@@ -532,8 +536,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
         LoadTokenFromDBStatus::NUM_LOAD_TOKEN_FROM_DB_STATUS);
 
     if (load_account) {
-      // TODO(b/274463812): load wrapped binding keys from disk.
-      std::vector<uint8_t> wrapped_binding_key;
       UpdateCredentialsInMemory(account_id, refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                                 ,
@@ -652,10 +654,15 @@ void MutableProfileOAuth2TokenServiceDelegate::PersistCredentials(
   DCHECK(!account_id.empty());
   DCHECK(!refresh_token.empty());
   if (token_web_data_) {
-    // TODO(b/274463812): persist `wrapped_binding_key` on disk.
     VLOG(1) << "MutablePO2TS::PersistCredentials for account_id=" << account_id;
     token_web_data_->SetTokenForService(
-        ApplyAccountIdPrefix(account_id.ToString()), refresh_token);
+        ApplyAccountIdPrefix(account_id.ToString()), refresh_token,
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+        wrapped_binding_key
+#else
+        /*wrapped_binding_key=*/{}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    );
   }
 }
 

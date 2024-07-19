@@ -33,6 +33,24 @@ enum ReadOneTokenResult {
 
 }  // namespace
 
+TokenServiceTable::TokenWithBindingKey::TokenWithBindingKey() = default;
+TokenServiceTable::TokenWithBindingKey::TokenWithBindingKey(
+    std::string token,
+    std::vector<uint8_t> wrapped_binding_key)
+    : token(std::move(token)),
+      wrapped_binding_key(std::move(wrapped_binding_key)) {}
+
+TokenServiceTable::TokenWithBindingKey::TokenWithBindingKey(
+    const TokenWithBindingKey& other) = default;
+TokenServiceTable::TokenWithBindingKey&
+TokenServiceTable::TokenWithBindingKey::operator=(
+    const TokenWithBindingKey& other) = default;
+
+TokenServiceTable::TokenWithBindingKey::~TokenWithBindingKey() = default;
+
+TokenServiceTable::TokenServiceTable() = default;
+TokenServiceTable::~TokenServiceTable() = default;
+
 TokenServiceTable* TokenServiceTable::FromWebDatabase(WebDatabase* db) {
   return static_cast<TokenServiceTable*>(db->GetTable(GetKey()));
 }
@@ -83,8 +101,10 @@ bool TokenServiceTable::RemoveTokenForService(const std::string& service) {
   return result;
 }
 
-bool TokenServiceTable::SetTokenForService(const std::string& service,
-                                           const std::string& token) {
+bool TokenServiceTable::SetTokenForService(
+    const std::string& service,
+    const std::string& token,
+    const std::vector<uint8_t>& wrapped_binding_key) {
   std::string encrypted_token;
   bool encrypted = OSCrypt::EncryptString(token, &encrypted_token);
   if (!encrypted) {
@@ -94,11 +114,12 @@ bool TokenServiceTable::SetTokenForService(const std::string& service,
 
   // Don't bother with a cached statement since this will be a relatively
   // infrequent operation.
-  sql::Statement s(
-      db_->GetUniqueStatement("INSERT OR REPLACE INTO token_service "
-                              "(service, encrypted_token) VALUES (?, ?)"));
+  sql::Statement s(db_->GetUniqueStatement(
+      "INSERT OR REPLACE INTO token_service "
+      "(service, encrypted_token, binding_key) VALUES (?, ?, ?)"));
   s.BindString(0, service);
   s.BindBlob(1, encrypted_token);
+  s.BindBlob(2, wrapped_binding_key);
 
   bool result = s.Run();
   LOG_IF(ERROR, !result) << "Failed to insert or replace token for " << service;
@@ -106,9 +127,9 @@ bool TokenServiceTable::SetTokenForService(const std::string& service,
 }
 
 TokenServiceTable::Result TokenServiceTable::GetAllTokens(
-    std::map<std::string, std::string>* tokens) {
+    std::map<std::string, TokenWithBindingKey>* tokens) {
   sql::Statement s(db_->GetUniqueStatement(
-      "SELECT service, encrypted_token FROM token_service"));
+      "SELECT service, encrypted_token, binding_key FROM token_service"));
 
   UMA_HISTOGRAM_BOOLEAN("Signin.TokenTable.GetAllTokensSqlStatementValidity",
                         s.is_valid());
@@ -127,12 +148,15 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
     std::string encrypted_token;
     std::string decrypted_token;
     std::string service;
+    std::vector<uint8_t> wrapped_binding_key;
     service = s.ColumnString(0);
-    bool entry_ok =
-        !service.empty() && s.ColumnBlobAsString(1, &encrypted_token);
+    bool entry_ok = !service.empty() &&
+                    s.ColumnBlobAsString(1, &encrypted_token) &&
+                    s.ColumnBlobAsVector(2, &wrapped_binding_key);
     if (entry_ok) {
       if (OSCrypt::DecryptString(encrypted_token, &decrypted_token)) {
-        (*tokens)[service] = decrypted_token;
+        (*tokens)[service] = TokenServiceTable::TokenWithBindingKey(
+            std::move(decrypted_token), std::move(wrapped_binding_key));
         read_token_result = READ_ONE_TOKEN_SUCCESS;
         number_of_tokens_loaded++;
       } else {

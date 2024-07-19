@@ -32,10 +32,12 @@ class WebDataServiceConsumer;
 struct TokenResult {
   TokenResult();
   TokenResult(const TokenResult& other);
+  TokenResult& operator=(const TokenResult& other);
   ~TokenResult();
 
-  TokenServiceTable::Result db_result;
-  std::map<std::string, std::string> tokens;
+  TokenServiceTable::Result db_result =
+      TokenServiceTable::TOKEN_DB_RESULT_SQL_INVALID_STATEMENT;
+  std::map<std::string, TokenServiceTable::TokenWithBindingKey> tokens;
 };
 
 // TokenWebData is a data repository for storage of authentication tokens.
@@ -53,7 +55,9 @@ class TokenWebData : public WebDataServiceBase {
   TokenWebData& operator=(const TokenWebData&) = delete;
 
   // Set a token to use for a specified service.
-  void SetTokenForService(const std::string& service, const std::string& token);
+  void SetTokenForService(const std::string& service,
+                          const std::string& token,
+                          const std::vector<uint8_t>& wrapped_binding_key);
 
   // Remove all tokens stored in the web database.
   void RemoveAllTokens();
