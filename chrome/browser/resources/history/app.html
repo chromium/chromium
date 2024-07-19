@@ -7,6 +7,11 @@
         overflow: hidden;
       }
 
+      :host([enable-history-embeddings_]) {
+        --first-card-padding-top: 0;
+        --first-cluster-padding-top: 0;
+      }
+
       #main-container {
         display: flex;
         height: calc(100% - var(--toolbar-height));
@@ -31,11 +36,6 @@
         color: var(--cr-secondary-text-color);
         font-size: 11px;
         font-weight: 400;
-      }
-
-      history-embeddings-promo {
-        /* Add some margin so that the box-shadow is not cropped. */
-        margin-block-start: 4px;
       }
 
       cr-history-embeddings-filter-chips {
@@ -105,6 +105,10 @@
       :host([has-history-embeddings-results_]) history-list[is-empty],
       :host([has-history-embeddings-results_]) history-clusters[is-empty] {
         display: none;
+      }
+
+      cr-history-embeddings {
+        margin-block-end: var(--card-padding-between);
       }
     </style>
     <history-query-manager query-state="{{queryState_}}"
