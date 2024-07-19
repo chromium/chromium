@@ -203,9 +203,9 @@ class GLHelper::CopyTextureToImpl final {
           bytes_per_pixel(bytes_per_pixel_),
           bytes_per_row(bytes_per_row_),
           row_stride_bytes(row_stride_bytes_),
-          pixels(pixels_),
           flip_y(flip_y_),
-          callback(std::move(callback_)) {}
+          callback(std::move(callback_)),
+          pixels(pixels_) {}
 
     bool done = false;
     bool result = false;
@@ -213,9 +213,9 @@ class GLHelper::CopyTextureToImpl final {
     size_t bytes_per_pixel;
     size_t bytes_per_row;
     size_t row_stride_bytes;
-    raw_ptr<unsigned char> pixels;
     bool flip_y;
     base::OnceCallback<void(bool)> callback;
+    raw_ptr<unsigned char> pixels;
     GLuint buffer = 0;
     GLuint query = 0;
   };

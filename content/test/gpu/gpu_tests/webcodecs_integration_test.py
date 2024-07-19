@@ -146,6 +146,10 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
            'webrtc-peer-connection.html', [{
                'use_worker': True
            }])
+    yield ('WebCodecs_Terminate_Worker', 'terminate-worker.html', [{
+        'source_type':
+        'offscreen',
+    }])
 
     source_type = 'offscreen'
     codec = 'avc1.42001E'

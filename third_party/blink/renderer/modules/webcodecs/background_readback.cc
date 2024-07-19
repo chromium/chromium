@@ -224,7 +224,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
       texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stide),
       dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
-                    MakeUnwrappingCrossThreadHandle(this), std::move(result_cb),
+                    WrapWeakPersistent(this), std::move(result_cb),
                     std::move(txt_frame), std::move(result)));
 }
 
@@ -305,8 +305,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
       texture_size, src_point, info, base::saturated_cast<GLuint>(stride),
       dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsBufferReadCompleted,
-                    MakeUnwrappingCrossThreadHandle(this), std::move(txt_frame),
-                    src_rect, dest_layout, dest_buffer, std::move(done_cb)));
+                    WrapWeakPersistent(this), std::move(txt_frame), src_rect,
+                    dest_layout, dest_buffer, std::move(done_cb)));
 }
 
 void BackgroundReadback::OnARGBPixelsBufferReadCompleted(
