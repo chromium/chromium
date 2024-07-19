@@ -596,8 +596,10 @@ TEST_F(CanvasResourceProviderTest,
   provider->TryEnableSingleBuffering();
   EXPECT_TRUE(provider->IsSingleBuffered());
 
+  auto client_si = gpu::ClientSharedImage::CreateForTesting();
+
   viz::TransferableResource tr;
-  tr.set_mailbox(gpu::Mailbox::Generate());
+  tr.set_mailbox(client_si->mailbox());
   tr.set_texture_target(GL_TEXTURE_2D);
   tr.set_sync_token(gpu::SyncToken());
   tr.size = kSize;
@@ -605,7 +607,7 @@ TEST_F(CanvasResourceProviderTest,
 
   scoped_refptr<ExternalCanvasResource> resource =
       ExternalCanvasResource::Create(
-          tr, viz::ReleaseCallback(),
+          client_si, tr, viz::ReleaseCallback(),
           SharedGpuContext::ContextProviderWrapper(), provider->CreateWeakPtr(),
           cc::PaintFlags::FilterQuality::kMedium, true /*is_origin_top_left*/);
 
