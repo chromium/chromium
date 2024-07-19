@@ -811,8 +811,8 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   }
 
   return ExternalCanvasResource::Create(
-      resource, viz::ReleaseCallback(), context_provider_->GetWeakPtr(),
-      resource_provider, filter_quality_,
+      color_buffer->shared_image, resource, viz::ReleaseCallback(),
+      context_provider_->GetWeakPtr(), resource_provider, filter_quality_,
       /*is_origin_top_left=*/opengl_flip_y_extension_);
 }
 
