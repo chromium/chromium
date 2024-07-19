@@ -45,7 +45,7 @@ EditorManagerLacros::EditorManagerLacros()
 EditorManagerLacros::~EditorManagerLacros() = default;
 
 void EditorManagerLacros::GetEditorPanelContext(
-    base::OnceCallback<void(EditorContext)> callback) {
+    base::OnceCallback<void(const EditorContext&)> callback) {
   (*panel_manager_remote_)
       ->GetEditorPanelContext(
           base::BindOnce(&EditorManagerLacros::OnEditorPanelContextResult,
@@ -97,7 +97,7 @@ void EditorManagerLacros::NotifyEditorModeChanged(const EditorMode& mode) {
 }
 
 void EditorManagerLacros::OnEditorPanelContextResult(
-    base::OnceCallback<void(const EditorContext)> callback,
+    base::OnceCallback<void(const EditorContext&)> callback,
     crosapi::mojom::EditorPanelContextPtr panel_context) {
   std::move(callback).Run(FromMojoEditorContext(std::move(panel_context)));
 }

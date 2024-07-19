@@ -93,17 +93,28 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
     ChromeAshTestBase::TearDown();
   }
 
-  void OnGetEditorModeResult(editor_menu::FetchControllersCallback callback,
-                             editor_menu::EditorMode editor_mode) {
+  void OnGetEditorContext(editor_menu::FetchControllersCallback callback,
+                          editor_menu::EditorMode editor_mode,
+                          bool editor_consent_status_settled) {
     content::ContextMenuParams params;
     params.is_editable = true;
-    manager_->OnGetEditorModeResult(params, std::move(callback), editor_mode);
+
+    editor_menu::EditorContext editor_context(
+        editor_mode, /*consent_status_settled=*/editor_consent_status_settled,
+        {});
+
+    manager_->OnGetEditorContext(params, std::move(callback), editor_context);
   }
 
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> GetControllers(
       content::ContextMenuParams params,
-      editor_menu::EditorMode editor_mode = editor_menu::EditorMode::kWrite) {
-    return manager_->GetControllers(params, editor_mode);
+      editor_menu::EditorMode editor_mode = editor_menu::EditorMode::kWrite,
+      bool editor_consent_status_settled = true) {
+    editor_menu::EditorContext editor_context(
+        editor_mode, /*consent_status_settled=*/editor_consent_status_settled,
+        {});
+
+    return manager_->GetControllers(params, editor_context);
   }
 
   QuickAnswersControllerImpl* quick_answers_controller() {
@@ -291,7 +302,8 @@ TEST_P(ReadWriteCardsManagerImplTest,
     ExpectControllersEqual(
         "",
         std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
-        GetControllers(params, editor_menu::EditorMode::kPromoCard));
+        GetControllers(params, editor_menu::EditorMode::kPromoCard,
+                       /*editor_consent_status_settled=*/false));
 
     EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
               magic_boost_card_controller()->GetOptInFeatures());
@@ -331,7 +343,8 @@ TEST_P(ReadWriteCardsManagerImplTest,
     // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
     // Orca.
     auto controllers =
-        GetControllers(params, editor_menu::EditorMode::kPromoCard);
+        GetControllers(params, editor_menu::EditorMode::kPromoCard,
+                       /*editor_consent_status_settled=*/false);
 
     ExpectControllersEqual(
         "",
@@ -356,13 +369,17 @@ TEST_P(ReadWriteCardsManagerImplTest,
 
 // Tests that the appropriate controller is returned given the editor mode
 // provided in each case.
-TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultBlocked) {
-  // If no text is selected and editor mode is kBlocked, no card is shown
-  OnGetEditorModeResult(
-      base::BindOnce(&ExpectControllersEqual,
-                     "Wrong controller is fetched when editor mode is kBlocked",
-                     std::vector<ReadWriteCardController*>{}),
-      editor_menu::EditorMode::kSoftBlocked);
+TEST_P(ReadWriteCardsManagerImplTest,
+       OnGetEditorContextSoftBlockedAndConsentStatusAlreadySet) {
+  // If no text is selected, editor mode is kSoftBlocked and editor consent
+  // status is already set, no card is shown.
+  OnGetEditorContext(
+      base::BindOnce(
+          &ExpectControllersEqual,
+          "Wrong controller is fetched when editor mode is kSoftBlocked",
+          std::vector<ReadWriteCardController*>{}),
+      editor_menu::EditorMode::kSoftBlocked,
+      /*editor_consent_status_settled=*/true);
 
   if (IsMahiEnabled()) {
     EXPECT_EQ(
@@ -371,8 +388,48 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultBlocked) {
   }
 }
 
-TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultPromoCard) {
-  OnGetEditorModeResult(
+TEST_P(ReadWriteCardsManagerImplTest,
+       OnGetEditorContextHardBlockedAndEditorConsentStatusUnset) {
+  // If no text is selected and editor mode is kHardBlocked, no card is shown
+  OnGetEditorContext(
+      base::BindOnce(
+          &ExpectControllersEqual,
+          "Wrong controller is fetched when editor mode is kHardBlocked",
+          std::vector<ReadWriteCardController*>{}),
+      editor_menu::EditorMode::kHardBlocked,
+      /*editor_consent_status_settled=*/false);
+
+  if (IsMahiEnabled()) {
+    EXPECT_EQ(
+        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        magic_boost_card_controller()->transition_action_for_test());
+  }
+}
+
+TEST_P(ReadWriteCardsManagerImplTest,
+       OnGetEditorContextSoftBlockedAndEditorConsentStatusUnset) {
+  OnGetEditorContext(
+      base::BindOnce(
+          &ExpectControllersEqual,
+          "Wrong controller is fetched when editor mode is kSoftBlocked",
+          IsMahiEnabled()
+              ? std::vector<
+                    ReadWriteCardController*>{magic_boost_card_controller()}
+              : std::vector<ReadWriteCardController*>{}),
+      editor_menu::EditorMode::kSoftBlocked,
+      /*editor_consent_status_settled=*/false);
+
+  if (IsMahiEnabled()) {
+    EXPECT_EQ(crosapi::mojom::MagicBoostController::TransitionAction::
+                  kShowEditorPanel,
+              magic_boost_card_controller()->transition_action_for_test());
+    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+              magic_boost_card_controller()->GetOptInFeatures());
+  }
+}
+
+TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextPromoCard) {
+  OnGetEditorContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kPromoCard",
@@ -381,7 +438,8 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultPromoCard) {
                     ReadWriteCardController*>{magic_boost_card_controller()}
               : std::vector<
                     ReadWriteCardController*>{editor_menu_controller()}),
-      editor_menu::EditorMode::kPromoCard);
+      editor_menu::EditorMode::kPromoCard,
+      /*editor_consent_status_settled=*/false);
 
   if (IsMahiEnabled()) {
     // Should show opt-in for both Hmr and Orca.
@@ -393,22 +451,23 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultPromoCard) {
   }
 }
 
-TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultWrite) {
-  OnGetEditorModeResult(
+TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextWrite) {
+  OnGetEditorContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kWrite",
           std::vector<ReadWriteCardController*>{editor_menu_controller()}),
-      editor_menu::EditorMode::kWrite);
+      editor_menu::EditorMode::kWrite, /*editor_consent_status_settled=*/true);
 }
 
-TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultRewrite) {
-  OnGetEditorModeResult(
+TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorContextRewrite) {
+  OnGetEditorContext(
       base::BindOnce(
           &ExpectControllersEqual,
           "Wrong controller is fetched when editor mode is kRewrite",
           std::vector<ReadWriteCardController*>{editor_menu_controller()}),
-      editor_menu::EditorMode::kRewrite);
+      editor_menu::EditorMode::kRewrite,
+      /*editor_consent_status_settled=*/true);
 }
 
 }  // namespace chromeos

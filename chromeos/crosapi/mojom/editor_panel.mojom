@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module crosapi.mojom;
 
@@ -50,6 +50,10 @@ struct EditorPanelContext {
   EditorPanelMode editor_panel_mode@0;
 
   array<EditorPanelPresetTextQuery> preset_text_queries@1;
+
+  // a boolean value indicating whether the editor consent status has been set
+  // or not.
+  [MinVersion=7] bool consent_status_settled@2;
 };
 
 // An interface to allow clients in the Lacros side to observe important state

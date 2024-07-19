@@ -23,7 +23,7 @@ class EditorManager {
   virtual ~EditorManager() = default;
 
   virtual void GetEditorPanelContext(
-      base::OnceCallback<void(EditorContext)> callback) = 0;
+      base::OnceCallback<void(const EditorContext&)> callback) = 0;
   virtual void OnPromoCardDismissed() = 0;
   virtual void OnPromoCardDeclined() = 0;
   virtual void StartEditingFlow() = 0;

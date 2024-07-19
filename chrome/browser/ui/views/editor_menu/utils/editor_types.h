@@ -18,11 +18,17 @@ enum EditorMode {
 };
 
 struct EditorContext {
-  EditorContext(EditorMode mode, PresetTextQueries preset_queries);
+  EditorContext(EditorMode mode,
+                bool consent_status_settled,
+                PresetTextQueries preset_queries);
   EditorContext(const EditorContext&);
   ~EditorContext();
 
   EditorMode mode;
+
+  // indicating whether the editor consent status is already determined or still
+  // unset.
+  bool consent_status_settled;
   PresetTextQueries preset_queries;
 };
 

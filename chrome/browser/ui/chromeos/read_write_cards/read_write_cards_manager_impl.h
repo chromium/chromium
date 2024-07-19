@@ -59,14 +59,14 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
  private:
   friend class ReadWriteCardsManagerImplTest;
 
-  void OnGetEditorModeResult(const content::ContextMenuParams& params,
-                             editor_menu::FetchControllersCallback callback,
-                             editor_menu::EditorMode editor_mode);
+  void OnGetEditorContext(const content::ContextMenuParams& params,
+                          editor_menu::FetchControllersCallback callback,
+                          const editor_menu::EditorContext& editor_context);
 
   // Get the controllers that should be fetched into `FetchController`.
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> GetControllers(
       const content::ContextMenuParams& params,
-      editor_menu::EditorMode editor_mode);
+      const editor_menu::EditorContext& editor_context);
 
   // Helper function to get the Mahi and/or Quick Answers controllers that need
   // to be fetched.
@@ -82,7 +82,7 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
   // if we should not initiate an opt-in flow.
   std::optional<OptInFeatures> GetMagicBoostOptInFeatures(
       const content::ContextMenuParams& params,
-      editor_menu::EditorMode editor_mode);
+      const editor_menu::EditorContext& editor_context);
 
   chromeos::ReadWriteCardsUiController ui_controller_;
 

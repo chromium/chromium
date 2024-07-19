@@ -47,7 +47,7 @@ EditorManagerAsh::~EditorManagerAsh() {
 }
 
 void EditorManagerAsh::GetEditorPanelContext(
-    base::OnceCallback<void(EditorContext)> callback) {
+    base::OnceCallback<void(const EditorContext&)> callback) {
   panel_manager_->GetEditorPanelContext(
       base::BindOnce(&EditorManagerAsh::OnEditorPanelContextResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -101,7 +101,7 @@ void EditorManagerAsh::RequestCacheContext() {
 }
 
 void EditorManagerAsh::OnEditorPanelContextResult(
-    base::OnceCallback<void(EditorContext)> callback,
+    base::OnceCallback<void(const EditorContext&)> callback,
     crosapi::mojom::EditorPanelContextPtr panel_context) {
   std::move(callback).Run(FromMojoEditorContext(std::move(panel_context)));
 }

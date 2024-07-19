@@ -81,6 +81,7 @@ EditorContext FromMojoEditorContext(EditorPanelContextPtr panel_context) {
   }
 
   return EditorContext(FromMojoEditorMode(panel_context->editor_panel_mode),
+                       panel_context->consent_status_settled,
                        std::move(preset_queries));
 }
 

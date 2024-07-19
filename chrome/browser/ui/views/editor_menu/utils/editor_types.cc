@@ -6,8 +6,12 @@
 
 namespace chromeos::editor_menu {
 
-EditorContext::EditorContext(EditorMode mode, PresetTextQueries queries)
-    : mode(mode), preset_queries(queries) {}
+EditorContext::EditorContext(EditorMode mode,
+                             bool consent_status_settled,
+                             PresetTextQueries queries)
+    : mode(mode),
+      consent_status_settled(consent_status_settled),
+      preset_queries(queries) {}
 
 EditorContext::EditorContext(const EditorContext&) = default;
 EditorContext::~EditorContext() = default;

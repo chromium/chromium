@@ -74,8 +74,8 @@ void ReadWriteCardsManagerImpl::FetchController(
     return;
   }
 
-  editor_menu_controller_->GetEditorMode(
-      base::BindOnce(&ReadWriteCardsManagerImpl::OnGetEditorModeResult,
+  editor_menu_controller_->GetEditorContext(
+      base::BindOnce(&ReadWriteCardsManagerImpl::OnGetEditorContext,
                      weak_factory_.GetWeakPtr(), params, std::move(callback)));
 }
 
@@ -93,20 +93,20 @@ void ReadWriteCardsManagerImpl::TryCreatingEditorSession(
   }
 }
 
-void ReadWriteCardsManagerImpl::OnGetEditorModeResult(
+void ReadWriteCardsManagerImpl::OnGetEditorContext(
     const content::ContextMenuParams& params,
     editor_menu::FetchControllersCallback callback,
-    editor_menu::EditorMode editor_mode) {
-  std::move(callback).Run(GetControllers(params, editor_mode));
+    const editor_menu::EditorContext& editor_context) {
+  std::move(callback).Run(GetControllers(params, editor_context));
 }
 
 std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
 ReadWriteCardsManagerImpl::GetControllers(
     const content::ContextMenuParams& params,
-    editor_menu::EditorMode editor_mode) {
+    const editor_menu::EditorContext& editor_context) {
   const bool should_show_editor_menu =
       editor_menu_controller_ && params.is_editable;
-  auto opt_in_features = GetMagicBoostOptInFeatures(params, editor_mode);
+  auto opt_in_features = GetMagicBoostOptInFeatures(params, editor_context);
 
   if (opt_in_features) {
     crosapi::mojom::MagicBoostController::TransitionAction action =
@@ -135,12 +135,12 @@ ReadWriteCardsManagerImpl::GetControllers(
   // controller.
   if (should_show_editor_menu) {
     // Use editor menu if available.
-    if (editor_mode != editor_menu::EditorMode::kHardBlocked &&
-        editor_mode != editor_menu::EditorMode::kSoftBlocked) {
+    if (editor_context.mode != editor_menu::EditorMode::kHardBlocked &&
+        editor_context.mode != editor_menu::EditorMode::kSoftBlocked) {
       return {editor_menu_controller_->GetWeakPtr()};
     }
 
-    editor_menu_controller_->LogEditorMode(editor_mode);
+    editor_menu_controller_->LogEditorMode(editor_context.mode);
   }
 
   // Otherwise, use Quick Answers and Mahi if available.
@@ -202,7 +202,7 @@ bool ReadWriteCardsManagerImpl::ShouldShowMahi(
 std::optional<OptInFeatures>
 ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
     const content::ContextMenuParams& params,
-    editor_menu::EditorMode editor_mode) {
+    const editor_menu::EditorContext& editor_context) {
   if (!magic_boost_card_controller_) {
     return std::nullopt;
   }
@@ -211,8 +211,12 @@ ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
   // Editor card.
   const bool should_show_editor_menu =
       editor_menu_controller_ && params.is_editable;
+
+  // Only opt in orca if it is not blocked by any hard requirements and its
+  // current status is unset.
   const bool should_opt_in_orca =
-      editor_mode == editor_menu::EditorMode::kPromoCard;
+      editor_context.mode != editor_menu::EditorMode::kHardBlocked &&
+      !editor_context.consent_status_settled;
 
   if (should_show_editor_menu) {
     if (should_opt_in_orca) {

@@ -39,7 +39,7 @@ class EditorManagerLacros : public EditorManager {
 
   // EditorManager overrides
   void GetEditorPanelContext(
-      base::OnceCallback<void(EditorContext)> callback) override;
+      base::OnceCallback<void(const EditorContext&)> callback) override;
   void OnPromoCardDismissed() override;
   void OnPromoCardDeclined() override;
   void StartEditingFlow() override;
@@ -54,7 +54,7 @@ class EditorManagerLacros : public EditorManager {
 
  private:
   void OnEditorPanelContextResult(
-      base::OnceCallback<void(EditorContext)> callback,
+      base::OnceCallback<void(const EditorContext&)> callback,
       crosapi::mojom::EditorPanelContextPtr panel_context);
 
   LacrosObserver lacros_observer_;

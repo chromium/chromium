@@ -345,6 +345,10 @@ EditorMode EditorMediator::GetEditorMode() const {
   return editor_switch_->GetEditorMode();
 }
 
+ConsentStatus EditorMediator::GetConsentStatus() const {
+  return consent_store_->GetConsentStatus();
+}
+
 EditorMetricsRecorder* EditorMediator::GetMetricsRecorder() {
   return metrics_recorder_.get();
 }

@@ -26,7 +26,7 @@ class EditorManagerAsh : public EditorManager {
 
   // EditorManager overrides
   void GetEditorPanelContext(
-      base::OnceCallback<void(EditorContext)> callback) override;
+      base::OnceCallback<void(const EditorContext&)> callback) override;
   void OnPromoCardDismissed() override;
   void OnPromoCardDeclined() override;
   void StartEditingFlow() override;
@@ -55,7 +55,7 @@ class EditorManagerAsh : public EditorManager {
   };
 
   void OnEditorPanelContextResult(
-      base::OnceCallback<void(EditorContext)> callback,
+      base::OnceCallback<void(const EditorContext&)> callback,
       crosapi::mojom::EditorPanelContextPtr panel_context);
 
   raw_ptr<ash::input_method::EditorPanelManager> panel_manager_;

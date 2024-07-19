@@ -106,6 +106,8 @@ void EditorPanelManager::GetEditorPanelContext(
 
   auto context = crosapi::mojom::EditorPanelContext::New();
   context->editor_panel_mode = editor_panel_mode;
+  context->consent_status_settled =
+      delegate_->GetConsentStatus() != ConsentStatus::kUnset;
   std::move(callback).Run(std::move(context));
 }
 
@@ -143,6 +145,8 @@ void EditorPanelManager::OnGetPresetTextQueriesResult(
     std::vector<orca::mojom::PresetTextQueryPtr> queries) {
   auto context = crosapi::mojom::EditorPanelContext::New();
   context->editor_panel_mode = panel_mode;
+  context->consent_status_settled =
+      delegate_->GetConsentStatus() != ConsentStatus::kUnset;
   for (const auto& query : queries) {
     context->preset_text_queries.push_back(ToEditorPanelQuery(query));
   }
@@ -224,6 +228,11 @@ void EditorPanelManager::OnMagicBoostPromoCardDeclined() {
   // card is declined.
   OnConsentRejected();
   OnPromoCardDeclined();
+}
+
+void EditorPanelManager::SetEditorClientForTesting(
+    mojo::PendingRemote<orca::mojom::EditorClient> client_for_testing) {
+  editor_client_remote_.Bind(std::move(client_for_testing));
 }
 
 }  // namespace ash::input_method

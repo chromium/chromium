@@ -83,6 +83,7 @@ class EditorMediator : public EditorContext::Observer,
       std::optional<std::string_view> preset_query_id = std::nullopt,
       std::optional<std::string_view> freeform_text = std::nullopt) override;
   EditorMode GetEditorMode() const override;
+  ConsentStatus GetConsentStatus() const override;
   // This method is currently used for metric purposes to understand the ratio
   // of requests being blocked vs. the potential requests that can be
   // accommodated.

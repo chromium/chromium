@@ -49,9 +49,9 @@ void EditorMenuControllerImpl::OnTextAvailable(
     return;
   }
 
-  card_session_->manager().GetEditorPanelContext(
-      base::BindOnce(&EditorMenuControllerImpl::OnGetEditorPanelContextResult,
-                     weak_factory_.GetWeakPtr(), anchor_bounds));
+  card_session_->manager().GetEditorPanelContext(base::BindOnce(
+      &EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext,
+      weak_factory_.GetWeakPtr(), anchor_bounds));
 }
 
 void EditorMenuControllerImpl::OnAnchorBoundsChanged(
@@ -174,31 +174,31 @@ void EditorMenuControllerImpl::LogEditorMode(const EditorMode& editor_mode) {
   card_session_->manager().LogEditorMode(editor_mode);
 }
 
-void EditorMenuControllerImpl::GetEditorMode(
-    base::OnceCallback<void(const EditorMode)> callback) {
+void EditorMenuControllerImpl::GetEditorContext(
+    base::OnceCallback<void(const EditorContext&)> callback) {
   if (!card_session_) {
     return;
   }
   card_session_->manager().GetEditorPanelContext(
-      base::BindOnce(&EditorMenuControllerImpl::OnGetEditorModeResult,
+      base::BindOnce(&EditorMenuControllerImpl::OnGetEditorContext,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void EditorMenuControllerImpl::OnGetEditorPanelContextResultForTesting(
+void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContextForTesting(
     const gfx::Rect& anchor_bounds,
-    EditorContext context) {
-  OnGetEditorPanelContextResult(anchor_bounds, std::move(context));
+    const EditorContext& context) {
+  OnGetAnchorBoundsAndEditorContext(anchor_bounds, std::move(context));
 }
 
-void EditorMenuControllerImpl::OnGetEditorModeResult(
-    base::OnceCallback<void(const EditorMode)> callback,
-    EditorContext context) {
-  std::move(callback).Run(context.mode);
+void EditorMenuControllerImpl::OnGetEditorContext(
+    base::OnceCallback<void(const EditorContext&)> callback,
+    const EditorContext& context) {
+  std::move(callback).Run(context);
 }
 
-void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
+void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
     const gfx::Rect& anchor_bounds,
-    EditorContext context) {
+    const EditorContext& context) {
   switch (context.mode) {
     case EditorMode::kHardBlocked:
     case EditorMode::kSoftBlocked:

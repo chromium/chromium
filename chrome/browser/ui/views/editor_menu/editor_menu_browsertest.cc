@@ -42,13 +42,17 @@ using ::testing::Not;
 using ::testing::Property;
 using ::testing::SizeIs;
 
-EditorContext CreateTestEditorPanelContext(EditorMode editor_panel_mode) {
-  return EditorContext(editor_panel_mode, std::vector<PresetTextQuery>{});
+EditorContext CreateTestEditorPanelContext(EditorMode editor_panel_mode,
+                                           bool consent_status_settled) {
+  return EditorContext(editor_panel_mode,
+                       /*consent_status_settled=*/consent_status_settled,
+                       std::vector<PresetTextQuery>{});
 }
 
 EditorContext CreateTestEditorPanelContextWithQueries() {
   return EditorContext(
       EditorMode::kRewrite,
+      /*consent_status_settled=*/true,
       std::vector<PresetTextQuery>{
           PresetTextQuery("ID1", u"Rephrase", PresetQueryCategory::kRephrase),
           PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify),
@@ -172,8 +176,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowEditorMenu) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kRewrite,
+                                   /*consent_status_settled=*/true));
 
   EXPECT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
 
@@ -184,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        ShowsRewriteUIWithChips) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
       gfx::Rect(200, 300, 400, 200), CreateTestEditorPanelContextWithQueries());
 
   // Editor menu should be showing with two rows of chips.
@@ -202,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   // Show editor menu with a wide anchor.
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
       gfx::Rect(200, 300, 600, 200), CreateTestEditorPanelContextWithQueries());
 
   // Editor menu should be wide enough to fit all chips in one row.
@@ -217,8 +223,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowPromoCard) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kPromoCard));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+                                   /*consent_status_settled=*/false));
 
   EXPECT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
 
@@ -226,11 +234,13 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowPromoCard) {
 }
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
-                       DoesNotShowWhenBlocked) {
+                       DoesNotShowWhenSoftBlocked) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kSoftBlocked));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kSoftBlocked,
+                                   /*consent_status_settled=*/true));
 
   EXPECT_EQ(GetControllerImpl()->editor_menu_widget_for_testing(), nullptr);
 }
@@ -240,8 +250,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
   EXPECT_NE(nullptr, GetControllerImpl());
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kRewrite,
+                                   /*consent_status_settled=*/true));
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
   // View is vertically left aligned with anchor.
@@ -257,8 +269,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
   EXPECT_NE(nullptr, GetControllerImpl());
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBoundsTop, CreateTestEditorPanelContext(EditorMode::kRewrite));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBoundsTop,
+      CreateTestEditorPanelContext(EditorMode::kRewrite,
+                                   /*consent_status_settled=*/true));
 
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
@@ -279,8 +293,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().right();
   const gfx::Rect anchor_bounds = gfx::Rect(screen_right - 80, 250, 70, 160);
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      anchor_bounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      anchor_bounds,
+      CreateTestEditorPanelContext(EditorMode::kRewrite,
+                                   /*consent_status_settled=*/true));
 
   // Editor menu should be right aligned with anchor.
   EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen().right(),
@@ -295,9 +311,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
 
   // Show editor menu.
   constexpr int kAnchorWidth = 401;
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
       gfx::Rect(200, 300, kAnchorWidth, 50),
-      CreateTestEditorPanelContext(EditorMode::kRewrite));
+      CreateTestEditorPanelContext(EditorMode::kRewrite,
+                                   /*consent_status_settled=*/true));
 
   // Editor menu width should match anchor width.
   EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen().width(), kAnchorWidth);
@@ -310,9 +327,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   // Show editor menu.
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
       gfx::Rect(200, 300, 408, 50),
-      CreateTestEditorPanelContext(EditorMode::kRewrite));
+      CreateTestEditorPanelContext(EditorMode::kRewrite,
+                                   /*consent_status_settled=*/true));
   constexpr int kNewAnchorWidth = 365;
   GetControllerImpl()->OnAnchorBoundsChanged(
       gfx::Rect(200, 300, kNewAnchorWidth, 50));
@@ -328,8 +346,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
   // Show editor menu.
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kRewrite,
+                                   /*consent_status_settled=*/true));
   const gfx::Rect initial_editor_menu_bounds =
       GetEditorMenuView()->GetBoundsInScreen();
   // Adjust anchor bounds (this can happen e.g. when the context menu adjusts
@@ -350,8 +370,10 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        PressingEscClosesEditorMenuWidget) {
   ASSERT_NE(GetControllerImpl(), nullptr);
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kRewrite));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kRewrite,
+                                   /*consent_status_settled=*/true));
 
   ASSERT_NE(GetEditorMenuView()->GetWidget(), nullptr);
   GetEditorMenuView()->GetWidget()->GetFocusManager()->ProcessAccelerator(
@@ -365,8 +387,9 @@ IN_PROC_BROWSER_TEST_F(
     ShowWriteCardTitleInFrenchWhenOrcaUseL10nStringsIsEnabled) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kWrite));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext(
+                         EditorMode::kWrite, /*consent_status_settled=*/true));
 
   ASSERT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
 
@@ -383,8 +406,10 @@ IN_PROC_BROWSER_TEST_F(
     ShowPromoCardTitleInFrenchWhenOrcaUseL10nStringsFlagIsEnabled) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kPromoCard));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+                                   /*consent_status_settled=*/false));
 
   ASSERT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
 
@@ -399,8 +424,9 @@ IN_PROC_BROWSER_TEST_F(
     ShowWriteCardPlaceholderTextInEnUsWhenOrcaUseL10nStringsFlagIsDisabled) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kWrite));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext(
+                         EditorMode::kWrite, /*consent_status_settled=*/true));
 
   ASSERT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
 
@@ -416,8 +442,10 @@ IN_PROC_BROWSER_TEST_F(
     ShowPromoCardTitleInEnUsWhenOrcaUseL10nStringsFlagIsDisabled) {
   ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
 
-  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
-      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kPromoCard));
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+                                   /*consent_status_settled=*/false));
 
   ASSERT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
 

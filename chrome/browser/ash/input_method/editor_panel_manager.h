@@ -43,6 +43,7 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
         std::optional<std::string_view> preset_query_id,
         std::optional<std::string_view> freeform_text) = 0;
     virtual EditorMode GetEditorMode() const = 0;
+    virtual ConsentStatus GetConsentStatus() const = 0;
     virtual EditorMetricsRecorder* GetMetricsRecorder() = 0;
     virtual EditorOpportunityMode GetEditorOpportunityMode() const = 0;
     virtual std::vector<EditorBlockedReason> GetBlockedReasons() const = 0;
@@ -85,6 +86,10 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   // Used by the Magic Boost opt-in flow. Virtual for testing.
   virtual void OnConsentApproved();
   void OnMagicBoostPromoCardDeclined();
+
+  // For testing
+  void SetEditorClientForTesting(
+      mojo::PendingRemote<orca::mojom::EditorClient> client_for_testing);
 
  private:
   void OnGetPresetTextQueriesResult(
