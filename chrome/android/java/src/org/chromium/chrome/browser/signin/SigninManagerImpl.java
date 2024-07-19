@@ -736,14 +736,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     public void isAccountManaged(String email, final Callback<Boolean> callback) {
         assert email != null;
         CoreAccountInfo account = mIdentityManager.findExtendedAccountInfoByEmailAddress(email);
-        if (account == null) throw new RuntimeException("Failed to find account for email.");
         isAccountManaged(account, callback);
     }
 
     @Override
     public void isAccountManaged(
             @NonNull CoreAccountInfo account, final Callback<Boolean> callback) {
-        assert account != null;
+        if (account == null) throw new IllegalArgumentException("Account shouldn't be null!");
         SigninManagerImplJni.get()
                 .isAccountManaged(
                         mNativeSigninManagerAndroid, mAccountTrackerService, account, callback);
