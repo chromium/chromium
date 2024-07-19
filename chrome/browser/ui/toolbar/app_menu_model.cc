@@ -698,9 +698,7 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
     Browser* browser)
     : SimpleMenuModel(delegate) {
-  if (media_router::MediaRouterEnabled(browser->profile()) &&
-      base::FeatureList::IsEnabled(features::kCastAppMenuExperiment) &&
-      features::kCastListedFirst.Get()) {
+  if (media_router::MediaRouterEnabled(browser->profile())) {
     AddTitle(l10n_util::GetStringUTF16(IDS_SAVE_AND_SHARE_MENU_CAST));
     SetElementIdentifierAt(GetItemCount() - 1, AppMenuModel::kCastTitleItem);
     AddItemWithStringIdAndVectorIcon(this, IDC_ROUTE_MEDIA,
@@ -740,14 +738,6 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
       AddItemWithStringIdAndVectorIcon(this, IDC_QRCODE_GENERATOR,
                                        IDS_APP_MENU_CREATE_QR_CODE,
                                        kQrCodeChromeRefreshIcon);
-    }
-
-    if (media_router::MediaRouterEnabled(browser->profile()) &&
-        (!base::FeatureList::IsEnabled(features::kCastAppMenuExperiment) ||
-         !features::kCastListedFirst.Get())) {
-      AddItemWithStringIdAndVectorIcon(this, IDC_ROUTE_MEDIA,
-                                       IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
-                                       kCastChromeRefreshIcon);
     }
   }
   if (sharing_hub::DesktopScreenshotsFeatureEnabled(browser->profile())) {
@@ -1874,12 +1864,9 @@ void AppMenuModel::Build() {
 
   sub_menus_.push_back(
       std::make_unique<SaveAndShareSubMenuModel>(this, browser_));
-  int string_id =
-      media_router::MediaRouterEnabled(browser()->profile()) &&
-              base::FeatureList::IsEnabled(features::kCastAppMenuExperiment)
-          ? (features::kCastListedFirst.Get() ? IDS_CAST_SAVE_AND_SHARE_MENU
-                                              : IDS_SAVE_SHARE_AND_CAST_MENU)
-          : IDS_SAVE_AND_SHARE_MENU;
+  int string_id = media_router::MediaRouterEnabled(browser()->profile())
+                      ? IDS_CAST_SAVE_AND_SHARE_MENU
+                      : IDS_SAVE_AND_SHARE_MENU;
   AddSubMenuWithStringIdAndVectorIcon(this, IDC_SAVE_AND_SHARE_MENU, string_id,
                                       sub_menus_.back().get(),
                                       kFileSaveChromeRefreshIcon);

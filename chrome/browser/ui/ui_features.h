@@ -27,11 +27,6 @@ BASE_DECLARE_FEATURE(kAllowWindowDragUsingSystemDragDrop);
 
 BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
-#if !defined(ANDROID)
-BASE_DECLARE_FEATURE(kCastAppMenuExperiment);
-extern const base::FeatureParam<bool> kCastListedFirst;
-#endif
-
 BASE_DECLARE_FEATURE(kWebAppIconInTitlebar);
 
 BASE_DECLARE_FEATURE(kChromeLabs);
