@@ -42,6 +42,7 @@ static_library("accessibility") {
     "//chrome/browser/ash/accessibility/service",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ui/ash/keyboard",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",

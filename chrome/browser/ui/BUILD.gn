@@ -2236,16 +2236,6 @@ static_library("ui") {
       "ash/auth/cryptohome_pin_engine.h",
       "ash/auth/legacy_fingerprint_engine.cc",
       "ash/auth/legacy_fingerprint_engine.h",
-      "ash/keyboard/chrome_keyboard_bounds_observer.cc",
-      "ash/keyboard/chrome_keyboard_bounds_observer.h",
-      "ash/keyboard/chrome_keyboard_controller_client.cc",
-      "ash/keyboard/chrome_keyboard_controller_client.h",
-      "ash/keyboard/chrome_keyboard_ui.cc",
-      "ash/keyboard/chrome_keyboard_ui.h",
-      "ash/keyboard/chrome_keyboard_ui_factory.cc",
-      "ash/keyboard/chrome_keyboard_ui_factory.h",
-      "ash/keyboard/chrome_keyboard_web_contents.cc",
-      "ash/keyboard/chrome_keyboard_web_contents.h",
       "ash/lobster/lobster_client_factory_impl.cc",
       "ash/lobster/lobster_client_factory_impl.h",
       "ash/lobster/lobster_client_impl.cc",
@@ -3454,6 +3444,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/game_dashboard",
       "//chrome/browser/ui/ash/global_media_controls",
       "//chrome/browser/ui/ash/holding_space",
+      "//chrome/browser/ui/ash/keyboard",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -7154,17 +7145,6 @@ static_library("browser_element_identifiers") {
     "browser_element_identifiers.h",
   ]
   deps = [ "//ui/base" ]
-}
-
-if (is_chromeos_ash) {
-  source_set("ash_test_support") {
-    check_includes = false
-    sources = [
-      "ash/keyboard/chrome_keyboard_controller_client_test_helper.cc",
-      "ash/keyboard/chrome_keyboard_controller_client_test_helper.h",
-    ]
-    deps = [ "//ash" ]
-  }
 }
 
 if (is_android) {

@@ -3674,7 +3674,7 @@ if (!is_android) {
     if (is_chromeos_ash) {
       sources +=
           [ "../browser/lifetime/application_lifetime_chromeos_browsertest.cc" ]
-      deps += [ "//chrome/browser/ui:ash_test_support" ]
+      deps += [ "//chrome/browser/ui/ash/keyboard:ash_test_support" ]
     }
 
     if (!is_chromeos) {
@@ -4686,8 +4686,6 @@ if (!is_android) {
         "../browser/ui/ash/feature_discovery_duration_reporter_browsertest.cc",
         "../browser/ui/ash/float_controller_browsertest.cc",
         "../browser/ui/ash/google_one_offer_iph_tab_helper_browsertest.cc",
-        "../browser/ui/ash/keyboard/keyboard_controller_browsertest.cc",
-        "../browser/ui/ash/keyboard/keyboard_end_to_end_browsertest.cc",
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.cc",
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.h",
         "../browser/ui/ash/network/network_portal_signin_controller_browsertest.cc",
@@ -4971,9 +4969,10 @@ if (!is_android) {
         "//chrome/browser/policy:onc",
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
         "//chrome/browser/scalable_iph:scalable_iph_factory",
-        "//chrome/browser/ui:ash_test_support",
         "//chrome/browser/ui/ash/capture_mode",
         "//chrome/browser/ui/ash/holding_space:test_support",
+        "//chrome/browser/ui/ash/keyboard",
+        "//chrome/browser/ui/ash/keyboard:ash_test_support",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/ui/chromeos/read_write_cards",
         "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
@@ -5150,6 +5149,7 @@ if (!is_android) {
         "//chrome/browser/ui/ash/glanceables:browser_tests",
         "//chrome/browser/ui/ash/global_media_controls:browser_tests",
         "//chrome/browser/ui/ash/holding_space:browser_tests",
+        "//chrome/browser/ui/ash/keyboard:browser_tests",
       ]
     }
     if (safe_browsing_mode == 1) {
@@ -8574,8 +8574,6 @@ test("unit_tests") {
       "../browser/ui/ash/app_icon_color_cache_unittest.cc",
       "../browser/ui/ash/ime_controller_client_impl_unittest.cc",
       "../browser/ui/ash/in_session_auth_dialog_client_unittest.cc",
-      "../browser/ui/ash/keyboard/chrome_keyboard_ui_unittest.cc",
-      "../browser/ui/ash/keyboard/chrome_keyboard_web_contents_unittest.cc",
       "../browser/ui/ash/media_client_impl_unittest.cc",
       "../browser/ui/ash/multi_user/multi_profile_support_unittest.cc",
       "../browser/ui/ash/multi_user/multi_user_context_menu_chromeos_unittest.cc",
@@ -8882,6 +8880,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/glanceables:unit_tests",
       "//chrome/browser/ui/ash/global_media_controls:unit_tests",
       "//chrome/browser/ui/ash/holding_space:unit_tests",
+      "//chrome/browser/ui/ash/keyboard:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]

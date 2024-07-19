@@ -90,8 +90,12 @@ source_set("platform_apps") {
     deps += [
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/remote_apps",
+      "//chrome/browser/ui/ash/keyboard",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/ash/login/demo_mode" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ui/ash/keyboard",
+    ]
   }
 }
