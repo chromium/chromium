@@ -109,13 +109,29 @@ TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
   EXPECT_EQ(1,
             user_action_tester_.GetActionCount("UserEducation.WhatsNew.Shown"));
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.VersionShown"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "UserEducation.WhatsNew.ShownByManualNavigation"));
 
-  handler_->RecordModuleImpression(std::string("MyFeature"));
+  user_action_tester_.ResetCounts();
+  handler_->RecordEditionPageLoaded("NewEdition", false);
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("UserEducation.WhatsNew.Shown"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.EditionShown"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.EditionShown.NewEdition"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "UserEducation.WhatsNew.ShownByManualNavigation"));
+
+  handler_->RecordModuleImpression(
+      "MyFeature", whats_new::mojom::ModulePosition::kSpotlight1);
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "UserEducation.WhatsNew.ModuleShown"));
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "UserEducation.WhatsNew.ModuleShown.MyFeature"));
+  histogram_tester_.ExpectTotalCount(
+      "UserEducation.WhatsNew.ModuleShown.MyFeature", 1);
 
   handler_->RecordExploreMoreToggled(false);
   histogram_tester_.ExpectTotalCount(
@@ -127,11 +143,14 @@ TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
   handler_->RecordTimeOnPage(base::TimeDelta());
   histogram_tester_.ExpectTotalCount("UserEducation.WhatsNew.TimeOnPage", 1);
 
-  handler_->RecordModuleLinkClicked("AnotherFeature");
+  handler_->RecordModuleLinkClicked(
+      "AnotherFeature", whats_new::mojom::ModulePosition::kExploreMore1);
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "UserEducation.WhatsNew.ModuleLinkClicked"));
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "UserEducation.WhatsNew.ModuleLinkClicked.AnotherFeature"));
+  histogram_tester_.ExpectTotalCount(
+      "UserEducation.WhatsNew.ModuleLinkClicked.AnotherFeature", 1);
 }
 
 class WhatsNewHandlerTestWithCountry

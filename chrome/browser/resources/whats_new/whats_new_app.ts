@@ -14,7 +14,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {JSTime, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ScrollDepth} from './whats_new.mojom-webui.js';
+import {ModulePosition, ScrollDepth} from './whats_new.mojom-webui.js';
 import {getCss} from './whats_new_app.css.js';
 import {getHtml} from './whats_new_app.html.js';
 import {WhatsNewProxyImpl} from './whats_new_proxy.js';
@@ -28,7 +28,31 @@ enum EventType {
   SCROLL = 'scroll',
   TIME_ON_PAGE_MS = 'time_on_page_ms',
   GENERAL_LINK_CLICK = 'general_link_click',
+  MODULES_RENDERED = 'modules_rendered',
 }
+
+enum SectionType {
+  SPOTLIGHT = 'spotlight',
+  EXPLORE_MORE = 'explore_more',
+}
+
+// Used to map a section and order value to the ModulePosition mojo type.
+const kModulePositionsMap: Record<SectionType, ModulePosition[]> = {
+  [SectionType.SPOTLIGHT]: [
+    ModulePosition.kSpotlight1,
+    ModulePosition.kSpotlight2,
+    ModulePosition.kSpotlight3,
+    ModulePosition.kSpotlight4,
+  ],
+  [SectionType.EXPLORE_MORE]: [
+    ModulePosition.kExploreMore1,
+    ModulePosition.kExploreMore2,
+    ModulePosition.kExploreMore3,
+    ModulePosition.kExploreMore4,
+    ModulePosition.kExploreMore5,
+    ModulePosition.kExploreMore6,
+  ],
+};
 
 // TODO(crbug.com/342172972): Remove legacy browser command format.
 interface LegacyBrowserCommandData {
@@ -42,15 +66,25 @@ interface BrowserCommandData {
   clickInfo: ClickInfo;
 }
 
-interface PageLoadedMetric {
+interface VersionPageLoadedMetric {
   event: EventType.PAGE_LOADED;
   type: 'version';
   version: number;
+  page_uid?: string;
+}
+
+interface EditionPageLoadedMetric {
+  event: EventType.PAGE_LOADED;
+  type: 'edition';
+  version: null;
+  page_uid: string;
 }
 
 interface ModuleImpressionMetric {
   event: EventType.MODULE_IMPRESSION;
   module_name?: string;
+  section?: SectionType;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
 }
 
 interface ExploreMoreOpenMetric {
@@ -65,7 +99,7 @@ interface ExploreMoreCloseMetric {
 
 interface ScrollDepthMetric {
   event: EventType.SCROLL;
-  percent_scrolled: 25|50|75|100;
+  percent_scrolled: '25'|'50'|'75'|'100';
 }
 
 interface TimeOnPageMetric {
@@ -79,12 +113,19 @@ interface GeneralLinkClickMetric {
   link_type: string;
   link_url: string;
   module_name?: string;
+  section?: SectionType;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
 }
 
+interface ModulesRenderedMetric {
+  event: EventType.MODULES_RENDERED;
+}
+
+type PageLoadedMetric = VersionPageLoadedMetric|EditionPageLoadedMetric;
 type BrowserCommand = LegacyBrowserCommandData|BrowserCommandData;
 type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
     ExploreMoreCloseMetric|ScrollDepthMetric|TimeOnPageMetric|
-    GeneralLinkClickMetric;
+    GeneralLinkClickMetric|ModulesRenderedMetric;
 
 interface EventData {
   data: BrowserCommand|MetricData;
@@ -123,27 +164,40 @@ function handlePageLoadMetric(data: PageLoadedMetric, isAutoOpen: boolean) {
   const now: JSTime = {msec: Date.now()};
   handler.recordTimeToLoadContent(now);
 
-  if (data.type === 'version' && Number.isInteger(data.version)) {
-    handler.recordVersionPageLoaded(isAutoOpen);
-  } else {
-    console.warn(
-        'Unrecognized page version: ' + data.type + ', ' + data.version);
+  // Record initial scroll depth as 0%.
+  handler.recordScrollDepth(ScrollDepth.k0);
+
+  switch (data.type) {
+    case 'version':
+      if (Number.isInteger(data.version)) {
+        const {handler} = WhatsNewProxyImpl.getInstance();
+        handler.recordVersionPageLoaded(isAutoOpen);
+      }
+      break;
+    case 'edition':
+      const {handler} = WhatsNewProxyImpl.getInstance();
+      handler.recordEditionPageLoaded(data.page_uid, isAutoOpen);
+      break;
+    default:
+      console.warn('Unrecognized page version: ' + (data as any)!.type);
   }
 }
 
 function handleScrollDepthMetric(data: ScrollDepthMetric) {
   let scrollDepth;
+  // Embedded page never sends scroll depth 0%. This value is created in
+  // handlePageLoadMetric instead.
   switch (data.percent_scrolled) {
-    case 25:
+    case '25':
       scrollDepth = ScrollDepth.k25;
       break;
-    case 50:
+    case '50':
       scrollDepth = ScrollDepth.k50;
       break;
-    case 75:
+    case '75':
       scrollDepth = ScrollDepth.k75;
       break;
-    case 100:
+    case '100':
       scrollDepth = ScrollDepth.k100;
       break;
   }
@@ -155,10 +209,57 @@ function handleScrollDepthMetric(data: ScrollDepthMetric) {
   }
 }
 
+// Parse `section` and `order` values from the untrusted source.
+function parseOrder(
+    section: string|undefined, order: string|undefined): ModulePosition {
+  // Reject messages that send falsy `section` or `order` values.
+  if (!section || !order) {
+    return ModulePosition.kUndefined;
+  }
+
+  // Ensure `section` is one of the defined enum values.
+  if (!(Object.values(SectionType).includes(section as SectionType))) {
+    return ModulePosition.kUndefined;
+  }
+
+  const moduleSection = kModulePositionsMap[section as SectionType];
+  const orderAsNumber = Number.parseInt(order, 10);
+  // Ensure `order` is a number within the 1-based range of the given section.
+  if (Number.isNaN(orderAsNumber) || orderAsNumber > moduleSection.length ||
+      orderAsNumber < 1) {
+    return ModulePosition.kUndefined;
+  }
+
+  // Get ModulePosition enum from validated message parameters.
+  return moduleSection[orderAsNumber - 1] as ModulePosition;
+}
+
+
+function handleModuleImpression(data: ModuleImpressionMetric) {
+  // Reject falsy `module_name`, including empty strings.
+  if (!data.module_name) {
+    return;
+  }
+  const position = parseOrder(data.section, data.order);
+  const {handler} = WhatsNewProxyImpl.getInstance();
+  handler.recordModuleImpression(data.module_name, position);
+}
+
+function handleModuleLinkClicked(data: GeneralLinkClickMetric) {
+  // Reject falsy `module_name`, including empty strings.
+  if (!data.module_name) {
+    return;
+  }
+  const position = parseOrder(data.section, data.order);
+  const {handler} = WhatsNewProxyImpl.getInstance();
+  handler.recordModuleLinkClicked(data.module_name, position);
+}
+
 function handleTimeOnPageMetric(data: TimeOnPageMetric) {
   if (Number.isInteger(data.time) && data.time > 0) {
     const {handler} = WhatsNewProxyImpl.getInstance();
-    const delta: TimeDelta = {microseconds: BigInt(data.time)};
+    // Event contains time in milliseconds. Convert to microseconds.
+    const delta: TimeDelta = {microseconds: BigInt(data.time) * 1000n};
     handler.recordTimeOnPage(delta);
   } else {
     console.warn('Invalid time: ', data.time);
@@ -267,9 +368,10 @@ export class WhatsNewAppElement extends CrLitElement {
         handlePageLoadMetric(data, this.isAutoOpen_);
         break;
       case EventType.MODULE_IMPRESSION:
-        if (data.module_name) {
-          handler.recordModuleImpression(data.module_name);
-        }
+        handleModuleImpression(data);
+        break;
+      case EventType.MODULES_RENDERED:
+        // Ignored.
         break;
       case EventType.EXPLORE_MORE_OPEN:
         handler.recordExploreMoreToggled(true);
@@ -284,9 +386,7 @@ export class WhatsNewAppElement extends CrLitElement {
         handleTimeOnPageMetric(data);
         break;
       case EventType.GENERAL_LINK_CLICK:
-        if (data.module_name) {
-          handler.recordModuleLinkClicked(data.module_name);
-        }
+        handleModuleLinkClicked(data);
         break;
       default:
         console.warn('Unrecognized message.', data);

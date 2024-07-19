@@ -7,15 +7,12 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 window.onload = function() {
   assertTrue(!!window.top);
 
-  // The user clicks a link in a module.
+  // A module intersected with the viewport.
   window.top.postMessage(
       {
         data: {
-          event: 'general_link_click',
-          link_text: 'Google Search',
-          link_type: 'external',
-          link_url: 'https://google.com',
-          module_name: 'FeatureWithLink',
+          event: 'module_impression',
+          module_name: 'ChromeFeature',
           section: 'spotlight',
           order: '1',
         },

@@ -42368,6 +42368,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.WhatsNew.EditionShown">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    A What's New edition page was shown to the user, either by automatically
+    opening on startup or by direct user navigation.
+  </description>
+</action>
+
 <action name="UserEducation.WhatsNew.ModuleLinkClicked">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
@@ -42397,6 +42406,15 @@ should be able to be added at any place in this file.
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <description>The user manually navigated to the What's New page.</description>
+</action>
+
+<action name="UserEducation.WhatsNew.VersionShown">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    A What's New version page was shown to the user, either by automatically
+    opening on startup or by direct user navigation.
+  </description>
 </action>
 
 <action name="UserManager_Cleared_Legacy_User_Prefs">
@@ -43602,8 +43620,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action-suffix separator="." ordering="suffix">
+  <suffix name="Test" label="Test module."/>
   <affected-action name="UserEducation.WhatsNew.ModuleLinkClicked"/>
   <affected-action name="UserEducation.WhatsNew.ModuleShown"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="Test" label="Test edition."/>
+  <affected-action name="UserEducation.WhatsNew.EditionShown"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">

@@ -43,11 +43,15 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
 
   void RecordTimeToLoadContent(base::Time time) override;
   void RecordVersionPageLoaded(bool is_auto_open) override;
-  void RecordModuleImpression(const std::string& module_name) override;
+  void RecordEditionPageLoaded(const std::string& page_uid,
+                               bool is_auto_open) override;
+  void RecordModuleImpression(const std::string& module_name,
+                              whats_new::mojom::ModulePosition) override;
   void RecordExploreMoreToggled(bool expanded) override;
   void RecordScrollDepth(whats_new::mojom::ScrollDepth depth) override;
   void RecordTimeOnPage(base::TimeDelta time) override;
-  void RecordModuleLinkClicked(const std::string& module_name) override;
+  void RecordModuleLinkClicked(const std::string& module_name,
+                               whats_new::mojom::ModulePosition) override;
 
   // Makes a request to show a HaTS survey.
   void TryShowHatsSurveyWithTimeout();

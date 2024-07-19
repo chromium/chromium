@@ -6,11 +6,19 @@ import 'chrome://whats-new/whats_new_app.js';
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {ModulePosition} from 'chrome://whats-new/whats_new.mojom-webui.js';
 import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
 import {TestWhatsNewBrowserProxy} from './test_whats_new_browser_proxy.js';
 
 const whatsNewURL = 'chrome://webui-test/whats_new/test.html';
+
+function getUrlForFixture(filename: string, query?: string): string {
+  if (query) {
+    return `chrome://webui-test/whats_new/${filename}.html?${query}`;
+  }
+  return `chrome://webui-test/whats_new/${filename}.html`;
+}
 
 suite('WhatsNewV2AppTest', function() {
   setup(function() {
@@ -60,5 +68,19 @@ suite('WhatsNewV2AppTest', function() {
         whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>('#content');
     assertTrue(!!iframe);
     assertEquals(whatsNewURL + '?updated=false', iframe.src);
+  });
+
+  test('with module_impression metrics from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_module_impression_v2'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    const moduleImpression =
+        await proxy.handler.whenCalled('recordModuleImpression');
+    assertEquals('ChromeFeature', moduleImpression[0]);
+    assertEquals(ModulePosition.kSpotlight1, moduleImpression[1]);
   });
 });

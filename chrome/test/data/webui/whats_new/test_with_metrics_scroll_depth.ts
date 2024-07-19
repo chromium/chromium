@@ -12,7 +12,7 @@ window.onload = function() {
       {
         data: {
           event: 'scroll',
-          percent_scrolled: 25,  // 25 || 50 || 75 || 100
+          percent_scrolled: '25',  // 0 || 25 || 50 || 75 || 100
         },
       },
       'chrome://whats-new/');

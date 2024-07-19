@@ -6,7 +6,7 @@ import type {JSTime, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {PageCallbackRouter} from 'chrome://whats-new/whats_new.mojom-webui.js';
-import type {PageHandlerInterface} from 'chrome://whats-new/whats_new.mojom-webui.js';
+import type {ModulePosition, PageHandlerInterface, ScrollDepth} from 'chrome://whats-new/whats_new.mojom-webui.js';
 import type {WhatsNewProxy} from 'chrome://whats-new/whats_new_proxy.js';
 
 /**
@@ -22,6 +22,7 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
       'getServerUrl',
       'recordTimeToLoadContent',
       'recordVersionPageLoaded',
+      'recordEditionPageLoaded',
       'recordModuleImpression',
       'recordExploreMoreToggled',
       'recordScrollDepth',
@@ -45,15 +46,19 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
     this.methodCalled('recordVersionPageLoaded', isAutoOpen);
   }
 
-  recordModuleImpression(moduleName: string) {
-    this.methodCalled('recordModuleImpression', moduleName);
+  recordEditionPageLoaded(pageUid: string, isAutoOpen: boolean) {
+    this.methodCalled('recordEditionPageLoaded', pageUid, isAutoOpen);
+  }
+
+  recordModuleImpression(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModuleImpression', moduleName, position);
   }
 
   recordExploreMoreToggled(expanded: boolean) {
     this.methodCalled('recordExploreMoreToggled', expanded);
   }
 
-  recordScrollDepth(percent: number) {
+  recordScrollDepth(percent: ScrollDepth) {
     this.methodCalled('recordScrollDepth', percent);
   }
 
@@ -61,8 +66,8 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
     this.methodCalled('recordTimeOnPage', time);
   }
 
-  recordModuleLinkClicked(moduleName: string) {
-    this.methodCalled('recordModuleLinkClicked', moduleName);
+  recordModuleLinkClicked(moduleName: string, position: ModulePosition) {
+    this.methodCalled('recordModuleLinkClicked', moduleName, position);
   }
 }
 

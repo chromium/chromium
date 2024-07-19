@@ -60,6 +60,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Test" summary="the tutorial used for testing only"/>
 </variants>
 
+<variants name="WhatsNewModule">
+  <variant name="Test" summary="the module used for testing only"/>
+</variants>
+
 <histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"
     expires_after="2024-09-20">
   <owner>dpenning@chromium.org</owner>
@@ -322,13 +326,35 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.WhatsNew.ExploreMoreExpanded"
-    enum="BooleanSuccess" expires_after="2024-12-03">
+    enum="BooleanYesNo" expires_after="2024-12-03">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
     Records when the user expands or collapses the &quot;Explore More&quot;
     section of the What's New page.
   </summary>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.ModuleLinkClicked.{ModuleName}"
+    enum="WhatsNewModulePosition" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that a link or button in the {ModuleName} module on the What's New
+    page was clicked. The value indicates the module's position in its section.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
+<histogram name="UserEducation.WhatsNew.ModuleShown.{ModuleName}"
+    enum="WhatsNewModulePosition" expires_after="2024-12-03">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that the {ModuleName} module on the What's New page was visible to
+    the user. The value indicates the module's position in its section.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
 <histogram name="UserEducation.WhatsNew.ScrollDepth" enum="ScrollDepthQuartile"

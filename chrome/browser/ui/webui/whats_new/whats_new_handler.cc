@@ -51,19 +51,46 @@ void WhatsNewHandler::RecordTimeToLoadContent(base::Time time) {
 
 void WhatsNewHandler::RecordVersionPageLoaded(bool is_auto_open) {
   base::RecordAction(base::UserMetricsAction("UserEducation.WhatsNew.Shown"));
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.VersionShown"));
   if (!is_auto_open) {
     base::RecordAction(base::UserMetricsAction(
         "UserEducation.WhatsNew.ShownByManualNavigation"));
   }
 }
 
-void WhatsNewHandler::RecordModuleImpression(const std::string& module_name) {
+void WhatsNewHandler::RecordEditionPageLoaded(const std::string& page_uid,
+                                              bool is_auto_open) {
+  base::RecordAction(base::UserMetricsAction("UserEducation.WhatsNew.Shown"));
+
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.WhatsNew.EditionShown"));
+
+  if (!page_uid.empty()) {
+    std::string action_name = "UserEducation.WhatsNew.EditionShown.";
+    action_name.append(page_uid);
+    base::RecordComputedAction(action_name);
+  }
+
+  if (!is_auto_open) {
+    base::RecordAction(base::UserMetricsAction(
+        "UserEducation.WhatsNew.ShownByManualNavigation"));
+  }
+}
+
+void WhatsNewHandler::RecordModuleImpression(
+    const std::string& module_name,
+    whats_new::mojom::ModulePosition position) {
   base::RecordAction(
       base::UserMetricsAction("UserEducation.WhatsNew.ModuleShown"));
 
   std::string action_name = "UserEducation.WhatsNew.ModuleShown.";
   action_name.append(module_name);
   base::RecordComputedAction(action_name);
+
+  std::string base_histogram_name = "UserEducation.WhatsNew.ModuleShown.";
+  base_histogram_name.append(module_name);
+  base::UmaHistogramEnumeration(action_name, position);
 }
 
 void WhatsNewHandler::RecordExploreMoreToggled(bool expanded) {
@@ -79,13 +106,19 @@ void WhatsNewHandler::RecordTimeOnPage(base::TimeDelta time) {
   base::UmaHistogramMediumTimes("UserEducation.WhatsNew.TimeOnPage", time);
 }
 
-void WhatsNewHandler::RecordModuleLinkClicked(const std::string& module_name) {
+void WhatsNewHandler::RecordModuleLinkClicked(
+    const std::string& module_name,
+    whats_new::mojom::ModulePosition position) {
   base::RecordAction(
       base::UserMetricsAction("UserEducation.WhatsNew.ModuleLinkClicked"));
 
   std::string action_name = "UserEducation.WhatsNew.ModuleLinkClicked.";
   action_name.append(module_name);
   base::RecordComputedAction(action_name);
+
+  std::string base_histogram_name = "UserEducation.WhatsNew.ModuleLinkClicked.";
+  base_histogram_name.append(module_name);
+  base::UmaHistogramEnumeration(action_name, position);
 }
 
 void WhatsNewHandler::GetServerUrl(GetServerUrlCallback callback) {

@@ -31327,6 +31327,7 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ScrollDepthQuartile">
+  <int value="0" label="0%"/>
   <int value="25" label="25%"/>
   <int value="50" label="50%"/>
   <int value="75" label="75%"/>
@@ -35016,6 +35017,20 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4" label="Load failed and tab was closed"/>
   <int value="5" label="Load failed in preload and tab was never opened"/>
   <int value="6" label="Load aborted before request returned"/>
+</enum>
+
+<enum name="WhatsNewModulePosition">
+  <int value="1" label="Position 1 in 'Spotlight'"/>
+  <int value="2" label="Position 2 in 'Spotlight'"/>
+  <int value="3" label="Position 3 in 'Spotlight'"/>
+  <int value="4" label="Position 4 in 'Spotlight'"/>
+  <int value="5" label="Position 1 in 'Explore More'"/>
+  <int value="6" label="Position 2 in 'Explore More'"/>
+  <int value="7" label="Position 3 in 'Explore More'"/>
+  <int value="8" label="Position 4 in 'Explore More'"/>
+  <int value="9" label="Position 5 in 'Explore More'"/>
+  <int value="10" label="Position 6 in 'Explore More'"/>
+  <int value="11" label="No position specified in legacy event"/>
 </enum>
 
 <enum name="WhatsNewStartupType">
