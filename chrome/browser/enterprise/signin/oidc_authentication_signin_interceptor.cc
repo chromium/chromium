@@ -60,6 +60,9 @@ using profile_management::features::kOidcAuthStubDmToken;
 using profile_management::features::kOidcAuthStubUserEmail;
 using profile_management::features::kOidcAuthStubUserName;
 
+using profile_management::features::kOidcAuthForceErrorUi;
+using profile_management::features::kOidcAuthForceTimeoutUi;
+
 using enterprise::ProfileIdServiceFactory;
 
 namespace {
@@ -319,6 +322,12 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
     std::unique_ptr<CloudPolicyClient> client,
     std::string preset_profile_guid,
     base::TimeTicks registration_start_time) {
+  if (kOidcAuthForceErrorUi.Get()) {
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "OIDC client registration failure "
+                                          "enforced by feature flag parameter.";
+    return HandleError(OidcInterceptionResult::kFailedToRegisterProfile);
+  }
+
   if (client->last_dm_status() != policy::DM_STATUS_SUCCESS) {
     RecordOidcEnrollmentRegistrationLatency(
         std::nullopt, /*success=*/false,
@@ -522,7 +531,7 @@ void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
     bool success) {
   if (user_choice_handling_done_callback_) {
     std::move(user_choice_handling_done_callback_)
-        .Run(success
+        .Run((success && !kOidcAuthForceTimeoutUi.Get())
                  ? signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS
                  : signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT);
   } else {

@@ -13,6 +13,7 @@ import './signin_vars.css.js';
 import './tangible_sync_style_shared.css.js';
 import './managed_user_profile_notice_disclosure.js';
 import './managed_user_profile_notice_state.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';

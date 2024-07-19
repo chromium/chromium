@@ -34,19 +34,21 @@
     text-align: center;
   }
 
-  h1.title {
+  .tangible-sync-style .title {
     font-size: 36px;
     font-weight: 500;
     line-height: 44px;
+    margin-bottom: 6px;
     text-align: center;
 
   }
 
   .subtitle {
-    margin-top: 0;
-    line-height: 24px;
+    color: var(--cr-secondary-text-color);
     font-size: 20px;
     font-weight: 400;
+    line-height: 24px;
+    margin-top: 6px;
     text-align: center;
 
   }
@@ -55,46 +57,48 @@
     font-size: 15px;
     font-weight: 500;
     line-height: 32px;
+    margin-bottom: 0px;
     text-align: center;
   }
 
   .disclaimer-container {
+    box-sizing: border-box;
     display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
     justify-content: center;
     margin-block-start: 30px;
-    min-height: 212px;
     max-height: 300px;
-    flex-wrap: wrap;
+    min-height: 212px;
     overflow-y: auto;
     overflow-x: hidden;
-    gap: 24px;
-    box-sizing: border-box;
   }
 
   .disclaimer {
-    min-width: 360px;
-    width: 360px;
-    border-radius: 24px;
     background-color: var(--md-background-color);
+    border-radius: 24px;
+    box-sizing: border-box;
+    height: 212px;
+    min-width: 212px;
     padding: 24px;
     text-align: center;
-    box-sizing: border-box;
+    width: 360px;
   }
 
   .disclaimer .icon {
+    color: var(--google-blue-600);
     height: 36px;
     width: 36px;
-    color: var(--google-blue-500);
-  }
-
-  .disclaimer h3 {
-    line-height: 32px;
-    text-align: center;
   }
 
   .disclaimer p {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    font-weight: 400;
     line-height: 20px;
+    margin-top: 0px;
     text-align: center;
+
   }
 
   @media (prefers-color-scheme: dark) {
@@ -109,6 +113,10 @@
 
     .disclaimer {
       background-color: var(--cr-fallback-color-surface);
+    }
+
+    .disclaimer .icon {
+      color: var(--google-blue-300);
     }
   }
 </style>

@@ -30,6 +30,8 @@ extern const base::FeatureParam<std::string> kOidcAuthStubClientId;
 extern const base::FeatureParam<std::string> kOidcAuthStubUserName;
 extern const base::FeatureParam<std::string> kOidcAuthStubUserEmail;
 extern const base::FeatureParam<bool> kOidcAuthIsDasherBased;
+extern const base::FeatureParam<bool> kOidcAuthForceErrorUi;
+extern const base::FeatureParam<bool> kOidcAuthForceTimeoutUi;
 
 }  // namespace profile_management::features
 

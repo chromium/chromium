@@ -55,4 +55,14 @@ constexpr base::FeatureParam<std::string> kOidcAuthStubUserEmail{
 constexpr base::FeatureParam<bool> kOidcAuthIsDasherBased{
     &kOidcAuthProfileManagement, "is_dasher_based", true};
 
+// If set to `true`, OIDC flow will always fail its registration and trigger the
+// Error dialog.
+constexpr base::FeatureParam<bool> kOidcAuthForceErrorUi{
+    &kOidcAuthProfileManagement, "force_error_ui", false};
+
+// If set to `true`, OIDC flow will always fail its policy fetch and trigger the
+// Timeout dialog.
+constexpr base::FeatureParam<bool> kOidcAuthForceTimeoutUi{
+    &kOidcAuthProfileManagement, "force_timeout_ui", false};
+
 }  // namespace profile_management::features

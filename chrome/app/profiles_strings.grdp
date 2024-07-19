@@ -635,22 +635,19 @@
       Setting up your work profile ...
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_SUCCESS_TITLE" desc="Title of a section telling the user that their work profile has been created..">
-      Your work profile is ready
+      You're all set!
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_SUCCESS_SUBTITLE" desc="Subtitle of a section telling the user that their work profile has been created.">
-      You are ready to use your profile for work
+      Now you can start browsing
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_TITLE" desc="Title of a section telling the user that their work profile was created but is not fully ready yet.">
-      Your profile setup is almost done
-    </message>
-    <message name="IDS_ENTERPRISE_OIDC_WELCOME_TIMEOUT_SUBTITLE" desc="Subtitle of a section telling the user that their work profile was created but is not fully ready yet.">
-      We're getting your workspace ready! Feel free to explore in the meantime and we'll be ready for you soon.
+      Your work profile is almost ready
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_TITLE" desc="Title of a section telling the user that there was an error while creating their work profile.">
       Something went wrong
     </message>
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
-      You can try again or contact your administrator or help
+      You can try again or contact your administrator for help
     </message>
 
     <!-- Profile Picker -->
