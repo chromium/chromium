@@ -51,6 +51,9 @@ class TokenServiceTable : public WebDatabaseTable {
   // a mac keychain popup.
   // True if we encrypted a token and stored it, false otherwise.
   bool SetTokenForService(const std::string& service, const std::string& token);
+
+ private:
+  bool MigrateToVersion130AddBindingKeyColumn();
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_WEBDATA_TOKEN_SERVICE_TABLE_H_

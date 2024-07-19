@@ -145,7 +145,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 129;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 130;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1406,5 +1406,22 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion128ToCurrent) {
     ASSERT_TRUE(connection.Open(GetDatabasePath()));
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
     EXPECT_TRUE(connection.DoesTableExist("generic_payment_instruments"));
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion129ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_129.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(129, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("token_service", "binding_key"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("token_service", "binding_key"));
   }
 }

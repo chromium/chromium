@@ -12,6 +12,7 @@
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
+#include "sql/transaction.h"
 
 namespace {
 
@@ -44,7 +45,8 @@ bool TokenServiceTable::CreateTablesIfNecessary() {
   if (!db_->DoesTableExist("token_service")) {
     if (!db_->Execute("CREATE TABLE token_service ("
                       "service VARCHAR PRIMARY KEY NOT NULL,"
-                      "encrypted_token BLOB)")) {
+                      "encrypted_token BLOB,"
+                      "binding_key BLOB)")) {
       DUMP_WILL_BE_NOTREACHED() << "Failed creating token_service table";
       return false;
     }
@@ -54,6 +56,11 @@ bool TokenServiceTable::CreateTablesIfNecessary() {
 
 bool TokenServiceTable::MigrateToVersion(int version,
                                          bool* update_compatible_version) {
+  switch (version) {
+    case 130:
+      return MigrateToVersion130AddBindingKeyColumn();
+  }
+
   return true;
 }
 
@@ -147,4 +154,12 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
   VLOG(1) << "Loaded tokens: result = " << read_all_tokens_result
           << " ; number of tokens loaded = " << number_of_tokens_loaded;
   return read_all_tokens_result;
+}
+
+bool TokenServiceTable::MigrateToVersion130AddBindingKeyColumn() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         db_->Execute(
+             "ALTER TABLE token_service ADD COLUMN binding_key BLOB") &&
+         transaction.Commit();
 }
