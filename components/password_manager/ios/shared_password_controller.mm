@@ -43,8 +43,10 @@
 #import "components/password_manager/core/browser/password_feature_manager.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/constants.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
@@ -119,6 +121,19 @@ class PasswordAutofillAgentDelegateImpl
  private:
   web::WebState* web_state_;
 };
+
+AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
+    bool proactive,
+    bool manual) {
+  // 'proactive' keeps track of whether the sheet was shown proactively and
+  // 'manual' keeps track of whether the sheet was shown through manual
+  // fallback (these are mutually exclusive events), so if both are false, it
+  // means the sheet was shown through the "Suggest strong password" keyboard
+  // accessory.
+  return proactive ? AcceptedGeneratedPasswordSourceType::kProactiveBottomSheet
+         : manual  ? AcceptedGeneratedPasswordSourceType::kManualFallback
+                   : AcceptedGeneratedPasswordSourceType::kSuggestion;
+}
 
 }  // namespace
 
@@ -254,6 +269,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 #pragma mark - PasswordGenerationProvider
 
 - (void)triggerPasswordGeneration {
+  LogPasswordGenerationEvent(
+      autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
   [self triggerPasswordGenerationForFormId:_lastFocusedFormIdentifier
                            fieldIdentifier:_lastFocusedFieldIdentifier
                                    inFrame:_lastFocusedFrame
@@ -268,13 +285,14 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     return;
   }
   _proactivePasswordGeneration = proactivePasswordGeneration;
-
-  LogPasswordGenerationEvent(
-      autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
+  // This function is reached either by using manual fallback or proactive
+  // generation. Therefore, if it is not proactive password generation, it is
+  // manually triggered, hence how isManuallyTriggered is set in the following
+  // call.
   [self generatePasswordForFormId:formIdentifier
                   fieldIdentifier:fieldIdentifier
                           inFrame:frame
-              isManuallyTriggered:YES];
+              isManuallyTriggered:!_proactivePasswordGeneration];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -903,6 +921,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                            return;
                          }
 
+                         [strongSelf
+                             logUserChoice:accept
+                                 proactive:self.proactivePasswordGeneration
+                                    manual:isManuallyTriggered];
+
                          if (accept) {
                            LogPasswordGenerationEvent(
                                autofill::password_generation::
@@ -1061,6 +1084,28 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       driver, driver->field_data_manager(),
       /*removed_forms=*/params.removed_forms,
       /*removed_unowned_fields=*/params.removed_unowned_fields);
+}
+
+- (void)logUserChoice:(BOOL)accept
+            proactive:(BOOL)proactive
+               manual:(BOOL)manual {
+  if (accept) {
+    if (proactive) {
+      // Suggested generated password accepted on proactive bottom sheet.
+      base::UmaHistogramEnumeration(
+          "PasswordManager.TouchToFill.PasswordGeneration.UserChoice",
+          password_manager::metrics_util::GenerationDialogChoice::kAccepted);
+    }
+    base::UmaHistogramEnumeration(
+        "PasswordGeneration.iOS.AcceptedGeneratedPasswordSource",
+        DetermineGeneratedPasswordSource(proactive, manual));
+  } else if (proactive) {
+    // Suggested generated password is not accepted from proactive bottom sheet.
+    base::UmaHistogramEnumeration(
+        "PasswordManager.TouchToFill."
+        "PasswordGeneration.UserChoice",
+        password_manager::metrics_util::GenerationDialogChoice::kRejected);
+  }
 }
 
 @end

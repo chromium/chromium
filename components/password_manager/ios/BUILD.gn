@@ -36,6 +36,7 @@ component("ios") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   sources = [
+    "constants.h",
     "ios_password_manager_driver.h",
     "ios_password_manager_driver.mm",
     "ios_password_manager_driver_factory.h",

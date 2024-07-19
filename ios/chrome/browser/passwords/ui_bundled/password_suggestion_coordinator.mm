@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_coordinator.h"
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/common/password_generation_util.h"
 #import "components/password_manager/core/browser/features/password_features.h"
+#import "components/password_manager/ios/constants.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -226,14 +229,18 @@ constexpr CGFloat preferredCornerRadius = 20;
   }
   PrefService* prefService = browserState->GetPrefs();
   if (prefService) {
-    const int currentDismissCount = prefService->GetInteger(
-        prefs::kIosPasswordGenerationBottomSheetDismissCount);
-    if (currentDismissCount <
-        AutofillBottomSheetTabHelper::
-            kPasswordGenerationBottomSheetMaxDismissCount) {
-      prefService->SetInteger(
-          prefs::kIosPasswordGenerationBottomSheetDismissCount,
-          currentDismissCount + 1);
+    const int newDismissCount =
+        prefService->GetInteger(
+            prefs::kIosPasswordGenerationBottomSheetDismissCount) +
+        1;
+    prefService->SetInteger(
+        prefs::kIosPasswordGenerationBottomSheetDismissCount, newDismissCount);
+    if (newDismissCount == AutofillBottomSheetTabHelper::
+                               kPasswordGenerationBottomSheetMaxDismissCount) {
+      base::UmaHistogramEnumeration(
+          "PasswordGeneration.BottomSheetStateTransitionPasswordGeneration.iOS."
+          "ProactiveBottomSheetStateTransition",
+          PasswordGenerationBottomSheetStateTransitionType::kSilenced);
     }
   }
 }
@@ -279,6 +286,15 @@ constexpr CGFloat preferredCornerRadius = 20;
   }
   PrefService* prefService = browserState->GetPrefs();
   if (prefService) {
+    const int currentDismissCount = prefService->GetInteger(
+        prefs::kIosPasswordGenerationBottomSheetDismissCount);
+    if (currentDismissCount ==
+        AutofillBottomSheetTabHelper::
+            kPasswordGenerationBottomSheetMaxDismissCount) {
+      base::UmaHistogramEnumeration(
+          "PasswordGeneration.iOS.ProactiveBottomSheetStateTransition",
+          PasswordGenerationBottomSheetStateTransitionType::kUnsilenced);
+    }
     prefService->SetInteger(
         prefs::kIosPasswordGenerationBottomSheetDismissCount, 0);
   }

@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AcceptedGeneratedPasswordSourceType">
+  <int value="0" label="Proactive bottom sheet"/>
+  <int value="1" label="Keyboard accessory"/>
+</enum>
+
 <enum name="AccessoryAction">
   <int value="0" label="Automatic password generation"/>
   <int value="1" label="'Manage all passwords' link"/>
@@ -1468,6 +1473,11 @@ chromium-metrics-reviews@google.com.
     credential stored and the field content was NOT overridden with the username
     of this credential due to 2).
   </int>
+</enum>
+
+<enum name="ProactivePasswordGenerationBottomSheetTransitionType">
+  <int value="0" label="Silenced"/>
+  <int value="1" label="Unsilenced"/>
 </enum>
 
 <enum name="ProvisionalSaveFailure">

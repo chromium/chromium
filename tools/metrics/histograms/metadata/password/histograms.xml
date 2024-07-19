@@ -394,6 +394,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordGeneration.iOS.AcceptedGeneratedPasswordSource"
+    enum="AcceptedGeneratedPasswordSourceType" expires_after="2025-01-05">
+  <owner>cloutierc@google.com</owner>
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the source of the generated password which was accepted by the user.
+    Recorded when they accept a suggestion from a password generation bottom
+    sheet, which was either presented proactively or it was triggered by the
+    keyboard accessory.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.iOS.ProactiveBottomSheetStateTransition"
+    enum="ProactivePasswordGenerationBottomSheetTransitionType"
+    expires_after="2025-01-05">
+  <owner>cloutierc@google.com</owner>
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records state transitions of the proactive password generation bottom sheet.
+    For example getting from an active state to a silenced/inactive state will
+    be recorded as a &quot;silence&quot; transition. Recorded when the state
+    changes (e.g. when it is silenced because it reached too many strikes).
+  </summary>
+</histogram>
+
 <histogram name="PasswordGeneration.PopupShown"
     enum="PasswordGenerationPopupShown" expires_after="2024-12-08">
   <owner>kazinova@google.com</owner>
