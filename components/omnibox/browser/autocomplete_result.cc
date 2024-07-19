@@ -807,6 +807,7 @@ void AutocompleteResult::ConvertOpenTabMatches(
       }
 
       auto tab_info = batch_lookup_map.find(match.destination_url);
+      // DCHECK ok as loop is exited if tab_info at .end().
       DCHECK(tab_info != batch_lookup_map.end());
       if (tab_info == batch_lookup_map.end()) {
         continue;
