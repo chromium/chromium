@@ -24,7 +24,7 @@ type: main
 schema:
   type: boolean
 items:
-  - caption: "Enabled: CSS zoom conforms to the standard specificiation."
+  - caption: "Enabled: CSS zoom conforms to the standard specification."
     value: true
   - caption: "Disabled: CSS zoom preserves its legacy pre-standard behavior."
     value: false
