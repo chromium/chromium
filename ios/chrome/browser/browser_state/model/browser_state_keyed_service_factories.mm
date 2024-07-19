@@ -121,6 +121,7 @@
 #import "ios/chrome/browser/signin/model/signin_browser_state_info_updater_factory.h"
 #import "ios/chrome/browser/signin/model/signin_client_factory.h"
 #import "ios/chrome/browser/signin/model/signin_error_controller_factory.h"
+#import "ios/chrome/browser/signin/model/signin_metrics_service_factory.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
@@ -293,6 +294,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ShareExtensionServiceFactory::GetInstance();
   SigninBrowserStateInfoUpdaterFactory::GetInstance();
   SigninClientFactory::GetInstance();
+  SigninMetricsServiceFactory::GetInstance();
   SupervisedUserMetricsServiceFactory::GetInstance();
   SupervisedUserServiceFactory::GetInstance();
   SupervisedUserSettingsServiceFactory::GetInstance();

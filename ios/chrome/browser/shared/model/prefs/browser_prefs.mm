@@ -56,6 +56,7 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/sessions/core/session_id_generator.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_prefs.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_locale_settings.h"
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
@@ -690,6 +691,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
       registry);
   segmentation_platform::DeviceSwitcherResultDispatcher::RegisterProfilePrefs(
       registry);
+  SigninPrefs::RegisterProfilePrefs(registry);
   supervised_user::RegisterProfilePrefs(registry);
   supervised_user::SupervisedUserMetricsService::RegisterProfilePrefs(registry);
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);
