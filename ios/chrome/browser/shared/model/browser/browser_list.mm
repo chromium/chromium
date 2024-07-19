@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/model/browser/browser_list_impl.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -55,12 +55,9 @@ bool IsBrowserOfType(Browser* browser, BrowserList::BrowserType type) {
 
 }  // namespace
 
-BrowserListImpl::BrowserListImpl() {}
+BrowserList::BrowserList() = default;
 
-BrowserListImpl::~BrowserListImpl() {}
-
-// KeyedService:
-void BrowserListImpl::Shutdown() {
+BrowserList::~BrowserList() {
   for (auto& observer : observers_) {
     observer.OnBrowserListShutdown(this);
   }
@@ -69,8 +66,12 @@ void BrowserListImpl::Shutdown() {
   }
 }
 
-// BrowserList:
-void BrowserListImpl::AddBrowser(Browser* browser) {
+void BrowserList::BrowserDestroyed(Browser* browser) {
+  RemoveBrowser(browser);
+  browser->RemoveObserver(this);
+}
+
+void BrowserList::AddBrowser(Browser* browser) {
   CHECK(!browsers_.contains(browser)) << "cannot insert the same Browser twice";
   browsers_.insert(browser);
   browser->AddObserver(this);
@@ -79,7 +80,7 @@ void BrowserListImpl::AddBrowser(Browser* browser) {
   }
 }
 
-void BrowserListImpl::RemoveBrowser(Browser* browser) {
+void BrowserList::RemoveBrowser(Browser* browser) {
   auto iter = browsers_.find(browser);
   if (iter != browsers_.end()) {
     browsers_.erase(iter);
@@ -90,7 +91,7 @@ void BrowserListImpl::RemoveBrowser(Browser* browser) {
   }
 }
 
-std::set<Browser*> BrowserListImpl::BrowsersOfType(
+std::set<Browser*> BrowserList::BrowsersOfType(
     BrowserList::BrowserType type) const {
   std::set<Browser*> browsers;
   base::ranges::copy_if(
@@ -99,18 +100,10 @@ std::set<Browser*> BrowserListImpl::BrowsersOfType(
   return browsers;
 }
 
-// Adds an observer to the model.
-void BrowserListImpl::AddObserver(BrowserListObserver* observer) {
+void BrowserList::AddObserver(BrowserListObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-// Removes an observer from the model.
-void BrowserListImpl::RemoveObserver(BrowserListObserver* observer) {
+void BrowserList::RemoveObserver(BrowserListObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-// BrowserObserver
-void BrowserListImpl::BrowserDestroyed(Browser* browser) {
-  RemoveBrowser(browser);
-  browser->RemoveObserver(this);
 }

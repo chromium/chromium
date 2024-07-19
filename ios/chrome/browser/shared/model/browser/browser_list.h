@@ -7,9 +7,11 @@
 
 #include <set>
 
+#include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
+#include "ios/chrome/browser/shared/model/browser/browser_observer.h"
 
-class BrowserListObserver;
 class Browser;
 
 // An observable KeyedService which tracks the addition and removal of Browsers
@@ -23,7 +25,7 @@ class Browser;
 // There's a single service instance for both regular and OTR browser states;
 // fetching the service for the OTR browser state will return the regular
 // browser state's service instance.
-class BrowserList : public KeyedService {
+class BrowserList final : public KeyedService, public BrowserObserver {
  public:
   enum class BrowserType {
     kRegular,
@@ -33,28 +35,41 @@ class BrowserList : public KeyedService {
     kAll,
   };
 
-  explicit BrowserList() = default;
+  BrowserList();
 
   BrowserList(const BrowserList&) = delete;
   BrowserList& operator=(const BrowserList&) = delete;
 
-  // Adds a regular browser to the list. It's an error to add a temporary
-  // browser.
-  virtual void AddBrowser(Browser* browser) = 0;
+  ~BrowserList() final;
 
-  // Removes a regular browser from the list. Removing any browser not
-  // previously added is a no-op; observers are not informed.
-  virtual void RemoveBrowser(Browser* browser) = 0;
+  // BrowserObserver:
+  void BrowserDestroyed(Browser* browser) final;
+
+  // Adds `browser` to the registered Browser set. It is an error to add a
+  // temporary Browser.
+  void AddBrowser(Browser* browser);
+
+  // Removes `browser` from the registered Browser set. It is a no-op to
+  // remove a Browser that has not been previously registered (and in that
+  // case the observers are not notified).
+  void RemoveBrowser(Browser* browser);
 
   // Returns the current set of browsers in the list matching the `type`.
-  virtual std::set<Browser*> BrowsersOfType(BrowserType type) const = 0;
+  std::set<Browser*> BrowsersOfType(BrowserType type) const;
 
   // Adds an observer to the service.
-  virtual void AddObserver(BrowserListObserver* observer) = 0;
+  void AddObserver(BrowserListObserver* observer);
 
   // Removes an observer from the service. The service must have no observers
   // when it is destroyed.
-  virtual void RemoveObserver(BrowserListObserver* observer) = 0;
+  void RemoveObserver(BrowserListObserver* observer);
+
+ private:
+  // The list of observers.
+  base::ObserverList<BrowserListObserver, true> observers_;
+
+  // The set of registered Browsers.
+  std::set<Browser*> browsers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_H_
