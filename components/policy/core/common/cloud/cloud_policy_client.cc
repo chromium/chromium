@@ -1167,6 +1167,7 @@ void CloudPolicyClient::UploadFmRegistrationToken(
       DeviceManagementService::JobConfiguration::
           TYPE_UPLOAD_FM_REGISTRATION_TOKEN,
       this);
+  params.auth_data = DMAuth::FromDMToken(dm_token_);
   params.callback =
       base::BindOnce(&CloudPolicyClient::OnUploadFmRegistrationTokenResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));

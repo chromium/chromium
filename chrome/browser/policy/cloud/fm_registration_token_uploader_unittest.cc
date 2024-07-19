@@ -27,7 +27,7 @@ namespace {
 
 const char kFakeRegistrationToken[] = "fake_registration_token";
 const char kFakeDMToken[] = "fake_dm_token";
-const int kExpectedProtocolVersion = -1;
+const int kExpectedProtocolVersion = 1;
 const base::Time kFakeTokenEndOfLife = base::Time::Now();
 
 class MockInvalidationListener : public invalidation::InvalidationListener {

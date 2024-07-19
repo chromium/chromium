@@ -75,6 +75,10 @@ class InvalidationListener {
   // The number is used to deliver invalidations with FCM.
   static constexpr char kProjectNumberEnterprise[] = "1013309121859";
 
+  // Represents version of the format of the invalidation messages that is
+  // parsed by the listener.
+  static constexpr int kInvalidationProtocolVersion = 1;
+
   virtual ~InvalidationListener() = default;
 
   enum class RegistrationTokenUploadStatus { kSucceeded, kFailed };
