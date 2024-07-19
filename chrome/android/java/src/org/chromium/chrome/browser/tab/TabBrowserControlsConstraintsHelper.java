@@ -166,7 +166,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
                                 && isInteractable
                                 && !isStateForced(constraints)) {
-                            updateOffsetTags(OffsetTag.createRandom(), constraints);
+                            updateEnabledState();
                         }
                     }
 
