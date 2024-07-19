@@ -381,8 +381,6 @@ std::unique_ptr<syncer::EntityData>
 ProductSpecificationsSyncBridge::CreateEntityData(
     const sync_pb::ProductComparisonSpecifics& specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
-  entity_data->name = base::StringPrintf("%s_%s", specifics.name().c_str(),
-                                         specifics.uuid().c_str());
   sync_pb::ProductComparisonSpecifics* entity_specifics =
       entity_data->specifics.mutable_product_comparison();
 
@@ -398,6 +396,29 @@ ProductSpecificationsSyncBridge::CreateEntityData(
   for (const sync_pb::ComparisonData& data_to_copy : specifics.data()) {
     sync_pb::ComparisonData* data = entity_specifics->add_data();
     data->set_url(data_to_copy.url());
+  }
+
+  if (IsMultiSpecSetsEnabled() && specifics.has_product_comparison()) {
+    *entity_specifics->mutable_product_comparison() =
+        specifics.product_comparison();
+    entity_data->name =
+        base::StringPrintf("product_comparison_%s_%s", specifics.uuid().c_str(),
+                           specifics.product_comparison().name().c_str());
+  } else if (IsMultiSpecSetsEnabled() &&
+             specifics.has_product_comparison_item()) {
+    *entity_specifics->mutable_product_comparison_item() =
+        specifics.product_comparison_item();
+    entity_data->name = base::StringPrintf(
+        "product_comparison_item_%s_%s",
+        specifics.product_comparison_item().product_comparison_uuid().c_str(),
+        specifics.uuid().c_str());
+  } else if (specifics.has_name()) {
+    entity_data->name = base::StringPrintf("%s_%s", specifics.name().c_str(),
+                                           specifics.uuid().c_str());
+  } else {
+    // TODO(crbug.com/354017278) remove this when the multi specifics
+    // flag is removed.
+    entity_data->name = base::StringPrintf("%s", specifics.uuid().c_str());
   }
   return entity_data;
 }

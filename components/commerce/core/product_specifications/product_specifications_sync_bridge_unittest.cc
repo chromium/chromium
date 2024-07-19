@@ -323,11 +323,6 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
 
   syncer::MockModelTypeChangeProcessor& processor() { return processor_; }
 
-  void EnableMultiSpecFlag() {
-    scoped_feature_list_.InitAndEnableFeature(
-        commerce::kProductSpecificationsMultiSpecifics);
-  }
-
   void UpdateSpecifics(const sync_pb::ProductComparisonSpecifics& specifics) {
     bridge().UpdateSpecifics(specifics);
   }
@@ -336,7 +331,12 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     return &observer_;
   }
 
- private:
+  std::unique_ptr<syncer::EntityData> CreateEntityData(
+      const sync_pb::ProductComparisonSpecifics& specifics) {
+    return bridge().CreateEntityData(specifics);
+  }
+
+ protected:
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   testing::NiceMock<ProductSpecificationsSyncBridgeObserver> observer_;
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -345,6 +345,16 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   std::map<std::string, sync_pb::ProductComparisonSpecifics> initial_entries_;
   std::map<std::string, sync_pb::ProductComparisonSpecifics> initial_store_;
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class ProductSpecificationsSyncMultiSpecsBridgeTest
+    : public ProductSpecificationsSyncBridgeTest {
+ public:
+  void SetUp() override {
+    ProductSpecificationsSyncBridgeTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        commerce::kProductSpecificationsMultiSpecifics);
+  }
 };
 
 TEST_F(ProductSpecificationsSyncBridgeTest, TestGetStorageKey) {
@@ -631,5 +641,123 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
   loop.Run();
   EXPECT_EQ(3u, bridge_entries_size(new_bridge.get()));
 }
+
+TEST_F(ProductSpecificationsSyncBridgeTest, TestCreateEntityDataLegacy) {
+  sync_pb::ProductComparisonSpecifics specifics;
+  specifics.set_uuid("70000000-0000-0000-0000-000000000000");
+  specifics.set_creation_time_unix_epoch_millis(1000000000000);
+  specifics.set_update_time_unix_epoch_millis(2000000000000);
+  specifics.set_name("test_name");
+  sync_pb::ComparisonData* data = specifics.add_data();
+  data->set_url("https://a.example.com");
+  sync_pb::ComparisonData* another_data = specifics.add_data();
+  another_data->set_url("https://b.example.com");
+
+  std::unique_ptr<syncer::EntityData> entity_data = CreateEntityData(specifics);
+  EXPECT_EQ("test_name_70000000-0000-0000-0000-000000000000",
+            entity_data->name);
+  EXPECT_EQ("70000000-0000-0000-0000-000000000000",
+            entity_data->specifics.product_comparison().uuid());
+  EXPECT_EQ(1000000000000, entity_data->specifics.product_comparison()
+                               .creation_time_unix_epoch_millis());
+  EXPECT_EQ(2000000000000, entity_data->specifics.product_comparison()
+                               .update_time_unix_epoch_millis());
+  EXPECT_EQ("test_name", entity_data->specifics.product_comparison().name());
+  EXPECT_EQ("https://a.example.com",
+            entity_data->specifics.product_comparison().data()[0].url());
+  EXPECT_EQ("https://b.example.com",
+            entity_data->specifics.product_comparison().data()[1].url());
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest, TestCreateEntityDataFallback) {
+  sync_pb::ProductComparisonSpecifics specifics;
+  specifics.set_uuid("70000000-0000-0000-0000-000000000000");
+  specifics.set_creation_time_unix_epoch_millis(1000000000000);
+  specifics.set_update_time_unix_epoch_millis(2000000000000);
+  sync_pb::ComparisonData* data = specifics.add_data();
+  data->set_url("https://a.example.com");
+  sync_pb::ComparisonData* another_data = specifics.add_data();
+  another_data->set_url("https://b.example.com");
+
+  std::unique_ptr<syncer::EntityData> entity_data = CreateEntityData(specifics);
+  EXPECT_EQ("70000000-0000-0000-0000-000000000000", entity_data->name);
+  EXPECT_EQ("70000000-0000-0000-0000-000000000000",
+            entity_data->specifics.product_comparison().uuid());
+  EXPECT_EQ(1000000000000, entity_data->specifics.product_comparison()
+                               .creation_time_unix_epoch_millis());
+  EXPECT_EQ(2000000000000, entity_data->specifics.product_comparison()
+                               .update_time_unix_epoch_millis());
+  EXPECT_EQ("https://a.example.com",
+            entity_data->specifics.product_comparison().data()[0].url());
+  EXPECT_EQ("https://b.example.com",
+            entity_data->specifics.product_comparison().data()[1].url());
+}
+
+TEST_F(ProductSpecificationsSyncMultiSpecsBridgeTest,
+       TestCreateEntityDataTopLevelSpecifics) {
+  sync_pb::ProductComparisonSpecifics specifics;
+  specifics.set_uuid("70000000-0000-0000-0000-000000000000");
+  specifics.set_creation_time_unix_epoch_millis(1000000000000);
+  specifics.set_update_time_unix_epoch_millis(2000000000000);
+  specifics.mutable_product_comparison()->set_name("test_name");
+
+  std::unique_ptr<syncer::EntityData> entity_data = CreateEntityData(specifics);
+
+  EXPECT_EQ("product_comparison_70000000-0000-0000-0000-000000000000_test_name",
+            entity_data->name);
+  EXPECT_EQ("70000000-0000-0000-0000-000000000000",
+            entity_data->specifics.product_comparison().uuid());
+  EXPECT_EQ(1000000000000, entity_data->specifics.product_comparison()
+                               .creation_time_unix_epoch_millis());
+  EXPECT_EQ(2000000000000, entity_data->specifics.product_comparison()
+                               .update_time_unix_epoch_millis());
+  EXPECT_EQ(
+      "test_name",
+      entity_data->specifics.product_comparison().product_comparison().name());
+}
+
+TEST_F(ProductSpecificationsSyncMultiSpecsBridgeTest,
+       TestCreateEntityDataItemLevelSpecifics) {
+  sync_pb::ProductComparisonSpecifics specifics;
+  specifics.set_uuid("50000000-0000-0000-0000-000000000000");
+  specifics.set_creation_time_unix_epoch_millis(1000000000000);
+  specifics.set_update_time_unix_epoch_millis(2000000000000);
+  specifics.mutable_product_comparison_item()->set_product_comparison_uuid(
+      "70000000-0000-0000-0000-000000000000");
+  specifics.mutable_product_comparison_item()->set_url("https://a.example.com");
+  syncer::UniquePosition unique_position =
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix());
+  *specifics.mutable_product_comparison_item()->mutable_unique_position() =
+      unique_position.ToProto();
+
+  std::unique_ptr<syncer::EntityData> entity_data = CreateEntityData(specifics);
+
+  EXPECT_EQ(
+      "product_comparison_item_70000000-0000-0000-0000-000000000000_50000000-"
+      "0000-0000-0000-"
+      "000000000000",
+      entity_data->name);
+  EXPECT_EQ("50000000-0000-0000-0000-000000000000",
+            entity_data->specifics.product_comparison().uuid());
+  EXPECT_EQ(1000000000000, entity_data->specifics.product_comparison()
+                               .creation_time_unix_epoch_millis());
+  EXPECT_EQ(2000000000000, entity_data->specifics.product_comparison()
+                               .update_time_unix_epoch_millis());
+  EXPECT_EQ("70000000-0000-0000-0000-000000000000",
+            entity_data->specifics.product_comparison()
+                .product_comparison_item()
+                .product_comparison_uuid());
+  EXPECT_EQ("https://a.example.com", entity_data->specifics.product_comparison()
+                                         .product_comparison_item()
+                                         .url());
+  EXPECT_TRUE(unique_position.Equals(syncer::UniquePosition::FromProto(
+      entity_data->specifics.product_comparison()
+          .product_comparison_item()
+          .unique_position())));
+}
+
+// TODO(crbug.com/354165274) write a test that ensures no single specifics
+// format specifics are written when the multi specifics flag is on.
 
 }  // namespace commerce
