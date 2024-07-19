@@ -257,7 +257,8 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   override ready() {
     super.ready();
-    this.addEventListener('cr-lottie-playing', this.measureAnimationPlayDelay);
+    this.addEventListener(
+        'cros-lottie-playing', this.measureAnimationPlayDelay, {once: true});
     this.initializeLoginScreen('WelcomeScreen');
     this.updateLocalizedContent();
   }

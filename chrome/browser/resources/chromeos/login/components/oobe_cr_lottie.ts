@@ -7,17 +7,17 @@
  */
 
 import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cros_components/lottie_renderer/lottie-renderer.js';
-import {LottieRenderer} from '//resources/cros_components/lottie_renderer/lottie-renderer.js';
 import './oobe_icons.html.js';
 
+import {LottieRenderer} from '//resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
+import {traceOobeLottieExecution} from '../oobe_trace.js';
 
+import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
 import {getTemplate} from './oobe_cr_lottie.html.js';
 
 const OobeCrLottieBase = OobeI18nMixin(PolymerElement);
@@ -81,6 +81,8 @@ export class OobeCrLottie extends OobeCrLottieBase {
   override ready() {
     super.ready();
     this.addEventListener('click', this.onClick);
+    this.addEventListener(
+        'cros-lottie-initialized', this.onInitialized, {once: true});
     // Preload the player so that the first frame is shown.
     if (this.preload) {
       this.createPlayer(/*autoplay=*/false);
@@ -92,6 +94,11 @@ export class OobeCrLottie extends OobeCrLottieBase {
       return;
     }
     this.playing = !this.playing;
+  }
+
+  private onInitialized(e: Event): void {
+    e.stopPropagation();
+    traceOobeLottieExecution();
   }
 
   /**
