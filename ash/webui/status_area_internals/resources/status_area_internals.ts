@@ -17,6 +17,21 @@ import {getTemplate} from './status_area_internals.html.js';
  * Internals" test page.
  */
 
+function getBatteryIconEnum(icon: string): number {
+  switch (icon) {
+    case 'x-icon':
+      return 1;
+    case 'unreliable-icon':
+      return 2;
+    case 'bolt-icon':
+      return 3;
+    case 'battery-saver-plus-icon':
+      return 4;
+    default:
+      return 0;
+  }
+}
+
 export class StatusAreaInternalsElement extends PolymerElement {
   static get is() {
     return 'status-area-internals';
@@ -90,6 +105,21 @@ export class StatusAreaInternalsElement extends PolymerElement {
     e.stopPropagation();
 
     pageHandler.resetHmrConsentStatus();
+  }
+
+  onBatteryIconChanged(e: CustomEvent<string>) {
+    e.stopPropagation();
+
+    const selectedIcon = (e.target as HTMLInputElement).value;
+    pageHandler.setBatteryIcon(getBatteryIconEnum(selectedIcon));
+  }
+
+  onBatteryPercentChanged(e: CustomEvent<number>) {
+    e.stopPropagation();
+
+    const target = e.target as HTMLInputElement;
+    const value = target.value;
+    pageHandler.setBatteryPercent(parseInt(value, 10));
   }
 }
 

@@ -16,7 +16,9 @@
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/model/enterprise_domain_model.h"
+#include "ash/system/model/fake_power_status.h"
 #include "ash/system/model/fake_system_tray_model.h"
+#include "ash/system/model/scoped_fake_power_status.h"
 #include "ash/system/model/scoped_fake_system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
@@ -266,4 +268,62 @@ TEST_F(StatusAreaInternalsHandlerTest, ResetHmrConsentStatus) {
             magic_boost_state->hmr_consent_status());
 }
 
+class StatusAreaInternalsHandlerBatteryTest
+    : public StatusAreaInternalsHandlerTest {
+ public:
+  FakePowerStatus* GetFakePowerStatus() {
+    return handler_->scoped_fake_power_status_->fake_power_status();
+  }
+};
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, XIcon) {
+  handler_->SetBatteryIcon(
+      StatusAreaInternalsHandler::PageHandler::BatteryIcon::kXIcon);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_FALSE(fake_power_status->IsBatteryPresent());
+  EXPECT_FALSE(fake_power_status->IsUsbChargerConnected());
+  EXPECT_FALSE(fake_power_status->IsLinePowerConnected());
+  EXPECT_FALSE(fake_power_status->IsBatterySaverActive());
+}
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, UnreliableIcon) {
+  handler_->SetBatteryIcon(
+      StatusAreaInternalsHandler::PageHandler::BatteryIcon::kUnreliableIcon);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_TRUE(fake_power_status->IsBatteryPresent());
+  EXPECT_TRUE(fake_power_status->IsUsbChargerConnected());
+  EXPECT_FALSE(fake_power_status->IsLinePowerConnected());
+  EXPECT_FALSE(fake_power_status->IsBatterySaverActive());
+}
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, BoltIcon) {
+  handler_->SetBatteryIcon(
+      StatusAreaInternalsHandler::PageHandler::BatteryIcon::kBoltIcon);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_TRUE(fake_power_status->IsBatteryPresent());
+  EXPECT_FALSE(fake_power_status->IsUsbChargerConnected());
+  EXPECT_TRUE(fake_power_status->IsLinePowerConnected());
+  EXPECT_FALSE(fake_power_status->IsBatterySaverActive());
+}
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, BatterySaverPlusIcon) {
+  handler_->SetBatteryIcon(StatusAreaInternalsHandler::PageHandler::
+                               BatteryIcon::kBatterySaverPlusIcon);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_TRUE(fake_power_status->IsBatteryPresent());
+  EXPECT_FALSE(fake_power_status->IsUsbChargerConnected());
+  EXPECT_FALSE(fake_power_status->IsLinePowerConnected());
+  EXPECT_TRUE(fake_power_status->IsBatterySaverActive());
+}
+
+TEST_F(StatusAreaInternalsHandlerBatteryTest, Percent) {
+  handler_->SetBatteryPercent(75);
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+
+  EXPECT_EQ(fake_power_status->GetBatteryPercent(), 75);
+}
 }  // namespace ash
