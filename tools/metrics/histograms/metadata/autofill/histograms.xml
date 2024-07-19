@@ -265,8 +265,13 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.Snackbar.Type">
   <variant name="MandatoryReauth"
       summary="Snackbar shown after opting into mandatory reauth."/>
+  <variant name="SaveCardSuccess"
+      summary="Snackbar shown after card has been successfully saved."/>
   <variant name="VirtualCard"
       summary="Snackbar shown after virtual card is autofilled."/>
+  <variant name="VirtualCardEnrollSuccess"
+      summary="Snackbar shown after virtual card has been successfully
+               enrolled."/>
 </variants>
 
 <variants name="Autofill.TimingPrecise.Callee">
@@ -3427,6 +3432,34 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.Message.{MessageType}.{Event}" enum="BooleanShown"
+    expires_after="2025-07-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Emits true when an autofill Android Message event occurs (shown, dismissed,
+    etc.) and does not emit any value otherwise. See event variants for
+    additional details on when each individual logging event happens.
+  </summary>
+  <token key="MessageType">
+    <variant name="SaveCardFailure"
+        summary="Autofill Android Message shown after a credit card has
+                 failed to have been saved to the server."/>
+    <variant name="VirtualCardEnrollFailure"
+        summary="Autofill Android Message shown after a virtual card has
+                 failed to have been enrolled."/>
+  </token>
+  <token key="Event">
+    <variant name="ActionClicked"
+        summary="Event for when the action button on the message is clicked
+                 by the user."/>
+    <variant name="Dismissed"
+        summary="Event for when the message is dismissed."/>
+    <variant name="Shown"
+        summary="Event for when the message is initially shown."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.NameTokenVerificationStatusAtProfileUsage.{NameType}"
     enum="AufofillStructuredTokenVerificationStatus" expires_after="2025-01-05">
   <owner>koerber@google.com</owner>
@@ -5274,7 +5307,9 @@ chromium-metrics-reviews@google.com.
     enum="BooleanShown" expires_after="2025-07-01">
   <owner>siashah@chromium.org</owner>
   <owner>jsaul@google.com</owner>
+  <owner>darwinyang@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
   <summary>
     Emits true when the action button on the autofill snackbar is clicked and
     does not emit any value otherwise.
@@ -5286,7 +5321,9 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-07-01">
   <owner>siashah@chromium.org</owner>
   <owner>jsaul@google.com</owner>
+  <owner>darwinyang@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
   <summary>
     Emits true when the autofill snackbar is displayed and does not emit any
     value otherwise.
