@@ -260,7 +260,7 @@ bool ExtensionTelemetryEventRouter::IsPolicyEnabled() {
   std::optional<ReportingSettings> settings =
       reporting_client->GetReportingSettings();
   return settings.has_value() &&
-         settings->enabled_event_names.count(kExtensionTelemetryEvent) > 0;
+         settings->enabled_opt_in_events.count(kExtensionTelemetryEvent) > 0;
 }
 
 void ExtensionTelemetryEventRouter::UploadTelemetryReport(

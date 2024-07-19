@@ -346,9 +346,9 @@ TEST_F(ExtensionTelemetryServiceTest, CheckEnableConditionsForEnterprise) {
   enterprise_connectors::test::SetOnSecurityEventReporting(
       /*prefs=*/prefs(),
       /*enabled=*/true,
-      /*enabled_event_names=*/
-      {enterprise_connectors::kExtensionTelemetryEvent},
-      /*enabled_opt_in_events=*/{});
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
   EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise());
 
   // Destruct and restart service and verify that it starts enabled.
@@ -360,8 +360,7 @@ TEST_F(ExtensionTelemetryServiceTest, CheckEnableConditionsForEnterprise) {
   enterprise_connectors::test::SetOnSecurityEventReporting(
       /*prefs=*/prefs(),
       /*enabled=*/false,
-      /*enabled_event_names=*/
-      {},
+      /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{});
   EXPECT_FALSE(IsTelemetryServiceEnabledForEnterprise());
 }
@@ -385,9 +384,9 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignalForEnterprise) {
   enterprise_connectors::test::SetOnSecurityEventReporting(
       /*prefs=*/prefs(),
       /*enabled=*/true,
-      /*enabled_event_names=*/
-      {enterprise_connectors::kExtensionTelemetryEvent},
-      /*enabled_opt_in_events=*/{});
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
   PrimeTelemetryServiceWithSignal();
   // Verify that the registered extension information is saved in the
   // telemetry service's enterprise extension store.
@@ -557,9 +556,9 @@ TEST_F(ExtensionTelemetryServiceTest,
   enterprise_connectors::test::SetOnSecurityEventReporting(
       /*prefs=*/prefs(),
       /*enabled=*/true,
-      /*enabled_event_names=*/
-      {enterprise_connectors::kExtensionTelemetryEvent},
-      /*enabled_opt_in_events=*/{});
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
   PrimeTelemetryServiceWithSignal();
 
   // Since ESB is disabled, verify that extension store is empty and no ESB
@@ -600,9 +599,9 @@ TEST_F(ExtensionTelemetryServiceTest,
   enterprise_connectors::test::SetOnSecurityEventReporting(
       /*prefs=*/prefs(),
       /*enabled=*/true,
-      /*enabled_event_names=*/
-      {enterprise_connectors::kExtensionTelemetryEvent},
-      /*enabled_opt_in_events=*/{});
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
   PrimeTelemetryServiceWithSignal();
 
   std::unique_ptr<TelemetryReport> esb_telemetry_report = GetTelemetryReport();

@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/connectors/reporting/constants.h"
 #include "components/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -104,9 +105,9 @@ class ExtensionTelemetryEventRouterTest : public testing::Test {
 
     test::SetOnSecurityEventReporting(
         profile_->GetPrefs(), /*enabled=*/true,
-        /*enabled_event_names=*/std::set<std::string>(),
+        /*enabled_event_names=*/{},
         /*enabled_opt_in_events=*/
-        std::map<std::string, std::vector<std::string>>());
+        {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
     // Set a mock cloud policy client in the router.
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken("fake-token");
@@ -305,7 +306,11 @@ TEST_F(ExtensionTelemetryEventRouterTest, CheckIsPolicyEnabled) {
   EXPECT_FALSE(extension_telemetry_event_router_->IsPolicyEnabled());
 
   // Enable reporting.
-  test::SetOnSecurityEventReporting(profile_->GetPrefs(), /*enabled=*/true);
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
 
   EXPECT_TRUE(extension_telemetry_event_router_->IsPolicyEnabled());
 }
