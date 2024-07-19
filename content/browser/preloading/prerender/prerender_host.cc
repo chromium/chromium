@@ -1206,24 +1206,32 @@ void PrerenderHost::SetFailureReason(
   }
 }
 
-bool PrerenderHost::IsUrlMatch(const GURL& url) const {
+std::optional<PrerenderHost::UrlMatchType> PrerenderHost::IsUrlMatch(
+    const GURL& url) const {
   // Triggers are not allowed to treat a cross-origin url as a matched url. It
   // would cause security risks.
   if (!url::IsSameOriginWith(attributes_.prerendering_url, url)) {
-    return false;
+    return std::nullopt;
   }
 
   if (attributes_.url_match_predicate) {
-    return attributes_.url_match_predicate.Run(url);
+    if (attributes_.url_match_predicate.Run(url)) {
+      return PrerenderHost::UrlMatchType::kURLPredicateMatch;
+    }
+    return std::nullopt;
   }
 
   if (GetInitialUrl() == url) {
-    return true;
+    return PrerenderHost::UrlMatchType::kExact;
   }
 
   // Check No-Vary-Search header and try and match.
-  return no_vary_search_.has_value() &&
-         no_vary_search_->AreEquivalent(GetInitialUrl(), url);
+  if (no_vary_search_.has_value() &&
+      no_vary_search_->AreEquivalent(GetInitialUrl(), url)) {
+    return PrerenderHost::UrlMatchType::kNoVarySearch;
+  }
+
+  return std::nullopt;
 }
 
 bool PrerenderHost::IsNoVarySearchHintUrlMatch(const GURL& url) const {

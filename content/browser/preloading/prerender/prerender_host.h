@@ -100,6 +100,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     kMaybeNavigationCancelled
   };
 
+  // Types of URL match
+  enum class UrlMatchType { kExact, kNoVarySearch, kURLPredicateMatch };
+
   // Observes a triggered prerender. Note that the observer should overlive the
   // prerender host instance, or be removed properly upon destruction.
   class Observer : public base::CheckedObserver {
@@ -294,7 +297,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   // Returns true if the given `url` indicates the same destination to the
   // initial_url.
-  bool IsUrlMatch(const GURL& url) const;
+  std::optional<UrlMatchType> IsUrlMatch(const GURL& url) const;
 
   // Returns true if the given `url` might indicate the same destination to the
   // initial_url based on `no_vary_search_expected`.
