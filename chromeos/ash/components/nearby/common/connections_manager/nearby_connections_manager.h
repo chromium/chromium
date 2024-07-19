@@ -106,6 +106,11 @@ class NearbyConnectionsManager {
 
     virtual ~BandwidthUpgradeListener() = default;
 
+    // Called for the first time the medium is set for the associated
+    // `endpoint_id`.
+    virtual void OnInitialMedium(const std::string& endpoint_id,
+                                 const Medium medium) = 0;
+
     // Called for each successful bandwidth upgrade for the associated
     // `endpoint_id`.
     virtual void OnBandwidthUpgrade(const std::string& endpoint_id,

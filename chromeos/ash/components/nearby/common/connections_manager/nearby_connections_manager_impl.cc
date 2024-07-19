@@ -927,6 +927,9 @@ void NearbyConnectionsManagerImpl::OnBandwidthChanged(
     CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__ << ": Initial call with medium=" << medium
         << "; endpoint_id=" << endpoint_id;
+    if (bandwidth_upgrade_listener_) {
+      bandwidth_upgrade_listener_->OnInitialMedium(endpoint_id, medium);
+    }
     on_bandwidth_changed_endpoint_ids_.emplace(endpoint_id);
   } else {
     CD_LOG(VERBOSE, Feature::NEARBY_INFRA)

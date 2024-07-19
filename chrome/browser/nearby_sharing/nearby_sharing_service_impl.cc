@@ -1446,6 +1446,24 @@ void NearbySharingServiceImpl::OnEndpointLost(const std::string& endpoint_id) {
                      base::Unretained(this), endpoint_id));
 }
 
+void NearbySharingServiceImpl::OnInitialMedium(const std::string& endpoint_id,
+                                               const Medium medium) {
+  // Our |share_target_map_| is populated in CreateShareTarget. This
+  // is deterministically called *before* this method when sending,
+  // and *after* this method when receiving. In other words, we can
+  // expect to *not* record the initial medium when receiving.
+  // We determined this acceptable as the initial medium when receiving
+  // will always be Bluetooth, until other mediums are supported (Wifi LAN
+  // can be an initial medium when sending due to mDNS discovery.)
+  if (!share_target_map_.contains(endpoint_id)) {
+    return;
+  }
+  auto share_target = share_target_map_[endpoint_id];
+  for (auto& observer : observers_) {
+    observer.OnInitialMedium(share_target, medium);
+  }
+}
+
 void NearbySharingServiceImpl::OnBandwidthUpgrade(
     const std::string& endpoint_id,
     const Medium medium) {

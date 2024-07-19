@@ -107,6 +107,8 @@ class NearbySharingService : public KeyedService {
                                    float percentage_complete) {}
     virtual void OnTransferCompleted(const ShareTarget& share_target,
                                      TransferMetadata::Status status) {}
+    virtual void OnInitialMedium(const ShareTarget& share_target,
+                                 nearby::connections::mojom::Medium medium) {}
     virtual void OnBandwidthUpgrade(const ShareTarget& share_target,
                                     nearby::connections::mojom::Medium medium) {
     }

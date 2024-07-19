@@ -169,6 +169,11 @@ class MockBandwidthUpgradeListener
     : public NearbyConnectionsManager::BandwidthUpgradeListener {
  public:
   MOCK_METHOD(void,
+              OnInitialMedium,
+              (const std::string& endpoint_id, const Medium medium),
+              (override));
+
+  MOCK_METHOD(void,
               OnBandwidthUpgrade,
               (const std::string& endpoint_id, const Medium medium),
               (override));
