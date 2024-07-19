@@ -1167,12 +1167,12 @@ void NetworkQualityEstimator::AddAndNotifyObserversOfRTT(
         rtt_ms_observations_[observation_category].AddObservation(observation);
     if (evicted) {
       auto delta = base::TimeTicks::Now() - evicted->timestamp();
-      base::UmaHistogramMediumTimes(
-          base::StrCat({"NQE.RTT.ObservationBufferLifeTime.",
+      base::UmaHistogramLongTimes100(
+          base::StrCat({"NQE.RTT.ObservationBufferLifeTime2.",
                         CategoryToString(observation_category)}),
           delta);
-      base::UmaHistogramMediumTimes("NQE.RTT.ObservationBufferLifeTime.All",
-                                    delta);
+      base::UmaHistogramLongTimes100("NQE.RTT.ObservationBufferLifeTime2.All",
+                                     delta);
     }
   }
 

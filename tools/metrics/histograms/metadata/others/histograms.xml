@@ -6177,7 +6177,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NQE.RTT.ObservationBufferLifeTime.{Category}" units="ms"
+<histogram name="NQE.RTT.ObservationBufferLifeTime2.{Category}" units="ms"
     expires_after="2025-02-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -6187,6 +6187,7 @@ chromium-metrics-reviews@google.com.
     duration on how long an observation is kept in the ObservationBuffer so that
     we can understand how fast the new status will be reflected. Recorded when
     an observation is added to the buffer and an old observation gets evicted.
+    (Max 1 hour, 100 buckets)
   </summary>
   <token key="Category">
     <variant name="All"
