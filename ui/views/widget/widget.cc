@@ -377,7 +377,7 @@ bool Widget::RequiresNonClientView(InitParams::Type type) {
 
 // static
 bool Widget::IsWindowCompositingSupported() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
   return true;
 #elif BUILDFLAG(IS_OZONE)
   return ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported();
