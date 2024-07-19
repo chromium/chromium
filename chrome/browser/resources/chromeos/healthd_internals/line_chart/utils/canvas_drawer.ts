@@ -86,14 +86,9 @@ export class CanvasDrawer {
       canvasHeight: number, scrollbarPosition: number, startTime: number,
       scale: number) {
     this.initAndClearContext(context, canvasWidth, canvasHeight);
-    this.updateMaxValue();
 
     this.graphWidth = canvasWidth;
     this.graphHeight = canvasHeight - TEXT_SIZE - MIN_LABEL_VERTICAL_SPACING;
-    this.renderChartGrid(context);
-
-    const visibleStartTime: number = startTime + scrollbarPosition * scale;
-    this.renderTimeLabels(context, visibleStartTime, scale);
 
     // To reduce CPU usage, the chart do not draw points at every pixels. Use
     // `offset` to make sure the graph won't shaking during scrolling, the line
@@ -106,10 +101,14 @@ export class CanvasDrawer {
     // First point's position(`queryStartTime`) may go out of the canvas to make
     // the line chart continuous at the begin of the visible range, as well as
     // the last points.
+    const visibleStartTime: number = startTime + scrollbarPosition * scale;
     this.queryStartTime = visibleStartTime - this.offset * scale;
     const queryWidth: number = this.graphWidth + this.offset;
     this.numOfPoint = Math.ceil(queryWidth / SAMPLE_RATE) + 1;
 
+    this.updateMaxValue();
+    this.renderChartGrid(context);
+    this.renderTimeLabels(context, visibleStartTime, scale);
     this.renderUnitLabels(context);
     this.renderLines(context);
   }
