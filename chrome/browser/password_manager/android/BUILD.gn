@@ -265,6 +265,7 @@ robolectric_binary("password_manager_junit_tests") {
     "$google_play_services_package:google_play_services_basement_java",
     "account_storage_notice:junit",
     "add_username_dialog:junit",
+    "bottom_sheet:junit",
     "pwd_migration:junit",
     "//base:base_java",
     "//base:base_java_test_support",
