@@ -142,7 +142,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       <div id="footer">
         ${i18n.genAiDisclaimerText}
         <!-- TODO: b/336963138 - Add correct link -->
-        <a href="#">${i18n.genAiLearnMoreLink}</a>
+        <a href="javascript:;">${i18n.genAiLearnMoreLink}</a>
       </div>
       <genai-feedback-buttons></genai-feedback-buttons>
     `;

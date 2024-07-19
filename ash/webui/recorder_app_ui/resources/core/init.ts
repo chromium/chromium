@@ -101,9 +101,11 @@ export class ErrorView extends LitElement {
         return html`<div>
           Failed to validate stored data. This is likely caused by data format
           change. Try
-          <a href="#" @click=${clearRecordings}>clear recordings.</a>. Please
-          report this if the issue persists after clear recordings. (Note that
-          this is only for early dogfooding when we still make
+          <a href="javascript:;" @click=${clearRecordings}>
+            clear recordings.
+          </a>
+          Please report this if the issue persists after clear recordings. (Note
+          that this is only for early dogfooding when we still make
           backward-incompatible changes.)
           <pre>${errorDisplay}</pre>
         </div>`;
@@ -152,7 +154,7 @@ export async function init(platformHandler: PlatformHandler): Promise<void> {
   initSettings();
   // TODO: b/344782258 - Put microphoneManager to initContext.
   await MicrophoneManager.create(
-    (deviceId: string) => platformHandler.getMicrophoneInfo(deviceId)
+    (deviceId: string) => platformHandler.getMicrophoneInfo(deviceId),
   );
   dataDir = await DataDir.createFromOpfs();
   const recordingDataManager = await RecordingDataManager.create(dataDir);
