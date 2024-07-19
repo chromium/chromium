@@ -36,11 +36,6 @@ BASE_FEATURE(kShadowDomSupport,
              "ShadowDomSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables .well-known based password change flow from leaked password dialog.
-BASE_FEATURE(kPasswordChangeWellKnown,
-             "PasswordChangeWellKnown",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables password reuse detection.
 BASE_FEATURE(kPasswordReuseDetectionEnabled,
              "PasswordReuseDetectionEnabled",
