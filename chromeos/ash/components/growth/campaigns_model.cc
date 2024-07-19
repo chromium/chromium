@@ -16,6 +16,7 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
+#include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -210,7 +211,13 @@ std::optional<BuiltInImage> GetBuiltInImageType(
     return std::nullopt;
   }
 
-  return static_cast<BuiltInImage>(built_in_image_value.value());
+  auto built_in_image = built_in_image_value.value();
+  if (built_in_image < 0 ||
+      built_in_image > static_cast<int>(BuiltInImage::kMaxValue)) {
+    return std::nullopt;
+  }
+
+  return static_cast<BuiltInImage>(built_in_image);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -222,7 +229,11 @@ std::optional<BuiltInVectorIcon> GetBuiltInVectorIconType(
     return std::nullopt;
   }
 
-  return static_cast<BuiltInVectorIcon>(built_in_vector_icon_value.value());
+  auto icon = built_in_vector_icon_value.value();
+  if (icon < 0 || icon > static_cast<int>(BuiltInVectorIcon::kMaxValue)) {
+    return std::nullopt;
+  }
+  return static_cast<BuiltInVectorIcon>(icon);
 }
 
 std::optional<base::Version> StringToVersion(const std::string* version_value) {
@@ -257,6 +268,7 @@ Campaigns* GetMutableCampaignsBySlot(CampaignsPerSlot* campaigns_per_slot,
   if (!campaigns_per_slot) {
     return nullptr;
   }
+
   return campaigns_per_slot->FindList(
       base::NumberToString(static_cast<int>(slot)));
 }
@@ -693,7 +705,15 @@ std::optional<growth::ActionType> Action::GetActionType() const {
     return std::nullopt;
   }
 
-  return static_cast<growth::ActionType>(action_type_value.value());
+  auto action_type = action_type_value.value();
+  if (action_type < 0 ||
+      action_type > static_cast<int>(growth::ActionType::kMaxValue)) {
+    LOG(ERROR) << "Unrecognized action type.";
+    // TODO: b/330931877 - Record an error.
+    return std::nullopt;
+  }
+
+  return static_cast<growth::ActionType>(action_type);
 }
 
 const base::Value::Dict* Action::GetParams() const {
@@ -711,15 +731,22 @@ const std::optional<WindowAnchorType> Anchor::GetActiveAppWindowAnchorType()
     return std::nullopt;
   }
 
-  const auto anchor_type = anchor_dict_->FindInt(kActiveAppWindowAnchorType);
-  if (!anchor_type) {
+  const auto anchor_type_value =
+      anchor_dict_->FindInt(kActiveAppWindowAnchorType);
+  if (!anchor_type_value) {
     // Invalid anchor type.
     LOG(ERROR) << "Invalid anchor type";
     RecordCampaignsManagerError(CampaignsManagerError::kInvalidAnchorType);
     return std::nullopt;
   }
 
-  return static_cast<WindowAnchorType>(anchor_type.value());
+  auto anchor_type = anchor_type_value.value();
+  if (anchor_type < 0 ||
+      anchor_type > static_cast<int>(WindowAnchorType::kMaxValue)) {
+    return std::nullopt;
+  }
+
+  return static_cast<WindowAnchorType>(anchor_type);
 }
 
 const std::string* Anchor::GetShelfAppButtonId() const {

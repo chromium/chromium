@@ -149,6 +149,49 @@ TEST_F(ShowNotificationActionPerformerTest, TestValidParams) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+TEST_F(ShowNotificationActionPerformerTest, TestUnrecognizedImage) {
+  auto* valid_params = R"(
+    {
+      "title": "test title",
+      "message": "test message",
+      "sourceIcon": {
+        "builtInVectorIcon": 0
+      },
+      "image": {
+        "builtInImage": 20000
+      }
+    }
+)";
+  auto value = base::JSONReader::Read(valid_params);
+  ASSERT_TRUE(value.has_value());
+  EXPECT_CALL(
+      mock_observer_,
+      OnReadyToLogImpression(testing::Eq(kTestCampaignId),
+                             testing::Eq(std::nullopt), testing::Eq(false)))
+      .Times(1);
+
+  action().Run(
+      /*campaign_id=*/kTestCampaignId, /*group_id=*/std::nullopt,
+      &value->GetDict(),
+      base::BindOnce(&ShowNotificationActionPerformerTest::
+                         RunShowNotificationActionPerformerCallback,
+                     base::Unretained(this)));
+
+  EXPECT_TRUE(VerifyActionResult(/*success=*/true));
+
+  const auto notification_id =
+      base::StringPrintf(kNotificationIdTemplate, kTestCampaignId);
+  message_center::Notification* notification =
+      message_center_->FindVisibleNotificationById(notification_id);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(notification->title(), base::UTF8ToUTF16(std::string(kTestTitle)));
+  EXPECT_EQ(notification->message(),
+            base::UTF8ToUTF16(std::string(kTestMessage)));
+  EXPECT_STREQ(chromeos::kRedeemIcon.name,
+               notification->vector_small_image().name);
+  EXPECT_EQ(gfx::Image(), notification->rich_notification_data().image);
+}
+
 TEST_F(ShowNotificationActionPerformerTest, TestInvalidParams) {
   auto* const invalid_params = "{}";
   auto value = base::JSONReader::Read(invalid_params);

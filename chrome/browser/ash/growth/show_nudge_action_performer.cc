@@ -54,7 +54,12 @@ constexpr base::TimeDelta kCancelDelay = base::Milliseconds(100);
 
 // These values are deserialized from Growth Campaign, so entries should not
 // be renumbered and numeric values should never be reused.
-enum class NudgeDuration { kDefaultDuration, kMediumDuration, kLongDuration };
+enum class NudgeDuration {
+  kDefaultDuration,
+  kMediumDuration,
+  kLongDuration,
+  kMaxValue = kLongDuration
+};
 
 ash::NudgeDuration ConvertDuration(NudgeDuration duration) {
   switch (duration) {
@@ -83,7 +88,8 @@ enum class Arrow {
   kLeftCenter,
   kRightCenter,
   kNone,
-  kFloat
+  kFloat,
+  kMaxValue = kFloat
 };
 
 views::BubbleBorder::Arrow ConvertArrow(Arrow arrow) {
@@ -318,7 +324,9 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   // Set arrow.
   auto arrow_value =
       nudge_payload->FindInt(kArrowPath).value_or(int(Arrow::kBottomRight));
-  nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
+  if (arrow_value >= 0 && arrow_value <= static_cast<int>(Arrow::kMaxValue)) {
+    nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
+  }
 
   auto anchor = GetAnchorConfig(nudge_payload);
   if (anchor &&
@@ -383,8 +391,12 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   // Set duration.
   auto duration_value = nudge_payload->FindInt(kDurationPath)
                             .value_or(int(NudgeDuration::kDefaultDuration));
-  nudge_data.duration =
-      ConvertDuration(static_cast<NudgeDuration>(duration_value));
+
+  if (duration_value >= 0 &&
+      duration_value <= static_cast<int>(NudgeDuration::kMaxValue)) {
+    nudge_data.duration =
+        ConvertDuration(static_cast<NudgeDuration>(duration_value));
+  }
 
   // Default value of `should_log_cros_events` is false if this is not
   // configurated.

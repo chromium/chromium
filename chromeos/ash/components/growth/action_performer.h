@@ -27,6 +27,8 @@ enum class ActionType {
   kShowNudge = 4,
   kShowNotification = 5,
   kUpdateUserPref = 6,
+
+  kMaxValue = kUpdateUserPref
 };
 
 enum class ActionResult {

@@ -63,6 +63,7 @@ enum class BuiltInImage {
 enum class WindowAnchorType {
   kCaptionButtonContainer = 0,
   kWindowBounds = 1,
+  kMaxValue = kWindowBounds
 };
 
 // These values are deserialized from Growth Campaign, so entries should not
