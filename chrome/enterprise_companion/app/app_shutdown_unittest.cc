@@ -17,8 +17,6 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/time/default_clock.h"
-#include "base/time/time.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
@@ -153,10 +151,7 @@ TEST_F(AppShutdownTest, UntrustedCallerRejected) {
 }
 
 TEST_F(AppShutdownTest, Timeout) {
-  EnterpriseCompanionStatus result =
-      CreateAppShutdown(base::DefaultClock::GetInstance(),
-                        base::Milliseconds(100), server_name_)
-          ->Run();
+  EnterpriseCompanionStatus result = CreateAppShutdown(server_name_)->Run();
   EXPECT_TRUE(result.EqualsApplicationError(
       ApplicationError::kEnterpriseCompanionServiceConnectionFailed));
 }
@@ -168,9 +163,7 @@ MULTIPROCESS_TEST_MAIN(ShutdownAppClient) {
   ScopedIPCSupportWrapper ipc_support;
 
   EnterpriseCompanionStatus result =
-      CreateAppShutdown(base::DefaultClock::GetInstance(),
-                        TestTimeouts::action_timeout(),
-                        command_line->GetSwitchValueNative(kServerNameFlag))
+      CreateAppShutdown(command_line->GetSwitchValueNative(kServerNameFlag))
           ->Run();
   if (result.EqualsApplicationError(
           ApplicationError::kEnterpriseCompanionServiceConnectionFailed)) {

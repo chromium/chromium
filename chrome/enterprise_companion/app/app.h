@@ -7,10 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/bind.h"
-#include "base/time/clock.h"
-#include "base/time/default_clock.h"
-#include "base/time/time.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/installer.h"
@@ -45,8 +41,6 @@ std::unique_ptr<App> CreateAppServer();
 
 // Creates an App which instructs the running server to exit, if present.
 std::unique_ptr<App> CreateAppShutdown(
-    base::Clock* clock = base::DefaultClock::GetInstance(),
-    base::TimeDelta connection_timeout = base::Seconds(10),
     const mojo::NamedPlatformChannel::ServerName& server_name =
         GetServerName());
 

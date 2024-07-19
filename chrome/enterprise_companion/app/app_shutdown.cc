@@ -5,10 +5,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/clock.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
@@ -24,12 +22,9 @@ namespace enterprise_companion {
 // shutdown, if present.
 class AppShutdown : public App {
  public:
-  AppShutdown(base::Clock* clock,
-              base::TimeDelta connection_timeout,
-              const mojo::NamedPlatformChannel::ServerName& server_name)
-      : clock_(clock),
-        connection_timeout_(connection_timeout),
-        server_name_(server_name) {}
+  explicit AppShutdown(
+      const mojo::NamedPlatformChannel::ServerName& server_name)
+      : server_name_(server_name) {}
 
   ~AppShutdown() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -39,8 +34,7 @@ class AppShutdown : public App {
   void FirstTaskRun() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    ConnectToServer(clock_.get(), connection_timeout_,
-                    base::BindOnce(&AppShutdown::OnConnected,
+    ConnectToServer(base::BindOnce(&AppShutdown::OnConnected,
                                    weak_ptr_factory_.GetWeakPtr()),
                     server_name_);
   }
@@ -79,8 +73,6 @@ class AppShutdown : public App {
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const raw_ptr<const base::Clock> clock_;
-  const base::TimeDelta connection_timeout_;
   const mojo::NamedPlatformChannel::ServerName server_name_;
   std::unique_ptr<mojo::IsolatedConnection> connection_;
   mojo::Remote<mojom::EnterpriseCompanion> remote_;
@@ -88,10 +80,8 @@ class AppShutdown : public App {
 };
 
 std::unique_ptr<App> CreateAppShutdown(
-    base::Clock* clock,
-    base::TimeDelta connection_timeout,
     const mojo::NamedPlatformChannel::ServerName& server_name) {
-  return std::make_unique<AppShutdown>(clock, connection_timeout, server_name);
+  return std::make_unique<AppShutdown>(server_name);
 }
 
 }  // namespace enterprise_companion

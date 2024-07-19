@@ -25,24 +25,28 @@ namespace enterprise_companion {
 // Returns the server name for establishing IPC via NamedMojoIpcServer.
 mojo::NamedPlatformChannel::ServerName GetServerName();
 
+// Connects to the IPC server. `callback` is answered on the calling sequence,
+// the IsolationConnection and Remote may be null/invalid if the service could
+// not be reached. The returned `Remote` is bound to the calling sequence.
+void ConnectToServer(
+    base::OnceCallback<void(std::unique_ptr<mojo::IsolatedConnection>,
+                            mojo::Remote<mojom::EnterpriseCompanion>)> callback,
+    const mojo::NamedPlatformChannel::ServerName& server_name =
+        GetServerName());
+
 // Connects to the IPC server, attempting to launch the installed Chrome
 // Enterprise Companion App if necessary. This function repeatedly attempts
 // to connect to the server until `timeout` has expired, launching the
 // application at most once. `callback` is answered on the calling sequence, the
 // IsolationConnection and Remote may be null/invalid if the service could not
 // be reached. The returned `Remote` is bound to the calling sequence.
-void ConnectToServer(
+void ConnectAndLaunchServer(
     const base::Clock* clock,
     base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<mojo::IsolatedConnection>,
                             mojo::Remote<mojom::EnterpriseCompanion>)> callback,
     const mojo::NamedPlatformChannel::ServerName& server_name =
         GetServerName());
-
-// Launches the Enterprise Companion App installed on the system. `callback` is
-// responded to on the calling sequence with a boolean indicating whether the
-// process was launched.
-void LaunchEnterpriseCompanionApp(base::OnceCallback<void(bool)> callback);
 
 }  // namespace enterprise_companion
 

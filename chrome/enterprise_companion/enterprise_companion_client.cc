@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
@@ -16,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
@@ -38,11 +40,41 @@ constexpr char kServerName[] =
 constexpr wchar_t kServerName[] = PRODUCT_FULLNAME_STRING L"Service";
 #endif
 
-void Connect(const mojo::NamedPlatformChannel::ServerName& server_name,
-             const base::Clock* clock,
-             int tries,
-             base::Time deadline,
-             base::OnceCallback<void(mojo::PlatformChannelEndpoint)> callback) {
+bool LaunchEnterpriseCompanionApp() {
+  std::optional<base::FilePath> binary_path = FindExistingInstall();
+  if (!binary_path) {
+    return false;
+  }
+  return base::LaunchProcess(base::CommandLine(*binary_path), {}).IsValid();
+}
+
+void OnEndpointReceived(
+    base::OnceCallback<void(std::unique_ptr<mojo::IsolatedConnection>,
+                            mojo::Remote<mojom::EnterpriseCompanion>)> callback,
+    mojo::PlatformChannelEndpoint endpoint) {
+  if (!endpoint.is_valid()) {
+    std::move(callback).Run(nullptr, {});
+    return;
+  }
+
+  std::unique_ptr<mojo::IsolatedConnection> connection =
+      std::make_unique<mojo::IsolatedConnection>();
+  mojo::Remote<mojom::EnterpriseCompanion> remote(
+      mojo::PendingRemote<mojom::EnterpriseCompanion>(
+          connection->Connect(std::move(endpoint)),
+          /*version=*/0));
+  std::move(callback).Run(std::move(connection), std::move(remote));
+}
+
+// Repeatedly attempts to connect to the remote service until `deadline` is
+// exhausted. If the service could not be reached after the first attempt, the
+// application is launched.
+void ConnectWithRetries(
+    const mojo::NamedPlatformChannel::ServerName& server_name,
+    const base::Clock* clock,
+    int tries,
+    base::Time deadline,
+    base::OnceCallback<void(mojo::PlatformChannelEndpoint)> callback) {
   if (clock->Now() > deadline) {
     VLOG(1) << "Failed to connect to EnterpriseCompanionService remote. "
                "Connection timed out.";
@@ -50,9 +82,14 @@ void Connect(const mojo::NamedPlatformChannel::ServerName& server_name,
     return;
   }
 
+  if (tries == 1 && !LaunchEnterpriseCompanionApp()) {
+    VLOG(1) << "Failed to connect to EnterpriseCompanionService remote. "
+               "The service could not be launched.";
+    std::move(callback).Run({});
+  }
+
   mojo::PlatformChannelEndpoint endpoint =
       named_mojo_ipc_server::ConnectToServer(server_name);
-
   if (endpoint.is_valid()) {
     std::move(callback).Run(std::move(endpoint));
     return;
@@ -60,8 +97,8 @@ void Connect(const mojo::NamedPlatformChannel::ServerName& server_name,
 
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&Connect, server_name, clock, tries + 1, deadline,
-                     std::move(callback)),
+      base::BindOnce(&ConnectWithRetries, server_name, clock, tries + 1,
+                     deadline, std::move(callback)),
       base::Milliseconds(30 * tries));
 }
 
@@ -72,6 +109,21 @@ mojo::NamedPlatformChannel::ServerName GetServerName() {
 }
 
 void ConnectToServer(
+    base::OnceCallback<void(std::unique_ptr<mojo::IsolatedConnection>,
+                            mojo::Remote<mojom::EnterpriseCompanion>)> callback,
+    const mojo::NamedPlatformChannel::ServerName& server_name) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](const mojo::NamedPlatformChannel::ServerName& server_name) {
+            return named_mojo_ipc_server::ConnectToServer(server_name);
+          },
+          server_name)
+          .Then(base::BindPostTaskToCurrentDefault(
+              base::BindOnce(&OnEndpointReceived, std::move(callback)))));
+}
+
+void ConnectAndLaunchServer(
     const base::Clock* clock,
     base::TimeDelta timeout,
     base::OnceCallback<void(std::unique_ptr<mojo::IsolatedConnection>,
@@ -79,42 +131,10 @@ void ConnectToServer(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          &Connect, server_name, clock, /*tries=*/0, clock->Now() + timeout,
-          base::BindPostTaskToCurrentDefault(base::BindOnce(
-              [](base::OnceCallback<void(
-                     std::unique_ptr<mojo::IsolatedConnection>,
-                     mojo::Remote<mojom::EnterpriseCompanion>)> callback,
-                 mojo::PlatformChannelEndpoint endpoint) {
-                if (!endpoint.is_valid()) {
-                  std::move(callback).Run(nullptr, {});
-                  return;
-                }
-
-                std::unique_ptr<mojo::IsolatedConnection> connection =
-                    std::make_unique<mojo::IsolatedConnection>();
-                mojo::Remote<mojom::EnterpriseCompanion> remote(
-                    mojo::PendingRemote<mojom::EnterpriseCompanion>(
-                        connection->Connect(std::move(endpoint)),
-                        /*version=*/0));
-                std::move(callback).Run(std::move(connection),
-                                        std::move(remote));
-              },
-              std::move(callback)))));
-}
-
-void LaunchEnterpriseCompanionApp(base::OnceCallback<void(bool)> callback) {
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      base::BindOnce([] {
-        std::optional<base::FilePath> binary_path = FindExistingInstall();
-        if (!binary_path) {
-          return false;
-        }
-
-        return base::LaunchProcess(base::CommandLine(*binary_path), {})
-            .IsValid();
-      }).Then(base::BindPostTaskToCurrentDefault(std::move(callback))));
+      base::BindOnce(&ConnectWithRetries, server_name, clock, /*tries=*/0,
+                     clock->Now() + timeout,
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
+                         &OnEndpointReceived, std::move(callback)))));
 }
 
 }  // namespace enterprise_companion
