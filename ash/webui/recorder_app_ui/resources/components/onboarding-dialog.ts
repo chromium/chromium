@@ -209,7 +209,11 @@ export class OnboardingDialog extends ReactiveLitElement {
         return this.renderDialog(
           'onboarding_speaker_id',
           i18n.onboardingDialogSpeakerIdHeader,
-          i18n.onboardingDialogSpeakerIdDescription,
+          // TODO: b/336963138 - Add correct link
+          // prettier-ignore
+          html`${i18n.onboardingDialogSpeakerIdDescription} <a
+              href="javascript:;"
+              >${i18n.onboardingDialogSpeakerIdLearnMoreLink}</a>`,
           html`
             <cra-button
               .label=${i18n.onboardingDialogSpeakerIdDeferButton}

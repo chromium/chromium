@@ -45,10 +45,10 @@
     Allow
   </message>
   <message desc="Button to defer enabling speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DEFER_BUTTON">
-    Maybe later
+    Skip
   </message>
   <message desc="Description of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION">
-    When you allow this, Recorder will process your audio recordings using advanced audio analysis.
+    When you allow this, Recorder will use advanced audio analysis to automatically detect distinct voices and give each a generic label such as Speaker 1 and Speaker 2.
 
 You can turn this off at anytime in Settings.
   </message>
@@ -56,16 +56,20 @@ You can turn this off at anytime in Settings.
     Don’t allow
   </message>
   <message desc="Header of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_HEADER">
-    Allow Recorder to identify speakers?
+    Allow Recorder to detect and label speakers?
+  </message>
+  <message desc="Link to more information about speaker ID." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_LEARN_MORE_LINK">
+    Learn more about speaker labels.
   </message>
   <message desc="Button to disable transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_CANCEL_BUTTON">
     Cancel
   </message>
   <message desc="Button to defer enabling transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DEFER_BUTTON">
-    Maybe later
+    Skip
   </message>
   <message desc="Description of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_DESCRIPTION">
-    Recorder can create transcriptions for recordings with speech. Download the transcription model (up to 100MB) to get these transcriptions.
+    Recorder can create transcriptions for recordings with speech.
+Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Header of the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_HEADER">
     Turn on transcription and download transcription model?
@@ -113,13 +117,13 @@ You can turn this off at anytime in Settings.
     Cancel
   </message>
   <message desc="Header of the delete recording dialog before stopping recording." name="IDS_RECORDER_RECORD_DELETE_DIALOG_CURRENT_HEADER">
-    Delete current recording?
+    Delete recording?
   </message>
   <message desc="Button to delete recording in the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_DELETE_BUTTON">
     Delete
   </message>
   <message desc="Description of the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_DESCRIPTION">
-    This action is permanent and cannot be undone.
+    This action is permanent and can’t be undone
   </message>
   <message desc="Header of the delete recording dialog." name="IDS_RECORDER_RECORD_DELETE_DIALOG_HEADER">
     Delete recording?
@@ -131,10 +135,10 @@ You can turn this off at anytime in Settings.
     Delete
   </message>
   <message desc="Description of the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_DESCRIPTION">
-    Leaving this page will end your current recording.
+    Leaving this page will end your current recording
   </message>
   <message desc="Header of the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_HEADER">
-    Exit recording
+    Exit recording?
   </message>
   <message desc="Button to save and exit in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_SAVE_AND_EXIT_BUTTON">
     Save and exit
@@ -143,25 +147,25 @@ You can turn this off at anytime in Settings.
     Delete
   </message>
   <message desc="Label of the menu item to toggle whether transcription is enabled while recording." name="IDS_RECORDER_RECORD_MENU_TOGGLE_TRANSCRIPTION_OPTION">
-    Transcription feature
+    Create transcript
   </message>
   <message desc="Button to stop recording." name="IDS_RECORDER_RECORD_STOP_BUTTON">
     Stop recording
   </message>
   <message desc="Description of the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_DESCRIPTION">
-    With this feature enabled, live transcripts will also be shown as you’re recording.
+    Live transcripts will be shown while you’re recording. You can turn this off at any time in Settings.
   </message>
   <message desc="Button to disable transcription on the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_DISABLE_BUTTON">
     Don’t show again
   </message>
   <message desc="Button to enable transcription on the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_ENABLE_BUTTON">
-    Enable
+    Turn on
   </message>
   <message desc="Header of the entry point of the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_ENTRY_POINT_HEADER">
-    Get a transcription for your recording
+    Turn on transcription?
   </message>
   <message desc="Description when transcription is off in the transcription view while recording. The [3dot] will be replaced by an icon of the 3 dots menu." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_DESCRIPTION">
-    You can adjust this in Settings or in the <ph name="THREE_DOTS_MENU_ICON">[3dot]</ph> menu
+    You can turn this on in Settings or the <ph name="THREE_DOTS_MENU_ICON">[3dot]</ph> menu
   </message>
   <message desc="Header when transcription is off in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_HEADER">
     Transcript is off
@@ -197,7 +201,10 @@ You can turn this off at anytime in Settings.
     Download
   </message>
   <message desc="Label of the summary setting in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_LABEL">
-    Recording summary, powered by Google AI
+    Recording summary and name creation
+  </message>
+  <message desc="Link to more information about summary and name creation model." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_LEARN_MORE_LINK">
+    Learn more
   </message>
   <message desc="Button when transcription model is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_BUTTON">
     Downloading…
@@ -248,6 +255,6 @@ You can turn this off at anytime in Settings.
     No speech detected
   </message>
   <message desc="Message when there’s not yet any speech detected when recording." name="IDS_RECORDER_TRANSCRIPTION_WAITING_SPEECH_TEXT">
-    Listening for speech...
+    Listening for speech…
   </message>
 </grit-part>

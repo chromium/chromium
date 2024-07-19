@@ -158,10 +158,10 @@ export class SettingsMenu extends ReactiveLitElement {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
     this.platformHandler.downloadModel(ModelId.SUMMARY);
-    // TODO(pihsun): This downloads the model used by title suggestion, and
-    // both model are downloaded together with the same toggle. This currently
-    // doesn't take extra time because it's the base model for summary. Change
-    // this to title suggestion specific model when we have LoRA for that.
+    // The settings download both the model for summary and title suggestion.
+    // TODO(pihsun): Rename the summary-related settings and functions to be
+    // more accurate that it controls both settings for summary and title
+    // suggestion.
     this.platformHandler.downloadModel(ModelId.GEMINI_XXS_IT_BASE);
   }
 
@@ -182,6 +182,10 @@ export class SettingsMenu extends ReactiveLitElement {
       return html`
         <span slot="description">
           ${i18n.settingsOptionsSummaryDescription}
+          <!-- TODO: b/336963138 - Add correct link -->
+          <a href="javascript:;">
+            ${i18n.settingsOptionsSummaryLearnMoreLink}
+          </a>
         </span>
         <cra-button
           slot="action"
@@ -392,7 +396,7 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    // TODO: b/336963138 - Implement actual functionality of all settings.
+    // TODO: b/354109582 - Implement actual functionality of all settings.
     return html`<cra-dialog>
         <div slot="content">
           <div id="header">
