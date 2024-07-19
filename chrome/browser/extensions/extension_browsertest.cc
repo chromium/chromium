@@ -408,10 +408,11 @@ void ExtensionBrowserTest::OnShutdown(ExtensionRegistry* registry) {
 
 Profile* ExtensionBrowserTest::profile() {
   if (!profile_) {
-    if (browser())
+    if (browser()) {
       profile_ = browser()->profile();
-    else
+    } else {
       profile_ = ProfileManager::GetLastUsedProfile();
+    }
   }
   return profile_;
 }
@@ -509,8 +510,9 @@ const Extension* ExtensionBrowserTest::LoadExtension(
     const base::FilePath& path,
     const LoadOptions& options) {
   base::FilePath extension_path;
-  if (!ModifyExtensionIfNeeded(options, path, &extension_path))
+  if (!ModifyExtensionIfNeeded(options, path, &extension_path)) {
     return nullptr;
+  }
 
   if (options.load_as_component) {
     // TODO(crbug.com/40166157): Decide if other load options
@@ -542,8 +544,9 @@ const Extension* ExtensionBrowserTest::LoadExtension(
 
   scoped_refptr<const Extension> extension =
       loader.LoadExtension(extension_path);
-  if (extension)
+  if (extension) {
     last_loaded_extension_id_ = extension->id();
+  }
 
   if (options.wait_for_registration_stored &&
       BackgroundInfo::IsServiceWorkerBased(extension.get())) {
@@ -568,8 +571,9 @@ const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
       extension_service()->component_loader()->Add(manifest, path);
   const Extension* extension =
       extension_registry()->enabled_extensions().GetByID(extension_id);
-  if (!extension)
+  if (!extension) {
     return nullptr;
+  }
   last_loaded_extension_id_ = extension->id();
   return extension;
 }
@@ -748,8 +752,9 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     if (crx_path.Extension() != FILE_PATH_LITERAL(".crx")) {
       crx_path = PackExtension(path, ExtensionCreator::kNoRunFlags);
     }
-    if (crx_path.empty())
+    if (crx_path.empty()) {
       return nullptr;
+    }
 
     std::unique_ptr<ExtensionInstallPrompt> install_ui;
     if (prompt_auto_confirm) {
@@ -906,8 +911,9 @@ void ExtensionBrowserTest::OpenWindow(content::WebContents* contents,
               newtab->GetPrimaryMainFrame()->GetSiteInstance());
   }
 
-  if (newtab_result)
+  if (newtab_result) {
     *newtab_result = newtab;
+  }
 }
 
 bool ExtensionBrowserTest::NavigateInRenderer(content::WebContents* contents,
@@ -1003,8 +1009,9 @@ bool ExtensionBrowserTest::ModifyExtensionIfNeeded(
   }
 
   base::FilePath extension_root;
-  if (!CreateTempDirectoryCopy(temp_dir, input_path, &extension_root))
+  if (!CreateTempDirectoryCopy(temp_dir, input_path, &extension_root)) {
     return false;
+  }
 
   std::string error;
   std::optional<base::Value::Dict> manifest_dict =
