@@ -34,7 +34,10 @@
           role="link" tabindex="0"
           aria-label="[[getMenuAriaLabel_(item)]]">
         <cr-icon icon="history:table-chart-organize"></cr-icon>
-        [[getItemTitle_(item)]] [[item.uuid.value]]
+        <history-searched-label class="website-title"
+            title="[[getItemTitle_(item)]]"
+            search-term="[[searchTerm]]">
+        </history-searched-label> [[item.uuid.value]]
       </div>
     </div>
     <cr-icon-button id="menu" iron-icon="cr:more-vert"

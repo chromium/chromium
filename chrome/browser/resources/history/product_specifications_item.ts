@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './shared_icons.html.js';
+import './searched_label.js';
 
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
@@ -54,6 +55,8 @@ export class ProductSpecificationsItemElement extends PolymerElement {
       checked: Boolean,
 
       index: Number,
+
+      searchTerm: String,
     };
   }
 

@@ -38,12 +38,14 @@
       </div>
     </div>
   </div>
-  <template is="dom-repeat" items="[[allItems_]]" as="item" id="allItemsList"
+  <template is="dom-repeat" items="[[displayedItems_]]"
+      as="item" id="displayedItemsList"
       on-dom-change="updateFocusGrid_">
     <product-specifications-item item="[[item]]"
         index="[[index]]"
         on-product-spec-item-select="onItemSelected_"
-        on-item-menu-open="onOpenMenu_">
+        on-item-menu-open="onOpenMenu_"
+        search-term="[[searchTerm]]">
     </product-specifications-item>
   </template>
 

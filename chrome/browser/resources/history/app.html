@@ -222,7 +222,8 @@
         <template is="dom-if"
             if="[[productSpecificationsListsSelected_(selectedPage_)]]">
           <product-specifications-lists id="productSpecificationsLists"
-              path="productSpecificationsLists">
+              path="productSpecificationsLists"
+              search-term="[[queryState_.searchTerm]]">
           </product-specifications-lists>
         </template>
       </iron-pages>

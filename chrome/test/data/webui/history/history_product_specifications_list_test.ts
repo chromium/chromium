@@ -340,4 +340,20 @@ suite('ProductSpecificationsListTest', () => {
         new Set(['ex2', 'ex3', 'ex4']),
         productSpecificationsList.selectedItems);
   });
+
+  test('search term changed', async function() {
+    await ensureLazyLoaded();
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertEquals(4, items.length);
+    initProductSets();
+
+    productSpecificationsList.searchTerm = 'example2';
+    await flushTasks();
+    const newItems = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+
+    assertEquals(1, newItems!.length);
+    assertDeepEquals('example2', newItems[0]!.item.name);
+  });
 });

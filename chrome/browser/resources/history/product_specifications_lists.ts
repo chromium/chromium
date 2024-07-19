@@ -25,7 +25,7 @@ export interface ProductSpecificationsListsElement {
   $: {
     'sharedMenu': CrLazyRenderElement<CrActionMenuElement>,
     'deleteItemDialog': CrLazyRenderElement<CrDialogElement>,
-    'allItemsList': DomRepeat,
+    'displayedItemsList': DomRepeat,
   };
 }
 
@@ -47,21 +47,29 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   static get properties() {
     return {
       selectedItems: Object,
+      searchTerm: String,
       pendingDelete_: {
         notify: true,
         type: Boolean,
       },
       lastSelectedIndex_: Number,
       allItems_: Array,
+      displayedItems_: {
+        type: Array,
+        computed: 'computeDisplayedItems_(allItems_.*, searchTerm)',
+      },
       uuidOfOpenMenu_: Object,
     };
   }
 
   selectedItems: Set<string> = new Set();
+  searchTerm: string = '';
   private pendingDelete_: boolean = false;
   private lastSelectedIndex_: number|undefined = undefined;
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
   private allItems_: ProductSpecificationsSet[] = [];
+  private displayedItems_: ProductSpecificationsSet[] = [];
+
   private focusGrid_: FocusGrid|null = null;
   private uuidOfOpenMenu_: Uuid|null = null;
   private callbackRouter_: PageCallbackRouter;
@@ -133,7 +141,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     for (let i = Math.min(index, this.lastSelectedIndex_);
          i <= Math.min(
                   Math.max(index, this.lastSelectedIndex_),
-                  this.allItems_.length - 1);
+                  this.displayedItems_.length - 1);
          i++) {
       this.changeSelection_(i, toSelect, itemElements);
     }
@@ -144,10 +152,10 @@ export class ProductSpecificationsListsElement extends PolymerElement {
       index: number, toSelect: boolean,
       itemElements: NodeListOf<ProductSpecificationsItemElement>) {
     if (toSelect) {
-      this.selectedItems.add(this.allItems_[index].uuid.value);
+      this.selectedItems.add(this.displayedItems_[index].uuid.value);
       itemElements[index].checked = true;
     } else {
-      this.selectedItems.delete(this.allItems_[index].uuid.value);
+      this.selectedItems.delete(this.displayedItems_[index].uuid.value);
       itemElements[index].checked = false;
     }
   }
@@ -276,8 +284,15 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     this.splice('allItems_', setIndex, 1);
   }
 
+  private computeDisplayedItems_() {
+    const searchText = this.searchTerm.toLowerCase().trim();
+    return this.allItems_.filter((item) => {
+      return item.name.trim().toLowerCase().includes(searchText);
+    });
+  }
+
   selectOrUnselectAll() {
-    if (this.allItems_.length === this.getSelectedItemCount()) {
+    if (this.displayedItems_.length === this.getSelectedItemCount()) {
       this.unselectAllItems();
     } else {
       this.selectAllItems();
@@ -291,7 +306,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
       item.checked = true;
       this.selectedItems.add(item.item.uuid.value);
     });
-    assert(this.selectedItems.size === this.allItems_.length);
+    assert(this.selectedItems.size === this.displayedItems_.length);
   }
 }
 
