@@ -28,7 +28,7 @@ class VIEWS_EXPORT ActionViewInterface {
       base::RepeatingClosure trigger_action_callback) {}
   // Triggers the action associated with the ActionItem.
   virtual void InvokeActionImpl(actions::ActionItem* action_item);
-  // Respond to any view changes such as updating ActinoItem properties.
+  // Respond to any view changes such as updating ActionItem properties.
   virtual void OnViewChangedImpl(actions::ActionItem* action_item) {}
 };
 
