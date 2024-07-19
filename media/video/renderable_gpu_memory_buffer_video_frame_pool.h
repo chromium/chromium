@@ -63,6 +63,17 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
         gpu::SharedImageUsageSet usage,
         gpu::SyncToken& sync_token) = 0;
 
+    // Used to create a Mappable shared image.
+    virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+        const gfx::Size& size,
+        gfx::BufferUsage buffer_usage,
+        const viz::SharedImageFormat& si_format,
+        const gfx::ColorSpace& color_space,
+        GrSurfaceOrigin surface_origin,
+        SkAlphaType alpha_type,
+        gpu::SharedImageUsageSet usage,
+        gpu::SyncToken& sync_token) = 0;
+
     // Destroy a SharedImage created by this interface.
     virtual void DestroySharedImage(
         const gpu::SyncToken& sync_token,

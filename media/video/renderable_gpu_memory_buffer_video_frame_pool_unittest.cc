@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -70,6 +71,21 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
         {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
          alpha_type, usage, "RenderableGpuMemoryBufferVideoFramePoolTest"},
         gpu_memory_buffer->CloneHandle());
+  }
+
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      const gfx::Size& size,
+      gfx::BufferUsage buffer_usage,
+      const viz::SharedImageFormat& si_format,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      gpu::SharedImageUsageSet usage,
+      gpu::SyncToken& sync_token) override {
+    // Marking this method as not implemented as it's not used for now. It will
+    // be used and implemented when MappableSI is enabled in future CLs.
+    NOTIMPLEMENTED();
+    return nullptr;
   }
 
   MOCK_METHOD2(DoCreateGpuMemoryBuffer,
