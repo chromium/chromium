@@ -1354,7 +1354,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoOpenInAppForBrowserTabPwa) {
 
   NavigateViaLinkClickToURLAndWait(browser(), app_url);
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
-  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
+
+  // Even though the app doesn't meet promotability criteria (manifest has
+  // display:browser), the installation option should still show up as `Install
+  // Page as App`.
+  AppMenuCommandState install_pwa_state =
+      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
+          ? kEnabled
+          : kNotPresent;
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()),
+            install_pwa_state);
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
             kNotPresent);
 }

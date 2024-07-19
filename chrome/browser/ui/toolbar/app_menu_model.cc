@@ -264,42 +264,76 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
     return std::u16string();
   }
 
+  std::u16string install_page_as_app_label =
+      l10n_util::GetStringUTF16(IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE);
   webapps::AppBannerManager* banner =
       webapps::AppBannerManager::FromWebContents(web_contents);
   if (!banner) {
+    // Showing `Install Page as App` allows the user to refetch the manifest and
+    // go through the install flow without relying on the AppBannerManager to
+    // finish working.
+    if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
+      return install_page_as_app_label;
+    }
     return std::u16string();
   }
 
   std::optional<webapps::InstallBannerConfig> install_config =
       banner->GetCurrentBannerConfig();
   if (!install_config) {
+    // In some edge cases where the `AppBannerManager` pipeline hasn't run yet,
+    // the information populated to be used for determining installability and
+    // other parameters is not available. In this case, allow users to try
+    // installability by refetching the manifest.
+    if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
+      return install_page_as_app_label;
+    }
     return std::u16string();
   }
   CHECK_EQ(install_config->mode, webapps::AppBannerMode::kWebApp);
   webapps::InstallableWebAppCheckResult installable =
       banner->GetInstallableWebAppCheckResult();
-  std::u16string app_name;
+
   switch (installable) {
     case webapps::InstallableWebAppCheckResult::kUnknown:
+      // Loading of the menu model is synchronous, so there could be a condition
+      // where the `AppBannerManager` has not yet finished the pipeline while
+      // the menu item has been triggered. In such a case,
+      // `banner->GetInstallableWebAppCheckResult()` returns the default value
+      // of `kUnknown`.
+      // Show `Install Page as App` for that use-case, since that allows the
+      // user to trigger the install flow to verify all the data required for
+      // installability. The correct dialog will be shown to the user depending
+      // on whether the app turns out to be installable or not.
+      if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
+        return install_page_as_app_label;
+      }
+      return std::u16string();
     case webapps::InstallableWebAppCheckResult::kNo_AlreadyInstalled:
+      // Returning an empty string here allows the `launch page as app` field to
+      // get populated in place of the `install` strings.
       return std::u16string();
     case webapps::InstallableWebAppCheckResult::kNo:
-      // Returning an empty string prevents menu item creation.
       if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
-        return l10n_util::GetStringUTF16(IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE);
+        return install_page_as_app_label;
       }
       return std::u16string();
     case webapps::InstallableWebAppCheckResult::kYes_ByUserRequest:
     case webapps::InstallableWebAppCheckResult::kYes_Promotable:
-      app_name = install_config->GetWebOrNativeAppName();
-      break;
+      std::u16string app_name = install_config->GetWebOrNativeAppName();
+      if (app_name.empty()) {
+        // Prefer showing `Install Page as App` here, as users can set the name
+        // of the installed app on the DIY app dialog anyway.
+        if (base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
+          return install_page_as_app_label;
+        } else {
+          return std::u16string();
+        }
+      }
+      return l10n_util::GetStringFUTF16(
+          IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
+          ui::EscapeMenuLabelAmpersands(app_name));
   }
-  if (app_name.empty()) {
-    return std::u16string();
-  }
-
-  return l10n_util::GetStringFUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
-                                    ui::EscapeMenuLabelAmpersands(app_name));
 }
 
 // TODO(b/328077967): Implement async updates of menu for app icon.
@@ -328,8 +362,10 @@ ui::ImageModel GetInstallPWAIcon(Browser* browser) {
 
   // For sites that are not installable (DIY apps), do not return any icons,
   // instead use the default chrome refresh icon for installing.
-  if (banner->GetInstallableWebAppCheckResult() ==
-      webapps::InstallableWebAppCheckResult::kNo) {
+  auto installable_check_result = banner->GetInstallableWebAppCheckResult();
+  if (installable_check_result == webapps::InstallableWebAppCheckResult::kNo ||
+      installable_check_result ==
+          webapps::InstallableWebAppCheckResult::kUnknown) {
     return app_icon_to_use;
   }
 

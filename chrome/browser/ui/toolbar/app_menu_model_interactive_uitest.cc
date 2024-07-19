@@ -364,6 +364,11 @@ class UniversalInstallAppMenuModelInteractiveTest
     return embedded_test_server()->GetURL("/banners/manifest_test_page.html");
   }
 
+  GURL GetInvalidManifestParsingAppUrl() {
+    return embedded_test_server()->GetURL(
+        "/banners/invalid_manifest_test_page.html");
+  }
+
   // If universal install is enabled, non installable sites (DIY apps) will have
   // a corresponding menu item entry for installation, as well as the default
   // install icon next to them.
@@ -475,6 +480,26 @@ IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
       EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       VerifyDiyAppMenuItemViews());
+}
+
+IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
+                       DIYAppMenuWorksCorrectlyInvalidManifestParsingSites) {
+  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
+                  ObserveState(kAppBannerManagerState, GetManager()),
+                  NavigateWebContents(kPrimaryTabPageElementId,
+                                      GetInvalidManifestParsingAppUrl()),
+                  WaitForWebContentsReady(kPrimaryTabPageElementId),
+                  // Invalid parsing currently leads the AppBannerManager to
+                  // early exit the pipeline without modifying the default value
+                  // of `InstallableWebAppCheckResult`, which is `kUnknown`.
+                  // This should almost never trigger a wait, but it's better to
+                  // be safe than introduce flakiness.
+                  WaitForState(kAppBannerManagerState,
+                               InstallableWebAppCheckResult::kUnknown),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
+                  SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
+                  VerifyDiyAppMenuItemViews());
 }
 
 IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
