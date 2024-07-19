@@ -233,7 +233,9 @@ void NigoriModelTypeProcessor::OnSyncStopping(
   // OnSyncStarting() has completed.
   DCHECK(!start_callback_);
 
-  worker_.reset();
+  if (IsConnected()) {
+    DisconnectSync();
+  }
 
   switch (metadata_fate) {
     case syncer::KEEP_METADATA: {
@@ -244,8 +246,7 @@ void NigoriModelTypeProcessor::OnSyncStopping(
       ClearMetadataAndReset();
       model_ready_to_sync_ = false;
 
-      // The model is still ready to sync (with the same |bridge_|) and same
-      // sync metadata.
+      // The model is immediately ready to sync again (with the same |bridge_|).
       ModelReadyToSync(bridge_, NigoriMetadataBatch());
       break;
     }

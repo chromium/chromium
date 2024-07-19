@@ -511,13 +511,13 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Disabling sync for a type shouldn't happen before the model is loaded
   // because OnSyncStopping() is not allowed to be called before
-  // OnSyncStarting() has completed..
+  // OnSyncStarting() has completed.
   DCHECK(bookmark_model_);
   DCHECK(!start_callback_);
 
   activation_request_ = syncer::DataTypeActivationRequest{};
 
-  worker_.reset();
+  DisconnectSync();
 
   switch (metadata_fate) {
     case syncer::KEEP_METADATA: {
@@ -538,9 +538,8 @@ void BookmarkModelTypeProcessor::OnSyncStopping(
     }
   }
 
-  // Do not let any delayed callbacks to be called.
+  // Do not let any delayed callbacks be called.
   weak_ptr_factory_for_controller_.InvalidateWeakPtrs();
-  weak_ptr_factory_for_worker_.InvalidateWeakPtrs();
 }
 
 void BookmarkModelTypeProcessor::NudgeForCommitIfNeeded() {
