@@ -55,4 +55,20 @@ suite('ListItemTest', () => {
 
     memberSites.forEach(member => assertTrue(isVisible(member)));
   });
+
+  test('check bold with primary site', async () => {
+    item.query = 'primary';
+    await microtasksFinished();
+
+    const boldedText = item.shadowRoot!.querySelector('b');
+    assertEquals('primary', boldedText!.textContent!.trim());
+  });
+
+  test('check bold with member site', async () => {
+    item.query = 'associated1';
+    await microtasksFinished();
+
+    const boldedText = item.shadowRoot!.querySelector('b');
+    assertEquals('associated1', boldedText!.textContent!.trim());
+  });
 });

@@ -59,4 +59,23 @@ suite('AppTest', () => {
 
     assertFalse(isVisible(app.$.drawer));
   });
+
+  test('URL parameters update UI search box', async () => {
+    const query = new URLSearchParams(window.location.search);
+    query.set('q', 'test');
+    window.history.replaceState(
+        {}, '', `${window.location.pathname}?${query.toString()}`);
+    window.dispatchEvent(new CustomEvent('popstate'));
+    await microtasksFinished();
+    assertEquals(
+        'test', app.$.toolbar.$.mainToolbar.getSearchField().getValue());
+  });
+
+  test('UI search box updates URL parameters', async () => {
+    app.$.toolbar.$.mainToolbar.getSearchField().setValue('hello');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q');
+    assertEquals('hello', query);
+  });
 });

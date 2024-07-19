@@ -11,13 +11,13 @@ export function getHtml(this: RelatedWebsiteSetsListContainerElement) {
 <div class="header">
   <h2 class="flex page-title">All sets</h2>
   <cr-button id="expandCollapseButton"
-      @click="${this.onClick_}">
+      @click="${this.onClick_}" ?hidden="${this.errorMessage}">
     ${this.expandCollapseButtonText_()}
   </cr-button>
 </div>
 <div id="descriptionLabel" class="cr-secondary-text"
     ?hidden="${!this.errorMessage}">
-  <p>${this.getDisplayedError()}</p>
+  ${this.getDisplayedError()}
 </div>
 <div id="descriptionLabel" class="cr-secondary-text"
     ?hidden="${this.errorMessage}">
@@ -27,10 +27,11 @@ export function getHtml(this: RelatedWebsiteSetsListContainerElement) {
 </div>
 <div id="related-website-sets" class="card" role="list"
     ?hidden="${this.errorMessage}">
-  ${this.relatedWebsiteSets.map(item => html`
+  ${this.filteredItems.map(item => html`
     <related-website-set-list-item id=${item.primarySite}
         .primarySite="${item.primarySite}" .memberSites="${item.memberSites}"
         .managedByEnterprise="${item.managedByEnterprise}"
+        .query="${this.query}"
         @expanded-toggled="${this.onExpandedToggled_}">
     </related-website-set-list-item>
   `)}

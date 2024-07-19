@@ -35,14 +35,18 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
   static override get properties() {
     return {
       relatedWebsiteSets: {type: Array},
+      filteredItems: {type: Array},
       isAnyRowCollapsed: {type: Boolean},
       errorMessage: {type: String},
+      query: {type: String},
     };
   }
 
   relatedWebsiteSets: RelatedWebsiteSet[] = [];
-  protected isAnyRowCollapsed: boolean = true;
+  query: string = '';
   errorMessage: string = '';
+  protected isAnyRowCollapsed: boolean = true;
+  protected filteredItems: RelatedWebsiteSet[] = [];
 
   private rowExpandedStates_: Map<string, boolean> = new Map();
 
@@ -51,6 +55,28 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
 
     this.isAnyRowCollapsed = Array.from(this.rowExpandedStates_.values())
                                  .some(expanded => !expanded);
+
+    if (changedProperties.has('query') ||
+        changedProperties.has('relatedWebsiteSets')) {
+      this.filteredItems =
+          this.relatedWebsiteSets.filter(set => this.hasMatch_(set));
+
+      this.errorMessage =
+          this.filteredItems.length === 0 ? 'No items match' : '';
+    }
+  }
+
+  private hasMatch_(set: RelatedWebsiteSet): boolean {
+    if (set.primarySite.toLowerCase().includes(this.query)) {
+      return true;
+    }
+
+    for (const member of set.memberSites) {
+      if (member.site.toLowerCase().includes(this.query)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   protected onClick_() {

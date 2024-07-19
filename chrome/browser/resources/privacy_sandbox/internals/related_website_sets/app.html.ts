@@ -10,7 +10,9 @@ export function getHtml(this: RelatedWebsiteSetsAppElement) {
   // clang-format off
   return html`
 <related-website-sets-toolbar id="toolbar" .pageName="${this.pageTitle_}"
-    ?narrow="${this.narrow_}">
+    ?narrow="${this.narrow_}" @narrow-changed="${this.onNarrowChanged_}"
+    @cr-toolbar-menu-click="${this.onMenuButtonClick_}"
+    @search-changed="${this.onSearchChanged_}">
 </related-website-sets-toolbar>
 <div id="container" role="group">
   <related-website-sets-sidebar id="sidebar" ?hidden="${this.narrow_}">
@@ -18,6 +20,7 @@ export function getHtml(this: RelatedWebsiteSetsAppElement) {
   <div id="content">
     <related-website-sets-list-container id="rws-list-container"
         class="cr-centered-card-container" .errorMessage="${this.errorMessage_}"
+        .query="${this.query_}"
         .relatedWebsiteSets="${this.relatedWebsiteSets_}">
     </related-website-sets-list-container>
   </div>

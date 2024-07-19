@@ -49,6 +49,10 @@ export class RelatedWebsiteSetsToolbarElement extends CrLitElement {
   protected narrowThreshold_: number = 1096;
   protected pageName: string = '';
   protected searchPrompt_: string = 'Search site';
+
+  setSearchFieldValue(query: string) {
+    this.$.mainToolbar.getSearchField().setValue(query);
+  }
 }
 
 declare global {

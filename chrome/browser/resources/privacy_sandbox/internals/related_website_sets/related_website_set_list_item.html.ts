@@ -14,7 +14,7 @@ export function getHtml(this: RelatedWebsiteSetListItemElement) {
     <div id="container">
       <site-favicon id="favicon" domain="chrome://favicon2" aria-hidden="true">
       </site-favicon>
-      <div id="borderPart">${this.primarySite}</div>
+      <div id="borderPart">${this.boldQuery_(this.primarySite)}</div>
       <cr-icon class="icon" icon="cr20:domain"
           ?hidden="${this.isEnterpriseIconHidden_()}">
       </cr-icon>
@@ -27,7 +27,7 @@ export function getHtml(this: RelatedWebsiteSetListItemElement) {
             aria-hidden="true">
         </site-favicon>
         <div class="cr-secondary-text">
-          ${item.site} - ${this.getSiteType_(item.type)}
+          ${this.boldQuery_(item.site)} - ${this.getSiteType_(item.type)}
         </div>
       </div>`)}
   </cr-collapse>`;

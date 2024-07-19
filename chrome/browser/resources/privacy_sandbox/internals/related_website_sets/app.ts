@@ -9,6 +9,7 @@ import './related_website_sets_list_container.js';
 
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -46,6 +47,7 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
       isDrawerOpen_: {type: Boolean},
       relatedWebsiteSets_: {type: Array},
       errorMessage_: {type: String},
+      query_: {type: String},
     };
   }
 
@@ -55,16 +57,16 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
   protected isDrawerOpen_: boolean = false;
   protected relatedWebsiteSets_: RelatedWebsiteSet[] = [];
   protected errorMessage_: string = '';
+  protected query_: string = '';
 
   private apiProxy_: RelatedWebsiteSetsApiBrowserProxy =
       RelatedWebsiteSetsApiBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addEventListener(
-        'cr-toolbar-menu-click', this.onMenuButtonClick_ as EventListener);
-    this.addEventListener(
-        'narrow-changed', this.onNarrowChanged_ as EventListener);
+    this.updateQueryFromUrl_();
+    window.addEventListener(
+        'popstate', (() => this.handlePopState_()) as EventListener);
 
     this.apiProxy_.handler.getRelatedWebsiteSets().then(
         ({relatedWebsiteSetsInfo}) => {
@@ -78,18 +80,26 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
   }
 
   override disconnectedCallback() {
-    this.removeEventListener(
-        'cr-toolbar-menu-click', this.onMenuButtonClick_ as EventListener);
-    this.removeEventListener(
-        'narrow-changed', this.onNarrowChanged_ as EventListener);
+    window.removeEventListener(
+      'popstate', (() => this.handlePopState_()) as EventListener);
     super.disconnectedCallback();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('narrow_')) {
+      if (this.$.drawer.open && !this.narrow_) {
+        this.$.drawer.close();
+      }
+    }
   }
 
   protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
     this.narrow_ = e.detail.value;
-    if (this.$.drawer.open && !this.narrow_) {
-      this.$.drawer.close();
-    }
   }
 
   protected onMenuButtonClick_() {
@@ -103,6 +113,32 @@ export class RelatedWebsiteSetsAppElement extends CrLitElement {
 
   protected onDrawerClose_() {
     this.isDrawerOpen_ = this.$.drawer.open;
+  }
+
+  protected onSearchChanged_(event: CustomEvent<string>) {
+    this.query_ = event.detail;
+    this.updateUrlParams_();
+  }
+
+  private updateUrlParams_() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (this.query_) {
+      urlParams.set('q', this.query_);
+    } else {
+      urlParams.delete('q');
+    }
+    window.history.replaceState(
+        {}, '', `${window.location.pathname}?${urlParams.toString()}`);
+  }
+
+  private updateQueryFromUrl_() {
+    const params = new URLSearchParams(window.location.search);
+    this.query_ = params.get('q') || '';
+    this.$.toolbar.setSearchFieldValue(this.query_);
+  }
+
+  private handlePopState_() {
+    this.updateQueryFromUrl_();
   }
 
   setNarrowForTesting(state: boolean) {

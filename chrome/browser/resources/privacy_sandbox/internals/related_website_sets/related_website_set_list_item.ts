@@ -9,7 +9,7 @@ import './site_favicon.js';
 
 import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './related_website_set_list_item.css.js';
 import {getHtml} from './related_website_set_list_item.html.js';
@@ -42,6 +42,7 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
       primarySite: {type: String},
       memberSites: {type: Array},
       managedByEnterprise: {type: Boolean},
+      query: {type: String},
     };
   }
 
@@ -49,6 +50,7 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
   primarySite: string = '';
   memberSites: Member[] = [];
   managedByEnterprise: boolean = false;
+  query: string = '';
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded = e.detail.value;
@@ -72,6 +74,17 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
 
   protected isEnterpriseIconHidden_(): boolean {
     return !this.managedByEnterprise;
+  }
+
+  protected boldQuery_(site: string) {
+    if (!this.query) {
+      return site;
+    }
+
+    const queryLower = this.query.toLowerCase();
+    const parts = site.split(new RegExp(`(${this.query})`, 'gi'));
+    return parts.map(part =>
+            part.toLowerCase() === queryLower ? html`<b>${part}</b>` : part);
   }
 }
 
