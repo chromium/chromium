@@ -1,0 +1,96 @@
+<html>
+<head>
+  <title>Web app scope_a test page for link capturing tests</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <script>navigator.serviceWorker.register('/banners/service_worker.js');</script>
+  <script>
+    function setLinksForScopeB(url, target, opener) {
+      console.log('setting links and buttons for scope B: ' + url);
+      var links = document.getElementsByClassName('linkB');
+      for (let link of links) {
+        link.setAttribute('href', url);
+      }
+      var buttons = document.getElementsByClassName('btnB');
+      for (let button of buttons) {
+        button.addEventListener("click", () => {
+          window.open(url, target, opener === 'noopener' ? 'noopener' : '');
+        });
+      }
+    }
+
+    function simulateClick(anchor_name, properties) {
+      let evt = new MouseEvent("click", properties);
+      let target = document.getElementById(anchor_name);
+      return target.dispatchEvent(evt);
+    }
+
+    function notifyReady(delay) {
+      if (delay <= 0) {
+        domAutomationController.send('ReadyForLinkCaptureTesting')
+        return;
+      }
+
+      setTimeout(() => {
+          console.log("Delay start for a bit (" + delay + ")");
+          domAutomationController.send('ReadyForLinkCaptureTesting')
+        }, delay);
+    }
+
+    // Pro-tip: Use `delay` to slow down execution of the test (so that you can
+    // see what is happening during manual runs).
+    notifyReady(/*delay=*/ 0);
+  </script>
+</head>
+
+<body>
+<h1>Start page scope A</h1>
+
+<table>
+<tr><td><h2>Same scope</h2></td><td><h2>Other scope</h2></td><td><h2>Frame</h2></td></tr>
+<tr>
+<td>
+<!-- Links to same scope-->
+<a href="destination.html" target="_self"   rel="opener"   id="id-LINK-A_TO_A-SELF-OPENER" class="linkA">target="_self" rel=opener</a><br>
+<a href="destination.html" target="_self"   rel="noopener" id="id-LINK-A_TO_A-SELF-NO_OPENER" class="linkA">target="_self" rel=noopener</a><br>
+<a href="destination.html" target="iframe"  rel="opener"   id="id-LINK-A_TO_A-FRAME-OPENER" class="linkA">target="iframe" rel=opener</a><br>
+<a href="destination.html" target="iframe"  rel="noopener" id="id-LINK-A_TO_A-FRAME-NO_OPENER" class="linkA">target="iframe" rel=noopener</a><br>
+<a href="destination.html" target="_blank"  rel="opener"   id="id-LINK-A_TO_A-BLANK-OPENER" class="linkA">target="_blank" rel=opener</a><br>
+<a href="destination.html" target="_blank"  rel="noopener" id="id-LINK-A_TO_A-BLANK-NO_OPENER" class="linkA">target="_blank" rel=noopener</a><br>
+<a href="destination.html" target="noframe" rel="opener"   id="id-LINK-A_TO_A-NO_FRAME-OPENER" class="linkA">target="noframe" rel=opener</a><br>
+<a href="destination.html" target="noframe" rel="noopener" id="id-LINK-A_TO_A-NO_FRAME-NO_OPENER" class="linkA">target="noframe" rel=noopener</a><br>
+<!-- Buttons to same scope-->
+<button onclick="javascript:window.open('destination.html', '_self');" id="id-BTN-A_TO_A-SELF-OPENER" class="btnA">window.open(url, '_self')</button><br>
+<button onclick="javascript:window.open('destination.html', '_self', 'noopener');" id="id-BTN-A_TO_A-SELF-NO_OPENER" class="btnA">window.open(url, '_self',' 'noopener')</button><br>
+<button onclick="javascript:window.open('destination.html', 'iframe');" id="id-BTN-A_TO_A-FRAME-OPENER" class="btnA">window.open(url, 'iframe')</button><br>
+<button onclick="javascript:window.open('destination.html', 'iframe', 'noopener');" id="id-BTN-A_TO_A-FRAME-NO_OPENER" class="btnA">window.open(url, 'iframe',' 'noopener')</button><br>
+<button onclick="javascript:window.open('destination.html', '_blank');" id="id-BTN-A_TO_A-BLANK-OPENER" class="btnA">window.open(url, '_blank')</button><br>
+<button onclick="javascript:window.open('destination.html', '_blank', 'noopener');" id="id-BTN-A_TO_A-BLANK-NO_OPENER" class="btnA">window.open(url, '_blank',' 'noopener')</button><br>
+<button onclick="javascript:window.open('destination.html', 'noframe');" id="id-BTN-A_TO_A-NO_FRAME-OPENER" class="btnA">window.open(url, 'noframe')</button><br>
+<button onclick="javascript:window.open('destination.html', 'noframe', 'noopener');" id="id-BTN-A_TO_A-NO_FRAME-NO_OPENER" class="btnA">window.open(url, 'noframe', 'noopener')</button><br>
+</td>
+<td>
+<!-- Links to another scope (href is updated programmatically, see setLinksForScopeB). -->
+<a href="scope_b.html" target="_self"   rel="opener"   id="id-LINK-A_TO_B-SELF-OPENER" class="linkB">target="_self" rel=opener</a><br>
+<a href="scope_b.html" target="_self"   rel="noopener" id="id-LINK-A_TO_B-SELF-NO_OPENER" class="linkB">target="_self" rel=noopener</a><br>
+<a href="scope_b.html" target="iframe"  rel="opener"   id="id-LINK-A_TO_B-FRAME-OPENER" class="linkB">target="iframe" rel=opener</a><br>
+<a href="scope_b.html" target="iframe"  rel="noopener" id="id-LINK-A_TO_B-FRAME-NO_OPENER" class="linkB">target="iframe" rel=noopener</a><br>
+<a href="scope_b.html" target="_blank"  rel="opener"   id="id-LINK-A_TO_B-BLANK-OPENER" class="linkB">target="_blank" rel=opener</a><br>
+<a href="scope_b.html" target="_blank"  rel="noopener" id="id-LINK-A_TO_B-BLANK-NO_OPENER" class="linkB">target="_blank" rel=noopener</a><br>
+<a href="scope_b.html" target="noframe" rel="opener"   id="id-LINK-A_TO_B-NO_FRAME-OPENER" class="linkB">target="noframe" rel=opener</a><br>
+<a href="scope_b.html" target="noframe" rel="noopener" id="id-LINK-A_TO_B-NO_FRAME-NO_OPENER" class="linkB">target="noframe" rel=noopener</a><br>
+<!-- Buttons to another scope (Note: onclick handlers are provided programmatically, see setLinksForScopeB  above). -->
+<button id="id-BTN-A_TO_B-SELF-OPENER" class="btnB">window.open(url, '_self')</button><br>
+<button id="id-BTN-A_TO_B-SELF-NO_OPENER" class="btnB">window.open(url, '_self',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_B-FRAME-OPENER" class="btnB">window.open(url, 'iframe')</button><br>
+<button id="id-BTN-A_TO_B-FRAME-NO_OPENER" class="btnB">window.open(url, 'iframe',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_B-BLANK-OPENER" class="btnB">window.open(url, '_blank')</button><br>
+<button id="id-BTN-A_TO_B-BLANK-NO_OPENER" class="btnB">window.open(url, '_blank',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_B-NO_FRAME-OPENER" class="btnB">window.open(url, 'noframe')</button><br>
+<button id="id-BTN-A_TO_B-NO_FRAME-NO_OPENER" class="btnB">window.open(url, 'noframe', 'noopener')</button><br>
+</td>
+<td>
+  <iframe src="about:blank" name="iframe" />
+</td>
+</tr></table>
+</body>
+</html>

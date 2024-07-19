@@ -1,0 +1,29 @@
+<html>
+<head>
+  <title>Web app scope_a test page 2 for link capturing tests</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <script>navigator.serviceWorker.register('/banners/service_worker.js');</script>
+  <script>
+    function notifyReady(delay) {
+      const doneMessage = 'FinishedNavigating in frame:' + (window.frameElement === null ? 'main' : 'iframe');
+      if (delay <= 0) {
+        domAutomationController.send(doneMessage);
+        return;
+      }
+
+      setTimeout(() => {
+          console.log("Delay end for a bit (" + delay + ")");
+          domAutomationController.send(doneMessage);
+        }, delay);
+    }
+
+    // Pro-tip: Use `delay` to slow down execution of the test (so that you can
+    // see what is happening during manual runs).
+    notifyReady(/*delay=*/ 0);
+  </script>
+</head>
+
+<body>
+<h1>Destination in scope A</h1>
+</body>
+</html>

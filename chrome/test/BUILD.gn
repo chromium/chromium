@@ -2580,6 +2580,7 @@ if (!is_android) {
       "../browser/performance_manager/persistence/site_data/site_data_cache_facade_browsertest.cc",
       "../browser/webapps/installable/installable_manager_browsertest.cc",
       "../browser/webapps/installable/ml_promotion_browsertest.cc",
+      "../browser/webapps/web_app_link_capturing_browsertest.cc",
 
       # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
       "../browser/supervised_user/advanced_content_restrictions_interactive_uitest.cc",
