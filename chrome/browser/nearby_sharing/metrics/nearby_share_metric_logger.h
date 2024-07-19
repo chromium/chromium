@@ -33,6 +33,8 @@ class NearbyShareMetricLogger : public NearbySharingService::Observer {
                          float percentage_complete) override;
   void OnTransferCompleted(const ShareTarget& share_target,
                            TransferMetadata::Status status) override;
+  void OnInitialMedium(const ShareTarget& share_target,
+                       nearby::connections::mojom::Medium medium) override;
   void OnBandwidthUpgrade(const ShareTarget& share_target,
                           nearby::connections::mojom::Medium medium) override;
 
@@ -50,6 +52,11 @@ class NearbyShareMetricLogger : public NearbySharingService::Observer {
       share_target_accept_time_;
   base::flat_map<base::UnguessableToken, base::TimeTicks>
       share_target_upgrade_time_;
+  // The initial medium map reflects the medium that connection started
+  // over, while the medium map tracks the current medium (reflecting any
+  // bandwidth upgrades).
+  base::flat_map<base::UnguessableToken, nearby::connections::mojom::Medium>
+      share_target_initial_medium_;
   base::flat_map<base::UnguessableToken, nearby::connections::mojom::Medium>
       share_target_medium_;
   base::flat_map<base::UnguessableToken, int64_t> transfer_size_;
