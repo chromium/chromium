@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -57,8 +58,13 @@ class DataSharingBubbleInteractiveUiTest : public InteractiveBrowserTest {
       data_sharing::features::kDataSharingFeature};
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_BubbleCanShowAndClose DISABLED_BubbleCanShowAndClose
+#else
+#define MAYBE_BubbleCanShowAndClose BubbleCanShowAndClose
+#endif
 IN_PROC_BROWSER_TEST_F(DataSharingBubbleInteractiveUiTest,
-                       BubbleCanShowAndClose) {
+                       MAYBE_BubbleCanShowAndClose) {
   RunTestSequence(EnsureNotPresent(kDataSharingBubbleElementId), ShowBubble(),
                   WaitForShow(kDataSharingBubbleElementId), FlushEvents(),
                   CloseBubble(), WaitForHide(kDataSharingBubbleElementId));
