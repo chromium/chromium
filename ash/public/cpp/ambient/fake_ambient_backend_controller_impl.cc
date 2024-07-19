@@ -166,6 +166,7 @@ void FakeAmbientBackendControllerImpl::FetchWeather(
     bool prefer_aplha_endpoint,
     FetchWeatherCallback callback) {
   ++fetch_weather_count_;
+  weather_client_id_ = weather_client_id;
   if (run_fetch_weather_callback_) {
     std::move(callback).Run(weather_info_);
   }

@@ -149,6 +149,30 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
       }));
 }
 
+TEST_F(BirchWeatherProviderTest, GetWeatherUsesChromeOSWeatherClientId) {
+  auto* birch_model = Shell::Get()->birch_model();
+
+  // Set up fake weather.
+  WeatherInfo info;
+  info.condition_description = "Cloudy";
+  info.condition_icon_url = "https://fake-icon-url";
+  info.temp_f = 70.0f;
+  ambient_backend_controller_->SetWeatherInfo(info);
+
+  // Fetch birch data, which includes weather.
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
+  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
+  run_loop.Run();
+
+  // Verify the controller was called with the correct weather client ID.
+  std::optional<std::string> weather_client_id =
+      ambient_backend_controller_->weather_client_id();
+  ASSERT_TRUE(weather_client_id.has_value());
+  EXPECT_EQ(*weather_client_id, "chromeos-system-ui");
+}
+
 TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   auto* birch_model = Shell::Get()->birch_model();
   StubBirchClient birch_client;

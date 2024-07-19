@@ -107,6 +107,11 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
     run_fetch_weather_callback_ = value;
   }
 
+  // The latest `weather_client_id` passed to `FetchWeather()`.
+  std::optional<std::string> weather_client_id() const {
+    return weather_client_id_;
+  }
+
  private:
   OnSettingsAndAlbumsFetchedCallback pending_fetch_settings_albums_callback_;
 
@@ -133,6 +138,7 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
 
   int fetch_weather_count_ = 0;
   bool run_fetch_weather_callback_ = true;
+  std::optional<std::string> weather_client_id_;
 };
 
 }  // namespace ash
