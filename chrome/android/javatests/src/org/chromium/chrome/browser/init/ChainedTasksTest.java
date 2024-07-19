@@ -10,25 +10,26 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.JavaUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskOriginException;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link ChainedTasks}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ChainedTasksTest {
-    private static final long TIMEOUT_MS = 1000;
-
     private static final class TestRunnable implements Runnable {
         private final List<String> mLogMessages;
         private final String mMessage;
@@ -47,8 +48,7 @@ public class ChainedTasksTest {
     @Test
     @SmallTest
     public void testCoalescedTasks() {
-        final List<String> expectedMessages =
-                Arrays.asList(new String[] {"First", "Second", "Third"});
+        final List<String> expectedMessages = List.of("First", "Second", "Third");
         final List<String> messages = new ArrayList<>();
         final ChainedTasks tasks = new ChainedTasks();
         for (String message : expectedMessages) {
@@ -65,84 +65,65 @@ public class ChainedTasksTest {
     @Test
     @SmallTest
     public void testCoalescedTasksDontBlockNonUiThread() throws Exception {
-        final Semaphore waitForIt = new Semaphore(0);
-        final Semaphore finished = new Semaphore(0);
-        final ChainedTasks tasks = new ChainedTasks();
+        CallbackHelper waitForIt = new CallbackHelper();
+        CallbackHelper finished = new CallbackHelper();
+        ChainedTasks tasks = new ChainedTasks();
 
         tasks.add(
                 TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            waitForIt.acquire();
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException();
-                        }
+                () -> {
+                    try {
+                        waitForIt.waitForOnly();
+                    } catch (TimeoutException e) {
+                        JavaUtils.throwUnchecked(e);
                     }
                 });
 
-        List<String> expectedMessages = Arrays.asList(new String[] {"First", "Second", "Third"});
+        List<String> expectedMessages = List.of("First", "Second", "Third");
         final List<String> messages = new ArrayList<>();
         for (String message : expectedMessages) {
             tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, message));
         }
-        tasks.add(
-                TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        finished.release();
-                    }
-                });
+        tasks.add(TaskTraits.UI_DEFAULT, finished::notifyCalled);
 
         tasks.start(true);
         // If start() were blocking, then this would be a deadlock, as the first task acquires a
         // semaphore that we are releasing later on the same thread.
-        waitForIt.release();
-        Assert.assertTrue(finished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        waitForIt.notifyCalled();
+        finished.waitForOnly();
         Assert.assertEquals(expectedMessages, messages);
     }
 
     @Test
     @SmallTest
     public void testAsyncTasks() throws Exception {
-        List<String> expectedMessages = Arrays.asList(new String[] {"First", "Second", "Third"});
-        final List<String> messages = new ArrayList<>();
-        final ChainedTasks tasks = new ChainedTasks();
-        final Semaphore finished = new Semaphore(0);
+        List<String> expectedMessages = List.of("First", "Second", "Third");
+        List<String> messages = new ArrayList<>();
+        ChainedTasks tasks = new ChainedTasks();
+        CallbackHelper callbackHelper = new CallbackHelper();
 
         for (String message : expectedMessages) {
             tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, message));
         }
-        tasks.add(
-                TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        finished.release();
-                    }
-                });
-
+        tasks.add(TaskTraits.UI_DEFAULT, callbackHelper::notifyCalled);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tasks.start(false);
                     Assert.assertTrue("No task should run synchronously", messages.isEmpty());
                 });
-        Assert.assertTrue(finished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        callbackHelper.waitForOnly();
         Assert.assertEquals(expectedMessages, messages);
     }
 
     @Test
     @SmallTest
     public void testAsyncTasksAreChained() throws Exception {
-        List<String> expectedMessages =
-                Arrays.asList(new String[] {"First", "Second", "High Priority", "Third"});
-        final List<String> messages = new ArrayList<>();
-        final ChainedTasks tasks = new ChainedTasks();
-        final Semaphore secondTaskFinished = new Semaphore(0);
-        final Semaphore waitForHighPriorityTask = new Semaphore(0);
-        final Semaphore finished = new Semaphore(0);
+        List<String> expectedMessages = List.of("First", "Second", "High Priority", "Third");
+        List<String> messages = new ArrayList<>();
+        ChainedTasks tasks = new ChainedTasks();
+        CallbackHelper secondTaskFinished = new CallbackHelper();
+        CallbackHelper waitForHighPriorityTask = new CallbackHelper();
+        CallbackHelper finished = new CallbackHelper();
 
         // Posts 2 tasks, waits for a high priority task to be posted from another thread, and
         // carries on.
@@ -150,65 +131,69 @@ public class ChainedTasksTest {
         tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "Second"));
         tasks.add(
                 TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            secondTaskFinished.release();
-                            waitForHighPriorityTask.acquire();
-                        } catch (InterruptedException e) {
-                            Assert.fail();
-                        }
+                () -> {
+                    try {
+                        secondTaskFinished.notifyCalled();
+                        waitForHighPriorityTask.waitForOnly();
+                    } catch (TimeoutException e) {
+                        Assert.fail();
                     }
                 });
         tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "Third"));
-        tasks.add(
-                TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        finished.release();
-                    }
-                });
+        tasks.add(TaskTraits.UI_DEFAULT, finished::notifyCalled);
 
         tasks.start(false);
-        Assert.assertTrue(secondTaskFinished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        secondTaskFinished.waitForOnly();
         PostTask.postTask(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "High Priority"));
-        waitForHighPriorityTask.release();
-
-        Assert.assertTrue(finished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        waitForHighPriorityTask.notifyCalled();
+        finished.waitForOnly();
         Assert.assertEquals(expectedMessages, messages);
     }
 
     @Test
     @SmallTest
     public void testCanCancel() throws Exception {
-        List<String> expectedMessages = Arrays.asList(new String[] {"First", "Second"});
-        final List<String> messages = new ArrayList<>();
-        final ChainedTasks tasks = new ChainedTasks();
-        final Semaphore finished = new Semaphore(0);
+        ChainedTasks tasks = new ChainedTasks();
 
-        tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "First"));
-        tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "Second"));
-        tasks.add(
-                TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        tasks.cancel();
-                    }
-                });
-        tasks.add(TaskTraits.UI_DEFAULT, new TestRunnable(messages, "Third"));
-        tasks.add(
-                TaskTraits.UI_DEFAULT,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        finished.release();
-                    }
-                });
+        tasks.add(TaskTraits.UI_DEFAULT, tasks::cancel);
+        tasks.add(TaskTraits.UI_DEFAULT, Assert::fail);
         tasks.start(false);
-        Assert.assertFalse(finished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(expectedMessages, messages);
+    }
+
+    @Test
+    @SmallTest
+    public void testUncaughtException() throws Exception {
+        ChainedTasks tasks = new ChainedTasks();
+        AtomicReference<Throwable> uncaught = new AtomicReference<>();
+        CallbackHelper callbackHelper = new CallbackHelper();
+        tasks.add(TaskTraits.USER_BLOCKING, () -> {});
+        tasks.add(
+                TaskTraits.USER_BLOCKING,
+                () -> {
+                    Thread.currentThread()
+                            .setUncaughtExceptionHandler(
+                                    (thread, throwable) -> {
+                                        uncaught.set(throwable);
+                                        callbackHelper.notifyCalled();
+                                    });
+                    throw new Error("Error");
+                });
+
+        tasks.start(false);
+        callbackHelper.waitForOnly();
+
+        Throwable ex = uncaught.get();
+        Assert.assertEquals("Error", ex.getMessage());
+
+        Throwable actualTaskOrigin = ex.getCause();
+        String assertMsg = "Was: " + Log.getStackTraceString(ex);
+        if (PostTask.ENABLE_TASK_ORIGINS) {
+            Assert.assertTrue(assertMsg, actualTaskOrigin instanceof TaskOriginException);
+            // Ensure the origin is set to the ChainedTasks.add() call, and not the deferred
+            // PostTask.
+            Assert.assertTrue(Log.getStackTraceString(ex.getCause()).contains("ChainedTasksTest"));
+        } else {
+            Assert.assertNull(assertMsg, actualTaskOrigin);
+        }
     }
 }

@@ -61,7 +61,9 @@ public class ChainedTasks {
      */
     public void add(@TaskTraits int traits, Runnable task) {
         assert mIterationIdForTesting == PostTask.sTestIterationForTesting;
-
+        if (PostTask.ENABLE_TASK_ORIGINS) {
+            task = PostTask.populateTaskOrigin(new TaskOriginException(), task);
+        }
         synchronized (mTasks) {
             assert !mFinalized : "Must not call add() after start()";
             mTasks.add(new Pair<>(traits, task));

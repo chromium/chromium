@@ -1064,7 +1064,7 @@ component("base") {
   ]
   if (!is_nacl) {
     # Used by metrics/crc32, except on NaCl builds.
-    deps += ["//third_party/zlib"]
+    deps += [ "//third_party/zlib" ]
   }
 
   # `raw_ptr` cannot be made a component due to CRT symbol issues.
@@ -4578,6 +4578,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/lifetime/Destroyable.java",
     ]
     deps = [
+      "//base:tasks_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
@@ -4716,6 +4717,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/task/SerialExecutor.java",
       "android/java/src/org/chromium/base/task/SingleThreadTaskRunner.java",
       "android/java/src/org/chromium/base/task/SingleThreadTaskRunnerImpl.java",
+      "android/java/src/org/chromium/base/task/TaskOriginException.java",
       "android/java/src/org/chromium/base/task/TaskRunner.java",
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
       "android/java/src/org/chromium/base/task/UiThreadTaskRunnerImpl.java",
@@ -4955,7 +4957,6 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/task/AsyncTaskTest.java",
       "android/javatests/src/org/chromium/base/task/PostTaskTest.java",
       "android/javatests/src/org/chromium/base/task/SequencedTaskRunnerImplTest.java",
-      "android/javatests/src/org/chromium/base/task/TaskRunnerImplTest.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherTestBase.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherTransitionToNativeTest.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherWithNativeTest.java",

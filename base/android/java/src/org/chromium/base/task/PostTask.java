@@ -4,11 +4,15 @@
 
 package org.chromium.base.task;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +24,14 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * Java interface to the native chromium scheduler.  Note tasks can be posted before native
- * initialization, but task prioritization is extremely limited. Once the native scheduler
- * is ready, tasks will be migrated over.
+ * Java interface to the native chromium scheduler. Note tasks can be posted before native
+ * initialization, but task prioritization is extremely limited. Once the native scheduler is ready,
+ * tasks will be migrated over.
  */
 @JNINamespace("base")
 public class PostTask {
     private static final String TAG = "PostTask";
+    public static final boolean ENABLE_TASK_ORIGINS = BuildConfig.ENABLE_ASSERTS;
     private static final Object sPreNativeTaskRunnerLock = new Object();
 
     @GuardedBy("sPreNativeTaskRunnerLock")
@@ -39,7 +44,8 @@ public class PostTask {
     private static ChromeThreadPoolExecutor sPrenativeThreadPoolExecutor =
             new ChromeThreadPoolExecutor();
     private static volatile Executor sPrenativeThreadPoolExecutorForTesting;
-
+    private static final ThreadLocal<TaskOriginException> sTaskOrigin =
+            ENABLE_TASK_ORIGINS ? new ThreadLocal<>() : null;
     private static final TaskRunner[] sTraitsToRunnerMap =
             new TaskRunner[TaskTraits.UI_TRAITS_END + 1];
 
@@ -54,6 +60,28 @@ public class PostTask {
 
     // Used by AsyncTask / ChainedTask to auto-cancel tasks from prior tests.
     static int sTestIterationForTesting;
+
+    private static class TaskOriginRunnable implements Runnable {
+        private final @Nullable TaskOriginException mTaskOrigin;
+        private final Runnable mWrappedRunnable;
+
+        TaskOriginRunnable(@Nullable TaskOriginException taskOrigin, Runnable wrappedRunnable) {
+            this.mTaskOrigin = taskOrigin;
+            this.mWrappedRunnable = wrappedRunnable;
+        }
+
+        @Override
+        public void run() {
+            sTaskOrigin.set(mTaskOrigin);
+            try {
+                mWrappedRunnable.run();
+            } catch (Throwable t) {
+                JavaUtils.throwUnchecked(maybeAddTaskOrigin(t));
+            } finally {
+                sTaskOrigin.remove();
+            }
+        }
+    }
 
     private static boolean isUiTaskTraits(@TaskTraits int taskTraits) {
         return taskTraits >= TaskTraits.UI_TRAITS_START;
@@ -177,7 +205,10 @@ public class PostTask {
     }
 
     private static <T> T runSynchronouslyInternal(@TaskTraits int taskTraits, FutureTask<T> task) {
-        runOrPostTask(taskTraits, task);
+        // Ensure no task origin "caused by" is added, since we are wrapping in a RuntimeException
+        // anyways.
+        Runnable r = ENABLE_TASK_ORIGINS ? populateTaskOrigin(null, task) : task;
+        runOrPostTask(taskTraits, r);
         try {
             return task.get();
         } catch (Exception e) {
@@ -206,6 +237,40 @@ public class PostTask {
             return sPrenativeThreadPoolExecutorForTesting;
         }
         return sPrenativeThreadPoolExecutor;
+    }
+
+    public static @Nullable Exception getTaskOrigin() {
+        return ENABLE_TASK_ORIGINS ? sTaskOrigin.get() : null;
+    }
+
+    /**
+     * Adds the active TaskOriginException (if applicable) as the last "Caused By" to the given
+     * exception.
+     */
+    public static <T extends Throwable> T maybeAddTaskOrigin(T exception) {
+        Exception taskOrigin = getTaskOrigin();
+        if (taskOrigin != null) {
+            Throwable t = exception;
+            while (t.getCause() != null) {
+                t = t.getCause();
+                assert !(t instanceof TaskOriginException)
+                        : "Already wrapped: " + Log.getStackTraceString(exception);
+            }
+            t.initCause(taskOrigin);
+        }
+        return exception;
+    }
+
+    /**
+     * @param taskOrigin If null, ensures no origin will be added.
+     */
+    static Runnable populateTaskOrigin(
+            @Nullable TaskOriginException taskOrigin, Runnable origTask) {
+        // If runnable was wrapped higher up in the stack, then do not add another origin.
+        if (origTask instanceof TaskOriginRunnable) {
+            return origTask;
+        }
+        return new TaskOriginRunnable(taskOrigin, origTask);
     }
 
     /**

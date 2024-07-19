@@ -6,6 +6,7 @@ package org.chromium.base;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.task.PostTask;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
 
@@ -67,7 +68,7 @@ public class LifetimeAssert {
         public WrappedReference(
                 Object target, CreationException creationException, boolean safeToGc) {
             super(target, sReferenceQueue);
-            mCreationException = creationException;
+            mCreationException = PostTask.maybeAddTaskOrigin(creationException);
             mSafeToGc = safeToGc;
             mTargetClass = target.getClass();
             sActiveWrappers.add(this);

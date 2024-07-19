@@ -27,11 +27,12 @@ import java.util.Set;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * Implementation of the abstract class {@link TaskRunnerImpl}. Uses AsyncTasks until
- * native APIs are available.
+ * Implementation of the abstract class {@link TaskRunnerImpl}. Uses AsyncTasks until native APIs
+ * are available.
  */
 @JNINamespace("base")
 public class TaskRunnerImpl implements TaskRunner {
+
     // TaskRunnerCleaners are enqueued to this queue when their WeakReference to a TaskRunnerIml is
     // cleared.
     private static final ReferenceQueue<Object> sQueue = new ReferenceQueue<>();
@@ -142,12 +143,15 @@ public class TaskRunnerImpl implements TaskRunner {
     }
 
     @Override
-    public void postTask(Runnable task) {
+    public final void postTask(Runnable task) {
         postDelayedTask(task, 0);
     }
 
     @Override
-    public void postDelayedTask(Runnable task, long delay) {
+    public final void postDelayedTask(Runnable task, long delay) {
+        if (PostTask.ENABLE_TASK_ORIGINS) {
+            task = PostTask.populateTaskOrigin(new TaskOriginException(), task);
+        }
         // Lock-free path when native is initialized.
         if (mNativeTaskRunnerAndroid != 0) {
             TaskRunnerImplJni.get()
