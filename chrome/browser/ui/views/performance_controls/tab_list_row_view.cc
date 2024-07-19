@@ -26,7 +26,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
@@ -216,8 +215,6 @@ TabListRowView::TabListRowView(
   close_button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_PERFORMANCE_INTERVENTION_CLOSE_BUTTON_ACCNAME,
       text_container_->title()->GetText()));
-
-  close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button_ = row_container->AddChildView(std::move(close_button));
 
   inkdrop_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
