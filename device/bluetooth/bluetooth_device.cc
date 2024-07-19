@@ -30,7 +30,22 @@
 #include "device/bluetooth/strings/grit/bluetooth_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/no_destructor.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace device {
+
+#if BUILDFLAG(IS_CHROMEOS)
+// See Bluetooth Assigned Numbers - 3.3 SDP Service Class and Profile
+// Identifiers
+const base::NoDestructor<std::vector<BluetoothUUID>> kAudioUUIDs([] {
+  return std::vector<BluetoothUUID>({
+      BluetoothUUID("0x110B"),  // Audio sink
+      BluetoothUUID("0x111E"),  // Hands free
+  });
+}());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using BatteryInfo = BluetoothDevice::BatteryInfo;
 using BatteryType = BluetoothDevice::BatteryType;
@@ -301,6 +316,18 @@ BluetoothDeviceType BluetoothDevice::GetDeviceType() const {
           return BluetoothDeviceType::TABLET;
       }
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Some bluetooth devices paired via Fast Pair, e.g., JBL TUNE230NC,
+  // do not expose its bluetooth class or its appearance. Use UUIDs as
+  // last workaround.
+  UUIDSet uuids = GetUUIDs();
+  for (const auto& audio_uuid : *kAudioUUIDs) {
+    if (uuids.contains(audio_uuid)) {
+      return BluetoothDeviceType::AUDIO;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return BluetoothDeviceType::UNKNOWN;
 }
