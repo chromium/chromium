@@ -1601,6 +1601,25 @@ TEST_F(PickerViewTest, LeftArrowKeyClosesSubmenu) {
   EXPECT_EQ(submenu_controller.GetSubmenuView(), nullptr);
 }
 
+TEST_F(PickerViewTest, PressingEscClosesSubmenu) {
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results = {PickerSearchResult::NewWindow(
+          PickerSearchResult::NewWindowData::Type::kDoc)},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+
+  PickerSubmenuController& submenu_controller =
+      GetPickerViewFromWidget(*widget)->submenu_controller_for_testing();
+  views::test::WidgetDestroyedWaiter(submenu_controller.widget_for_testing())
+      .Wait();
+  EXPECT_EQ(submenu_controller.GetSubmenuView(), nullptr);
+  EXPECT_FALSE(widget->IsClosed());
+}
+
 TEST_F(PickerViewTest, KeyEventsNavigateWithinSubmenu) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results =

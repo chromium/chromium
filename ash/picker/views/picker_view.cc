@@ -229,9 +229,18 @@ PickerView::~PickerView() = default;
 
 bool PickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
+
+  // Close the submenu if it's active.
+  if (submenu_controller_.GetSubmenuView() != nullptr) {
+    submenu_controller_.Close();
+    return true;
+  }
+
+  // Close the widget if there's no submenu.
   if (auto* widget = GetWidget()) {
     widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
   }
+
   return true;
 }
 
