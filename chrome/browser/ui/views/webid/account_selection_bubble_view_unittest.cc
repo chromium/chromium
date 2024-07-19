@@ -99,13 +99,15 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         kIdpETLDPlusOne, metadata,
         CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
-    dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/false);
+    dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/false,
+                                    /*is_choose_an_account=*/false);
   }
 
   void CreateAndShowMultiIdpAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) {
     CreateAccountSelectionBubble(/*exclude_title=*/true);
-    dialog_->ShowMultiAccountPicker(idp_data_list, /*show_back_button=*/false);
+    dialog_->ShowMultiAccountPicker(idp_data_list, /*show_back_button=*/false,
+                                    /*is_choose_an_account=*/false);
   }
 
   void PerformHeaderChecks(
@@ -933,6 +935,20 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   EXPECT_TRUE(IsViewClass<views::Separator>(contents[1]));
   CheckChooseAnAccount(contents, accounts_index,
                        u"idp3.com, idp4.com, idp-example.com");
+
+  // Simulate clicking on the choose an account button.
+  dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/true,
+                                  /*is_choose_an_account=*/true);
+
+  children = dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+
+  // Check title text.
+  views::Label* title_view =
+      static_cast<views::Label*>(GetViewWithClassName(children[0], "Label"));
+  ASSERT_TRUE(title_view);
+  EXPECT_EQ(title_view->GetText(),
+            u"Choose an account to sign in to rp-example.com");
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {

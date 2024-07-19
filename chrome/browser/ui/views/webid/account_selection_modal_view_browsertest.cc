@@ -90,7 +90,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         kIdpETLDPlusOne, metadata,
         CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
-    dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/false);
+    dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/false,
+                                    /*is_choose_an_account=*/false);
   }
 
   void CreateAndShowRequestPermissionDialog(

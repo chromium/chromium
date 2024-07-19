@@ -172,7 +172,7 @@ class AccountSelectionViewBase {
     virtual void CloseModalDialog() = 0;
 
     // Called when the user clicks on the 'Choose an account' button
-    virtual void OnChooseAnAccount() = 0;
+    virtual void OnChooseAnAccountClicked() = 0;
   };
 
   AccountSelectionViewBase(
@@ -189,9 +189,13 @@ class AccountSelectionViewBase {
   virtual void InitDialogWidget() = 0;
 
   // Updates the FedCM dialog to show the "account picker" sheet.
+  // `is_choose_an_account` is true if the dialog must change its title to
+  // 'Choose an account'. This is currently only used on widget mode, when
+  // clicking on the 'Choose an account' button.
   virtual void ShowMultiAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list,
-      bool show_back_button) = 0;
+      bool show_back_button,
+      bool is_choose_an_account) = 0;
 
   // Updates the FedCM dialog to show the "verifying" sheet.
   virtual void ShowVerifyingSheet(

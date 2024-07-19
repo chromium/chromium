@@ -295,18 +295,24 @@ void AccountSelectionBubbleView::InitDialogWidget() {
 
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
-    bool show_back_button) {
+    bool show_back_button,
+    bool is_choose_an_account) {
   // If there are multiple IDPs, then the content::IdentityProviderMetadata
   // passed will be unused since there will be no `header_icon_view_`.
   // Therefore, it is fine to pass the first one into UpdateHeader().
   DCHECK(idp_display_data_list.size() == 1u || !header_icon_view_);
+  DCHECK(!is_choose_an_account || show_back_button);
   std::u16string title =
-      webid::GetTitle(rp_for_display_,
-                      idp_display_data_list.size() > 1u
-                          ? std::nullopt
-                          : std::make_optional<std::u16string>(
-                                idp_display_data_list[0].idp_etld_plus_one),
-                      rp_context_);
+      is_choose_an_account
+          ? l10n_util::GetStringFUTF16(IDS_MULTI_IDP_CHOOSE_AN_ACCOUNT_TITLE,
+                                       rp_for_display_)
+          : webid::GetTitle(
+                rp_for_display_,
+                idp_display_data_list.size() > 1u
+                    ? std::nullopt
+                    : std::make_optional<std::u16string>(
+                          idp_display_data_list[0].idp_etld_plus_one),
+                rp_context_);
   UpdateHeader(idp_display_data_list[0].idp_metadata, title, show_back_button);
 
   RemoveNonHeaderChildViews();
@@ -1041,8 +1047,9 @@ AccountSelectionBubbleView::CreateChooseAnAccountButton(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           kPersonIcon, ui::kColorMenuIcon, kMultiIdpIconSize));
   auto button = std::make_unique<HoverButton>(
-      base::BindOnce(&AccountSelectionViewBase::Observer::OnChooseAnAccount,
-                     base::Unretained(observer_)),
+      base::BindOnce(
+          &AccountSelectionViewBase::Observer::OnChooseAnAccountClicked,
+          base::Unretained(observer_)),
       std::move(icon_view),
       /*title=*/
       l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON),

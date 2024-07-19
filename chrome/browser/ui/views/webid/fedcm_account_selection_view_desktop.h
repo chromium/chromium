@@ -274,7 +274,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                     const ui::Event& event) override;
   void OnGotIt(const ui::Event& event) override;
   void OnMoreDetails(const ui::Event& event) override;
-  void OnChooseAnAccount() override;
+  void OnChooseAnAccountClicked() override;
 
   // Returns false if `this` got deleted. In that case, the caller should not
   // access any further member variables.

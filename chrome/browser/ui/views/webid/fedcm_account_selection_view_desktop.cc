@@ -243,7 +243,8 @@ bool FedCmAccountSelectionView::Show(
         state_ = State::MULTI_ACCOUNT_PICKER;
         account_selection_view_->ShowMultiAccountPicker(
             idp_display_data_list_,
-            /*show_back_button=*/false);
+            /*show_back_button=*/false,
+            /*is_choose_an_account=*/false);
       } else {
         state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(
@@ -261,7 +262,8 @@ bool FedCmAccountSelectionView::Show(
         account_selection_view_->ShowMultiAccountPicker(
             new_accounts_idp_display_data_,
             /*show_back_button=*/accounts_or_mismatches_size >
-                new_idp_data.accounts.size());
+                new_idp_data.accounts.size(),
+            /*is_choose_an_account=*/false);
       }
     }
   } else if (idp_display_data_list_.size() == 1u &&
@@ -276,7 +278,8 @@ bool FedCmAccountSelectionView::Show(
       // bubble dialog.
       state_ = State::MULTI_ACCOUNT_PICKER;
       account_selection_view_->ShowMultiAccountPicker(
-          idp_display_data_list_, /*show_back_button=*/false);
+          idp_display_data_list_, /*show_back_button=*/false,
+          /*is_choose_an_account=*/false);
     } else {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
@@ -294,8 +297,10 @@ bool FedCmAccountSelectionView::Show(
         idp_display_data_list_);
   } else {
     state_ = State::MULTI_ACCOUNT_PICKER;
-    account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_,
-                                                    /*show_back_button=*/false);
+    account_selection_view_->ShowMultiAccountPicker(
+        idp_display_data_list_,
+        /*show_back_button=*/false,
+        /*is_choose_an_account=*/false);
   }
 
   if (!GetDialogWidget()) {
@@ -736,7 +741,8 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
   state_ = State::MULTI_ACCOUNT_PICKER;
   account_selection_view_->ShowMultiAccountPicker(
       idp_display_data_list_,
-      /*show_back_button=*/started_as_single_returning_account_);
+      /*show_back_button=*/started_as_single_returning_account_,
+      /*is_choose_an_account=*/false);
 }
 
 void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
@@ -884,10 +890,12 @@ content::WebContents* FedCmAccountSelectionView::GetRpWebContents() {
   NOTREACHED();
 }
 
-void FedCmAccountSelectionView::OnChooseAnAccount() {
+void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
   state_ = State::MULTI_ACCOUNT_PICKER;
-  account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_,
-                                                  /*show_back_button=*/true);
+  account_selection_view_->ShowMultiAccountPicker(
+      idp_display_data_list_,
+      /*show_back_button=*/true,
+      /*is_choose_an_account=*/true);
   base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
                             true);
 }

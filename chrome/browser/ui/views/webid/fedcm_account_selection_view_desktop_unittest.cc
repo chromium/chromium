@@ -60,8 +60,11 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
 
   void ShowMultiAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list,
-      bool show_back_button) override {
+      bool show_back_button,
+      bool is_choose_an_account) override {
+    CHECK(!is_choose_an_account || show_back_button);
     show_back_button_ = show_back_button;
+    is_choose_an_account_ = is_choose_an_account;
     sheet_type_ = SheetType::kAccountPicker;
 
     account_ids_.clear();
@@ -78,6 +81,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
     sheet_type_ = SheetType::kVerifying;
     account_ids_ = {account.id};
     show_back_button_ = false;
+    is_choose_an_account_ = false;
   }
 
   void ShowSingleAccountConfirmDialog(
@@ -85,6 +89,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
       const IdentityProviderDisplayData& idp_data,
       bool show_back_button) override {
     show_back_button_ = show_back_button;
+    is_choose_an_account_ = false;
     sheet_type_ = SheetType::kConfirmAccount;
     account_ids_ = {account.id};
   }
@@ -95,6 +100,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
     sheet_type_ = SheetType::kFailure;
     account_ids_ = {};
     show_back_button_ = false;
+    is_choose_an_account_ = false;
   }
 
   void ShowErrorDialog(const std::u16string& idp_for_display,
@@ -103,12 +109,14 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
     sheet_type_ = SheetType::kError;
     account_ids_ = {};
     show_back_button_ = false;
+    is_choose_an_account_ = false;
   }
 
   void ShowRequestPermissionDialog(
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) override {
     show_back_button_ = true;
+    is_choose_an_account_ = false;
     sheet_type_ = SheetType::kRequestPermission;
     account_ids_ = {account.id};
   }
@@ -116,6 +124,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   void ShowSingleReturningAccountDialog(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) override {
     show_back_button_ = false;
+    is_choose_an_account_ = false;
     sheet_type_ = SheetType::kSingleReturningAccount;
     for (const auto& idp : idp_data_list) {
       for (const auto& account : idp.accounts) {
@@ -144,6 +153,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   bool CanFitInWebContents() override { return can_fit_in_web_contents_; }
 
   bool show_back_button_{false};
+  bool is_choose_an_account_{false};
   bool dialog_position_updated_{false};
   bool can_fit_in_web_contents_{true};
   std::optional<SheetType> sheet_type_;
@@ -1779,6 +1789,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpWithOneIdpMismatch) {
               testing::ElementsAre(kAccountId1));
   histogram_tester_->ExpectTotalCount(
       "Blink.FedCm.ChooseAnAccountSelected.Desktop", 0);
+  EXPECT_FALSE(account_selection_view_->is_choose_an_account_);
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest,
@@ -1795,14 +1806,16 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
   EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_FALSE(account_selection_view_->is_choose_an_account_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kSingleReturningAccount,
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
 
   // Simulate 'Choose an account' button being clicked.
-  observer->OnChooseAnAccount();
+  observer->OnChooseAnAccountClicked();
   EXPECT_TRUE(account_selection_view_->show_back_button_);
+  EXPECT_TRUE(account_selection_view_->is_choose_an_account_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
@@ -1815,6 +1828,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
+  EXPECT_FALSE(account_selection_view_->is_choose_an_account_);
 
   // Simulate account picked
   observer->OnAccountSelected(idp_list[0].accounts[0], idp_list[0],

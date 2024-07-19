@@ -411,7 +411,8 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
 
 void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
-    bool show_back_button) {
+    bool show_back_button,
+    bool is_choose_an_account) {
   DCHECK(!show_back_button);
   RemoveNonHeaderChildViews();
 

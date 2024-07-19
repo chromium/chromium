@@ -43,7 +43,8 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   void ShowMultiAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
-      bool show_back_button) override;
+      bool show_back_button,
+      bool is_choose_an_account) override;
 
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
                           const IdentityProviderDisplayData& idp_display_data,
