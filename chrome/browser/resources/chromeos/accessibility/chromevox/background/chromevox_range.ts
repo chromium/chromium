@@ -25,37 +25,40 @@ import {MathHandler} from './math_handler.js';
 import {Output} from './output/output.js';
 import {OutputCustomEvent} from './output/output_types.js';
 
+type AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 const Action = BridgeConstants.ChromeVoxRange.Action;
 const TARGET = BridgeConstants.ChromeVoxRange.TARGET;
 
+interface Point {
+  x: number;
+  y: number;
+}
+
 /**
  * An interface implemented by objects to observe ChromeVox range changes.
- * @interface
+ * TODO(b/346347267): Convert to an interface post-TypeScript migration.
  */
-export class ChromeVoxRangeObserver {
-  /**
-   * @param {?CursorRange} range The new range.
-   * @param {boolean=} opt_fromEditing
-   */
-  onCurrentRangeChanged(range, opt_fromEditing = undefined) {}
+export abstract class ChromeVoxRangeObserver {
+  /** @param range The new range. */
+  abstract onCurrentRangeChanged(
+      range: CursorRange | null, fromEditing?: boolean): void;
 }
 
 /** Handles tracking of and changes to the ChromeVox range. */
 export class ChromeVoxRange {
-  /** @private */
-  constructor() {
-    /** @private {?CursorRange} */
-    this.current_ = null;
-    /** @private {?CursorRange} */
-    this.pageSel_ = null;
-    /** @private {?CursorRange} */
-    this.previous_ = null;
-  }
+  private current_: CursorRange | null = null;
+  private pageSel_: CursorRange | null = null;
+  private previous_: CursorRange | null = null;
+  private static observers_: ChromeVoxRangeObserver[] = [];
 
-  static init() {
+  static instance: ChromeVoxRange;
+
+  private constructor() {}
+
+  static init(): void {
     if (ChromeVoxRange.instance) {
       throw new Error('Cannot create more than one ChromeVoxRange');
     }
@@ -65,30 +68,26 @@ export class ChromeVoxRange {
         TARGET, Action.CLEAR_CURRENT_RANGE, () => ChromeVoxRange.set(null));
   }
 
-  /** @return {?CursorRange} */
-  static get current() {
+  static get current(): CursorRange | null {
     if (ChromeVoxRange.instance.current_?.isValid()) {
       return ChromeVoxRange.instance.current_;
     }
     return null;
   }
 
-  static clearSelection() {
+  static clearSelection(): void {
     ChromeVoxRange.instance.pageSel_ = null;
   }
 
-  /**
-   * Return the current range, but focus recovery is not applied to it.
-   * @return {?CursorRange}
-   */
-  static getCurrentRangeWithoutRecovery() {
+  /** Return the current range, but focus recovery is not applied to it. */
+  static getCurrentRangeWithoutRecovery(): CursorRange | null {
     return ChromeVoxRange.instance.current_;
   }
 
   /**
    * Check for loss of focus which results in us invalidating our current range.
    */
-  static maybeResetFromFocus() {
+  static maybeResetFromFocus(): void {
     ChromeVoxRange.instance.maybeResetFromFocus_();
   }
 
@@ -101,40 +100,34 @@ export class ChromeVoxRange {
    *     the selection, otherwise it does by default.
    */
   static navigateTo(
-      range, opt_focus, opt_speechProps, opt_skipSettingSelection) {
-    ChromeVoxRange.instance.navigateTo_(...arguments);
+      range: CursorRange, focus?: boolean, speechProps?: TtsSpeechProperties,
+      skipSettingSelection?: boolean): void {
+    ChromeVoxRange.instance.navigateTo_(
+        range, focus, speechProps, skipSettingSelection);
   }
 
   /** Restores the last valid ChromeVox range. */
-  static restoreLastValidRangeIfNeeded() {
+  static restoreLastValidRangeIfNeeded(): void {
     ChromeVoxRange.instance.restoreLastValidRangeIfNeeded_();
   }
 
-  /**
-   * @param {?CursorRange} newRange The new range.
-   * @param {boolean=} opt_fromEditing
-   */
-  static set(newRange, opt_fromEditing) {
-    ChromeVoxRange.instance.set_(...arguments);
+  static set(newRange: CursorRange | null, fromEditing?: boolean): void {
+    ChromeVoxRange.instance.set_(newRange, fromEditing);
   }
 
   /**
-   * @return {boolean} true if the selection is toggled on, false if it is
-   * toggled off.
+   * @return true if the selection is toggled on, false if it is toggled off.
    */
-  static toggleSelection() {
+  static toggleSelection(): boolean {
     return ChromeVoxRange.instance.toggleSelection_();
   }
 
   // ================= Observer Functions =================
 
-  /** @param {ChromeVoxRangeObserver} observer */
-  static addObserver(observer) {
+  static addObserver(observer: ChromeVoxRangeObserver): void {
     ChromeVoxRange.observers_.push(observer);
   }
-
-  /** @param {ChromeVoxRangeObserver} observer */
-  static removeObserver(observer) {
+  static removeObserver(observer: ChromeVoxRangeObserver): void {
     const index = ChromeVoxRange.observers_.indexOf(observer);
     if (index > -1) {
       ChromeVoxRange.observers_.splice(index, 1);
@@ -149,10 +142,9 @@ export class ChromeVoxRange {
    * updated when this function returns (despite being technicallly a separate
    * function call). Note: do not convert this method to async, as it would
    * change the execution order described above.
-   * @private
    */
-  maybeResetFromFocus_() {
-    chrome.automation.getFocus(focus => {
+  private maybeResetFromFocus_(): void {
+    chrome.automation.getFocus((focus: AutomationNode | undefined) => {
       const cur = ChromeVoxRange.current;
       // If the current node is not valid and there's a current focus:
       if (cur && !cur.isValid() && focus) {
@@ -168,7 +160,8 @@ export class ChromeVoxRange {
       // This case detects when TalkBack (in ARC++) is enabled (which also
       // covers when the ARC++ window is active). Clear the ChromeVox range
       // so keys get passed through for ChromeVox commands.
-      if (ChromeVoxState.instance.talkBackEnabled &&
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      if (ChromeVoxState.instance!.talkBackEnabled &&
           // This additional check is not strictly necessary, but we use it to
           // ensure we are never inadvertently losing focus. ARC++ windows set
           // "focus" on a root view.
@@ -180,27 +173,25 @@ export class ChromeVoxRange {
 
   /**
    * Navigate to the given range - it both sets the range and outputs it.
-   * @param {!CursorRange} range The new range.
-   * @param {boolean=} opt_focus Focus the range; defaults to true.
-   * @param {TtsSpeechProperties=} opt_speechProps Speech properties.
-   * @param {boolean=} opt_skipSettingSelection If true, does not set
-   *     the selection, otherwise it does by default.
-   * @private
+   * @param focus Focus the range; defaults to true.
    */
-  navigateTo_(range, opt_focus, opt_speechProps, opt_skipSettingSelection) {
-    opt_focus = opt_focus ?? true;
-    opt_speechProps = opt_speechProps ?? new TtsSpeechProperties();
-    opt_skipSettingSelection = opt_skipSettingSelection ?? false;
+  private navigateTo_(
+      range: CursorRange, focus?: boolean, speechProps?: TtsSpeechProperties,
+      skipSettingSelection?: boolean): void {
+    focus = focus ?? true;
+    speechProps = speechProps ?? new TtsSpeechProperties();
+    skipSettingSelection = skipSettingSelection ?? false;
     const prevRange = ChromeVoxRange.getCurrentRangeWithoutRecovery();
 
     // Specialization for math output.
     let skipOutput = false;
     if (MathHandler.init(range)) {
-      skipOutput = MathHandler.instance.speak();
-      opt_focus = false;
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      skipOutput = MathHandler.instance!.speak();
+      focus = false;
     }
 
-    if (opt_focus) {
+    if (focus) {
       this.setFocusToRange_(range, prevRange);
     }
 
@@ -224,7 +215,8 @@ export class ChromeVoxRange {
       if (pageRootStart !== pageRootEnd || pageRootStart !== curRootStart ||
           pageRootEnd !== curRootEnd) {
         o.format('@end_selection');
-        DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        DesktopAutomationInterface.instance!.ignoreDocumentSelectionFromAction(
             false);
         this.pageSel_ = null;
       } else {
@@ -250,22 +242,24 @@ export class ChromeVoxRange {
             this.pageSel_.start, wasBackwardSel ? range.start : range.end);
         this.pageSel_.select();
       }
-    } else if (!opt_skipSettingSelection) {
+    } else if (!skipSettingSelection) {
       // Ensure we don't select the editable when we first encounter it.
-      let lca = null;
-      if (range.start.node && prevRange.start.node) {
+      let lca: AutomationNode | null | undefined = null;
+      if (range.start.node && prevRange?.start.node) {
         lca = AutomationUtil.getLeastCommonAncestor(
-            prevRange.start.node, range.start.node);
+            prevRange!.start.node, range.start.node);
       }
-      if (!lca || lca.state[StateType.EDITABLE] ||
-          !range.start.node.state[StateType.EDITABLE]) {
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      if (!lca || lca.state![StateType.EDITABLE] ||
+          !range.start.node.state![StateType.EDITABLE]) {
         range.select();
       }
     }
 
     o.withRichSpeechAndBraille(
-         selectedRange ?? range, prevRange, OutputCustomEvent.NAVIGATE)
-        .withInitialSpeechProperties(opt_speechProps);
+         selectedRange ?? range, prevRange ?? undefined,
+         OutputCustomEvent.NAVIGATE)
+        .withInitialSpeechProperties(speechProps);
 
     if (msg) {
       o.format(msg);
@@ -276,22 +270,18 @@ export class ChromeVoxRange {
     }
   }
 
-  /**
-   * @param {?CursorRange} range The new range.
-   * @param {boolean=} opt_fromEditing
-   * @private
-   */
-  notifyObservers_(range, opt_fromEditing = undefined) {
+  private notifyObservers_(range: CursorRange | null, fromEditing?: boolean)
+      : void {
     for (const observer of ChromeVoxRange.observers_) {
-      observer.onCurrentRangeChanged(range, opt_fromEditing);
+      observer.onCurrentRangeChanged(range, fromEditing);
     }
   }
 
-  /** @private */
-  restoreLastValidRangeIfNeeded_() {
+  private restoreLastValidRangeIfNeeded_(): void {
     // Never restore range when TalkBack is enabled as commands such as
     // Search+Left, go directly to TalkBack.
-    if (ChromeVoxState.instance.talkBackEnabled) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (ChromeVoxState.instance!.talkBackEnabled) {
       return;
     }
 
@@ -300,12 +290,7 @@ export class ChromeVoxRange {
     }
   }
 
-  /**
-   * @param {?CursorRange} newRange
-   * @param {boolean=} opt_fromEditing
-   * @private
-   */
-  set_(newRange, opt_fromEditing) {
+  private set_(newRange: CursorRange | null, fromEditing?: boolean): void {
     // Clear anything that was frozen on the braille display whenever
     // the user navigates.
     ChromeVox.braille.thaw();
@@ -319,7 +304,7 @@ export class ChromeVoxRange {
     this.previous_ = this.current_;
     this.current_ = newRange;
 
-    this.notifyObservers_(newRange, opt_fromEditing);
+    this.notifyObservers_(newRange, fromEditing);
 
     if (!this.current_) {
       FocusBounds.set([]);
@@ -340,21 +325,18 @@ export class ChromeVoxRange {
       return;
     }
 
-    const position = {};
-    const loc = start.unclippedLocation;
-    position.x = loc.left + loc.width / 2;
-    position.y = loc.top + loc.height / 2;
-    let url = root.docUrl;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const loc = start.unclippedLocation!;
+    const x = loc.left + loc.width / 2;
+    const y = loc.top + loc.height / 2;
+    const position: Point = {x, y};
+    let url = root.docUrl!;
     url = url.substring(0, url.indexOf('#')) || url;
     ChromeVoxState.position[url] = position;
   }
 
-  /**
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   * @private
-   */
-  setFocusToRange_(range, prevRange) {
+  private setFocusToRange_(range: CursorRange, prevRange: CursorRange | null)
+      : void {
     const start = range.start.node;
     const end = range.end.node;
 
@@ -366,31 +348,36 @@ export class ChromeVoxRange {
       const isPluginOrIframe =
           AutomationPredicate.roles([RoleType.PLUGIN_OBJECT, RoleType.IFRAME]);
 
-      entered.filter(isPluginOrIframe).forEach(container => {
-        if (!container.state[StateType.FOCUSED]) {
+      entered.filter(isPluginOrIframe).forEach((container: AutomationNode) => {
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        if (!container.state![StateType.FOCUSED]) {
           container.focus();
         }
       });
     }
 
-    if (start.state[StateType.FOCUSED] || end.state[StateType.FOCUSED]) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (start.state![StateType.FOCUSED] || end.state![StateType.FOCUSED]) {
       return;
     }
 
-    const isFocusableLinkOrControl = node => node.state[StateType.FOCUSABLE] &&
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const isFocusableLinkOrControl = (node: AutomationNode): boolean =>
+        node.state![StateType.FOCUSABLE] &&
         AutomationPredicate.linkOrControl(node);
 
     // Next, try to focus the start or end node.
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (!AutomationPredicate.structuralContainer(start) &&
-        start.state[StateType.FOCUSABLE]) {
-      if (!start.state[StateType.FOCUSED]) {
+        start.state![StateType.FOCUSABLE]) {
+      if (!start.state![StateType.FOCUSED]) {
         start.focus();
       }
       return;
     } else if (
         !AutomationPredicate.structuralContainer(end) &&
-        end.state[StateType.FOCUSABLE]) {
-      if (!end.state[StateType.FOCUSED]) {
+        end.state![StateType.FOCUSABLE]) {
+      if (!end.state![StateType.FOCUSED]) {
         end.focus();
       }
       return;
@@ -400,7 +387,8 @@ export class ChromeVoxRange {
     let ancestor = AutomationUtil.getLeastCommonAncestor(start, end);
     while (ancestor && ancestor.root === start.root) {
       if (isFocusableLinkOrControl(ancestor)) {
-        if (!ancestor.state[StateType.FOCUSED]) {
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        if (!ancestor.state![StateType.FOCUSED]) {
           ancestor.focus();
         }
         return;
@@ -411,42 +399,38 @@ export class ChromeVoxRange {
     // If nothing is focusable, set the sequential focus navigation starting
     // point, which ensures that the next time you press Tab, you'll reach
     // the next or previous focusable node from |start|.
-    if (!start.state[StateType.OFFSCREEN]) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (!start.state![StateType.OFFSCREEN]) {
       start.setSequentialFocusNavigationStartingPoint();
     }
   }
 
-  /**
-   * @return {boolean} true if the selection is toggled on, false if it is
-   * toggled off.
-   * @private
-   */
-  toggleSelection_() {
+  /** @return true if the selection is toggled on, false if toggled off. */
+  private toggleSelection_(): boolean {
     if (!this.pageSel_) {
       ChromeVox.earcons.playEarcon(EarconId.SELECTION);
       this.pageSel_ = ChromeVoxRange.current;
-      DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      DesktopAutomationInterface.instance!.ignoreDocumentSelectionFromAction(
           true);
       return true;
     } else {
-      const root = this.current_.start.node.root;
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      const root = this.current_!.start.node.root;
       if (root && root.selectionStartObject && root.selectionEndObject &&
           !isNaN(Number(root.selectionStartOffset)) &&
           !isNaN(Number(root.selectionEndOffset))) {
         ChromeVox.earcons.playEarcon(EarconId.SELECTION_REVERSE);
+        // TODO(b/314203187): Not null asserted, check that this is correct.
         const sel = new CursorRange(
-            new Cursor(
-                root.selectionStartObject,
-                /** @type {number} */ (root.selectionStartOffset)),
-            new Cursor(
-                root.selectionEndObject,
-                /** @type {number} */ (root.selectionEndOffset)));
-        const o =
-            new Output()
-                .format('@end_selection')
-                .withSpeechAndBraille(sel, sel, OutputCustomEvent.NAVIGATE)
-                .go();
-        DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
+            new Cursor(root.selectionStartObject, root.selectionStartOffset!),
+            new Cursor(root.selectionEndObject, root.selectionEndOffset!));
+        new Output()
+            .format('@end_selection')
+            .withSpeechAndBraille(sel, sel, OutputCustomEvent.NAVIGATE)
+            .go();
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        DesktopAutomationInterface.instance!.ignoreDocumentSelectionFromAction(
             false);
       }
       this.pageSel_ = null;
@@ -454,11 +438,5 @@ export class ChromeVoxRange {
     }
   }
 }
-
-/** @private {!Array<ChromeVoxRangeObserver>} */
-ChromeVoxRange.observers_ = [];
-
-/** @type {ChromeVoxRange} */
-ChromeVoxRange.instance;
 
 TestImportManager.exportForTesting(ChromeVoxRange, ChromeVoxRangeObserver);
