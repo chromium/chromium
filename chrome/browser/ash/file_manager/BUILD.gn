@@ -516,3 +516,32 @@ source_set("browser_tests") {
     "//url",
   ]
 }
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "file_manager_interactive_uitest.cc" ]
+
+    deps = [
+      ":file_manager",
+      "//ash",
+      "//ash/public/cpp",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ui/ash",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//testing/gtest",
+      "//ui/aura",
+      "//ui/aura:test_support",
+      "//ui/base:test_support",
+    ]
+  }
+}
