@@ -171,6 +171,19 @@ public abstract class CronetProvider {
      *
      * @return the list of available providers.
      */
+    public static List<CronetProvider> getAllProviders(Context context) {
+        var providers = new ArrayList<CronetProvider>();
+        for (var providerInfo : getAllProviderInfos(context)) {
+            providers.add(providerInfo.provider);
+        }
+        return Collections.unmodifiableList(providers);
+    }
+
+    /**
+     * Same as {@link #getAllProviders}, but returning the providerInfos directly.
+     *
+     * @return the list of available providerInfos.
+     */
     static List<ProviderInfo> getAllProviderInfos(Context context) {
         // Use LinkedHashSet to preserve the order and eliminate duplicate providers.
         Set<ProviderInfo> providers = new LinkedHashSet<>();
@@ -207,20 +220,6 @@ public abstract class CronetProvider {
                 providers,
                 false);
         return Collections.unmodifiableList(new ArrayList<>(providers));
-    }
-
-    /**
-     * Same as {@link #getAllProviderInfos}, but returning the providers directly.
-     *
-     * @deprecated This is only provided to preserve Cronet API backwards compatibility. Use {@link
-     *     #getAllProviderInfos} instead.
-     */
-    public static List<CronetProvider> getAllProviders(Context context) {
-        var providers = new ArrayList<CronetProvider>();
-        for (var providerInfo : getAllProviderInfos(context)) {
-            providers.add(providerInfo.provider);
-        }
-        return Collections.unmodifiableList(providers);
     }
 
     /**
