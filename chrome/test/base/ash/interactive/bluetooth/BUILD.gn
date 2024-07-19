@@ -9,7 +9,7 @@ assert(is_chromeos_ash)
 source_set("interactive_ui_tests") {
   testonly = true
 
-  sources = [ "bluetooth_interactive_uitest.cc" ]
+  sources = [ "pair_with_ui_interactive_uitest.cc" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

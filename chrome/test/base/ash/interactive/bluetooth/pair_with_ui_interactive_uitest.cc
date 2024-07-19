@@ -40,7 +40,7 @@
 namespace ash {
 namespace {
 
-class BluetoothInteractiveUiTest : public InteractiveAshTest {
+class PairWithUiInteractiveUiTest : public InteractiveAshTest {
  public:
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
@@ -70,9 +70,9 @@ class BluetoothInteractiveUiTest : public InteractiveAshTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class FlossInteractiveUiTest : public BluetoothInteractiveUiTest {
+class FlossPairWithUiInteractiveUiTest : public PairWithUiInteractiveUiTest {
  public:
-  FlossInteractiveUiTest() {
+  FlossPairWithUiInteractiveUiTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{floss::features::kFlossEnabled},
         /*disabled_features=*/{
@@ -98,15 +98,16 @@ class FlossInteractiveUiTest : public BluetoothInteractiveUiTest {
   }
 };
 
-class BluezInteractiveUiTest : public BluetoothInteractiveUiTest {
+class BluezPairWithUiInteractiveUiTest : public PairWithUiInteractiveUiTest {
  public:
-  BluezInteractiveUiTest() {
+  BluezPairWithUiInteractiveUiTest() {
     // Use the legacy BlueZ bluetooth stack.
     feature_list_.InitAndDisableFeature(floss::features::kFlossEnabled);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FlossInteractiveUiTest, PairDeviceWithQuickSettings) {
+IN_PROC_BROWSER_TEST_F(FlossPairWithUiInteractiveUiTest,
+                       PairDeviceWithQuickSettings) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBluetoothPairingDialogElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
                                       kBluetoothPowerState);
@@ -204,7 +205,8 @@ IN_PROC_BROWSER_TEST_F(FlossInteractiveUiTest, PairDeviceWithQuickSettings) {
       Log("Test complete"));
 }
 
-IN_PROC_BROWSER_TEST_F(BluezInteractiveUiTest, PairDeviceWithQuickSettings) {
+IN_PROC_BROWSER_TEST_F(BluezPairWithUiInteractiveUiTest,
+                       PairDeviceWithQuickSettings) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBluetoothPairingDialogElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BluetoothPowerStateObserver,
                                       kBluetoothPowerState);
