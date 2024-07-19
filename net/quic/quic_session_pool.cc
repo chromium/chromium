@@ -686,8 +686,9 @@ void QuicSessionPool::SetRequestPriority(QuicSessionRequest* request,
 
 void QuicSessionPool::CloseAllSessions(int error,
                                        quic::QuicErrorCode quic_error) {
-  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_CLOSE_ALL_SESSIONS);
   base::UmaHistogramSparse("Net.QuicSession.CloseAllSessionsError", -error);
+  size_t before_active_sessions_size = active_sessions_.size();
+  size_t before_all_sessions_size = active_sessions_.size();
   while (!active_sessions_.empty()) {
     size_t initial_size = active_sessions_.size();
     active_sessions_.begin()->second->CloseSessionOnError(
@@ -703,6 +704,21 @@ void QuicSessionPool::CloseAllSessions(int error,
     DCHECK_NE(initial_size, all_sessions_.size());
   }
   DCHECK(all_sessions_.empty());
+  // TODO(crbug.com/347984574): Remove before/after counts once we identified
+  // the cause.
+  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_CLOSE_ALL_SESSIONS, [&] {
+    base::Value::Dict dict;
+    dict.Set("net_error", error);
+    dict.Set("quic_error", quic::QuicErrorCodeToString(quic_error));
+    dict.Set("before_active_sessions_size",
+             static_cast<int>(before_active_sessions_size));
+    dict.Set("before_all_sessions_size",
+             static_cast<int>(before_all_sessions_size));
+    dict.Set("after_active_sessions_size",
+             static_cast<int>(active_sessions_.size()));
+    dict.Set("after_all_sessions_size", static_cast<int>(all_sessions_.size()));
+    return dict;
+  });
 }
 
 base::Value QuicSessionPool::QuicSessionPoolInfoToValue() const {

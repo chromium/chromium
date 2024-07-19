@@ -1859,8 +1859,22 @@ EVENT_TYPE(QUIC_SESSION_POOL_PLATFORM_NOTIFICATION)
 
 // These events track QuicSessionPool's handling of OnIPAddressChanged and
 // whether QuicSessions are closed or marked as going away.
+
 EVENT_TYPE(QUIC_SESSION_POOL_ON_IP_ADDRESS_CHANGED)
+
+//   {
+//     "net_error": <Net error code for the closure>,
+//     "quic_error": <quic::QuicErrorCode in the frame>,
+//     "before_active_sessions_size": <The number of active session before
+//                                     closing>,
+//     "before_all_sessions_size": <The number of all session before
+//                                  closing>,
+//     "after_active_sessions_size": <The number of active session after
+//                                    closing>,
+//     "after_all_sessions_size": <The number of all session after closing>,
+//   }
 EVENT_TYPE(QUIC_SESSION_POOL_CLOSE_ALL_SESSIONS)
+
 EVENT_TYPE(QUIC_SESSION_POOL_MARK_ALL_ACTIVE_SESSIONS_GOING_AWAY)
 
 // ------------------------------------------------------------------------
