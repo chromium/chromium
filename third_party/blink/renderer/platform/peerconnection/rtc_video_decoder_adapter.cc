@@ -120,10 +120,13 @@ struct EncodedImageExternalMemory
  public:
   explicit EncodedImageExternalMemory(
       rtc::scoped_refptr<webrtc::EncodedImageBufferInterface> buffer_interface)
-      : ExternalMemory(base::make_span(buffer_interface->data(),
-                                       buffer_interface->size())),
-        buffer_interface_(std::move(buffer_interface)) {}
-  ~EncodedImageExternalMemory() override = default;
+      : buffer_interface_(std::move(buffer_interface)) {
+    DCHECK(buffer_interface_);
+  }
+
+  const base::span<const uint8_t> Span() const override {
+    return *buffer_interface_;
+  }
 
  private:
   rtc::scoped_refptr<webrtc::EncodedImageBufferInterface> buffer_interface_;

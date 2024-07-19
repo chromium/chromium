@@ -42,19 +42,17 @@ namespace {
 // This class does not take the ownership of the data. The DecoderBufferBase
 // is still responsible for deleting the data. This class holds a reference
 // to the DecoderBufferBase so that it lives longer than this DecoderBuffer.
-class DecoderBuffer : public ::media::DecoderBuffer {
+class DecoderBufferExternalMemory
+    : public ::media::DecoderBuffer::ExternalMemory {
  public:
-  explicit DecoderBuffer(scoped_refptr<DecoderBufferBase> buffer)
-      : ::media::DecoderBuffer(
-            std::make_unique<::media::DecoderBuffer::ExternalMemory>(
-                base::make_span(buffer->data(), buffer->data_size()))),
-        buffer_(std::move(buffer)) {
-    set_timestamp(::base::Microseconds(buffer_->timestamp()));
+  explicit DecoderBufferExternalMemory(scoped_refptr<DecoderBufferBase> buffer)
+      : buffer_(std::move(buffer)) {}
+
+  const base::span<const uint8_t> Span() const override {
+    return {buffer_->data(), buffer_->data_size()};
   }
 
  private:
-  ~DecoderBuffer() override { DCHECK_EQ(data_.data(), buffer_->data()); }
-
   scoped_refptr<DecoderBufferBase> buffer_;
 };
 
@@ -144,12 +142,19 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
 
     // FFmpegAudioDecoder requires a timestamp to be set.
     base::TimeDelta timestamp = base::Microseconds(data->timestamp());
-    if (timestamp == ::media::kNoTimestamp)
-      data->set_timestamp(base::TimeDelta());
+    if (timestamp == ::media::kNoTimestamp) {
+      timestamp = base::TimeDelta();
+      data->set_timestamp(timestamp);
+    }
 
     decode_pending_ = true;
     pending_decode_callback_ = std::move(decode_callback);
-    decoder_->Decode(base::WrapRefCounted(new DecoderBuffer(std::move(data))),
+
+    auto media_buffer = ::media::DecoderBuffer::FromExternalMemory(
+        std::make_unique<DecoderBufferExternalMemory>(std::move(data)));
+    media_buffer->set_timestamp(timestamp);
+
+    decoder_->Decode(std::move(media_buffer),
                      base::BindRepeating(&CastAudioDecoderImpl::OnDecodeStatus,
                                          weak_this_, timestamp));
   }

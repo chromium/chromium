@@ -40,20 +40,12 @@ class MEDIA_EXPORT DecoderBuffer
     : public base::RefCountedThreadSafe<DecoderBuffer> {
  public:
   // ExternalMemory wraps a class owning a buffer and expose the data interface
-  // through |span|. This class is derived by a class that owns the class owning
-  // the buffer owner class. It is generally better to add the buffer class to
-  // DecoderBuffer. ExternalMemory is for a class that cannot be added; for
-  // instance, rtc::scoped_refptr<webrtc::EncodedImageBufferInterface>, webrtc
-  // class cannot be included in //media/base.
+  // through Span(). This class is derived by a class that owns the class owning
+  // the buffer owner class.
   struct MEDIA_EXPORT ExternalMemory {
    public:
-    explicit ExternalMemory(base::span<const uint8_t> span);
-    virtual ~ExternalMemory();
-    const base::span<const uint8_t> span() const { return span_; }
-
-   protected:
-    ExternalMemory();
-    base::raw_span<const uint8_t, DanglingUntriaged> span_;
+    virtual ~ExternalMemory() = default;
+    virtual const base::span<const uint8_t> Span() const = 0;
   };
 
   using DiscardPadding = std::pair<base::TimeDelta, base::TimeDelta>;
@@ -167,7 +159,7 @@ class MEDIA_EXPORT DecoderBuffer
     if (writable_mapping_.IsValid())
       return writable_mapping_.GetMemoryAs<const uint8_t>();
     if (external_memory_)
-      return external_memory_->span().data();
+      return external_memory_->Span().data();
     return data_.data();
   }
 

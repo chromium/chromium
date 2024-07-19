@@ -40,7 +40,7 @@ DecoderBuffer::DecoderBuffer(base::WritableSharedMemoryMapping mapping,
     : size_(size), writable_mapping_(std::move(mapping)) {}
 
 DecoderBuffer::DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory)
-    : size_(external_memory->span().size()),
+    : size_(external_memory->Span().size()),
       external_memory_(std::move(external_memory)) {}
 
 DecoderBuffer::DecoderBuffer(DecoderBufferType decoder_buffer_type)
@@ -100,8 +100,9 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromSharedMemoryRegion(
 scoped_refptr<DecoderBuffer> DecoderBuffer::FromExternalMemory(
     std::unique_ptr<ExternalMemory> external_memory) {
   DCHECK(external_memory);
-  if (external_memory->span().empty())
+  if (external_memory->Span().empty()) {
     return nullptr;
+  }
   return base::WrapRefCounted(new DecoderBuffer(std::move(external_memory)));
 }
 
@@ -139,7 +140,7 @@ base::span<const uint8_t> DecoderBuffer::AsSpan() const {
     return writable_mapping_.GetMemoryAsSpan<const uint8_t>().first(size_);
   }
   if (external_memory_) {
-    return external_memory_->span().first(size_);
+    return external_memory_->Span().first(size_);
   }
   return data_.first(size_);
 }
@@ -250,8 +251,4 @@ size_t DecoderBuffer::GetMemoryUsage() const {
   return memory_usage;
 }
 
-DecoderBuffer::ExternalMemory::ExternalMemory(base::span<const uint8_t> span)
-    : span_(span) {}
-DecoderBuffer::ExternalMemory::~ExternalMemory() = default;
-DecoderBuffer::ExternalMemory::ExternalMemory() = default;
 }  // namespace media

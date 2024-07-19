@@ -159,7 +159,7 @@ foreach(variant, pipeline_integration_fuzzer_variants) {
       ":pipeline_integration_test_base",
       "//base",
       "//base/test:test_support",
-      "//media",
+      "//media:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/gfx:test_support",

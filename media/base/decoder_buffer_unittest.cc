@@ -14,6 +14,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -167,7 +168,8 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
 TEST(DecoderBufferTest, FromExternalMemory) {
   constexpr uint8_t kData[] = "hello";
   constexpr size_t kDataSize = std::size(kData);
-  auto external_memory = std::make_unique<DecoderBuffer::ExternalMemory>(
+
+  auto external_memory = std::make_unique<ExternalMemoryAdapterForTesting>(
       base::make_span(kData, kDataSize));
   auto buffer = DecoderBuffer::FromExternalMemory(std::move(external_memory));
   ASSERT_TRUE(buffer.get());

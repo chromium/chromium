@@ -13,7 +13,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "media/base/decoder_buffer.h"
 
 namespace media {
 
@@ -180,6 +179,10 @@ const char kErrorTitle[] = "error";
 
 const base::FilePath::CharType kTestDataPath[] =
     FILE_PATH_LITERAL("media/test/data");
+
+const base::span<const uint8_t> ExternalMemoryAdapterForTesting::Span() const {
+  return span_;
+}
 
 base::FilePath GetTestDataFilePath(const std::string& name) {
   base::FilePath file_path;

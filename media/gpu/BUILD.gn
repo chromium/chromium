@@ -693,7 +693,7 @@ if (enable_hevc_parser_and_hw_decoder) {
     deps = [
       ":gpu",
       "//base",
-      "//media",
+      "//media:test_support",
     ]
   }
 }
@@ -703,7 +703,7 @@ fuzzer_test("media_h264_decoder_fuzzer") {
   deps = [
     ":gpu",
     "//base",
-    "//media",
+    "//media:test_support",
   ]
   seed_corpuses = [ "//media/test/data" ]
 }
@@ -716,7 +716,7 @@ if (use_v4l2_codec || use_vaapi) {
       ":common",
       ":gpu",
       "//base",
-      "//media",
+      "//media:test_support",
     ]
     seed_corpuses = [ "//media/test/data" ]
   }
@@ -728,7 +728,7 @@ if (use_av1_hw_decoder) {
     deps = [
       ":common",
       "//base",
-      "//media",
+      "//media:test_support",
     ]
   }
 }
@@ -738,7 +738,7 @@ fuzzer_test("media_vp9_decoder_fuzzer") {
   deps = [
     ":gpu",
     "//base",
-    "//media",
+    "//media:test_support",
   ]
   seed_corpuses = [ "//media/test/data" ]
 }

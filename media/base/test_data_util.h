@@ -13,16 +13,26 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "media/base/decoder_buffer.h"
 
 namespace media {
-
-class DecoderBuffer;
 
 // Common test results.
 extern const char kFailedTitle[];
 extern const char kEndedTitle[];
 extern const char kErrorEventTitle[];
 extern const char kErrorTitle[];
+
+// A simple external memory wrapper around base::span for testing purposes.
+struct ExternalMemoryAdapterForTesting : public DecoderBuffer::ExternalMemory {
+ public:
+  explicit ExternalMemoryAdapterForTesting(base::span<const uint8_t> span)
+      : span_(std::move(span)) {}
+  const base::span<const uint8_t> Span() const override;
+
+ private:
+  const base::span<const uint8_t> span_;
+};
 
 // Returns a file path for a file in the media/test/data directory.
 base::FilePath GetTestDataFilePath(const std::string& name);
