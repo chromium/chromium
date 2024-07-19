@@ -14,7 +14,6 @@ class MockPlatformAuthProvider : public PlatformAuthProvider {
  public:
   MockPlatformAuthProvider();
   ~MockPlatformAuthProvider() override;
-  MOCK_METHOD(bool, SupportsOriginFiltering, (), (override));
   MOCK_METHOD(void, FetchOrigins, (FetchOriginsCallback), (override));
   MOCK_METHOD(void,
               GetData,

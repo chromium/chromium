@@ -6385,8 +6385,6 @@ static_library("browser") {
   }
   if (is_mac) {
     sources += [
-      "enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h",
-      "enterprise/platform_auth/extensible_enterprise_sso_provider_mac.mm",
       "webauthn/chrome_authenticator_request_delegate_mac.mm",
       "webauthn/local_credential_management_mac.cc",
       "webauthn/local_credential_management_mac.h",
@@ -6394,11 +6392,8 @@ static_library("browser") {
   }
   if (is_mac || is_win) {
     sources += [
-      "enterprise/platform_auth/platform_auth_navigation_throttle.cc",
-      "enterprise/platform_auth/platform_auth_navigation_throttle.h",
       "enterprise/platform_auth/platform_auth_policy_observer.cc",
       "enterprise/platform_auth/platform_auth_policy_observer.h",
-      "enterprise/platform_auth/platform_auth_provider.h",
       "enterprise/platform_auth/platform_auth_provider_manager.cc",
       "enterprise/platform_auth/platform_auth_provider_manager.h",
     ]
@@ -6432,6 +6427,9 @@ static_library("browser") {
       "enterprise/platform_auth/cloud_ap_provider_win.h",
       "enterprise/platform_auth/cloud_ap_utils_win.cc",
       "enterprise/platform_auth/cloud_ap_utils_win.h",
+      "enterprise/platform_auth/platform_auth_navigation_throttle.cc",
+      "enterprise/platform_auth/platform_auth_navigation_throttle.h",
+      "enterprise/platform_auth/platform_auth_provider.h",
       "enterprise/signals/device_info_fetcher_win.cc",
       "enterprise/signals/device_info_fetcher_win.h",
       "first_run/first_run_internal_win.cc",

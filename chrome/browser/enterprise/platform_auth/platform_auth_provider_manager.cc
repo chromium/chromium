@@ -36,8 +36,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_provider_win.h"
-#elif BUILDFLAG(IS_MAC)
-#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
 #endif
 
 namespace enterprise_auth {
@@ -47,8 +45,6 @@ namespace {
 std::unique_ptr<PlatformAuthProvider> MakeProvider() {
 #if BUILDFLAG(IS_WIN)
   return std::make_unique<CloudApProviderWin>();
-#elif BUILDFLAG(IS_MAC)
-  return std::make_unique<ExtensibleEnterpriseSSOProvider>();
 #else
   return nullptr;
 #endif
@@ -76,13 +72,8 @@ void PlatformAuthProviderManager::SetEnabled(bool enabled,
 
   enabled_ = enabled;
 
-  if (supports_origin_filtering_) {
-    on_enable_complete_ = std::move(on_complete);
-    StartFetchOrigins();
-  } else if (on_complete) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(on_complete));
-  }
+  on_enable_complete_ = std::move(on_complete);
+  StartFetchOrigins();
 
   // TODO(crbug.com/40196687): Users may add/remove WebAccounts, which could
   // change the set of origins. Consider polling on a low-frequency timer and/or
@@ -97,9 +88,7 @@ bool PlatformAuthProviderManager::IsEnabled() const {
 
 bool PlatformAuthProviderManager::IsEnabledFor(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return !supports_origin_filtering_ ||
-         base::Contains(origins_, url::Origin::Create(url));
+  return base::Contains(origins_, url::Origin::Create(url));
 }
 
 void PlatformAuthProviderManager::GetData(const GURL& url,
@@ -125,14 +114,12 @@ PlatformAuthProviderManager::PlatformAuthProviderManager()
 
 PlatformAuthProviderManager::PlatformAuthProviderManager(
     std::unique_ptr<PlatformAuthProvider> provider)
-    : provider_(std::move(provider)),
-      supports_origin_filtering_(provider_->SupportsOriginFiltering()) {}
+    : provider_(std::move(provider)) {}
 
 PlatformAuthProviderManager::~PlatformAuthProviderManager() = default;
 
 void PlatformAuthProviderManager::StartFetchOrigins() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(supports_origin_filtering_);
 
   if (enabled_ && provider_) {
     provider_->FetchOrigins(base::BindOnce(
@@ -145,7 +132,6 @@ void PlatformAuthProviderManager::StartFetchOrigins() {
 void PlatformAuthProviderManager::OnOrigins(
     std::unique_ptr<std::vector<url::Origin>> origins) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(supports_origin_filtering_);
 
   base::flat_set<url::Origin> new_origins;
 
@@ -168,7 +154,6 @@ void PlatformAuthProviderManager::OnOrigins(
 std::unique_ptr<PlatformAuthProvider>
 PlatformAuthProviderManager::SetProviderForTesting(
     std::unique_ptr<PlatformAuthProvider> provider) {
-  supports_origin_filtering_ = provider->SupportsOriginFiltering();
   return std::exchange(provider_, std::move(provider));
 }
 

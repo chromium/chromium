@@ -3458,19 +3458,12 @@ if (!is_android) {
       ]
     }
 
-    if (is_win || is_mac) {
-      sources += [
-        "../browser/enterprise/platform_auth/platform_auth_policy_observer_browsertest.cc",
-        "../browser/enterprise/platform_auth/platform_auth_provider_manager_browsertest.cc",
-      ]
-
-      deps += [ "//chrome/browser/enterprise/platform_auth:test_utils" ]
-    }
-
     if (is_win) {
       sources += [
         "../browser/chrome_browser_main_win_browsertest.cc",
         "../browser/chrome_main_process_singleton_browsertest.cc",
+        "../browser/enterprise/platform_auth/platform_auth_policy_observer_browsertest.cc",
+        "../browser/enterprise/platform_auth/platform_auth_provider_manager_browsertest.cc",
         "../browser/font_prewarmer_tab_helper_browsertest.cc",
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
@@ -3493,6 +3486,7 @@ if (!is_android) {
         "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
         "//chrome/app:command_ids",
+        "//chrome/browser/enterprise/platform_auth:test_utils",
         "//chrome/browser/ui/startup:buildflags",
         "//chrome/credential_provider/common:common_constants",
         "//chrome/test:credential_provider_test_utils",
@@ -3519,7 +3513,6 @@ if (!is_android) {
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.cc",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.h",
         "../browser/chrome_browser_application_mac_browsertest.mm",
-        "../browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac_browsertest.cc",
         "../browser/mac/auth_session_request_browsertest.mm",
         "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_browsertest.mm",
         "../browser/spellchecker/spell_check_host_chrome_impl_mac_browsertest.cc",
@@ -7146,15 +7139,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_win || is_mac) {
-    sources += [
-      "../browser/enterprise/platform_auth/platform_auth_navigation_throttle_unittest.cc",
-      "../browser/enterprise/platform_auth/platform_auth_provider_manager_unittest.cc",
-    ]
-
-    deps += [ "//chrome/browser/enterprise/platform_auth:test_utils" ]
-  }
-
   if (is_win) {
     assert(toolkit_views)
     sources += [
@@ -7164,6 +7148,8 @@ test("unit_tests") {
       "../browser/device_reauth/win/device_authenticator_win_unittest.cc",
       "../browser/enterprise/platform_auth/cloud_ap_provider_win_unittest.cc",
       "../browser/enterprise/platform_auth/cloud_ap_utils_win_unittest.cc",
+      "../browser/enterprise/platform_auth/platform_auth_navigation_throttle_unittest.cc",
+      "../browser/enterprise/platform_auth/platform_auth_provider_manager_unittest.cc",
       "../browser/install_verification/win/module_info_unittest.cc",
       "../browser/install_verification/win/module_list_unittest.cc",
       "../browser/install_verification/win/module_verification_test.cc",
@@ -7221,6 +7207,7 @@ test("unit_tests") {
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:win_unit_tests",
       "//chrome/browser:chrome_process_finder",
+      "//chrome/browser/enterprise/platform_auth:test_utils",
       "//chrome/browser/shortcuts",
       "//chrome/browser/win/conflicts:unit_tests",
       "//chrome/chrome_elf:constants",

@@ -8661,21 +8661,6 @@
             ]
         }
     ],
-    "EnableExtensibleEnterpriseSSO": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableExtensibleEnterpriseSSO"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableFallbackFontsCrashReporting": [
         {
             "platforms": [
