@@ -41,6 +41,11 @@ IsolatedWebAppResponseReaderImpl::IsolatedWebAppResponseReaderImpl(
 
 IsolatedWebAppResponseReaderImpl::~IsolatedWebAppResponseReaderImpl() = default;
 
+web_package::SignedWebBundleIntegrityBlock
+IsolatedWebAppResponseReaderImpl::GetIntegrityBlock() {
+  return reader_->GetIntegrityBlock();
+}
+
 void IsolatedWebAppResponseReaderImpl::ReadResponse(
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {

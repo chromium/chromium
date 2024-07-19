@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -200,16 +202,22 @@ void InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory(
 }
 
 void InstallIsolatedWebAppCommand::CheckTrustAndSignatures(
-    base::OnceClosure next_step_callback) {
+    base::OnceCallback<
+        void(std::optional<web_package::SignedWebBundleIntegrityBlock>)>
+        next_step_callback) {
   command_helper_->CheckTrustAndSignatures(
       *destination_source_, &profile(),
-      base::BindOnce(&InstallIsolatedWebAppCommand::RunNextStepOnSuccess<void>,
-                     weak_factory_.GetWeakPtr(), std::move(next_step_callback),
-                     InstallIwaError::kTrustCheckFailed));
+      base::BindOnce(
+          &InstallIsolatedWebAppCommand::RunNextStepOnSuccess<
+              std::optional<web_package::SignedWebBundleIntegrityBlock>>,
+          weak_factory_.GetWeakPtr(), std::move(next_step_callback),
+          InstallIwaError::kTrustCheckFailed));
 }
 
 void InstallIsolatedWebAppCommand::CreateStoragePartition(
-    base::OnceClosure next_step_callback) {
+    base::OnceClosure next_step_callback,
+    std::optional<web_package::SignedWebBundleIntegrityBlock> integrity_block) {
+  integrity_block_ = std::move(integrity_block);
   command_helper_->CreateStoragePartitionIfNotPresent(profile());
   std::move(next_step_callback).Run();
 }
@@ -262,7 +270,14 @@ void InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo(
 
 void InstallIsolatedWebAppCommand::FinalizeInstall(WebAppInstallInfo info) {
   WebAppInstallFinalizer::FinalizeOptions options(install_surface_);
-  options.isolated_web_app_location = *destination_storage_location_;
+
+  options.iwa_options = WebAppInstallFinalizer::FinalizeOptions::IwaOptions(
+      *destination_storage_location_,
+      integrity_block_
+          ? std::make_optional(
+                IsolatedWebAppIntegrityBlockData::FromIntegrityBlock(
+                    *integrity_block_))
+          : std::nullopt);
 
   lock_->install_finalizer().FinalizeInstall(
       info, options,

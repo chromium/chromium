@@ -7,6 +7,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/web_applications/proto/web_app_isolation_data.pb.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 
 namespace web_app {
@@ -23,6 +24,9 @@ class IsolatedWebAppIntegrityBlockData {
       const IsolatedWebAppIntegrityBlockData&);
 
   bool operator==(const IsolatedWebAppIntegrityBlockData& other) const;
+
+  static IsolatedWebAppIntegrityBlockData FromIntegrityBlock(
+      const web_package::SignedWebBundleIntegrityBlock& integrity_block);
 
   static base::expected<IsolatedWebAppIntegrityBlockData, std::string>
   FromProto(const proto::IsolationData::IntegrityBlockData& proto);

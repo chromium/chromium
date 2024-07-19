@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
@@ -167,9 +168,15 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   void CheckIfUpdateIsStillApplicable(base::OnceClosure next_step_callback);
 
-  void CheckTrustAndSignatures(base::OnceClosure next_step_callback);
+  void CheckTrustAndSignatures(
+      base::OnceCallback<
+          void(std::optional<web_package::SignedWebBundleIntegrityBlock>)>
+          next_step_callback);
 
-  void CreateStoragePartition(base::OnceClosure next_step_callback);
+  void CreateStoragePartition(
+      base::OnceClosure next_step_callback,
+      std::optional<web_package::SignedWebBundleIntegrityBlock>
+          integrity_block);
 
   void LoadInstallUrl(base::OnceClosure next_step_callback);
 
@@ -197,6 +204,8 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   const IsolatedWebAppUrlInfo url_info_;
   const std::optional<base::Version> expected_version_;
+
+  std::optional<web_package::SignedWebBundleIntegrityBlock> integrity_block_;
 
   std::optional<IwaSourceWithModeAndFileOp> update_source_;
   std::optional<IwaSourceWithMode> destination_location_;

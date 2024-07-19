@@ -50,6 +50,7 @@ namespace {
 
 using base::test::ErrorIs;
 using base::test::ValueIs;
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
@@ -233,13 +234,13 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, Succeeds) {
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
               test::IwaIs(Eq("installed app"),
-                          Eq(WebApp::IsolationData(
-                              installed_location_, installed_version_,
-                              /*controlled_frame_partitions=*/{},
-                              WebApp::IsolationData::PendingUpdateInfo(
-                                  pending_location, update_version_,
-                                  /*integrity_block_data=*/std::nullopt),
-                              /*integrity_block_data=*/std::nullopt))));
+                          test::IsolationDataIs(
+                              Eq(installed_location_), Eq(installed_version_),
+                              /*controlled_frame_partitions=*/_,
+                              test::PendingUpdateInfoIs(
+                                  Eq(pending_location), Eq(update_version_),
+                                  /*integrity_block_data=*/_),
+                              /*integrity_block_data=*/_)));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -264,13 +265,13 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   EXPECT_THAT(web_app,
               test::IwaIs(Eq("installed app"),
-                          Eq(WebApp::IsolationData(
-                              installed_location_, installed_version_,
-                              /*controlled_frame_partitions=*/{},
-                              WebApp::IsolationData::PendingUpdateInfo(
-                                  result.location, update_version_,
-                                  /*integrity_block_data=*/std::nullopt),
-                              /*integrity_block_data=*/std::nullopt))));
+                          test::IsolationDataIs(
+                              Eq(installed_location_), Eq(installed_version_),
+                              /*controlled_frame_partitions=*/_,
+                              test::PendingUpdateInfoIs(
+                                  Eq(result.location), Eq(update_version_),
+                                  /*integrity_block_data=*/_),
+                              /*integrity_block_data=*/_)));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsWhenShuttingDown) {

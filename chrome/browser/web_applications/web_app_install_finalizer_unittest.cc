@@ -17,6 +17,7 @@
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -476,7 +477,11 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
       IwaStorageUnownedBundle{base::FilePath(FILE_PATH_LITERAL("p"))});
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::EXTERNAL_POLICY);
-  options.isolated_web_app_location = location;
+
+  auto integrity_block_data =
+      IsolatedWebAppIntegrityBlockData(test::CreateSignatures());
+  options.iwa_options = WebAppInstallFinalizer::FinalizeOptions::IwaOptions(
+      location, integrity_block_data);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -487,6 +492,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   EXPECT_EQ(location, installed_app->isolation_data()->location);
   EXPECT_EQ(version, installed_app->isolation_data()->version);
+  EXPECT_EQ(integrity_block_data,
+            installed_app->isolation_data()->integrity_block_data);
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {

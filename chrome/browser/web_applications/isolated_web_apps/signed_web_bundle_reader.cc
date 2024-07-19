@@ -13,6 +13,7 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -318,6 +319,14 @@ void SignedWebBundleReader::FulfillWithError(ReadErrorCallback callback,
       base::BindOnce(std::move(callback), base::unexpected(std::move(error))));
 }
 
+const web_package::SignedWebBundleIntegrityBlock&
+SignedWebBundleReader::GetIntegrityBlock() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kInitialized);
+
+  return *integrity_block_;
+}
+
 const std::optional<GURL>& SignedWebBundleReader::GetPrimaryURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitialized);
@@ -329,11 +338,8 @@ std::vector<GURL> SignedWebBundleReader::GetEntries() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitialized);
 
-  std::vector<GURL> entries;
-  entries.reserve(entries_.size());
-  base::ranges::transform(entries_, std::back_inserter(entries),
-                          [](const auto& entry) { return entry.first; });
-  return entries;
+  return base::ToVector(entries_,
+                        [](const auto& entry) { return entry.first; });
 }
 
 void SignedWebBundleReader::ReadResponse(

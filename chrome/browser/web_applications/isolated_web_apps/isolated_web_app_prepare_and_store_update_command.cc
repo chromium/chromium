@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -229,21 +230,25 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::OnCopiedToProfileDirectory(
 }
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckTrustAndSignatures(
-    base::OnceClosure next_step_callback) {
+    base::OnceCallback<
+        void(std::optional<web_package::SignedWebBundleIntegrityBlock>)>
+        next_step_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   command_helper_->CheckTrustAndSignatures(
       *destination_location_, &profile(),
       base::BindOnce(
           &IsolatedWebAppUpdatePrepareAndStoreCommand::RunNextStepOnSuccess<
-              void>,
+              std::optional<web_package::SignedWebBundleIntegrityBlock>>,
           weak_factory_.GetWeakPtr(), std::move(next_step_callback)));
 }
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::CreateStoragePartition(
-    base::OnceClosure next_step_callback) {
+    base::OnceClosure next_step_callback,
+    std::optional<web_package::SignedWebBundleIntegrityBlock> integrity_block) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  integrity_block_ = std::move(integrity_block);
   // TODO(cmfcmf): Maybe we should log somewhere when the storage partition is
   // unexpectedly missing?
   command_helper_->CreateStoragePartitionIfNotPresent(profile());
@@ -330,7 +335,11 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
   updated_isolation_data.SetPendingUpdateInfo(
       WebApp::IsolationData::PendingUpdateInfo(
           *destination_storage_location_, info.isolated_web_app_version,
-          /*integrity_block_data=*/std::nullopt));
+          integrity_block_
+              ? std::make_optional(
+                    IsolatedWebAppIntegrityBlockData::FromIntegrityBlock(
+                        *integrity_block_))
+              : std::nullopt));
   app_to_update->SetIsolationData(std::move(updated_isolation_data));
 }
 

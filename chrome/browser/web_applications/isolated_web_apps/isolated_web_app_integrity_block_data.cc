@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/containers/to_value_list.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
@@ -102,6 +103,15 @@ IsolatedWebAppIntegrityBlockData& IsolatedWebAppIntegrityBlockData::operator=(
 
 bool IsolatedWebAppIntegrityBlockData::operator==(
     const IsolatedWebAppIntegrityBlockData& other) const = default;
+
+// static
+IsolatedWebAppIntegrityBlockData
+IsolatedWebAppIntegrityBlockData::FromIntegrityBlock(
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block) {
+  return IsolatedWebAppIntegrityBlockData(base::ToVector(
+      integrity_block.signature_stack().entries(),
+      &web_package::SignedWebBundleSignatureStackEntry::signature_info));
+}
 
 // static
 base::expected<IsolatedWebAppIntegrityBlockData, std::string>

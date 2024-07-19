@@ -246,7 +246,10 @@ IsolatedWebAppInstallCommandHelper::~IsolatedWebAppInstallCommandHelper() =
 void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
     const IwaSourceWithMode& location,
     Profile* profile,
-    base::OnceCallback<void(base::expected<void, std::string>)> callback) {
+    base::OnceCallback<
+        void(base::expected<
+             std::optional<web_package::SignedWebBundleIntegrityBlock>,
+             std::string>)> callback) {
   absl::visit(
       base::Overloaded{
           [&](const IwaSourceBundleWithMode& location) {
@@ -268,15 +271,33 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
             }
             // Dev mode proxy mode does not use Web Bundles, hence there is no
             // bundle to validate / trust and no signatures to check.
-            std::move(callback).Run(base::ok());
+            std::move(callback).Run(base::ok(std::nullopt));
           }},
       location.variant());
+}
+
+void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
+    const IwaSourceWithMode& location,
+    Profile* profile,
+    base::OnceCallback<void(base::expected<void, std::string>)> callback) {
+  CheckTrustAndSignatures(
+      location, profile,
+      base::BindOnce(
+          [](base::expected<
+              std::optional<web_package::SignedWebBundleIntegrityBlock>,
+              std::string> result) {
+            return result.transform([](const auto&) -> void {});
+          })
+          .Then(std::move(callback)));
 }
 
 void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignaturesOfBundle(
     const base::FilePath& path,
     bool dev_mode,
-    base::OnceCallback<void(base::expected<void, std::string>)> callback) {
+    base::OnceCallback<
+        void(base::expected<
+             std::optional<web_package::SignedWebBundleIntegrityBlock>,
+             std::string>)> callback) {
   // To check whether the bundle is valid and trusted, we attempt to create a
   // `IsolatedWebAppResponseReader`. If a response reader is created
   // successfully, then this means that the Signed Web Bundle...
@@ -297,36 +318,24 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignaturesOfBundle(
 }
 
 void IsolatedWebAppInstallCommandHelper::OnTrustAndSignaturesOfBundleChecked(
-    base::OnceCallback<void(base::expected<void, std::string>)> callback,
+    base::OnceCallback<
+        void(base::expected<
+             std::optional<web_package::SignedWebBundleIntegrityBlock>,
+             std::string>)> callback,
     base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                    UnusableSwbnFileError> result) {
-  auto status =
-      result
-          .transform(
-              [](const std::unique_ptr<IsolatedWebAppResponseReader>& reader)
-                  -> void {})
-          .transform_error([](const UnusableSwbnFileError& error) {
-            return IsolatedWebAppResponseReaderFactory::ErrorToString(error);
-          });
-  std::unique_ptr<IsolatedWebAppResponseReader> reader;
-  IsolatedWebAppResponseReader* raw_reader = nullptr;
-  if (result.has_value()) {
-    reader = std::move(result.value());
-    raw_reader = reader.get();
-  }
+  ASSIGN_OR_RETURN(
+      auto reader, std::move(result), [&](const UnusableSwbnFileError& error) {
+        std::move(callback).Run(base::unexpected(
+            IsolatedWebAppResponseReaderFactory::ErrorToString(error)));
+      });
 
-  base::OnceClosure run_result_callback = base::BindOnce(
-      [](base::OnceCallback<void(base::expected<void, std::string>)> cb,
-         base::expected<void, std::string> status,
-         std::unique_ptr<IsolatedWebAppResponseReader>) {
-        std::move(cb).Run(std::move(status));
-      },
-      std::move(callback), std::move(status), std::move(reader));
-  if (raw_reader) {
-    raw_reader->Close(std::move(run_result_callback));
-  } else {
-    std::move(run_result_callback).Run();
-  }
+  auto* reader_ptr = reader.get();
+  base::OnceClosure reader_keep_alive =
+      base::DoNothingWithBoundArgs(std::move(reader));
+  reader_ptr->Close(std::move(reader_keep_alive)
+                        .Then(base::BindOnce(std::move(callback),
+                                             reader_ptr->GetIntegrityBlock())));
 }
 
 void IsolatedWebAppInstallCommandHelper::CreateStoragePartitionIfNotPresent(

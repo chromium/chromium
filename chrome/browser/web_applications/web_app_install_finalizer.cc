@@ -28,6 +28,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
@@ -216,6 +217,17 @@ void ApplyUserDisplayModeSyncMitigations(
 
 }  // namespace
 
+WebAppInstallFinalizer::FinalizeOptions::IwaOptions::IwaOptions(
+    IsolatedWebAppStorageLocation location,
+    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data)
+    : location(std::move(location)),
+      integrity_block_data(std::move(integrity_block_data)) {}
+
+WebAppInstallFinalizer::FinalizeOptions::IwaOptions::~IwaOptions() = default;
+
+WebAppInstallFinalizer::FinalizeOptions::IwaOptions::IwaOptions(
+    const IwaOptions&) = default;
+
 WebAppInstallFinalizer::FinalizeOptions::FinalizeOptions(
     webapps::WebappInstallSource install_surface)
     : source(ConvertInstallSurfaceToWebAppSource(install_surface)),
@@ -356,10 +368,11 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   }
 #endif
 
-  if (options.isolated_web_app_location.has_value()) {
+  if (options.iwa_options) {
     UpdateIsolationDataAndResetPendingUpdateInfo(
-        web_app.get(), *options.isolated_web_app_location,
-        web_app_info.isolated_web_app_version);
+        web_app.get(), options.iwa_options->location,
+        web_app_info.isolated_web_app_version,
+        options.iwa_options->integrity_block_data);
   }
 
   web_app->SetParentAppId(web_app_info.parent_app_id);
@@ -446,16 +459,17 @@ void WebAppInstallFinalizer::FinalizeUpdate(
 
   auto web_app = std::make_unique<WebApp>(*existing_web_app);
   if (web_app->isolation_data().has_value()) {
-    base::optional_ref<const WebApp::IsolationData::PendingUpdateInfo>
+    const std::optional<WebApp::IsolationData::PendingUpdateInfo>&
         pending_update_info = web_app->isolation_data()->pending_update_info();
     CHECK(pending_update_info.has_value())
         << "Isolated Web Apps can only be updated if "
            "`WebApp::IsolationData::PendingUpdateInfo` is set.";
     CHECK_EQ(web_app_info.isolated_web_app_version,
              pending_update_info->version);
-    UpdateIsolationDataAndResetPendingUpdateInfo(web_app.get(),
-                                                 pending_update_info->location,
-                                                 pending_update_info->version);
+    UpdateIsolationDataAndResetPendingUpdateInfo(
+        web_app.get(), pending_update_info->location,
+        pending_update_info->version,
+        pending_update_info->integrity_block_data);
   }
 
   // Prepare copy-on-write to update existing app.
@@ -488,7 +502,8 @@ void WebAppInstallFinalizer::Shutdown() {
 void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
     WebApp* web_app,
     const IsolatedWebAppStorageLocation& location,
-    const base::Version& version) {
+    const base::Version& version,
+    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data) {
   CHECK(version.IsValid());
 
   // If previous `controlled_frame_partitions` exist, keep them the same. This
@@ -502,8 +517,7 @@ void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
       location, version, controlled_frame_partitions,
       // Always reset `pending_update_info`, because reaching this point means
       // that an install or update just succeeded.
-      /*pending_update_info=*/std::nullopt,
-      /*integrity_block_data=*/std::nullopt));
+      /*pending_update_info=*/std::nullopt, std::move(integrity_block_data)));
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(

@@ -40,9 +40,9 @@ namespace web_app {
 //
 // `Create` returns a new instance of this class.
 //
-// `StartReading` starts the process to read the Signed Web Bundle's integrity
-// block and metadata, as well as to verify that the signatures contained in the
-// integrity block sign the bundle correctly.
+// `ReadIntegrityBlock` starts the process to read the Signed Web Bundle's
+// integrity block and metadata, as well as to verify that the signatures
+// contained in the integrity block sign the bundle correctly.
 //
 // If everything is parsed successfully, then
 // the caller can make requests to responses contained in the Signed Web Bundle
@@ -152,6 +152,10 @@ class SignedWebBundleReader {
   SignedWebBundleReader& operator=(const SignedWebBundleReader&) = delete;
 
   ~SignedWebBundleReader();
+
+  // Returns the integrity block of the Web Bundle.
+  // Will CHECK if `GetState()` != `kInitialized`.
+  const web_package::SignedWebBundleIntegrityBlock& GetIntegrityBlock() const;
 
   // Returns the primary URL, as specified in the metadata of the Web Bundle.
   // Will CHECK if `GetState()` != `kInitialized`.

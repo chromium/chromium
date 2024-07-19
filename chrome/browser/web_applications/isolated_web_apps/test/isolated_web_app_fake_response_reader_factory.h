@@ -19,6 +19,7 @@ namespace web_app {
 class MockIsolatedWebAppResponseReader : public IsolatedWebAppResponseReader {
  public:
   ~MockIsolatedWebAppResponseReader() override = default;
+  web_package::SignedWebBundleIntegrityBlock GetIntegrityBlock() override;
   void ReadResponse(const network::ResourceRequest& resource_request,
                     ReadResponseCallback callback) override;
   void Close(base::OnceClosure callback) override;
