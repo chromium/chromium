@@ -79,6 +79,11 @@
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
         ],
       },
+      'android-14-arm64-rel': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'android-arm64-proguard-rel': {
         'swarming': {
           'shards': 2,
@@ -1293,7 +1298,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter',
         ],
       },
-      'android-14-arm64-fyi-rel': {
+      'android-14-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device.cc_unittests.filter',
         ],
@@ -1908,7 +1913,7 @@
           'shards': 40,
         },
       },
-      'android-14-arm64-fyi-rel': {
+      'android-14-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.content_browsertests.filter',
         ],

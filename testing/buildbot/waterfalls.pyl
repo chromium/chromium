@@ -596,6 +596,18 @@
           'isolated_scripts': 'private_code_failure_test_isolated_scripts',
         }
       },
+      'android-14-arm64-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'panther_on_14',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_14_device_gtests',
+          'scripts': 'chromium_android_scripts',
+        }
+      },
       'android-14-x64-rel': {
         'mixins': [
           '14-x64-emulator',

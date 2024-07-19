@@ -2346,6 +2346,50 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-14-arm64-rel",
+    description_html = "Run chromium tests on Android 14 devices.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_mb",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+            "webview_trichrome",
+        ],
+    ),
+    # TODO(crbug.com/352811552): Enable gardening once tests are stable
+    gardener_rotations = args.ignore_default(None),
+    # TODO(crbug.com/352811552): Enable once builder is stable
+    # tree_closing = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "builder_tester",
+        short_name = "14",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "clank-engprod@google.com",
+    execution_timeout = 4 * time.hour,
+)
+ci.builder(
     name = "android-14-x64-rel",
     description_html = "Run chromium tests on Android 14 emulators.",
     # TODO(crbug.com/40286106): Enable on branches once stable
