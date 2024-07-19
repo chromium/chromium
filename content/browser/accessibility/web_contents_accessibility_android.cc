@@ -59,11 +59,22 @@ base::LazyInstance<SearchKeyToPredicateMap>::Leaky
 base::LazyInstance<std::u16string>::Leaky g_all_search_keys =
     LAZY_INSTANCE_INITIALIZER;
 
+static const char kHtmlTypeRow[] = "ROW";
+static const char kHtmlTypeColumn[] = "COLUMN";
+static const char kHtmlTypeRowBounds[] = "ROW_BOUNDS";
+static const char kHtmlTypeColumnBounds[] = "COLUMN_BOUNDS";
+static const char kHtmlTypeTableBounds[] = "TABLE_BOUNDS";
+
 bool AllInterestingNodesPredicate(BrowserAccessibility* start,
                                   BrowserAccessibility* node) {
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(node);
   return android_node->IsInterestingOnAndroid();
+}
+
+bool AccessibilityNoOpPredicate(BrowserAccessibility* start,
+                                BrowserAccessibility* node) {
+  return true;
 }
 
 void AddToPredicateMap(const char* search_key_ascii,
@@ -117,6 +128,15 @@ void InitSearchKeyToPredicateMapIfNeeded() {
   AddToPredicateMap("TREE", AccessibilityTreePredicate);
   AddToPredicateMap("UNVISITED_LINK", AccessibilityUnvisitedLinkPredicate);
   AddToPredicateMap("VISITED_LINK", AccessibilityVisitedLinkPredicate);
+
+  // These are surfaced simply to document the html types, but do not do a
+  // tree/predicate search.
+  AddToPredicateMap(kHtmlTypeRow, AccessibilityNoOpPredicate);
+  AddToPredicateMap(kHtmlTypeColumn, AccessibilityNoOpPredicate);
+  AddToPredicateMap(kHtmlTypeRowBounds, AccessibilityNoOpPredicate);
+  AddToPredicateMap(kHtmlTypeColumnBounds, AccessibilityNoOpPredicate);
+  AddToPredicateMap(kHtmlTypeTableBounds, AccessibilityNoOpPredicate);
+  AddToPredicateMap(kHtmlTypeTableBounds, AccessibilityNoOpPredicate);
 }
 
 AccessibilityMatchPredicate PredicateForSearchKey(
@@ -157,6 +177,89 @@ void DeleteAutofillPopupProxy() {
 // character bounding boxes at once. Set the limit much higher than needed
 // but small enough to prevent wasting memory and cpu if abused.
 const int kMaxCharacterBoundingBoxLen = 1024;
+
+std::optional<int> MaybeFindRowColumn(BrowserAccessibility* start_node,
+                                      std::u16string element_type,
+                                      jboolean forwards) {
+  bool want_row = base::EqualsASCII(element_type, kHtmlTypeRow);
+  bool want_col = base::EqualsASCII(element_type, kHtmlTypeColumn);
+  bool want_row_bounds = base::EqualsASCII(element_type, kHtmlTypeRowBounds);
+  bool want_col_bounds = base::EqualsASCII(element_type, kHtmlTypeColumnBounds);
+  bool want_table_bounds =
+      base::EqualsASCII(element_type, kHtmlTypeTableBounds);
+  if (!want_row && !want_col && !want_row_bounds && !want_col_bounds &&
+      !want_table_bounds) {
+    // The search should continue for other types.
+    return std::nullopt;
+  }
+
+  // See if we're in a table and grab the cell-like node we're under on the way.
+  BrowserAccessibility* table_node = start_node;
+  ui::AXNode* cell_node = nullptr;
+  int cur_row_index, cur_col_index;
+  while (table_node) {
+    if (AccessibilityTablePredicate(start_node, table_node)) {
+      break;
+    }
+
+    auto* node = table_node->node();
+    if (std::optional<int> row = node->GetTableCellRowIndex(),
+        col = node->GetTableCellColIndex();
+        row && col) {
+      cell_node = node;
+      cur_row_index = *row;
+      cur_col_index = *col;
+    }
+
+    table_node = table_node->PlatformGetParent();
+  }
+
+  if (!table_node || !cell_node) {
+    return 0;
+  }
+
+  ui::AXTree* tree = start_node->node()->tree();
+  ui::AXTableInfo* table_info = tree->GetTableInfo(table_node->node());
+  if (!table_info) {
+    return 0;
+  }
+
+  // Move in the desired direction by the element type.
+  int want_row_index = cur_row_index, want_col_index = cur_col_index;
+  if (want_row) {
+    want_row_index += forwards ? 1 : -1;
+  }
+
+  if (want_col) {
+    want_col_index += forwards ? 1 : -1;
+  }
+
+  if (want_col_bounds || want_table_bounds) {
+    want_row_index = forwards ? table_info->row_count - 1 : 0;
+  }
+
+  if (want_row_bounds || want_table_bounds) {
+    want_col_index = forwards ? table_info->col_count - 1 : 0;
+  }
+
+  // This causes the caller to stop its search and indicate appropriately when
+  // trying to move past a boundary.
+  if (want_row_index < 0 || (size_t)want_row_index >= table_info->row_count ||
+      want_col_index < 0 || (size_t)want_col_index >= table_info->col_count) {
+    return 0;
+  }
+
+  // This causes the caller to stop its search and indicate appropriately when
+  // trying to move to the same cell.
+  if ((want_row_bounds && want_col_index == cur_col_index) ||
+      (want_col_bounds && want_row_index == cur_row_index) ||
+      (want_table_bounds && want_row_index == cur_row_index &&
+       want_col_index == cur_col_index)) {
+    return 0;
+  }
+
+  return table_info->cell_ids[want_row_index][want_col_index];
+}
 
 }  // anonymous namespace
 
@@ -1097,8 +1200,18 @@ jint WebContentsAccessibilityAndroid::FindElementType(
   if (use_default_predicate) {
     predicate = AllInterestingNodesPredicate;
   } else {
-    predicate = PredicateForSearchKey(
-        base::android::ConvertJavaStringToUTF16(env, element_type_str));
+    const auto element_type =
+        base::android::ConvertJavaStringToUTF16(env, element_type_str);
+    if (std::optional<int> ret =
+            MaybeFindRowColumn(start_node, element_type, forwards);
+        ret) {
+      BrowserAccessibility* node = start_node->manager()->GetFromID(*ret);
+      return node ? static_cast<BrowserAccessibilityAndroid*>(node)
+                        ->GetUniqueId()
+                  : 0;
+    }
+
+    predicate = PredicateForSearchKey(element_type);
   }
 
   OneShotAccessibilityTreeSearch tree_search(root);
