@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/vector_icons/vector_icons.h"
@@ -81,6 +82,15 @@ void ManagePasswordsIconViews::SetState(password_manager::ui::State state) {
 }
 
 void ManagePasswordsIconViews::UpdateUiForState() {
+  if (features::IsToolbarPinningEnabled()) {
+    BrowserActions* browser_actions = browser()->browser_actions();
+    actions::ActionManager::Get()
+        .FindAction(kActionShowPasswordsBubbleOrPage,
+                    browser_actions->root_action_item())
+        ->SetProperty(kActionItemUnderlineIndicatorKey,
+                      (state_ != password_manager::ui::INACTIVE_STATE));
+  }
+
   // Hides the page action icon if the associated toolbar icon is pinned.
   if (state_ == password_manager::ui::INACTIVE_STATE ||
       delegate()->ShouldHidePageActionIcon(this)) {
