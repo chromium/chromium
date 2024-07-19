@@ -169,17 +169,17 @@
   <message name="IDS_COMPOSE_RESULT_TEXT_LABEL" desc="Accesibility label for the area holding the result text.">
     Result
   </message>
-  <message name="IDS_COMPOSE_RESULT_LOADING_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the result dialog is loading a new response." translateable="false">
+  <message name="IDS_COMPOSE_RESULT_LOADING_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the result dialog is loading a new response.">
     Result loading
   </message>
-  <message name="IDS_COMPOSE_RESULT_UPDATED_A11Y_MESSAGE" desc="Accessibility string read by screen readers when the text in the result dialog has changed." translateable="false">
+  <message name="IDS_COMPOSE_RESULT_UPDATED_A11Y_MESSAGE" desc="Accessibility string read by screen readers when the text in the result dialog has changed.">
     Result updated
   </message>
-  <message name="IDS_COMPOSE_UNDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the undo button in the result dialog has been pressed." translateable="false">
-    Undoing result
+  <message name="IDS_COMPOSE_UNDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the undo button in the result dialog has been pressed.">
+    Undo result
   </message>
-  <message name="IDS_COMPOSE_REDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the redo button in the result dialog has been pressed." translateable="false">
-    Redoing result
+  <message name="IDS_COMPOSE_REDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the redo button in the result dialog has been pressed.">
+    Redo result
   </message>
 
   <!-- Errors -->

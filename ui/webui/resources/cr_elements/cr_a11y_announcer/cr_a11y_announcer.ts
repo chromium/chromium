@@ -76,6 +76,10 @@ export class CrA11yAnnouncerElement extends CustomElement {
     }
   }
 
+  announceWithTimeout(message: string, timeout: number) {
+    this.announce(message, timeout);
+  }
+
   announce(message: string, timeout: number = TIMEOUT_MS) {
     if (this.currentTimeout_ !== null) {
       clearTimeout(this.currentTimeout_);
