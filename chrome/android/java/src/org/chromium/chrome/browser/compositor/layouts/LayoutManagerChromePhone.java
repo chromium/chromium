@@ -34,9 +34,9 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      *
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
-     *     Start surface refactor is enabled. Used to create overviewLayout if it has value,
-     *     otherwise will use the accessibility overview layout.
+     * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher. Used
+     *     to create overviewLayout if it has value, otherwise will use the accessibility overview
+     *     layout.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.

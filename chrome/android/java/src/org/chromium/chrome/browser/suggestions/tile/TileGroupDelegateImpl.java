@@ -176,7 +176,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     }
 
     /**
-     * Records user clicking on MV tiles in New tab page or Start surface.
+     * Records user clicking on MV tiles in New tab page.
      *
      * @param windowDisposition How to open (new window, current tab, etc).
      */

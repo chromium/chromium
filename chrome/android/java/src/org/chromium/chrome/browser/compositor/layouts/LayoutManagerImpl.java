@@ -1146,17 +1146,14 @@ public class LayoutManagerImpl
     /**
      * Should be called by control logic to show a new {@link Layout}.
      *
-     * TODO(dtrainor, clholgat): Clean up the show logic to guarantee startHiding/doneHiding get
+     * <p>TODO(dtrainor, clholgat): Clean up the show logic to guarantee startHiding/doneHiding get
      * called.
      *
-     * @param layout  The new {@link Layout} to show.
+     * @param layout The new {@link Layout} to show.
      * @param animate Whether or not {@code layout} should animate as it shows.
      */
     protected void startShowing(Layout layout, boolean animate) {
         assert layout != null : "Can't show a null layout.";
-
-        // This can happen in some cases where the start surface may not have been created yet.
-        if (layout == null) return;
 
         // Set the new layout
         setNextLayout(null, true);

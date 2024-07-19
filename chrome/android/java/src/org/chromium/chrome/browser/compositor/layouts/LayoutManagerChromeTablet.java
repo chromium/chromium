@@ -61,8 +61,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
-     *     Start surface refactor is enabled.
+     * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.

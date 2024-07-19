@@ -249,8 +249,6 @@ public class StatusBarColorController
                 };
 
         if (layoutManagerSupplier != null) {
-            // LayoutState is observed when the feature "Start surface refactor" is enabled or Start
-            // surface is disabled.
             layoutManagerSupplier.addObserver(
                     mCallbackController.makeCancelable(
                             layoutManager -> {
