@@ -53,16 +53,15 @@ base::LazyInstance<re2::RE2, PasswordSiteUrlLazyInstanceTraits>
 // be used to spare recomputation if called multiple times for the same form.
 std::vector<FieldRendererId> GetUsernamePredictions(
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache,
-    const WebFormElement& form) {
+    UsernameDetectorCache* username_detector_cache) {
   // Dummy cache stores the predictions in case no real cache was passed to
   // here.
   UsernameDetectorCache dummy_cache;
   if (!username_detector_cache)
     username_detector_cache = &dummy_cache;
 
-  return GetPredictionsFieldBasedOnHtmlAttributes(
-      form_data, username_detector_cache, form);
+  return GetPredictionsFieldBasedOnHtmlAttributes(form_data,
+                                                  username_detector_cache);
 }
 
 }  // namespace
@@ -139,7 +138,7 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
       IsGaiaReauthenticationForm(web_form));
 
   form_data->set_username_predictions(
-      GetUsernamePredictions(*form_data, username_detector_cache, web_form));
+      GetUsernamePredictions(*form_data, username_detector_cache));
   form_data->set_button_titles(
       form_util::GetButtonTitles(web_form, button_titles_cache));
 
@@ -158,8 +157,8 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     return nullptr;
   }
   auto form_data = std::make_unique<FormData>(std::move(*form));
-  form_data->set_username_predictions(GetUsernamePredictions(
-      *form_data, username_detector_cache, WebFormElement()));
+  form_data->set_username_predictions(
+      GetUsernamePredictions(*form_data, username_detector_cache));
   return form_data;
 }
 

@@ -33,8 +33,7 @@ using UsernameDetectorCache =
 // which is stored in the cache.
 const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache,
-    const blink::WebFormElement& form);
+    UsernameDetectorCache* username_detector_cache);
 
 }  // namespace autofill
 

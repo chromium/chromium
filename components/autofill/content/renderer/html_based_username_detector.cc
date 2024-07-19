@@ -239,14 +239,13 @@ void FindUsernameFieldInternal(
 
 const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache,
-    const WebFormElement& form) {
+    UsernameDetectorCache* username_detector_cache) {
   // The cache will store the object referenced in the return value, so it must
   // exist. It can be empty.
   DCHECK(username_detector_cache);
 
   auto [form_position, cache_miss] = username_detector_cache->emplace(
-      form_util::GetFormRendererId(form), std::vector<FieldRendererId>());
+      form_data.renderer_id(), std::vector<FieldRendererId>());
 
   if (cache_miss) {
     std::vector<FieldRendererId> username_predictions;
