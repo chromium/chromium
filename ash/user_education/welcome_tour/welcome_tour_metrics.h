@@ -42,54 +42,6 @@ enum class ChromeVoxEnabled {
   kMaxValue = kDuringTour,
 };
 
-// Enumeration of reasons the Welcome Tour may be prevented. These values are
-// persisted to logs. Entries should not be renumbered and numeric values should
-// never be reused. Be sure to update `kAllPreventedReasonsSet` accordingly.
-enum class PreventedReason {
-  kMinValue = 0,
-  kUnknown = kMinValue,
-  kChromeVoxEnabled = 1,
-  kCounterfactualExperimentArm = 2,
-  kManagedAccount = 3,
-  kTabletModeEnabled = 4,
-  kUserNewnessNotAvailable = 5,
-  kUserNotNewCrossDevice = 6,
-  kUserTypeNotRegular = 7,
-  kUserNotNewLocally = 8,
-  kMaxValue = kUserNotNewLocally,
-};
-
-static constexpr auto kAllPreventedReasonsSet =
-    base::EnumSet<PreventedReason,
-                  PreventedReason::kMinValue,
-                  PreventedReason::kMaxValue>({
-        PreventedReason::kUnknown,
-        PreventedReason::kChromeVoxEnabled,
-        PreventedReason::kCounterfactualExperimentArm,
-        PreventedReason::kManagedAccount,
-        PreventedReason::kTabletModeEnabled,
-        PreventedReason::kUserNewnessNotAvailable,
-        PreventedReason::kUserNotNewCrossDevice,
-        PreventedReason::kUserTypeNotRegular,
-        PreventedReason::kUserNotNewLocally,
-    });
-
-// Enumeration of steps in the Welcome Tour. These values are persisted to logs.
-// Entries should not be renumbered and numeric values should never be reused.
-enum class Step {
-  kMinValue = 0,
-  kDialog = kMinValue,
-  kExploreApp = 1,
-  kExploreAppWindow = 2,
-  kHomeButton = 3,
-  kSearch = 4,
-  kSettingsApp = 5,
-  kShelf = 6,
-  kStatusArea = 7,
-  kFilesApp = 8,
-  kMaxValue = kFilesApp,
-};
-
 // Enumeration of interactions users may engage in after the Welcome Tour. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused. Be sure to update `kAllInteractionsSet`
@@ -114,6 +66,66 @@ static constexpr auto kAllInteractionsSet =
         Interaction::kSearch,
         Interaction::kSettingsApp,
     });
+
+// Enumeration of reasons the Welcome Tour may be prevented. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused. Be sure to update `kAllPreventedReasonsSet` accordingly.
+enum class PreventedReason {
+  kMinValue = 0,
+  kUnknown = kMinValue,
+  kChromeVoxEnabled = 1,
+  // kCounterfactualExperimentArm = 2, Deprecated.
+  kManagedAccount = 3,
+  kTabletModeEnabled = 4,
+  kUserNewnessNotAvailable = 5,
+  kUserNotNewCrossDevice = 6,
+  kUserTypeNotRegular = 7,
+  kUserNotNewLocally = 8,
+  kHoldbackExperimentArm = 9,
+  kMaxValue = kHoldbackExperimentArm,
+};
+
+static constexpr auto kAllPreventedReasonsSet =
+    base::EnumSet<PreventedReason,
+                  PreventedReason::kMinValue,
+                  PreventedReason::kMaxValue>({
+        PreventedReason::kUnknown,
+        PreventedReason::kChromeVoxEnabled,
+        PreventedReason::kManagedAccount,
+        PreventedReason::kTabletModeEnabled,
+        PreventedReason::kUserNewnessNotAvailable,
+        PreventedReason::kUserNotNewCrossDevice,
+        PreventedReason::kUserTypeNotRegular,
+        PreventedReason::kUserNotNewLocally,
+        PreventedReason::kHoldbackExperimentArm,
+    });
+
+// Enumeration of steps in the Welcome Tour. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class Step {
+  kMinValue = 0,
+  kDialog = kMinValue,
+  kExploreApp = 1,
+  kExploreAppWindow = 2,
+  kHomeButton = 3,
+  kSearch = 4,
+  kSettingsApp = 5,
+  kShelf = 6,
+  kStatusArea = 7,
+  kFilesApp = 8,
+  kMaxValue = kFilesApp,
+};
+
+// Enumeration of results recorded for each attempt to show the Welcome Tour to
+// the user. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class TourResult {
+  kMinValue = 0,
+  kAborted = kMinValue,
+  kCompleted = 1,
+  kHoldback = 2,
+  kMaxValue = kHoldback,
+};
 
 // Utilities -------------------------------------------------------------------
 
@@ -141,6 +153,9 @@ ASH_EXPORT void RecordTourDuration(base::TimeDelta duration, bool completed);
 
 // Record that the Welcome Tour was prevented for the given `reason`.
 ASH_EXPORT void RecordTourPrevented(PreventedReason reason);
+
+// Record the result for an attempt to show the Welcome Tour to the user.
+ASH_EXPORT void RecordTourResult(TourResult result);
 
 // Returns a string representation of the given `interaction`.
 ASH_EXPORT std::string ToString(Interaction interaction);

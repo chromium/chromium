@@ -555,7 +555,7 @@ TEST_P(WelcomeTourControllerV2Test, GetTutorialDescription) {
 
   const std::u16string product_name = ui::GetChromeOSDeviceName();
   const std::u16string total_steps =
-      IsWelcomeTourV2Enabled() ? kTotalStepsV2 : kTotalStepsV1;
+      features::IsWelcomeTourV2Enabled() ? kTotalStepsV2 : kTotalStepsV1;
   int current_step = 1;
 
   using ::testing::Matcher;
@@ -798,59 +798,57 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
                   IsEmpty()));
 }
 
-// WelcomeTourControllerCounterfactualTest -------------------------------------
+// WelcomeTourControllerHoldbackTest -------------------------------------------
 
-// Base class for tests of the `WelcomeTourController` which are concerned with
-// the behavior of counterfactual experiment arms, parameterized by whether the
-// Welcome Tour feature is enabled counterfactually.
-class WelcomeTourControllerCounterfactualTest
+// Base class for tests of the `WelcomeTourController` which are concerned
+// with the behavior of holdback experiment arms, parameterized by whether the
+// Welcome Tour is held back.
+class WelcomeTourControllerHoldbackTest
     : public WelcomeTourControllerTest,
       public ::testing::WithParamInterface<
-          /*is_counterfactual=*/std::optional<bool>> {
+          /*is_holdback=*/std::optional<bool>> {
  public:
-  WelcomeTourControllerCounterfactualTest() {
-    if (const auto& is_counterfactual = IsCounterfactual()) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kWelcomeTour,
-          {{"is-counterfactual", *is_counterfactual ? "true" : "false"}});
+  WelcomeTourControllerHoldbackTest() {
+    if (const auto& is_holdback = IsHoldback()) {
+      scoped_feature_list_.InitWithFeatureState(features::kWelcomeTourHoldback,
+                                                is_holdback.value());
     }
   }
 
-  // Returns whether the Welcome Tour is enabled counterfactually as part of an
-  // experiment arm given test parameterization.
-  const std::optional<bool>& IsCounterfactual() const { return GetParam(); }
+  // Returns whether the Welcome Tour is enabled as the holdback experiment
+  // arm given test parameterization.
+  const std::optional<bool>& IsHoldback() const { return GetParam(); }
 
  private:
-  // Used to conditionally enable the Welcome Tour counterfactually as part of
-  // an experiment arm given test parameterization.
+  // Used to conditionally enable the Welcome Tour as the holdback experiment
+  // arm given test parameterization.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         WelcomeTourControllerCounterfactualTest,
-                         /*is_counterfactual=*/
+                         WelcomeTourControllerHoldbackTest,
+                         /*is_holdback=*/
                          ::testing::Values(std::make_optional(true),
                                            std::make_optional(false),
                                            std::nullopt));
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that the Welcome Tour is prevented from running if enabled
-// counterfactually as part of an experiment arm and that an attempt is made to
-// launch the Explore app when that occurs.
-TEST_P(WelcomeTourControllerCounterfactualTest,
-       PreventsWelcomeTourForCounterfactualArms) {
+// Verifies that the Welcome Tour is prevented from running if enabled as the
+// holdback experiment arm and that an attempt is made to launch the Explore app
+// when that occurs.
+TEST_P(WelcomeTourControllerHoldbackTest, PreventsWelcomeTourForHoldbackArms) {
   const auto primary_account_id = AccountId::FromUserEmail("primary@test");
 
   // Set expectations for whether the Welcome Tour will run.
   EXPECT_CALL(
       *user_education_delegate(),
       RegisterTutorial(Eq(primary_account_id), Eq(TutorialId::kWelcomeTour), _))
-      .Times(IsCounterfactual().value_or(false) ? 0u : 1u);
+      .Times(IsHoldback().value_or(false) ? 0u : 1u);
   EXPECT_CALL(*user_education_delegate(),
               StartTutorial(Eq(primary_account_id),
                             Eq(TutorialId::kWelcomeTour), _, _, _))
-      .Times(IsCounterfactual().value_or(false) ? 0u : 1u);
+      .Times(IsHoldback().value_or(false) ? 0u : 1u);
 
   // Set expectations for whether the Explore app will launch.
   EXPECT_CALL(*user_education_delegate(),
@@ -858,7 +856,7 @@ TEST_P(WelcomeTourControllerCounterfactualTest,
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
-      .Times(IsCounterfactual().value_or(false) ? 1u : 0u);
+      .Times(IsHoldback().value_or(false) ? 1u : 0u);
 
   // Login the primary user for the first time and verify expectations.
   SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());

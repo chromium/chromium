@@ -19,6 +19,12 @@
 namespace ash::welcome_tour_metrics {
 namespace {
 
+// Aliases ---------------------------------------------------------------------
+
+using TestVariantsParam = std::tuple<
+    /*is_completed=*/std::optional<bool>,
+    std::optional<PreventedReason>>;
+
 // Constants -------------------------------------------------------------------
 
 static constexpr auto kAllStepsSet =
@@ -41,57 +47,40 @@ void ClearPref(const std::string& pref_name) {
 // properly submitted.
 class WelcomeTourInteractionMetricsTest
     : public UserEducationAshTestBase,
-      public ::testing::WithParamInterface<std::optional<PreventedReason>> {
+      public ::testing::WithParamInterface<TestVariantsParam> {
  public:
   WelcomeTourInteractionMetricsTest() {
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kWelcomeTour,
-        {{"is-counterfactual", IsCounterfactual() ? "true" : "false"}});
+    scoped_feature_list.InitWithFeatureState(features::kWelcomeTourHoldback,
+                                             IsHoldback());
   }
 
-  std::string GetCompletionString() const {
-    if (IsCounterfactual()) {
-      return "Counterfactual";
-    }
-    if (IsCompleted()) {
-      return "Completed";
-    }
-    NOTREACHED_NORETURN();
-  }
-
-  std::string GetInteractionCountMetricName(
-      const std::string& completion_string) const {
-    return base::StrCat(
-        {"Ash.WelcomeTour.", completion_string, ".Interaction.Count"});
+  std::string GetInteractionCountMetricName() const {
+    return "Ash.WelcomeTour.Interaction.Count";
   }
 
   std::string GetInteractionFirstTimeBucketMetricName(
-      Interaction interaction,
-      const std::string& completion_string) const {
-    return base::StrCat({"Ash.WelcomeTour.", completion_string,
-                         ".Interaction.FirstTimeBucket.",
+      Interaction interaction) const {
+    return base::StrCat({"Ash.WelcomeTour.Interaction.FirstTimeBucket.",
                          ToString(interaction)});
   }
 
-  std::string GetInteractionFirstTimeMetricName(
-      Interaction interaction,
-      const std::string& completion_string) const {
-    return base::StrCat({"Ash.WelcomeTour.", completion_string,
-                         ".Interaction.FirstTime.", ToString(interaction)});
+  std::string GetInteractionFirstTimeMetricName(Interaction interaction) const {
+    return base::StrCat(
+        {"Ash.WelcomeTour.Interaction.FirstTime.", ToString(interaction)});
   }
 
   std::optional<PreventedReason> GetPreventedReason() const {
-    return GetParam();
+    return std::get<1>(GetParam());
   }
 
-  bool IsCompleted() const { return !GetParam().has_value(); }
+  std::optional<bool> IsCompleted() const { return std::get<0>(GetParam()); }
 
-  bool IsCounterfactual() const {
-    return GetParam() == PreventedReason::kCounterfactualExperimentArm;
+  bool IsHoldback() const {
+    return GetPreventedReason() == PreventedReason::kHoldbackExperimentArm;
   }
 
   bool InteractionsShouldBeRecorded() const {
-    return IsCompleted() || IsCounterfactual();
+    return IsCompleted().has_value() || IsHoldback();
   }
 
  private:
@@ -101,10 +90,14 @@ class WelcomeTourInteractionMetricsTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     WelcomeTourInteractionMetricsTest,
-    ::testing::Values(
-        std::nullopt,
-        std::make_optional(PreventedReason::kCounterfactualExperimentArm),
-        std::make_optional(PreventedReason::kUnknown)));
+    testing::Combine(
+        /*is_completed=*/::testing::Values(std::nullopt,
+                                           std::make_optional(true),
+                                           std::make_optional(false)),
+        ::testing::Values(
+            std::nullopt,
+            std::make_optional(PreventedReason::kHoldbackExperimentArm),
+            std::make_optional(PreventedReason::kUnknown))));
 
 // Tests -----------------------------------------------------------------------
 
@@ -112,92 +105,70 @@ INSTANTIATE_TEST_SUITE_P(
 // appropriate histogram is submitted.
 TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   SimulateNewUserFirstLogin("user@test");
-  ClearPref("ash.welcome_tour.prevented.first_reason");
-  ClearPref("ash.welcome_tour.prevented.first_time");
+  ClearPref("ash.welcome_tour.v2.prevented.first_reason");
+  ClearPref("ash.welcome_tour.v2.prevented.first_time");
 
   base::HistogramTester histogram_tester;
 
-  // Case: Before tour prevention/completion. No interactions should be logged.
+  // Case: Before tour attempt. No interactions should be logged.
   for (auto interaction : kAllInteractionsSet) {
     RecordInteraction(interaction);
     histogram_tester.ExpectTotalCount(
-        GetInteractionFirstTimeBucketMetricName(interaction, "Completed"), 0);
+        GetInteractionFirstTimeBucketMetricName(interaction), 0);
     histogram_tester.ExpectTotalCount(
-        GetInteractionFirstTimeMetricName(interaction, "Completed"), 0);
-    histogram_tester.ExpectBucketCount(
-        GetInteractionCountMetricName("Completed"), interaction, 0);
-    histogram_tester.ExpectTotalCount(
-        GetInteractionFirstTimeBucketMetricName(interaction, "Counterfactual"),
-        0);
-    histogram_tester.ExpectTotalCount(
-        GetInteractionFirstTimeMetricName(interaction, "Counterfactual"), 0);
-    histogram_tester.ExpectBucketCount(
-        GetInteractionCountMetricName("Counterfactual"), interaction, 0);
+        GetInteractionFirstTimeMetricName(interaction), 0);
+    histogram_tester.ExpectBucketCount(GetInteractionCountMetricName(),
+                                       interaction, 0);
   }
 
-  // Case: First time after prevention/completion. Interactions should be
-  // recorded, along with first interaction times, if the tour was completed or
-  // prevented counterfactually.
-  if (IsCompleted()) {
-    RecordTourDuration(base::Minutes(1), /*completed=*/true);
-  } else {
+  // Case: First time after tour attempt. Interactions should be recorded, along
+  // with first interaction times, if the tour was attempted.
+  if (const auto completed = IsCompleted()) {
+    RecordTourDuration(base::Minutes(1), completed.value());
+  } else if (GetPreventedReason()) {
     RecordTourPrevented(GetPreventedReason().value());
   }
 
   for (auto interaction : kAllInteractionsSet) {
     RecordInteraction(interaction);
+
     if (InteractionsShouldBeRecorded()) {
-      const auto completion = GetCompletionString();
       histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeBucketMetricName(interaction, completion), 1);
+          GetInteractionFirstTimeBucketMetricName(interaction), 1);
       histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeMetricName(interaction, completion), 1);
-      histogram_tester.ExpectBucketCount(
-          GetInteractionCountMetricName(completion), interaction, 1);
+          GetInteractionFirstTimeMetricName(interaction), 1);
+      histogram_tester.ExpectBucketCount(GetInteractionCountMetricName(),
+                                         interaction, 1);
     } else {
       histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeMetricName(interaction, "Completed"), 0);
+          GetInteractionFirstTimeBucketMetricName(interaction), 0);
       histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeBucketMetricName(interaction, "Completed"), 0);
-      histogram_tester.ExpectBucketCount(
-          GetInteractionCountMetricName("Completed"), interaction, 0);
-      histogram_tester.ExpectTotalCount(GetInteractionFirstTimeBucketMetricName(
-                                            interaction, "Counterfactual"),
-                                        0);
-      histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeMetricName(interaction, "Counterfactual"), 0);
-      histogram_tester.ExpectBucketCount(
-          GetInteractionCountMetricName("Counterfactual"), interaction, 0);
+          GetInteractionFirstTimeMetricName(interaction), 0);
+      histogram_tester.ExpectBucketCount(GetInteractionCountMetricName(),
+                                         interaction, 0);
     }
   }
 
-  // Case: Another time after prevention/completion. Interactions should be
-  // recorded if the tour was completed or prevented counterfactually, but the
-  // first time metric should not be recorded again.
+  // Case: Another time after tour attempt. Interactions should be recorded if
+  // the tour was attempted, but the first time metric should not be recorded
+  // again.
   for (auto interaction : kAllInteractionsSet) {
     RecordInteraction(interaction);
+
     if (InteractionsShouldBeRecorded()) {
-      const auto completion = GetCompletionString();
       histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeBucketMetricName(interaction, completion), 1);
+          GetInteractionFirstTimeBucketMetricName(interaction), 1);
       histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeMetricName(interaction, completion), 1);
-      histogram_tester.ExpectBucketCount(
-          GetInteractionCountMetricName(completion), interaction, 2);
+          GetInteractionFirstTimeMetricName(interaction), 1);
+      histogram_tester.ExpectBucketCount(GetInteractionCountMetricName(),
+                                         interaction, 2);
     } else {
       histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeMetricName(interaction, "Completed"), 0);
+          GetInteractionFirstTimeBucketMetricName(interaction), 0);
       histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeBucketMetricName(interaction, "Completed"), 0);
-      histogram_tester.ExpectBucketCount(
-          GetInteractionCountMetricName("Completed"), interaction, 0);
-      histogram_tester.ExpectTotalCount(GetInteractionFirstTimeBucketMetricName(
-                                            interaction, "Counterfactual"),
-                                        0);
-      histogram_tester.ExpectTotalCount(
-          GetInteractionFirstTimeMetricName(interaction, "Counterfactual"), 0);
-      histogram_tester.ExpectBucketCount(
-          GetInteractionCountMetricName("Counterfactual"), interaction, 0);
+          GetInteractionFirstTimeMetricName(interaction), 0);
+      histogram_tester.ExpectBucketCount(GetInteractionCountMetricName(),
+                                         interaction, 0);
     }
   }
 }
@@ -252,13 +223,13 @@ TEST_F(WelcomeTourMetricsEnumTest, AllPreventedReasons) {
     switch (reason) {
       case PreventedReason::kUnknown:
       case PreventedReason::kChromeVoxEnabled:
-      case PreventedReason::kCounterfactualExperimentArm:
       case PreventedReason::kManagedAccount:
       case PreventedReason::kTabletModeEnabled:
       case PreventedReason::kUserNewnessNotAvailable:
       case PreventedReason::kUserNotNewCrossDevice:
       case PreventedReason::kUserTypeNotRegular:
       case PreventedReason::kUserNotNewLocally:
+      case PreventedReason::kHoldbackExperimentArm:
         should_exist_in_all_set = true;
     }
 

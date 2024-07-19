@@ -1035,6 +1035,8 @@ BASE_DECLARE_FEATURE(kWelcomeTourChromeVoxSupported);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWelcomeTourForceUserEligibility);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kWelcomeTourHoldback);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWelcomeTourV2);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWifiConnectMacAddressRandomization);
@@ -1468,8 +1470,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperPerDeskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeExperienceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourChromeVoxSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourEnabledCounterfactually();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourForceUserEligibilityEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourHoldbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiConcurrencyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiDirectEnabled();

@@ -22,14 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="Completion">
-  <variant name="Aborted" summary="aborted"/>
-  <variant name="Completed" summary="completed"/>
-  <variant name="Counterfactual" summary="prevented counterfactually"/>
-</variants>
+<histogram name="Ash.WelcomeTour.Aborted.Duration" units="ms"
+    expires_after="2025-07-01">
+  <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records the duration of the Welcome Tour when it has been aborted, starting
+    from when dialog shows.
+  </summary>
+</histogram>
 
 <histogram name="Ash.WelcomeTour.Aborted.Reason"
-    enum="WelcomeTourAbortedReason" expires_after="2024-12-08">
+    enum="WelcomeTourAbortedReason" expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -38,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.ChromeVoxEnabled.When"
-    enum="WelcomeTourChromeVoxEnabled" expires_after="2025-02-01">
+    enum="WelcomeTourChromeVoxEnabled" expires_after="2025-07-01">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -47,8 +51,64 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.WelcomeTour.Completed.Duration" units="ms"
+    expires_after="2025-07-01">
+  <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records the duration of the Welcome Tour when it has been completed,
+    starting from when dialog shows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Interaction.Count"
+    enum="WelcomeTourInteraction" expires_after="2025-07-01">
+  <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records each time the user performs the given interaction when the tour was
+    completed, aborted, or held back.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Interaction.FirstTime.{Interaction}"
+    units="ms" expires_after="2025-07-01">
+  <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records the time it took the user to interact with {Interaction}, when the
+    tour was completed, aborted, or held back.
+  </summary>
+  <token key="Interaction">
+    <variant name="ExploreApp" summary="the Explore app"/>
+    <variant name="FilesApp" summary="the Files app"/>
+    <variant name="Launcher" summary="the Launcher"/>
+    <variant name="QuickSettings" summary="Quick Settings"/>
+    <variant name="Search" summary="the search box in the Launcher"/>
+    <variant name="SettingsApp" summary="the Settings app"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Interaction.FirstTimeBucket.{Interaction}"
+    enum="TimeBucket" expires_after="2025-07-01">
+  <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records the time it took the user to interact with {Interaction}, when the
+    tour was completed, aborted, or held back.
+  </summary>
+  <token key="Interaction">
+    <variant name="ExploreApp" summary="the Explore app"/>
+    <variant name="FilesApp" summary="the Files app"/>
+    <variant name="Launcher" summary="the Launcher"/>
+    <variant name="QuickSettings" summary="Quick Settings"/>
+    <variant name="Search" summary="the search box in the Launcher"/>
+    <variant name="SettingsApp" summary="the Settings app"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.Prevented.Reason"
-    enum="WelcomeTourPreventedReason" expires_after="2024-12-08">
+    enum="WelcomeTourPreventedReason" expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -58,15 +118,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.WelcomeTour.Result" enum="WelcomeTourResult"
+    expires_after="2025-07-01">
+  <owner>wutao@google.com</owner>
+  <owner>llin@google.com</owner>
+  <summary>
+    Records the result for an attempt to show the Welcome Tour to the user.
+  </summary>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.Step.Aborted" enum="WelcomeTourStep"
-    expires_after="2024-12-08">
+    expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>Records that the Welcome Tour was aborted on a given step.</summary>
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Duration.{Step}" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -85,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
-    expires_after="2024-12-08">
+    expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -93,68 +162,6 @@ chromium-metrics-reviews@google.com.
     recorded either 0 or 1 times for any given user, depending on how far into
     the tour the user proceeds.
   </summary>
-</histogram>
-
-<histogram name="Ash.WelcomeTour.{Completion}.Duration" units="ms"
-    expires_after="2024-12-08">
-  <owner>dmblack@google.com</owner>
-  <owner>teresachow@google.com</owner>
-  <summary>
-    Records the duration of the Welcome Tour when it has been {Completion},
-    starting from when dialog shows.
-  </summary>
-  <token key="Completion" variants="Completion"/>
-</histogram>
-
-<histogram name="Ash.WelcomeTour.{Completion}.Interaction.Count"
-    enum="WelcomeTourInteraction" expires_after="2024-12-08">
-  <owner>dmblack@google.com</owner>
-  <owner>teresachow@google.com</owner>
-  <summary>
-    Records each time the user performs the given interaction when the tour was
-    {Completion}.
-  </summary>
-  <token key="Completion" variants="Completion"/>
-</histogram>
-
-<histogram
-    name="Ash.WelcomeTour.{Completion}.Interaction.FirstTime.{Interaction}"
-    units="ms" expires_after="2024-12-08">
-  <owner>dmblack@google.com</owner>
-  <owner>teresachow@google.com</owner>
-  <summary>
-    Records the time it took the user to interact with {Interaction}, when the
-    tour was {Completion}.
-  </summary>
-  <token key="Completion" variants="Completion"/>
-  <token key="Interaction">
-    <variant name="ExploreApp" summary="the Explore app"/>
-    <variant name="FilesApp" summary="the Files app"/>
-    <variant name="Launcher" summary="the Launcher"/>
-    <variant name="QuickSettings" summary="Quick Settings"/>
-    <variant name="Search" summary="the search box in the Launcher"/>
-    <variant name="SettingsApp" summary="the Settings app"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Ash.WelcomeTour.{Completion}.Interaction.FirstTimeBucket.{Interaction}"
-    enum="TimeBucket" expires_after="2024-12-08">
-  <owner>dmblack@google.com</owner>
-  <owner>teresachow@google.com</owner>
-  <summary>
-    Records the time it took the user to interact with {Interaction}, when the
-    tour was {Completion}.
-  </summary>
-  <token key="Completion" variants="Completion"/>
-  <token key="Interaction">
-    <variant name="ExploreApp" summary="the Explore app"/>
-    <variant name="FilesApp" summary="the Files app"/>
-    <variant name="Launcher" summary="the Launcher"/>
-    <variant name="QuickSettings" summary="Quick Settings"/>
-    <variant name="Search" summary="the search box in the Launcher"/>
-    <variant name="SettingsApp" summary="the Settings app"/>
-  </token>
 </histogram>
 
 </histograms>

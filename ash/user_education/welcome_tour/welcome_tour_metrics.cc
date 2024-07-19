@@ -20,6 +20,10 @@
 namespace ash::welcome_tour_metrics {
 namespace {
 
+// Constants -------------------------------------------------------------------
+
+static constexpr char kWelcomeTourHistogramNamePrefix[] = "Ash.WelcomeTour.";
+
 // Helpers ---------------------------------------------------------------------
 
 PrefService* GetLastActiveUserPrefService() {
@@ -34,7 +38,9 @@ PrefService* GetLastActiveUserPrefService() {
 void RecordChromeVoxEnabled(ChromeVoxEnabled when) {
   CHECK(features::IsWelcomeTourEnabled());
 
-  base::UmaHistogramEnumeration("Ash.WelcomeTour.ChromeVoxEnabled.When", when);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kWelcomeTourHistogramNamePrefix, "ChromeVoxEnabled.When"}),
+      when);
 }
 
 void RecordInteraction(Interaction interaction) {
@@ -46,47 +52,34 @@ void RecordInteraction(Interaction interaction) {
     return;
   }
 
-  auto completed_time = welcome_tour_prefs::GetTimeOfFirstTourCompletion(prefs);
-  auto prevented_time = welcome_tour_prefs::GetTimeOfFirstTourPrevention(prefs);
-  bool prevented_counterfactually =
-      welcome_tour_prefs::GetReasonForFirstTourPrevention(prefs) ==
-      welcome_tour_metrics::PreventedReason::kCounterfactualExperimentArm;
-
-  // These metrics should only be recorded for users who have completed the
-  // Welcome Tour, or users who are part of the counterfactual experiment arm.
-  if (!completed_time && !(prevented_time && prevented_counterfactually)) {
+  // These metrics should only be recorded for users who have attempted the
+  // tour.
+  const auto first_time = welcome_tour_prefs::GetTimeOfFirstTourAttempt(prefs);
+  if (!first_time) {
     return;
   }
 
-  const std::string completion_string =
-      prevented_counterfactually ? "Counterfactual" : "Completed";
-
   base::UmaHistogramEnumeration(
-      base::StrCat(
-          {"Ash.WelcomeTour.", completion_string, ".Interaction.Count"}),
+      base::StrCat({kWelcomeTourHistogramNamePrefix, "Interaction.Count"}),
       interaction);
 
   // Attempt to mark that this interaction happened for the first time. If it
   // succeeds, then it was, so record the relevant metric.
   if (welcome_tour_prefs::MarkTimeOfFirstInteraction(prefs, interaction)) {
-    // Time to interaction should be measured from tour prevention if the tour
-    // was prevented, else use the time the tour was completed.
-    const auto relevant_time = prevented_time.has_value()
-                                   ? prevented_time.value()
-                                   : completed_time.value();
-    const auto time_delta = base::Time::Now() - relevant_time;
+    // Time to interaction should be measured from first tour attempt.
+    const auto time_delta = base::Time::Now() - first_time.value();
 
     // Record high fidelity `time_delta`.
     base::UmaHistogramCustomTimes(
-        base::StrCat({"Ash.WelcomeTour.", completion_string,
-                      ".Interaction.FirstTime.", ToString(interaction)}),
+        base::StrCat({kWelcomeTourHistogramNamePrefix, "Interaction.FirstTime.",
+                      ToString(interaction)}),
         time_delta, /*min=*/base::Seconds(1), /*max=*/base::Days(3),
         /*buckets=*/100);
 
     // Record high readability time bucket.
     base::UmaHistogramEnumeration(
-        base::StrCat({"Ash.WelcomeTour.", completion_string,
-                      ".Interaction.FirstTimeBucket.", ToString(interaction)}),
+        base::StrCat({kWelcomeTourHistogramNamePrefix,
+                      "Interaction.FirstTimeBucket.", ToString(interaction)}),
         user_education_util::GetTimeBucket(time_delta));
   }
 }
@@ -94,14 +87,16 @@ void RecordInteraction(Interaction interaction) {
 void RecordStepAborted(Step step) {
   CHECK(features::IsWelcomeTourEnabled());
 
-  base::UmaHistogramEnumeration("Ash.WelcomeTour.Step.Aborted", step);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kWelcomeTourHistogramNamePrefix, "Step.Aborted"}), step);
 }
 
 void RecordStepDuration(Step step, base::TimeDelta duration) {
   CHECK(features::IsWelcomeTourEnabled());
 
   base::UmaHistogramCustomTimes(
-      base::StrCat({"Ash.WelcomeTour.Step.Duration.", ToString(step)}),
+      base::StrCat(
+          {kWelcomeTourHistogramNamePrefix, "Step.Duration.", ToString(step)}),
       duration, /*min=*/base::Milliseconds(1), /*max=*/base::Minutes(5),
       /*buckets=*/50);
 }
@@ -109,13 +104,16 @@ void RecordStepDuration(Step step, base::TimeDelta duration) {
 void RecordStepShown(Step step) {
   CHECK(features::IsWelcomeTourEnabled());
 
-  base::UmaHistogramEnumeration("Ash.WelcomeTour.Step.Shown", step);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kWelcomeTourHistogramNamePrefix, "Step.Shown"}), step);
 }
 
 void RecordTourAborted(AbortedReason reason) {
   CHECK(features::IsWelcomeTourEnabled());
 
-  base::UmaHistogramEnumeration("Ash.WelcomeTour.Aborted.Reason", reason);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kWelcomeTourHistogramNamePrefix, "Aborted.Reason"}),
+      reason);
 }
 
 void RecordTourDuration(base::TimeDelta duration, bool completed) {
@@ -124,13 +122,17 @@ void RecordTourDuration(base::TimeDelta duration, bool completed) {
   if (completed) {
     welcome_tour_prefs::MarkTimeOfFirstTourCompletion(
         GetLastActiveUserPrefService());
+  } else {
+    welcome_tour_prefs::MarkTimeOfFirstTourAborted(
+        GetLastActiveUserPrefService());
   }
 
   const std::string metric_infix = completed ? "Completed" : "Aborted";
-  base::UmaHistogramCustomTimes(
-      base::StrCat({"Ash.WelcomeTour.", metric_infix, ".Duration"}), duration,
-      /*min=*/base::Seconds(1),
-      /*max=*/base::Minutes(10), /*buckets=*/50);
+  base::UmaHistogramCustomTimes(base::StrCat({kWelcomeTourHistogramNamePrefix,
+                                              metric_infix, ".Duration"}),
+                                duration,
+                                /*min=*/base::Seconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
 }
 
 void RecordTourPrevented(PreventedReason reason) {
@@ -140,7 +142,16 @@ void RecordTourPrevented(PreventedReason reason) {
     welcome_tour_prefs::MarkFirstTourPrevention(prefs, reason);
   }
 
-  base::UmaHistogramEnumeration("Ash.WelcomeTour.Prevented.Reason", reason);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kWelcomeTourHistogramNamePrefix, "Prevented.Reason"}),
+      reason);
+}
+
+void RecordTourResult(TourResult result) {
+  CHECK(features::IsWelcomeTourEnabled());
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({kWelcomeTourHistogramNamePrefix, "Result"}), result);
 }
 
 // These strings are persisted to logs. These string values should never be

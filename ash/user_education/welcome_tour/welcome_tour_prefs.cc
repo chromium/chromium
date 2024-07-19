@@ -19,30 +19,28 @@ namespace {
 
 // Constants -------------------------------------------------------------------
 
+// TODO: crbug.com/353568276 - Clean up the deprecated prefs.
+// static constexpr char kTimeOfFirstInteractionPrefPrefix[] =
+//     "ash.welcome_tour.interaction_time.";
+// static constexpr char kTimeOfFirstTourCompletion[] =
+//     "ash.welcome_tour.completed.first_time";
+// static constexpr char kTimeOfFirstTourPrevention[] =
+//     "ash.welcome_tour.prevented.first_time";
+// static constexpr char kReasonForFirstTourPrevention[] =
+//     "ash.welcome_tour.prevented.first_reason";
+
 static constexpr char kTimeOfFirstInteractionPrefPrefix[] =
-    "ash.welcome_tour.interaction_time.";
+    "ash.welcome_tour.v2.interaction_time.";
+static constexpr char kTimeOfFirstTourAborted[] =
+    "ash.welcome_tour.v2.aborted.first_time";
 static constexpr char kTimeOfFirstTourCompletion[] =
-    "ash.welcome_tour.completed.first_time";
+    "ash.welcome_tour.v2.completed.first_time";
 static constexpr char kTimeOfFirstTourPrevention[] =
-    "ash.welcome_tour.prevented.first_time";
+    "ash.welcome_tour.v2.prevented.first_time";
 static constexpr char kReasonForFirstTourPrevention[] =
-    "ash.welcome_tour.prevented.first_reason";
+    "ash.welcome_tour.v2.prevented.first_reason";
 
 // Helpers ---------------------------------------------------------------------
-
-bool TourWasPreventedCounterfactually(PrefService* prefs) {
-  return GetReasonForFirstTourPrevention(prefs) ==
-         welcome_tour_metrics::PreventedReason::kCounterfactualExperimentArm;
-}
-
-std::optional<base::Time> GetTimeOfFirstCompletionOrCounterfactualPrevention(
-    PrefService* prefs) {
-  if (TourWasPreventedCounterfactually(prefs)) {
-    return GetTimeOfFirstTourPrevention(prefs);
-  } else {
-    return GetTimeOfFirstTourCompletion(prefs);
-  }
-}
 
 std::string GetTimeOfFirstInteractionPrefName(
     welcome_tour_metrics::Interaction interaction) {
@@ -58,6 +56,11 @@ std::optional<base::Time> GetTimePrefIfSet(PrefService* prefs,
                                 : base::ValueToTime(pref->GetValue());
 }
 
+bool TourWasPreventedAsHoldback(PrefService* prefs) {
+  return GetReasonForFirstTourPrevention(prefs) ==
+         welcome_tour_metrics::PreventedReason::kHoldbackExperimentArm;
+}
+
 }  // namespace
 
 // Utilities -------------------------------------------------------------------
@@ -69,6 +72,28 @@ std::optional<base::Time> GetTimeOfFirstInteraction(
   auto* pref = prefs->FindPreference(pref_name);
   return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
+}
+
+std::optional<base::Time> GetTimeOfFirstTourAborted(PrefService* prefs) {
+  CHECK(features::IsWelcomeTourEnabled());
+  return GetTimePrefIfSet(prefs, kTimeOfFirstTourAborted);
+}
+
+std::optional<base::Time> GetTimeOfFirstTourAttempt(PrefService* prefs) {
+  std::optional<base::Time> first_aborted = GetTimeOfFirstTourAborted(prefs);
+  std::optional<base::Time> first_completion =
+      GetTimeOfFirstTourCompletion(prefs);
+  std::optional<base::Time> first_prevention =
+      TourWasPreventedAsHoldback(prefs) ? GetTimeOfFirstTourPrevention(prefs)
+                                        : std::nullopt;
+
+  if (!first_aborted && !first_completion && !first_prevention) {
+    return std::nullopt;
+  }
+
+  return std::min(first_aborted.value_or(base::Time::Max()),
+                  std::min(first_completion.value_or(base::Time::Max()),
+                           first_prevention.value_or(base::Time::Max())));
 }
 
 std::optional<base::Time> GetTimeOfFirstTourCompletion(PrefService* prefs) {
@@ -118,12 +143,10 @@ bool MarkTimeOfFirstInteraction(PrefService* prefs,
   CHECK(features::IsWelcomeTourEnabled());
 
   const auto now = base::Time::Now();
-  const auto time_to_measure_from =
-      GetTimeOfFirstCompletionOrCounterfactualPrevention(prefs);
+  const auto time_to_measure_from = GetTimeOfFirstTourAttempt(prefs);
 
-  // This function should only be called if the tour has been compeleted or
-  // prevented counterfactually, so that we always have a time to measure the
-  // delta from.
+  // This function should only be called if the tour has been attempted, so that
+  // we always have a time to measure the delta from.
   CHECK(time_to_measure_from.has_value());
 
   // Set the continuous time pref.
@@ -133,6 +156,15 @@ bool MarkTimeOfFirstInteraction(PrefService* prefs,
     return true;
   }
 
+  return false;
+}
+
+bool MarkTimeOfFirstTourAborted(PrefService* prefs) {
+  CHECK(features::IsWelcomeTourEnabled());
+  if (prefs->FindPreference(kTimeOfFirstTourAborted)->IsDefaultValue()) {
+    prefs->SetTime(kTimeOfFirstTourAborted, base::Time::Now());
+    return true;
+  }
   return false;
 }
 
@@ -146,6 +178,7 @@ bool MarkTimeOfFirstTourCompletion(PrefService* prefs) {
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(kTimeOfFirstTourAborted, base::Time());
   registry->RegisterTimePref(kTimeOfFirstTourCompletion, base::Time());
   registry->RegisterTimePref(kTimeOfFirstTourPrevention, base::Time());
   registry->RegisterIntegerPref(kReasonForFirstTourPrevention, -1);

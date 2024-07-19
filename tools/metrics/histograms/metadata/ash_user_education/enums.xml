@@ -71,6 +71,12 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="kUserNotNewLocally"/>
 </enum>
 
+<enum name="WelcomeTourResult">
+  <int value="0" label="kAborted"/>
+  <int value="1" label="kCompleted"/>
+  <int value="2" label="kHoldback"/>
+</enum>
+
 <enum name="WelcomeTourStep">
   <int value="0" label="kDialog"/>
   <int value="1" label="kExploreApp"/>

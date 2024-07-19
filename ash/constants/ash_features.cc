@@ -3223,11 +3223,6 @@ BASE_FEATURE(kWelcomeExperience,
 // Enables the Welcome Tour that walks new users through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether the Welcome Tour that walks new users through ChromeOS System UI is
-// enabled counterfactually as part of an experiment arm.
-const base::FeatureParam<bool> kWelcomeTourEnabledCounterfactually{
-    &kWelcomeTour, "is-counterfactual", false};
-
 // Whether ChromeVox is supported in the Welcome Tour that walks new users
 // through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTourChromeVoxSupported,
@@ -3239,6 +3234,12 @@ BASE_FEATURE(kWelcomeTourChromeVoxSupported,
 // also enabled.
 BASE_FEATURE(kWelcomeTourForceUserEligibility,
              "WelcomeTourForceUserEligibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether the Welcome Tour holdback is enabled as part of an experiment arm.
+// When this is enabled, neither version of Welcome Tour version will be shown.
+BASE_FEATURE(kWelcomeTourHoldback,
+             "WelcomeTourHoldback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Welcome Tour V2 that has different strings and steps than V1.
@@ -4846,13 +4847,14 @@ bool IsWelcomeTourEnabled() {
   return base::FeatureList::IsEnabled(kWelcomeTour);
 }
 
-bool IsWelcomeTourEnabledCounterfactually() {
-  return IsWelcomeTourEnabled() && kWelcomeTourEnabledCounterfactually.Get();
-}
-
 bool IsWelcomeTourForceUserEligibilityEnabled() {
   return IsWelcomeTourEnabled() &&
          base::FeatureList::IsEnabled(kWelcomeTourForceUserEligibility);
+}
+
+bool IsWelcomeTourHoldbackEnabled() {
+  return IsWelcomeTourEnabled() &&
+         base::FeatureList::IsEnabled(kWelcomeTourHoldback);
 }
 
 bool IsWelcomeTourV2Enabled() {

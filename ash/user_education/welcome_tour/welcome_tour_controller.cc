@@ -542,10 +542,12 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     return;
   }
 
-  // Welcome Tour is not supported for counterfactual experiment arms.
-  if (features::IsWelcomeTourEnabledCounterfactually()) {
+  // Welcome Tour is not supported for holdback experiment arm.
+  if (features::IsWelcomeTourHoldbackEnabled()) {
     welcome_tour_metrics::RecordTourPrevented(
-        welcome_tour_metrics::PreventedReason::kCounterfactualExperimentArm);
+        welcome_tour_metrics::PreventedReason::kHoldbackExperimentArm);
+    welcome_tour_metrics::RecordTourResult(
+        welcome_tour_metrics::TourResult::kHoldback);
     return;
   }
 
@@ -680,6 +682,10 @@ void WelcomeTourController::OnWelcomeTourEnded(
 
   welcome_tour_metrics::RecordTourDuration(time_since_start.Elapsed(),
                                            completed);
+
+  welcome_tour_metrics::RecordTourResult(
+      completed ? welcome_tour_metrics::TourResult::kCompleted
+                : welcome_tour_metrics::TourResult::kAborted);
 
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourEnded();

@@ -28,6 +28,16 @@ ASH_EXPORT std::optional<base::Time> GetTimeOfFirstInteraction(
     PrefService* prefs,
     welcome_tour_metrics::Interaction interaction);
 
+// Retrieves the time that the tour was first aborted. If the time has not
+// been set, returns `std::nullopt`.
+ASH_EXPORT std::optional<base::Time> GetTimeOfFirstTourAborted(
+    PrefService* prefs);
+
+// Retrieves the time that the tour was first attempted. If the time has not
+// been set, returns `std::nullopt`.
+ASH_EXPORT std::optional<base::Time> GetTimeOfFirstTourAttempt(
+    PrefService* prefs);
+
 // Retrieves the time that the tour was first completed. If the time has not
 // been set, returns `std::nullopt`.
 ASH_EXPORT std::optional<base::Time> GetTimeOfFirstTourCompletion(
@@ -54,6 +64,10 @@ ASH_EXPORT bool MarkFirstTourPrevention(
 ASH_EXPORT bool MarkTimeOfFirstInteraction(
     PrefService* prefs,
     welcome_tour_metrics::Interaction interaction);
+
+// Marks now as the first time the tour was aborted. Returns true if it was
+// successfully marked.
+ASH_EXPORT bool MarkTimeOfFirstTourAborted(PrefService* prefs);
 
 // Marks now as the first time the tour was completed. Returns true if it was
 // successfully marked.

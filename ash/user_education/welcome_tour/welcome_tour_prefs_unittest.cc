@@ -13,6 +13,7 @@
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,10 +30,14 @@ using welcome_tour_metrics::PreventedReason;
 
 // Constants -------------------------------------------------------------------
 
+static constexpr char kTimeOfFirstTourAborted[] =
+    "ash.welcome_tour.v2.aborted.first_time";
+static constexpr char kTimeOfFirstTourCompletion[] =
+    "ash.welcome_tour.v2.completed.first_time";
 static constexpr char kTimeOfFirstTourPrevention[] =
-    "ash.welcome_tour.prevented.first_time";
+    "ash.welcome_tour.v2.prevented.first_time";
 static constexpr char kReasonForFirstTourPrevention[] =
-    "ash.welcome_tour.prevented.first_reason";
+    "ash.welcome_tour.v2.prevented.first_reason";
 
 }  // namespace
 
@@ -84,6 +89,225 @@ TEST_F(WelcomeTourPrefsTest, FirstInteraction) {
     EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
               interaction_time);
   }
+}
+
+// Expects the first tour aborted time pref can be set exactly once.
+TEST_F(WelcomeTourPrefsTest, FirstTourAborted) {
+  // Should be unset by default.
+  EXPECT_EQ(GetTimeOfFirstTourAborted(pref_service()), std::nullopt);
+
+  // The first time the mark method is called, it should succeed and mark the
+  // time as now.
+  auto before = base::Time::Now();
+  EXPECT_TRUE(MarkTimeOfFirstTourAborted(pref_service()));
+  auto after = base::Time::Now();
+
+  auto aborted_time = GetTimeOfFirstTourAborted(pref_service());
+  ASSERT_TRUE(aborted_time);
+  EXPECT_GE(aborted_time, before);
+  EXPECT_LE(aborted_time, after);
+
+  // For any call beyond the first, the function should return false and the
+  // marked time should not change.
+  EXPECT_FALSE(MarkTimeOfFirstTourAborted(pref_service()));
+  EXPECT_EQ(GetTimeOfFirstTourAborted(pref_service()), aborted_time);
+}
+
+// Expects the first tour attempt time is minimum time among all attempts.
+TEST_F(WelcomeTourPrefsTest, FirstTourAttemptAmongAllAttempts) {
+  // Should be unset by default.
+  EXPECT_EQ(GetTimeOfFirstTourAttempt(pref_service()), std::nullopt);
+
+  // The first time the mark method is called, it should succeed and mark the
+  // time as now and the given reason as the reason.
+  auto before = base::Time::Now();
+  EXPECT_TRUE(MarkFirstTourPrevention(pref_service(),
+                                      PreventedReason::kHoldbackExperimentArm));
+  auto after = base::Time::Now();
+
+  EXPECT_EQ(GetReasonForFirstTourPrevention(pref_service()),
+            PreventedReason::kHoldbackExperimentArm);
+
+  auto prevention_time = GetTimeOfFirstTourPrevention(pref_service());
+  ASSERT_TRUE(prevention_time);
+  EXPECT_GE(prevention_time, before);
+  EXPECT_LE(prevention_time, after);
+
+  // Prevention reason of holdback will return the prevention time as the
+  // attempt time.
+  auto attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  ASSERT_TRUE(attempt_time);
+  EXPECT_GE(attempt_time, before);
+  EXPECT_LE(attempt_time, after);
+  EXPECT_EQ(attempt_time, prevention_time);
+
+  // Set an aborted time.
+  before = base::Time::Now();
+  EXPECT_TRUE(MarkTimeOfFirstTourAborted(pref_service()));
+  after = base::Time::Now();
+
+  auto aborted_time = GetTimeOfFirstTourAborted(pref_service());
+  ASSERT_TRUE(aborted_time);
+  EXPECT_GE(aborted_time, before);
+  EXPECT_LE(aborted_time, after);
+
+  attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  EXPECT_NE(attempt_time, aborted_time);
+  EXPECT_EQ(attempt_time, prevention_time);
+
+  // Set a completion time.
+  before = base::Time::Now();
+  EXPECT_TRUE(MarkTimeOfFirstTourCompletion(pref_service()));
+  after = base::Time::Now();
+
+  auto completion_time = GetTimeOfFirstTourCompletion(pref_service());
+  ASSERT_TRUE(completion_time);
+  EXPECT_GE(completion_time, before);
+  EXPECT_LE(completion_time, after);
+
+  attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  EXPECT_NE(attempt_time, aborted_time);
+  EXPECT_NE(attempt_time, completion_time);
+  EXPECT_EQ(attempt_time, prevention_time);
+
+  // Clear the prevention time and reason prefs.
+  pref_service()->ClearPref(kReasonForFirstTourPrevention);
+  pref_service()->ClearPref(kTimeOfFirstTourPrevention);
+
+  attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  EXPECT_EQ(attempt_time, aborted_time);
+  EXPECT_NE(attempt_time, completion_time);
+  EXPECT_NE(attempt_time, prevention_time);
+
+  // Clear the aborted time.
+  pref_service()->ClearPref(kTimeOfFirstTourAborted);
+
+  attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  EXPECT_NE(attempt_time, aborted_time);
+  EXPECT_EQ(attempt_time, completion_time);
+  EXPECT_NE(attempt_time, prevention_time);
+
+  // Mark the aborted time again.
+  EXPECT_TRUE(MarkTimeOfFirstTourAborted(pref_service()));
+  aborted_time = GetTimeOfFirstTourAborted(pref_service());
+  ASSERT_TRUE(aborted_time);
+
+  attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  EXPECT_NE(attempt_time, aborted_time);
+  EXPECT_EQ(attempt_time, completion_time);
+  EXPECT_NE(attempt_time, prevention_time);
+
+  // Clear the completion time.
+  pref_service()->ClearPref(kTimeOfFirstTourCompletion);
+
+  attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  EXPECT_EQ(attempt_time, aborted_time);
+  EXPECT_NE(attempt_time, completion_time);
+  EXPECT_NE(attempt_time, prevention_time);
+}
+
+// Expects the first tour attempt time is the aborted time.
+TEST_F(WelcomeTourPrefsTest, FirstTourAttemptWhenAborted) {
+  // Should be unset by default.
+  EXPECT_EQ(GetTimeOfFirstTourAttempt(pref_service()), std::nullopt);
+
+  // The first time the mark method is called, it should succeed and mark the
+  // time as now.
+  auto before = base::Time::Now();
+  EXPECT_TRUE(MarkTimeOfFirstTourAborted(pref_service()));
+  auto after = base::Time::Now();
+
+  auto aborted_time = GetTimeOfFirstTourAborted(pref_service());
+  ASSERT_TRUE(aborted_time);
+  EXPECT_GE(aborted_time, before);
+  EXPECT_LE(aborted_time, after);
+
+  // Prevention reason of holdback will return the prevention time as the
+  // attempt time.
+  auto attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  ASSERT_TRUE(attempt_time);
+  EXPECT_GE(attempt_time, before);
+  EXPECT_LE(attempt_time, after);
+
+  EXPECT_EQ(attempt_time, aborted_time);
+}
+
+// Expects the first tour attempt time is the completion time.
+TEST_F(WelcomeTourPrefsTest, FirstTourAttemptWhenCompleted) {
+  // Should be unset by default.
+  EXPECT_EQ(GetTimeOfFirstTourAttempt(pref_service()), std::nullopt);
+
+  // The first time the mark method is called, it should succeed and mark the
+  // time as now.
+  auto before = base::Time::Now();
+  EXPECT_TRUE(MarkTimeOfFirstTourCompletion(pref_service()));
+  auto after = base::Time::Now();
+
+  auto completion_time = GetTimeOfFirstTourCompletion(pref_service());
+  ASSERT_TRUE(completion_time);
+  EXPECT_GE(completion_time, before);
+  EXPECT_LE(completion_time, after);
+
+  // Prevention reason of holdback will return the prevention time as the
+  // attempt time.
+  auto attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  ASSERT_TRUE(attempt_time);
+  EXPECT_GE(attempt_time, before);
+  EXPECT_LE(attempt_time, after);
+
+  EXPECT_EQ(attempt_time, completion_time);
+}
+
+// Expects the first tour attempt time is nullopt if the prevention reason is
+// not holdback.
+TEST_F(WelcomeTourPrefsTest, FirstTourAttemptWhenPreventionIsNotHoldback) {
+  // Should be unset by default.
+  EXPECT_EQ(GetTimeOfFirstTourAttempt(pref_service()), std::nullopt);
+
+  // Should be unset by default.
+  EXPECT_EQ(GetReasonForFirstTourPrevention(pref_service()), std::nullopt);
+  EXPECT_EQ(GetTimeOfFirstTourPrevention(pref_service()), std::nullopt);
+
+  // The first time the mark method is called, it should succeed and mark the
+  // time as now and the given reason as the reason.
+  EXPECT_TRUE(MarkFirstTourPrevention(pref_service(),
+                                      PreventedReason::kUserTypeNotRegular));
+  EXPECT_EQ(GetReasonForFirstTourPrevention(pref_service()),
+            PreventedReason::kUserTypeNotRegular);
+
+  auto attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+
+  // Only prevention reason of holdback will return the prevention time as the
+  // attempt time.
+  ASSERT_FALSE(attempt_time);
+}
+
+// Expects the first tour attempt time is the prevention time if the prevention
+// reason is holdback.
+TEST_F(WelcomeTourPrefsTest, FirstTourAttemptWhenPreventionIsHoldback) {
+  // Should be unset by default.
+  EXPECT_EQ(GetTimeOfFirstTourAttempt(pref_service()), std::nullopt);
+
+  // Should be unset by default.
+  EXPECT_EQ(GetReasonForFirstTourPrevention(pref_service()), std::nullopt);
+  EXPECT_EQ(GetTimeOfFirstTourPrevention(pref_service()), std::nullopt);
+
+  // The first time the mark method is called, it should succeed and mark the
+  // time as now and the given reason as the reason.
+  auto before = base::Time::Now();
+  EXPECT_TRUE(MarkFirstTourPrevention(pref_service(),
+                                      PreventedReason::kHoldbackExperimentArm));
+  auto after = base::Time::Now();
+
+  EXPECT_EQ(GetReasonForFirstTourPrevention(pref_service()),
+            PreventedReason::kHoldbackExperimentArm);
+
+  // Prevention reason of holdback will return the prevention time as the
+  // attempt time.
+  auto attempt_time = GetTimeOfFirstTourAttempt(pref_service());
+  ASSERT_TRUE(attempt_time);
+  EXPECT_GE(attempt_time, before);
+  EXPECT_LE(attempt_time, after);
 }
 
 // Expects the first tour completion time pref can be set exactly once.
