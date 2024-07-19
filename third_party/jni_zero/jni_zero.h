@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include <vector>
-
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_methods.h"

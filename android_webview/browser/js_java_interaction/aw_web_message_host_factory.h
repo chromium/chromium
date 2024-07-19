@@ -5,6 +5,8 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_JS_JAVA_INTERACTION_AW_WEB_MESSAGE_HOST_FACTORY_H_
 #define ANDROID_WEBVIEW_BROWSER_JS_JAVA_INTERACTION_AW_WEB_MESSAGE_HOST_FACTORY_H_
 
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
 
