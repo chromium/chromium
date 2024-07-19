@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 
+#include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,6 +20,7 @@
 
 namespace {
 constexpr int kGapSize = 8;
+constexpr int kGpmIconSize = 16;
 constexpr int kSmallIconSize = 20;
 constexpr int kMediumIconSize = 26;
 constexpr int kHorizontalInset = 8;
@@ -63,4 +66,16 @@ std::unique_ptr<views::View> CreatePasskeyIconWithLabelRow(
   row->AddChildView(std::make_unique<views::Label>(
       label, views::style::CONTEXT_DIALOG_BODY_TEXT));
   return row;
+}
+
+std::unique_ptr<views::View> CreateGpmIconWithLabel() {
+  auto view = std::make_unique<views::BoxLayoutView>();
+  view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  view->SetBetweenChildSpacing(kGapSize);
+  view->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          GooglePasswordManagerVectorIcon(), ui::kColorIcon, kGpmIconSize)));
+  view->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER)));
+  return view;
 }

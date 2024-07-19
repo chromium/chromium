@@ -194,9 +194,11 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     child_views_.step_specific_header_ =
         contents->AddChildView(step_specific_header.release());
 
-    auto insets = contents->GetBorder()->GetInsets();
-    insets.set_top(0);
-    contents->SetBorder(views::CreateEmptyBorder(insets));
+    if (model()->lottie_illustrations() || model()->vector_illustrations()) {
+      auto insets = contents->GetBorder()->GetInsets();
+      insets.set_top(0);
+      contents->SetBorder(views::CreateEmptyBorder(insets));
+    }
   }
 
   auto label_container = std::make_unique<views::View>();
