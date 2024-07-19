@@ -53,7 +53,21 @@ IOSTabGroupSyncDelegate::~IOSTabGroupSyncDelegate() {}
 void IOSTabGroupSyncDelegate::HandleOpenTabGroupRequest(
     const base::Uuid& sync_tab_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
-  // TODO(crbug.com/329640329): Send the command to update the UI here.
+  const auto saved_tab_group = sync_service_->GetGroup(sync_tab_group_id);
+  if (!saved_tab_group) {
+    // The group doesn't exist.
+    return;
+  }
+
+  LocalTabGroupInfo tab_group_info =
+      GetLocalTabGroupInfo(browser_list_, *saved_tab_group);
+  if (tab_group_info.tab_group) {
+    // TODO(crbug.com/329626315): Focus the window it belongs to and open the
+    // group in the UI.
+  } else {
+    CreateLocalTabGroup(*saved_tab_group);
+    // TODO(crbug.com/329626315): Open the group in the UI.
+  }
 }
 
 void IOSTabGroupSyncDelegate::CreateLocalTabGroup(

@@ -17,6 +17,7 @@
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -43,8 +44,9 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-using testing::_;
+using ::testing::_;
 using ::testing::Property;
+using ::testing::Return;
 
 namespace tab_groups {
 
@@ -553,6 +555,74 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateRemoteTabGroup) {
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id));
   EXPECT_CALL(*mock_service_, AddGroup(SyncTabGroupPrediction(saved_group)));
   delegate_->CreateRemoteTabGroup(tab_group_id);
+}
+
+// Tests opening an unknown tab group ID doesn't do anything.
+TEST_F(IOSTabGroupSyncDelegateTest,
+       HandleOpenTabGroupRequest_UnknownSavedTabGroupID) {
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+
+  EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
+      .WillOnce(Return(std::nullopt));
+  delegate_->HandleOpenTabGroupRequest(
+      saved_tab_group_id, std::make_unique<TabGroupActionContext>());
+
+  // Check that no tab group was opened locally.
+  auto local_group_ids = delegate_->GetLocalTabGroupIds();
+  EXPECT_EQ(0u, local_group_ids.size());
+}
+
+// Tests opening a tab group from sync that isn't already open locally.
+TEST_F(IOSTabGroupSyncDelegateTest,
+       HandleOpenTabGroupRequest_UnopenedSavedTabGroup) {
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup saved_group(kGroupTitle, kGroupColor,
+                            CreateSavedTabs(saved_tab_group_id),
+                            std::make_optional(0), saved_tab_group_id);
+
+  EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
+      .WillOnce(Return(saved_group));
+  delegate_->HandleOpenTabGroupRequest(
+      saved_tab_group_id, std::make_unique<TabGroupActionContext>());
+
+  // Check that a tab group was opened locally.
+  auto local_group_ids = delegate_->GetLocalTabGroupIds();
+  EXPECT_EQ(1u, local_group_ids.size());
+  const auto local_group_id = local_group_ids[0];
+  const auto local_tab_group_info =
+      tab_groups::utils::GetLocalTabGroupInfo(browser_list_, local_group_id);
+  EXPECT_EQ(1u, local_tab_group_info.web_state_list->GetGroups().size());
+}
+
+// Tests opening a tab group from sync that is already open locally doesn't open
+// a new local group.
+TEST_F(IOSTabGroupSyncDelegateTest,
+       HandleOpenTabGroupRequest_OpenedSavedTabGroup) {
+  // Create a local group.
+  WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a [0 b* c ] d", browser_->GetBrowserState()));
+  LocalTabGroupID local_id_group_0 =
+      builder.GetTabGroupForIdentifier('0')->tab_group_id();
+  ASSERT_EQ(1u, delegate_->GetLocalTabGroupIds().size());
+  ASSERT_EQ(1u, web_state_list->GetGroups().size());
+  // Create the associated distant group.
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+  SavedTabGroup saved_group(kGroupTitle, kGroupColor,
+                            CreateSavedTabs(saved_tab_group_id),
+                            std::make_optional(0), saved_tab_group_id);
+  saved_group.SetLocalGroupId(local_id_group_0);
+
+  EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
+      .WillOnce(Return(saved_group));
+  delegate_->HandleOpenTabGroupRequest(
+      saved_tab_group_id, std::make_unique<TabGroupActionContext>());
+
+  // Check that there is still only one tab group opened locally.
+  auto local_group_ids = delegate_->GetLocalTabGroupIds();
+  EXPECT_EQ(1u, local_group_ids.size());
+  EXPECT_EQ(1u, web_state_list->GetGroups().size());
 }
 
 }  // namespace tab_groups
