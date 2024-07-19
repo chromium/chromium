@@ -48,6 +48,8 @@ class JavaTestHealth:
     """The number of test cases annotated with @DisableIf."""
     tests_count: int
     """The total number of test cases."""
+    disabled_tests: List[str]
+    disable_if_tests: List[str]
 
 
 def get_java_test_health(test_path: pathlib.Path) -> JavaTestHealth:
@@ -99,6 +101,8 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
         Java test health information based on the test's AST.
     """
     annotation_counter = collections.Counter()
+    disabled_test_list = []
+    disable_if_test_list = []
 
     java_classes: List[ClassDeclaration] = java_ast.types
     for java_class in java_classes:
@@ -107,6 +111,11 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
             all_test_methods = _collect_all_test_methods(java_class)
             annotation_counter[_DISABLED_TEST_ANNOTATION] += len(
                 all_test_methods)
+            for test_method in all_test_methods:
+                test_full_name = (f'{java_ast.package.name}'
+                                  f'.{java_class.name}'
+                                  f'#{test_method}')
+                disabled_test_list.append(test_full_name)
             continue
         elif any(
                 re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name)
@@ -114,18 +123,46 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
             all_test_methods = _collect_all_test_methods(java_class)
             annotation_counter[_DISABLE_IF_TEST_ANNOTATION] += len(
                 all_test_methods)
+            for test_method in all_test_methods:
+                test_full_name = (f'{java_ast.package.name}'
+                                  f'.{java_class.name}'
+                                  f'#{test_method}')
+                disable_if_test_list.append(test_full_name)
             continue
 
         java_methods: List[MethodDeclaration] = java_class.methods
         for java_method in java_methods:
             annotation_counter.update(
                 _count_annotations(java_method.annotations))
+            if any(annotation.name == _DISABLED_TEST_ANNOTATION
+                   for annotation in java_method.annotations):
+                test_full_name = (f'{java_ast.package.name}'
+                                  f'.{java_class.name}'
+                                  f'#{java_method.name}')
+                disabled_test_list.append(test_full_name)
+            elif any(
+                    re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name)
+                    for annotation in java_method.annotations):
+                test_full_name = (f'{java_ast.package.name}'
+                                  f'.{java_class.name}'
+                                  f'#{java_method.name}')
+                disable_if_test_list.append(test_full_name)
 
     return JavaTestHealth(
         java_package=_get_java_package_name(java_ast),
         disabled_tests_count=annotation_counter[_DISABLED_TEST_ANNOTATION],
+        disabled_tests=disabled_test_list,
         disable_if_tests_count=annotation_counter[_DISABLE_IF_TEST_ANNOTATION],
-        tests_count=annotation_counter[_TEST_ANNOTATION])
+        tests_count=annotation_counter[_TEST_ANNOTATION],
+        disable_if_tests=disable_if_test_list,
+    )
+
+
+def _collect_all_test_methods(java_class: ClassDeclaration) -> List[str]:
+    return [
+        method.name for method in java_class.methods
+        if any(a.name == _TEST_ANNOTATION for a in method.annotations)
+    ]
 
 
 def _collect_all_test_methods(java_class: ClassDeclaration) -> List[str]:
