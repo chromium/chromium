@@ -6,19 +6,21 @@
 
 [
   Exposed=Window,
-  RuntimeEnabled=ModelExecutionAPI
+  RuntimeEnabled=AIPromptAPI
 ]
 interface AITextSession {
   [
     Measure,
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    RuntimeEnabled=AIPromptAPI
   ]
   Promise<DOMString> prompt(DOMString input);
   [
     Measure,
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    RuntimeEnabled=AIPromptAPI
   ]
   ReadableStream promptStreaming(DOMString input);
   [

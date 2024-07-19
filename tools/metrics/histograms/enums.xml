@@ -19808,6 +19808,7 @@ from previous Chrome versions.
   <int value="-427835676" label="FullscreenInsetsApiMigration:enabled"/>
   <int value="-427163069" label="isolation-by-default"/>
   <int value="-426815606" label="HomepageTile:enabled"/>
+  <int value="-426514080" label="EnableBuiltInAIAPI:enabled"/>
   <int value="-425754211" label="FirstPartyVietnameseInput:disabled"/>
   <int value="-424701311" label="SignedHTTPExchange:disabled"/>
   <int value="-424689493" label="HistoryClustersHideVisits:enabled"/>
@@ -20328,6 +20329,7 @@ from previous Chrome versions.
   <int value="-211162053" label="OmniboxHeaderPaddingUpdate:enabled"/>
   <int value="-208587977" label="OmniboxMaterialDesignWeatherIcons:enabled"/>
   <int value="-208435024" label="EnableUsernameCorrection:enabled"/>
+  <int value="-207858780" label="EnableAIPromptAPI:disabled"/>
   <int value="-206393363" label="enable-scroll-prediction"/>
   <int value="-205975637" label="WebUIDarkMode:enabled"/>
   <int value="-205401012" label="webrtc-hw-encoding:disabled"/>
@@ -20888,7 +20890,6 @@ from previous Chrome versions.
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
   <int value="32701080" label="DropInputEventsBeforeFirstPaint:enabled"/>
-  <int value="33135480" label="EnableModelExecutionAPI:disabled"/>
   <int value="33778663" label="OriginTrials:enabled"/>
   <int value="34166742" label="AccessibilityIncludeLongClickAction:enabled"/>
   <int value="34399969" label="SplitPartiallyOccludedQuads:enabled"/>
@@ -21776,7 +21777,6 @@ from previous Chrome versions.
   <int value="402143634" label="enable-search-button-in-omnibox-always"/>
   <int value="402630521"
       label="IPH_KeyboardAccessoryPaymentVirtualCard:enabled"/>
-  <int value="402998524" label="EnableModelExecutionAPI:enabled"/>
   <int value="403288255" label="enable-wheel-scroll-latching"/>
   <int value="403554154" label="SafetyCheckWeakPasswords:enabled"/>
   <int value="405068544" label="GlobalMediaControlsUpdatedUI:enabled"/>
@@ -24244,6 +24244,7 @@ from previous Chrome versions.
   <int value="1460958818" label="NTPForeignSessionsSuggestions:enabled"/>
   <int value="1461581256" label="MovablePartialScreenshot:enabled"/>
   <int value="1462042881" label="ArcRoundedWindowCompat:enabled"/>
+  <int value="1462978380" label="EnableBuiltInAIAPI:disabled"/>
   <int value="1463230871" label="ArcEnableUsap:enabled"/>
   <int value="1464028544" label="WinUseHybridSpellChecker:disabled"/>
   <int value="1464053185" label="EnableInputInDiagnosticsApp:disabled"/>
@@ -25670,6 +25671,7 @@ from previous Chrome versions.
   <int value="2058425230" label="LauncherNudgeSessionReset:enabled"/>
   <int value="2058439723" label="CalculateNativeWinOcclusion:disabled"/>
   <int value="2059322877" label="new-avatar-menu"/>
+  <int value="2061585881" label="EnableAIPromptAPI:enabled"/>
   <int value="2062051946" label="AccessCodeCastFreezeUI:disabled"/>
   <int value="2062665434" label="AddPrinterViaPrintscanmgr:enabled"/>
   <int value="2062752242" label="ApnRevamp:enabled"/>

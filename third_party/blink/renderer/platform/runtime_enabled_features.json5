@@ -298,6 +298,11 @@
       base_feature: "none",
     },
     {
+      name: "AIPromptAPI",
+      status: "test",
+      base_feature: "EnableAIPromptAPI",
+    },
+    {
       name: "AllowContentInitiatedDataUrlNavigations",
       base_feature: "none",
     },
@@ -554,6 +559,12 @@
     {
       name: "BufferedBytesConsumerLimitSize",
       status: "stable",
+    },
+    {
+      name: "BuiltInAIAPI",
+      status: "test",
+      base_feature: "EnableBuiltInAIAPI",
+      implied_by: ["AIPromptAPI"]
     },
     {
       // Bypasses the enforcement of the Page Embedded Permission Control
@@ -2613,11 +2624,6 @@
     },
     {
       name: "MobileLayoutTheme",
-    },
-    {
-      name: "ModelExecutionAPI",
-      status: "test",
-      base_feature: "EnableModelExecutionAPI",
     },
     {
       name: "ModifyParagraphCrossEditingoundary",

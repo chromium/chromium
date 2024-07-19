@@ -604,7 +604,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AndroidSessionDurationsServiceFactory::GetInstance();
 #endif
   AffiliationServiceFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
     AIManagerKeyedServiceFactory::GetInstance();
   }
   AnnouncementNotificationServiceFactory::GetInstance();

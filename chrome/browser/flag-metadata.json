@@ -7407,7 +7407,7 @@
   },
   {
     "name": "prompt-api-for-gemini-nano",
-    "owners": ["//chrome/browser/model_execution/OWNERS"],
+    "owners": ["//chrome/browser/ai/OWNERS"],
     "expiry_milestone": 140
   },
   {

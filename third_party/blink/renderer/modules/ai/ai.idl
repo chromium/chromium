@@ -12,19 +12,21 @@ enum AIModelAvailability {
 
 [
   Exposed=Window,
-  RuntimeEnabled=ModelExecutionAPI
+  RuntimeEnabled=BuiltInAIAPI
 ]
 interface AI {
   [
     Measure,
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    RuntimeEnabled=AIPromptAPI
   ]
   Promise<AIModelAvailability> canCreateTextSession();
   [
     Measure,
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    RuntimeEnabled=AIPromptAPI
   ]
   Promise<AITextSession> createTextSession(
     optional AITextSessionOptions options = {}

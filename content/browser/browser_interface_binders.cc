@@ -1118,7 +1118,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                           base::Unretained(host->GetProcess())));
 #endif
 
-  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(
         base::BindRepeating(&ContentBrowserClient::BindAIManager,
                             base::Unretained(GetContentClient()->browser()),
@@ -1258,7 +1258,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::StorageAccessHandle>(
       base::BindRepeating(&StorageAccessHandle::Create));
 
-  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(
         base::BindRepeating(&EmptyBinderForFrame<blink::mojom::AIManager>));
   }
@@ -1384,7 +1384,7 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
       host));
 
-  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(
         base::BindRepeating(&ContentBrowserClient::BindAIManager,
                             base::Unretained(GetContentClient()->browser()),
@@ -1462,7 +1462,7 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
     map->Add<blink::mojom::WebPressureManager>(base::BindRepeating(
         &SharedWorkerHost::BindPressureService, base::Unretained(host)));
   }
-  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(
         base::BindRepeating(&ContentBrowserClient::BindAIManager,
                             base::Unretained(GetContentClient()->browser()),
@@ -1565,7 +1565,7 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
       &ServiceWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &ServiceWorkerHost::BindUsbService, base::Unretained(host)));
-  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
     map->Add<blink::mojom::AIManager>(base::BindRepeating(
         &ServiceWorkerHost::BindAIManager, base::Unretained(host)));
   }

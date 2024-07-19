@@ -7,7 +7,7 @@
 [
     Exposed=(Window,Worker),
     ImplementedAs=DOMAI,
-    RuntimeEnabled=ModelExecutionAPI
+    RuntimeEnabled=BuiltInAIAPI
 ] partial interface mixin WindowOrWorkerGlobalScope {
     [
       Replaceable
