@@ -71,7 +71,6 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   static bool Initialized();
 
   // GpuDataManager implementation.
-  void BlocklistWebGLForTesting() override;
   gpu::GPUInfo GetGPUInfo() override;
   gpu::GpuFeatureStatus GetFeatureStatus(gpu::GpuFeatureType feature) override;
   bool GpuAccessAllowed(std::string* reason) override;
@@ -89,6 +88,8 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   bool HardwareAccelerationEnabled() override;
   void AppendGpuCommandLine(base::CommandLine* command_line,
                             GpuProcessKind kind) override;
+  void BlocklistWebGLForTesting() override;
+  void SetSkiaGraphiteEnabledForTesting(bool enabled) override;
 
   // Start a timer that occasionally reports UMA metrics. This is explicitly
   // started because unit tests may create and use a GpuDataManager but they do

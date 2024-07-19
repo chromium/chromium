@@ -35,6 +35,7 @@
 #include "components/sync/service/sync_internals_util.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/gpu_data_manager.h"
 #include "extensions/browser/api/power/power_api.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/power.h"
@@ -86,7 +87,7 @@ constexpr char kSyncDataKey[] = "about_sync_data";
 constexpr char kExtensionsListKey[] = "extensions";
 constexpr char kPowerApiListKey[] = "chrome.power extensions";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
-constexpr char kGraphiteEnabled[] = "graphite_enabled";
+constexpr char kSkiaGraphiteStatusKey[] = "skia_graphite_status";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
@@ -436,11 +437,17 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   response->emplace(kCpuArch, WinCpuArchAsString());
 #endif
 
-  std::string graphite_enabled =
-      features::IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())
-          ? "true"
-          : "false";
-  response->emplace(kGraphiteEnabled, graphite_enabled);
+  std::string skia_graphite_status = "unknown";
+  if (content::GpuDataManager::GetInstance()->IsEssentialGpuInfoAvailable()) {
+    if (content::GpuDataManager::GetInstance()->GetFeatureStatus(
+            gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE) ==
+        gpu::kGpuFeatureStatusEnabled) {
+      skia_graphite_status = "enabled";
+    } else {
+      skia_graphite_status = "disabled";
+    }
+  }
+  response->emplace(kSkiaGraphiteStatusKey, skia_graphite_status);
 
   if (ProfileManager::GetLastUsedProfile()->IsChild())
     response->emplace("account_type", "child");

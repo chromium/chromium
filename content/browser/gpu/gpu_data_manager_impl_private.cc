@@ -586,6 +586,15 @@ void GpuDataManagerImplPrivate::BlocklistWebGLForTesting() {
   NotifyGpuInfoUpdate();
 }
 
+void GpuDataManagerImplPrivate::SetSkiaGraphiteEnabledForTesting(bool enabled) {
+  // Pretend that HW acceleration is enabled so that we consider GpuFeatureInfo
+  // as initialized.
+  gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_GL] =
+      gpu::kGpuFeatureStatusEnabled;
+  gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+      enabled ? gpu::kGpuFeatureStatusEnabled : gpu::kGpuFeatureStatusDisabled;
+}
+
 gpu::GPUInfo GpuDataManagerImplPrivate::GetGPUInfo() const {
   return gpu_info_;
 }
