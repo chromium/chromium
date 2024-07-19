@@ -393,23 +393,23 @@ bool CanScrollInDirection(const Node* container,
     case SpatialNavigationDirection::kLeft:
       return (container->GetLayoutObject()->Style()->OverflowX() !=
                   EOverflow::kHidden &&
-              scrollable_area->ScrollPosition().x() > 0);
+              scrollable_area->GetScrollOffset().x() >
+                  scrollable_area->MinimumScrollOffset().x());
     case SpatialNavigationDirection::kUp:
       return (container->GetLayoutObject()->Style()->OverflowY() !=
                   EOverflow::kHidden &&
-              scrollable_area->ScrollPosition().y() > 0);
+              scrollable_area->GetScrollOffset().y() >
+                  scrollable_area->MinimumScrollOffset().y());
     case SpatialNavigationDirection::kRight:
       return (container->GetLayoutObject()->Style()->OverflowX() !=
                   EOverflow::kHidden &&
-              LayoutUnit(scrollable_area->ScrollPosition().x()) +
-                      container->GetLayoutBox()->ClientWidth() <
-                  container->GetLayoutBox()->ScrollWidth());
+              scrollable_area->GetScrollOffset().x() <
+                  scrollable_area->MaximumScrollOffset().x());
     case SpatialNavigationDirection::kDown:
       return (container->GetLayoutObject()->Style()->OverflowY() !=
                   EOverflow::kHidden &&
-              LayoutUnit(scrollable_area->ScrollPosition().y()) +
-                      container->GetLayoutBox()->ClientHeight() <
-                  container->GetLayoutBox()->ScrollHeight());
+              scrollable_area->GetScrollOffset().y() <
+                  scrollable_area->MaximumScrollOffset().y());
     default:
       NOTREACHED_IN_MIGRATION();
       return false;
