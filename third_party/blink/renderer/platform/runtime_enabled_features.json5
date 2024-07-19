@@ -547,6 +547,11 @@
       status: "stable",
     },
     {
+      // crbug.com/41485013
+      name: "BreakIteratorSetStartOffset",
+      status: "stable",
+    },
+    {
       name: "BrowserVerifiedUserActivationKeyboard",
       base_feature: "none",
       public: true,
