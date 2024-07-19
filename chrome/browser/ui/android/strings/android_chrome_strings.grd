@@ -5025,7 +5025,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       Go to Google App Home
       </message>
       <message name="IDS_GOOGLE_BOTTOM_BAR_SEARCHBOX_TEXT" desc="Text used as hint text for searchbox">
-      Ask anything
+      Search
       </message>
       <message name="IDS_GOOGLE_BOTTOM_BAR_SEARCHBOX_MIC_BUTTON_DESCRIPTION" desc="Content description for mic button in a searchbox that opens Voice Search in Google App">
       Go to Google App Voice Search
