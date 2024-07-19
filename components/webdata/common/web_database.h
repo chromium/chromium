@@ -22,10 +22,36 @@ class WEBDATA_EXPORT WebDatabase {
     COMMIT_NOT_NEEDED,
     COMMIT_NEEDED
   };
-  // Exposed publicly so the keyword table can access it.
-  static const int kCurrentVersionNumber;
-  // The newest version of the database Chrome will NOT try to migrate.
-  static const int kDeprecatedVersionNumber;
+
+  // Current database version number.
+  //
+  // Note: when changing the current version number, corresponding changes must
+  // happen in the unit tests, and new migration test added to
+  // `WebDatabaseMigrationTest`.
+  static constexpr int kCurrentVersionNumber = 130;
+
+  // To support users who are upgrading from older versions of Chrome, we enable
+  // migrating from any database version newer than `kDeprecatedVersionNumber`.
+  // If an upgrading user has a database version of `kDeprecatedVersionNumber`
+  // or lower, their database will be fully deleted and recreated instead
+  // (losing all data previously in it).
+  //
+  // To determine this migration window, we support the same Chrome versions
+  // that Chrome Sync does. Any database version that was added before the
+  // oldest Chrome version that sync supports can be dropped from the Chromium
+  // codebase (i.e., increment `kDeprecatedVersionNumber` and remove related
+  // tests + support files).
+  //
+  // Note the difference between database version and Chrome version! To
+  // determine the database version for a given Chrome version, check out the
+  // git branch for the Chrome version, and look at `kCurrentVersionNumber` in
+  // that branch.
+  //
+  // To determine the versions of Chrome that Chrome Sync supports, see
+  // `max_client_version_to_reject` in server_chrome_sync_config.proto (internal
+  // only).
+  static constexpr int kDeprecatedVersionNumber = 82;
+
   // Use this as a path to create an in-memory database.
   static const base::FilePath::CharType kInMemoryPath[];
 
