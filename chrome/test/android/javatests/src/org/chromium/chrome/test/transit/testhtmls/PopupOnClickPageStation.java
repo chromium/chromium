@@ -57,7 +57,6 @@ public class PopupOnClickPageStation extends WebPageStation {
      * message to be shown.
      */
     public PopupBlockedMessageFacility clickLinkAndExpectPopupBlockedMessage() {
-        PopupBlockedMessageFacility infoBar = new PopupBlockedMessageFacility(this, 1);
-        return enterFacilitySync(infoBar, mLinkToPopup::click);
+        return enterFacilitySync(new PopupBlockedMessageFacility(1), mLinkToPopup::click);
     }
 }

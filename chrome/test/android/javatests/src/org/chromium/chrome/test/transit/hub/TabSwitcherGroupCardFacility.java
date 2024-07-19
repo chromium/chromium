@@ -41,14 +41,11 @@ public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
     private final List<Integer> mTabIdsToGroup;
     private final String mTitle;
 
-    public TabSwitcherGroupCardFacility(
-            TabSwitcherStation station, List<Integer> tabIdsToGroup) {
-        this(station, tabIdsToGroup, TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size()));
+    public TabSwitcherGroupCardFacility(List<Integer> tabIdsToGroup) {
+        this(tabIdsToGroup, TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size()));
     }
 
-    public TabSwitcherGroupCardFacility(
-            TabSwitcherStation station, List<Integer> tabIdsToGroup, String title) {
-        super(station);
+    public TabSwitcherGroupCardFacility(List<Integer> tabIdsToGroup, String title) {
         assert !tabIdsToGroup.isEmpty();
 
         mTabIdsToGroup = new ArrayList<>(tabIdsToGroup);

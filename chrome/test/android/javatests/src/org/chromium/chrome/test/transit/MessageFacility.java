@@ -55,10 +55,6 @@ public class MessageFacility extends Facility<PageStation> {
             unscopedViewElement(withId(R.id.message_banner));
     public static final ViewElement MESSAGE_ICON = unscopedViewElement(withId(R.id.message_icon));
 
-    public MessageFacility(PageStation station) {
-        super(station);
-    }
-
     @CallSuper
     @Override
     public void declareElements(Elements.Builder elements) {

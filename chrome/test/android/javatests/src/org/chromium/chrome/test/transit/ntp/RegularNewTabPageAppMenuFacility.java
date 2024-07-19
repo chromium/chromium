@@ -7,11 +7,8 @@ package org.chromium.chrome.test.transit.ntp;
 import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
 
 /** The app menu shown when pressing ("...") in a regular NTP. */
-public class RegularNewTabPageAppMenuFacility extends PageAppMenuFacility<RegularNewTabPageStation> {
-    public RegularNewTabPageAppMenuFacility(RegularNewTabPageStation station) {
-        super(station);
-    }
-
+public class RegularNewTabPageAppMenuFacility
+        extends PageAppMenuFacility<RegularNewTabPageStation> {
     @Override
     protected void declareItems(ItemsBuilder items) {
         mNewTab = declareMenuItemToStation(items, NEW_TAB_ID, this::createNewTabPageStation);

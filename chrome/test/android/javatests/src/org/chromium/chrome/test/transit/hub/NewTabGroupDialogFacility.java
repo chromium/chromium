@@ -60,10 +60,8 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     private ViewElement mTitleInputElement;
 
     /** Constructor. Expects no particular title or selected color. */
-    public NewTabGroupDialogFacility(
-            TabSwitcherStation hostStation, List<Integer> tabIdsToGroup) {
+    public NewTabGroupDialogFacility(List<Integer> tabIdsToGroup) {
         this(
-                hostStation,
                 tabIdsToGroup,
                 TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size()),
                 /* selectedColor= */ null);
@@ -71,11 +69,9 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     /** Constructor. Expects a specific title and selected color. */
     public NewTabGroupDialogFacility(
-            TabSwitcherStation hostStation,
             List<Integer> tabIdsToGroup,
             String title,
             @Nullable @TabGroupColorId Integer selectedColor) {
-        super(hostStation);
         mTabIdsToGroup = tabIdsToGroup;
         mTitle = title;
         mSelectedColor = selectedColor;
@@ -132,8 +128,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     public NewTabGroupDialogFacility inputName(String newTabGroupName) {
         return mHostStation.swapFacilitySync(
                 this,
-                new NewTabGroupDialogFacility(
-                        mHostStation, mTabIdsToGroup, newTabGroupName, mSelectedColor),
+                new NewTabGroupDialogFacility(mTabIdsToGroup, newTabGroupName, mSelectedColor),
                 () -> mTitleInputElement.perform(replaceText(newTabGroupName)));
     }
 
@@ -141,7 +136,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     public NewTabGroupDialogFacility pickColor(@TabGroupColorId int newColor) {
         return mHostStation.swapFacilitySync(
                 this,
-                new NewTabGroupDialogFacility(mHostStation, mTabIdsToGroup, mTitle, newColor),
+                new NewTabGroupDialogFacility(mTabIdsToGroup, mTitle, newColor),
                 () ->
                         onView(colorPickerIconMatcher(newColor, /* selected= */ false))
                                 .perform(click()));
@@ -151,7 +146,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
     public TabSwitcherGroupCardFacility pressDone() {
         return mHostStation.swapFacilitySync(
                 this,
-                new TabSwitcherGroupCardFacility(mHostStation, mTabIdsToGroup, mTitle),
+                new TabSwitcherGroupCardFacility(mTabIdsToGroup, mTitle),
                 () -> DONE_BUTTON.perform(click()));
     }
 }

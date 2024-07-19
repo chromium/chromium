@@ -43,10 +43,6 @@ public abstract class ScrollableFacility<HostStationT extends Station>
 
     private ArrayList<Item<?>> mItems;
 
-    public ScrollableFacility(HostStationT station) {
-        super(station);
-    }
-
     /** Must populate |items| with the expected items. */
     protected abstract void declareItems(ItemsBuilder items);
 
@@ -393,7 +389,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
         }
 
         return mHostStation.swapFacilitySync(
-                List.of(ScrollableFacility.this, itemOnScreenFacility),
+                List.of(this, itemOnScreenFacility),
                 destination,
                 () -> item.getViewElement().perform(click()));
     }
@@ -427,7 +423,6 @@ public abstract class ScrollableFacility<HostStationT extends Station>
         protected final Item<SelectReturnT> mItem;
 
         protected ItemOnScreenFacility(Item<SelectReturnT> item) {
-            super(ScrollableFacility.this.mHostStation);
             mItem = item;
         }
 

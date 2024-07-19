@@ -28,7 +28,9 @@ public abstract class Station extends ConditionalState {
     private static int sLastStationId;
 
     private final int mId;
-    private final List<Facility> mFacilities = new ArrayList<>();
+    // All facilities that have ever been entered. Exited ones remain so that the history is can
+    // be queried.
+    private final List<Facility<?>> mFacilities = new ArrayList<>();
     private final String mName;
 
     protected Station() {
@@ -37,9 +39,9 @@ public abstract class Station extends ConditionalState {
         mName = String.format("<S%d: %s>", mId, getClass().getSimpleName());
     }
 
-    protected List<Facility> getFacilitiesWithPhase(@Phase int phase) {
-        List<Facility> facilities = new ArrayList<>();
-        for (Facility facility : mFacilities) {
+    protected List<Facility<?>> getFacilitiesWithPhase(@Phase int phase) {
+        List<Facility<?>> facilities = new ArrayList<>();
+        for (Facility<?> facility : mFacilities) {
             if (facility.getPhase() == phase) {
                 facilities.add(facility);
             }
@@ -47,8 +49,15 @@ public abstract class Station extends ConditionalState {
         return facilities;
     }
 
-    void registerFacility(Facility facility) {
+    private void registerFacility(Facility<?> facility) {
+        facility.setHostStation(this);
         mFacilities.add(facility);
+    }
+
+    private void assertHasFacilities(List<Facility<?>> facilities) {
+        for (var facility : facilities) {
+            assert mFacilities.contains(facility) : this + " does not have " + facility;
+        }
     }
 
     @Override
@@ -102,33 +111,32 @@ public abstract class Station extends ConditionalState {
      * @return the {@link Facility} entered, now ACTIVE.
      * @param <F> the type of {@link Facility} entered.
      */
-    public <F extends Facility> F enterFacilitySync(F facility, Trigger trigger) {
+    public <F extends Facility<?>> F enterFacilitySync(F facility, Trigger trigger) {
         return enterFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
     }
 
     /** Version of {@link #enterFacilitySync(F, Trigger)} with extra TransitionOptions. */
-    public <F extends Facility> F enterFacilitySync(
+    public <F extends Facility<?>> F enterFacilitySync(
             F facility, TransitionOptions options, Trigger trigger) {
-        assert facility.getHostStation() == this;
-        FacilityCheckIn checkIn = new FacilityCheckIn(facility, options, trigger);
         registerFacility(facility);
+        FacilityCheckIn checkIn = new FacilityCheckIn(facility, options, trigger);
         checkIn.transitionSync();
         return facility;
     }
 
     /**
-     * Starts a transition out of a {@link Facility}, runs the transition |trigger| and blocks until
-     * the facility is considered FINISHED (exit Conditions are fulfilled).
+     * Starts a transition out of the {@link Facility}, runs the transition |trigger| and blocks
+     * until the facility is considered FINISHED (exit Conditions are fulfilled).
      *
      * @param facility the {@link Facility} to exit.
      * @param trigger the trigger to start the transition (e.g. clicking a view).
      */
-    public void exitFacilitySync(Facility facility, Trigger trigger) {
+    public void exitFacilitySync(Facility<?> facility, Trigger trigger) {
         exitFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
     }
 
     /** Version of {@link #exitFacilitySync(Facility, Trigger)} with extra TransitionOptions. */
-    public void exitFacilitySync(Facility facility, TransitionOptions options, Trigger trigger) {
+    public void exitFacilitySync(Facility<?> facility, TransitionOptions options, Trigger trigger) {
         exitFacilitiesSync(List.of(facility), options, trigger);
     }
 
@@ -139,13 +147,14 @@ public abstract class Station extends ConditionalState {
      * @param facilities the {@link Facility}s to exit.
      * @param trigger the trigger to start the transition (e.g. clicking a view).
      */
-    public void exitFacilitiesSync(List<Facility> facilities, Trigger trigger) {
+    public void exitFacilitiesSync(List<Facility<?>> facilities, Trigger trigger) {
         exitFacilitiesSync(facilities, TransitionOptions.DEFAULT, trigger);
     }
 
     /** Version of {@link #exitFacilitiesSync(List, Trigger)} with extra TransitionOptions. */
     public void exitFacilitiesSync(
-            List<Facility> facilities, TransitionOptions options, Trigger trigger) {
+            List<Facility<?>> facilities, TransitionOptions options, Trigger trigger) {
+        assertHasFacilities(facilities);
         FacilityCheckOut checkOut = new FacilityCheckOut(facilities, options, trigger);
         checkOut.transitionSync();
     }
@@ -163,22 +172,19 @@ public abstract class Station extends ConditionalState {
      * @return the {@link Facility} entered, now ACTIVE.
      * @param <F> the type of {@link Facility} entered.
      */
-    public <F extends Facility> F swapFacilitySync(
-            Facility facilityToExit, F facilityToEnter, Trigger trigger) {
+    public <F extends Facility<?>> F swapFacilitySync(
+            Facility<?> facilityToExit, F facilityToEnter, Trigger trigger) {
         return swapFacilitySync(
-                facilityToExit, facilityToEnter, TransitionOptions.DEFAULT, trigger);
+                List.of(facilityToExit), facilityToEnter, TransitionOptions.DEFAULT, trigger);
     }
 
     /** Version of {@link #swapFacilitySync(Facility, F, Trigger)} with extra TransitionOptions. */
-    public <F extends Facility> F swapFacilitySync(
-            Facility facilityToExit,
+    public <F extends Facility<?>> F swapFacilitySync(
+            Facility<?> facilityToExit,
             F facilityToEnter,
             TransitionOptions options,
             Trigger trigger) {
-        FacilitySwap swap =
-                new FacilitySwap(List.of(facilityToExit), facilityToEnter, options, trigger);
-        swap.transitionSync();
-        return facilityToEnter;
+        return swapFacilitySync(List.of(facilityToExit), facilityToEnter, options, trigger);
     }
 
     /**
@@ -194,18 +200,20 @@ public abstract class Station extends ConditionalState {
      * @return the {@link Facility} entered, now ACTIVE.
      * @param <F> the type of {@link Facility} entered.
      */
-    public <F extends Facility> F swapFacilitySync(
-            List<Facility> facilitiesToExit, F facilityToEnter, Trigger trigger) {
+    public <F extends Facility<?>> F swapFacilitySync(
+            List<Facility<?>> facilitiesToExit, F facilityToEnter, Trigger trigger) {
         return swapFacilitySync(
                 facilitiesToExit, facilityToEnter, TransitionOptions.DEFAULT, trigger);
     }
 
     /** Version of {@link #swapFacilitySync(List, F, Trigger)} with extra TransitionOptions. */
-    public <F extends Facility> F swapFacilitySync(
-            List<Facility> facilitiesToExit,
+    public <F extends Facility<?>> F swapFacilitySync(
+            List<Facility<?>> facilitiesToExit,
             F facilityToEnter,
             TransitionOptions options,
             Trigger trigger) {
+        assertHasFacilities(facilitiesToExit);
+        registerFacility(facilityToEnter);
         FacilitySwap swap = new FacilitySwap(facilitiesToExit, facilityToEnter, options, trigger);
         swap.transitionSync();
         return facilityToEnter;
@@ -215,9 +223,10 @@ public abstract class Station extends ConditionalState {
      * Add a Facility which will be entered together with this Station. Both will become ACTIVE in
      * the same Trip.
      */
-    public void addInitialFacility(Facility facility) {
+    public <F extends Facility<?>> F addInitialFacility(F facility) {
         assertInPhase(Phase.NEW);
         registerFacility(facility);
+        return facility;
     }
 
     /**

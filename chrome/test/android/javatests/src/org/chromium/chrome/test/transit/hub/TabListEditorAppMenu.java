@@ -30,9 +30,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
     private Item<TabSwitcherGroupCardFacility> mGroupMenuItem;
     private Item<NewTabGroupDialogFacility> mGroupWithParityMenuItem;
 
-    public TabListEditorAppMenu(
-            TabSwitcherStation station, TabSwitcherListEditorFacility listEditor) {
-        super(station);
+    public TabListEditorAppMenu(TabSwitcherListEditorFacility listEditor) {
         mListEditor = listEditor;
     }
 
@@ -85,7 +83,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
 
     /** Factory for the result of {@link #groupTabs()}. */
     private TabSwitcherGroupCardFacility doGroupTabsWithParityDisabled() {
-        return new TabSwitcherGroupCardFacility(mHostStation, mListEditor.getTabIdsSelected());
+        return new TabSwitcherGroupCardFacility(mListEditor.getTabIdsSelected());
     }
 
     /**
@@ -101,7 +99,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
 
     /** Factory for the result of {@link #groupTabsWithParityEnabled()}. */
     private NewTabGroupDialogFacility doGroupTabsWithParityEnabled() {
-        return new NewTabGroupDialogFacility(mHostStation, mListEditor.getTabIdsSelected());
+        return new NewTabGroupDialogFacility(mListEditor.getTabIdsSelected());
     }
 
     /**

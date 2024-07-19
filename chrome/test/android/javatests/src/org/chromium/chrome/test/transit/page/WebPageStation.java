@@ -53,17 +53,15 @@ public class WebPageStation extends PageStation {
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public RegularWebPageAppMenuFacility openRegularTabAppMenu() {
         assert !mIncognito;
-
-        RegularWebPageAppMenuFacility menu = new RegularWebPageAppMenuFacility(this);
-        return enterFacilitySync(menu, () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(
+                new RegularWebPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public IncognitoWebPageAppMenuFacility openIncognitoTabAppMenu() {
         assert mIncognito;
-
-        IncognitoWebPageAppMenuFacility menu = new IncognitoWebPageAppMenuFacility(this);
-        return enterFacilitySync(menu, () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(
+                new IncognitoWebPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
     }
 
     private static class WebContentsPresentCondition extends ConditionWithResult<WebContents> {

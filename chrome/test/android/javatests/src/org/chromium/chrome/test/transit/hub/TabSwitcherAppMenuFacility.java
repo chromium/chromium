@@ -28,8 +28,7 @@ public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStati
     private Item<Void> mClearBrowsingData;
     private Item<SettingsStation> mSettings;
 
-    public TabSwitcherAppMenuFacility(TabSwitcherStation station, boolean isIncognito) {
-        super(station);
+    public TabSwitcherAppMenuFacility(boolean isIncognito) {
         mIsIncognito = isIncognito;
     }
 
@@ -103,6 +102,6 @@ public class TabSwitcherAppMenuFacility extends AppMenuFacility<TabSwitcherStati
     }
 
     private TabSwitcherListEditorFacility createListEditorFacility() {
-        return new TabSwitcherListEditorFacility(mHostStation, Collections.EMPTY_LIST);
+        return new TabSwitcherListEditorFacility(Collections.EMPTY_LIST);
     }
 }

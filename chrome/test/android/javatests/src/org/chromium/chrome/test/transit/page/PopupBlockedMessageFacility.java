@@ -17,8 +17,7 @@ public class PopupBlockedMessageFacility extends MessageFacility {
 
     private final int mCount;
 
-    public PopupBlockedMessageFacility(PageStation station, int count) {
-        super(station);
+    public PopupBlockedMessageFacility(int count) {
         mCount = count;
     }
 

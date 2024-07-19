@@ -99,9 +99,9 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     public TabSwitcherAppMenuFacility openAppMenu() {
         recheckActiveConditions();
 
-        TabSwitcherAppMenuFacility menu = new TabSwitcherAppMenuFacility(this, mIsIncognito);
-
-        return enterFacilitySync(menu, () -> HUB_MENU_BUTTON.perform(click()));
+        return enterFacilitySync(
+                new TabSwitcherAppMenuFacility(mIsIncognito),
+                () -> HUB_MENU_BUTTON.perform(click()));
     }
 
     /**

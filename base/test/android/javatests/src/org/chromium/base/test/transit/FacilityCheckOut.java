@@ -23,11 +23,11 @@ class FacilityCheckOut extends Transition {
      *     View.
      */
     FacilityCheckOut(
-            List<Facility> facilities, TransitionOptions options, @Nullable Trigger trigger) {
+            List<Facility<?>> facilities, TransitionOptions options, @Nullable Trigger trigger) {
         super(options, facilities, Collections.emptyList(), trigger);
 
         List<String> names = new ArrayList<>();
-        for (Facility facility : facilities) {
+        for (Facility<?> facility : facilities) {
             names.add(facility.getName());
         }
         mFacilityNames = String.join(", ", names);

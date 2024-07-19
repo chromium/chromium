@@ -43,10 +43,6 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                             withText(R.string.menu_new_incognito_tab),
                             isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
 
-    public TabSwitcherActionMenuFacility(PageStation pageStation) {
-        super(pageStation);
-    }
-
     @Override
     public void declareElements(Elements.Builder elements) {
         elements.declareView(APP_MENU_LIST);

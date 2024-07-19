@@ -9,10 +9,6 @@ import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
 /** The app menu shown when pressing ("...") in a Incognito NTP. */
 public class IncognitoNewTabPageAppMenuFacility
         extends PageAppMenuFacility<IncognitoNewTabPageStation> {
-    public IncognitoNewTabPageAppMenuFacility(IncognitoNewTabPageStation station) {
-        super(station);
-    }
-
     @Override
     protected void declareItems(ItemsBuilder items) {
         mNewTab = declareMenuItemToStation(items, NEW_TAB_ID, this::createNewTabPageStation);

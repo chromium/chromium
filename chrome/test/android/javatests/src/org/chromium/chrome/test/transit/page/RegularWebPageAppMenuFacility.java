@@ -6,10 +6,6 @@ package org.chromium.chrome.test.transit.page;
 
 /** The app menu shown when pressing ("...") in a regular Tab showing a web page. */
 public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageStation> {
-    public RegularWebPageAppMenuFacility(WebPageStation station) {
-        super(station);
-    }
-
     @Override
     protected void declareItems(ItemsBuilder items) {
         mNewTab = declareMenuItemToStation(items, NEW_TAB_ID, this::createNewTabPageStation);

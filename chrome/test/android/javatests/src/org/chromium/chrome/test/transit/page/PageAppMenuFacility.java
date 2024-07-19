@@ -35,10 +35,6 @@ public class PageAppMenuFacility<HostPageStationT extends PageStation>
     protected Item<IncognitoNewTabPageStation> mNewIncognitoTab;
     protected Item<SettingsStation> mSettings;
 
-    public PageAppMenuFacility(HostPageStationT station) {
-        super(station);
-    }
-
     @Override
     @CallSuper
     public void declareElements(Elements.Builder elements) {

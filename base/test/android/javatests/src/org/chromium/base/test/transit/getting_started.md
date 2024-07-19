@@ -329,10 +329,6 @@ package org.chromium.chrome.test.transit;
 public class TabSwitcherButtonFacility extends Facility<PageStation> {
     private Supplier<View> mTabSwitcherButton;
 
-    public TabSwitcherButtonFacility(PageStation pageStation) {
-        super(pageStation);
-    }
-
     @Override
     public void declareElements(Elements.Builder elements) {
         mTabSwitcherButton = elements.declareView(PageStation.TAB_SWITCHER_BUTTON);
@@ -369,7 +365,7 @@ public class PageStation extends Station {
 -   }
 
 +   public TabSwitcherButtonFacility focusOnTabSwitcherButton() {
-+       return enterFacilitySync(new TabSwitcherButtonFacility(this), /* trigger= */ null);
++       return enterFacilitySync(new TabSwitcherButtonFacility(), /* trigger= */ null);
 +   }
 }
 ```
@@ -404,9 +400,7 @@ public class TabSwitcherButtonFacility extends Facility<PageStation> {
 +   private final String mExpectedText;
     private Supplier<View> mTabSwitcherButton;
 
--   public TabSwitcherButtonFacility(PageStation pageStation) {
-+   public TabSwitcherButtonFacility(PageStation pageStation, String expectedText) {
-        super(pageStation);
++   public TabSwitcherButtonFacility(String expectedText) {
 +       mExpectedText = expectedText;
     }
 
@@ -443,7 +437,7 @@ public class TabSwitcherButtonFacility extends Facility<PageStation> {
 ```java
 public class PageStation extends Station {
 +   public TabSwitcherButtonFacility focusOnTabSwitcherButton(String expectedText) {
-+       return enterFacilitySync(new TabSwitcherButtonFacility(this, expectedText), /* trigger= */ null);
++       return enterFacilitySync(new TabSwitcherButtonFacility(expectedText), /* trigger= */ null);
 +   }
 }
 ```
@@ -484,7 +478,7 @@ public class TabSwitcherButtonFacility extends Facility<PageStation> {
 +   }
 +
 +   public TabSwitcherActionMenuFacility longClickToOpenActionMenu() {
-+       return mHostStation.enterFacilitySync(new TabSwitcherActionMenuFacility(mHostStation), () -> PageStation.TAB_SWITCHER_BUTTON.perform(longClick()));
++       return mHostStation.enterFacilitySync(new TabSwitcherActionMenuFacility(), () -> PageStation.TAB_SWITCHER_BUTTON.perform(longClick()));
 +   }
 }
 ```

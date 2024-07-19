@@ -58,7 +58,7 @@ public class RegularNewTabPageStation extends PageStation {
     /** Opens the app menu by pressing the toolbar "..." button */
     public RegularNewTabPageAppMenuFacility openAppMenu() {
         return enterFacilitySync(
-                new RegularNewTabPageAppMenuFacility(this), () -> MENU_BUTTON.perform(click()));
+                new RegularNewTabPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
     }
 
     /**
@@ -70,6 +70,6 @@ public class RegularNewTabPageStation extends PageStation {
      */
     public MvtsFacility focusOnMvts(List<SiteSuggestion> siteSuggestions) {
         // Assume MVTs are on the screen; if this assumption changes, make sure to scroll to them.
-        return enterFacilitySync(new MvtsFacility(this, siteSuggestions), /* trigger= */ null);
+        return enterFacilitySync(new MvtsFacility(siteSuggestions), /* trigger= */ null);
     }
 }

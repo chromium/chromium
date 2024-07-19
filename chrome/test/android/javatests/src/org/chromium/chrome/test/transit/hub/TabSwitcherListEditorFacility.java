@@ -39,9 +39,7 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
 
     private final List<Integer> mTabIdsSelected;
 
-    public TabSwitcherListEditorFacility(
-            TabSwitcherStation station, List<Integer> tabIdsSelected) {
-        super(station);
+    public TabSwitcherListEditorFacility(List<Integer> tabIdsSelected) {
         mTabIdsSelected = tabIdsSelected;
     }
 
@@ -86,11 +84,9 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
     public TabSwitcherListEditorFacility addTabToSelection(int index, int tabId) {
         List<Integer> newTabIdsList = new ArrayList<>(mTabIdsSelected);
         newTabIdsList.add(tabId);
-        TabSwitcherListEditorFacility newEditor =
-                new TabSwitcherListEditorFacility(mHostStation, newTabIdsList);
         return mHostStation.swapFacilitySync(
                 this,
-                newEditor,
+                new TabSwitcherListEditorFacility(newTabIdsList),
                 () ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItem(
                                 TAB_LIST_EDITOR_RECYCLER_VIEW.getViewMatcher(), index, click()));
@@ -99,7 +95,7 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
     /** Open the app menu, which looks different while selecting tabs. */
     public TabListEditorAppMenu openAppMenuWithEditor() {
         return mHostStation.enterFacilitySync(
-                new TabListEditorAppMenu(mHostStation, this),
+                new TabListEditorAppMenu(this),
                 () -> HubBaseStation.HUB_MENU_BUTTON.perform(click()));
     }
 }

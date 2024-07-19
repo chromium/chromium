@@ -279,17 +279,17 @@ public class PageStation extends Station {
     /** Long presses the tab switcher button to open the action menu. */
     public TabSwitcherActionMenuFacility openTabSwitcherActionMenu() {
         recheckActiveConditions();
-
-        TabSwitcherActionMenuFacility menu = new TabSwitcherActionMenuFacility(this);
-        return enterFacilitySync(menu, () -> TAB_SWITCHER_BUTTON.perform(longClick()));
+        return enterFacilitySync(
+                new TabSwitcherActionMenuFacility(),
+                () -> TAB_SWITCHER_BUTTON.perform(longClick()));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public PageAppMenuFacility<PageStation> openGenericAppMenu() {
         recheckActiveConditions();
 
-        PageAppMenuFacility<PageStation> menu = new PageAppMenuFacility<>(this);
-        return enterFacilitySync(menu, () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(
+                new PageAppMenuFacility<PageStation>(), () -> MENU_BUTTON.perform(click()));
     }
 
     /** Opens the hub by pressing the toolbar tab switcher button. */

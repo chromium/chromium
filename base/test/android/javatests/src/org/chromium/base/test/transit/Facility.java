@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.test.transit.Transition.Trigger;
 
 /**
@@ -26,44 +28,27 @@ import org.chromium.base.test.transit.Transition.Trigger;
  * @param <HostStationT> the type of host {@link Station} this is scoped to.
  */
 public abstract class Facility<HostStationT extends Station> extends ConditionalState {
-    protected final HostStationT mHostStation;
-    private final int mId;
     private static int sLastFacilityId = 1000;
-    private String mName;
+    private final int mId = ++sLastFacilityId;
+    protected @Nullable HostStationT mHostStation;
 
-    /**
-     * Constructor.
-     *
-     * <p>Instantiate a concrete subclass instead of this base class.
-     *
-     * <p>If the host {@link Station} is still NEW, the Enter conditions of this facility with be
-     * added to the transition to the station.
-     *
-     * <p>If the host {@link Station} is already ACTIVE, call {@link
-     * Station#enterFacilitySync(Facility, Trigger)} to enter this Facility synchronously with a
-     * Transition.
-     *
-     * @param hostStation the host {@link Station} this {@link Facility} is scoped to.
-     */
-    protected Facility(HostStationT hostStation) {
-        mId = ++sLastFacilityId;
-        mHostStation = hostStation;
-        mName =
-                String.format(
-                        "<S%d|F%d: %s>", mHostStation.getId(), mId, getClass().getSimpleName());
+    void setHostStation(Station station) {
+        assert mHostStation == null
+                : "Facility " + this + " already added to a station. Tried to add it to " + station;
+        mHostStation = (HostStationT) station;
     }
 
     @Override
     public String getName() {
-        return mName;
+        return String.format(
+                "<S%s|F%s: %s>",
+                mHostStation == null ? "-unset" : mHostStation.getId(),
+                mId,
+                getClass().getSimpleName());
     }
 
     @Override
     public String toString() {
-        return mName;
-    }
-
-    public HostStationT getHostStation() {
-        return mHostStation;
+        return getName();
     }
 }

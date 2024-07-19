@@ -42,8 +42,7 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
     private ArrayList<Item<WebPageStation>> mTiles;
 
     /** Constructor. Expects the tiles to show the given |siteSuggestions|. */
-    public MvtsFacility(RegularNewTabPageStation station, List<SiteSuggestion> siteSuggestions) {
-        super(station);
+    public MvtsFacility(List<SiteSuggestion> siteSuggestions) {
         mSiteSuggestions = siteSuggestions;
     }
 

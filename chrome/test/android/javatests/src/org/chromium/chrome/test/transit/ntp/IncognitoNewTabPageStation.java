@@ -62,6 +62,6 @@ public class IncognitoNewTabPageStation extends PageStation {
     /** Opens the app menu by pressing the toolbar "..." button */
     public IncognitoNewTabPageAppMenuFacility openAppMenu() {
         return enterFacilitySync(
-                new IncognitoNewTabPageAppMenuFacility(this), () -> MENU_BUTTON.perform(click()));
+                new IncognitoNewTabPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
     }
 }

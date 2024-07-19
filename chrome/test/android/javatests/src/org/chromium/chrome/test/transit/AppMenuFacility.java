@@ -73,11 +73,10 @@ public abstract class AppMenuFacility<HostStationT extends Station>
     }
 
     /** Create a new app menu item which enters a |EnteredFacilityT| when selected. */
-    protected <EnteredFacilityT extends Facility<HostStationT>>
-            Item<EnteredFacilityT> declareMenuItemToFacility(
-                    ItemsBuilder items,
-                    @IdRes int id,
-                    Callable<EnteredFacilityT> destinationFacilityFactory) {
+    protected <EnteredFacilityT extends Facility> Item<EnteredFacilityT> declareMenuItemToFacility(
+            ItemsBuilder items,
+            @IdRes int id,
+            Callable<EnteredFacilityT> destinationFacilityFactory) {
         return items.declareItemToFacility(
                 itemViewMatcher(id), itemDataMatcher(id), destinationFacilityFactory);
     }
@@ -134,10 +133,6 @@ public abstract class AppMenuFacility<HostStationT extends Station>
     public static final @IdRes int DESKTOP_SITE_ID = R.id.request_desktop_site_id;
     public static final @IdRes int SETTINGS_ID = R.id.preferences_id;
     public static final @IdRes int HELP_AND_FEEDBACK_ID = R.id.help_id;
-
-    protected AppMenuFacility(HostStationT station) {
-        super(station);
-    }
 
     @CallSuper
     @Override
