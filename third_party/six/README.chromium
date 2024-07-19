@@ -2,6 +2,7 @@ Name: six
 Short Name: six
 URL: https://github.com/benjaminp/six
 Version: 1.14.0
+Revision: 3a3db7510b33eb22c63ad94bc735a9032949249f
 License: MIT
 License File: LICENSE
 Security Critical: No
