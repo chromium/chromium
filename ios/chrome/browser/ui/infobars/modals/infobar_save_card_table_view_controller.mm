@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/target_account_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/save_card_infobar_metrics_recorder.h"
@@ -80,12 +81,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // should be shown, e.g. if the card won't be saved to any account.
 @property(nonatomic, strong) UIImage* displayedTargetAccountAvatar;
 
+// Item for displaying the last digits of the card to be saved.
+@property(nonatomic, strong) TableViewTextEditItem* cardLastDigitsItem;
 // Item for displaying and editing the cardholder name.
 @property(nonatomic, strong) TableViewTextEditItem* cardholderNameItem;
 // Item for displaying and editing the expiration month.
 @property(nonatomic, strong) TableViewTextEditItem* expirationMonthItem;
 // Item for displaying and editing the expiration year.
 @property(nonatomic, strong) TableViewTextEditItem* expirationYearItem;
+// Item for displaying legal lines.
+@property(nonatomic, strong) TableViewTextLinkItem* legalMessageItem;
+// Item for displaying extra legal lines.
+@property(nonatomic, strong) TableViewTextLinkItem* extraLegalMessageItem;
+// Item for showing the avatar and email of the account where the card will be
+// saved.
+@property(nonatomic, strong) TargetAccountItem* targetAccountItem;
 // Item for displaying the save card button .
 @property(nonatomic, strong) TableViewTextButtonItem* saveCardButtonItem;
 
@@ -152,13 +162,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierContent];
 
-  TableViewTextEditItem* cardLastDigitsItem = [self
+  self.cardLastDigitsItem = [self
       textEditItemWithType:ItemTypeCardLastDigits
         fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARD_NUMBER)
             textFieldValue:self.cardNumber
           textFieldEnabled:NO];
-  cardLastDigitsItem.identifyingIcon = self.cardIssuerIcon;
-  [model addItem:cardLastDigitsItem
+  self.cardLastDigitsItem.identifyingIcon = self.cardIssuerIcon;
+  [model addItem:self.cardLastDigitsItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
   self.cardholderNameItem =
@@ -186,36 +196,31 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:self.expirationYearItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
-  // The extra legal line and account info should only be shown together.
-  bool shouldShowExtraLegalLineAndAccountInfo =
-      [self.displayedTargetAccountEmail length] > 0 &&
-      self.displayedTargetAccountAvatar != nil;
-
   // Concatenate legal lines and maybe add the extra one.
   for (SaveCardMessageWithLinks* message in self.legalMessages) {
-    TableViewTextLinkItem* legalMessageItem =
+    self.legalMessageItem =
         [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
-    legalMessageItem.text = message.messageText;
-    legalMessageItem.linkURLs = message.linkURLs;
-    legalMessageItem.linkRanges = message.linkRanges;
-    [model addItem:legalMessageItem
+    self.legalMessageItem.text = message.messageText;
+    self.legalMessageItem.linkURLs = message.linkURLs;
+    self.legalMessageItem.linkRanges = message.linkRanges;
+    [model addItem:self.legalMessageItem
         toSectionWithIdentifier:SectionIdentifierContent];
   }
-  if (shouldShowExtraLegalLineAndAccountInfo) {
-    TableViewTextLinkItem* legalMessageItem =
+  if ([self shouldShowExtraLegalLineAndAccountInfo]) {
+    self.extraLegalMessageItem =
         [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
-    legalMessageItem.text =
+    self.extraLegalMessageItem.text =
         l10n_util::GetNSString(IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT);
-    [model addItem:legalMessageItem
+    [model addItem:self.extraLegalMessageItem
         toSectionWithIdentifier:SectionIdentifierContent];
   }
 
-  if (shouldShowExtraLegalLineAndAccountInfo) {
-    TargetAccountItem* targetTargetAccountItem =
+  if ([self shouldShowExtraLegalLineAndAccountInfo]) {
+    self.targetAccountItem =
         [[TargetAccountItem alloc] initWithType:ItemTypeTargetAccount];
-    targetTargetAccountItem.email = self.displayedTargetAccountEmail;
-    targetTargetAccountItem.avatar = self.displayedTargetAccountAvatar;
-    [model addItem:targetTargetAccountItem
+    self.targetAccountItem.email = self.displayedTargetAccountEmail;
+    self.targetAccountItem.avatar = self.displayedTargetAccountAvatar;
+    [model addItem:self.targetAccountItem
         toSectionWithIdentifier:SectionIdentifierContent];
   }
 
@@ -357,7 +362,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [UIColor colorNamed:kBlue100Color];
     self.saveCardButtonItem.dimBackgroundWhenDisabled = NO;
   }
-  [self reconfigureCellsForItems:@[ self.saveCardButtonItem ]];
+
+  [self updateAccessibilityInProgressStateWithUploadComplete:uploadCompleted];
+
+  if ([self shouldShowExtraLegalLineAndAccountInfo]) {
+    [self reconfigureCellsForItems:@[
+      self.cardLastDigitsItem, self.cardholderNameItem,
+      self.expirationMonthItem, self.expirationYearItem, self.legalMessageItem,
+      self.extraLegalMessageItem, self.targetAccountItem,
+      self.saveCardButtonItem
+    ]];
+  } else {
+    [self reconfigureCellsForItems:@[
+      self.cardLastDigitsItem, self.cardholderNameItem,
+      self.expirationMonthItem, self.expirationYearItem, self.legalMessageItem,
+      self.saveCardButtonItem
+    ]];
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -464,6 +485,45 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.saveCardModalDelegate dismissInfobarModal:self];
 }
 
+// For progress state while showing loading and confirmation, hides the
+// accessibility elements for all the items except the one for
+// `saveCardButtonItem` so that VoiceOver doesn't read the contents of all the
+// items even in progress state. Also disables the text and icon in the items of
+// the type `TableViewTextEditItem`.
+- (void)updateAccessibilityInProgressStateWithUploadComplete:
+    (BOOL)uploadCompleted {
+  self.cardLastDigitsItem.hideAccessibilityElements = YES;
+  self.cardLastDigitsItem.identifyingIconEnabled = NO;
+  self.cardLastDigitsItem.textFieldEnabled = NO;
+
+  self.cardholderNameItem.hideAccessibilityElements = YES;
+  self.cardholderNameItem.identifyingIconEnabled = NO;
+  self.cardholderNameItem.textFieldEnabled = NO;
+
+  self.expirationMonthItem.hideAccessibilityElements = YES;
+  self.expirationMonthItem.identifyingIconEnabled = NO;
+  self.expirationMonthItem.textFieldEnabled = NO;
+
+  self.expirationYearItem.hideAccessibilityElements = YES;
+  self.expirationYearItem.identifyingIconEnabled = NO;
+  self.expirationYearItem.textFieldEnabled = NO;
+
+  self.legalMessageItem.hideAccessibilityElements = YES;
+
+  self.extraLegalMessageItem.hideAccessibilityElements = YES;
+  self.targetAccountItem.hideAccessibilityElements = YES;
+
+  // Set the `saveCardButtonItem` cell as an accessibility element so that the
+  // VoiceOver announces the accessibility identifier set on it.
+  self.saveCardButtonItem.cellIsAccessibilityElement = YES;
+  self.saveCardButtonItem.cellAccessibilityLabel =
+      uploadCompleted
+          ? l10n_util::GetNSString(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME)
+          : l10n_util::GetNSString(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME);
+}
+
 #pragma mark - Helpers
 
 - (TableViewTextEditItem*)textEditItemWithType:(ItemType)type
@@ -479,6 +539,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textEditItem.returnKeyType = UIReturnKeyDone;
 
   return textEditItem;
+}
+
+// Checks whether extra legal line and account info should be shown, if supposed
+// to be shown they should be shown together.
+- (BOOL)shouldShowExtraLegalLineAndAccountInfo {
+  return [self.displayedTargetAccountEmail length] > 0 &&
+         self.displayedTargetAccountAvatar != nil;
 }
 
 // YES if the current values of the Card are valid.

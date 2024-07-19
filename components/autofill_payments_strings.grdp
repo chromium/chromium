@@ -1213,5 +1213,10 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for virtual card enrollment failure confirmation prompt's ok button.">
     Confirming virtual card can't be turned on
   </message>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for a checkmark shown on save card infobar modal for card upload success ">
+      Card info saved
+    </message>
+  </if>
 
 </grit-part>

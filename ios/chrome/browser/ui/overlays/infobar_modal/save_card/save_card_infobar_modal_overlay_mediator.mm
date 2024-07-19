@@ -28,6 +28,17 @@ namespace {
 // confirmation state.
 static constexpr base::TimeDelta kConfirmationStateDuration =
     base::Seconds(1.5);
+
+// Time duration to wait before auto-closing modal in save card success
+// confirmation state when VoiceOver is running. This is slightly greater than
+// `kConfirmationStateDuration` to give VoiceOver enough time to read the
+// required content.
+// TODO(crbug.com/339887700): When VO is running do not use this and listen for
+// VO announcement to finish before auto-closing the modal in confirmation
+// state.
+static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
+    base::Seconds(5);
+
 }  // namespace
 
 @interface SaveCardInfobarModalOverlayMediator ()
@@ -140,7 +151,11 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
       // Auto close modal after showing successful card save confirmation.
       __weak __typeof(self) weakSelf = self;
       _autoCloseConfirmationTimer.Start(
-          FROM_HERE, kConfirmationStateDuration, base::BindOnce(^{
+          FROM_HERE,
+          UIAccessibilityIsVoiceOverRunning()
+              ? kConfirmationStateDurationIfVoiceOverRunning
+              : kConfirmationStateDuration,
+          base::BindOnce(^{
             [weakSelf dimissConfirmationStateOnTimeout];
           }));
     } else {

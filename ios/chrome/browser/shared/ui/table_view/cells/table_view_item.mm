@@ -29,6 +29,8 @@
   cell.useCustomSeparator = self.useCustomSeparator;
   cell.accessibilityTraits = self.accessibilityTraits;
   cell.accessibilityIdentifier = self.accessibilityIdentifier;
+  // To hide all the accessibility elements of the cell for the VoiceOver.
+  cell.accessibilityElementsHidden = self.hideAccessibilityElements;
   if (!cell.backgroundView) {
     if (styler.cellBackgroundColor) {
       cell.backgroundColor = styler.cellBackgroundColor;

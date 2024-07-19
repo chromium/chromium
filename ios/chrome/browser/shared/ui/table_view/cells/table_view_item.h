@@ -31,6 +31,9 @@
 // NO.
 @property(nonatomic, assign) BOOL useCustomSeparator;
 
+// Whether the accessibility elements of the cell should be hidden or not.
+@property(nonatomic, assign) BOOL hideAccessibilityElements;
+
 - (instancetype)initWithType:(NSInteger)type NS_DESIGNATED_INITIALIZER;
 
 // Configures the given cell with the item's information. Override this method
