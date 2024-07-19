@@ -167,7 +167,10 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(pageString)];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [ChromeEarlGrey waitForWebStateVisible];
   [ChromeEarlGrey waitForPageToFinishLoading];
+  GREYAssertEqual(2, _visitCounter, @"The page should have been loaded twice");
+
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
 }
