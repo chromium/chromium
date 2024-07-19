@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -134,6 +135,31 @@ bool IsAllowedToastWithoutScreenreaderText(const base::Feature& promo_feature) {
   }
 
   return false;
+}
+
+// Common check logic for gating reshow-ability of promos. Generates an error if
+// `subtype` is not allowed to reshow.
+void CheckReshowAllowedFor(FeaturePromoSpecification::PromoSubtype subtype) {
+  CHECK(subtype == FeaturePromoSpecification::PromoSubtype::kKeyedNotice ||
+        subtype == FeaturePromoSpecification::PromoSubtype::kLegalNotice)
+      << "Reshow only allowed for certain promo subtypes; subtype was "
+      << subtype;
+}
+
+// Gets the minimum allowed reshow delay for specific promo types and
+// `subtypes`.
+//
+// Note that currently, the subtype parameter does not affect the delay; it is
+// here for sanity checking and so we can tune policy later if necessary.
+base::TimeDelta GetMinReshowDelay(
+    FeaturePromoSpecification::PromoType type,
+    FeaturePromoSpecification::PromoSubtype subtype) {
+  CheckReshowAllowedFor(subtype);
+  if (type == FeaturePromoSpecification::PromoType::kToast) {
+    return base::Days(14);
+  } else {
+    return base::Days(90);
+  }
 }
 
 }  // namespace
@@ -419,6 +445,8 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetPromoSubtype(
       << "Rotating is not compatible with other promo subtypes.";
   CHECK_NE(promo_type_, PromoType::kSnooze)
       << "Basic snooze is not compatible with other promo subtypes.";
+  CHECK_EQ(promo_subtype_, PromoSubtype::kNormal)
+      << "Promo subtype cannot be set multiple times.";
   switch (promo_subtype) {
     case PromoSubtype::kLegalNotice:
       CHECK(feature_);
@@ -437,6 +465,17 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetPromoSubtype(
       break;
   }
   promo_subtype_ = promo_subtype;
+  return *this;
+}
+
+FeaturePromoSpecification& FeaturePromoSpecification::SetReshowPolicy(
+    base::TimeDelta reshow_delay,
+    std::optional<int> max_show_count) {
+  CheckReshowAllowedFor(promo_subtype_);
+  CHECK_GE(reshow_delay, GetMinReshowDelay(promo_type_, promo_subtype_));
+  CHECK(!max_show_count || max_show_count > 1);
+  reshow_delay_ = reshow_delay;
+  max_show_count_ = max_show_count;
   return *this;
 }
 

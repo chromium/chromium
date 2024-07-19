@@ -2406,6 +2406,166 @@ TEST_F(BrowserFeaturePromoControllerPriorityTest,
                        FeaturePromoStatus::kQueuedForStartup));
 }
 
+namespace {
+BASE_FEATURE(kKeyedPromoFeature,
+             "KeyedPromoFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kKeyedPromoFeature2,
+             "KeyedPromoFeature2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr char kAppName1[] = "app1";
+constexpr char kAppName2[] = "app2";
+}  // namespace
+
+class BrowserFeaturePromoControllerReshowTest
+    : public BrowserFeaturePromoControllerPriorityTest {
+ public:
+  BrowserFeaturePromoControllerReshowTest() = default;
+  ~BrowserFeaturePromoControllerReshowTest() override = default;
+
+  void RegisterIPH() override {
+    BrowserFeaturePromoControllerViewsTest::RegisterIPH();
+
+    FeaturePromoSpecification spec =
+        DefaultPromoSpecification(kLegalNoticeFeature);
+    spec.set_promo_subtype_for_testing(
+        FeaturePromoSpecification::PromoSubtype::kLegalNotice);
+    spec.SetReshowPolicy(base::Days(20), std::nullopt);
+    registry()->RegisterFeature(std::move(spec));
+
+    spec = FeaturePromoSpecification::CreateForTutorialPromo(
+        kLegalNoticeFeature2, kToolbarAppMenuButtonElementId, IDS_OK,
+        kTestTutorialIdentifier);
+    spec.set_promo_subtype_for_testing(
+        FeaturePromoSpecification::PromoSubtype::kLegalNotice);
+    spec.SetReshowPolicy(base::Days(100), 2);
+    registry()->RegisterFeature(std::move(spec));
+
+    spec = FeaturePromoSpecification::CreateForCustomAction(
+        kKeyedPromoFeature, kToolbarAppMenuButtonElementId, IDS_CANCEL, IDS_OK,
+        base::DoNothing());
+    spec.set_promo_subtype_for_testing(
+        FeaturePromoSpecification::PromoSubtype::kKeyedNotice);
+    spec.SetReshowPolicy(base::Days(100), std::nullopt);
+    registry()->RegisterFeature(std::move(spec));
+
+    spec = FeaturePromoSpecification::CreateForToastPromo(
+        kKeyedPromoFeature2, kToolbarAppMenuButtonElementId, IDS_CANCEL, IDS_OK,
+        FeaturePromoSpecification::AcceleratorInfo());
+    spec.set_promo_subtype_for_testing(
+        FeaturePromoSpecification::PromoSubtype::kKeyedNotice);
+    spec.SetReshowPolicy(base::Days(20), 2);
+    registry()->RegisterFeature(std::move(spec));
+  }
+};
+
+TEST_F(BrowserFeaturePromoControllerReshowTest, ReshowLegalNoticeWithNoLimit) {
+  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
+                  // Promo can show initially.
+                  MaybeShowPromo(kLegalNoticeFeature), ClosePromo(),
+                  // Promo cannot reshow immediately.
+                  MaybeShowPromo(kLegalNoticeFeature,
+                                 FeaturePromoResult::kBlockedByReshowDelay),
+                  // Promo cannot reshow after a short period.
+                  AdvanceTime(std::nullopt, base::Days(5)),
+                  MaybeShowPromo(kLegalNoticeFeature,
+                                 FeaturePromoResult::kBlockedByReshowDelay),
+                  // Promo can reshow after sufficient time.
+                  AdvanceTime(std::nullopt, base::Days(20)),
+                  MaybeShowPromo(kLegalNoticeFeature), ClosePromo(),
+                  // Promo cannot reshow again after a short time.
+                  AdvanceTime(std::nullopt, base::Days(5)),
+                  MaybeShowPromo(kLegalNoticeFeature,
+                                 FeaturePromoResult::kBlockedByReshowDelay),
+                  // Promo can reshow again after sufficient time.
+                  AdvanceTime(std::nullopt, base::Days(20)),
+                  MaybeShowPromo(kLegalNoticeFeature), ClosePromo());
+}
+
+TEST_F(BrowserFeaturePromoControllerReshowTest, ReshowLegalNoticeWithLimit) {
+  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
+                  // Promo can show initially.
+                  MaybeShowPromo(kLegalNoticeFeature2), ClosePromo(),
+                  // Promo cannot reshow immediately.
+                  MaybeShowPromo(kLegalNoticeFeature2,
+                                 FeaturePromoResult::kBlockedByReshowDelay),
+                  // Promo cannot reshow after a short period.
+                  AdvanceTime(std::nullopt, base::Days(5)),
+                  MaybeShowPromo(kLegalNoticeFeature2,
+                                 FeaturePromoResult::kBlockedByReshowDelay),
+                  // Promo can reshow after sufficient time.
+                  AdvanceTime(std::nullopt, base::Days(100)),
+                  MaybeShowPromo(kLegalNoticeFeature2), ClosePromo(),
+                  // Promo cannot reshow again because it has reached the limit.
+                  AdvanceTime(std::nullopt, base::Days(5)),
+                  MaybeShowPromo(kLegalNoticeFeature2,
+                                 FeaturePromoResult::kPermanentlyDismissed),
+                  AdvanceTime(std::nullopt, base::Days(100)),
+                  MaybeShowPromo(kLegalNoticeFeature2,
+                                 FeaturePromoResult::kPermanentlyDismissed));
+}
+
+TEST_F(BrowserFeaturePromoControllerReshowTest, ReshowKeyedPromoNoLimit) {
+  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
+                  // Promo can show initially.
+                  MaybeShowPromo({kKeyedPromoFeature, kAppName1}), ClosePromo(),
+                  // Promo cannot reshow immediately.
+                  MaybeShowPromo({kKeyedPromoFeature, kAppName1},
+                                 FeaturePromoResult::kBlockedByReshowDelay),
+
+                  // Promo cannot reshow after a short period.
+                  AdvanceTime(std::nullopt, base::Days(5)),
+                  MaybeShowPromo({kKeyedPromoFeature, kAppName1},
+                                 FeaturePromoResult::kBlockedByReshowDelay),
+                  // But for other app it can.
+                  MaybeShowPromo({kKeyedPromoFeature, kAppName2}), ClosePromo(),
+
+                  // Promo can reshow after sufficient time.
+                  AdvanceTime(std::nullopt, base::Days(99)),
+                  MaybeShowPromo({kKeyedPromoFeature, kAppName1}), ClosePromo(),
+
+                  // But other app cannot, since it has not been long enough.
+                  MaybeShowPromo({kKeyedPromoFeature, kAppName2},
+                                 FeaturePromoResult::kBlockedByReshowDelay));
+}
+
+TEST_F(BrowserFeaturePromoControllerReshowTest, ReshowKeyedPromoWithLimit) {
+  RunTestSequence(
+      ResetSessionData(kMoreThanGracePeriod),
+      // Promo can show initially.
+      MaybeShowPromo({kKeyedPromoFeature2, kAppName1}), ClosePromo(),
+      // Promo cannot reshow immediately.
+      MaybeShowPromo({kKeyedPromoFeature2, kAppName1},
+                     FeaturePromoResult::kBlockedByReshowDelay),
+
+      // Promo cannot reshow after a short period.
+      AdvanceTime(std::nullopt, base::Days(5)),
+      MaybeShowPromo({kKeyedPromoFeature2, kAppName1},
+                     FeaturePromoResult::kBlockedByReshowDelay),
+      // But for other app it can.
+      MaybeShowPromo({kKeyedPromoFeature2, kAppName2}), ClosePromo(),
+
+      // Promo can reshow after sufficient time.
+      AdvanceTime(std::nullopt, base::Days(19)),
+      MaybeShowPromo({kKeyedPromoFeature2, kAppName1}), ClosePromo(),
+
+      // But other app cannot, since it has not been long enough.
+      MaybeShowPromo({kKeyedPromoFeature2, kAppName2},
+                     FeaturePromoResult::kBlockedByReshowDelay),
+
+      // After additional time, the second app can show, but the
+      // first has hit the limit.
+      AdvanceTime(std::nullopt, base::Days(25)),
+      MaybeShowPromo({kKeyedPromoFeature2, kAppName1},
+                     FeaturePromoResult::kPermanentlyDismissed),
+      MaybeShowPromo({kKeyedPromoFeature2, kAppName2}), ClosePromo(),
+
+      // Both are now permanently dismissed.
+      MaybeShowPromo({kKeyedPromoFeature2, kAppName2},
+                     FeaturePromoResult::kPermanentlyDismissed));
+}
+
 class BrowserFeaturePromoControllerPolicyTest
     : public BrowserFeaturePromoControllerPriorityTest,
       public testing::WithParamInterface<bool> {

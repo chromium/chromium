@@ -369,6 +369,21 @@ class FeaturePromoSpecification {
   // `kNormal` requires being on an allowlist.
   FeaturePromoSpecification& SetPromoSubtype(PromoSubtype promo_subtype);
 
+  // For keyed and legal notice IPH, allows the promo to be re-shown under
+  // specific circumstances. For keyed promos, the limit applies per key, not
+  // the entire promo.
+  //
+  // There is a minimum allowed `reshow_delay` depending on promo type. The
+  // current minimum delays are:
+  //  - two weeks for "toast" promos
+  //  - three months (90 days) for heavyweight promos
+  //
+  // The `max_show_count` is optional and can be used to limit the number of
+  // times the promo can be shown, regardless of delay. If specified, this
+  // count must be at least 2 (else it is meaningless).
+  FeaturePromoSpecification& SetReshowPolicy(base::TimeDelta reshow_delay,
+                                             std::optional<int> max_show_count);
+
   // Set the anchor element filter.
   FeaturePromoSpecification& SetAnchorElementFilter(
       AnchorElementFilter anchor_element_filter);
@@ -410,6 +425,10 @@ class FeaturePromoSpecification {
   const std::u16string custom_action_caption() const {
     return custom_action_caption_;
   }
+  const std::optional<base::TimeDelta>& reshow_delay() const {
+    return reshow_delay_;
+  }
+  const std::optional<int>& max_show_count() const { return max_show_count_; }
 
   // Sets whether the custom action button is the default button on the help
   // bubble (default is false). It is an error to call this method for a promo
@@ -492,6 +511,10 @@ class FeaturePromoSpecification {
 
   // Whether we are allowed to search for the anchor element in any context.
   bool in_any_context_ = false;
+
+  // Whether and how many times the promo can reshow.
+  std::optional<base::TimeDelta> reshow_delay_;
+  std::optional<int> max_show_count_;
 
   // The filter to use if there is more than one matching element, or
   // additional processing is needed (default is to always use the first
