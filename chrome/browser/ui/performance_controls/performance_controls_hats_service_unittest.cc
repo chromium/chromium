@@ -167,6 +167,7 @@ TEST_F(PerformanceControlsHatsServiceTest, LaunchesPerformanceSurvey) {
   performance_controls_hats_service()->OpenedNewTabPage();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PerformanceControlsHatsServiceHasBatteryTest,
        LaunchesBatteryPerformanceSurvey) {
   EXPECT_CALL(
@@ -175,6 +176,7 @@ TEST_F(PerformanceControlsHatsServiceHasBatteryTest,
                    _, _, _));
   performance_controls_hats_service()->OpenedNewTabPage();
 }
+#endif
 
 TEST_F(PerformanceControlsHatsServiceMemorySaverOptOutTest,
        LaunchesMemorySaverOptOutSurvey) {

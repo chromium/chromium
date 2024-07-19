@@ -74,6 +74,8 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
                                {});
   }
 
+// ChromeOS defaults to the OS battery saver so this survey isn't relevant.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   base::Time last_battery_timestamp =
       performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
           ->GetLastBatteryUsageTimestamp();
@@ -92,6 +94,8 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
          {"battery_saver_mode", battery_saver_mode}},
         {});
   }
+
+#endif
 }
 
 void PerformanceControlsHatsService::OnBatterySaverModeChanged(
