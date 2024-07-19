@@ -142,8 +142,11 @@ class BuildResolver:
         exceeding the failure threshold. These failures are opaque to LUCI, but
         can be discovered from `run_web_tests.py` exit code conventions.
         """
-        # TODO(crbug.com/1123077): After the switch to wptrunner, stop checking
-        # the `blink_wpt_tests` step.
+        # TODO(crbug.com/352762538):
+        #  1. Fetch shard exit codes separately for each suite.
+        #  2. Instead of coercing bad shards to `INFRA_FAILURE`, they should be
+        #     interpreted to populate `WebTestResults.incomplete_reason`
+        #     directly.
         run_web_tests_pattern = re.compile(
             r'[\w_-]*(webdriver|blink_(web|wpt))_tests.*\(with patch\)[^|]*')
         output_props = raw_build.get('output', {}).get('properties', {})
@@ -244,7 +247,6 @@ class BuildResolver:
 
     def log_builds(self, build_statuses: BuildStatuses):
         """Log builds in a tabular format."""
-        self._warn_about_incomplete_results(build_statuses)
         finished_builds = {
             build: status.name or '--'
             for build, status in build_statuses.items()
@@ -266,33 +268,6 @@ class BuildResolver:
         if unfinished_builds:
             _log.info('Scheduled or started builds:')
             self._log_build_statuses(unfinished_builds)
-
-    def _warn_about_incomplete_results(self, build_statuses: BuildStatuses):
-        # TODO(crbug.com/352762538): Make the reason for incomplete results
-        # per-suite, not per-build, like:
-        #   Some suites have incomplete results:
-        #     "linux-rel" build 100, "blink_web_tests": Shard timeout
-        #
-        # This log should be moved into `rebaseline-cl` in that case and
-        # consolidated with the missing builds log.
-        builds_with_incomplete_results = GitCL.filter_incomplete(
-            build_statuses)
-        if builds_with_incomplete_results:
-            _log.warning('Some builds have incomplete results:')
-            for build in sorted(builds_with_incomplete_results,
-                                key=_build_sort_key):
-                _log.warning('  "%s" build %s', build.builder_name,
-                             str(build.build_number or '--'))
-            _log.warning('Examples of incomplete results include:')
-            _log.warning('  * Shard terminated the harness after timing out.')
-            _log.warning('  * Harness exited early due to '
-                         'excessive unexpected failures.')
-            _log.warning('  * Build failed on a non-test step.')
-            _log.warning('Please consider retrying the failed builders or '
-                         'giving the builders more shards.')
-            _log.warning(
-                'See https://chromium.googlesource.com/chromium/src/+/HEAD/'
-                'docs/testing/web_test_expectations.md#handle-bot-timeouts')
 
     def _log_build_statuses(self, build_statuses: BuildStatuses):
         assert build_statuses

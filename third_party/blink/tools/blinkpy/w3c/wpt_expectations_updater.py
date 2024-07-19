@@ -376,7 +376,7 @@ class WPTExpectationsUpdater:
         results_to_update = WebTestResults(
             results_to_update,
             step_name=test_results.step_name(),
-            interrupted=test_results.interrupted,
+            incomplete_reason=test_results.incomplete_reason,
             builder_name=test_results.builder_name)
         return tests_to_rebaseline, results_to_update
 

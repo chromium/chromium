@@ -11,12 +11,15 @@ import logging
 import optparse
 import re
 from concurrent.futures import Executor
-from typing import Dict, List, Optional
+from typing import List, Mapping, Optional
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
-from blinkpy.common.net.git_cl import BuildStatus, GitCL
+from blinkpy.common.net.git_cl import BuildStatus, BuildStatuses, GitCL
 from blinkpy.common.net.rpc import Build, RPCError
-from blinkpy.common.net.web_test_results import WebTestResults
+from blinkpy.common.net.web_test_results import (
+    IncompleteResultsReason,
+    WebTestResults,
+)
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.tool.commands.build_resolver import (
     BuildResolver,
@@ -28,6 +31,9 @@ from blinkpy.tool.commands.rebaseline import TestBaselineSet
 from blinkpy.tool.grammar import pluralize
 
 _log = logging.getLogger(__name__)
+
+
+ResultsByBuild = Mapping[Build, List[WebTestResults]]
 
 
 class RebaselineCL(AbstractParallelRebaselineCommand):
@@ -144,28 +150,18 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             _log.error('%s', error)
             return 1
 
-        builders_with_incomplete_results = {
-            build.builder_name
-            for build in GitCL.filter_incomplete(build_statuses)
-        }
         jobs_to_results = self._fetch_results(build_statuses)
-        builders_with_results = {b.builder_name for b in jobs_to_results}
-        builders_without_results = (set(self.selected_try_bots) -
-                                    builders_with_results -
-                                    builders_with_incomplete_results)
-        if builders_without_results:
-            _log.warning('Some builders have no results:')
-            for builder in sorted(builders_without_results):
-                _log.warning('  %s', builder)
-
-        builders_without_results.update(builders_with_incomplete_results)
-        if builders_without_results and not self._tool.user.confirm(
-                'Would you like to rebaseline with available results?\n'
-                'This is generally not suggested unless the results are '
-                'platform agnostic or the needed results happen to be not '
-                'missing.'):
-            _log.info('Aborting. Please retry builders with no results.')
-            return 1
+        incomplete_results = self._filter_for_incomplete_results(
+            jobs_to_results)
+        if incomplete_results:
+            self._log_incomplete_results(incomplete_results)
+            if not self._tool.user.confirm(
+                    'Would you like to rebaseline with available results?\n'
+                    'This is generally not suggested unless the results are '
+                    'platform agnostic or the needed results happen to be not '
+                    'missing.'):
+                _log.info('Aborting. Please retry builders with no results.')
+                return 1
 
         if options.test_name_file:
             test_baseline_set = self._make_test_baseline_set_from_file(
@@ -180,6 +176,26 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         # TODO(crbug.com/350775866): Fix `fill_in_missing_results()`.
         with self._io_pool or contextlib.nullcontext():
             return self.rebaseline(options, test_baseline_set)
+
+    def _filter_for_incomplete_results(
+            self, results_by_build: ResultsByBuild) -> ResultsByBuild:
+        incomplete_results_by_build = collections.defaultdict(list)
+        for build, results_for_build in results_by_build.items():
+            for suite_results in results_for_build:
+                if suite_results.incomplete_reason:
+                    incomplete_results_by_build[build].append(suite_results)
+        return incomplete_results_by_build
+
+    def _log_incomplete_results(self, results_by_build: ResultsByBuild):
+        _log.warning('Some builds have incomplete results:')
+        for build in sorted(results_by_build,
+                            key=lambda build: build.builder_name):
+            for results in sorted(results_by_build[build],
+                                  key=WebTestResults.step_name):
+                _log.warning(f'  {build}, "{results.step_name()}": '
+                             f'{results.incomplete_reason}')
+        # TODO(crbug.com/352762538): Link to the document about handling bot
+        # timeouts if it's one of the reasons.
 
     def check_ok_to_run(self):
         unstaged_baselines = self.unstaged_baselines()
@@ -196,10 +212,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             return set(self._builders)
         return self._tool.builders.builders_for_rebaselining()
 
-    def _fetch_results(
-        self,
-        build_statuses: Dict[Build, BuildStatus],
-    ) -> Dict[Build, List[WebTestResults]]:
+    def _fetch_results(self, build_statuses: BuildStatuses) -> ResultsByBuild:
         """Fetches results for all of the given builds.
 
         There should be a one-to-one correspondence between Builds, supported
@@ -207,39 +220,41 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         continuing with rebaselining may yield incorrect results, when the new
         baselines are deduped, an old baseline may be kept for the platform
         that's missing results.
-
-        Returns:
-            A dict mapping Builds to lists of WebTestResults for all completed
-            jobs.
         """
         results_fetcher = self._tool.results_fetcher
         builds_to_results = collections.defaultdict(list)
-        build_steps = []
+        build_steps_to_fetch = []
 
         for build, status in build_statuses.items():
-            if status is BuildStatus.SUCCESS:
-                _log.debug('No baselines to download for passing %r build %s.',
-                           build.builder_name, build.build_number
-                           or '(unknown)')
-                # This empty entry indicates the builder is not missing.
-                builds_to_results[build] = []
-                continue
-            if status is not BuildStatus.FAILURE:
-                # Only completed failed builds will contain actual failed
-                # web tests to download baselines for.
-                continue
+            for step in self._tool.builders.step_names_for_builder(
+                    build.builder_name):
+                if status is BuildStatus.FAILURE:
+                    # Only completed failed builds will contain actual failed
+                    # web tests to download baselines for.
+                    build_steps_to_fetch.append((build, step))
+                    continue
 
-            step_names = self._tool.builders.step_names_for_builder(
-                build.builder_name)
-            build_steps.extend((build, step_name) for step_name in step_names)
+                incomplete_reason = None
+                if status is BuildStatus.SUCCESS:
+                    _log.debug(
+                        f'No baselines to download for passing {build}.')
+                else:
+                    incomplete_reason = IncompleteResultsReason(status)
+                # These empty results are a no-op when constructing the
+                # `TestBaselineSet` later.
+                results = WebTestResults([],
+                                         step_name=step,
+                                         builder_name=build.builder_name,
+                                         incomplete_reason=incomplete_reason)
+                builds_to_results[build].append(results)
 
         _log.info('Fetching test results for '
-                  f'{pluralize("suite", len(build_steps))}.')
+                  f'{pluralize("suite", len(build_steps_to_fetch))}.')
         map_fn = self._io_pool.map if self._io_pool else map
         step_results = map_fn(
             lambda build_step: results_fetcher.gather_results(*build_step),
-            build_steps)
-        for (build, _), results in zip(build_steps, step_results):
+            build_steps_to_fetch)
+        for (build, _), results in zip(build_steps_to_fetch, step_results):
             builds_to_results[build].append(results)
         return builds_to_results
 

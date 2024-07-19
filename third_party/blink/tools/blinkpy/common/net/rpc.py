@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import enum
 import functools
 import logging
 import json
@@ -57,6 +58,31 @@ class Build(NamedTuple):
     build_number: Optional[int] = None
     build_id: Optional[str] = None
     bucket: Literal['ci', 'try'] = 'try'
+
+    def __str__(self) -> str:
+        builder = f'"{self.builder_name}"'
+        if self.build_number:
+            return f'{builder} build {self.build_number}'
+        return builder
+
+
+class BuildStatus(enum.Flag):
+    """Buildbucket statuses [0]. The names should match where applicable.
+
+    [0]: https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/common.proto
+    """
+    SCHEDULED = enum.auto()
+    STARTED = enum.auto()
+    SUCCESS = enum.auto()
+    FAILURE = enum.auto()
+    INFRA_FAILURE = enum.auto()
+    CANCELED = enum.auto()
+    COMPLETED = SUCCESS | FAILURE | INFRA_FAILURE | CANCELED
+    # Pseudo-status more specific than `SCHEDULED` to indicate a build that was
+    # triggered by this run.
+    TRIGGERED = enum.auto()
+    # Pseudo-status to indicate a missing try build.
+    MISSING = enum.auto()
 
 
 class RPCError(Exception):

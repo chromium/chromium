@@ -500,9 +500,11 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO:   MOCK Try Linux       6000    SCHEDULED try   \n',
             'INFO:   MOCK Try Mac         4000    STARTED   try   \n',
             'INFO: Fetching test results for 2 suites.\n',
-            'WARNING: Some builders have no results:\n',
-            'WARNING:   MOCK Try Linux\n',
-            'WARNING:   MOCK Try Mac\n',
+            'WARNING: Some builds have incomplete results:\n',
+            'WARNING:   "MOCK Try Linux" build 6000, "blink_web_tests": '
+            'build is not complete\n',
+            'WARNING:   "MOCK Try Mac" build 4000, "blink_web_tests": '
+            'build is not complete\n',
             'INFO: Would you like to rebaseline with available results?\n'
             'This is generally not suggested unless the results are '
             'platform agnostic or the needed results happen to be not '
@@ -589,9 +591,11 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO:   MOCK Try Mac         4000    FAILURE   try   \n',
             'INFO:   MOCK Try Win         5000    FAILURE   try   \n',
             'INFO: Fetching test results for 2 suites.\n',
-            'WARNING: Some builders have no results:\n',
-            'WARNING:   MOCK Try Linux\n',
-            'WARNING:   MOCK Try Linux (CQ duplicate)\n',
+            'WARNING: Some builds have incomplete results:\n',
+            'WARNING:   "MOCK Try Linux", "blink_web_tests": '
+            'build is missing and not triggered\n',
+            'WARNING:   "MOCK Try Linux (CQ duplicate)", "blink_web_tests": '
+            'build is missing and not triggered\n',
             'INFO: Would you like to rebaseline with available results?\n'
             'This is generally not suggested unless the results are '
             'platform agnostic or the needed results happen to be not '

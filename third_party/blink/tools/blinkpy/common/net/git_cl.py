@@ -15,28 +15,9 @@ from typing import Mapping, NamedTuple, Optional, Set
 
 from blinkpy.common.checkout.git import Git
 from blinkpy.common.net.results_fetcher import filter_latest_builds
-from blinkpy.common.net.rpc import Build, BuildbucketClient
+from blinkpy.common.net.rpc import Build, BuildStatus, BuildbucketClient
 
 _log = logging.getLogger(__name__)
-
-
-class BuildStatus(enum.Flag):
-    """Buildbucket statuses [0]. The names should match where applicable.
-
-    [0]: https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/common.proto
-    """
-    SCHEDULED = enum.auto()
-    STARTED = enum.auto()
-    SUCCESS = enum.auto()
-    FAILURE = enum.auto()
-    INFRA_FAILURE = enum.auto()
-    CANCELED = enum.auto()
-    COMPLETED = SUCCESS | FAILURE | INFRA_FAILURE | CANCELED
-    # Pseudo-status more specific than `SCHEDULED` to indicate a build that was
-    # triggered by this run.
-    TRIGGERED = enum.auto()
-    # Pseudo-status to indicate a missing try build.
-    MISSING = enum.auto()
 
 
 BuildStatuses = Mapping[Build, BuildStatus]

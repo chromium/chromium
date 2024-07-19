@@ -31,6 +31,7 @@ import json
 from typing import Dict, List, Literal, NamedTuple, Optional, Set
 
 from blinkpy.common.memoized import memoized
+from blinkpy.common.net.rpc import BuildStatus
 from blinkpy.web_tests.layout_package import json_results_generator
 from blinkpy.web_tests.models.test_failures import FailureImage
 from blinkpy.web_tests.models.typ_types import ResultType
@@ -140,6 +141,24 @@ def _flatten_test_results_trie(trie, sep: str = '/'):
             yield test_name, leaf
 
 
+class IncompleteResultsReason(NamedTuple):
+    build_status: Optional[BuildStatus] = None
+
+    # TODO(crbug.com/352762538): Add shard statuses (e.g., list of (shard index,
+    # exit code)).
+
+    def __str__(self) -> str:
+        if self.build_status is BuildStatus.INFRA_FAILURE:
+            return 'build failed due to infra'
+        elif self.build_status is BuildStatus.CANCELED:
+            return 'build was canceled'
+        elif self.build_status is BuildStatus.MISSING:
+            return 'build is missing and not triggered'
+        elif self.build_status not in BuildStatus.COMPLETED:
+            return 'build is not complete'
+        return 'results are incomplete for an unknown reason'
+
+
 # FIXME: This should be unified with ResultsSummary or other NRWT web tests code
 # in the web_tests package.
 # This doesn't belong in common.net, but we don't have a better place for it yet.
@@ -168,7 +187,9 @@ class WebTestResults:
                                                        {}).items()
             }
             results.append(WebTestResult(test_name, fields, artifacts))
-        kwargs.setdefault('interrupted', json_dict.get('interrupted', False))
+        if json_dict.get('interrupted'):
+            # Results JSON doesn't provide more specific information.
+            kwargs.setdefault('incomplete_reason', IncompleteResultsReason())
         kwargs.setdefault('builder_name', json_dict.get('builder_name'))
         kwargs.setdefault('chromium_revision',
                           json_dict.get('chromium_revision'))
@@ -206,7 +227,7 @@ class WebTestResults:
                  results: List[WebTestResult],
                  chromium_revision: Optional[str] = None,
                  step_name: Optional[str] = None,
-                 interrupted: bool = False,
+                 incomplete_reason: Optional[IncompleteResultsReason] = None,
                  builder_name: Optional[str] = None):
         self._results_by_name = collections.OrderedDict([
             (result.test_name(), result)
@@ -214,7 +235,7 @@ class WebTestResults:
         ])
         self._chromium_revision = chromium_revision
         self._step_name = step_name
-        self.interrupted = interrupted
+        self.incomplete_reason = incomplete_reason
         self.builder_name = builder_name
 
     def __iter__(self):

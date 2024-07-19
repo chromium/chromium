@@ -126,12 +126,12 @@ class WebTestResultsTest(unittest.TestCase):
         self.assertIsNone(WebTestResults.results_from_string(''))
 
     def test_was_interrupted(self):
-        self.assertTrue(
-            WebTestResults.results_from_string(
-                b'ADD_RESULTS({"tests":{},"interrupted":true});').interrupted)
-        self.assertFalse(
-            WebTestResults.results_from_string(
-                b'ADD_RESULTS({"tests":{},"interrupted":false});').interrupted)
+        results = WebTestResults.results_from_string(
+            b'ADD_RESULTS({"tests":{},"interrupted":true});')
+        self.assertIsNotNone(results.incomplete_reason)
+        results = WebTestResults.results_from_string(
+            b'ADD_RESULTS({"tests":{},"interrupted":false});')
+        self.assertIsNone(results.incomplete_reason)
 
     def test_chromium_revision(self):
         self.assertEqual(
