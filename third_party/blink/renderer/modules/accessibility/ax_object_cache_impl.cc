@@ -5506,6 +5506,15 @@ void AXObjectCacheImpl::UpdatePluginIncludedNodeCount() {
     }
   }
 }
+
+bool AXObjectCacheImpl::IsInternalUICheckerOn(const AXObject& obj) const {
+  if (internal_ui_checker_on_) {
+    return true;
+  }
+  // Also turn on for nodes that are inside of a UA shadow root, which is
+  // used for complex form controls built into the browser.
+  return obj.GetNode() && obj.GetNode()->IsInUserAgentShadowRoot();
+}
 #endif  // DCHECK_IS_ON()
 
 void AXObjectCacheImpl::GetImagesToAnnotate(

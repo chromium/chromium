@@ -647,14 +647,14 @@ class MODULES_EXPORT AXObjectCacheImpl
     return plugin_included_node_count_;
   }
   HeapHashMap<AXID, Member<AXObject>>& GetObjects() { return objects_; }
-#endif
 
   // Used to turn on accessibility checks for internal Web UI, e.g. history,
   // preferences, etc. Will trigger DCHECKS so that WebUI with basic a11y errors
   // fail tests.
   // TODO(accessibility) Use for more things that have 0% false positives, such
   // as focusable objects requiring a name.
-  bool IsInternalUICheckerOn() const { return internal_ui_checker_on_; }
+  bool IsInternalUICheckerOn(const AXObject& obj) const;
+#endif  // DCHECK_IS_ON()
 
   // The following represent functions that could be used as callbacks for
   // DeferTreeUpdate. Every enum value represents a function that would be

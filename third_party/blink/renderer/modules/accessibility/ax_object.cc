@@ -4400,7 +4400,7 @@ String AXObject::SimplifyName(const String& str,
     if (!name_on_prohibited_role_error_shown) {
       name_on_prohibited_role_error_shown = true;  // Reduce console spam.
 #if DCHECK_IS_ON()
-      if (AXObjectCache().IsInternalUICheckerOn()) {
+      if (AXObjectCache().IsInternalUICheckerOn(*this)) {
         DCHECK(false)
             << "A prohibited accessible name was used in chromium web UI:\n"
             << GetProhibitedNameError(str, name_from)
@@ -4458,9 +4458,11 @@ bool AXObject::IsNameProhibited() const {
     // of a focusable element even if it has the wrong role.
     // TODO(crbug.com/350528330): Test to see whether the following content
     // works in all screen readers we support, and not, we should return true
-    // here: <div tabindex="0" aria-label="Some label"></div>.
+    // here: <div tabindex="0" aria-label="Some label"></div>. Either way,
+    // we should still disallow this pattern in Chromium Web UI.
     return false;
   }
+
   // Will not be in platform tree.
   if (IsIgnored()) {
     return false;
@@ -7783,6 +7785,9 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         // affect the final serialized name for this object, but it allows it
         // to contribute to an ancestor name.
         result = true;
+      } else if (!GetElement() || GetElement()->IsInUserAgentShadowRoot()) {
+        // Built-in UI must have correct accessibility without needing repairs.
+        result = false;
       } else if (IsEditable() || GetAOMPropertyOrARIAAttribute(
                                      AOMRelationProperty::kActiveDescendant)) {
         // Handle exceptions:
@@ -7801,6 +7806,19 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         result = GetDocument()->FocusedElement() == GetElement() ||
                  GetElement()->IsKeyboardFocusable(
                      Element::UpdateBehavior::kNoneForAccessibility);
+#if DCHECK_IS_ON()
+        // TODO(crbug.com/350528330): Add this check and address focusable
+        // UI elements that are missing a role, or using an improper role.
+        // DCHECK(!result || !AXObjectCache().IsInternalUICheckerOn(*this))
+        //     << "A focusable node lacked proper accessibility markup, "
+        //        "causing a repair situation:"
+        //     << "\n* Is name prohibited: " << IsNameProhibited()
+        //     << "\n* Role: " << RoleValue() << "\n* URL: " <<
+        //     GetDocument()->Url()
+        //     << "\n* Outer html: " << GetElement()->outerHTML()
+        //     << "\n* AXObject ancestry:\n"
+        //     << ParentChainToStringHelper(this);
+#endif
       }
       break;
 
