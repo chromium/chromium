@@ -1376,8 +1376,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
     int destinationWebStateIndex =
         WebStateIndexAfterGridDropItemIndex(webStateList, destinationIndex);
-    MoveTabGroupToBrowser(tabGroupInfo.tabGroup, self.browser,
-                          destinationWebStateIndex);
+    tab_groups::utils::MoveTabGroupToBrowser(
+        tabGroupInfo.tabGroup, self.browser, destinationWebStateIndex);
   }
   base::UmaHistogramEnumeration(kUmaGridViewDragOrigin, DragItemOrigin::kOther);
 

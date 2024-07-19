@@ -62,6 +62,13 @@ void CloseTabGroupLocally(const TabGroup* tab_group,
                           WebStateList* web_state_list,
                           TabGroupSyncService* sync_service);
 
+// Moves tab group to the `destination_tab_group_index` in
+// `destination_browser`. It is an error to try to move a tab across profiles
+// (incognito <-> regular).
+void MoveTabGroupToBrowser(const TabGroup* tab_group,
+                           Browser* destination_browser,
+                           int destination_tab_group_index);
+
 }  // namespace utils
 }  // namespace tab_groups
 

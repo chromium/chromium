@@ -392,7 +392,8 @@ void TabGroupLocalUpdateObserver::UpdateVisualDataSyncedGroup(
 }
 
 void TabGroupLocalUpdateObserver::DeleteSyncedGroup(const TabGroup* tab_group) {
-  if (!sync_service_->GetGroup(tab_group->tab_group_id())) {
+  if (sync_update_paused_ ||
+      !sync_service_->GetGroup(tab_group->tab_group_id())) {
     // The group has been closed locally.
     return;
   }

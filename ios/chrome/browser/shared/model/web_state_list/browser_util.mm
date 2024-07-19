@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
@@ -121,96 +120,4 @@ BrowserAndIndex FindBrowserAndIndex(web::WebStateID tab_id,
     }
   }
   return BrowserAndIndex{};
-}
-
-void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
-                           Browser* destination_browser,
-                           int destination_tab_group_index) {
-  ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
-  const BrowserList::BrowserType browser_types =
-      browser_state->IsOffTheRecord() ? BrowserList::BrowserType::kIncognito
-                                      : BrowserList::BrowserType::kRegular;
-  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
-
-  // Retrieve the `source_browser`.
-  Browser* source_browser;
-  for (Browser* browser : browsers) {
-    WebStateList* web_state_list = browser->GetWebStateList();
-    if (web_state_list->ContainsGroup(source_tab_group)) {
-      source_browser = browser;
-      break;
-    }
-  }
-
-  if (!source_browser) {
-    DUMP_WILL_BE_NOTREACHED()
-        << "Either the 'source_tab_group' is incorrect, or the user is "
-           "attempting to move a tab group across profiles (incognito <-> "
-           "regular)";
-    return;
-  }
-
-  if (source_browser == destination_browser) {
-    // This is a reorder operation within the same WebStateList.
-    destination_browser->GetWebStateList()->MoveGroup(
-        source_tab_group, destination_tab_group_index);
-    return;
-  }
-
-  // Get and lock `source_web_state_list` and `destination_web_state_list`.
-  WebStateList* source_web_state_list = source_browser->GetWebStateList();
-  WebStateList* destination_web_state_list =
-      destination_browser->GetWebStateList();
-  auto source_lock = source_web_state_list->StartBatchOperation();
-  auto destination_lock = destination_web_state_list->StartBatchOperation();
-
-  int source_web_state_start_index = source_tab_group->range().range_begin();
-  int tab_count = source_tab_group->range().count();
-  CHECK(tab_count > 0);
-
-  // Create the `TabGroupVisualData` for the new group.
-  const tab_groups::TabGroupVisualData destination_visual_data(
-      source_tab_group->visual_data());
-
-  // Duplicate the `TabGroupId` for the new group.
-  const tab_groups::TabGroupId destination_local_id =
-      source_tab_group->tab_group_id();
-
-  // Move tabs to the new browser.
-  int moved_tab_count = 0;
-  size_t source_group_count =
-      source_browser->GetWebStateList()->GetGroups().size();
-  for (int destination_index_offset = 0; destination_index_offset < tab_count;
-       destination_index_offset++) {
-    if (!source_web_state_list->ContainsIndex(source_web_state_start_index)) {
-      // `source_web_state_start_index` should have been a valid index at all
-      // times during the loop.
-      base::debug::DumpWithoutCrashing();
-      break;
-    }
-    if (source_web_state_list->GetGroupOfWebStateAt(
-            source_web_state_start_index) != source_tab_group) {
-      // The group of the tab to move does not match.
-      base::debug::DumpWithoutCrashing();
-      break;
-    }
-    MoveTabFromBrowserToBrowser(
-        source_browser, source_web_state_start_index, destination_browser,
-        destination_tab_group_index + destination_index_offset);
-    moved_tab_count++;
-  }
-
-  // Create the new group.
-  const TabGroup* destination_tab_group =
-      destination_browser->GetWebStateList()->CreateGroup(
-          TabGroupRange(destination_tab_group_index, moved_tab_count).AsSet(),
-          destination_visual_data, destination_local_id);
-  CHECK(destination_browser->GetWebStateList()->ContainsGroup(
-      destination_tab_group));
-  // Check that the source browser has one less group.
-  CHECK_EQ(source_group_count,
-           source_browser->GetWebStateList()->GetGroups().size() + 1,
-           base::NotFatalUntil::M128);
 }

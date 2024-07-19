@@ -5,10 +5,14 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator_utils.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -21,6 +25,13 @@
 #import "testing/platform_test.h"
 
 namespace {
+
+// Creates a MockTabGroupSyncService.
+std::unique_ptr<KeyedService> CreateMockSyncService(
+    web::BrowserState* context) {
+  return std::make_unique<
+      testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
+}
 
 // Creates a WebState for test purposes.
 std::unique_ptr<web::WebState> CreateWebState() {
@@ -37,9 +48,15 @@ class TabStripMediatorUtilsTest : public PlatformTest {
  public:
   TabStripMediatorUtilsTest() {
     feature_list_.InitWithFeatures(
-        {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip}, {});
+        {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
     TestChromeBrowserState::Builder browser_state_builder;
+    browser_state_builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateMockSyncService));
     browser_state_ = browser_state_builder.Build();
+    mock_service_ = static_cast<tab_groups::MockTabGroupSyncService*>(
+        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+            browser_state_.get()));
     browser_ = std::make_unique<TestBrowser>(
         browser_state_.get(), std::make_unique<FakeWebStateListDelegate>());
     web_state_list_ = browser_->GetWebStateList();
@@ -48,6 +65,8 @@ class TabStripMediatorUtilsTest : public PlatformTest {
     other_web_state_list_ = other_browser_->GetWebStateList();
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
+    local_observer_ = std::make_unique<tab_groups::TabGroupLocalUpdateObserver>(
+        browser_list, mock_service_);
     browser_list->AddBrowser(browser_.get());
     browser_list->AddBrowser(other_browser_.get());
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());
@@ -62,6 +81,8 @@ class TabStripMediatorUtilsTest : public PlatformTest {
   raw_ptr<WebStateList> web_state_list_;
   std::unique_ptr<TestBrowser> other_browser_;
   raw_ptr<WebStateList> other_web_state_list_;
+  raw_ptr<tab_groups::MockTabGroupSyncService> mock_service_;
+  std::unique_ptr<tab_groups::TabGroupLocalUpdateObserver> local_observer_;
 };
 
 // Test that `CreateTabItemIdentifier` returns the correct
@@ -218,6 +239,9 @@ TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemDifferentBrowser) {
 
   EXPECT_EQ("| [ 0 a b* ] c", builder.GetWebStateListDescription());
   EXPECT_EQ("| d [ 1 e f ]", other_builder.GetWebStateListDescription());
+  EXPECT_CALL(*mock_service_, CreateScopedLocalObserverPauser()).Times(5);
+  local_observer_->SetSyncUpdatePaused(true);
+  EXPECT_CALL(*mock_service_, RemoveGroup(group_0->tab_group_id())).Times(0);
 
   // Move `group_0` before `webstate_f_item_identifier` in `other_browser_`.
   MoveGroupBeforeTabStripItem(group_0, webstate_f_item_identifier,
