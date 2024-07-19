@@ -21,3 +21,19 @@ source_set("office_web_app") {
     "//url",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "office_web_app_unittest.cc" ]
+
+  deps = [
+    ":office_web_app",
+    "//base/test:test_support",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications:web_applications_unit_tests",
+    "//chrome/test:test_support",
+    "//components/webapps/browser:constants",
+  ]
+}

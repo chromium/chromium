@@ -749,6 +749,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",
+    "//chrome/browser/chromeos/office_web_app:unit_tests",
     "//chrome/browser/chromeos/tast_support:unit_tests",
   ]
 
