@@ -1017,6 +1017,12 @@ suite('NewTabPageAppTest', () => {
         });
       });
 
+      test('does not increment button shown count on startup'), () => {
+        assertEquals(
+            0,
+            handler.getCallCount('incrementWallpaperSearchButtonShownCount'));
+      };
+
       test('wallpaper search button is not shown if it is disabled', () => {
         assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
         assertFalse(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
@@ -1061,12 +1067,18 @@ suite('NewTabPageAppTest', () => {
         });
       });
 
+      test('increments button shown count on startup'), () => {
+        assertEquals(
+            1,
+            handler.getCallCount('incrementWallpaperSearchButtonShownCount'));
+      };
+
       test('wallpaper search button shows if it is enabled', () => {
         assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
         assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
       });
 
-      test('button has animation if the flag is enabled', () => {
+      test('button has animation', () => {
         assertNotStyle(
             $$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
         assertNotStyle(
@@ -1270,6 +1282,7 @@ suite('NewTabPageAppTest', () => {
     suite('AnimationDisabled', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: true,
           wallpaperSearchButtonAnimationEnabled: false,
         });
       });

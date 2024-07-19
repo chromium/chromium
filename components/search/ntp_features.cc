@@ -423,6 +423,12 @@ BASE_FEATURE(kNtpWallpaperSearchButtonAnimation,
              "NtpWallpaperSearchButtonAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Dummy feature to set param "NtpWallpaperSearchButtonAnimationShownThreshold".
+// This is used for an emergency Finch param. Keep indefinitely.
+BASE_FEATURE(kNtpWallpaperSearchButtonAnimationShownThreshold,
+             "NtpWallpaperSearchButtonAnimationShownThreshold",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =
@@ -501,6 +507,8 @@ const char kNtpTabResumptionModuleTimeLimitParam[] =
     "NtpTabResumptionModuleTimeLimitParam";
 const char kNtpTabResumptionModuleVisibilityThresholdDataParam[] =
     "NtpTabResumptionModuleVisibilityThresholdDataParam";
+const char kNtpWallpaperSearchButtonAnimationShownThresholdParam[] =
+    "NtpWallpaperSearchButtonAnimationShownThresholdParam";
 const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
 
 const base::FeatureParam<std::string> kNtpCalendarModuleExperimentParam(
@@ -528,6 +536,16 @@ const base::FeatureParam<bool> kNtpRealboxCr23SteadyStateShadow(
     &ntp_features::kRealboxCr23Theming,
     "kNtpRealboxCr23SteadyStateShadow",
     false);
+
+bool IsNtpModulesRedesignedEnabled(std::string application_locale,
+                                   std::string country_code) {
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          kNtpModulesRedesigned.name)) {
+    return base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
+  }
+
+  return IsEnUSInUS(application_locale, country_code);
+}
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
@@ -560,14 +578,9 @@ std::vector<std::string> GetModulesOrder() {
                            base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
-bool IsNtpModulesRedesignedEnabled(std::string application_locale,
-                                   std::string country_code) {
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          kNtpModulesRedesigned.name)) {
-    return base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
-  }
-
-  return IsEnUSInUS(application_locale, country_code);
+int GetWallpaperSearchButtonAnimationShownThreshold() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kNtpWallpaperSearchButtonAnimationShownThreshold,
+      kNtpWallpaperSearchButtonAnimationShownThresholdParam, 15);
 }
-
 }  // namespace ntp_features

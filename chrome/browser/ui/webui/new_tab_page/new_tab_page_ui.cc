@@ -471,10 +471,21 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       customize_chrome::IsWallpaperSearchEnabledForProfile(profile_);
   source->AddBoolean("wallpaperSearchButtonEnabled",
                      wallpaper_search_button_enabled);
-  source->AddBoolean("wallpaperSearchButtonAnimationEnabled",
-                     wallpaper_search_button_enabled &&
-                         base::FeatureList::IsEnabled(
-                             ntp_features::kNtpWallpaperSearchButtonAnimation));
+  int wallpaper_search_animation_shown_threshold =
+      ntp_features::GetWallpaperSearchButtonAnimationShownThreshold();
+  // Animate the button if the threshold is negative (unconditional) or if the
+  // button has has been shown less times than the threshold.
+  bool should_animate_wallpaper_search_button =
+      wallpaper_search_animation_shown_threshold < 0 ||
+      wallpaper_search_animation_shown_threshold >=
+          profile_->GetPrefs()->GetInteger(
+              prefs::kNtpWallpaperSearchButtonShownCount);
+  source->AddBoolean(
+      "wallpaperSearchButtonAnimationEnabled",
+      wallpaper_search_button_enabled &&
+          base::FeatureList::IsEnabled(
+              ntp_features::kNtpWallpaperSearchButtonAnimation) &&
+          should_animate_wallpaper_search_button);
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));

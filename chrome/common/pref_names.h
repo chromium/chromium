@@ -2365,6 +2365,9 @@ inline constexpr char kNtpModulesInteractedCountDict[] =
 inline constexpr char kNtpPromoBlocklist[] = "ntp.promo_blocklist";
 // Whether the promo is visible.
 inline constexpr char kNtpPromoVisible[] = "ntp.promo_visible";
+// Number of times NTP wallpaper search button animation has been visible.
+inline constexpr char kNtpWallpaperSearchButtonShownCount[] =
+    "NewTabPage.WallpaperSearchButtonShownCount";
 // List of ids for past wallpaper search themes.
 inline constexpr char kNtpWallpaperSearchHistory[] =
     "ntp.wallpaper_search_history";

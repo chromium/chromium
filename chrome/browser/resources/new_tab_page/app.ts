@@ -616,6 +616,9 @@ export class AppElement extends AppElementBase {
     this.registerHelpBubble(
         CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, '#customizeButton', {fixed: true});
     this.pageHandler_.maybeShowFeaturePromo(IphFeature.kCustomizeChrome);
+    if (this.wallpaperSearchButtonEnabled_) {
+      this.pageHandler_.incrementWallpaperSearchButtonShownCount();
+    }
   }
 
   private onOpenVoiceSearch_() {

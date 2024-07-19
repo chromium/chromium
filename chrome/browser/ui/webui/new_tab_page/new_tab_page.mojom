@@ -308,9 +308,11 @@ interface PageHandler {
   // Increment the number of times the user has opened the side panel
   // with the customize chrome button.
   IncrementCustomizeChromeButtonOpenCount();
-
   // Attempts to trigger the specified in product help promo.
   MaybeShowFeaturePromo(IphFeature iph_feature);
+  // Increment the number of times the user has seen the wallpaper search
+  // button.
+  IncrementWallpaperSearchButtonShownCount();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

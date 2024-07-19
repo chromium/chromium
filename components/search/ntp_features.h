@@ -96,6 +96,7 @@ BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleTimeLimit);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButton);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimation);
+BASE_DECLARE_FEATURE(kNtpWallpaperSearchButtonAnimationShownThreshold);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
@@ -209,6 +210,9 @@ extern const char kNtpTabResumptionModuleResultTypesParam[];
 // Parameter determining the recency of tabs in the Tab Resumption module.
 extern const char kNtpTabResumptionModuleTimeLimitParam[];
 extern const char kNtpTabResumptionModuleVisibilityThresholdDataParam[];
+// Parameter determining the number of times to animate the NTP Wallpaper Search
+// button.
+extern const char kNtpWallpaperSearchButtonAnimationShownThresholdParam[];
 // Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
 extern const char kWallpaperSearchHatsDelayParam[];
 
@@ -231,6 +235,11 @@ extern const base::FeatureParam<bool>
 // Parameter determining the whether the steady state realbox has a shadow.
 extern const base::FeatureParam<bool> kNtpRealboxCr23SteadyStateShadow;
 
+// Returns whether the NTP redesigned launchpad experience is enabled for the
+// given locale and country code.
+bool IsNtpModulesRedesignedEnabled(std::string application_locale,
+                                   std::string country_code);
+
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
 
@@ -246,11 +255,9 @@ int GetMultipleLoadedModulesMaxModuleInstanceCount();
 // Returns a list of module IDs ordered by how they should appear on the NTP.
 std::vector<std::string> GetModulesOrder();
 
-// Returns whether the NTP redesigned launchpad experience is enabled for the
-// given locale and country code.
-bool IsNtpModulesRedesignedEnabled(std::string application_locale,
-                                   std::string country_code);
-
+// Returns the maximum number of times to show animation for NTP wallpaper
+// search button.
+int GetWallpaperSearchButtonAnimationShownThreshold();
 }  // namespace ntp_features
 
 #endif  // COMPONENTS_SEARCH_NTP_FEATURES_H_

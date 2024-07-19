@@ -1130,6 +1130,20 @@ TEST_F(NewTabPageHandlerTest, DoNotShowWebstoreToastOnCountExceeded) {
   mock_page_.FlushForTesting();
 }
 
+TEST_F(NewTabPageHandlerTest, IncrementWallpaperSearchButtonShownCount) {
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpWallpaperSearchButtonShownCount),
+            0);
+
+  handler_->IncrementWallpaperSearchButtonShownCount();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(
+                prefs::kNtpWallpaperSearchButtonShownCount),
+            1);
+
+  mock_page_.FlushForTesting();
+}
+
 class NewTabPageHandlerHaTSTest : public NewTabPageHandlerTest {
  public:
   static constexpr char kSampleModuleId[] = "sample_module_id";

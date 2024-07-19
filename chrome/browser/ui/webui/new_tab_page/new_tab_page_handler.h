@@ -141,6 +141,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void IncrementCustomizeChromeButtonOpenCount() override;
   void MaybeShowFeaturePromo(
       new_tab_page::mojom::IphFeature iph_feature) override;
+  void IncrementWallpaperSearchButtonShownCount() override;
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,

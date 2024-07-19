@@ -539,6 +539,7 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kNtpCustomizeChromeButtonOpenCount, 0);
   registry->RegisterDictionaryPref(prefs::kNtpModulesInteractedCountDict);
   registry->RegisterDictionaryPref(prefs::kNtpModulesLoadedCountDict);
+  registry->RegisterIntegerPref(prefs::kNtpWallpaperSearchButtonShownCount, 0);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
@@ -925,47 +926,11 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
   }
 }
 
-void NewTabPageHandler::OnPromoDataUpdated() {
-  if (promo_load_start_time_.has_value()) {
-    base::TimeDelta duration = base::TimeTicks::Now() - *promo_load_start_time_;
-    UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2", duration);
-    if (promo_service_->promo_status() == PromoService::Status::OK_WITH_PROMO) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.SuccessWithPromo", duration);
-    } else if (promo_service_->promo_status() ==
-               PromoService::Status::OK_BUT_BLOCKED) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.SuccessButBlocked", duration);
-    } else if (promo_service_->promo_status() ==
-               PromoService::Status::OK_WITHOUT_PROMO) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.SuccessWithoutPromo", duration);
-    } else {
-      DCHECK(promo_service_->promo_status() !=
-             PromoService::Status::NOT_UPDATED);
-      UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
-                                 duration);
-    }
-    promo_load_start_time_ = std::nullopt;
-  }
-
-  const auto& data = promo_service_->promo_data();
-  if (data.has_value() &&
-      promo_service_->promo_status() != PromoService::Status::OK_BUT_BLOCKED) {
-    page_->SetPromo(MakePromo(data.value()));
-  } else {
-    page_->SetPromo(nullptr);
-  }
-}
-
-void NewTabPageHandler::OnPromoServiceShuttingDown() {
-  promo_service_observation_.Reset();
-  promo_service_ = nullptr;
-}
-
-void NewTabPageHandler::OnChangeInFeatureCurrentlyEnabledState(
-    bool is_now_enabled) {
-  page_->SetWallpaperSearchButtonVisibility(is_now_enabled);
+void NewTabPageHandler::IncrementWallpaperSearchButtonShownCount() {
+  const auto shown_count = profile_->GetPrefs()->GetInteger(
+      prefs::kNtpWallpaperSearchButtonShownCount);
+  profile_->GetPrefs()->SetInteger(prefs::kNtpWallpaperSearchButtonShownCount,
+                                   shown_count + 1);
 }
 
 void NewTabPageHandler::OnAppRendered(double time) {
@@ -1218,6 +1183,49 @@ void NewTabPageHandler::OnNextCollectionImageAvailable() {}
 void NewTabPageHandler::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_->RemoveObserver(this);
   ntp_background_service_ = nullptr;
+}
+
+void NewTabPageHandler::OnPromoDataUpdated() {
+  if (promo_load_start_time_.has_value()) {
+    base::TimeDelta duration = base::TimeTicks::Now() - *promo_load_start_time_;
+    UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2", duration);
+    if (promo_service_->promo_status() == PromoService::Status::OK_WITH_PROMO) {
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "NewTabPage.Promos.RequestLatency2.SuccessWithPromo", duration);
+    } else if (promo_service_->promo_status() ==
+               PromoService::Status::OK_BUT_BLOCKED) {
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "NewTabPage.Promos.RequestLatency2.SuccessButBlocked", duration);
+    } else if (promo_service_->promo_status() ==
+               PromoService::Status::OK_WITHOUT_PROMO) {
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "NewTabPage.Promos.RequestLatency2.SuccessWithoutPromo", duration);
+    } else {
+      DCHECK(promo_service_->promo_status() !=
+             PromoService::Status::NOT_UPDATED);
+      UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
+                                 duration);
+    }
+    promo_load_start_time_ = std::nullopt;
+  }
+
+  const auto& data = promo_service_->promo_data();
+  if (data.has_value() &&
+      promo_service_->promo_status() != PromoService::Status::OK_BUT_BLOCKED) {
+    page_->SetPromo(MakePromo(data.value()));
+  } else {
+    page_->SetPromo(nullptr);
+  }
+}
+
+void NewTabPageHandler::OnPromoServiceShuttingDown() {
+  promo_service_observation_.Reset();
+  promo_service_ = nullptr;
+}
+
+void NewTabPageHandler::OnChangeInFeatureCurrentlyEnabledState(
+    bool is_now_enabled) {
+  page_->SetWallpaperSearchButtonVisibility(is_now_enabled);
 }
 
 void NewTabPageHandler::FileSelected(const ui::SelectedFileInfo& file,
