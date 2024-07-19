@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -216,11 +217,15 @@ std::vector<LocalTabGroupID> TabGroupServiceWrapper::GetDeletedGroupIds() {
 void TabGroupServiceWrapper::OpenTabGroup(
     const base::Uuid& sync_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
-  NOTIMPLEMENTED();
-
-  // TODO(crbug.com/348486163): Call TGSS::OpenTabGroup or
-  // STGKS::OpenSavedTabGroupInBrowser. But hold off until the bookmarks bar
-  // implementation to do this.
+  if (ShouldUseSyncService()) {
+    sync_service_->OpenTabGroup(sync_group_id, std::move(context));
+  } else {
+    TabGroupActionContextDesktop* desktop_context =
+        static_cast<TabGroupActionContextDesktop*>(context.get());
+    saved_keyed_service_->OpenSavedTabGroupInBrowser(
+        desktop_context->browser, sync_group_id,
+        desktop_context->opening_source);
+  }
 }
 
 void TabGroupServiceWrapper::UpdateLocalTabGroupMapping(

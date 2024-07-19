@@ -12,4 +12,5 @@ EventDetails::~EventDetails() = default;
 EventDetails::EventDetails(const EventDetails& other) = default;
 EventDetails& EventDetails::operator=(const EventDetails& other) = default;
 
+TabGroupActionContext::~TabGroupActionContext() = default;
 }  // namespace tab_groups

@@ -9,8 +9,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -71,7 +74,6 @@ class TabGroupServiceWrapperUnitTest
   bool IsMigrationEnabled() { return GetParam(); }
 
   TabGroupServiceWrapper* service() { return wrapper_service_.get(); }
-  Browser* GetBrowser() { return browser_; }
 
   // Return a distant tab at position 0 with the "first" ids.
   SavedTabGroupTab FirstTab(base::Uuid group_guid) {
@@ -111,16 +113,14 @@ class TabGroupServiceWrapperUnitTest
  private:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    browser_ = AddBrowser();
-
     if (IsMigrationEnabled()) {
       wrapper_service_ = std::make_unique<TabGroupServiceWrapper>(
-          TabGroupSyncServiceFactory::GetForProfile(browser_->profile()),
+          TabGroupSyncServiceFactory::GetForProfile(profile_.get()),
           /*saved_tab_group_keyed_service=*/nullptr);
     } else {
       wrapper_service_ = std::make_unique<TabGroupServiceWrapper>(
           /*tab_group_sync_service=*/nullptr,
-          SavedTabGroupServiceFactory::GetForProfile(browser_->profile()));
+          SavedTabGroupServiceFactory::GetForProfile(profile_.get()));
     }
   }
 
@@ -135,9 +135,8 @@ class TabGroupServiceWrapperUnitTest
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
-  std::vector<std::unique_ptr<Browser>> browsers_;
-  raw_ptr<Browser> browser_;
   std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
+  std::vector<std::unique_ptr<Browser>> browsers_;
 };
 
 // Verify we can add a group to both services correctly.
@@ -453,10 +452,10 @@ TEST_P(TabGroupServiceWrapperUnitTest, DefaultSaveNewGroups) {
   EXPECT_EQ(0u, service()->GetAllGroups().size());
 
   // Add some tabs and create a single tab group.
-  AddTabToBrowser(GetBrowser(), 0);
-  AddTabToBrowser(GetBrowser(), 0);
-  TabGroupId local_group_id =
-      GetBrowser()->tab_strip_model()->AddToNewGroup({0});
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  TabGroupId local_group_id = browser->tab_strip_model()->AddToNewGroup({0});
 
   // Ensure the group was saved.
   EXPECT_EQ(1u, service()->GetAllGroups().size());
@@ -467,11 +466,132 @@ TEST_P(TabGroupServiceWrapperUnitTest, DefaultSaveNewGroups) {
   base::Uuid saved_id = retrieved_group->saved_guid();
 
   // Ensure the group is still saved but no longer references `local_group_id`.
-  GetBrowser()->tab_strip_model()->CloseAllTabsInGroup(local_group_id);
+  browser->tab_strip_model()->CloseAllTabsInGroup(local_group_id);
   EXPECT_FALSE(service()->GetGroup(local_group_id).has_value());
   retrieved_group = service()->GetGroup(saved_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_EQ(std::nullopt, retrieved_group->local_group_id());
+}
+
+// Verifies that opening a saved group in the same window properly opens it and
+// associates the local id with the saved id.
+TEST_P(TabGroupServiceWrapperUnitTest, OpenTabGroupInSameWindow) {
+  EXPECT_EQ(0u, service()->GetAllGroups().size());
+
+  // Add some tabs and create a single tab group.
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  TabGroupId local_group_id = browser->tab_strip_model()->AddToNewGroup({0});
+
+  // Ensure the group was saved.
+  EXPECT_EQ(1u, service()->GetAllGroups().size());
+  std::optional<SavedTabGroup> retrieved_group =
+      service()->GetGroup(local_group_id);
+  EXPECT_TRUE(retrieved_group.has_value());
+
+  base::Uuid saved_id = retrieved_group->saved_guid();
+
+  // Ensure the group is still saved but no longer references `local_group_id`.
+  browser->tab_strip_model()->CloseAllTabsInGroup(local_group_id);
+  EXPECT_FALSE(browser->tab_strip_model()->group_model()->ContainsTabGroup(
+      local_group_id));
+
+  std::unique_ptr<TabGroupActionContextDesktop> desktop_context =
+      std::make_unique<TabGroupActionContextDesktop>(browser,
+                                                     OpeningSource::kUnknown);
+  service()->OpenTabGroup(saved_id, std::move(desktop_context));
+
+  retrieved_group = service()->GetGroup(saved_id);
+  EXPECT_TRUE(retrieved_group.has_value());
+  EXPECT_TRUE(retrieved_group->local_group_id().has_value());
+  EXPECT_NE(local_group_id, retrieved_group->local_group_id());
+  EXPECT_TRUE(browser->tab_strip_model()->group_model()->ContainsTabGroup(
+      retrieved_group->local_group_id().value()));
+}
+
+// Verifies that opening a saved group in a different window properly opens it
+// and associates the local id with the saved id.
+TEST_P(TabGroupServiceWrapperUnitTest, OpenTabGroupInDifferentWindow) {
+  EXPECT_EQ(0u, service()->GetAllGroups().size());
+
+  // Add some tabs and create a single tab group.
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  TabGroupId local_group_id = browser->tab_strip_model()->AddToNewGroup({0});
+
+  // Ensure the group was saved.
+  EXPECT_EQ(1u, service()->GetAllGroups().size());
+  std::optional<SavedTabGroup> retrieved_group =
+      service()->GetGroup(local_group_id);
+  EXPECT_TRUE(retrieved_group.has_value());
+
+  base::Uuid saved_id = retrieved_group->saved_guid();
+
+  // Ensure the group is still saved but no longer references `local_group_id`.
+  browser->tab_strip_model()->CloseAllTabsInGroup(local_group_id);
+  EXPECT_FALSE(browser->tab_strip_model()->group_model()->ContainsTabGroup(
+      local_group_id));
+
+  // Create a second browser to open the group into.
+  Browser* browser_2 = AddBrowser();
+  AddTabToBrowser(browser_2, 0);
+
+  std::unique_ptr<TabGroupActionContextDesktop> desktop_context =
+      std::make_unique<TabGroupActionContextDesktop>(browser_2,
+                                                     OpeningSource::kUnknown);
+  service()->OpenTabGroup(saved_id, std::move(desktop_context));
+
+  retrieved_group = service()->GetGroup(saved_id);
+  EXPECT_TRUE(retrieved_group.has_value());
+  EXPECT_TRUE(retrieved_group->local_group_id().has_value());
+  EXPECT_NE(local_group_id, retrieved_group->local_group_id());
+  EXPECT_FALSE(browser->tab_strip_model()->group_model()->ContainsTabGroup(
+      retrieved_group->local_group_id().value()));
+  EXPECT_TRUE(browser_2->tab_strip_model()->group_model()->ContainsTabGroup(
+      retrieved_group->local_group_id().value()));
+}
+
+// Verifies that opening a saved group that is already open will focus the
+// first tab in the group instead of opening a new one.
+TEST_P(TabGroupServiceWrapperUnitTest,
+       OpenTabGroupFocusFirstTabIfOpenedAlready) {
+  EXPECT_EQ(0u, service()->GetAllGroups().size());
+
+  // Add some tabs and create a single tab group.
+  Browser* browser = AddBrowser();
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+
+  TabGroupId local_group_id = browser->tab_strip_model()->AddToNewGroup({0});
+
+  // Ensure the group was saved.
+  EXPECT_EQ(1u, service()->GetAllGroups().size());
+  std::optional<SavedTabGroup> retrieved_group =
+      service()->GetGroup(local_group_id);
+  EXPECT_TRUE(retrieved_group.has_value());
+
+  base::Uuid saved_id = retrieved_group->saved_guid();
+
+  // Ensure the non-grouped tab is focused.
+  browser->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_NE(0, browser->tab_strip_model()->active_index());
+
+  std::unique_ptr<TabGroupActionContextDesktop> desktop_context =
+      std::make_unique<TabGroupActionContextDesktop>(browser,
+                                                     OpeningSource::kUnknown);
+  service()->OpenTabGroup(saved_id, std::move(desktop_context));
+
+  // The tab group should now have the active index.
+  EXPECT_EQ(0, browser->tab_strip_model()->active_index());
+
+  retrieved_group = service()->GetGroup(saved_id);
+  EXPECT_TRUE(retrieved_group.has_value());
+  EXPECT_TRUE(retrieved_group->local_group_id().has_value());
+  EXPECT_EQ(local_group_id, retrieved_group->local_group_id());
+  EXPECT_TRUE(browser->tab_strip_model()->group_model()->ContainsTabGroup(
+      retrieved_group->local_group_id().value()));
 }
 
 INSTANTIATE_TEST_SUITE_P(TabGroupServiceWrapper,

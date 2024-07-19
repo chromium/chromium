@@ -29,7 +29,9 @@ using LocalTabGroupID = tab_groups::TabGroupId;
 
 // Base context for tab group actions. Platforms can subclass this to pass
 // additional context such as a browser window.
-struct TabGroupActionContext {};
+struct TabGroupActionContext {
+  virtual ~TabGroupActionContext();
+};
 
 // Whether the update was originated by a change in the local or remote
 // client.

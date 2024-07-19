@@ -1528,6 +1528,8 @@ static_library("ui") {
       "tabs/saved_tab_groups/saved_tab_group_utils.h",
       "tabs/saved_tab_groups/saved_tab_group_web_contents_listener.cc",
       "tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h",
+      "tabs/saved_tab_groups/tab_group_action_context_desktop.cc",
+      "tabs/saved_tab_groups/tab_group_action_context_desktop.h",
       "tabs/saved_tab_groups/tab_group_service_wrapper.cc",
       "tabs/saved_tab_groups/tab_group_service_wrapper.h",
       "tabs/saved_tab_groups/tab_group_sync_delegate_desktop.cc",

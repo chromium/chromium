@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_DELEGATE_DESKTOP_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_DELEGATE_DESKTOP_H_
 
+#include <map>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,13 @@
 #include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/types.h"
 
+class Browser;
 class Profile;
+class TabStripModel;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace tab_groups {
 class TabGroupSyncService;
@@ -42,7 +49,18 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
   CreateScopedLocalObserverPauser() override;
 
  private:
-  raw_ptr<TabGroupSyncService> service_;
+  // Opens the tabs in `saved_group` in `browser`. These tabs are not grouped.
+  std::map<content::WebContents*, base::Uuid>
+  OpenTabsAndMapWebcontentsToTabUUIDs(Browser* const browser,
+                                      const SavedTabGroup& saved_group);
+  // Adds the opened tabs from OpenTabsAndMapWebcontentsToTabUUIDs into a tab
+  // group and links it to `saved_group`.
+  TabGroupId AddOpenedTabsToGroup(
+      TabStripModel* tab_strip_model,
+      const std::map<content::WebContents*, base::Uuid>&
+          opened_web_contents_to_uuid,
+      const SavedTabGroup& saved_group);
+
   std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
   std::unique_ptr<SavedTabGroupModelListener> listener_;
 };
