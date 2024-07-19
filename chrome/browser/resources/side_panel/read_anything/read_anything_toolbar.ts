@@ -592,9 +592,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         `${item}\u00A0${this.i18n('readingModeFontLoadingText')}`;
   }
 
+  // TODO(b/339007175): Consider using something like "Playback toggle" as
+  // an aria label instead of "Play" to be more accurate.
   private playPauseButtonAriaLabel_() {
-    return loadTimeData.getString(
-        this.isSpeechActive ? 'pauseLabel' : 'playLabel');
+    return loadTimeData.getString('playLabel');
   }
 
   private playPauseButtonTitle_() {

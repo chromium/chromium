@@ -63,8 +63,7 @@ suite('PlayPause', () => {
       assertEquals('read-anything-20:pause', playPauseButton.ironIcon);
       assertStringContains('pause (k)', playPauseButton.title.toLowerCase());
       assertStringContains(
-          'pause keyboard shortcut k',
-          playPauseButton.ariaLabel!.toLowerCase());
+          'play keyboard shortcut k', playPauseButton.ariaLabel!.toLowerCase());
     });
 
     test('granularity menu buttons show', () => {
