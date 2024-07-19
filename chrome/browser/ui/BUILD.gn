@@ -2232,10 +2232,6 @@ static_library("ui") {
     assert(toolkit_views)
     sources += [
       "app_icon_loader_delegate.h",
-      "ash/auth/cryptohome_pin_engine.cc",
-      "ash/auth/cryptohome_pin_engine.h",
-      "ash/auth/legacy_fingerprint_engine.cc",
-      "ash/auth/legacy_fingerprint_engine.h",
       "ash/login_screen_client_impl.cc",
       "ash/login_screen_client_impl.h",
       "ash/login_screen_shown_observer.h",

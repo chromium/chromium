@@ -20,6 +20,7 @@ static_library("auth") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
@@ -28,5 +29,10 @@ static_library("auth") {
     "//components/account_id",
     "//components/prefs",
     "//components/user_manager",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/login/quick_unlock",
   ]
 }
