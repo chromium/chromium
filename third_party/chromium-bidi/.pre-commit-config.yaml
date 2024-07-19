@@ -20,6 +20,7 @@
 #
 # Apply all pre-commit hooks to all files:
 #   $ pre-commit run --all-files
+default_stages: [pre-push, manual]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
