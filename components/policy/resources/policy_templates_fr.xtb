@@ -93,7 +93,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 Si cette règle est activée ou n'est pas configurée, la fonctionnalité de correction automatique est activée pour le clavier physique.
 
 Si elle est désactivée, la fonctionnalité de correction automatique est désactivée pour le clavier physique.</translation>
-<translation id="1038725366103635282">Autoriser la détection des partages avec NetBIOS</translation>
+<translation id="1038725366103635282">Autoriser la découverte des partages NetBIOS</translation>
 <translation id="1040446814317236570">Activer la suppression des URL via PAC (pour "https://")</translation>
 <translation id="1043965859599437362">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles internes.
 
@@ -1351,7 +1351,7 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
 Si cette règle est désactivée ou n'est pas configurée, les images tierces ne sont pas autorisées à afficher une commande d'authentification.
 
 Cette règle est habituellement désactivée pour protéger les utilisateurs contre l'hameçonnage.</translation>
-<translation id="2036522553891755455">Si cette règle est activée, la fonction de détection de partages (fonctionnalité Partages de fichiers en réseau de <ph name="PRODUCT_NAME" />) utilise le protocole <ph name="NETBIOS_PROTOCOL" /> pour détecter les partages sur le réseau. Si elle est désactivée, ce protocole n'est pas utilisé pour la détection des partages.
+<translation id="2036522553891755455">Si cette règle est activée, la découverte des partages (fonctionnalité Partages de fichiers en réseau de <ph name="PRODUCT_NAME" />) utilise le protocole <ph name="NETBIOS_PROTOCOL" /> pour découvrir les partages sur le réseau. Si elle est désactivée, ce protocole n'est pas utilisé pour la découverte des partages.
 
       Si cette règle n'est pas configurée, le protocole est, par défaut, désactivé pour les utilisateurs gérés et activé pour les autres.</translation>
 <translation id="2039801473506609891">Désactiver la compatibilité avec HTTP 0.9 sur les ports non utilisés par défaut</translation>
@@ -5016,7 +5016,7 @@ Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle
 
       Pour <ph name="MODE_FIELD_NAME" />, il doit s'agir de <ph name="MODE_ENUM_DROP_DOWN" /> ou <ph name="MODE_ENUM_PRE_MOUNT" /> :
 
-      * <ph name="MODE_ENUM_DROP_DOWN" /> indique que <ph name="SHARE_URL_FIELD_NAME" /> sera ajouté à la liste de détection des partages.
+      * <ph name="MODE_ENUM_DROP_DOWN" /> indique que <ph name="SHARE_URL_FIELD_NAME" /> sera ajouté à la liste de découverte des partages.
 
       * <ph name="MODE_ENUM_PRE_MOUNT" /> indique que <ph name="SHARE_URL_FIELD_NAME" /> sera installé.</translation>
 <translation id="5025239932007658691">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> envoie des requêtes occasionnelles à un serveur Google pour récupérer un horodatage précis.
@@ -6102,7 +6102,7 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
       Dans le cas présent, <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> peut désigner une version exacte comme "13305.0.0" ou le préfixe d'une version tel que "13305".
       La <ph name="WARNING_PERIOD_PROPERTY_NAME" /> et la <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> sont des valeurs facultatives exprimées en nombre de jours. Elles sont définies par défaut sur 0 jour, ce qui signifie qu'il n'y a pas de période d'avertissement.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> est une propriété facultative dont la valeur par défaut est "False".</translation>
-<translation id="5879014913445067283">Contrôler la détection des partages de fichiers sur le réseau via <ph name="NETBIOS_NAME" /></translation>
+<translation id="5879014913445067283">Contrôler la découverte des partages de fichiers sur le réseau via <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Activer la fonctionnalité Appuyer pour rechercher</translation>
 <translation id="5882345429632338713">Délai avant le lancement du navigateur secondaire (en millisecondes)</translation>
 <translation id="5883015257301027298">Paramètre de cookies par défaut</translation>
@@ -10378,7 +10378,7 @@ La valeur par défaut est "RollbackDisabled".</translation>
 <translation id="9197740283131855199">Pourcentage d'adaptation du délai d'assombrissement de l'écran si l'utilisateur devient actif après la réduction de la luminosité</translation>
 <translation id="9200828125069750521">Paramètres pour l'URL d'image utilisant POST</translation>
 <translation id="9204863016826119209">Des clés d'entreprise peuvent être utilisées par les applications Android installées et identifiées dans cette règle.</translation>
-<translation id="9206472508136116830">Ne pas autoriser la détection des partages avec NetBIOS</translation>
+<translation id="9206472508136116830">Ne pas autoriser la découverte des partages NetBIOS</translation>
 <translation id="9207596996305971030">Ne pas signaler les événements de connexion/déconnexion</translation>
 <translation id="9210647066889383361">Autoriser les utilisateurs à se connecter à leur appareil avec Smart Lock</translation>
 <translation id="9213751049772256263">Désactiver toutes les variantes</translation>

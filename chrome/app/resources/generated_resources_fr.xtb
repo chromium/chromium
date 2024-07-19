@@ -6247,7 +6247,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5646558797914161501">Homme d'affaires</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5648166631817621825">7 derniers jours</translation>
-<translation id="5651308944918885595">Visibilité de l'appareil pour le Partage à proximité</translation>
+<translation id="5651308944918885595">Découvrabilité pour le Partage à proximité</translation>
 <translation id="5653154844073528838">Vous avez <ph name="PRINTER_COUNT" /> imprimantes enregistrées.</translation>
 <translation id="5654669866168491665">En savoir plus sur les sites susceptibles de ne pas fonctionner quand les cookies tiers sont bloqués</translation>
 <translation id="565515993087783098">Si vous oubliez ce réseau, vous supprimerez également l'abonnement Passpoint et les réseaux associés.</translation>
@@ -7549,7 +7549,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6664774537677393800">Une erreur s'est produite lors de l'ouverture de votre profil. Veuillez vous déconnecter, puis vous connecter de nouveau.</translation>
 <translation id="6666559645296300656">Annuler la mise à niveau Linux</translation>
 <translation id="6667086124612170548">Fichier trop volumineux pour cet appareil</translation>
-<translation id="6667092961374478614">Visibilité du <ph name="FEATURE_NAME" /></translation>
+<translation id="6667092961374478614">Découvrabilité du <ph name="FEATURE_NAME" /></translation>
 <translation id="6667187897999649121">Pour le moment, vous ne pouvez partager des mots de passe qu'avec des membres de votre famille. <ph name="BEGIN_LINK" />Créez un groupe familial<ph name="END_LINK" /> avec jusqu'à six membres, et profitez pleinement de vos produits et abonnements sur Google.</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Les données sont traitées de la même manière que le site que vous consultez</translation>

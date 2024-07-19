@@ -5392,7 +5392,7 @@
 <translation id="501057610015570208">マニフェスト属性が kiosk_only のアプリをインストールするには ChromeOS Flex でキオスクモードを有効にする必要があります</translation>
 <translation id="5010886807652684893">ビジュアル表示</translation>
 <translation id="5012523644916800014">パスワードとパスキーを管理</translation>
-<translation id="501394389332262641">低いバッテリー音</translation>
+<translation id="501394389332262641">バッテリー残量警告</translation>
 <translation id="50145804426592479">位置情報を使用するとともに、位置情報の利用を許可されている ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対し、このデバイスの位置情報の使用を許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">プロキシを解決しています...</translation>
 <translation id="5016305686459575361">スマートフォンを接続すると、次のことができます。</translation>
