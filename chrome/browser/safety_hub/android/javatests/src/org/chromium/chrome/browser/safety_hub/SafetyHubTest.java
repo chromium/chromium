@@ -59,6 +59,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
@@ -502,6 +503,7 @@ public final class SafetyHubTest {
     @CommandLineFlags.Add({
         ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=update_available",
     })
+    @DisabledTest(message = "b/354050691")
     public void testUpdateCheckModule() {
         // TODO(crbug.com/324562205): Move the initialization of the SafetyHubFetchService so
         // that there is no dependency on ChromeTabbedActivity.
