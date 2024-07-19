@@ -13,6 +13,7 @@ import './healthd_internals_shared.css.js';
 import './pages/telemetry.js';
 import './pages/battery_chart.js';
 import './pages/cpu_frequency_chart.js';
+import './pages/cpu_usage_chart.js';
 import './pages/thermal_chart.js';
 import './settings/settings_dialog.js';
 
@@ -25,6 +26,7 @@ import {DataManager} from './data_manager.js';
 import type {HealthdInternalsFeatureFlagResult} from './externs.js';
 import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
 import type {HealthdInternalsCpuFrequencyChartElement} from './pages/cpu_frequency_chart.js';
+import type {HealthdInternalsCpuUsageChartElement} from './pages/cpu_usage_chart.js';
 import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
 import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
 import type {HealthdInternalsSettingsDialogElement} from './settings/settings_dialog.js';
@@ -40,6 +42,7 @@ export interface HealthdInternalsAppElement {
     telemetryPage: HealthdInternalsTelemetryElement,
     batteryChart: HealthdInternalsBatteryChartElement,
     cpuFrequencyChart: HealthdInternalsCpuFrequencyChartElement,
+    cpuUsageChart: HealthdInternalsCpuUsageChartElement,
     thermalChart: HealthdInternalsThermalChartElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
   };
@@ -76,6 +79,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
         this.$.telemetryPage,
         this.$.batteryChart,
         this.$.cpuFrequencyChart,
+        this.$.cpuUsageChart,
         this.$.thermalChart,
     );
 
@@ -98,6 +102,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
             {name: 'Telemetry', path: PagePath.TELEMETRY},
             {name: 'Battery Chart', path: PagePath.BATTERY},
             {name: 'CPU Frequency Chart', path: PagePath.CPU_FREQUENCY},
+            {name: 'CPU Usage Chart', path: PagePath.CPU_USAGE},
             {name: 'Thermal Chart', path: PagePath.THERMAL},
           ];
 
@@ -166,6 +171,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
       this.$.batteryChart.updateVisibility(isVisible);
     } else if (pagePath === PagePath.CPU_FREQUENCY) {
       this.$.cpuFrequencyChart.updateVisibility(isVisible);
+    } else if (pagePath === PagePath.CPU_USAGE) {
+      this.$.cpuUsageChart.updateVisibility(isVisible);
     } else if (pagePath === PagePath.THERMAL) {
       this.$.thermalChart.updateVisibility(isVisible);
     }

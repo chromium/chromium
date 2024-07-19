@@ -25,6 +25,7 @@ build_webui("build") {
     "line_chart/scrollbar.ts",
     "pages/battery_chart.ts",
     "pages/cpu_frequency_chart.ts",
+    "pages/cpu_usage_chart.ts",
     "pages/telemetry.ts",
     "pages/thermal_chart.ts",
     "settings/config_slider.ts",
@@ -33,6 +34,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "constants.ts",
+    "cpu_usage_helper.ts",
     "data_manager.ts",
     "externs.ts",
     "line_chart/configs.ts",

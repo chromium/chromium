@@ -5,10 +5,13 @@
 import {sendWithPromise} from '//resources/js/cr.js';
 
 import {LINE_CHART_COLOR_SET} from './constants.js';
+import {CpuUsageHelper} from './cpu_usage_helper.js';
+import type {CpuUsage} from './cpu_usage_helper.js';
 import type {HealthdApiBatteryResult, HealthdApiCpuResult, HealthdApiTelemetryResult, HealthdApiThermalResult} from './externs.js';
 import {DataSeries} from './line_chart/utils/data_series.js';
 import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
 import type {HealthdInternalsCpuFrequencyChartElement} from './pages/cpu_frequency_chart.js';
+import type {HealthdInternalsCpuUsageChartElement} from './pages/cpu_usage_chart.js';
 import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
 import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
 
@@ -40,12 +43,14 @@ export class DataManager {
       telemetryPage: HealthdInternalsTelemetryElement,
       batteryChart: HealthdInternalsBatteryChartElement,
       cpuFrequencyChart: HealthdInternalsCpuFrequencyChartElement,
+      cpuUsageChart: HealthdInternalsCpuUsageChartElement,
       thermalChart: HealthdInternalsThermalChartElement) {
     this.dataRetentionDuration = dataRetentionDuration;
 
     this.telemetryPage = telemetryPage;
     this.batteryChart = batteryChart;
     this.cpuFrequencyChart = cpuFrequencyChart;
+    this.cpuUsageChart = cpuUsageChart;
     this.thermalChart = thermalChart;
 
     this.initBatteryDataSeries();
@@ -60,6 +65,8 @@ export class DataManager {
   // is dynamic and initialized when the first batch of data is obtained.
   // - Frequency data of logical CPUs.
   private cpuFrequencyDataSeries: DataSeries[] = [];
+  // - CPU usage of logical CPUs in percentage.
+  private cpuUsageDataSeries: DataSeries[] = [];
   // - Temperature data of thermal sensors.
   private thermalDataSeries: DataSeries[] = [];
 
@@ -67,7 +74,11 @@ export class DataManager {
   private readonly telemetryPage: HealthdInternalsTelemetryElement;
   private readonly batteryChart: HealthdInternalsBatteryChartElement;
   private readonly cpuFrequencyChart: HealthdInternalsCpuFrequencyChartElement;
+  private readonly cpuUsageChart: HealthdInternalsCpuUsageChartElement;
   private readonly thermalChart: HealthdInternalsThermalChartElement;
+
+  // The helper class for calculating CPU usage.
+  private readonly cpuUsageHelper: CpuUsageHelper = new CpuUsageHelper();
 
   // The data fetching interval ID used for cancelling the running interval.
   private fetchDataInternalId: number|undefined = undefined;
@@ -110,11 +121,20 @@ export class DataManager {
     this.updateCpuFrequencyData(data.cpu, timestamp);
     this.updateThermalData(data.thermals, timestamp);
 
+    const cpuUsage: CpuUsage[][]|null =
+        this.cpuUsageHelper.getCpuUsage(data.cpu);
+    if (cpuUsage !== null) {
+      this.updateCpuUsageData(cpuUsage, timestamp);
+    }
+
     this.removeOutdatedData(timestamp);
 
     this.batteryChart.updateEndTime(timestamp);
     this.cpuFrequencyChart.updateEndTime(timestamp);
     this.thermalChart.updateEndTime(timestamp);
+    if (cpuUsage !== null) {
+      this.cpuUsageChart.updateEndTime(timestamp);
+    }
   }
 
   private removeOutdatedData(endTime: number) {
@@ -159,6 +179,31 @@ export class DataManager {
     }
   }
 
+  private updateCpuUsageData(
+      physcialCpuUsage: CpuUsage[][], timestamp: number) {
+    if (this.cpuUsageDataSeries.length === 0) {
+      this.initCpuUsageDataSeries(physcialCpuUsage);
+    }
+
+    const cpuNumber: number =
+        physcialCpuUsage.reduce((acc, item) => acc + item.length, 0);
+    if (cpuNumber !== this.cpuUsageDataSeries.length) {
+      console.warn('CPU usage data: Number of CPUs changed.');
+      return;
+    }
+
+    let count: number = 0;
+    for (const logicalCpuUsage of physcialCpuUsage) {
+      for (const cpuUsage of logicalCpuUsage) {
+        if (cpuUsage.usagePercentage !== null) {
+          this.cpuUsageDataSeries[count].addDataPoint(
+              cpuUsage.usagePercentage, timestamp);
+        }
+        count += 1;
+      }
+    }
+  }
+
   private updateThermalData(
       thermals: HealthdApiThermalResult[], timestamp: number) {
     if (this.thermalDataSeries.length === 0) {
@@ -195,6 +240,19 @@ export class DataManager {
       }
     }
     this.cpuFrequencyChart.addDataSeries(this.cpuFrequencyDataSeries);
+  }
+
+  private initCpuUsageDataSeries(physcialCpuUsage: CpuUsage[][]) {
+    let count: number = 0;
+    for (const [physicalCpuId, logicalCpuUsage] of physcialCpuUsage.entries()) {
+      for (let logicalCpuId: number = 0; logicalCpuId < logicalCpuUsage.length;
+           ++logicalCpuId) {
+        this.cpuUsageDataSeries.push(new DataSeries(
+            `CPU #${physicalCpuId}-${logicalCpuId}`, getLineChartColor(count)));
+        count += 1;
+      }
+    }
+    this.cpuUsageChart.addDataSeries(this.cpuUsageDataSeries);
   }
 
   private initThermalDataSeries(thermals: HealthdApiThermalResult[]) {

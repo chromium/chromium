@@ -35,6 +35,7 @@ export enum PagePath {
   NONE = '/',
   TELEMETRY = '/telemetry',
   CPU_FREQUENCY = '/cpu_frequency',
+  CPU_USAGE = '/cpu_usage',
   BATTERY = '/battery',
   THERMAL = '/thermal',
 }
