@@ -33,6 +33,13 @@ std::unique_ptr<DriveFileUploader> TestDriveService::CreateFileUploader(
   return result;
 }
 
+std::unique_ptr<DriveList> TestDriveService::CreateList(
+    id<SystemIdentity> identity) {
+  // TODO(crbug.com/344812969): Return a TestDriveList which fakes API requests,
+  // similarly to TestDriveFileUploader.
+  return nullptr;
+}
+
 std::string TestDriveService::GetSuggestedFolderName() const {
   return std::string("test_drive_folder");
 }

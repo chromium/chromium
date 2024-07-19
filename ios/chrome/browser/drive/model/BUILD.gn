@@ -87,6 +87,14 @@ source_set("drive_file_uploader") {
   public_deps = [ "//base" ]
 }
 
+source_set("drive_list") {
+  sources = [
+    "drive_list.h",
+    "drive_list.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("drive_service_factory") {
   sources = [
     "drive_service_factory.h",
