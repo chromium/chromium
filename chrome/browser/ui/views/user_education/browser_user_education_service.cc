@@ -562,36 +562,19 @@ void MaybeRegisterChromeFeaturePromos(
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // kIPHExplicitBrowserSigninPreferenceRememberedFeature:
   registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
+      FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::
               kIPHExplicitBrowserSigninPreferenceRememberedFeature,
           kToolbarAvatarButtonElementId,
           IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER,
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_SETTINGS_BUTTON,
-          base::BindRepeating([](ui::ElementContext ctx,
-                                 user_education::FeaturePromoHandle
-                                     promo_handle) {
-            auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-            if (!browser) {
-              return;
-            }
-            ShowPromoInPage::Params params;
-            params.bubble_anchor_id = kToolbarAvatarButtonElementId;
-            params.bubble_arrow = user_education::HelpBubbleArrow::kTopRight;
-            params.bubble_text = l10n_util::GetStringUTF16(
-                IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER);
-            ShowPromoInPage::Start(browser, std::move(params));
-            chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
-            base::RecordAction(
-                base::UserMetricsAction("ExplicitBrowserSigninPreferenceRemembe"
-                                        "red_IPHPromo_SettingsPageOpened"));
-          }))
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo(IDC_SHOW_AVATAR_MENU))
           .SetPromoSubtype(user_education::FeaturePromoSpecification::
                                PromoSubtype::kKeyedNotice)
           .SetBubbleTitleText(
               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN_REMINDER)
-          .SetBubbleIcon(&vector_icons::kCelebrationIcon)
-          .SetCustomActionIsDefault(false)));
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetBubbleIcon(&vector_icons::kCelebrationIcon)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // kIPHCookieControlsFeature:

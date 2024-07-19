@@ -13231,9 +13231,6 @@ This can include information about installed software, files, your browser, and 
             Got it
           </message>
         </if>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_SETTINGS_BUTTON" desc="This button appears on a confirmation message, which is intended to help users understand that they have been signed in to Chrome. The user previously signed in to a Google service (like Gmail or Maps), and saw the Chrome Signin Bubble intercept; when asked whether the user wanted to sign in to Chrome as well, the user selected yes. Now, this confirmation appears at the top right of Chrome (pointing at the Profile Menu) to confirm that their choice was effective. This button string comes after the 'Welcome, Elisa' and 'When you sign in on this device, you get your passwords and more from your Google Account' strings. Users click 'Settings' to convey that they don't want Chrome to follow their choice in the future, so the user wants to go to Chrome's settings in order to change their choice.">
-          Settings
-        </message>
 
         <!-- Chrome Signout Confirmation Prompt -->
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TITLE"  desc="This is the title of an error message dialog that appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. The error message appears when the user has saved some data (like a password or payment method) to Chrome, but Chrome wasn't able to save the data to the user's Google Account due to a sign-in error; but, the data has been saved locally to Chrome. This title is before the 'Chrome needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out, this data will stay on this device.' string. The tone should be cautionary.">
