@@ -247,8 +247,9 @@ export function mojoVoicePackStatusToVoicePackStatusEnum(
 // converts a locale or language into the code the VoicePackManager expects.
 // This is based on the VoicePackManager code here:
 // https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/language_packs/language_pack_manager.cc;l=346;drc=31e516b25930112df83bf09d3d2a868200ecbc6d
-export function convertLangOrLocaleForVoicePackManager(langOrLocale: string):
-    string|undefined {
+export function convertLangOrLocaleForVoicePackManager(
+    langOrLocale: string, enabledLangs?: string[],
+    availableLangs?: string[]): string|undefined {
   langOrLocale = langOrLocale.toLowerCase();
   if (PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(langOrLocale)) {
     return langOrLocale;
@@ -259,13 +260,15 @@ export function convertLangOrLocaleForVoicePackManager(langOrLocale: string):
     if (PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(baseLang)) {
       return baseLang;
     }
-    const locale = convertUnsupportedBaseLangToSupportedLocale(baseLang);
+    const locale = convertUnsupportedBaseLangToSupportedLocale(
+        baseLang, enabledLangs, availableLangs);
     if (locale) {
       return locale;
     }
   }
 
-  const locale = convertUnsupportedBaseLangToSupportedLocale(langOrLocale);
+  const locale = convertUnsupportedBaseLangToSupportedLocale(
+      langOrLocale, enabledLangs, availableLangs);
   if (locale) {
     return locale;
   }
@@ -291,24 +294,54 @@ export function isWaitingForInstallLocally(status: VoiceClientSideStatusCode|
       status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY;
 }
 
-function convertUnsupportedBaseLangToSupportedLocale(baseLang: string): string|
-    undefined {
+function convertUnsupportedBaseLangToSupportedLocale(
+    baseLang: string, enabledLangs?: string[],
+    availableLangs?: string[]): string|undefined {
   // Check if it's a base lang that supports a locale. These are the only
   // languages that have locales in the Pack Manager per the code link above.
-  if (['en', 'es', 'pt'].includes(baseLang)) {
-    // TODO (b/335691447) Convert from base-lang to locale based on browser
-    // prefs. For now, just default to arbitrary locales.
-    if (baseLang === 'en') {
-      return 'en-us';
-    }
-    if (baseLang === 'es') {
-      return 'es-es';
-    }
-    if (baseLang === 'pt') {
-      return 'pt-br';
+  if (!['en', 'es', 'pt'].includes(baseLang)) {
+    return undefined;
+  }
+
+  // If enabledLangs is not null, then choose an enabled locale for this given
+  // language so we don't unnecessarily enable other locales when one is already
+  // enabled.
+  if (enabledLangs) {
+    const enabledLocalesForLang =
+        enabledLangs.filter(lang => lang.startsWith(baseLang));
+    if (enabledLocalesForLang.length > 0) {
+      // TODO(crbug.com/335691447): If there is more than one enabled locale for
+      // this lang, choose one based on browser prefs. For now, just default to
+      // the first enabled locale.
+      return enabledLocalesForLang[0];
     }
   }
-  return undefined;
+
+  // If availableLangs is not null, then choose an available locale for this
+  // given language so we don't unnecessarily download other locales when one is
+  // already downloaded.
+  if (availableLangs) {
+    const availableLocalesForLang =
+        availableLangs.filter(lang => lang.startsWith(baseLang));
+    if (availableLocalesForLang.length > 0) {
+      // TODO(crbug.com/335691447): If there is more than one available locale
+      // for this lang, choose one based on browser prefs. For now, just default
+      // to the first available locale.
+      return availableLocalesForLang[0];
+    }
+  }
+
+  // TODO(crbug.com/335691447): Convert from base-lang to locale based on
+  // browser prefs.
+
+  // Otherwise, just default to arbitrary locales.
+  if (baseLang === 'en') {
+    return 'en-us';
+  } else if (baseLang === 'es') {
+    return 'es-es';
+  } else {
+    return 'pt-br';
+  }
 }
 
 // Returns true if input is base lang, and false if it's a locale

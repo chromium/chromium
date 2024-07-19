@@ -2528,8 +2528,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
-    const langCodeForVoicePackManager =
-        convertLangOrLocaleForVoicePackManager(langOrLocale);
+    const langCodeForVoicePackManager = convertLangOrLocaleForVoicePackManager(
+        langOrLocale, this.enabledLangs, this.availableLangs_);
 
     if (!langCodeForVoicePackManager) {
       this.autoSwitchVoice_(langOrLocale);

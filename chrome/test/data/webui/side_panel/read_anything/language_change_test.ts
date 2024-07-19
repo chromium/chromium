@@ -157,6 +157,33 @@ suite('LanguageChanged', () => {
         });
       });
 
+      test('to a voice in the enabled locale for this base language', () => {
+        const voice =
+            createSpeechSynthesisVoice({lang: 'es-us', name: 'Spanish'});
+        app.enabledLangs = ['es-us'];
+        setVoices(app, speechSynthesis, [voice]);
+        flush();
+        chrome.readingMode.baseLanguageForSpeech = 'es';
+
+        app.languageChanged();
+
+        assertEquals(voice, app.getSpeechSynthesisVoice());
+      });
+
+      test('to a voice in the available locale for this base language', () => {
+        const voice =
+            createSpeechSynthesisVoice({lang: 'en-au', name: 'Australian'});
+        app.enabledLangs = [];
+        setVoices(app, speechSynthesis, [voice]);
+        setInstalled('en-au');
+        flush();
+        chrome.readingMode.baseLanguageForSpeech = 'en';
+
+        app.languageChanged();
+
+        assertEquals(voice, app.getSpeechSynthesisVoice());
+      });
+
       suite('and this locale is enabled', () => {
         test('to a natural voice for this language', () => {
           chrome.readingMode.baseLanguageForSpeech = lang3;

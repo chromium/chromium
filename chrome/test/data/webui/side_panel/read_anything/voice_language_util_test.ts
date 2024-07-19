@@ -69,6 +69,27 @@ suite('voice and language utils', () => {
 
     // Unsupported languages are undefined
     assertEquals(undefined, convertLangOrLocaleForVoicePackManager('cn'));
+
+    // Uses enabled langs when available
+    const enabledLangs = ['en-au', 'es-us', 'pt-pt'];
+    assertEquals(
+        'en-au', convertLangOrLocaleForVoicePackManager('en', enabledLangs));
+    assertEquals(
+        'es-us', convertLangOrLocaleForVoicePackManager('es', enabledLangs));
+    assertEquals(
+        'pt-pt', convertLangOrLocaleForVoicePackManager('pt', enabledLangs));
+
+    // Uses available langs when available
+    const availableLangs = ['en-gb', 'es-us', 'pt-pt'];
+    assertEquals(
+        'en-gb',
+        convertLangOrLocaleForVoicePackManager('en', [], availableLangs));
+    assertEquals(
+        'es-us',
+        convertLangOrLocaleForVoicePackManager('es', [], availableLangs));
+    assertEquals(
+        'pt-pt',
+        convertLangOrLocaleForVoicePackManager('pt', [], availableLangs));
   });
 
   test('convertLangOrLocaleToExactVoicePackLocale', () => {
