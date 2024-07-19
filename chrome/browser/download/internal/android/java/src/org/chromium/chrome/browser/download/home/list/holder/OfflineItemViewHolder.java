@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.download.home.view.SelectionView;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.ui.listmenu.ListMenu;
@@ -143,6 +144,12 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
                 () -> properties.get(ListProperties.CALLBACK_REMOVE).onResult(offlineItem);
 
         mMore.setClickable(!properties.get(ListProperties.SELECTION_MODE_ACTIVE));
+
+        SelectableListUtils.setContentDescriptionContext(
+                mMore.getContext(),
+                mMore,
+                offlineItem.title,
+                SelectableListUtils.ContentDescriptionSource.MENU_BUTTON);
     }
 
     @Override
