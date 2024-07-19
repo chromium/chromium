@@ -27,18 +27,6 @@
 
 namespace {
 
-const sync_pb::ProductComparisonSpecifics TrimSpecificsForCaching(
-    const sync_pb::ProductComparisonSpecifics& comparison_specifics) {
-  sync_pb::ProductComparisonSpecifics trimmed_comparison_data =
-      sync_pb::ProductComparisonSpecifics(comparison_specifics);
-  trimmed_comparison_data.clear_uuid();
-  trimmed_comparison_data.clear_creation_time_unix_epoch_millis();
-  trimmed_comparison_data.clear_update_time_unix_epoch_millis();
-  trimmed_comparison_data.clear_name();
-  trimmed_comparison_data.clear_data();
-  return trimmed_comparison_data;
-}
-
 syncer::EntityData MakeEntityData(
     const sync_pb::ProductComparisonSpecifics& specifics) {
   syncer::EntityData entity_data;
@@ -421,6 +409,23 @@ ProductSpecificationsSyncBridge::CreateEntityData(
     entity_data->name = base::StringPrintf("%s", specifics.uuid().c_str());
   }
   return entity_data;
+}
+
+const sync_pb::ProductComparisonSpecifics
+ProductSpecificationsSyncBridge::TrimSpecificsForCaching(
+    const sync_pb::ProductComparisonSpecifics& comparison_specifics) const {
+  sync_pb::ProductComparisonSpecifics trimmed_comparison_data =
+      sync_pb::ProductComparisonSpecifics(comparison_specifics);
+  trimmed_comparison_data.clear_uuid();
+  trimmed_comparison_data.clear_creation_time_unix_epoch_millis();
+  trimmed_comparison_data.clear_update_time_unix_epoch_millis();
+  trimmed_comparison_data.clear_name();
+  trimmed_comparison_data.clear_data();
+  if (IsMultiSpecSetsEnabled()) {
+    trimmed_comparison_data.clear_product_comparison();
+    trimmed_comparison_data.clear_product_comparison_item();
+  }
+  return trimmed_comparison_data;
 }
 
 void ProductSpecificationsSyncBridge::ApplyIncrementalSyncChangesForTesting(

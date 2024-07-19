@@ -336,6 +336,11 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     return bridge().CreateEntityData(specifics);
   }
 
+  sync_pb::ProductComparisonSpecifics TrimSpecificsForCaching(
+      const sync_pb::ProductComparisonSpecifics& specifics) {
+    return bridge().TrimSpecificsForCaching(specifics);
+  }
+
  protected:
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   testing::NiceMock<ProductSpecificationsSyncBridgeObserver> observer_;
@@ -755,6 +760,54 @@ TEST_F(ProductSpecificationsSyncMultiSpecsBridgeTest,
       entity_data->specifics.product_comparison()
           .product_comparison_item()
           .unique_position())));
+}
+
+// TODO(crbug.com/354231134) expand TestTrimSpecificsForCachingTopLevelSpecific
+// and TestTrimSpecificsForCachingProductComparisonItem to include unsupported
+// fields.
+TEST_F(ProductSpecificationsSyncMultiSpecsBridgeTest,
+       TestTrimSpecificsForCachingTopLevelSpecific) {
+  sync_pb::ProductComparisonSpecifics specifics;
+  specifics.set_uuid("50000000-0000-0000-0000-000000000000");
+  specifics.set_creation_time_unix_epoch_millis(1000000000000);
+  specifics.set_update_time_unix_epoch_millis(2000000000000);
+  specifics.mutable_product_comparison()->set_name("test_name");
+
+  sync_pb::ProductComparisonSpecifics trimmed_specifics =
+      TrimSpecificsForCaching(specifics);
+  EXPECT_FALSE(trimmed_specifics.has_uuid());
+  EXPECT_FALSE(trimmed_specifics.has_creation_time_unix_epoch_millis());
+  EXPECT_FALSE(trimmed_specifics.has_update_time_unix_epoch_millis());
+  EXPECT_FALSE(trimmed_specifics.has_name());
+  EXPECT_TRUE(trimmed_specifics.data().empty());
+  EXPECT_FALSE(trimmed_specifics.has_product_comparison());
+  EXPECT_FALSE(trimmed_specifics.has_product_comparison_item());
+}
+
+TEST_F(ProductSpecificationsSyncMultiSpecsBridgeTest,
+       TestTrimSpecificsForCachingProductComparisonItem) {
+  sync_pb::ProductComparisonSpecifics specifics;
+  specifics.set_uuid("50000000-0000-0000-0000-000000000000");
+  specifics.set_creation_time_unix_epoch_millis(1000000000000);
+  specifics.set_update_time_unix_epoch_millis(2000000000000);
+  specifics.mutable_product_comparison_item()->set_product_comparison_uuid(
+      "70000000-0000-0000-0000-000000000000");
+  specifics.mutable_product_comparison_item()->set_url("https://a.example.com");
+  syncer::UniquePosition unique_position =
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix());
+  *specifics.mutable_product_comparison_item()->mutable_unique_position() =
+      unique_position.ToProto();
+
+  sync_pb::ProductComparisonSpecifics trimmed_specifics =
+      TrimSpecificsForCaching(specifics);
+  EXPECT_FALSE(trimmed_specifics.has_uuid());
+  EXPECT_FALSE(trimmed_specifics.has_creation_time_unix_epoch_millis());
+  EXPECT_FALSE(trimmed_specifics.has_update_time_unix_epoch_millis());
+  EXPECT_FALSE(trimmed_specifics.has_name());
+  EXPECT_TRUE(trimmed_specifics.data().empty());
+  EXPECT_FALSE(trimmed_specifics.has_product_comparison());
+  EXPECT_FALSE(trimmed_specifics.has_product_comparison_item());
 }
 
 // TODO(crbug.com/354165274) write a test that ensures no single specifics

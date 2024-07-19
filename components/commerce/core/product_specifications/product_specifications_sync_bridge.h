@@ -131,6 +131,9 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   std::unique_ptr<syncer::EntityData> CreateEntityData(
       const sync_pb::ProductComparisonSpecifics& specifics);
 
+  const sync_pb::ProductComparisonSpecifics TrimSpecificsForCaching(
+      const sync_pb::ProductComparisonSpecifics& comparison_specifics) const;
+
   void ApplyIncrementalSyncChangesForTesting(
       const std::vector<std::pair<sync_pb::ProductComparisonSpecifics,
                                   syncer::EntityChange::ChangeType>>&
