@@ -148,6 +148,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   // sink.
   scoped_refptr<base::SingleThreadTaskRunner> silent_sink_task_runner_;
 
+  // Mainly to bubble up the OnRenderError to the Blink WebAudio module.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   // Used to trigger one single textlog indicating that rendering started as

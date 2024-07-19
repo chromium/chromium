@@ -149,6 +149,8 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
       latency_hint_(latency_hint),
       webaudio_callback_(callback),
       frame_token_(sink_descriptor.Token()),
+      main_thread_task_runner_(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       create_silent_sink_cb_(std::move(create_silent_sink_cb)) {
   TRACE_EVENT0("webaudio",
                "RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl");
@@ -179,12 +181,6 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     // Inform the Blink client (e.g. AudioContext) that we have invalid device
     // parameters.
     if (base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
-      // Store the reference to the main thread task runner for later use.
-      // This is guaranteed to be the main thread since this call runs on the
-      // main thread.
-      main_thread_task_runner_ =
-          base::SingleThreadTaskRunner::GetCurrentDefault();
-
       // Post a task on the same thread, and the posted task will be executed
       // once the construction sequence is finished.
       main_thread_task_runner_->PostTask(
@@ -328,7 +324,6 @@ void RendererWebAudioDeviceImpl::OnRenderError() {
 
   // This function gets called from the audio infra, non-main thread, so this
   // posts a cross-thread task to the main thread task runner.
-  CHECK(main_thread_task_runner_.get());
   main_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&RendererWebAudioDeviceImpl::NotifyRenderError,
