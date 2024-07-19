@@ -520,8 +520,6 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
       GetMatchPatterns("ADDRESS_LINE_2", context);
 
   if (!ParseField(context, scanner, address_line2_patterns, &address2_,
-                  "ADDRESS_LINE_2") &&
-      !ParseField(context, scanner, address_line2_patterns, &address2_,
                   "ADDRESS_LINE_2")) {
     return true;
   }
@@ -533,8 +531,6 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
   // above.
   if (!ParseField(context, scanner, address_line_extra_patterns, &address3_,
                   "ADDRESS_LINE_EXTRA") &&
-      !ParseField(context, scanner, address_line2_patterns, &address3_,
-                  "ADDRESS_LINE_2") &&
       !ParseField(context, scanner, address_line2_patterns, &address3_,
                   "ADDRESS_LINE_2")) {
     return true;
