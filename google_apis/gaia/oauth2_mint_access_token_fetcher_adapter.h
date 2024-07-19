@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -30,6 +31,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
       base::RepeatingCallback<std::unique_ptr<OAuth2MintTokenFlow>(
           OAuth2MintTokenFlow::Delegate*,
           OAuth2MintTokenFlow::Parameters)>;
+  using TokenDecryptor = base::RepeatingCallback<std::string(std::string_view)>;
 
   explicit OAuth2MintAccessTokenFetcherAdapter(
       OAuth2AccessTokenConsumer* consumer,
@@ -55,6 +57,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
 
   // Virtual for testing.
   virtual void SetBindingKeyAssertion(std::string assertion);
+  virtual void SetTokenDecryptor(TokenDecryptor decryptor);
 
   void SetOAuth2MintTokenFlowFactoryForTesting(
       OAuth2MintTokenFlowFactory factory);
@@ -76,6 +79,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
   const std::string client_channel_;
 
   std::string binding_key_assertion_;
+  TokenDecryptor token_decryptor_;
 
   OAuth2MintTokenFlowFactory mint_token_flow_factory_for_testing_;
 

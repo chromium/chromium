@@ -4,6 +4,10 @@
 
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
@@ -19,6 +23,9 @@
 #include "url/gurl.h"
 
 namespace {
+using GenerateAssertionFuture =
+    base::test::TestFuture<std::string, std::optional<HybridEncryptionKey>>;
+
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
@@ -111,13 +118,14 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertion) {
   std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
   helper().SetBindingKey(account_id, wrapped_key);
 
-  base::test::TestFuture<std::string> sign_future;
+  GenerateAssertionFuture sign_future;
   helper().GenerateBindingKeyAssertion(
       account_id, "challenge", GURL("https://oauth.example.com/IssueToken"),
       sign_future.GetCallback());
   RunBackgroundTasks();
-  std::string assertion = sign_future.Get();
+  std::string assertion = sign_future.Get<0>();
   EXPECT_FALSE(assertion.empty());
+  EXPECT_NE(sign_future.Get<1>(), std::nullopt);
 
   EXPECT_TRUE(signin::VerifyJwtSignature(
       assertion, *unexportable_key_service().GetAlgorithm(key_id),
@@ -127,13 +135,14 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertion) {
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionNoBindingKey) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
 
-  base::test::TestFuture<std::string> sign_future;
+  GenerateAssertionFuture sign_future;
   helper().GenerateBindingKeyAssertion(
       account_id, "challenge", GURL("https://oauth.example.com/IssueToken"),
       sign_future.GetCallback());
   RunBackgroundTasks();
-  std::string assertion = sign_future.Get();
+  std::string assertion = sign_future.Get<0>();
   EXPECT_TRUE(assertion.empty());
+  EXPECT_EQ(sign_future.Get<1>(), std::nullopt);
 }
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
@@ -141,11 +150,12 @@ TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertionInvalidBindingKey) {
   const std::vector<uint8_t> kInvalidWrappedKey = {1, 2, 3};
   helper().SetBindingKey(account_id, kInvalidWrappedKey);
 
-  base::test::TestFuture<std::string> sign_future;
+  GenerateAssertionFuture sign_future;
   helper().GenerateBindingKeyAssertion(
       account_id, "challenge", GURL("https://oauth.example.com/IssueToken"),
       sign_future.GetCallback());
   RunBackgroundTasks();
-  std::string assertion = sign_future.Get();
+  std::string assertion = sign_future.Get<0>();
   EXPECT_TRUE(assertion.empty());
+  EXPECT_EQ(sign_future.Get<1>(), std::nullopt);
 }

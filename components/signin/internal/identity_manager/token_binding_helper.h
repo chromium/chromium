@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TOKEN_BINDING_HELPER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TOKEN_BINDING_HELPER_H_
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 
@@ -29,6 +32,9 @@ struct CoreAccountId;
 // Keys needs to be loaded into the helper on every startup.
 class TokenBindingHelper {
  public:
+  using GenerateAssertionCallback =
+      base::OnceCallback<void(std::string, std::optional<HybridEncryptionKey>)>;
+
   explicit TokenBindingHelper(
       unexportable_keys::UnexportableKeyService& unexportable_key_service);
 
@@ -58,11 +64,10 @@ class TokenBindingHelper {
   // Asynchronously generates a binding key assertion with a key associated with
   // `account_id`. The result is returned through `callback`. Returns an empty
   // string if the generation fails.
-  void GenerateBindingKeyAssertion(
-      const CoreAccountId& account_id,
-      std::string_view challenge,
-      const GURL& destination_url,
-      base::OnceCallback<void(std::string)> callback);
+  void GenerateBindingKeyAssertion(const CoreAccountId& account_id,
+                                   std::string_view challenge,
+                                   const GURL& destination_url,
+                                   GenerateAssertionCallback callback);
 
   // Returns a wrapped key associated with `account_id`. Returns an empty vector
   // if no key is found.
@@ -88,7 +93,7 @@ class TokenBindingHelper {
   void SignAssertionToken(
       std::string_view challenge,
       const GURL& destination_url,
-      base::OnceCallback<void(std::string)> callback,
+      GenerateAssertionCallback callback,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
           binding_key);
 

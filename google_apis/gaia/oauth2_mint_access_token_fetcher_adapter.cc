@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -76,6 +77,12 @@ void OAuth2MintAccessTokenFetcherAdapter::SetBindingKeyAssertion(
   binding_key_assertion_ = std::move(assertion);
 }
 
+void OAuth2MintAccessTokenFetcherAdapter::SetTokenDecryptor(
+    TokenDecryptor decryptor) {
+  CHECK(!decryptor.is_null());
+  token_decryptor_ = std::move(decryptor);
+}
+
 void OAuth2MintAccessTokenFetcherAdapter::
     SetOAuth2MintTokenFlowFactoryForTesting(
         OAuth2MintTokenFlowFactory factory) {
@@ -86,12 +93,27 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
     const std::string& access_token,
     const std::set<std::string>& granted_scopes,
     int time_to_live) {
+  std::string decrypted_token;
+  if (!token_decryptor_.is_null()) {
+    // Non-null decryptor indicates that the access token should be encrypted.
+    // TODO(b/353199749): rely on an explicit server indicator instead.
+    std::string decryption_result = token_decryptor_.Run(access_token);
+    if (decryption_result.empty()) {
+      FireOnGetTokenFailure(
+          GoogleServiceAuthError::FromUnexpectedServiceResponse(
+              "Failed to decrypt token"));
+      return;
+    }
+    decrypted_token = std::move(decryption_result);
+  } else {
+    decrypted_token = access_token;
+  }
   // The token will expire in `time_to_live` seconds. Take a 10% error margin to
   // prevent reusing a token too close to its expiration date.
   base::Time expiration_time =
       base::Time::Now() + base::Seconds(9 * time_to_live / 10);
   OAuth2AccessTokenConsumer::TokenResponse::Builder response_builder;
-  response_builder.WithAccessToken(access_token)
+  response_builder.WithAccessToken(decrypted_token)
       .WithExpirationTime(expiration_time);
   FireOnGetTokenSuccess(response_builder.build());
 }

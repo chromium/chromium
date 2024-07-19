@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -225,6 +226,22 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Success) {
                                         kTimeToLive.InSeconds());
 }
 
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessWithEncryption) {
+  const std::string kTestEncryptedToken = "test_encrypted_token";
+  auto fetcher = CreateFetcher();
+  base::MockCallback<OAuth2MintAccessTokenFetcherAdapter::TokenDecryptor>
+      mock_decryptor;
+  fetcher->SetTokenDecryptor(mock_decryptor.Get());
+  EXPECT_CALL(mock_decryptor, Run(kTestEncryptedToken))
+      .WillOnce(testing::Return(kTestAccessToken));
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  base::TimeDelta kTimeToLive = base::Hours(4);
+  EXPECT_CALL(*mock_consumer(), OnGetTokenSuccess(HasAccessTokenWithTtl(
+                                    kTestAccessToken, kTimeToLive)));
+  mock_flow()->SimulateMintTokenSuccess(kTestEncryptedToken, {kTestScope},
+                                        kTimeToLive.InSeconds());
+}
+
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Failure) {
   auto fetcher = CreateFetcher();
   fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
@@ -234,6 +251,24 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Failure) {
               CREDENTIALS_REJECTED_BY_SERVER);
   EXPECT_CALL(*mock_consumer(), OnGetTokenFailure(error));
   mock_flow()->SimulateMintTokenFailure(error);
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, DecryptionFailure) {
+  const std::string kTestEncryptedToken = "test_encrypted_token";
+  auto fetcher = CreateFetcher();
+  base::MockCallback<OAuth2MintAccessTokenFetcherAdapter::TokenDecryptor>
+      mock_decryptor;
+  fetcher->SetTokenDecryptor(mock_decryptor.Get());
+  EXPECT_CALL(mock_decryptor, Run(kTestEncryptedToken))
+      .WillOnce(testing::Return(std::string()));
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  base::TimeDelta kTimeToLive = base::Hours(4);
+  EXPECT_CALL(
+      *mock_consumer(),
+      OnGetTokenFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
+          "Failed to decrypt token")));
+  mock_flow()->SimulateMintTokenSuccess(kTestEncryptedToken, {kTestScope},
+                                        kTimeToLive.InSeconds());
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, UnexpectedConsentResult) {
