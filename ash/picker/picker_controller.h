@@ -107,6 +107,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerActionType GetActionForResult(
       const PickerSearchResult& result) override;
   std::vector<PickerSearchResult> GetSuggestedEmoji() override;
+  bool IsGifsEnabled() override;
 
   // views:WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

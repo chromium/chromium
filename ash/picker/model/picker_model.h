@@ -12,6 +12,8 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/range/range.h"
 
+class PrefService;
+
 namespace ui {
 class TextInputClient;
 }
@@ -44,6 +46,8 @@ class ASH_EXPORT PickerModel {
   bool is_caps_lock_enabled() const;
 
   PickerModeType GetMode() const;
+
+  bool IsGifsEnabled(PrefService* prefs) const;
 
  private:
   bool has_focus_;

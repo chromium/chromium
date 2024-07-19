@@ -629,9 +629,11 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
 }
 
 void PickerView::AddEmojiBarView() {
-  emoji_bar_view_ = AddChildViewAt(
-      std::make_unique<PickerEmojiBarView>(this, kPickerViewMaxSize.width()),
-      0);
+  emoji_bar_view_ =
+      AddChildViewAt(std::make_unique<PickerEmojiBarView>(
+                         this, kPickerViewMaxSize.width(),
+                         /*is_gifs_enabled*/ delegate_->IsGifsEnabled()),
+                     0);
   ResetEmojiBarToZeroState();
 }
 

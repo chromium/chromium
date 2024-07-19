@@ -613,6 +613,12 @@ std::vector<PickerSearchResult> PickerController::GetSuggestedEmoji() {
   return emoji_suggester_->GetSuggestedEmoji();
 }
 
+bool PickerController::IsGifsEnabled() {
+  CHECK(model_);
+  CHECK(client_);
+  return model_->IsGifsEnabled(client_->GetPrefs());
+}
+
 void PickerController::OnWidgetDestroying(views::Widget* widget) {
   caps_lock_state_view_ = nullptr;
   feature_usage_metrics_.StopUsage();

@@ -4,8 +4,10 @@
 
 #include "ash/picker/model/picker_model.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
@@ -162,6 +164,45 @@ TEST(PickerModel, GetModeForSelectionState) {
                     PickerModel::EditorStatus::kEnabled);
 
   EXPECT_EQ(model.GetMode(), PickerModeType::kHasSelection);
+}
+
+TEST(PickerModel, GifsDisabledWhenPrefDoesNotExist) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_FALSE(model.IsGifsEnabled(&prefs));
+}
+
+TEST(PickerModel, GifsEnabledWhenPrefIsTrue) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  prefs.registry()->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled,
+                                        true);
+  prefs.SetBoolean(prefs::kEmojiPickerGifSupportEnabled, true);
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_TRUE(model.IsGifsEnabled(&prefs));
+}
+
+TEST(PickerModel, GifsDisabledWhenPrefIsFalse) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  prefs.registry()->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled,
+                                        true);
+  prefs.SetBoolean(prefs::kEmojiPickerGifSupportEnabled, false);
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_FALSE(model.IsGifsEnabled(&prefs));
 }
 
 }  // namespace

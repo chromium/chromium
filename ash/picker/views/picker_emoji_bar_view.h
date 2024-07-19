@@ -34,7 +34,8 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
  public:
   // `delegate` must remain valid for the lifetime of this class.
   PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
-                     int picker_view_width);
+                     int picker_view_width,
+                     bool is_gifs_enabled = false);
   PickerEmojiBarView(const PickerEmojiBarView&) = delete;
   PickerEmojiBarView& operator=(const PickerEmojiBarView&) = delete;
   ~PickerEmojiBarView() override;

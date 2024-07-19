@@ -4,9 +4,11 @@
 
 #include "ash/picker/model/picker_model.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "base/check_deref.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
@@ -123,6 +125,14 @@ PickerModeType PickerModel::GetMode() const {
 
   return selection_range_.is_empty() ? PickerModeType::kNoSelection
                                      : PickerModeType::kHasSelection;
+}
+
+bool PickerModel::IsGifsEnabled(PrefService* prefs) const {
+  if (const PrefService::Preference* pref =
+          prefs->FindPreference(prefs::kEmojiPickerGifSupportEnabled)) {
+    return pref->GetValue()->GetBool();
+  }
+  return false;
 }
 
 }  // namespace ash

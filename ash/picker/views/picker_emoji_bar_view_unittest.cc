@@ -204,8 +204,9 @@ TEST_F(PickerEmojiBarViewTest, ClickingGifsButton) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
-  auto* emoji_bar = widget->SetContentsView(
-      std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
+  auto* emoji_bar =
+      widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
+          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/true));
   widget->Show();
 
   EXPECT_CALL(mock_delegate, ShowEmojiPicker(ui::EmojiPickerCategory::kGifs))
@@ -215,9 +216,23 @@ TEST_F(PickerEmojiBarViewTest, ClickingGifsButton) {
   LeftClickOn(*emoji_bar->gifs_button_for_testing());
 }
 
+TEST_F(PickerEmojiBarViewTest, GifsButtonNotVisibleWhenDisabled) {
+  MockEmojiBarViewDelegate mock_delegate;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* emoji_bar =
+      widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
+          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/false));
+  widget->Show();
+
+  EXPECT_FALSE(emoji_bar->gifs_button_for_testing()->GetVisible());
+}
+
 TEST_F(PickerEmojiBarViewTest, GifsButtonHasNoTooltip) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView view(&mock_delegate, kPickerWidth);
+  PickerEmojiBarView view(&mock_delegate, kPickerWidth,
+                          /*is_gifs_enabled=*/true);
 
   EXPECT_EQ(view.gifs_button_for_testing()->GetTooltipText(), u"");
 }
@@ -244,8 +259,9 @@ TEST_F(PickerEmojiBarViewTest, GetsItemLeftOf) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
-  auto* emoji_bar = widget->SetContentsView(
-      std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
+  auto* emoji_bar =
+      widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
+          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/true));
   widget->Show();
   emoji_bar->SetSearchResults(
       {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
@@ -261,13 +277,32 @@ TEST_F(PickerEmojiBarViewTest, GetsItemLeftOf) {
       emoji_bar->gifs_button_for_testing());
 }
 
+TEST_F(PickerEmojiBarViewTest, GetsItemLeftOfSkipsGifsIfGifsDisabled) {
+  MockEmojiBarViewDelegate mock_delegate;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* emoji_bar =
+      widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
+          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/false));
+  widget->Show();
+  emoji_bar->SetSearchResults({PickerSearchResult::Emoji(u"😊")});
+  const views::View::Views& emoji_bar_items = emoji_bar->GetItemsForTesting();
+  ASSERT_THAT(emoji_bar_items, SizeIs(1));
+
+  EXPECT_EQ(
+      emoji_bar->GetItemLeftOf(emoji_bar->more_emojis_button_for_testing()),
+      emoji_bar_items[0]);
+}
+
 TEST_F(PickerEmojiBarViewTest, GetsItemRightOf) {
   MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
-  auto* emoji_bar = widget->SetContentsView(
-      std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
+  auto* emoji_bar =
+      widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
+          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/true));
   widget->Show();
   emoji_bar->SetSearchResults(
       {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
@@ -282,6 +317,23 @@ TEST_F(PickerEmojiBarViewTest, GetsItemRightOf) {
   EXPECT_EQ(
       emoji_bar->GetItemRightOf(emoji_bar->more_emojis_button_for_testing()),
       nullptr);
+}
+
+TEST_F(PickerEmojiBarViewTest, GetsItemRightOfSkipsGifsIfGifsDisabled) {
+  MockEmojiBarViewDelegate mock_delegate;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* emoji_bar =
+      widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
+          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/false));
+  widget->Show();
+  emoji_bar->SetSearchResults({PickerSearchResult::Emoji(u"😊")});
+  const views::View::Views& emoji_bar_items = emoji_bar->GetItemsForTesting();
+  ASSERT_THAT(emoji_bar_items, SizeIs(1));
+
+  EXPECT_EQ(emoji_bar->GetItemRightOf(emoji_bar_items[0]),
+            emoji_bar->more_emojis_button_for_testing());
 }
 
 }  // namespace

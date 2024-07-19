@@ -59,6 +59,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return PickerActionType::kInsert;
   }
   std::vector<PickerSearchResult> GetSuggestedEmoji() override { return {}; }
+  bool IsGifsEnabled() override { return true; }
 
  private:
   PickerSessionMetrics session_metrics_;

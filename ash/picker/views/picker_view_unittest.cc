@@ -215,6 +215,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return results;
   }
 
+  bool IsGifsEnabled() override { return true; }
+
   std::optional<PickerSearchResult> last_inserted_result() const {
     return last_inserted_result_;
   }

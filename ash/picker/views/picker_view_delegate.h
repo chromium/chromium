@@ -89,6 +89,9 @@ class ASH_EXPORT PickerViewDelegate {
 
   // Gets suggested emoji results.
   virtual std::vector<PickerSearchResult> GetSuggestedEmoji() = 0;
+
+  // Whether GIFs are enabled or not.
+  virtual bool IsGifsEnabled() = 0;
 };
 
 }  // namespace ash

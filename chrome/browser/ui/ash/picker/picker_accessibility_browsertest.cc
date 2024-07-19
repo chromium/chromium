@@ -186,7 +186,8 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           .BuildClientOwnsWidget();
   auto* view =
       widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
-          /*delegate=*/nullptr, /*picker_width=*/1000));
+          /*delegate=*/nullptr, /*picker_width=*/1000,
+          /*is_gifs_enabled=*/true));
   view->SetSearchResults({
       ash::PickerSearchResult::Emoji(u"😊", u"happy"),
       ash::PickerSearchResult::Symbol(u"♬", u"music"),
@@ -238,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           .BuildClientOwnsWidget();
   auto* view =
       widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
-          /*delegate=*/nullptr, /*picker_width=*/100));
+          /*delegate=*/nullptr, /*picker_width=*/100,
+          /*is_gifs_enabled=*/true));
 
   sm_.Call([view]() { view->gifs_button_for_testing()->RequestFocus(); });
 

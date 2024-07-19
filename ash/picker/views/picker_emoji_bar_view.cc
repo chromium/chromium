@@ -158,7 +158,8 @@ END_METADATA
 }  // namespace
 
 PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
-                                       int picker_view_width)
+                                       int picker_view_width,
+                                       bool is_gifs_enabled)
     : delegate_(delegate), picker_view_width_(picker_view_width) {
   SetUseDefaultFillLayout(true);
   GetViewAccessibility().SetProperties(
@@ -202,6 +203,7 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
                           std::make_unique<GifsButton>(
                               base::BindRepeating(&PickerEmojiBarView::OpenGifs,
                                                   base::Unretained(this))))
+                          .SetVisible(is_gifs_enabled)
                           .CopyAddressTo(&gifs_button_)))
           .Build());
   item_row_and_gifs_container->GetViewAccessibility().SetRole(
