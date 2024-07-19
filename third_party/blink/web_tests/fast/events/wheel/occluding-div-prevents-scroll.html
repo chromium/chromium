@@ -2,6 +2,9 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src='../../../resources/gesture-util.js'></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-actions.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <style>
 .scroll {
   overflow: auto;
@@ -16,28 +19,25 @@
   background-image: linear-gradient(green, red);
 }
 
-#animated-overlap {
+#overlap {
   height: 100px;
   width: 110px;
-  animation: --cover 1s infinite;
-}
-
-@keyframes --cover {
-  0% { transform: translateY(0); }
-  1% { transform: translateY(-100px); }
-  100% { transform: translateY(-100px); }
+  /* transform places div over top of scroller */
+  transform: translateY(-100px);
 }
 </style>
-It should not be possible to scroll this content:<br>
+It should not be possible to scroll this content since a div occludes the
+scroll container: <br>
 <div id="scroller" class="scroll">
   <div class="scrolled-content"></div>
 </div>
-<div id="animated-overlap"></div>
+<div id="overlap"></div>
 <script>
   promise_test(async t => {
-    await waitForCompositorCommit();
-    await smoothScroll(20, 50, 50, GestureSourceType.MOUSE_INPUT, 'down', SPEED_INSTANT);
-    await waitForCompositorCommit();
+    await waitForCompositorReady();
+    const wheelPromise = waitForEvent(document, 'wheel');
+    await wheelScroll(50, 50, 0, 100, /*scrollEventListener=*/ null);
+    await wheelPromise;
     assert_equals(document.getElementById('scroller').scrollTop, 0);
-  }, 'Invisible composited animation prevents scroll');
+  }, 'Occluding div prevents scroll');
 </script>
