@@ -57,11 +57,11 @@ class ASH_EXPORT MagicBoostDisclaimerView : public views::View {
  private:
   // Owned by the views hierarchy.
   raw_ptr<views::MdTextButton> accept_button_ = nullptr;
-  raw_ptr<views::Label> title_;
-  raw_ptr<views::StyledLabel> paragraph_one_;
-  raw_ptr<views::StyledLabel> paragraph_two_;
-  raw_ptr<views::StyledLabel> paragraph_three_;
-  raw_ptr<views::StyledLabel> paragraph_four_;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::StyledLabel> paragraph_one_ = nullptr;
+  raw_ptr<views::StyledLabel> paragraph_two_ = nullptr;
+  raw_ptr<views::StyledLabel> paragraph_three_ = nullptr;
+  raw_ptr<views::StyledLabel> paragraph_four_ = nullptr;
 
   base::WeakPtrFactory<MagicBoostDisclaimerView> weak_ptr_factory_{this};
 };

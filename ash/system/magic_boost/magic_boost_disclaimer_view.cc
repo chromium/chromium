@@ -27,6 +27,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -167,32 +168,43 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView(
                   ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                       IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION))
               .SetPreferredSize(kImagePreferredSize),
-          views::Builder<views::BoxLayoutView>()
-              .SetOrientation(views::LayoutOrientation::kVertical)
+          views::Builder<views::ScrollView>()
+              .SetBackgroundColor(std::nullopt)
+              .SetDrawOverflowIndicator(false)
+              .SetVerticalScrollBarMode(
+                  views::ScrollView::ScrollBarMode::kHiddenButEnabled)
+              // The content will take all the available space of the widget.
               .SetProperty(views::kBoxLayoutFlexKey,
                            views::BoxLayoutFlexSpecification())
-              .SetBetweenChildSpacing(kTextContainerBetweenChildSpacing)
-              .SetBorder(views::CreateEmptyBorder(kTextContainerInsets))
-              .AddChildren(
-                  views::Builder<views::Label>()
-                      .SetFontList(
-                          TypographyProvider::Get()->ResolveTypographyToken(
-                              TypographyToken::kCrosDisplay7))
-                      .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-                      .SetHorizontalAlignment(
-                          gfx::HorizontalAlignment::ALIGN_LEFT)
-                      .SetID(magic_boost::ViewId::DisclaimerViewTitle)
-                      .CopyAddressTo(&title_)
-                      .SetText(l10n_util::GetStringUTF16(
-                          IDS_ASH_MAGIC_BOOST_DISCLAIMER_TITLE)),
-                  GetParagraphOneBuilder().CopyAddressTo(&paragraph_one_),
-                  GetParagraphTwoBuilder(
-                      std::move(press_terms_of_service_callback))
-                      .CopyAddressTo(&paragraph_two_),
-                  GetParagraphThreeBuilder().CopyAddressTo(&paragraph_three_),
-                  GetParagraphFourBuilder(
-                      std::move(press_learn_more_link_callback))
-                      .CopyAddressTo(&paragraph_four_)),
+              .ClipHeightTo(0, std::numeric_limits<int>::max())
+              .SetContents(
+                  views::Builder<views::BoxLayoutView>()
+                      .SetOrientation(views::LayoutOrientation::kVertical)
+                      .SetBetweenChildSpacing(kTextContainerBetweenChildSpacing)
+                      .SetBorder(views::CreateEmptyBorder(kTextContainerInsets))
+                      .AddChildren(
+                          views::Builder<views::Label>()
+                              .SetFontList(
+                                  TypographyProvider::Get()
+                                      ->ResolveTypographyToken(
+                                          TypographyToken::kCrosDisplay7))
+                              .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                              .SetHorizontalAlignment(
+                                  gfx::HorizontalAlignment::ALIGN_LEFT)
+                              .SetID(magic_boost::ViewId::DisclaimerViewTitle)
+                              .CopyAddressTo(&title_)
+                              .SetText(l10n_util::GetStringUTF16(
+                                  IDS_ASH_MAGIC_BOOST_DISCLAIMER_TITLE)),
+                          GetParagraphOneBuilder().CopyAddressTo(
+                              &paragraph_one_),
+                          GetParagraphTwoBuilder(
+                              std::move(press_terms_of_service_callback))
+                              .CopyAddressTo(&paragraph_two_),
+                          GetParagraphThreeBuilder().CopyAddressTo(
+                              &paragraph_three_),
+                          GetParagraphFourBuilder(
+                              std::move(press_learn_more_link_callback))
+                              .CopyAddressTo(&paragraph_four_))),
           views::Builder<views::BoxLayoutView>()
               .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
               .SetBetweenChildSpacing(kBetweenButtonsSpacing)
@@ -258,7 +270,8 @@ views::UniqueWidgetPtr MagicBoostDisclaimerView::CreateWidget(
   if (!window) {
     window = Shell::GetPrimaryRootWindow();
   }
-  auto center = window->bounds().CenterPoint();
+
+  auto center = window->GetBoundsInScreen().CenterPoint();
   widget->SetBounds(gfx::Rect(center.x() - kWidgetWidth / 2,
                               center.y() - widget_height / 2, kWidgetWidth,
                               widget_height));
