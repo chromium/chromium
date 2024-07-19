@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/run_until.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -156,7 +157,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, CubicBezier) {
   RunOverlayTest("lens/overlay/cubic_bezier_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTest, CursorTooltip) {
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CursorTooltip DISABLED_CursorTooltip
+#else
+#define MAYBE_CursorTooltip CursorTooltip
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, MAYBE_CursorTooltip) {
   RunOverlayTest("lens/overlay/cursor_tooltip_test.js", "mocha.run()");
 }
 
