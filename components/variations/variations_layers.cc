@@ -238,8 +238,7 @@ bool VariationsLayers::AllowsHighEntropy(const Study& study) {
   // code: go/chrome-variations-layer-validation
   for (const auto& experiment : study.experiment()) {
     if (experiment.has_google_web_experiment_id() ||
-        experiment.has_google_web_trigger_experiment_id() ||
-        experiment.has_chrome_sync_experiment_id()) {
+        experiment.has_google_web_trigger_experiment_id()) {
       return false;
     }
   }

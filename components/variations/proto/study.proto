@@ -106,8 +106,7 @@ message Study {
     // trigger experiment ids are visible to Google web properties.
     optional GoogleWebVisibility google_web_visibility = 16;
 
-    // Optional id used to uniquely identify this experiment for Chrome Sync.
-    optional uint64 chrome_sync_experiment_id = 10;
+    reserved 10;
 
     // Optional id used to uniquely identify this experiment when activating
     // integrations with the Android Google App.
