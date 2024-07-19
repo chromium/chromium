@@ -52,8 +52,8 @@ void AllPlusAddressesBottomSheetView::Show(
   }
 
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_profiles(
-      profiles.size());
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_profiles;
+  java_profiles.reserve(profiles.size());
 
   for (const PlusProfile& profile : profiles) {
     java_profiles.emplace_back(Java_PlusProfile_Constructor(
@@ -70,6 +70,10 @@ void AllPlusAddressesBottomSheetView::Show(
       env, ui_info,
       l10n_util::GetStringUTF16(
           IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_WARNING_ANDROID));
+  Java_AllPlusAddressesBottomSheetUIInfo_setQueryHint(
+      env, ui_info,
+      l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_QUERY_HINT_ANDROID));
   Java_AllPlusAddressesBottomSheetUIInfo_setPlusProfiles(env, ui_info,
                                                          java_profiles);
 

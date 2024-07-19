@@ -16,11 +16,13 @@ class AllPlusAddressesBottomSheetProperties {
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>("title");
     static final WritableObjectPropertyKey<String> WARNING =
             new WritableObjectPropertyKey<>("warning");
+    static final WritableObjectPropertyKey<String> QUERY_HINT =
+            new WritableObjectPropertyKey<>("query_hint");
     static final ReadableObjectPropertyKey<ModelList> PLUS_PROFILES =
             new ReadableObjectPropertyKey<>("plus_profiles");
 
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE, TITLE, WARNING, PLUS_PROFILES,
+        VISIBLE, TITLE, WARNING, QUERY_HINT, PLUS_PROFILES,
     };
 
     static PropertyModel createDefaultModel() {
@@ -28,6 +30,7 @@ class AllPlusAddressesBottomSheetProperties {
                 .with(VISIBLE, false)
                 .with(TITLE, "")
                 .with(WARNING, "")
+                .with(QUERY_HINT, "")
                 .with(PLUS_PROFILES, new ModelList())
                 .build();
     }

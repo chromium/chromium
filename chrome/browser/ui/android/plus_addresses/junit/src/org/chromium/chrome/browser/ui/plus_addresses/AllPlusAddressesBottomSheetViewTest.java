@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBott
 
 import android.app.Activity;
 import android.view.View.MeasureSpec;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +43,7 @@ public class AllPlusAddressesBottomSheetViewTest {
     private static final int HEIGHT = 2000;
     private static final String BOTTOMSHEET_TITLE = "Bottom sheet title";
     private static final String BOTTOMSHEET_WARNING = "Bottom sheet warning";
+    private static final String BOTTOMSHEET_QUERY_HINT = "Query hint";
     private static final PlusProfile PROFILE_1 = new PlusProfile("google.com", "example@gmail.com");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -81,6 +83,15 @@ public class AllPlusAddressesBottomSheetViewTest {
         mView.setWarning(BOTTOMSHEET_WARNING);
         TextView title = mView.getContentView().findViewById(R.id.sheet_warning);
         assertEquals(title.getText(), BOTTOMSHEET_WARNING);
+    }
+
+    @Test
+    @SmallTest
+    public void testQueryHint() {
+        mView.setQueryHint(BOTTOMSHEET_QUERY_HINT);
+        SearchView search =
+                mView.getContentView().findViewById(R.id.all_plus_addresses_search_view);
+        assertEquals(search.getQueryHint(), BOTTOMSHEET_QUERY_HINT);
     }
 
     @Test

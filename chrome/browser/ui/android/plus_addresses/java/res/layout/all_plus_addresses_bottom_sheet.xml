@@ -30,6 +30,15 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/all_plus_addresses_bottom_sheet_padding"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
+    <SearchView
+        android:id="@+id/all_plus_addresses_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        android:layout_marginEnd="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginBottom="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginTop="@dimen/all_plus_addresses_bottom_sheet_padding" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sheet_item_list"
         android:layout_width="match_parent"

@@ -175,5 +175,8 @@
     <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_WARNING_ANDROID" desc="The user warning text of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
       Select Plus Address warning placeholder.
     </message>
+    <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_QUERY_HINT_ANDROID" desc="The text shown in the search field of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
+      Search hint placeholder
+    </message>
 
 </grit-part>

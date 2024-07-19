@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -50,6 +51,11 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
 
     void setWarning(String warning) {
         ((TextView) mContentView.findViewById(R.id.sheet_warning)).setText(warning);
+    }
+
+    void setQueryHint(String queryHint) {
+        ((SearchView) mContentView.findViewById(R.id.all_plus_addresses_search_view))
+                .setQueryHint(queryHint);
     }
 
     void setSheetItemListAdapter(RecyclerView.Adapter adapter) {

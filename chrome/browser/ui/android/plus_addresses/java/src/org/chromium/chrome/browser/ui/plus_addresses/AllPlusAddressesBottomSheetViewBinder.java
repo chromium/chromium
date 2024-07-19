@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PlusProfileProperties.PLUS_PROFILE;
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.QUERY_HINT;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.TITLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.WARNING;
@@ -29,6 +30,8 @@ class AllPlusAddressesBottomSheetViewBinder {
             view.setTitle(model.get(TITLE));
         } else if (propertyKey == WARNING) {
             view.setWarning(model.get(WARNING));
+        } else if (propertyKey == QUERY_HINT) {
+            view.setQueryHint(model.get(QUERY_HINT));
         } else if (propertyKey == PLUS_PROFILES) {
             // Intentionally empty. The adapter will observe changes to PLUS_PROFILES.
         } else {

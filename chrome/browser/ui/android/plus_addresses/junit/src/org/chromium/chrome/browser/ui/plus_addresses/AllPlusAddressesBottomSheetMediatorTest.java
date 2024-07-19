@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PlusProfileProperties.PLUS_PROFILE;
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.QUERY_HINT;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.TITLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.WARNING;
 
@@ -28,6 +29,7 @@ import java.util.List;
 public class AllPlusAddressesBottomSheetMediatorTest {
     private static final String BOTTOMSHEET_TITLE = "Bottom sheet title";
     private static final String BOTTOMSHEET_WARNING = "Bottom sheet warning";
+    private static final String BOTTOMSHEET_QUERY_HINT = "Query hint";
     private static final PlusProfile PROFILE_1 = new PlusProfile("google.com", "example@gmail.com");
 
     private PropertyModel mModel;
@@ -45,12 +47,14 @@ public class AllPlusAddressesBottomSheetMediatorTest {
         AllPlusAddressesBottomSheetUIInfo info = new AllPlusAddressesBottomSheetUIInfo();
         info.setTitle(BOTTOMSHEET_TITLE);
         info.setWarning(BOTTOMSHEET_WARNING);
+        info.setQueryHint(BOTTOMSHEET_QUERY_HINT);
         info.setPlusProfiles(List.of(PROFILE_1));
 
         mMediator.showPlusProfiles(info);
 
         assertEquals(mModel.get(TITLE), BOTTOMSHEET_TITLE);
         assertEquals(mModel.get(WARNING), BOTTOMSHEET_WARNING);
+        assertEquals(mModel.get(QUERY_HINT), BOTTOMSHEET_QUERY_HINT);
         assertEquals(mModel.get(PLUS_PROFILES).size(), 1);
         assertEquals(mModel.get(PLUS_PROFILES).get(0).model.get(PLUS_PROFILE), PROFILE_1);
     }

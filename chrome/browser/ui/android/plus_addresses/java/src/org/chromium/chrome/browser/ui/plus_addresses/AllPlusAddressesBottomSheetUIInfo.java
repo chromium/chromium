@@ -16,6 +16,7 @@ class AllPlusAddressesBottomSheetUIInfo {
     private String mTitle;
     // The message displayed below the bottom sheet title.
     private String mWarning;
+    private String mQueryHint;
     private List<PlusProfile> mProfiles;
 
     @CalledByNative
@@ -32,6 +33,11 @@ class AllPlusAddressesBottomSheetUIInfo {
     }
 
     @CalledByNative
+    void setQueryHint(@JniType("std::u16string") String queryHint) {
+        mQueryHint = queryHint;
+    }
+
+    @CalledByNative
     void setPlusProfiles(@JniType("std::vector") List<PlusProfile> profiles) {
         mProfiles = profiles;
     }
@@ -42,6 +48,10 @@ class AllPlusAddressesBottomSheetUIInfo {
 
     String getWarning() {
         return mWarning;
+    }
+
+    String getQueryHint() {
+        return mQueryHint;
     }
 
     List<PlusProfile> getPlusProfiles() {
