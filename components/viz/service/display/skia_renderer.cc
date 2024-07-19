@@ -109,13 +109,13 @@ namespace viz {
 
 namespace {
 
-// Feature to temporarily track all the render pass IDs we've ever seen. This
-// will help us understand the case where we try and sample from a render pass
-// that has never been drawn to. See: crbug.com/344458294, crbug.com/345673794
+// Feature to temporarily create a dump in the case where we try and sample from
+// a render pass that has never been drawn to.
+// See: crbug.com/344458294, crbug.com/345673794
 // TODO(crbug.com/347909405): Remove this
-BASE_FEATURE(kTrackAllAllocatedRenderPassIds,
-             "TrackAllAllocatedRenderPassIds",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
+             "DumpWithoutCrashingOnMissingRenderPassBacking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
@@ -3390,22 +3390,23 @@ void SkiaRenderer::DrawRenderPassQuad(
   // A real render pass that was turned into an image
   auto iter = render_pass_backings_.find(quad->render_pass_id);
   if (iter == render_pass_backings_.end()) {
-    // This can happen if we previously skipped drawing a render pass (and
-    // allocating its backing) due to an empty update rect.
-    LOG(ERROR) << "Could not find render pass id # " << quad->render_pass_id
-               << " in the render pass overlay backings";
+    if (base::FeatureList::IsEnabled(
+            kDumpWithoutCrashingOnMissingRenderPassBacking)) {
+      // This can happen if we previously skipped drawing a render pass (and
+      // allocating its backing) due to an empty update rect.
+      LOG(ERROR) << "Could not find render pass id # " << quad->render_pass_id
+                 << " in the render pass overlay backings";
 
-    SCOPED_CRASH_KEY_STRING32(
-        "DrawRenderPassQuad", "backing not found",
-        "seen before = " +
-            (base::FeatureList::IsEnabled(kTrackAllAllocatedRenderPassIds)
-                 ? base::NumberToString(
-                       seen_render_pass_ids_.contains(quad->render_pass_id))
-                 : "unknown"));
+      SCOPED_CRASH_KEY_STRING32(
+          "DrawRenderPassQuad", "backing not found",
+          "seen before = " +
+              base::NumberToString(
+                  seen_render_pass_ids_.contains(quad->render_pass_id)));
 
-    // Collect a dump so we can investigate the root cause, but fallback to a
-    // solid color to avoid disrupting the user.
-    base::debug::DumpWithoutCrashing();
+      // Collect a dump so we can investigate the root cause, but fallback to a
+      // solid color to avoid disrupting the user.
+      base::debug::DumpWithoutCrashing();
+    }
 
     // The fallback is a solid color quad, which do not support batching.
     if (!batched_quads_.empty()) {
@@ -3694,7 +3695,8 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
                         requirements.format, mailbox, is_root,
                         requirements.is_scanout,
                         requirements.scanout_dcomp_surface));
-  if (base::FeatureList::IsEnabled(kTrackAllAllocatedRenderPassIds)) {
+  if (base::FeatureList::IsEnabled(
+          kDumpWithoutCrashingOnMissingRenderPassBacking)) {
     seen_render_pass_ids_.insert(render_pass_id);
   }
 }
