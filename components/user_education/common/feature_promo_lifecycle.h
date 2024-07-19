@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_LIFECYCLE_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -41,9 +42,17 @@ class FeaturePromoLifecycle {
   FeaturePromoLifecycle(const FeaturePromoLifecycle&) = delete;
   void operator=(const FeaturePromoLifecycle&) = delete;
 
+  // Sets reshow policy, if there is one.
+  FeaturePromoLifecycle& SetReshowPolicy(base::TimeDelta reshow_time,
+                                         std::optional<int> max_show_count);
+
   // Returns whether the policy and previous usage of this IPH would allow it to
   // be shown again; for example, a snoozeable IPH cannot show if it is
   // currently in the snooze period.
+  //
+  // For certain types of high-priority promos, `reshow_time` and
+  // `max_reshow_count` may be used to allow re-showing previously-dismissed
+  // promos.
   FeaturePromoResult CanShow() const;
 
   // Returns whether the policy and previous usage of this IPH would allow it to
@@ -133,6 +142,10 @@ class FeaturePromoLifecycle {
   // reads it from the storage service instead.
   void MaybeCachePromoIndex(const FeaturePromoData* data) const;
 
+  // Returns the result of trying to reshow a promo.
+  FeaturePromoResult GetReshowResult(base::Time last_show_time,
+                                     int show_count) const;
+
   // The service that stores non-transient data about the IPH.
   const raw_ptr<FeaturePromoStorageService> storage_service_;
 
@@ -144,6 +157,10 @@ class FeaturePromoLifecycle {
   const PromoType promo_type_;
   const PromoSubtype promo_subtype_;
   const int num_rotating_entries_;
+
+  // Optional data about the current IPH.
+  std::optional<base::TimeDelta> reshow_delay_;
+  std::optional<int> max_show_count_;
 
   // These are cached values for rotating promos that are applied later when the
   // data for the promo is updated.

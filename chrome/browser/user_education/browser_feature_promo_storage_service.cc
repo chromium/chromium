@@ -80,6 +80,57 @@ constexpr char kRecentSessionStartTimesPath[] =
 constexpr char kRecentSessionEnabledTimePath[] =
     "in_product_help.recent_session_enabled_time";
 
+constexpr char kKeyedPromoKey[] = "key";
+constexpr char kKeyedPromoShowCount[] = "show_count";
+constexpr char kKeyedPromoLastShownTime[] = "last_show_time";
+
+// Tries to read keyed promo data from a `base::Value`. Returns null on failure;
+// on old or missing/corrupt data, writes in sensible default values.
+std::optional<user_education::KeyedFeaturePromoDataMap::value_type> ReadKeyData(
+    const base::Value& value,
+    base::Time now) {
+  std::string key;
+  user_education::KeyedFeaturePromoData data;
+
+  if (const auto* key_ptr = value.GetIfString()) {
+    // This is old-style data. Set some sensible defaults for the values that
+    // aren't present.
+    data.show_count = 1;
+    data.last_shown_time = now;
+    return std::make_pair(*key_ptr, data);
+  }
+
+  if (const auto* key_data = value.GetIfDict()) {
+    if (const auto* maybe_key = key_data->FindString(kKeyedPromoKey)) {
+      // Show count needs to be at least 1.
+      data.show_count =
+          std::max(1, key_data->FindInt(kKeyedPromoShowCount).value_or(1));
+
+      // Time may or may not be set and may or may not be valid; if invalid,
+      // default to now.
+      const auto* const time_val = key_data->Find(kKeyedPromoLastShownTime);
+      const std::optional<base::Time> time =
+          time_val ? base::ValueToTime(*time_val) : std::nullopt;
+      data.last_shown_time = time.value_or(now);
+
+      // This should now be a (relatively) well-formed entry.
+      return std::make_pair(*maybe_key, data);
+    }
+  }
+
+  return std::nullopt;
+}
+
+// Writes keyed promo data to a `base::Value`.
+base::Value WriteKeyData(const std::string& key,
+                         const user_education::KeyedFeaturePromoData& data) {
+  base::Value::Dict value;
+  value.Set(kKeyedPromoKey, key);
+  value.Set(kKeyedPromoShowCount, data.show_count);
+  value.Set(kKeyedPromoLastShownTime, base::TimeToValue(data.last_shown_time));
+  return base::Value(std::move(value));
+}
+
 }  // namespace
 
 RecentSessionData::RecentSessionData() = default;
@@ -142,7 +193,7 @@ BrowserFeaturePromoStorageService::ReadPromoData(
       pref_data.FindIntByDottedPath(path_prefix + kIPHShowCountPath);
   std::optional<int> promo_index =
       pref_data.FindIntByDottedPath(path_prefix + kIPHPromoIndexPath);
-  const base::Value::List* app_list =
+  const base::Value::List* keyed_data =
       pref_data.FindListByDottedPath(path_prefix + kIPHShownForAppsPath);
 
   std::optional<user_education::FeaturePromoData> promo_data;
@@ -188,10 +239,11 @@ BrowserFeaturePromoStorageService::ReadPromoData(
             *last_dismissed_by);
   }
 
-  if (app_list) {
-    for (auto& app : *app_list) {
-      if (auto* const app_id = app.GetIfString()) {
-        promo_data->shown_for_keys.emplace(*app_id);
+  if (keyed_data) {
+    const auto now = GetCurrentTime();
+    for (auto& keyed : *keyed_data) {
+      if (const auto key_value = ReadKeyData(keyed, now)) {
+        promo_data->shown_for_keys.emplace(*key_value);
       }
     }
   }
@@ -224,12 +276,12 @@ void BrowserFeaturePromoStorageService::SavePromoData(
   pref_data.SetByDottedPath(path_prefix + kIPHPromoIndexPath,
                             promo_data.promo_index);
 
-  base::Value::List shown_for_keys;
-  for (auto& app_id : promo_data.shown_for_keys) {
-    shown_for_keys.Append(app_id);
+  base::Value::List shown_for;
+  for (auto& [key, data] : promo_data.shown_for_keys) {
+    shown_for.Append(WriteKeyData(key, data));
   }
   pref_data.SetByDottedPath(path_prefix + kIPHShownForAppsPath,
-                            std::move(shown_for_keys));
+                            std::move(shown_for));
 }
 
 void BrowserFeaturePromoStorageService::ResetSession() {

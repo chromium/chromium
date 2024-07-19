@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/default_clock.h"
+#include "components/user_education/common/feature_promo_data.h"
 
 namespace user_education {
 
@@ -20,11 +21,11 @@ int FeaturePromoStorageService::GetSnoozeCount(
   return data ? data->snooze_count : 0;
 }
 
-std::set<std::string> FeaturePromoStorageService::GetShownForKeys(
+KeyedFeaturePromoDataMap FeaturePromoStorageService::GetKeyedPromoData(
     const base::Feature& iph_feature) const {
   const auto data = ReadPromoData(iph_feature);
   if (!data) {
-    return std::set<std::string>();
+    return {};
   }
 
   return data->shown_for_keys;

@@ -14,7 +14,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/user_education/common/feature_promo_data.h"
@@ -83,6 +85,11 @@ class FeaturePromoLifecycleTest : public testing::Test {
   void set_promo_subtype(PromoSubtype promo_subtype) {
     promo_subtype_ = promo_subtype;
   }
+  void set_reshow_params(base::TimeDelta reshow_delay,
+                         std::optional<int> max_show_count) {
+    reshow_delay_ = reshow_delay;
+    max_show_count_ = max_show_count;
+  }
 
   FeaturePromoResult GetSnoozedResult() const {
     return promo_subtype() == PromoSubtype::kNormal &&
@@ -120,9 +127,9 @@ class FeaturePromoLifecycleTest : public testing::Test {
     if (!app_id) {
       app_id = promo_subtype() == PromoSubtype::kKeyedNotice ? kAppName : "";
     }
-    return std::make_unique<FeaturePromoLifecycle>(
+    return MaybeSetReshowParams(std::make_unique<FeaturePromoLifecycle>(
         &storage_service_, app_id, &feature, promo_type(), promo_subtype(),
-        promo_type() == PromoType::kRotating ? kNumRotatingPromos : 0);
+        promo_type() == PromoType::kRotating ? kNumRotatingPromos : 0));
   }
 
   std::unique_ptr<test::TestHelpBubble> CreateHelpBubble() {
@@ -197,8 +204,23 @@ class FeaturePromoLifecycleTest : public testing::Test {
   }
 
  protected:
+  base::SimpleTestClock& UseTestClock() {
+    storage_service_.set_clock_for_testing(&clock_);
+    return clock_;
+  }
+
+  std::unique_ptr<FeaturePromoLifecycle> MaybeSetReshowParams(
+      std::unique_ptr<FeaturePromoLifecycle> lifecycle) {
+    if (reshow_delay_) {
+      lifecycle->SetReshowPolicy(*reshow_delay_, max_show_count_);
+    }
+    return lifecycle;
+  }
+
   PromoType promo_type_ = PromoType::kSnooze;
   PromoSubtype promo_subtype_ = PromoSubtype::kNormal;
+  std::optional<base::TimeDelta> reshow_delay_;
+  std::optional<int> max_show_count_;
   int num_open_bubbles_ = 0;
   ui::test::TestElement element_{kTestElementId, kTestElementContext};
   test::TestFeaturePromoStorageService storage_service_;
@@ -210,6 +232,9 @@ class FeaturePromoLifecycleTest : public testing::Test {
   base::UserActionTester user_action_tester_;
 
   base::test::ScopedFeatureList feature_list_;
+
+ private:
+  base::SimpleTestClock clock_;
 };
 
 TEST_F(FeaturePromoLifecycleTest, BubbleClosedOnDiscard) {
@@ -369,6 +394,70 @@ TEST_F(FeaturePromoLifecycleTest, RotatingPromoSetIndex) {
   EXPECT_EQ(3, promo_data->promo_index);
 }
 
+TEST_F(FeaturePromoLifecycleTest, ReshowAfterDelay) {
+  auto& clock = UseTestClock();
+  set_promo_type(PromoType::kToast);
+  set_promo_subtype(PromoSubtype::kLegalNotice);
+  set_reshow_params(base::Minutes(5), std::nullopt);
+
+  EXPECT_CALL(tracker_, Dismissed);
+  auto lifecycle = CreateLifecycle(kTestIPHFeature);
+  EXPECT_TRUE(lifecycle->CanShow());
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+  lifecycle->OnPromoEnded(CloseReason::kDismiss, false);
+
+  // Try reshowing several times, first inside the reshow delay period, then
+  // outside of it.
+  for (int i = 0; i < 3; ++i) {
+    clock.Advance(base::Minutes(3));
+    lifecycle = CreateLifecycle(kTestIPHFeature);
+    EXPECT_EQ(FeaturePromoResult::kBlockedByReshowDelay, lifecycle->CanShow());
+
+    EXPECT_CALL(tracker_, Dismissed);
+    clock.Advance(base::Minutes(3));
+    EXPECT_TRUE(lifecycle->CanShow());
+    lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+    lifecycle->OnPromoEnded(CloseReason::kDismiss, false);
+  }
+}
+
+TEST_F(FeaturePromoLifecycleTest, ReshowAfterDelayWithLimit) {
+  auto& clock = UseTestClock();
+  set_promo_type(PromoType::kToast);
+  set_promo_subtype(PromoSubtype::kLegalNotice);
+  set_reshow_params(base::Minutes(5), 3);
+
+  EXPECT_CALL(tracker_, Dismissed);
+  auto lifecycle = CreateLifecycle(kTestIPHFeature);
+  EXPECT_TRUE(lifecycle->CanShow());
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+  lifecycle->OnPromoEnded(CloseReason::kDismiss, false);
+
+  // Try reshowing several times, first inside the reshow delay period, then
+  // outside of it.
+  for (int i = 0; i < 2; ++i) {
+    clock.Advance(base::Minutes(3));
+    lifecycle = CreateLifecycle(kTestIPHFeature);
+    EXPECT_EQ(FeaturePromoResult::kBlockedByReshowDelay, lifecycle->CanShow());
+
+    EXPECT_CALL(tracker_, Dismissed);
+    clock.Advance(base::Minutes(3));
+    EXPECT_TRUE(lifecycle->CanShow());
+    lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+    lifecycle->OnPromoEnded(CloseReason::kDismiss, false);
+  }
+
+  // At this point, the limit should have been reached, so no amount of delay
+  // will re-enable the promo.
+  clock.Advance(base::Minutes(3));
+  lifecycle = CreateLifecycle(kTestIPHFeature);
+  EXPECT_EQ(FeaturePromoResult::kPermanentlyDismissed, lifecycle->CanShow());
+
+  clock.Advance(base::Minutes(3));
+  lifecycle = CreateLifecycle(kTestIPHFeature);
+  EXPECT_EQ(FeaturePromoResult::kPermanentlyDismissed, lifecycle->CanShow());
+}
+
 template <typename... Args>
 class FeaturePromoLifecycleParamTest
     : public FeaturePromoLifecycleTest,
@@ -397,9 +486,9 @@ class FeaturePromoLifecycleParamTest
     if (!app_id) {
       app_id = promo_subtype() == PromoSubtype::kKeyedNotice ? kAppName : "";
     }
-    return std::make_unique<FeaturePromoLifecycle>(
+    return MaybeSetReshowParams(std::make_unique<FeaturePromoLifecycle>(
         &storage_service_, app_id, &feature, promo_type(), promo_subtype(),
-        promo_type() == PromoType::kRotating ? kNumRotatingPromos : 0);
+        promo_type() == PromoType::kRotating ? kNumRotatingPromos : 0));
   }
 };
 
@@ -673,6 +762,85 @@ TEST_P(FeaturePromoLifecycleAppTest, IPHBlockedKeyedNotice) {
 
   // But a different IPH should not be blocked.
   lifecycle = CreateLifecycle(kTestIPHFeature2, kAppName);
+  EXPECT_TRUE(lifecycle->CanShow());
+}
+
+TEST_P(FeaturePromoLifecycleAppTest, ReshowAfterDelay) {
+  set_reshow_params(base::Minutes(5), std::nullopt);
+  auto& clock = UseTestClock();
+
+  auto lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
+  EXPECT_TRUE(lifecycle->CanShow());
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+  EXPECT_CALL(tracker_, Dismissed);
+  lifecycle->OnPromoEnded(CloseReason::kDismiss);
+
+  // After a short time, the same promo cannot reshow, but it can show for a
+  // different app.
+  clock.Advance(base::Minutes(3));
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
+  EXPECT_EQ(FeaturePromoResult::kBlockedByReshowDelay, lifecycle->CanShow());
+
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName2);
+  EXPECT_TRUE(lifecycle->CanShow());
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+  EXPECT_CALL(tracker_, Dismissed);
+  lifecycle->OnPromoEnded(CloseReason::kDismiss);
+
+  // After another short time, the first promo can show, but the second cannot
+  // show yet.
+  clock.Advance(base::Minutes(3));
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
+  EXPECT_TRUE(lifecycle->CanShow());
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+  EXPECT_CALL(tracker_, Dismissed);
+  lifecycle->OnPromoEnded(CloseReason::kDismiss);
+
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName2);
+  EXPECT_EQ(FeaturePromoResult::kBlockedByReshowDelay, lifecycle->CanShow());
+}
+
+TEST_P(FeaturePromoLifecycleAppTest, ReshowAfterDelayWithLimit) {
+  set_reshow_params(base::Minutes(5), 2);
+  auto& clock = UseTestClock();
+
+  auto lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
+  EXPECT_TRUE(lifecycle->CanShow());
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+  EXPECT_CALL(tracker_, Dismissed);
+  lifecycle->OnPromoEnded(CloseReason::kDismiss);
+
+  // After a short time, the same promo cannot reshow, but it can show for a
+  // different app.
+  clock.Advance(base::Minutes(3));
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
+  EXPECT_EQ(FeaturePromoResult::kBlockedByReshowDelay, lifecycle->CanShow());
+
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName2);
+  EXPECT_TRUE(lifecycle->CanShow());
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+  EXPECT_CALL(tracker_, Dismissed);
+  lifecycle->OnPromoEnded(CloseReason::kDismiss);
+
+  // After another short time, the first promo can show, but the second cannot
+  // show yet.
+  clock.Advance(base::Minutes(3));
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
+  EXPECT_TRUE(lifecycle->CanShow());
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+  EXPECT_CALL(tracker_, Dismissed);
+  lifecycle->OnPromoEnded(CloseReason::kDismiss);
+
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName2);
+  EXPECT_EQ(FeaturePromoResult::kBlockedByReshowDelay, lifecycle->CanShow());
+
+  // Delay a bit longer, and ensure that the first app (which has been shown
+  // twice) cannot reshow, but the second can.
+  clock.Advance(base::Minutes(10));
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName);
+  EXPECT_EQ(FeaturePromoResult::kPermanentlyDismissed, lifecycle->CanShow());
+
+  lifecycle = CreateLifecycle(kTestIPHFeature, kAppName2);
   EXPECT_TRUE(lifecycle->CanShow());
 }
 

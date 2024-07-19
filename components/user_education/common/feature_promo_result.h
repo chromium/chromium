@@ -56,7 +56,10 @@ class FeaturePromoResult {
                                  // dismissed.
     kBlockedByNewProfile = 13,  // The promo could not be shown because the user
                                 // is still inside the new profile grace period.
-    kMaxValue = kBlockedByNewProfile
+    kBlockedByReshowDelay = 14,  // The promo is allowed to reshow after
+                                 // dismissal, but the required time has not
+                                 // elapsed yet.
+    kMaxValue = kBlockedByReshowDelay
   };
 
   constexpr FeaturePromoResult() = default;

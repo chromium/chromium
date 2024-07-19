@@ -70,6 +70,9 @@ std::ostream& operator<<(std::ostream& os,
     case FeaturePromoResult::kBlockedByNewProfile:
       os << "kBlockedByNewProfile";
       break;
+    case FeaturePromoResult::kBlockedByReshowDelay:
+      os << "kBlockedByReshowDelay";
+      break;
   }
   return os;
 }

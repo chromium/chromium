@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_STORAGE_SERVICE_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_STORAGE_SERVICE_H_
 
+#include <map>
 #include <optional>
-#include <set>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -71,7 +71,8 @@ class FeaturePromoStorageService {
   virtual void ResetNewBadge(const base::Feature& new_badge_feature) = 0;
 
   // Returns the set of apps that `iph_feature` has been shown for.
-  std::set<std::string> GetShownForKeys(const base::Feature& iph_feature) const;
+  KeyedFeaturePromoDataMap GetKeyedPromoData(
+      const base::Feature& iph_feature) const;
 
   // Returns the count of previous snoozes for `iph_feature`.
   int GetSnoozeCount(const base::Feature& iph_feature) const;

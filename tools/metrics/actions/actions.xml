@@ -42172,6 +42172,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.MessageNotShown.BlockedByReshowDelay">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user because it is too soon after the last time
+    it showed, but it is allowed to reshow after a delay.
+  </description>
+</action>
+
 <action name="UserEducation.MessageNotShown.BlockedByUi">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>

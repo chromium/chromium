@@ -7,9 +7,15 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/json/values_util.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_education/common/feature_promo_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,6 +35,8 @@ constexpr base::Time kSessionTime =
 constexpr base::Time kLastActiveTime = kSessionTime + base::Hours(2);
 constexpr base::Time kNewSessionTime = kSessionTime + base::Days(3);
 constexpr base::Time kNewActiveTime = kNewSessionTime + base::Minutes(17);
+constexpr base::Time kLastShownTime1 = kSessionTime + base::Minutes(45);
+constexpr base::Time kLastShownTime2 = kSessionTime + base::Minutes(75);
 }  // namespace
 
 // Repeats some of the tests in FeaturePromoStorageServiceTest except that a
@@ -52,8 +60,14 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     data.last_snooze_time = base::Time::FromMillisecondsSinceUnixEpoch(200);
     data.snooze_count = 3;
     data.show_count = 4;
-    data.shown_for_keys.insert(kAppName1);
-    data.shown_for_keys.insert(kAppName2);
+    user_education::KeyedFeaturePromoData keyed_data1;
+    keyed_data1.show_count = 1;
+    keyed_data1.last_shown_time = kLastShownTime1;
+    user_education::KeyedFeaturePromoData keyed_data2;
+    keyed_data2.show_count = 2;
+    keyed_data2.last_shown_time = kLastShownTime2;
+    data.shown_for_keys.emplace(kAppName1, keyed_data1);
+    data.shown_for_keys.emplace(kAppName2, keyed_data2);
     return data;
   }
 
@@ -131,6 +145,9 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
                 testing::ContainerEq(expected.recent_session_start_times));
     EXPECT_EQ(expected.enabled_time, actual.enabled_time);
   }
+
+  Profile& profile() { return profile_; }
+  BrowserFeaturePromoStorageService& service() { return service_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -350,4 +367,53 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, ResetRecentSessionData) {
   SaveRecentSessionData(data);
   ResetRecentSessionData();
   CompareRecentSessionData(RecentSessionData());
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, LegacyDataTest) {
+  static constexpr base::Time kLastSnoozeTime = kSessionTime - base::Days(30);
+
+  {
+    static constexpr char kPromoDataPath[] = "in_product_help.snoozed_feature";
+    ScopedDictPrefUpdate update(profile().GetPrefs(), kPromoDataPath);
+    auto& pref_data = update.Get();
+
+    pref_data.SetByDottedPath("TestIPHFeature.is_dismissed", false);
+    pref_data.SetByDottedPath("TestIPHFeature.last_snooze_time",
+                              base::TimeToValue(kLastSnoozeTime));
+    pref_data.SetByDottedPath("TestIPHFeature.snooze_count", 1);
+
+    base::Value::List shown_for;
+    shown_for.Append(kAppName1);
+    pref_data.SetByDottedPath("TestIPHFeature.shown_for_apps",
+                              std::move(shown_for));
+  }
+
+  user_education::FeaturePromoData data;
+  base::SimpleTestClock test_clock;
+  service().set_clock_for_testing(&test_clock);
+  const base::Time kCurrentTime = kSessionTime + base::Hours(1);
+  test_clock.SetNow(kCurrentTime);
+
+  // These are the values that were explicitly written.
+  data.is_dismissed = false;
+  data.last_snooze_time = kLastSnoozeTime;
+  data.snooze_count = 1;
+
+  // These values are auto-generated when missing as follows:
+  data.last_show_time = data.last_snooze_time - base::Seconds(1);
+  data.show_count = data.snooze_count;
+  data.first_show_time = data.last_show_time;
+  data.last_dismissed_by = user_education::FeaturePromoClosedReason::kCancel;
+
+  // This demonstrates default values for old-style keyed promos.
+  user_education::KeyedFeaturePromoData key_data;
+  key_data.show_count = 1;
+  key_data.last_shown_time = kCurrentTime;
+  data.shown_for_keys.emplace(kAppName1, key_data);
+
+  // See if this data matches the expectation.
+  CompareData(data, kTestIPHFeature);
+
+  // Reset the clock so there is no dangling pointer.
+  service().set_clock_for_testing(base::DefaultClock::GetInstance());
 }

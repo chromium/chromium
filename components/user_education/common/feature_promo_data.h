@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_DATA_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_DATA_H_
 
+#include <map>
 #include <ostream>
-#include <set>
 #include <string>
 
 #include "base/time/time.h"
@@ -46,6 +46,23 @@ enum class FeaturePromoClosedReason {
 std::ostream& operator<<(std::ostream& oss,
                          FeaturePromoClosedReason close_reason);
 
+// Per-key dismissal information.
+struct KeyedFeaturePromoData {
+  KeyedFeaturePromoData() = default;
+  KeyedFeaturePromoData(const KeyedFeaturePromoData&) = default;
+  KeyedFeaturePromoData(KeyedFeaturePromoData&&) noexcept = default;
+  KeyedFeaturePromoData& operator=(const KeyedFeaturePromoData&) = default;
+  KeyedFeaturePromoData& operator=(KeyedFeaturePromoData&&) noexcept = default;
+  ~KeyedFeaturePromoData() = default;
+
+  bool operator<=>(const KeyedFeaturePromoData& other) const = default;
+
+  int show_count = 0;
+  base::Time last_shown_time;
+};
+
+using KeyedFeaturePromoDataMap = std::map<std::string, KeyedFeaturePromoData>;
+
 // Dismissal and snooze information.
 struct FeaturePromoData {
   FeaturePromoData();
@@ -64,7 +81,7 @@ struct FeaturePromoData {
   int snooze_count = 0;
   int show_count = 0;
   int promo_index = 0;
-  std::set<std::string> shown_for_keys;
+  KeyedFeaturePromoDataMap shown_for_keys;
 };
 
 // Data about the current session, which can persist across browser restarts.

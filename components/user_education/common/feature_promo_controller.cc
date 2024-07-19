@@ -1214,6 +1214,9 @@ void FeaturePromoControllerCommon::RecordPromoNotShown(
     case FeaturePromoResult::kBlockedByNewProfile:
       failure_action_name.append("BlockedByNewProfile");
       break;
+    case FeaturePromoResult::kBlockedByReshowDelay:
+      failure_action_name.append("BlockedByReshowDelay");
+      break;
     default:
       NOTREACHED_IN_MIGRATION();
   }
