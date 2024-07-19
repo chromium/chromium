@@ -113,39 +113,15 @@ UsernameFieldData ComputeUsernameFieldData(const FormFieldData& field) {
   return field_data;
 }
 
-// For the fields of the given form (all_control_elements), computes
-// |UsernameFieldData| needed by the detector.
 void InferUsernameFieldData(
-    const std::vector<blink::WebFormControlElement>& all_control_elements,
     const FormData& form_data,
     std::vector<UsernameFieldData>* possible_usernames_data) {
-  // |all_control_elements| and |form_data.fields| may have different set of
-  // fields. Match them based on |WebInputElement.NameForAutofill| and
-  // |FormFieldData.name|.
-  size_t next_element_range_begin = 0;
-
-  for (const blink::WebFormControlElement& control_element :
-       all_control_elements) {
-    const WebInputElement input_element =
-        control_element.DynamicTo<WebInputElement>();
-    if (!input_element || input_element.IsPasswordFieldForAutofill()) {
+  for (const FormFieldData& field : form_data.fields()) {
+    if (field.name().empty() &&
+        field.form_control_type() == FormControlType::kInputPassword) {
       continue;
     }
-    const std::u16string element_name = input_element.NameForAutofill().Utf16();
-    for (size_t i = next_element_range_begin; i < form_data.fields().size();
-         ++i) {
-      const FormFieldData& field_data = form_data.fields()[i];
-      if (input_element.NameForAutofill().IsEmpty())
-        continue;
-
-      // Find matching field data and web input element.
-      if (field_data.name() == element_name) {
-        next_element_range_begin = i + 1;
-        possible_usernames_data->push_back(
-            ComputeUsernameFieldData(field_data));
-        break;
-      }
-    }
+    possible_usernames_data->push_back(ComputeUsernameFieldData(field));
   }
 }
 
@@ -232,7 +208,6 @@ void FindWordsFromCategoryInForm(
 // Find username elements if there is no cached result for the given form and
 // add them to |username_predictions| in the order of decreasing reliability.
 void FindUsernameFieldInternal(
-    const std::vector<blink::WebFormControlElement>& all_control_elements,
     const FormData& form_data,
     std::vector<FieldRendererId>* username_predictions) {
   DCHECK(username_predictions);
@@ -250,8 +225,7 @@ void FindUsernameFieldInternal(
       {kUsernameCategory, kUserCategory, kTechnicalCategory, kWeakCategory});
   std::vector<UsernameFieldData> possible_usernames_data;
 
-  InferUsernameFieldData(all_control_elements, form_data,
-                         &possible_usernames_data);
+  InferUsernameFieldData(form_data, &possible_usernames_data);
   RemoveFieldsWithNegativeWords(&possible_usernames_data);
 
   // These are the searches performed by the username detector.
@@ -264,7 +238,6 @@ void FindUsernameFieldInternal(
 }  // namespace
 
 const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
-    const std::vector<WebFormControlElement>& all_control_elements,
     const FormData& form_data,
     UsernameDetectorCache* username_detector_cache,
     const WebFormElement& form) {
@@ -272,15 +245,12 @@ const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
   // exist. It can be empty.
   DCHECK(username_detector_cache);
 
-  DCHECK(!all_control_elements.empty());
-
   auto [form_position, cache_miss] = username_detector_cache->emplace(
       form_util::GetFormRendererId(form), std::vector<FieldRendererId>());
 
   if (cache_miss) {
     std::vector<FieldRendererId> username_predictions;
-    FindUsernameFieldInternal(all_control_elements, form_data,
-                              &username_predictions);
+    FindUsernameFieldInternal(form_data, &username_predictions);
     if (!username_predictions.empty())
       form_position->second = std::move(username_predictions);
   }

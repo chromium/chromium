@@ -52,7 +52,6 @@ base::LazyInstance<re2::RE2, PasswordSiteUrlLazyInstanceTraits>
 // representation of that form. |username_detector_cache| is optional, and can
 // be used to spare recomputation if called multiple times for the same form.
 std::vector<FieldRendererId> GetUsernamePredictions(
-    const std::vector<WebFormControlElement>& control_elements,
     const FormData& form_data,
     UsernameDetectorCache* username_detector_cache,
     const WebFormElement& form) {
@@ -63,7 +62,7 @@ std::vector<FieldRendererId> GetUsernamePredictions(
     username_detector_cache = &dummy_cache;
 
   return GetPredictionsFieldBasedOnHtmlAttributes(
-      control_elements, form_data, username_detector_cache, form);
+      form_data, username_detector_cache, form);
 }
 
 }  // namespace
@@ -139,14 +138,8 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
       IsGaiaWithSkipSavePasswordForm(web_form) ||
       IsGaiaReauthenticationForm(web_form));
 
-  blink::WebVector<WebFormControlElement> control_elements =
-      web_form.GetFormControlElements();
-  if (control_elements.empty()) {
-    return nullptr;
-  }
   form_data->set_username_predictions(
-      GetUsernamePredictions(control_elements.ReleaseVector(), *form_data,
-                             username_detector_cache, web_form));
+      GetUsernamePredictions(*form_data, username_detector_cache, web_form));
   form_data->set_button_titles(
       form_util::GetButtonTitles(web_form, button_titles_cache));
 
@@ -159,20 +152,14 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache,
     const CallTimerState& timer_state) {
-  std::vector<WebFormControlElement> control_elements =
-      form_util::GetOwnedFormControls(frame.GetDocument(), WebFormElement());
-  if (control_elements.empty()) {
-    return nullptr;
-  }
   std::optional<FormData> form = form_util::ExtractFormData(
       frame.GetDocument(), WebFormElement(), field_data_manager, timer_state);
   if (!form) {
     return nullptr;
   }
   auto form_data = std::make_unique<FormData>(std::move(*form));
-  form_data->set_username_predictions(
-      GetUsernamePredictions(std::move(control_elements), *form_data,
-                             username_detector_cache, WebFormElement()));
+  form_data->set_username_predictions(GetUsernamePredictions(
+      *form_data, username_detector_cache, WebFormElement()));
   return form_data;
 }
 

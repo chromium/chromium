@@ -32,7 +32,6 @@ using UsernameDetectorCache =
 // the cache. The function returns a reference to the vector of predictions,
 // which is stored in the cache.
 const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
-    const std::vector<blink::WebFormControlElement>& all_control_elements,
     const FormData& form_data,
     UsernameDetectorCache* username_detector_cache,
     const blink::WebFormElement& form);

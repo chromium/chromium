@@ -103,8 +103,6 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
   void PredictAndCheckUsernameId(const std::string& html,
                                  const WebString& expected_username_id) {
     const FormData& form_data = LoadFormDataFromHtml(html);
-    const std::vector<WebFormControlElement>& control_elements =
-        GetFormControlElements();
 
     // Get the expected renderer id from the expected username id.
     const FieldRendererId expected_renderer_id =
@@ -113,8 +111,8 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
     // Run predictions and test the result.
     UsernameDetectorCache cache;
     const std::vector<FieldRendererId>& renderer_ids =
-        GetPredictionsFieldBasedOnHtmlAttributes(control_elements, form_data,
-                                                 &cache, GetFormElement());
+        GetPredictionsFieldBasedOnHtmlAttributes(form_data, &cache,
+                                                 GetFormElement());
 
     ASSERT_EQ(1u, cache.size());
     ASSERT_FALSE(cache.begin()->second.empty());
@@ -299,8 +297,8 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
 
   UsernameDetectorCache cache;
   std::vector<FieldRendererId> field_ids =
-      GetPredictionsFieldBasedOnHtmlAttributes(control_elements, form_data,
-                                               &cache, GetFormElement());
+      GetPredictionsFieldBasedOnHtmlAttributes(form_data, &cache,
+                                               GetFormElement());
 
   // No signals from HTML attributes. The classifier found nothing and cached
   // it.
@@ -314,8 +312,8 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
   // will be the same because it was cached in |username_detector_cache|.
   control_elements[0].SetAttribute("name", "id");
   form_data = GetFormData(GetFormElement());
-  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(
-      control_elements, form_data, &cache, GetFormElement());
+  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(form_data, &cache,
+                                                       GetFormElement());
   ASSERT_EQ(1u, cache.size());
   EXPECT_TRUE(field_ids.empty());
   EXPECT_EQ(form_util::GetFormRendererId(form), cache.begin()->first);
@@ -324,8 +322,8 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
   // Clear the cache. The classifier will find username field and cache it.
   cache.clear();
   ASSERT_EQ(4u, control_elements.size());
-  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(
-      control_elements, form_data, &cache, GetFormElement());
+  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(form_data, &cache,
+                                                       GetFormElement());
   ASSERT_EQ(1u, cache.size());
   EXPECT_EQ(1u, field_ids.size());
   EXPECT_EQ(form_util::GetFormRendererId(form), cache.begin()->first);
@@ -337,8 +335,8 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
   // but keep the cache. The classifier's output should be the same.
   control_elements[1].SetAttribute("name", "username");
   form_data = GetFormData(GetFormElement());
-  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(
-      control_elements, form_data, &cache, GetFormElement());
+  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(form_data, &cache,
+                                                       GetFormElement());
 
   ASSERT_EQ(1u, cache.size());
   EXPECT_EQ(1u, field_ids.size());
