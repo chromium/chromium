@@ -1,4 +1,4 @@
-# https://crbug.com/353818063
+# crbug.com/353818063
 -CrossPlatformAccessibilityBrowserTest.ImplicitRootScroller
 
 # crbug.com/343335591
@@ -6,3 +6,6 @@
 -FormControlsBrowserTest.Checkbox
 -FormControlsBrowserTest.MultiSelect
 -FormControlsBrowserTest.Select
+
+# crbug.com/354214032
+-BackgroundTracingManagerBrowserTest.RunStartupTracing
