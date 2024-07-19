@@ -2,12 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list::test {
+
+using ::testing::ElementsAre;
+using ::testing::Property;
 
 // This class contains additional logic to set up DriveFS and enable testing for
 // Drive file search in the launcher.
@@ -110,14 +119,21 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, ResultOrdering) {
   ASSERT_TRUE(drive_service->IsMounted());
   base::FilePath mount_path = drive_service->GetMountPointPath();
 
-  base::FilePath older = mount_path.Append("ranking_older.gdoc");
-  base::FilePath newer = mount_path.Append("ranking_newer.gdoc");
-  base::Time now = base::Time::Now();
-  base::Time then = now - base::Seconds(10000);
+  // This is intentionally in the incorrect order to ensure that file names and
+  // creation dates do not affect ranking. The files, from newest to oldest,
+  // should be 2, then 3, then 1.
+  base::FilePath older = mount_path.Append("ranking_1.gdoc");
+  base::FilePath newest = mount_path.Append("ranking_2.gdoc");
+  base::FilePath newer = mount_path.Append("ranking_3.gdoc");
+  base::Time newest_time = base::Time::Now();
+  base::Time newer_time = newest_time - base::Seconds(10000);
+  base::Time older_time = newer_time - base::Seconds(10000);
   ASSERT_TRUE(base::WriteFile(older, "content"));
+  ASSERT_TRUE(base::WriteFile(newest, "content"));
   ASSERT_TRUE(base::WriteFile(newer, "content"));
-  ASSERT_TRUE(base::TouchFile(older, then, then));
-  ASSERT_TRUE(base::TouchFile(newer, now, now));
+  ASSERT_TRUE(base::TouchFile(older, older_time, older_time));
+  ASSERT_TRUE(base::TouchFile(newest, newest_time, newest_time));
+  ASSERT_TRUE(base::TouchFile(newer, newer_time, newer_time));
 
   SearchAndWaitForProviders("ranking", {ResultType::kDriveSearch});
 
@@ -129,9 +145,10 @@ IN_PROC_BROWSER_TEST_P(AppListDriveSearchBrowserTest, ResultOrdering) {
               return a->relevance() > b->relevance();
             });
 
-  ASSERT_EQ(results.size(), 2u);
-  EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "ranking_newer");
-  EXPECT_EQ(base::UTF16ToASCII(results[1]->title()), "ranking_older");
+  EXPECT_THAT(results,
+              ElementsAre(Property(&ChromeSearchResult::title, u"ranking_2"),
+                          Property(&ChromeSearchResult::title, u"ranking_3"),
+                          Property(&ChromeSearchResult::title, u"ranking_1")));
 }
 
 }  // namespace app_list::test
