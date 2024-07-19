@@ -923,6 +923,17 @@ chromium-metrics-reviews@google.com.
   <token key="ProcessType" variants="TileManagerProcessType"/>
 </histogram>
 
+<histogram name="Compositing.TileManager.TileInvalidationArea" units="%"
+    expires_after="2025-06-09">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    When resource is assigned to tile for rasterization, records the percentage
+    area of invalidation of said resource. This will only be recorded for
+    partially rasterized tiles.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.VizBreakdownToPresentationUnexpected"
     enum="VizBreakdown" expires_after="M129">
   <owner>jonross@chromium.org</owner>
