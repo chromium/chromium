@@ -2262,12 +2262,10 @@ crbug.com/1488371 external/wpt/document-picture-in-picture/clears-session-on-clo
 # Skip the test for this currently unreleased feature on Mac where it times out the most.
 crbug.com/1430215 [ Mac ] external/wpt/dom/events/scrolling/overscroll-deltas.html [ Skip ]
 
-# These tests are for non-composited scrollbars only. RasterInducingScroll will
-# composite these scrollbars.
-crbug.com/40778657 virtual/raster-inducing-scroll/scrollbars/auto-scrollbar-fades-out.html [ Skip ]
-crbug.com/40778657 virtual/raster-inducing-scroll/scrollbars/hidden-scrollbars-invisible.html [ Skip ]
-
 ######## End Unload Deprecation
+
+# No need to test RasterInducingScroll in M127
+virtual/raster-inducing-scroll/* [ Skip ]
 
 # View transitions sub-directory tests under different configs
 # These run as virtual/view-transition-on-navigation/
