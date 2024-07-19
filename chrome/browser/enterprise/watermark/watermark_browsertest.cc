@@ -90,7 +90,15 @@ IN_PROC_BROWSER_TEST_F(WatermarkDisabledBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkShownAfterNavigation) {
+// TODO(crbug.com/343845142): Enable this test again.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WatermarkShownAfterNavigation \
+  DISABLED_WatermarkShownAfterNavigation
+#else
+#define MAYBE_WatermarkShownAfterNavigation WatermarkShownAfterNavigation
+#endif
+IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest,
+                       MAYBE_WatermarkShownAfterNavigation) {
   watermark_message_ = GetParam();
   ShowAndVerifyUi();
 }
