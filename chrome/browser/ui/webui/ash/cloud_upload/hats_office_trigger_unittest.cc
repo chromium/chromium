@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -37,9 +38,9 @@ namespace {
 constexpr char kFakeUserEmail[] = "test-user@example.com";
 }  // namespace
 
-class HatsOfficeTriggerTest : public testing::Test {
+class HatsOfficeTriggerTestBase : public testing::Test {
  public:
-  HatsOfficeTriggerTest() {
+  HatsOfficeTriggerTestBase() {
     scoped_feature_list_.InitAndEnableFeature(kHatsOfficeSurvey.feature);
 
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -47,19 +48,56 @@ class HatsOfficeTriggerTest : public testing::Test {
         ash::switches::kForceHappinessTrackingSystem,
         ::features::kHappinessTrackingOffice.name);
   }
-  ~HatsOfficeTriggerTest() override = default;
+  ~HatsOfficeTriggerTestBase() override = default;
 
   // testing::Test:
   void SetUp() override {
     user_manager_ = std::make_unique<FakeChromeUserManager>();
     user_manager_->Initialize();
     // Login user.
-    const AccountId account_id(AccountId::FromUserEmail(kFakeUserEmail));
-    user_manager_->AddUser(account_id);
+    user_manager_->AddUser(AccountId::FromUserEmail(kFakeUserEmail));
+  }
+
+  void TearDown() override {
+    user_manager_->Destroy();
+    user_manager_.reset();
+  }
+
+  bool IsDelayTriggerActive() {
+    return hats_office_trigger_.IsDelayTriggerActiveForTesting();
+  }
+
+  bool IsAppStateTriggerActive() {
+    return hats_office_trigger_.IsAppStateTriggerActiveForTesting();
+  }
+
+  const HatsNotificationController* GetHatsNotificationController() const {
+    return hats_office_trigger_.GetHatsNotificationControllerForTesting();
+  }
+
+  base::Time Now() const { return task_environment_.GetMockClock()->Now(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  session_manager::SessionManager session_manager_;
+  std::unique_ptr<FakeChromeUserManager> user_manager_;
+
+  HatsOfficeTrigger hats_office_trigger_;
+};
+
+class HatsOfficeTriggerTest : public HatsOfficeTriggerTestBase {
+ public:
+  void SetUp() override {
+    HatsOfficeTriggerTestBase::SetUp();
+
+    const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
+
     user_manager_->LoginUser(account_id);
     user_manager_->SwitchActiveUser(account_id);
 
     ASSERT_TRUE(test_profile_manager_.SetUp());
+    // Use sign-in profile to simulate the login screen.
     profile_ = test_profile_manager_.CreateTestingProfile(kFakeUserEmail);
     session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
 
@@ -87,27 +125,15 @@ class HatsOfficeTriggerTest : public testing::Test {
     network_handler_test_helper_.reset();
     display_service_.reset();
     profile_ = nullptr;
-    test_profile_manager_.DeleteTestingProfile(kFakeUserEmail);
-    user_manager_->Destroy();
-    user_manager_.reset();
+    test_profile_manager_.DeleteAllTestingProfiles();
+
+    HatsOfficeTriggerTestBase::TearDown();
   }
 
   bool IsHatsNotificationActive() const {
     return display_service_
         ->GetNotification(HatsNotificationController::kNotificationId)
         .has_value();
-  }
-
-  bool IsDelayTriggerActive() {
-    return hats_office_trigger_.IsDelayTriggerActiveForTesting();
-  }
-
-  bool IsAppStateTriggerActive() {
-    return hats_office_trigger_.IsAppStateTriggerActiveForTesting();
-  }
-
-  const HatsNotificationController* GetHatsNotificationController() const {
-    return hats_office_trigger_.GetHatsNotificationControllerForTesting();
   }
 
   void OnTrackedDocsInstance(apps::InstanceState state) {
@@ -130,16 +156,10 @@ class HatsOfficeTriggerTest : public testing::Test {
     registry.OnInstance(std::move(instance));
   }
 
-  base::Time Now() const { return task_environment_.GetMockClock()->Now(); }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  session_manager::SessionManager session_manager_;
-  std::unique_ptr<FakeChromeUserManager> user_manager_;
   TestingProfileManager test_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
+
   base::UnguessableToken tracked_instance_id_ =
       base::UnguessableToken::Create();
   base::UnguessableToken ignored_instance_id_ =
@@ -147,8 +167,16 @@ class HatsOfficeTriggerTest : public testing::Test {
 
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
+};
 
-  HatsOfficeTrigger hats_office_trigger_;
+class HatsOfficeTriggerLoginScreenTest : public HatsOfficeTriggerTestBase {
+ public:
+  void SetUp() override {
+    HatsOfficeTriggerTestBase::SetUp();
+    ash::ProfileHelper::Get();  // Instantiate ProfileHelper.
+    session_manager_.SetSessionState(
+        session_manager::SessionState::LOGIN_PRIMARY);
+  }
 };
 
 TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterDelaySuccess) {
@@ -292,14 +320,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyOnlyOnce) {
   EXPECT_EQ(hats_notification_controller, GetHatsNotificationController());
 }
 
-TEST_F(HatsOfficeTriggerTest, NoActiveProfile) {
-  // Remove the current active user.
-  const AccountId account_id(
-      AccountId::FromUserEmail(profile_->GetProfileUserName()));
-  user_manager_->RemoveUser(account_id,
-                            user_manager::UserRemovalReason::UNKNOWN);
-  ASSERT_FALSE(IsHatsNotificationActive());
-
+TEST_F(HatsOfficeTriggerLoginScreenTest, NoActiveUser) {
   hats_office_trigger_.ShowSurveyAfterDelay(HatsOfficeLaunchingApp::kMS365);
   ASSERT_FALSE(IsDelayTriggerActive());
   ASSERT_FALSE(GetHatsNotificationController());

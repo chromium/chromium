@@ -64,7 +64,7 @@ class HatsOfficeTrigger {
 
  private:
   friend class base::NoDestructor<HatsOfficeTrigger>;
-  friend class HatsOfficeTriggerTest;
+  friend class HatsOfficeTriggerTestBase;
 
   struct DelayTrigger {
     explicit DelayTrigger(base::OnceClosure callback);
