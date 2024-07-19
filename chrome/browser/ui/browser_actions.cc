@@ -430,6 +430,20 @@ void BrowserActions::InitializeBrowserActions() {
           .SetEnabled(!is_guest_session)
           .Build());
 
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::CopyURL(
+                    browser->tab_strip_model()->GetActiveWebContents());
+              },
+              base::Unretained(browser)),
+          kActionCopyUrl, IDS_APP_MENU_COPY_LINK, IDS_APP_MENU_COPY_LINK,
+          kLinkChromeRefreshIcon)
+          .SetEnabled(chrome::CanCopyUrl(browser))
+          .Build());
+
   AddListeners();
 }
 

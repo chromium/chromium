@@ -56,7 +56,6 @@
   E(kActionOpenInPwaWindow, IDC_OPEN_IN_PWA_WINDOW) \
   E(kActionMoveTabToNewWindow, IDC_MOVE_TAB_TO_NEW_WINDOW) \
   /* Web app window commands */ \
-  E(kActionCopyUrl, IDC_COPY_URL) \
   E(kActionOpenInChrome, IDC_OPEN_IN_CHROME) \
   E(kActionWebAppSettings, IDC_WEB_APP_SETTINGS) \
   E(kActionWebAppMenuAppInfo, IDC_WEB_APP_MENU_APP_INFO) \
@@ -576,6 +575,7 @@
   E(kActionShowPaymentsBubbleOrPage) \
   E(kActionShowPasswordsBubbleOrPage) \
   E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
+  E(kActionCopyUrl, IDC_COPY_URL) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

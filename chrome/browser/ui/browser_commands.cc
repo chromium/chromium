@@ -2099,6 +2099,19 @@ void CopyURL(content::WebContents* web_contents) {
   scw.WriteText(base::UTF8ToUTF16(web_contents->GetVisibleURL().spec()));
 }
 
+bool CanCopyUrl(const Browser* browser) {
+  return IsWebAppOrCustomTab(browser) ||
+         !sharing_hub::SharingIsDisabledByPolicy(browser->profile());
+}
+
+bool IsWebAppOrCustomTab(const Browser* browser) {
+  return
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      browser->is_type_custom_tab() ||
+#endif
+      web_app::AppBrowserController::IsWebApp(browser);
+}
+
 Browser* OpenInChrome(Browser* hosted_app_browser) {
   // Find a non-incognito browser.
   Browser* target_browser =

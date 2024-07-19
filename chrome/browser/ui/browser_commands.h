@@ -244,6 +244,9 @@ void ToggleFullscreenMode(Browser* browser);
 void ClearCache(Browser* browser);
 bool IsDebuggerAttachedToCurrentTab(Browser* browser);
 void CopyURL(content::WebContents* web_contents);
+bool CanCopyUrl(const Browser* browser);
+// Returns true if the browser window is for a web app or custom tab.
+bool IsWebAppOrCustomTab(const Browser* browser);
 // Moves the WebContents of a hosted app Browser to a tabbed Browser. Returns
 // the tabbed Browser.
 Browser* OpenInChrome(Browser* hosted_app_browser);
