@@ -328,7 +328,7 @@ export class ObjectLayerElement extends PolymerElement {
     this.fadeOutAnimations.push(
         this.$.objectSelectionCanvas.animate({opacity: 0}, {
           duration: CURSOR_FADE_OUT_TRANSITION_DURATION,
-          fill: 'none',
+          fill: 'forwards',
         }));
     this.fadeOutTimeoutIds.push(setTimeout(() => {
       this.clearCanvas(this.context);
