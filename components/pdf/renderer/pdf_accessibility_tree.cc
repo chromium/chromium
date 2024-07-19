@@ -204,21 +204,39 @@ std::unique_ptr<ui::AXNodeData> CreateBannerNode(ui::AXNodeID id,
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// TODO(crbug.com/40918372): Consider rotated images and PDF rotations in
-// creating the transform.
 gfx::Transform MakeTransformForImage(const gfx::RectF image_screen_size,
-                                     const gfx::SizeF image_pixel_size) {
+                                     const gfx::SizeF image_pixel_size,
+                                     const int32_t orientation) {
   // Nodes created with OCR results from the image will be misaligned on screen
   // if `image_screen_size` is different from `image_pixel_size`. To address
   // this misalignment issue, an additional transform needs to be created.
   CHECK(!image_pixel_size.IsEmpty());
 
   gfx::Transform transform;
-  float width_scale_factor =
-      image_screen_size.width() / image_pixel_size.width();
-  float height_scale_factor =
-      image_screen_size.height() / image_pixel_size.height();
-  transform.Scale(width_scale_factor, height_scale_factor);
+  // Note that the `Translate`, `Scale`, and `Rotate` steps are combined into
+  // one transform matrix and applied together. The `Translate` step sets the
+  // 3rd row of the 3x3 transform matrix, and the other two set the first two
+  // rows. Applying these steps one by one separately does not result in the
+  // same transform as the combined one.
+  switch (orientation) {
+    case 0:
+      break;
+    case 1:
+      transform.Translate(image_screen_size.height(), 0);
+      break;
+    case 2:
+      transform.Translate(image_screen_size.width(),
+                          image_screen_size.height());
+      break;
+    case 3:
+      transform.Translate(0, image_screen_size.width());
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+  transform.Scale(image_screen_size.width() / image_pixel_size.width(),
+                  image_screen_size.height() / image_pixel_size.height());
+  transform.Rotate(orientation * 90);
 
   return transform;
 }
@@ -409,7 +427,7 @@ void PdfAccessibilityTree::DoSetAccessibilityViewportInfo(
   CHECK_GT(scale_, 0);
   scroll_ = gfx::PointF(viewport_info.scroll).OffsetFromOrigin();
   offset_ = gfx::PointF(viewport_info.offset).OffsetFromOrigin();
-
+  orientation_ = viewport_info.orientation;
   selection_start_page_index_ = viewport_info.selection_start_page_index;
   selection_start_char_index_ = viewport_info.selection_start_char_index;
   selection_end_page_index_ = viewport_info.selection_end_page_index;
@@ -1091,7 +1109,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     // boxes. This transform will be applied to all nodes from OCR results
     // below.
     gfx::Transform transform = MakeTransformForImage(
-        ocr_request.image.bounds, ocr_request.image_pixel_size);
+        ocr_request.image.bounds, ocr_request.image_pixel_size, orientation_);
 
     // Update the relative bounds of all nodes in the tree update. The PDF
     // accessibility tree assumes that all nodes have bounds relative to the
@@ -1112,18 +1130,17 @@ void PdfAccessibilityTree::OnOcrDataReceived(
         // Character offsets are computed in pixel and based on the image size
         // that is sent to OCR. They should be scaled if the view size is
         // different.
+        int new_width = (orientation_ == 0 || orientation_ == 2)
+                            ? node_from_ocr.relative_bounds.bounds.width()
+                            : node_from_ocr.relative_bounds.bounds.height();
         if (node_from_ocr.HasIntListAttribute(
                 ax::mojom::IntListAttribute::kCharacterOffsets) &&
-            node_from_ocr.relative_bounds.bounds.width() != original_width) {
+            new_width != original_width) {
           std::vector<int32_t> character_offsets =
               node_from_ocr.GetIntListAttribute(
                   ax::mojom::IntListAttribute::kCharacterOffsets);
 
-          // TODO(crbug.com/40918372): Update when transform contains image/pdf
-          // rotation.
-          float ratio =
-              static_cast<float>(node_from_ocr.relative_bounds.bounds.width()) /
-              original_width;
+          float ratio = static_cast<float>(new_width) / original_width;
           base::ranges::for_each(character_offsets, [ratio](int32_t& offset) {
             offset = static_cast<int32_t>(offset * ratio);
           });
