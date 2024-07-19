@@ -232,6 +232,9 @@ alemate@chromium.org
 # mac
 bur@google.com
 mek@chromium.org
+# magic_stack
+ckitagawa@chromium.org
+hanxi@chromium.org
 # media
 evliu@google.com
 kron@chromium.org
@@ -276,6 +279,7 @@ toyoshim@chromium.org
 # new_tab_page
 dewittj@chromium.org
 tiborg@chromium.org
+hanxi@chromium.org
 # notifications
 peter@chromium.org
 mek@chromium.org
