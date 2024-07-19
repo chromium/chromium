@@ -209,4 +209,8 @@
   [self.toolbarsMutator setButtonsEnabled:YES];
 }
 
+- (void)quitSearchMode {
+  [self setModeOnCurrentPage:TabGridModeNormal];
+}
+
 @end

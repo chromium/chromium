@@ -22,6 +22,9 @@
 - (void)dragAndDropSessionStarted;
 - (void)dragAndDropSessionEnded;
 
+// Leaves the search mode.
+- (void)quitSearchMode;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_MUTATOR_H_

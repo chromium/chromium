@@ -440,12 +440,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)contentWillDisappearAnimated:(BOOL)animated {
   [self recordIdlePageStatus];
 
-  if (self.tabGridMode != TabGridModeSearch || !animated) {
-    // Updating the mode reset the items on the grid, in that case of search
-    // mode the animation to show the tab will start from the tab cell after the
-    // reset instead of starting from the cell that triggered the navigation.
-    self.tabGridMode = TabGridModeNormal;
-  }
   [self.regularGridHandler discardSavedClosedItems];
   [self.inactiveGridHandler discardSavedClosedItems];
 
@@ -1246,6 +1240,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Shows scrim overlay.
 - (void)showScrim {
   self.scrimView.alpha = 0.0f;
+  self.scrimView.hidden = NO;
   if (!self.scrimView.superview) {
     [self.scrollView addSubview:self.scrimView];
     AddSameConstraints(self.scrimView, self.view.superview);
@@ -1258,7 +1253,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         TabGridViewController* strongSelf = weakSelf;
         if (!strongSelf)
           return;
-        strongSelf.scrimView.hidden = NO;
         strongSelf.scrimView.alpha = 1.0f;
       }
       completion:^(BOOL finished) {
@@ -1279,12 +1273,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           return;
 
         strongSelf.scrimView.alpha = 0.0f;
-        strongSelf.scrimView.hidden = YES;
       }
       completion:^(BOOL finished) {
         TabGridViewController* strongSelf = weakSelf;
         if (!strongSelf)
           return;
+        strongSelf.scrimView.hidden = YES;
         strongSelf.currentPageViewController.accessibilityElementsHidden = NO;
       }];
 }
@@ -1375,7 +1369,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Quit search mode.
 - (void)quitSearchMode {
-  self.tabGridMode = TabGridModeNormal;
+  [self.mutator quitSearchMode];
 }
 
 // Optionally presents a full screen IPH that instructs the user to right swipe
