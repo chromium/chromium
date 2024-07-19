@@ -1104,7 +1104,7 @@ views::WebView* Browser::GetWebView() {
   return window_->GetContentsWebView();
 }
 
-void Browser::OpenURL(const GURL& gurl, WindowOpenDisposition disposition) {
+void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
   OpenURL(content::OpenURLParams(gurl, content::Referrer(), disposition,
                                  ui::PAGE_TRANSITION_LINK,
                                  /*is_renderer_initiated=*/false),

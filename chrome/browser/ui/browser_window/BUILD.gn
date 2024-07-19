@@ -12,6 +12,7 @@ source_set("browser_window") {
   ]
   public_deps = [
     "//base",
+    "//content/public/browser",
     "//ui/base:types",
   ]
 }

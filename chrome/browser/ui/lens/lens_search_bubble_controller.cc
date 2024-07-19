@@ -5,15 +5,10 @@
 #include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/search_bubble_ui.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/top_container_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -74,10 +69,11 @@ void LensSearchBubbleController::Show() {
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
 
-  Browser* browser = chrome::FindBrowserWithTab(contents);
   std::unique_ptr<LensSearchBubbleDialogView> bubble_view =
       std::make_unique<LensSearchBubbleDialogView>(
-          BrowserView::GetBrowserViewForBrowser(browser)->top_container(),
+          lens_overlay_controller_->GetTabInterface()
+              ->GetBrowserWindowInterface()
+              ->TopContainer(),
           std::move(contents_wrapper));
   bubble_view->SetProperty(views::kElementIdentifierKey,
                            kLensSearchBubbleElementId);

@@ -4,16 +4,12 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_web_view.h"
 
-#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_untrusted_ui.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -27,16 +23,6 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_LensUntrustedUI,
 END_METADATA
 
 namespace {
-
-Browser* BrowserFromWebContents(content::WebContents* web_contents) {
-  BrowserWindow* window =
-      BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
-  auto* browser_view = static_cast<BrowserView*>(window);
-  if (browser_view) {
-    return browser_view->browser();
-  }
-  return nullptr;
-}
 
 }  // namespace
 
@@ -75,10 +61,10 @@ content::WebContents* LensOverlaySidePanelWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  Browser* browser = BrowserFromWebContents(web_contents());
-  if (browser) {
-    browser->OpenURL(params, std::move(navigation_handle_callback));
-  }
+  coordinator_->GetLensOverlayController()
+      ->GetTabInterface()
+      ->GetBrowserWindowInterface()
+      ->OpenURL(params, std::move(navigation_handle_callback));
   return nullptr;
 }
 

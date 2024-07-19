@@ -143,7 +143,7 @@ bool LensPermissionBubbleController::HasOpenDialogWidget() {
 void LensPermissionBubbleController::OnHelpCenterLinkClicked(
     const ui::Event& event) {
   LogUserAction(UserAction::kLinkOpened, invocation_source_);
-  browser_window_interface_->OpenURL(
+  browser_window_interface_->OpenGURL(
       GURL(lens::features::GetLensOverlayHelpCenterURL()),
       ui::DispositionFromEventFlags(event.flags(),
                                     WindowOpenDisposition::NEW_BACKGROUND_TAB));

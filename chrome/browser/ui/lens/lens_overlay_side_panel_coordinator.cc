@@ -215,8 +215,8 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
     navigation_handle->SetSilentlyIgnoreErrors();
     lens_overlay_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
-        ->OpenURL(navigation_handle->GetURL(),
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB);
+        ->OpenGURL(navigation_handle->GetURL(),
+                   WindowOpenDisposition::NEW_FOREGROUND_TAB);
     return;
   }
 
@@ -252,7 +252,7 @@ void LensOverlaySidePanelCoordinator::OpenURLInBrowser(
     const content::OpenURLParams& params) {
   lens_overlay_controller_->GetTabInterface()
       ->GetBrowserWindowInterface()
-      ->OpenURL(params.url, params.disposition);
+      ->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void LensOverlaySidePanelCoordinator::RegisterEntry() {

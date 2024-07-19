@@ -143,7 +143,6 @@ class Browser : public TabStripModelObserver,
                 public base::SupportsUserData,
                 public BookmarkTabHelperObserver,
                 public zoom::ZoomObserver,
-                public content::PageNavigator,
                 public ThemeServiceObserver,
                 public translate::ContentTranslateDriver::TranslationObserver,
                 public ui::SelectFileDialog::Listener,
@@ -751,12 +750,6 @@ class Browser : public TabStripModelObserver,
 
   // Interface implementations ////////////////////////////////////////////////
 
-  // Overridden from content::PageNavigator:
-  content::WebContents* OpenURL(
-      const content::OpenURLParams& params,
-      base::OnceCallback<void(content::NavigationHandle&)>
-          navigation_handle_callback) override;
-
   // Overridden from TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -877,7 +870,11 @@ class Browser : public TabStripModelObserver,
 
   // BrowserWindowInterface overrides:
   views::WebView* GetWebView() override;
-  void OpenURL(const GURL& gurl, WindowOpenDisposition disposition) override;
+  void OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) override;
+  content::WebContents* OpenURL(
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
   const SessionID& GetSessionID() override;
   bool IsTabStripVisible() override;
   views::View* TopContainer() override;

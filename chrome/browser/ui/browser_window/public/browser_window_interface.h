@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
 
+#include "content/public/browser/page_navigator.h"
 #include "ui/base/window_open_disposition.h"
 
 // This is the public interface for a browser window. Most features in
@@ -31,15 +32,17 @@ class BrowserWindowFeatures;
 class GURL;
 class SessionID;
 
-class BrowserWindowInterface {
+class BrowserWindowInterface : public content::PageNavigator {
  public:
   // The contents of the active tab is rendered in a views::WebView. When the
   // active tab switches, the contents of the views::WebView is modified, but
   // the instance itself remains the same.
   virtual views::WebView* GetWebView() = 0;
 
-  // Opens a URL, with the given disposition.
-  virtual void OpenURL(const GURL& gurl, WindowOpenDisposition disposition) = 0;
+  // Opens a URL, with the given disposition. This is a convenience wrapper
+  // around OpenURL from content::PageNavigator.
+  virtual void OpenGURL(const GURL& gurl,
+                        WindowOpenDisposition disposition) = 0;
 
   // Returns a session-unique ID.
   virtual const SessionID& GetSessionID() = 0;

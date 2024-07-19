@@ -1720,7 +1720,7 @@ void LensOverlayController::ActivityRequestedByOverlay(
   if (!tab_->IsInForeground()) {
     return;
   }
-  tab_->GetBrowserWindowInterface()->OpenURL(
+  tab_->GetBrowserWindowInterface()->OpenGURL(
       GURL(lens::features::GetLensOverlayActivityURL()),
       ui::DispositionFromClick(
           click_modifiers->middle_button, click_modifiers->alt_key,
@@ -1779,7 +1779,7 @@ void LensOverlayController::InfoRequestedByOverlay(
   if (!tab_->IsInForeground()) {
     return;
   }
-  tab_->GetBrowserWindowInterface()->OpenURL(
+  tab_->GetBrowserWindowInterface()->OpenGURL(
       GURL(lens::features::GetLensOverlayHelpCenterURL()),
       ui::DispositionFromClick(
           click_modifiers->middle_button, click_modifiers->alt_key,
