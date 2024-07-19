@@ -26,6 +26,8 @@ source_set("app_shim") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//apps",
     "//chrome/browser:browser_process",

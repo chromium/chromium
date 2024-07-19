@@ -85,6 +85,7 @@ source_set("app_service") {
       "//chromeos/startup",
     ]
   }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

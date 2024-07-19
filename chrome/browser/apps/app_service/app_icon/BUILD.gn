@@ -59,6 +59,7 @@ source_set("app_icon") {
       "//components/arc/common",
     ]
   }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("util") {

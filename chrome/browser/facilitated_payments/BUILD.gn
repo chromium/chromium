@@ -10,6 +10,8 @@ static_library("facilitated_payments") {
     "ui/chrome_facilitated_payments_client.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//chrome/browser/autofill",
     "//chrome/browser/facilitated_payments/ui/android",

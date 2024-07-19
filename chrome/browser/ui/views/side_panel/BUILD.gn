@@ -112,6 +112,7 @@ source_set("side_panel") {
   }
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/companion/core/mojom:mojo_bindings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/actions:actions_headers",

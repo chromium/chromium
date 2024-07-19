@@ -21,6 +21,8 @@ static_library("ip_protection") {
     "ip_protection_switches.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//base/version_info:channel",

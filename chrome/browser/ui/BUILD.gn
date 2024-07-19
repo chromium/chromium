@@ -415,26 +415,15 @@ static_library("ui") {
     "//build/config/compiler:wexit_time_destructors",
   ]
 
-  # Since browser and browser_ui actually depend on each other,
-  # we must omit the dependency from browser_ui to browser.
-  # However, this means browser_ui and browser should more or less
-  # have the same dependencies. Once browser_ui is untangled from
-  # browser, then we can clean up these dependencies.
   public_deps = [
+    # WARNING WARNING WARNING
+    # Do not add a new dependency here that is outside of chrome/browser.
+    # Instead add it to ui_public_depedenencies. See
+    # ui_public_dependencies for more details.
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:lcp_critical_path_predictor_proto",
     "//chrome/browser/headless",
     "//chrome/browser/ui/tabs:tab_enums",
-    "//components/cross_device/logging",
-    "//components/dom_distiller/core",
-    "//components/enterprise/buildflags",
-    "//components/paint_preview/buildflags",
-    "//components/safe_browsing:buildflags",
-    "//components/segmentation_platform/public",
-    "//components/sync",
-    "//components/sync_user_events",
-    "//components/translate/content/browser",
-    "//content/public/browser",
-    "//mojo/public/cpp/bindings",
   ]
 
   if (enable_bound_session_credentials) {
@@ -769,6 +758,7 @@ static_library("ui") {
   }
 
   # TODO(crbug.com/41437292): Remove this circular dependency.
+  # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
   allow_circular_includes_from = [
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
@@ -1058,6 +1048,7 @@ static_library("ui") {
     ]
 
     # TODO(b/335257259): Resolve circular deps.
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
   } else {
     # !is_android
@@ -2167,16 +2158,11 @@ static_library("ui") {
       "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
     ]
     public_deps += [
-      "//build:branding_buildflags",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/side_panel",
-      "//ui/base/dragdrop/mojom:mojom_headers",
-
-      # TODO: Use //chrome/browser after fixing cyclic dependency.
-      "//components/commerce/core:coupon_db_content_proto",
-      "//components/feed/core/proto:proto_v2",
     ]
 
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
       # TODO(crbug.com/40110173): Resolve circular dependencies.
       "//chrome/browser/media/router",
@@ -3688,9 +3674,9 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:seal_mojom",
-      "//chromeos/ash/services/multidevice_setup/public/mojom",
     ]
 
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/accessibility",
@@ -3877,6 +3863,7 @@ static_library("ui") {
   }
 
   if (is_chromeos) {
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
@@ -3984,6 +3971,7 @@ static_library("ui") {
       "//ui/chromeos",
     ]
   } else {
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/webui/bluetooth_internals" ]
     deps += [
@@ -4072,6 +4060,7 @@ static_library("ui") {
     ]
 
     # TODO(crbug.com/339497734): Remove circular dependencies.
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [ "//chrome/browser/ui/lens" ]
   }
 
@@ -4515,6 +4504,7 @@ static_library("ui") {
       ]
     }
 
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [ "//chrome/browser/apps/app_shim" ]
 
     deps += [
@@ -4613,11 +4603,6 @@ static_library("ui") {
       "webui/version/version_util_win.cc",
       "webui/version/version_util_win.h",
     ]
-    public_deps += [
-      "//build:branding_buildflags",
-      "//ui/views",
-      "//ui/views/controls/webview",
-    ]
     deps += [
       "//chrome/browser:titlebar_config",
       "//chrome/browser/ui/startup:buildflags",
@@ -4646,13 +4631,6 @@ static_library("ui") {
       deps += [ "//chrome/updater/app/server/win:updater_legacy_idl" ]
     } else {
       sources += [ "webui/help/version_updater_basic.cc" ]
-    }
-  } else {  # 'OS!="win"
-    if (toolkit_views) {
-      public_deps += [
-        "//ui/views",
-        "//ui/views/controls/webview",
-      ]
     }
   }
 
@@ -6229,11 +6207,9 @@ static_library("ui") {
       "//ui/lottie",
       "//ui/views:buildflags",
     ]
-    public_deps += [
-      ":webui_name_variants",
-      "//ui/base/dragdrop/mojom:mojom_headers",
-    ]
+    public_deps += [ ":webui_name_variants" ]
 
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
@@ -6545,6 +6521,8 @@ static_library("ui") {
       "//ui/color:color",
       "//ui/color:mixers",
     ]
+
+    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
@@ -6670,6 +6648,9 @@ static_library("ui") {
         "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
       ]
+
+      # Any circular includes must depend on the target
+      # "//chrome/browser:browser_public_dependencies".
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/ash/system_web_apps" ]
     }
@@ -6866,8 +6847,6 @@ static_library("ui") {
       "webui/certificate_manager/platform_cert_sources.h",
     ]
 
-    public_deps +=
-        [ "//ui/webui/resources/cr_components/certificate_manager:mojom" ]
     deps += [ "//services/cert_verifier/public/mojom" ]
   }
 
@@ -6922,6 +6901,55 @@ static_library("ui") {
       "//components/compose/core/browser",
       "//components/compose/core/browser:mojo_bindings",
     ]
+  }
+}
+
+# These are the dependencies for the "ui" target that are outside of
+# //chrome/browser. These are semantically a part of
+# //chrome/browser:browser_public_dependencies since //chrome/browser and
+# //chrome/browser/ui allow circular dependencies.
+static_library("ui_public_dependencies") {
+  visibility = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//components/cross_device/logging",
+    "//components/dom_distiller/core",
+    "//components/enterprise/buildflags",
+    "//components/paint_preview/buildflags",
+    "//components/safe_browsing:buildflags",
+    "//components/segmentation_platform/public",
+    "//components/sync",
+    "//components/sync_user_events",
+    "//components/translate/content/browser",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+  if (!is_android) {
+    public_deps += [
+      "//build:branding_buildflags",
+      "//ui/base/dragdrop/mojom:mojom_headers",
+      "//ui/views",
+      "//ui/views/controls/webview",
+
+      # TODO: Use //chrome/browser after fixing cyclic dependency.
+      "//components/commerce/core:coupon_db_content_proto",
+      "//components/feed/core/proto:proto_ios_shared_v2",
+      "//components/feed/core/proto:proto_v2",
+    ]
+  }
+  if (is_chromeos_ash) {
+    public_deps += [ "//chromeos/ash/services/multidevice_setup/public/mojom" ]
+  }
+  if (is_win) {
+    arflags = [ "/llvmlibempty" ]
+    public_deps += [
+      "//build:branding_buildflags",
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
+  }
+  if (chrome_root_store_cert_management_ui) {
+    public_deps +=
+        [ "//ui/webui/resources/cr_components/certificate_manager:mojom" ]
   }
 }
 

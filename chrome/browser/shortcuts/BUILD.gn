@@ -9,6 +9,7 @@ assert(!is_android)
 source_set("shortcuts") {
   public = [ "shortcut_icon_generator.h" ]
   sources = [ "shortcut_icon_generator.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//chrome/app/resources:platform_locale_settings",
     "//components/url_formatter",

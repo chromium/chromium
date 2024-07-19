@@ -13,6 +13,8 @@ static_library("region_search") {
     "lens_region_search_helper.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser/image_editor",

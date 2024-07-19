@@ -42,7 +42,10 @@ source_set("app_service") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ ":constants" ]
+  public_deps = [
+    ":constants",
+    "//chrome/browser:browser_public_dependencies",
+  ]
 
   deps = [
     "//base",

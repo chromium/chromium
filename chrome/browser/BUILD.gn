@@ -2016,6 +2016,8 @@ static_library("browser") {
   ]
 
   if (!is_chromeos_lacros) {
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/webui/bluetooth_internals" ]
   } else {
@@ -3719,6 +3721,8 @@ static_library("browser") {
 
     # TODO(crbug.com/335257259): Resolve circular deps caused by including
     # `IdentityManagerFactory` in facilitated payments.
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
     allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
 
     if (safe_browsing_mode == 2) {
@@ -4730,6 +4734,8 @@ static_library("browser") {
       ]
       deps += [ "//chrome/browser/shortcuts" ]
       if (is_linux) {
+        # Any circular includes must depend on the target
+        # "browser_public_dependencies".
         allow_circular_includes_from += [
           # TODO(crbug.com/335727004): Split out linux dependencies into separate targets.
           "//chrome/browser/shortcuts",
@@ -5877,6 +5883,9 @@ static_library("browser") {
         "//chrome/browser/ash/chromebox_for_meetings/browser",
         "//chrome/browser/ash/chromebox_for_meetings/xu_camera",
       ]
+
+      # Any circular includes must depend on the target
+      # "browser_public_dependencies".
       allow_circular_includes_from += [
         "//chrome/browser/ash/chromebox_for_meetings/browser",
         "//chrome/browser/ash/chromebox_for_meetings/xu_camera",
@@ -6736,6 +6745,9 @@ static_library("browser") {
       "//third_party/crashpad/crashpad/client",
       "//third_party/google_toolbox_for_mac",
     ]
+
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
     allow_circular_includes_from += [ "//chrome/browser/apps/app_shim" ]
     frameworks = [
       "Accelerate.framework",
@@ -7588,6 +7600,8 @@ static_library("browser") {
       "//components/paint_preview/common",
     ]
 
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
     allow_circular_includes_from +=
         [ "//chrome/browser/paint_preview:services" ]
 
@@ -7897,6 +7911,9 @@ static_library("browser") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api",
     ]
+
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",
 
@@ -8581,7 +8598,10 @@ static_library("browser") {
 # correctness of the build-graph outside of //chrome/browser.
 static_library("browser_public_dependencies") {
   public_deps = [
+    # //chrome/browser/ui and //chrome/browser are semantically the same target,
+    # and thus their public dependencies are shared.
     "//base",
+    "//chrome/browser/ui:ui_public_dependencies",
     "//chrome/common",
     "//chrome/common:buildflags",
     "//chrome/common:constants",

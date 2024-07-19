@@ -5,19 +5,20 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
-# This component facilitates `ReportingClient` ability to select underlying
+# This target facilitates `ReportingClient` ability to select underlying
 # storage for encrypted reporting pipeline report client. It is built into
 # Chrome and configured differently depending on whether Chrome is intended for
 # Ash/LaCros: in that case it can store events in `missived` daemon,
 # otherwise it stores them locally and also provides the uploader for them.
 # It can also be built into other daemons; in that case it always connects to
 # `missived` daemon.
-component("storage_selector") {
+static_library("storage_selector") {
   defines = [ "IS_STORAGE_SELECTOR_IMPL" ]
 
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_public_dependencies",
     "//components/reporting/storage:storage_module_interface",
     "//components/reporting/util:status",
   ]

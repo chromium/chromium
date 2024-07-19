@@ -10,6 +10,8 @@ source_set("image_fetcher") {
     "image_fetcher_service_factory.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser/image_decoder",

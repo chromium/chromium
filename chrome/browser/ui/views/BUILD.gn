@@ -25,6 +25,8 @@ component("views") {
 
   defines = [ "CHROME_VIEWS_IMPLEMENTATION" ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//build:branding_buildflags",

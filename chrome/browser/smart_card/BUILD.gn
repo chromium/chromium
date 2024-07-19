@@ -45,6 +45,8 @@ source_set("smart_card") {
       "//content/public/browser",
     ]
   }
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   # TODO(crbug.com/40247152): Add chrome_smart_card_delegate.* for Win/Mac/Linux
   # and move smart_card_* out of the is_chromeos guard.
 }

@@ -50,6 +50,7 @@ source_set("sync") {
   public_deps = [
     ":factories",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//components/browser_sync",
     "//components/favicon/core",

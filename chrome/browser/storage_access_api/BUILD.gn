@@ -18,6 +18,7 @@ source_set("storage_access_api") {
   ]
 
   public_deps = [
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//components/permissions",
   ]

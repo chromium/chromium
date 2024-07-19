@@ -12,6 +12,8 @@ source_set("ai") {
     "ai_text_session.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",

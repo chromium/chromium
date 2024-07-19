@@ -46,6 +46,7 @@ source_set("platform_apps") {
 
   public_deps = [
     "//apps",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/platform_apps/api:api_registration",
     "//chrome/common/apps/platform_apps/api",
   ]

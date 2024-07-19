@@ -17,6 +17,7 @@ source_set("favicon") {
     "large_icon_service_factory.cc",
     "large_icon_service_factory.h",
   ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/browser/image_fetcher",

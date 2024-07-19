@@ -594,6 +594,7 @@ source_set("web_applications") {
   }
 
   public_deps = [
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/web_applications/isolated_web_apps/key_distribution/proto",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
