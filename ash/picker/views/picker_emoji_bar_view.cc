@@ -76,6 +76,21 @@ std::unique_ptr<views::View> CreateEmptyCell() {
   return cell_view;
 }
 
+std::u16string GetTooltipForEmojiResult(
+    const PickerSearchResult::EmojiData& data) {
+  switch (data.type) {
+    case PickerSearchResult::EmojiData::Type::kEmoji:
+      return l10n_util::GetStringFUTF16(IDS_PICKER_EMOJI_ITEM_ACCESSIBLE_NAME,
+                                        data.name);
+    case PickerSearchResult::EmojiData::Type::kSymbol:
+      return data.name;
+    case PickerSearchResult::EmojiData::Type::kEmoticon:
+      return l10n_util::GetStringFUTF16(
+          IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME, data.name);
+  }
+  NOTREACHED_NORETURN();
+}
+
 // Creates an item view for a search result. Only supports results that can be
 // added to the emoji bar, i.e. emojis, symbols and emoticons.
 std::unique_ptr<PickerItemView> CreateItemView(
@@ -107,8 +122,9 @@ std::unique_ptr<PickerItemView> CreateItemView(
   }
 
   if (!data->name.empty()) {
-    item_view->SetTooltipText(data->name);
-    item_view->SetAccessibleName(data->name);
+    std::u16string tooltip = GetTooltipForEmojiResult(*data);
+    item_view->SetTooltipText(tooltip);
+    item_view->SetAccessibleName(std::move(tooltip));
   }
 
   return item_view;

@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([view]() { view->GetItemsForTesting()[0]->RequestFocus(); });
 
-  sm_.ExpectSpeechPattern("happy");
+  sm_.ExpectSpeechPattern("happy emoji");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("row 1 column 1");
   sm_.ExpectSpeechPattern("Table Emojis and GIFs, 1 by 5");
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([view]() { view->GetItemsForTesting()[2]->RequestFocus(); });
 
-  sm_.ExpectSpeechPattern("surprise");
+  sm_.ExpectSpeechPattern("surprise emoticon");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("row 1 column 3");
 
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
-  sm_.ExpectSpeechPattern("happy");
+  sm_.ExpectSpeechPattern("happy emoji");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
-  sm_.ExpectSpeechPattern("surprise");
+  sm_.ExpectSpeechPattern("surprise emoticon");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();

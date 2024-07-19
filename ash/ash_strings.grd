@@ -7455,6 +7455,12 @@ New install
       <message name="IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for the emoji bar grid.">
         Emojis and GIFs
       </message>
+      <message name="IDS_PICKER_EMOJI_ITEM_ACCESSIBLE_NAME" translateable="false" desc="The tooltip text for an emoji result.">
+        <ph name="ITEM_TEXT">$1<ex>Face with Tears of Joy</ex></ph> emoji
+      </message>
+      <message name="IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME" translateable="false" desc="The tooltip text for an emoticon result.">
+        <ph name="ITEM_TEXT">$1<ex>sparkles</ex></ph> emoticon
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

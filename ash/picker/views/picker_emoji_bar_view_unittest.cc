@@ -103,13 +103,14 @@ TEST_F(PickerEmojiBarViewTest, SearchResultsWithNamesHaveTooltips) {
        PickerSearchResult::Symbol(u"♬", u"music"),
        PickerSearchResult::Emoticon(u"(°□°)", u"surprise")});
 
-  EXPECT_THAT(emoji_bar.GetItemsForTesting(),
-              ElementsAre(AsView<views::Button>(Property(
-                              &views::Button::GetTooltipText, u"happy")),
-                          AsView<views::Button>(Property(
-                              &views::Button::GetTooltipText, u"music")),
-                          AsView<views::Button>(Property(
-                              &views::Button::GetTooltipText, u"surprise"))));
+  EXPECT_THAT(
+      emoji_bar.GetItemsForTesting(),
+      ElementsAre(AsView<views::Button>(
+                      Property(&views::Button::GetTooltipText, u"happy emoji")),
+                  AsView<views::Button>(
+                      Property(&views::Button::GetTooltipText, u"music")),
+                  AsView<views::Button>(Property(&views::Button::GetTooltipText,
+                                                 u"surprise emoticon"))));
 }
 
 TEST_F(PickerEmojiBarViewTest, SearchResultsWithNamesHaveAccessibleNames) {
@@ -124,9 +125,10 @@ TEST_F(PickerEmojiBarViewTest, SearchResultsWithNamesHaveAccessibleNames) {
   EXPECT_THAT(
       emoji_bar.GetItemsForTesting(),
       ElementsAre(
-          Pointee(Property(&views::View::GetAccessibleName, u"happy")),
+          Pointee(Property(&views::View::GetAccessibleName, u"happy emoji")),
           Pointee(Property(&views::View::GetAccessibleName, u"music")),
-          Pointee(Property(&views::View::GetAccessibleName, u"surprise"))));
+          Pointee(Property(&views::View::GetAccessibleName,
+                           u"surprise emoticon"))));
 }
 
 TEST_F(PickerEmojiBarViewTest, SearchResultsWithNoNameHaveNoTooltips) {
