@@ -169,7 +169,7 @@ bool IsAccessibilityFaceGazeEnabled() {
 
 BASE_FEATURE(kAccessibilityReducedAnimationsInKiosk,
              "AccessibilityReducedAnimationsInKiosk",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityReducedAnimationsInKioskEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityReducedAnimationsInKiosk);
