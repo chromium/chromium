@@ -107,8 +107,9 @@ LayoutUnit ResolveInlineLengthInternal(
           (available_size - margins.InlineSum()).ClampNegativeToZero();
       return min_max_sizes.ShrinkToFit(fill_available);
     }
-    case Length::kAuto:
     case Length::kContent:
+      return min_max_sizes_func(MinMaxSizesType::kContent).sizes.max_size;
+    case Length::kAuto:
     case Length::kNone:
       return unresolvable_length_result;
     case Length::kDeviceWidth:

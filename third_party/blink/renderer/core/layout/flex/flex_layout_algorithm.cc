@@ -736,25 +736,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       }
       return layout_result->IntrinsicBlockSize();
     };
-    auto ContentBlockSizeFunc = [&]() -> LayoutUnit {
-      DCHECK(!MainAxisIsInlineAxis(child));
-
-      if (child.HasAspectRatio() && !child.IsReplaced()) {
-        const LayoutUnit inline_size = InlineSizeFunc();
-        if (inline_size != kIndefiniteSize) {
-          return BlockSizeFromAspectRatio(
-              border_padding_in_child_writing_mode, child.GetAspectRatio(),
-              child_style.BoxSizingForAspectRatio(), inline_size);
-        }
-
-        const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
-            child.GetAspectRatio(), min_max_sizes_in_cross_axis_direction,
-            border_padding_in_child_writing_mode,
-            child.Style().BoxSizingForAspectRatio());
-        return min_max.ClampSizeToMinAndMax(IntrinsicBlockSizeFunc());
-      }
-      return IntrinsicBlockSizeFunc();
-    };
 
     const Length& flex_basis = child_style.FlexBasis();
     if (is_column_ && flex_basis.MayHavePercentDependence()) {
@@ -800,17 +781,37 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         return MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size;
       }
 
-      // The block-axis is slightly different to the inline-axis - first
-      // attempt to resolve the length using an indefinite intrinsic-size.
-      //
-      // By doing this we can optionally add the caption block-size below.
-      // (Adding the caption to something content based would be incorrect).
-      const LayoutUnit block_size = ResolveMainBlockLength(
+      // The block-axis is slightly different to the inline-axis.
+
+      auto ContentBlockSizeFunc = [&]() -> LayoutUnit {
+        DCHECK(!MainAxisIsInlineAxis(child));
+        CHECK(!is_used_flex_basis_indefinite) << "should only be called once";
+
+        is_used_flex_basis_indefinite = true;
+        if (child.HasAspectRatio() && !child.IsReplaced()) {
+          const LayoutUnit inline_size = InlineSizeFunc();
+          if (inline_size != kIndefiniteSize) {
+            return BlockSizeFromAspectRatio(
+                border_padding_in_child_writing_mode, child.GetAspectRatio(),
+                child_style.BoxSizingForAspectRatio(), inline_size);
+          }
+
+          const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
+              child.GetAspectRatio(), min_max_sizes_in_cross_axis_direction,
+              border_padding_in_child_writing_mode,
+              child.Style().BoxSizingForAspectRatio());
+          return min_max.ClampSizeToMinAndMax(IntrinsicBlockSizeFunc());
+        }
+        return IntrinsicBlockSizeFunc();
+      };
+
+      LayoutUnit block_size = ResolveMainBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           used_flex_basis_length, &auto_flex_basis_length,
-          /* intrinsic_size */ kIndefiniteSize);
+          ContentBlockSizeFunc);
 
-      if (block_size != kIndefiniteSize) {
+      // Add the caption block-size only to sizes that are not content-based.
+      if (!is_used_flex_basis_indefinite) {
         // 1. A table interprets forced block-size as the block-size of its
         //    captions and rows.
         // 2. The specified block-size of a table only applies to its rows.
@@ -822,16 +823,10 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
               BuildSpaceForIntrinsicBlockSize(*table_child,
                                               max_content_contribution));
         }
-        return block_size + caption_block_size;
+        block_size += caption_block_size;
       }
 
-      // We weren't able to resolve the length (i.e. it was content based), try
-      // to re-resolve passing the content block-size callback.
-      is_used_flex_basis_indefinite = true;
-      return ResolveMainBlockLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          used_flex_basis_length, &auto_flex_basis_length,
-          ContentBlockSizeFunc);
+      return block_size;
     })();
 
     // Spec calls this "flex base size"
