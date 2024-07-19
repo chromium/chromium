@@ -722,9 +722,12 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           // byte containing the most significant bit (MSB), so it needs to be
           // shifted to the left to create a 16 bit long value that can be
           // passed to the bitset constructor.
+          long cdb_bits = edid[data_offset + 2];
+          if (edid.size() >= data_offset + 3) {
+            cdb_bits += edid[data_offset + 3] << 8;
+          }
           const std::bitset<kMaxNumColorimetryEntries>
-              supported_primaries_bitfield(edid[data_offset + 2] +
-                                           (edid[data_offset + 3] << 8));
+              supported_primaries_bitfield(cdb_bits);
           static_assert(
               kMaxNumColorimetryEntries == std::size(kPrimaryMatrixIDMap),
               "kPrimaryIDMap should describe all possible colorimetry entries");
