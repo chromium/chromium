@@ -367,9 +367,12 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
   }
 
   private startScanning_(): void {
-    const oldStream = this.stream_;
     if (this.qrCodeDetectorTimer_) {
       this.clearQrCodeDetectorTimer_();
+    }
+
+    if (this.stream_) {
+      this.stopStream_(this.stream_);
     }
 
     const useUserFacingCamera =
@@ -393,7 +396,6 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
               this.playVideo_();
             }
           }
-          this.stopStream_(oldStream);
 
           this.activationCode = '';
           this.state_ = useUserFacingCamera ?
