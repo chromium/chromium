@@ -123,7 +123,6 @@ void NavigateAndTriggerInstallDialogCommand::OnUrlLoaded(
 
 void NavigateAndTriggerInstallDialogCommand::OnInstallabilityChecked(
     blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   GetMutableDebugValue().Set("webapps::InstallableStatusCode",

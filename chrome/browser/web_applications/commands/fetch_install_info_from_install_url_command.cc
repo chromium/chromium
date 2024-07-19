@@ -145,7 +145,6 @@ void FetchInstallInfoFromInstallUrlCommand::OnGetWebAppInstallInfo(
 void FetchInstallInfoFromInstallUrlCommand::OnManifestRetrieved(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   CHECK(web_app_info);
@@ -158,8 +157,7 @@ void FetchInstallInfoFromInstallUrlCommand::OnManifestRetrieved(
   }
 
   if (opt_manifest) {
-    UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
-                                 web_app_info.get());
+    UpdateWebAppInfoFromManifest(*opt_manifest, web_app_info.get());
   }
 
   webapps::AppId app_id = GenerateAppIdFromManifestId(

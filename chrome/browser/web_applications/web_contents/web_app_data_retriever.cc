@@ -298,8 +298,8 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
 
   CHECK(!check_installability_callback_.is_null());
   std::move(check_installability_callback_)
-      .Run(std::move(opt_manifest), *data.manifest_url,
-           data.installable_check_passed, data.GetFirstError());
+      .Run(std::move(opt_manifest), data.installable_check_passed,
+           data.GetFirstError());
 }
 
 void WebAppDataRetriever::OnIconsDownloaded(
@@ -336,7 +336,7 @@ void WebAppDataRetriever::CallCallbackOnError(
     std::move(get_web_app_info_callback_).Run(nullptr);
   } else if (check_installability_callback_) {
     std::move(check_installability_callback_)
-        .Run(/*manifest=*/nullptr, /*manifest_url=*/GURL(),
+        .Run(/*manifest=*/nullptr,
              /*installable_check_passed_for_web_app=*/false,
              /*error_code=*/
              error_code);

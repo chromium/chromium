@@ -274,7 +274,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), blink::mojom::ManifestPtr(),
-                         GURL(), /*valid_manifest_for_web_app=*/false,
+                         /*valid_manifest_for_web_app=*/false,
                          webapps::InstallableStatusCode::NO_MANIFEST));
       return;
     }
@@ -289,6 +289,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
         page.manifest_before_default_processing
             ? page.manifest_before_default_processing->Clone()
             : blink::mojom::Manifest::New();
+    manifest->manifest_url = page.manifest_url;
     if (manifest->start_url.is_empty()) {
       manifest->start_url = url;
     }
@@ -303,8 +304,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::move(manifest),
-                       page.manifest_url, page.valid_manifest_for_web_app,
-                       page.error_code));
+                       page.valid_manifest_for_web_app, page.error_code));
   }
 
   void GetIcons(content::WebContents* web_contents,

@@ -68,13 +68,11 @@ void PopulateFileHandlerInfoFromManifest(
 // Will sanitise the manifest fields to be suitable for installation to prevent
 // sites from using arbitrarily large amounts of disk space.
 void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
-                                  const GURL& manifest_url,
                                   WebAppInstallInfo* web_app_info);
 
 // Same as above, but returns a fresh WebAppInstallInfo.
 WebAppInstallInfo CreateWebAppInfoFromManifest(
-    const blink::mojom::Manifest& manifest,
-    const GURL& manifest_url);
+    const blink::mojom::Manifest& manifest);
 
 // Populate non-product icons in WebAppInstallInfo using the IconsMap. This
 // currently covers shortcut item icons and file handler icons. It ignores

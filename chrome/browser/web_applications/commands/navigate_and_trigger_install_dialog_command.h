@@ -73,7 +73,6 @@ class NavigateAndTriggerInstallDialogCommand
 
   void OnUrlLoaded(webapps::WebAppUrlLoaderResult result);
   void OnInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
-                               const GURL& manifest_url,
                                bool valid_manifest_for_web_app,
                                webapps::InstallableStatusCode error_code);
   void OnAppLockGranted(std::unique_ptr<AppLock> app_lock);

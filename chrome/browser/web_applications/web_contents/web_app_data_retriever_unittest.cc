@@ -303,11 +303,10 @@ TEST_F(WebAppDataRetrieverTest,
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
+          [&](blink::mojom::ManifestPtr opt_manifest,
               bool valid_manifest_for_web_app,
               webapps::InstallableStatusCode error_code) {
             EXPECT_FALSE(opt_manifest);
-            EXPECT_EQ(manifest_url, GURL());
             EXPECT_FALSE(valid_manifest_for_web_app);
             EXPECT_EQ(error_code,
                       webapps::InstallableStatusCode::RENDERER_CANCELLED);
@@ -383,6 +382,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
 
   {
     auto manifest = blink::mojom::Manifest::New();
+    manifest->manifest_url = GURL("https://example.com/manifest");
     manifest->short_name = manifest_short_name;
     manifest->name = manifest_name;
     manifest->start_url = manifest_start_url;
@@ -404,7 +404,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
+          [&](blink::mojom::ManifestPtr opt_manifest,
               bool valid_manifest_for_web_app,
               webapps::InstallableStatusCode error_code) {
             EXPECT_EQ(error_code,
@@ -415,8 +415,8 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
             EXPECT_EQ(manifest_start_url, opt_manifest->start_url);
             EXPECT_EQ(manifest_scope, opt_manifest->scope);
             EXPECT_EQ(manifest_theme_color, opt_manifest->theme_color);
-
-            EXPECT_EQ(manifest_url, GURL("https://example.com/manifest"));
+            EXPECT_EQ(GURL("https://example.com/manifest"),
+                      opt_manifest->manifest_url);
 
             callback_called = true;
             run_loop.Quit();
@@ -443,12 +443,11 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](blink::mojom::ManifestPtr opt_manifest, const GURL& manifest_url,
+          [&](blink::mojom::ManifestPtr opt_manifest,
               bool valid_manifest_for_web_app,
               webapps::InstallableStatusCode error_code) {
             EXPECT_EQ(error_code, webapps::InstallableStatusCode::NO_MANIFEST);
             EXPECT_FALSE(valid_manifest_for_web_app);
-            EXPECT_EQ(manifest_url, GURL());
             callback_called = true;
             run_loop.Quit();
           }));

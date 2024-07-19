@@ -206,7 +206,6 @@ void InstallFromSyncCommand::OnGetWebAppInstallInfo(
 
 void InstallFromSyncCommand::OnDidPerformInstallableCheck(
     blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   if (!opt_manifest) {
@@ -214,8 +213,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
     return;
   }
 
-  UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
-                               install_info_.get());
+  UpdateWebAppInfoFromManifest(*opt_manifest, install_info_.get());
 
   // Ensure that the manifest linked is the right one.
   webapps::AppId generated_app_id =

@@ -22,8 +22,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
-class GURL;
-
 namespace content {
 class WebContents;
 }
@@ -55,7 +53,6 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // |manifest_url| is empty if manifest is empty.
   using CheckInstallabilityCallback =
       base::OnceCallback<void(blink::mojom::ManifestPtr opt_manifest,
-                              const GURL& manifest_url,
                               bool valid_manifest_for_web_app,
                               webapps::InstallableStatusCode)>;
 

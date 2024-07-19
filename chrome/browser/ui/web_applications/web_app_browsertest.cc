@@ -347,6 +347,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
   {
     const SkColor theme_color = SkColorSetA(SK_ColorBLUE, 0xF0);
     blink::mojom::Manifest manifest;
+    manifest.manifest_url = GURL(kExampleManifestURL);
     manifest.start_url = GURL(kExampleURL);
     manifest.id = GenerateManifestIdFromStartUrlOnly(manifest.start_url);
     manifest.scope = GURL(kExampleURL);
@@ -354,8 +355,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     manifest.theme_color = theme_color;
     auto web_app_info =
         std::make_unique<WebAppInstallInfo>(manifest.id, manifest.start_url);
-    web_app::UpdateWebAppInfoFromManifest(manifest, GURL(kExampleManifestURL),
-                                          web_app_info.get());
+    web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
 
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
@@ -379,6 +379,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColor) {
   blink::mojom::Manifest manifest;
+  manifest.manifest_url = GURL(kExampleManifestURL);
   manifest.start_url = GURL(kExampleURL);
   manifest.id = GenerateManifestIdFromStartUrlOnly(manifest.start_url);
   manifest.scope = GURL(kExampleURL);
@@ -386,8 +387,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColor) {
   manifest.background_color = SkColorSetA(SK_ColorBLUE, 0xF0);
   auto web_app_info =
       std::make_unique<WebAppInstallInfo>(manifest.id, manifest.start_url);
-  web_app::UpdateWebAppInfoFromManifest(manifest, GURL(kExampleManifestURL),
-                                        web_app_info.get());
+  web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
   webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
   auto* provider = WebAppProvider::GetForTest(profile());

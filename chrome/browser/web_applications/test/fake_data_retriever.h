@@ -51,8 +51,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
       std::optional<webapps::mojom::WebPageMetadata> opt_metadata);
   // Set arguments to respond on |CheckInstallabilityAndRetrieveManifest|.
   void SetManifest(blink::mojom::ManifestPtr manifest,
-                   webapps::InstallableStatusCode error_code,
-                   GURL manifest_url = GURL());
+                   webapps::InstallableStatusCode error_code);
   // Set icons to respond on |GetIcons|.
   void SetIcons(IconsMap icons_map);
 

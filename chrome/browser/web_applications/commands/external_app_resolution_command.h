@@ -96,7 +96,6 @@ class ExternalAppResolutionCommand
   void OnGetWebAppInstallInfoInCommand(
       std::unique_ptr<WebAppInstallInfo> web_app_info);
   void OnDidPerformInstallableCheck(blink::mojom::ManifestPtr opt_manifest,
-                                    const GURL& manifest_url,
                                     bool valid_manifest_for_web_app,
                                     webapps::InstallableStatusCode error_code);
   void OnPreparedForIconRetrieving(IconUrlSizeSet icon_urls,

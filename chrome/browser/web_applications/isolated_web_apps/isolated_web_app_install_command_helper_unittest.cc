@@ -106,8 +106,13 @@ IwaSourceWithMode CreateDevProxySource(
   return IwaSourceProxy{url::Origin::Create(GURL(dev_mode_proxy_url))};
 }
 
+GURL CreateDefaultManifestURL(const GURL& application_url) {
+  return application_url.Resolve("/manifest.webmanifest");
+}
+
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
   auto manifest = blink::mojom::Manifest::New();
+  manifest->manifest_url = CreateDefaultManifestURL(application_url);
   manifest->id = application_url.DeprecatedGetOriginAsURL();
   manifest->scope = application_url.Resolve("/");
   manifest->start_url = application_url.Resolve("/testing-start-url.html");
@@ -117,12 +122,7 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
   return manifest;
 }
 
-GURL CreateDefaultManifestURL(const GURL& application_url) {
-  return application_url.Resolve("/manifest.webmanifest");
-}
-
 auto ReturnManifest(const blink::mojom::ManifestPtr& manifest,
-                    const GURL& manifest_url,
                     webapps::InstallableStatusCode error_code =
                         webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
   constexpr int kCallbackArgumentIndex = 1;
@@ -134,7 +134,6 @@ auto ReturnManifest(const blink::mojom::ManifestPtr& manifest,
           }),
       RunOnceCallback<kCallbackArgumentIndex>(
           /*manifest=*/manifest.Clone(),
-          /*manifest_url=*/manifest_url,
           /*valid_manifest_for_web_app=*/true, error_code));
 }
 
@@ -452,14 +451,12 @@ TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
   EXPECT_CALL(*fake_data_retriever,
               CheckInstallabilityAndRetrieveManifest(_, _, _))
       .WillOnce(
-          ReturnManifest(CreateDefaultManifest(url_info.origin().GetURL()),
-                         CreateDefaultManifestURL(url_info.origin().GetURL())));
+          ReturnManifest(CreateDefaultManifest(url_info.origin().GetURL())));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, std::move(fake_data_retriever),
       /*response_reader_factory=*/nullptr);
 
-  base::test::TestFuture<base::expected<
-      IsolatedWebAppInstallCommandHelper::ManifestAndUrl, std::string>>
+  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr, std::string>>
       future;
   command_helper->CheckInstallabilityAndRetrieveManifest(web_contents(),
                                                          future.GetCallback());
@@ -475,14 +472,12 @@ TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
   ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
       .WillByDefault(
           ReturnManifest(blink::mojom::Manifest::New(),
-                         GURL{"http://test-url-example.com/manifest.json"},
                          webapps::InstallableStatusCode::NO_MANIFEST));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, std::move(fake_data_retriever),
       /*response_reader_factory=*/nullptr);
 
-  base::test::TestFuture<base::expected<
-      IsolatedWebAppInstallCommandHelper::ManifestAndUrl, std::string>>
+  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr, std::string>>
       future;
   command_helper->CheckInstallabilityAndRetrieveManifest(web_contents(),
                                                          future.GetCallback());
@@ -497,13 +492,11 @@ TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
       CreateDefaultDataRetriever(url_info.origin().GetURL());
   ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
       .WillByDefault(ReturnManifest(
-          /*manifest=*/nullptr,
-          CreateDefaultManifestURL(url_info.origin().GetURL())));
+          /*manifest=*/nullptr));
   auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
       url_info, std::move(fake_data_retriever),
       /*response_reader_factory=*/nullptr);
-  base::test::TestFuture<base::expected<
-      IsolatedWebAppInstallCommandHelper::ManifestAndUrl, std::string>>
+  base::test::TestFuture<base::expected<blink::mojom::ManifestPtr, std::string>>
       future;
   command_helper->CheckInstallabilityAndRetrieveManifest(web_contents(),
                                                          future.GetCallback());
@@ -535,13 +528,9 @@ TEST_P(InstallIsolatedWebAppCommandHelperInvalidVersionTest,
   auto manifest = CreateDefaultManifest(url_info.origin().GetURL());
   manifest->version = GetParam().version;
 
-  IsolatedWebAppInstallCommandHelper::ManifestAndUrl manifest_and_url(
-      std::move(manifest),
-      CreateDefaultManifestURL(url_info.origin().GetURL()));
-
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/std::nullopt, std::move(manifest_and_url));
+          /*expected_version=*/std::nullopt, *manifest);
   EXPECT_THAT(result, ErrorIs(HasSubstr(GetParam().error)));
 }
 
@@ -573,9 +562,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
           base::Version("99.99.99"),
-          IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
-              CreateDefaultManifest(url_info.origin().GetURL()),
-              CreateDefaultManifestURL(url_info.origin().GetURL())));
+          *CreateDefaultManifest(url_info.origin().GetURL()));
   EXPECT_THAT(result,
               ErrorIs(HasSubstr(
                   "does not match the version provided in the manifest")));
@@ -591,9 +578,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
           /*expected_version=*/std::nullopt,
-          IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
-              CreateDefaultManifest(url_info.origin().GetURL()),
-              CreateDefaultManifestURL(url_info.origin().GetURL())));
+          *CreateDefaultManifest(url_info.origin().GetURL()));
   EXPECT_THAT(result, HasValue());
 }
 
@@ -610,10 +595,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/std::nullopt,
-          IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
-              std::move(manifest),
-              CreateDefaultManifestURL(url_info.origin().GetURL())));
+          /*expected_version=*/std::nullopt, *manifest);
   EXPECT_THAT(result, ErrorIs(HasSubstr(R"(Manifest `id` must be "/")")));
 }
 
@@ -630,10 +612,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/std::nullopt,
-          IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
-              std::move(manifest),
-              CreateDefaultManifestURL(url_info.origin().GetURL())));
+          /*expected_version=*/std::nullopt, *manifest);
   EXPECT_THAT(result, ErrorIs(HasSubstr("Scope should resolve to the origin")));
 }
 
@@ -650,10 +629,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/std::nullopt,
-          IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
-              std::move(manifest),
-              CreateDefaultManifestURL(url_info.origin().GetURL())));
+          /*expected_version=*/std::nullopt, *manifest);
   EXPECT_THAT(result, ValueIs(Field(&WebAppInstallInfo::scope,
                                     Eq(url_info.origin().GetURL()))));
 }
@@ -672,10 +648,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
 
   base::expected<WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
-          /*expected_version=*/std::nullopt,
-          IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
-              std::move(manifest),
-              CreateDefaultManifestURL(url_info.origin().GetURL())));
+          /*expected_version=*/std::nullopt, *manifest);
   EXPECT_THAT(result,
               ErrorIs(HasSubstr(
                   "App manifest must have either 'name' or 'short_name'")));
@@ -740,13 +713,9 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
       url_info, std::move(fake_data_retriever),
       /*response_reader_factory=*/nullptr);
 
-  ASSERT_OK_AND_ASSIGN(
-      auto install_info,
-      command_helper->ValidateManifestAndCreateInstallInfo(
-          std::nullopt,
-          IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
-              std::move(manifest),
-              CreateDefaultManifestURL(kSomeTestApplicationUrl))));
+  ASSERT_OK_AND_ASSIGN(auto install_info,
+                       command_helper->ValidateManifestAndCreateInstallInfo(
+                           std::nullopt, *manifest));
 
   base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
   command_helper->RetrieveIconsAndPopulateInstallInfo(
@@ -791,13 +760,9 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
       url_info, std::move(fake_data_retriever),
       /*response_reader_factory=*/nullptr);
 
-  ASSERT_OK_AND_ASSIGN(
-      auto install_info,
-      command_helper->ValidateManifestAndCreateInstallInfo(
-          std::nullopt,
-          IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
-              std::move(manifest),
-              CreateDefaultManifestURL(kSomeTestApplicationUrl))));
+  ASSERT_OK_AND_ASSIGN(auto install_info,
+                       command_helper->ValidateManifestAndCreateInstallInfo(
+                           std::nullopt, *manifest));
 
   base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
   command_helper->RetrieveIconsAndPopulateInstallInfo(

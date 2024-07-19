@@ -121,13 +121,11 @@ class IsolatedWebAppApplyUpdateCommand
   void LoadInstallUrl(base::OnceClosure next_step_callback);
 
   void CheckInstallabilityAndRetrieveManifest(
-      base::OnceCallback<
-          void(IsolatedWebAppInstallCommandHelper::ManifestAndUrl)>
-          next_step_callback);
+      base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback);
 
   void ValidateManifestAndCreateInstallInfo(
       base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      IsolatedWebAppInstallCommandHelper::ManifestAndUrl manifest_and_url);
+      blink::mojom::ManifestPtr manifest);
 
   void RetrieveIconsAndPopulateInstallInfo(
       base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,

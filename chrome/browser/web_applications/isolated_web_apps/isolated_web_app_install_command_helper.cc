@@ -384,8 +384,8 @@ void IsolatedWebAppInstallCommandHelper::OnLoadInstallUrl(
 
 void IsolatedWebAppInstallCommandHelper::CheckInstallabilityAndRetrieveManifest(
     content::WebContents& web_contents,
-    base::OnceCallback<void(base::expected<ManifestAndUrl, std::string>)>
-        callback) {
+    base::OnceCallback<void(
+        base::expected<blink::mojom::ManifestPtr, std::string>)> callback) {
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       &web_contents,
       base::BindOnce(&IsolatedWebAppInstallCommandHelper::
@@ -395,10 +395,9 @@ void IsolatedWebAppInstallCommandHelper::CheckInstallabilityAndRetrieveManifest(
 
 void IsolatedWebAppInstallCommandHelper::
     OnCheckInstallabilityAndRetrieveManifest(
-        base::OnceCallback<void(base::expected<ManifestAndUrl, std::string>)>
-            callback,
+        base::OnceCallback<void(
+            base::expected<blink::mojom::ManifestPtr, std::string>)> callback,
         blink::mojom::ManifestPtr opt_manifest,
-        const GURL& manifest_url,
         bool valid_manifest_for_web_app,
         webapps::InstallableStatusCode error_code) {
   if (error_code != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
@@ -418,26 +417,25 @@ void IsolatedWebAppInstallCommandHelper::
     return;
   }
 
+  if (opt_manifest->manifest_url.is_empty()) {
+    std::move(callback).Run(
+        base::unexpected("Manifest is the default manifest."));
+    return;
+  }
+
   // See |WebAppDataRetriever::CheckInstallabilityCallback| documentation for
   // details.
   DCHECK(!blink::IsEmptyManifest(opt_manifest))
       << "must not be empty when manifest is present.";
 
-  // See |WebAppDataRetriever::CheckInstallabilityCallback| documentation for
-  // details.
-  DCHECK(!manifest_url.is_empty())
-      << "must not be empty if manifest is not empty.";
-
-  std::move(callback).Run(
-      ManifestAndUrl(std::move(opt_manifest), manifest_url));
+  std::move(callback).Run(std::move(opt_manifest));
 }
 
 base::expected<WebAppInstallInfo, std::string>
 IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
     const std::optional<base::Version>& expected_version,
-    const ManifestAndUrl& manifest_and_url) {
-  const blink::mojom::Manifest& manifest = *manifest_and_url.manifest;
-  const GURL& manifest_url = manifest_and_url.url;
+    const blink::mojom::Manifest& manifest) {
+  const GURL& manifest_url = manifest.manifest_url;
 
   // TODO(b/280862254): Ideally move this validation logic into a
   // WebAppInstallInfo creator function.
@@ -460,7 +458,7 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
   }
 
   WebAppInstallInfo info(manifest.id, manifest.start_url);
-  UpdateWebAppInfoFromManifest(manifest, manifest_url, &info);
+  UpdateWebAppInfoFromManifest(manifest, &info);
 
   if (!manifest.version.has_value()) {
     return base::unexpected(
@@ -566,15 +564,4 @@ void IsolatedWebAppInstallCommandHelper::OnRetrieveIcons(
   std::move(callback).Run(std::move(install_info));
 }
 
-IsolatedWebAppInstallCommandHelper::ManifestAndUrl::ManifestAndUrl(
-    blink::mojom::ManifestPtr manifest,
-    GURL url)
-    : manifest(std::move(manifest)), url(std::move(url)) {}
-IsolatedWebAppInstallCommandHelper::ManifestAndUrl::~ManifestAndUrl() = default;
-
-IsolatedWebAppInstallCommandHelper::ManifestAndUrl::ManifestAndUrl(
-    ManifestAndUrl&&) = default;
-IsolatedWebAppInstallCommandHelper::ManifestAndUrl&
-IsolatedWebAppInstallCommandHelper::ManifestAndUrl::operator=(
-    ManifestAndUrl&&) = default;
 }  // namespace web_app

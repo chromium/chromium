@@ -145,13 +145,19 @@ void InstallAppFromVerifiedManifestCommand::OnManifestParsed(
     return;
   }
 
+  if (manifest->manifest_url != verified_manifest_url_) {
+    mojo::ReportBadMessage("Returned manifest has incorrect manifest URL");
+    Abort(CommandResult::kFailure,
+          webapps::InstallResultCode::kNotValidManifestForWebApp);
+    return;
+  }
+
   GetMutableDebugValue().Set("manifest_parsed", true);
   web_app_info_ =
       std::make_unique<WebAppInstallInfo>(manifest->id, manifest->start_url);
   web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
-  UpdateWebAppInfoFromManifest(*manifest, verified_manifest_url_,
-                               web_app_info_.get());
+  UpdateWebAppInfoFromManifest(*manifest, web_app_info_.get());
 
   IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
   base::EraseIf(icon_urls, [](const IconUrlWithSize& url_with_size) {

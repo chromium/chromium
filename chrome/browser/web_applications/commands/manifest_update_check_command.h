@@ -87,7 +87,6 @@ class ManifestUpdateCheckCommand
       WebAppDataRetriever::CheckInstallabilityCallback next_step_callback);
   void StashNewManifestJson(base::OnceClosure next_step_callback,
                             blink::mojom::ManifestPtr opt_manifest,
-                            const GURL& manifest_url,
                             bool valid_manifest_for_web_app,
                             webapps::InstallableStatusCode installable_status);
   void DownloadNewIconBitmaps(

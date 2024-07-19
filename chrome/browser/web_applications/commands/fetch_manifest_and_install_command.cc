@@ -367,12 +367,12 @@ void FetchManifestAndInstallCommand::FetchManifest() {
 
 void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
     blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   valid_manifest_for_crafted_web_app_ = valid_manifest_for_web_app;
-  GetMutableDebugValue().Set("manifest_url",
-                             manifest_url.possibly_invalid_spec());
+  GetMutableDebugValue().Set(
+      "manifest_url",
+      opt_manifest ? opt_manifest->manifest_url.possibly_invalid_spec() : "");
   GetMutableDebugValue().Set("valid_manifest_for_web_app",
                              valid_manifest_for_web_app);
   GetMutableDebugValue().Set("installable_error_code",
@@ -391,8 +391,8 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
     case FallbackBehavior::kCraftedManifestOnly:
       if (!valid_manifest_for_web_app) {
         LOG(WARNING) << "Did not install "
-                     << (manifest_url.is_valid()
-                             ? manifest_url.spec()
+                     << (opt_manifest->manifest_url.is_valid()
+                             ? opt_manifest->manifest_url.spec()
                              : web_contents()->GetLastCommittedURL().spec())
                      << " because it didn't have a manifest for web app";
         Abort(webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -430,8 +430,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   GetMutableDebugValue().Set("is_diy_app", web_app_info_->is_diy_app);
   CHECK(opt_manifest->start_url.is_valid());
   CHECK(opt_manifest->id.is_valid());
-  UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
-                               web_app_info_.get());
+  UpdateWebAppInfoFromManifest(*opt_manifest, web_app_info_.get());
   LogInstallInfo(GetMutableDebugValue(), *web_app_info_);
 
   icons_from_manifest_ = GetValidIconUrlsToDownload(*web_app_info_);

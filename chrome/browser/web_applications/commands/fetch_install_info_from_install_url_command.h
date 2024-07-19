@@ -58,7 +58,6 @@ class FetchInstallInfoFromInstallUrlCommand
   void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> install_info);
   void OnManifestRetrieved(std::unique_ptr<WebAppInstallInfo> web_app_info,
                            blink::mojom::ManifestPtr opt_manifest,
-                           const GURL& manifest_url,
                            bool valid_manifest_for_web_app,
                            webapps::InstallableStatusCode error_code);
   void OnIconsRetrieved(std::unique_ptr<WebAppInstallInfo> web_app_info,

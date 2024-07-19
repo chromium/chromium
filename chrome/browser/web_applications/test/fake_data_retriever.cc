@@ -45,7 +45,7 @@ void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
     CheckInstallabilityCallback callback,
     std::optional<webapps::InstallableParams> params) {
   completion_callback_ =
-      base::BindOnce(std::move(callback), manifest_.Clone(), manifest_url_,
+      base::BindOnce(std::move(callback), manifest_.Clone(),
                      /*valid_manifest_for_web_app=*/true, error_code_);
   ScheduleCompletionCallback();
 }
@@ -84,11 +84,9 @@ void FakeDataRetriever::SetWebPageMetadata(
 }
 
 void FakeDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
-                                    webapps::InstallableStatusCode error_code,
-                                    GURL manifest_url) {
+                                    webapps::InstallableStatusCode error_code) {
   manifest_ = std::move(manifest);
   error_code_ = error_code;
-  manifest_url_ = std::move(manifest_url);
 }
 
 void FakeDataRetriever::SetIcons(IconsMap icons_map) {

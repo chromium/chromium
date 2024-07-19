@@ -201,24 +201,23 @@ void IsolatedWebAppApplyUpdateCommand::LoadInstallUrl(
 }
 
 void IsolatedWebAppApplyUpdateCommand::CheckInstallabilityAndRetrieveManifest(
-    base::OnceCallback<void(IsolatedWebAppInstallCommandHelper::ManifestAndUrl)>
-        next_step_callback) {
+    base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   command_helper_->CheckInstallabilityAndRetrieveManifest(
       *web_contents_.get(),
       base::BindOnce(&IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<
-                         IsolatedWebAppInstallCommandHelper::ManifestAndUrl>,
+                         blink::mojom::ManifestPtr>,
                      weak_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));
 }
 
 void IsolatedWebAppApplyUpdateCommand::ValidateManifestAndCreateInstallInfo(
     base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-    IsolatedWebAppInstallCommandHelper::ManifestAndUrl manifest_and_url) {
+    blink::mojom::ManifestPtr manifest) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::expected<WebAppInstallInfo, std::string> install_info =
       command_helper_->ValidateManifestAndCreateInstallInfo(
-          pending_update_info_->version, manifest_and_url);
+          pending_update_info_->version, *manifest);
   RunNextStepOnSuccess(std::move(next_step_callback), std::move(install_info));
 }
 

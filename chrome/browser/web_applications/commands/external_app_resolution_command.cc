@@ -248,14 +248,13 @@ void ExternalAppResolutionCommand::OnGetWebAppInstallInfoInCommand(
 
 void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
     blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
   CHECK(install_params_.has_value());
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
 
   if (install_params_->require_manifest && !valid_manifest_for_web_app) {
-    LOG(WARNING) << "Did not install " << manifest_url.spec()
+    LOG(WARNING) << "Did not install " << web_app_info_->manifest_id().spec()
                  << " because it didn't have a manifest for web app";
     Abort(webapps::InstallResultCode::kNotValidManifestForWebApp);
     return;
@@ -270,8 +269,7 @@ void ExternalAppResolutionCommand::OnDidPerformInstallableCheck(
   GetMutableDebugValue().Set("had_manifest", false);
   if (opt_manifest) {
     GetMutableDebugValue().Set("had_manifest", true);
-    UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
-                                 web_app_info_.get());
+    UpdateWebAppInfoFromManifest(*opt_manifest, web_app_info_.get());
   }
 
   if (install_params_->install_as_shortcut) {

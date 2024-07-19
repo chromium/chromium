@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
   std::unique_ptr<content::WebContents> deleting_web_contents =
       CreateWebContentsScheduledForDeletion();
 
-  base::test::TestFuture<blink::mojom::ManifestPtr, const GURL&, bool,
+  base::test::TestFuture<blink::mojom::ManifestPtr, bool,
                          webapps::InstallableStatusCode>
       installability_future;
   data_retriever.CheckInstallabilityAndRetrieveManifest(
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
   std::unique_ptr<content::WebContents> deleting_web_contents =
       CreateWebContentsScheduledForDeletion();
 
-  base::test::TestFuture<blink::mojom::ManifestPtr, const GURL&, bool,
+  base::test::TestFuture<blink::mojom::ManifestPtr, bool,
                          webapps::InstallableStatusCode>
       installability_future;
   data_retriever.CheckInstallabilityAndRetrieveManifest(

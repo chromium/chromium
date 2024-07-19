@@ -230,6 +230,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
 
   // Create manifest:
   blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
+  manifest->manifest_url = GURL(kManifestUrl);
   manifest->name = base::UTF8ToUTF16(std::string(kDefaultAppName));
   manifest->start_url = GURL(kStartUrl);
   manifest->id = GenerateManifestIdFromStartUrlOnly(manifest->start_url);
@@ -246,8 +247,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   std::unique_ptr<WebAppInstallInfo> install_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kStartUrl));
   install_info->install_url = GURL(kInstallUrl);
-  UpdateWebAppInfoFromManifest(*manifest, GURL(kManifestUrl),
-                               install_info.get());
+  UpdateWebAppInfoFromManifest(*manifest, install_info.get());
 
   auto* provider = WebAppProvider::GetForTest(profile());
   provider->scheduler().InstallFromInfoNoIntegrationForTesting(

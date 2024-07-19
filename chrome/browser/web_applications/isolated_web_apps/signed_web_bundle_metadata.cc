@@ -102,25 +102,22 @@ class WebAppInstallInfoFetcher {
   }
 
   void CheckInstallabilityAndRetrieveManifest(
-      base::OnceCallback<
-          void(IsolatedWebAppInstallCommandHelper::ManifestAndUrl)>
-          next_step_callback) {
+      base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback) {
     CHECK(helper_);
     helper_->CheckInstallabilityAndRetrieveManifest(
         *web_contents_.get(),
         base::BindOnce(&WebAppInstallInfoFetcher::RunNextStepOnSuccess<
-                           IsolatedWebAppInstallCommandHelper::ManifestAndUrl>,
+                           blink::mojom::ManifestPtr>,
                        weak_factory_.GetWeakPtr(),
                        std::move(next_step_callback)));
   }
 
   void ValidateManifestAndCreateInstallInfo(
       base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      IsolatedWebAppInstallCommandHelper::ManifestAndUrl manifest_and_url) {
+      blink::mojom::ManifestPtr manifest) {
     CHECK(helper_);
     base::expected<WebAppInstallInfo, std::string> install_info =
-        helper_->ValidateManifestAndCreateInstallInfo(std::nullopt,
-                                                      manifest_and_url);
+        helper_->ValidateManifestAndCreateInstallInfo(std::nullopt, *manifest);
     RunNextStepOnSuccess(std::move(next_step_callback),
                          std::move(install_info));
   }

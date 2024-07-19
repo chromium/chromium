@@ -92,29 +92,15 @@ class IsolatedWebAppInstallCommandHelper {
       webapps::WebAppUrlLoader& url_loader,
       base::OnceCallback<void(base::expected<void, std::string>)> callback);
 
-  struct ManifestAndUrl {
-    ManifestAndUrl(blink::mojom::ManifestPtr manifest, GURL url);
-    ~ManifestAndUrl();
-
-    ManifestAndUrl(const ManifestAndUrl&) = delete;
-    ManifestAndUrl& operator=(const ManifestAndUrl&) = delete;
-
-    ManifestAndUrl(ManifestAndUrl&&);
-    ManifestAndUrl& operator=(ManifestAndUrl&&);
-
-    blink::mojom::ManifestPtr manifest;
-    GURL url;
-  };
-
   void CheckInstallabilityAndRetrieveManifest(
       content::WebContents& web_contents,
-      base::OnceCallback<void(base::expected<ManifestAndUrl, std::string>)>
-          callback);
+      base::OnceCallback<void(
+          base::expected<blink::mojom::ManifestPtr, std::string>)> callback);
 
   base::expected<WebAppInstallInfo, std::string>
   ValidateManifestAndCreateInstallInfo(
       const std::optional<base::Version>& expected_version,
-      const ManifestAndUrl& manifest_and_url);
+      const blink::mojom::Manifest& manifest);
 
   void RetrieveIconsAndPopulateInstallInfo(
       WebAppInstallInfo install_info,
@@ -138,10 +124,9 @@ class IsolatedWebAppInstallCommandHelper {
       webapps::WebAppUrlLoaderResult result);
 
   void OnCheckInstallabilityAndRetrieveManifest(
-      base::OnceCallback<void(base::expected<ManifestAndUrl, std::string>)>
-          callback,
+      base::OnceCallback<void(
+          base::expected<blink::mojom::ManifestPtr, std::string>)> callback,
       blink::mojom::ManifestPtr opt_manifest,
-      const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       webapps::InstallableStatusCode error_code);
 

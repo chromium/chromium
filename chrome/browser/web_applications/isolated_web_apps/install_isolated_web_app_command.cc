@@ -224,22 +224,21 @@ void InstallIsolatedWebAppCommand::LoadInstallUrl(
 }
 
 void InstallIsolatedWebAppCommand::CheckInstallabilityAndRetrieveManifest(
-    base::OnceCallback<void(IsolatedWebAppInstallCommandHelper::ManifestAndUrl)>
-        next_step_callback) {
+    base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback) {
   command_helper_->CheckInstallabilityAndRetrieveManifest(
       *web_contents_.get(),
       base::BindOnce(&InstallIsolatedWebAppCommand::RunNextStepOnSuccess<
-                         IsolatedWebAppInstallCommandHelper::ManifestAndUrl>,
+                         blink::mojom::ManifestPtr>,
                      weak_factory_.GetWeakPtr(), std::move(next_step_callback),
                      InstallIwaError::kAppIsNotInstallable));
 }
 
 void InstallIsolatedWebAppCommand::ValidateManifestAndCreateInstallInfo(
     base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-    IsolatedWebAppInstallCommandHelper::ManifestAndUrl manifest_and_url) {
+    blink::mojom::ManifestPtr manifest) {
   base::expected<WebAppInstallInfo, std::string> install_info =
       command_helper_->ValidateManifestAndCreateInstallInfo(expected_version_,
-                                                            manifest_and_url);
+                                                            *manifest);
   RunNextStepOnSuccess(std::move(next_step_callback),
                        InstallIwaError::kCantValidateManifest,
                        std::move(install_info));
