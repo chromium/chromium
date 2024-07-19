@@ -980,6 +980,15 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           this.hideSpinner =
               !this.isSpeechActive || this.isAudioCurrentlyPlaying;
         });
+    // If the previously focused item becomes disabled or disappears from the
+    // toolbar because of speech starting or stopping, put the focus on the
+    // play/pause button so keyboard navigation continues working.
+    if ((this.shadowRoot !== null) &&
+        (this.shadowRoot.activeElement === null ||
+         this.shadowRoot.activeElement.clientHeight === 0)) {
+      this.$.toolbarContainer.querySelector<HTMLElement>('#play-pause')
+          ?.focus();
+    }
   }
 
 
