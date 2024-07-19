@@ -29,10 +29,10 @@ BASE_FEATURE(kLLPrivacyIsAvailable,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
-const char* kLaunchedBoards[] = {"BRYA",   "ATLAS",    "CHERRY", "CORSOLA",
-                                 "DEDEDE", "DRALLION", "GERALT", "HATCH",
-                                 "NISSA",  "OCTOPUS",  "REX",    "SARIEN",
-                                 "SKYRIM", "STARYU",   "VOLTEER"};
+const char* kLaunchedBoards[] = {
+    "BRYA",     "ATLAS",  "BROX",   "CHERRY", "CORSOLA", "DEDEDE",
+    "DRALLION", "GERALT", "HATCH",  "NISSA",  "OCTOPUS", "RAURU",
+    "REX",      "SARIEN", "SKYRIM", "STARYU", "VOLTEER"};
 }  // namespace
 
 static bool IsDeviceLaunchedFloss() {
