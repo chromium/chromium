@@ -242,9 +242,10 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   NSMutableSet* referenced_external_files = [NSMutableSet set];
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);
-  int browser_types = browser_state_->IsOffTheRecord()
-                          ? BrowserList::BrowserType::kIncognito
-                          : BrowserList::BrowserType::kRegularAndInactive;
+  const BrowserList::BrowserType browser_types =
+      browser_state_->IsOffTheRecord()
+          ? BrowserList::BrowserType::kIncognito
+          : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
   for (Browser* browser : browsers) {
     NSSet* files = ComputeReferencedExternalFiles(browser);

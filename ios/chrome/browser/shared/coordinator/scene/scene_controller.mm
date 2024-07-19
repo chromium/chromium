@@ -1366,9 +1366,10 @@ void OnListFamilyMembersResponse(
   ChromeBrowserState* browserState = self.currentInterface.browserState;
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
-  int browser_types = self.currentInterface.incognito
-                          ? BrowserList::BrowserType::kIncognito
-                          : BrowserList::BrowserType::kRegularAndInactive;
+  const BrowserList::BrowserType browser_types =
+      self.currentInterface.incognito
+          ? BrowserList::BrowserType::kIncognito
+          : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browserList->BrowsersOfType(browser_types);
 
   BrowserAndIndex tabInfo = FindBrowserAndIndex(tabID, browsers);

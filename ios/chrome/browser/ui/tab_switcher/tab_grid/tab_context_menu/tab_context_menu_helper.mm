@@ -390,9 +390,9 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 - (TabItem*)tabItemForIdentifier:(web::WebStateID)identifier {
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(_browserState);
-  int browser_types = _incognito
-                          ? BrowserList::BrowserType::kIncognito
-                          : BrowserList::BrowserType::kRegularAndInactive;
+  const BrowserList::BrowserType browser_types =
+      _incognito ? BrowserList::BrowserType::kIncognito
+                 : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browserList->BrowsersOfType(browser_types);
   for (Browser* browser : browsers) {
     WebStateList* webStateList = browser->GetWebStateList();

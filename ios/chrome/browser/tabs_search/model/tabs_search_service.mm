@@ -77,9 +77,9 @@ void TabsSearchService::Search(
     const std::u16string& term,
     base::OnceCallback<void(std::vector<TabsSearchBrowserResults>)>
         completion) {
-  int browser_types = is_off_the_record_
-                          ? BrowserList::BrowserType::kIncognito
-                          : BrowserList::BrowserType::kRegularAndInactive;
+  const BrowserList::BrowserType browser_types =
+      is_off_the_record_ ? BrowserList::BrowserType::kIncognito
+                         : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list_->BrowsersOfType(browser_types);
   SearchWithinBrowsers(browsers, term, std::move(completion));
 }

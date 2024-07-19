@@ -4,7 +4,56 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser_list_impl.h"
 
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "base/check.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+
+namespace {
+
+// Returns whether a Browser's type matches `type`.
+bool IsBrowserOfType(Browser* browser, BrowserList::BrowserType type) {
+  switch (browser->type()) {
+    case Browser::Type::kRegular:
+      switch (type) {
+        case BrowserList::BrowserType::kRegular:
+        case BrowserList::BrowserType::kRegularAndInactive:
+        case BrowserList::BrowserType::kAll:
+          return true;
+
+        case BrowserList::BrowserType::kInactive:
+        case BrowserList::BrowserType::kIncognito:
+          return false;
+      }
+
+    case Browser::Type::kIncognito:
+      switch (type) {
+        case BrowserList::BrowserType::kIncognito:
+        case BrowserList::BrowserType::kAll:
+          return true;
+
+        case BrowserList::BrowserType::kRegular:
+        case BrowserList::BrowserType::kRegularAndInactive:
+        case BrowserList::BrowserType::kInactive:
+          return false;
+      }
+
+    case Browser::Type::kInactive:
+      switch (type) {
+        case BrowserList::BrowserType::kInactive:
+        case BrowserList::BrowserType::kRegularAndInactive:
+        case BrowserList::BrowserType::kAll:
+          return true;
+
+        case BrowserList::BrowserType::kRegular:
+        case BrowserList::BrowserType::kIncognito:
+          return false;
+      }
+
+    case Browser::Type::kTemporary:
+      return false;
+  }
+}
+
+}  // namespace
 
 BrowserListImpl::BrowserListImpl() {}
 
@@ -42,22 +91,11 @@ void BrowserListImpl::RemoveBrowser(Browser* browser) {
 }
 
 std::set<Browser*> BrowserListImpl::BrowsersOfType(
-    int browser_type_mask) const {
+    BrowserList::BrowserType type) const {
   std::set<Browser*> browsers;
-  base::ranges::copy_if(browsers_, std::inserter(browsers, browsers.end()),
-                        [browser_type_mask](Browser* browser) {
-                          switch (browser->type()) {
-                            case Browser::Type::kRegular:
-                              return browser_type_mask & BrowserType::kRegular;
-                            case Browser::Type::kIncognito:
-                              return browser_type_mask &
-                                     BrowserType::kIncognito;
-                            case Browser::Type::kInactive:
-                              return browser_type_mask & BrowserType::kInactive;
-                            case Browser::Type::kTemporary:
-                              return 0;
-                          }
-                        });
+  base::ranges::copy_if(
+      browsers_, std::inserter(browsers, browsers.end()),
+      [type](Browser* browser) { return IsBrowserOfType(browser, type); });
   return browsers;
 }
 

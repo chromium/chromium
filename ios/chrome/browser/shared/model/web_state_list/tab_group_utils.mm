@@ -17,8 +17,9 @@
 std::set<const TabGroup*> GetAllGroupsForBrowserList(BrowserList* browser_list,
                                                      BOOL incognito) {
   std::set<const TabGroup*> groups;
-  int browser_types = incognito ? BrowserList::BrowserType::kIncognito
-                                : BrowserList::BrowserType::kRegular;
+  const BrowserList::BrowserType browser_types =
+      incognito ? BrowserList::BrowserType::kIncognito
+                : BrowserList::BrowserType::kRegular;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();
@@ -42,8 +43,9 @@ void MoveTabToGroup(web::WebStateID web_state_identifier,
   BOOL incognito = browser_state->IsOffTheRecord();
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state);
-  int browser_types = incognito ? BrowserList::BrowserType::kIncognito
-                                : BrowserList::BrowserType::kRegularAndInactive;
+  const BrowserList::BrowserType browser_types =
+      incognito ? BrowserList::BrowserType::kIncognito
+                : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   int web_state_index = WebStateList::kInvalidIndex;
@@ -84,8 +86,9 @@ void MoveTabToGroup(web::WebStateID web_state_identifier,
 Browser* GetBrowserForGroup(BrowserList* browser_list,
                             const TabGroup* group,
                             bool is_otr_group) {
-  int browser_types = is_otr_group ? BrowserList::BrowserType::kIncognito
-                                   : BrowserList::BrowserType::kRegular;
+  const BrowserList::BrowserType browser_types =
+      is_otr_group ? BrowserList::BrowserType::kIncognito
+                   : BrowserList::BrowserType::kRegular;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();

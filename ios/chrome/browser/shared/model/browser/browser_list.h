@@ -25,12 +25,12 @@ class Browser;
 // browser state's service instance.
 class BrowserList : public KeyedService {
  public:
-  enum BrowserType {
-    kRegular = 1 << 0,
-    kInactive = 1 << 1,
-    kIncognito = 1 << 2,
-    kRegularAndInactive = kRegular | kInactive,
-    kAll = kRegular | kInactive | kIncognito
+  enum class BrowserType {
+    kRegular,
+    kInactive,
+    kIncognito,
+    kRegularAndInactive,
+    kAll,
   };
 
   explicit BrowserList() = default;
@@ -46,9 +46,8 @@ class BrowserList : public KeyedService {
   // previously added is a no-op; observers are not informed.
   virtual void RemoveBrowser(Browser* browser) = 0;
 
-  // Returns the current set of browsers in the list matching the `type`. `type`
-  // can be be used as a bitmask.
-  virtual std::set<Browser*> BrowsersOfType(int browser_type_mask) const = 0;
+  // Returns the current set of browsers in the list matching the `type`.
+  virtual std::set<Browser*> BrowsersOfType(BrowserType type) const = 0;
 
   // Adds an observer to the service.
   virtual void AddObserver(BrowserListObserver* observer) = 0;

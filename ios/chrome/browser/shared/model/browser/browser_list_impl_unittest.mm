@@ -37,11 +37,7 @@ class BrowserListImplTest : public PlatformTest {
 // Tests main add/remove logic.
 TEST_F(BrowserListImplTest, AddRemoveBrowsers) {
   // Browser list should start empty
-  EXPECT_EQ(0UL, browser_list_
-                     ->BrowsersOfType(BrowserType::kRegular |
-                                      BrowserType::kIncognito |
-                                      BrowserType::kInactive)
-                     .size());
+  EXPECT_EQ(0UL, browser_list_->BrowsersOfType(BrowserType::kAll).size());
 
   TestBrowser browser_1(chrome_browser_state_.get());
 
@@ -89,11 +85,7 @@ TEST_F(BrowserListImplTest, AddRemoveIncognitoAndInactiveBrowsers) {
   EXPECT_EQ(otr_browser_list, browser_list_);
 
   // Incognito browser list starts empty.
-  EXPECT_EQ(0UL, browser_list_
-                     ->BrowsersOfType(BrowserType::kRegular |
-                                      BrowserType::kIncognito |
-                                      BrowserType::kInactive)
-                     .size());
+  EXPECT_EQ(0UL, browser_list_->BrowsersOfType(BrowserType::kAll).size());
 
   TestBrowser browser_1(chrome_browser_state_.get());
   Browser* inactive_browser_1 = browser_1.CreateInactiveBrowser();
@@ -139,11 +131,7 @@ TEST_F(BrowserListImplTest, AddRemoveIncognitoAndInactiveBrowsers) {
   browser_list_->RemoveBrowser(&browser_1);
   browser_list_->RemoveBrowser(&incognito_browser_1);
   browser_list_->RemoveBrowser(inactive_browser_1);
-  EXPECT_EQ(0UL, browser_list_
-                     ->BrowsersOfType(BrowserType::kRegular |
-                                      BrowserType::kIncognito |
-                                      BrowserType::kInactive)
-                     .size());
+  EXPECT_EQ(0UL, browser_list_->BrowsersOfType(BrowserType::kAll).size());
 }
 
 // Tests that destroyed browsers are auto-removed.
@@ -163,10 +151,7 @@ TEST_F(BrowserListImplTest, AutoRemoveBrowsers) {
   }
 
   // Expect that the browsers going out of scope will have triggered removal.
-  EXPECT_EQ(
-      0UL, browser_list_
-               ->BrowsersOfType(BrowserType::kRegular | BrowserType::kIncognito)
-               .size());
+  EXPECT_EQ(0UL, browser_list_->BrowsersOfType(BrowserType::kAll).size());
 }
 
 // Tests that values returned from BrowsersOfType aren't affected by subsequent
@@ -176,17 +161,13 @@ TEST_F(BrowserListImplTest, AllBrowserValuesDontChange) {
 
   // Add a browser and get the current set of browsers.
   browser_list_->AddBrowser(&browser_1);
-  std::set<Browser*> browsers = browser_list_->BrowsersOfType(
-      BrowserType::kRegular | BrowserType::kIncognito | BrowserType::kInactive);
+  std::set<Browser*> browsers =
+      browser_list_->BrowsersOfType(BrowserType::kAll);
   EXPECT_EQ(1UL, browsers.size());
 
   // Remove the browser.
   browser_list_->RemoveBrowser(&browser_1);
-  EXPECT_EQ(0UL, browser_list_
-                     ->BrowsersOfType(BrowserType::kRegular |
-                                      BrowserType::kIncognito |
-                                      BrowserType::kInactive)
-                     .size());
+  EXPECT_EQ(0UL, browser_list_->BrowsersOfType(BrowserType::kAll).size());
   EXPECT_EQ(1UL, browsers.size());
 }
 

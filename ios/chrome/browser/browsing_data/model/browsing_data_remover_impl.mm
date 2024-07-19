@@ -689,8 +689,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS)) {
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state_);
-    for (Browser* browser :
-         browser_list->BrowsersOfType(BrowserList::kRegularAndInactive)) {
+    for (Browser* browser : browser_list->BrowsersOfType(
+             BrowserList::BrowserType::kRegularAndInactive)) {
       current_task_runner->PostTask(
           FROM_HERE, base::BindOnce(&tabs_closure_util::CloseTabs,
                                     browser->GetWebStateList(), delete_begin,
