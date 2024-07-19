@@ -13,6 +13,18 @@ public class QuicExceptionImpl extends QuicException {
     private final @ConnectionCloseSource int mSource;
     private final NetworkExceptionImpl mNetworkException;
 
+    /** Deprecated, maintained for backward compatibility. */
+    @Deprecated
+    public QuicExceptionImpl(
+            String message, int errorCode, int netErrorCode, int quicDetailedErrorCode) {
+        this(
+                message,
+                errorCode,
+                netErrorCode,
+                quicDetailedErrorCode,
+                ConnectionCloseSource.UNKNOWN);
+    }
+
     /**
      * Constructs an exception with a specific error.
      *
