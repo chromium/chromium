@@ -113,7 +113,7 @@ class OnConsentStateUpdateClosureRunner
         magic_boost_state_observation_.Reset();
         std::move(on_declined_closure_).Run();
         return;
-      case chromeos::HMRConsentStatus::kPending:
+      case chromeos::HMRConsentStatus::kPendingDisclaimer:
       case chromeos::HMRConsentStatus::kUnset:
         return;
     }

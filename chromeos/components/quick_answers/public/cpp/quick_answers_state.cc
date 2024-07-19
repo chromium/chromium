@@ -44,13 +44,17 @@ QuickAnswersState::Error ToQuickAnswersStateError(
 quick_answers::prefs::ConsentStatus ToQuickAnswersPrefsConsentStatus(
     chromeos::HMRConsentStatus consent_status) {
   switch (consent_status) {
+    case chromeos::HMRConsentStatus::kUnset:
+      return quick_answers::prefs::ConsentStatus::kUnknown;
+    case chromeos::HMRConsentStatus::kPendingDisclaimer:
+      // Quick Answers capability is available from `kPendingDisclaimer` state.
+      // See comments in `chromeos::HMRConsentStatus` for details of those
+      // states.
+      return quick_answers::prefs::ConsentStatus::kAccepted;
     case chromeos::HMRConsentStatus::kApproved:
       return quick_answers::prefs::ConsentStatus::kAccepted;
     case chromeos::HMRConsentStatus::kDeclined:
       return quick_answers::prefs::ConsentStatus::kRejected;
-    case chromeos::HMRConsentStatus::kPending:
-    case chromeos::HMRConsentStatus::kUnset:
-      return quick_answers::prefs::ConsentStatus::kUnknown;
   }
 
   CHECK(false) << "Unknown HMRConsentStatus enum class value provided.";

@@ -283,7 +283,7 @@ void MagicBoostOptInCard::OnPrimaryButtonPressed() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   magic_boost_state->AsyncWriteConsentStatus(
-      chromeos::HMRConsentStatus::kPending);
+      chromeos::HMRConsentStatus::kPendingDisclaimer);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

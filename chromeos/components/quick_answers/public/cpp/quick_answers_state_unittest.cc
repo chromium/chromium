@@ -272,4 +272,59 @@ TEST(QuickAnswersStateTest, GetConsentStatusUnderMagicBoost) {
             observer.consent_status());
 }
 
+TEST(QuickAnswersStateTest, PendingUnderMagicBoost) {
+  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
+      MaybeEnableMagicBoost();
+  ASSERT_TRUE(magic_boost_enabled)
+      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
+
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+
+  magic_boost_state.AsyncWriteHMREnabled(true);
+  magic_boost_state.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kPendingDisclaimer);
+
+  EXPECT_TRUE(
+      quick_answers_state.IsEnabledAs(QuickAnswersState::FeatureType::kHmr))
+      << "Quick Answers capability can be enabled with kPendingDisclaimer "
+         "state.";
+  EXPECT_FALSE(quick_answers_state.IsEnabledAs(
+      QuickAnswersState::FeatureType::kQuickAnswers))
+      << "Expect that Quick Answers capability is enabled only as HMR if it's "
+         "via MagicBoost.";
+}
+
+TEST(QuickAnswersStateTest, PendingNotEnabledUnderMagicBoost) {
+  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
+      MaybeEnableMagicBoost();
+  ASSERT_TRUE(magic_boost_enabled)
+      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
+
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+
+  magic_boost_state.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kPendingDisclaimer);
+
+  ASSERT_FALSE(magic_boost_state.hmr_enabled().has_value())
+      << "Test that enabled state pref value is not initialized yet.";
+  EXPECT_FALSE(
+      quick_answers_state.IsEnabledAs(QuickAnswersState::FeatureType::kHmr))
+      << "Magic Boost must be enabled as Quick Answers capability can be "
+         "enabled.";
+
+  magic_boost_state.AsyncWriteHMREnabled(false);
+  ASSERT_TRUE(magic_boost_state.hmr_enabled().has_value());
+  ASSERT_FALSE(magic_boost_state.hmr_enabled().value())
+      << "This test is testing kPendingDisclaimer state with not-enabled";
+
+  EXPECT_FALSE(
+      quick_answers_state.IsEnabledAs(QuickAnswersState::FeatureType::kHmr))
+      << "Magic Boost must be enabled as Quick Answers capability can be "
+         "enabled.";
+}
+
 }  // namespace quick_answers
