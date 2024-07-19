@@ -128,6 +128,8 @@ public interface SyncService {
     public void getLocalDataDescriptions(
             Set<Integer> types, Callback<HashMap<Integer, LocalDataDescription>> callback);
 
+    public void triggerLocalDataMigration(Set<Integer> types);
+
     public boolean hasKeepEverythingSynced();
 
     public boolean isTypeManagedByPolicy(@UserSelectableType int type);

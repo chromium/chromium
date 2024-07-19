@@ -234,6 +234,11 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
+    public void triggerLocalDataMigration(Set<Integer> types) {
+        mDelegate.triggerLocalDataMigration(types);
+    }
+
+    @Override
     public boolean hasKeepEverythingSynced() {
         return mDelegate.hasKeepEverythingSynced();
     }

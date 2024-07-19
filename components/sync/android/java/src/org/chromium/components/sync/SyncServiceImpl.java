@@ -183,6 +183,15 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
+    public void triggerLocalDataMigration(Set<Integer> types) {
+        mThreadChecker.assertOnValidThread();
+        assert mSyncServiceAndroidBridge != 0;
+        SyncServiceImplJni.get()
+                .triggerLocalDataMigration(
+                        mSyncServiceAndroidBridge, userSelectableTypeSetToArray(types));
+    }
+
+    @Override
     public boolean isTypeManagedByPolicy(@UserSelectableType int type) {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -555,6 +564,8 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
                 long nativeSyncServiceAndroidBridge,
                 int[] types,
                 Callback<HashMap<Integer, LocalDataDescription>> callback);
+
+        void triggerLocalDataMigration(long nativeSyncServiceAndroidBridge, int[] types);
 
         boolean isTypeManagedByPolicy(long nativeSyncServiceAndroidBridge, int type);
 

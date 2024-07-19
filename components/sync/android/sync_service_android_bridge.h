@@ -61,6 +61,9 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jintArray>& types,
       const base::android::JavaParamRef<jobject>& callback);
+  void TriggerLocalDataMigration(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jintArray>& types);
   jboolean IsTypeManagedByPolicy(JNIEnv* env, jint type);
   jboolean IsTypeManagedByCustodian(JNIEnv* env, jint type);
   void SetSelectedTypes(JNIEnv* env,

@@ -41,6 +41,12 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
+syncer::ModelType IntToModelTypeChecked(int type) {
+  CHECK_GE(type, static_cast<int>(syncer::ModelType::FIRST_REAL_MODEL_TYPE));
+  CHECK_LE(type, static_cast<int>(syncer::ModelType::LAST_REAL_MODEL_TYPE));
+  return static_cast<syncer::ModelType>(type);
+}
+
 ScopedJavaLocalRef<jintArray> ModelTypeSetToJavaIntArray(
     JNIEnv* env,
     syncer::ModelTypeSet types) {
@@ -49,6 +55,18 @@ ScopedJavaLocalRef<jintArray> ModelTypeSetToJavaIntArray(
     type_vector.push_back(type);
   }
   return base::android::ToJavaIntArray(env, type_vector);
+}
+
+syncer::ModelTypeSet JavaIntArrayToModelTypeSet(
+    JNIEnv* env,
+    const JavaParamRef<jintArray>& types) {
+  std::vector<int> types_vector;
+  base::android::JavaIntArrayToIntVector(env, types, &types_vector);
+  syncer::ModelTypeSet model_type_set;
+  for (int type : types_vector) {
+    model_type_set.Put(IntToModelTypeChecked(type));
+  }
+  return model_type_set;
 }
 
 ScopedJavaLocalRef<jintArray> UserSelectableTypeSetToJavaIntArray(
@@ -122,12 +140,6 @@ syncer::UserSelectableType IntToUserSelectableTypeChecked(int type) {
   CHECK_GE(type, static_cast<int>(syncer::UserSelectableType::kFirstType));
   CHECK_LE(type, static_cast<int>(syncer::UserSelectableType::kLastType));
   return static_cast<syncer::UserSelectableType>(type);
-}
-
-syncer::ModelType IntToModelTypeChecked(int type) {
-  CHECK_GE(type, static_cast<int>(syncer::ModelType::FIRST_REAL_MODEL_TYPE));
-  CHECK_LE(type, static_cast<int>(syncer::ModelType::LAST_REAL_MODEL_TYPE));
-  return static_cast<syncer::ModelType>(type);
 }
 
 }  // namespace
@@ -255,19 +267,20 @@ void SyncServiceAndroidBridge::GetLocalDataDescriptions(
     JNIEnv* env,
     const base::android::JavaParamRef<jintArray>& types,
     const base::android::JavaParamRef<jobject>& callback) {
-  std::vector<int> types_vector;
-  base::android::JavaIntArrayToIntVector(env, types, &types_vector);
-  syncer::ModelTypeSet model_type_set;
-  for (int type : types_vector) {
-    model_type_set.Put(IntToModelTypeChecked(type));
-  }
-
   base::android::ScopedJavaGlobalRef<jobject> java_callback;
   java_callback.Reset(env, callback);
 
   native_sync_service_->GetLocalDataDescriptions(
-      model_type_set, base::BindOnce(&NativeGetLocalDataDescriptionsCallback,
-                                     env, java_callback));
+      JavaIntArrayToModelTypeSet(env, types),
+      base::BindOnce(&NativeGetLocalDataDescriptionsCallback, env,
+                     java_callback));
+}
+
+void SyncServiceAndroidBridge::TriggerLocalDataMigration(
+    JNIEnv* env,
+    const JavaParamRef<jintArray>& types) {
+  native_sync_service_->TriggerLocalDataMigration(
+      JavaIntArrayToModelTypeSet(env, types));
 }
 
 jboolean SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env,
