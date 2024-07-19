@@ -20,12 +20,12 @@
 
 namespace ash {
 
-// Responds to changes in the SecureDNS preferences and generates and updates
-// the corresponding shill property which can then be used by downstream
-// services.
+// Responds to changes in the SecureDNS preferences from the local state and
+// generates and updates the corresponding shill property which can then be used
+// by downstream services.
 class SecureDnsManager : public NetworkStateHandlerObserver {
  public:
-  explicit SecureDnsManager(PrefService* pref_service);
+  explicit SecureDnsManager(PrefService* local_state);
   SecureDnsManager(const SecureDnsManager&) = delete;
   SecureDnsManager& operator=(const SecureDnsManager&) = delete;
   ~SecureDnsManager() override;
@@ -47,19 +47,29 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   base::Value::Dict GetProviders(const std::string& mode,
                                  const std::string& templates);
 
-  // Callbacks for the registrar. Evaluates the current settings and publishes
+  // Starts tracking secure DNS enterprise policy changes. The policy values are
+  // mapped by the policy service to the local state pref service.
+  void MonitorPolicyPrefs();
+
+  // Callback for the registrar. Evaluates the current settings and publishes
   // the result to shill.
-  void OnDoHConfigPrefChanged();
+  void OnPolicyPrefChanged();
+
   void OnDoHIncludedDomainsPrefChanged();
   void OnDoHExcludedDomainsPrefChanged();
 
+  // If the DoH template URIs contain network identifiers, this method will
+  // instantiate `network_state_handler_observer_` to start monitoring
+  // network changes. Otherwise, it will reset
+  // `network_state_handler_observer_`.
+  void ToggleNetworkMonitoring();
   void UpdateTemplateUri();
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
-  PrefChangeRegistrar registrar_;
-  raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar local_state_registrar_;
+  raw_ptr<PrefService> local_state_;
 
   // Maps secure DNS provider URL templates to their corresponding standard DNS
   // name servers. Providers that are either disabled or not applicable for the

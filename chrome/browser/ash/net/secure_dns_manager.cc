@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver_impl.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/secure_dns_util.h"
 #include "chrome/common/pref_names.h"
@@ -35,43 +36,44 @@
 
 namespace ash {
 
-SecureDnsManager::SecureDnsManager(PrefService* pref_service)
-    : pref_service_(pref_service) {
+SecureDnsManager::SecureDnsManager(PrefService* local_state)
+    : local_state_(local_state) {
   doh_templates_uri_resolver_ =
       std::make_unique<dns_over_https::TemplatesUriResolverImpl>();
-  registrar_.Init(pref_service);
-  registrar_.Add(::prefs::kDnsOverHttpsMode,
-                 base::BindRepeating(&SecureDnsManager::OnDoHConfigPrefChanged,
-                                     base::Unretained(this)));
-  registrar_.Add(::prefs::kDnsOverHttpsTemplates,
-                 base::BindRepeating(&SecureDnsManager::OnDoHConfigPrefChanged,
-                                     base::Unretained(this)));
-  registrar_.Add(::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
-                 base::BindRepeating(&SecureDnsManager::OnDoHConfigPrefChanged,
-                                     base::Unretained(this)));
-  registrar_.Add(::prefs::kDnsOverHttpsSalt,
-                 base::BindRepeating(&SecureDnsManager::OnDoHConfigPrefChanged,
-                                     base::Unretained(this)));
-  registrar_.Add(
+
+  MonitorPolicyPrefs();
+  LoadProviders();
+  OnPolicyPrefChanged();
+  OnDoHIncludedDomainsPrefChanged();
+  OnDoHExcludedDomainsPrefChanged();
+}
+
+void SecureDnsManager::MonitorPolicyPrefs() {
+  local_state_registrar_.Init(local_state_);
+  static constexpr std::array<const char*, 4> secure_dns_pref_names = {
+      ::prefs::kDnsOverHttpsMode, ::prefs::kDnsOverHttpsTemplates,
+      ::prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+      ::prefs::kDnsOverHttpsSalt};
+  for (auto* const pref_name : secure_dns_pref_names) {
+    local_state_registrar_.Add(
+        pref_name, base::BindRepeating(&SecureDnsManager::OnPolicyPrefChanged,
+                                       base::Unretained(this)));
+  }
+  local_state_registrar_.Add(
       prefs::kDnsOverHttpsIncludedDomains,
       base::BindRepeating(&SecureDnsManager::OnDoHIncludedDomainsPrefChanged,
                           base::Unretained(this)));
-  registrar_.Add(
+  local_state_registrar_.Add(
       prefs::kDnsOverHttpsExcludedDomains,
       base::BindRepeating(&SecureDnsManager::OnDoHExcludedDomainsPrefChanged,
                           base::Unretained(this)));
-  LoadProviders();
-  OnDoHIncludedDomainsPrefChanged();
-  OnDoHExcludedDomainsPrefChanged();
-  OnDoHConfigPrefChanged();
 }
 
 SecureDnsManager::~SecureDnsManager() {
-  // `pref_service_` outlives the SecureDnsManager instance. The value of
-  // `prefs::kDnsOverHttpsEffectiveTemplatesChromeOS` should not outlive the
+  // `local_state_` outlives the SecureDnsManager instance. The value of
+  // `::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS` should not outlive the
   // current instance of SecureDnsManager.
-  pref_service_->ClearPref(::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS);
-  registrar_.RemoveAll();
+  local_state_->ClearPref(::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS);
 }
 
 void SecureDnsManager::SetDoHTemplatesUriResolverForTesting(
@@ -142,8 +144,7 @@ base::Value::Dict SecureDnsManager::GetProviders(const std::string& mode,
 }
 
 void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
-  const std::string& mode =
-      pref_service_->GetString(::prefs::kDnsOverHttpsMode);
+  const std::string& mode = local_state_->GetString(::prefs::kDnsOverHttpsMode);
   if (mode == SecureDnsConfig::kModeOff) {
     return;
   }
@@ -152,7 +153,7 @@ void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
   // template URI if the admin has configured the
   // DnsOverHttpsTemplatesWithIdentifiers policy to include the IP addresses.
   std::string templates_with_identifiers =
-      pref_service_->GetString(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+      local_state_->GetString(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
   if (!dns_over_https::TemplatesUriResolverImpl::
           IsDeviceIpAddressIncludedInUriTemplate(templates_with_identifiers)) {
     return;
@@ -160,21 +161,26 @@ void SecureDnsManager::DefaultNetworkChanged(const NetworkState* network) {
   UpdateTemplateUri();
 }
 
-void SecureDnsManager::OnDoHConfigPrefChanged() {
+void SecureDnsManager::OnPolicyPrefChanged() {
   UpdateTemplateUri();
+  ToggleNetworkMonitoring();
+}
 
-  if (!doh_templates_uri_resolver_->GetDohWithIdentifiersActive()) {
-    return;
-  }
-
+void SecureDnsManager::ToggleNetworkMonitoring() {
   // If DoH with identifiers are active, verify if network changes need to be
   // observed for URI template placeholder replacement.
   std::string templates_with_identifiers =
-      pref_service_->GetString(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
+      local_state_->GetString(::prefs::kDnsOverHttpsTemplatesWithIdentifiers);
 
-  bool should_observe_default_network_changes =
+  bool template_uri_includes_network_identifiers =
+      doh_templates_uri_resolver_->GetDohWithIdentifiersActive() &&
       dns_over_https::TemplatesUriResolverImpl::
           IsDeviceIpAddressIncludedInUriTemplate(templates_with_identifiers);
+
+  bool should_observe_default_network_changes =
+      template_uri_includes_network_identifiers &&
+      (local_state_->GetString(::prefs::kDnsOverHttpsMode) !=
+       SecureDnsConfig::kModeOff);
 
   if (!should_observe_default_network_changes) {
     network_state_handler_observer_.Reset();
@@ -190,7 +196,7 @@ void SecureDnsManager::OnDoHConfigPrefChanged() {
 
 void SecureDnsManager::OnDoHIncludedDomainsPrefChanged() {
   base::Value::List included_domains =
-      pref_service_->GetList(prefs::kDnsOverHttpsIncludedDomains).Clone();
+      local_state_->GetList(prefs::kDnsOverHttpsIncludedDomains).Clone();
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
       shill::kDOHIncludedDomainsProperty,
       base::Value(std::move(included_domains)));
@@ -202,7 +208,7 @@ void SecureDnsManager::OnDoHIncludedDomainsPrefChanged() {
 
 void SecureDnsManager::OnDoHExcludedDomainsPrefChanged() {
   base::Value::List excluded_domains =
-      pref_service_->GetList(prefs::kDnsOverHttpsExcludedDomains).Clone();
+      local_state_->GetList(prefs::kDnsOverHttpsExcludedDomains).Clone();
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
       shill::kDOHExcludedDomainsProperty,
       base::Value(std::move(excluded_domains)));
@@ -213,7 +219,7 @@ void SecureDnsManager::OnDoHExcludedDomainsPrefChanged() {
 }
 
 void SecureDnsManager::UpdateTemplateUri() {
-  doh_templates_uri_resolver_->Update(pref_service_);
+  doh_templates_uri_resolver_->Update(local_state_);
 
   const std::string effective_uri_templates =
       doh_templates_uri_resolver_->GetEffectiveTemplates();
@@ -223,14 +229,14 @@ void SecureDnsManager::UpdateTemplateUri() {
   // TODO(acostinas, b/331903009): Storing the effective DoH providers in a
   // local_state pref on Chrome OS has downsides. Replace this pref with an
   // in-memory mechanism to sync effective DoH prefs.
-  pref_service_->SetString(::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
-                           effective_uri_templates);
+  local_state_->SetString(::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
+                          effective_uri_templates);
 
   // Set the DoH URI template shill property which is synced with platform
   // daemons (shill, dns-proxy etc).
-  base::Value::Dict doh_providers =
-      GetProviders(registrar_.prefs()->GetString(::prefs::kDnsOverHttpsMode),
-                   effective_uri_templates);
+  base::Value::Dict doh_providers = GetProviders(
+      local_state_registrar_.prefs()->GetString(::prefs::kDnsOverHttpsMode),
+      effective_uri_templates);
 
   if (cached_doh_providers_ == doh_providers) {
     return;
