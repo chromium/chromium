@@ -57,6 +57,7 @@ InstalledAppController::InstalledAppController(LocalDOMWindow& window)
 
 void InstalledAppController::OnGetManifestForRelatedApps(
     std::unique_ptr<AppInstalledCallbacks> callbacks,
+    mojom::blink::ManifestRequestResult result,
     const KURL& url,
     mojom::blink::ManifestPtr manifest) {
   if (!GetSupplementable()->GetFrame()) {

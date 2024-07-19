@@ -56,6 +56,7 @@ class MODULES_EXPORT InstalledAppController final
   // to the current page's origin. Passes the filtered list to the callback.
   void OnGetManifestForRelatedApps(
       std::unique_ptr<AppInstalledCallbacks> callbacks,
+      mojom::blink::ManifestRequestResult result,
       const KURL& url,
       mojom::blink::ManifestPtr manifest);
 

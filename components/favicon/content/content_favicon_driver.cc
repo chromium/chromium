@@ -76,6 +76,7 @@ ContentFaviconDriver::NavigationManifestData::~NavigationManifestData() =
 
 void ContentFaviconDriver::OnDidDownloadManifest(
     ManifestDownloadCallback callback,
+    blink::mojom::ManifestRequestResult result,
     const GURL& manifest_url,
     blink::mojom::ManifestPtr manifest) {
   // ~WebContentsImpl triggers running any pending callbacks for manifests.

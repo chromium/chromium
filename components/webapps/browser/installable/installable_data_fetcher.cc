@@ -55,13 +55,16 @@ void InstallableDataFetcher::FetchManifest(FetcherCallback finish_callback) {
 
 void InstallableDataFetcher::OnDidGetManifest(
     FetcherCallback finish_callback,
+    blink::mojom::ManifestRequestResult result,
     const GURL& manifest_url,
     blink::mojom::ManifestPtr manifest) {
   InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
   // An empty manifest signifies an error fetching, parsing, or a
   // frame/CORS/opaque origin related issue. Otherwise the manifest algorithm
   // will always populate default values for `start_url`, `id`, and `scope`.
-  if (blink::IsEmptyManifest(manifest)) {
+  if (blink::IsEmptyManifest(manifest) ||
+      result == blink::mojom::ManifestRequestResult::kManifestFailedToFetch ||
+      result == blink::mojom::ManifestRequestResult::kManifestFailedToParse) {
     error = InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
   }
   page_data_->OnManifestFetched(std::move(manifest), manifest_url, error);

@@ -59,8 +59,10 @@ class PaymentAppInfoFetcher {
     void RunCallbackAndDestroy();
 
     // The WebContents::GetManifestCallback.
-    void FetchPaymentAppManifestCallback(const GURL& url,
-                                         blink::mojom::ManifestPtr manifest);
+    void FetchPaymentAppManifestCallback(
+        blink::mojom::ManifestRequestResult result,
+        const GURL& url,
+        blink::mojom::ManifestPtr manifest);
 
     // The ManifestIconDownloader::IconFetchCallback.
     void OnIconFetched(const SkBitmap& icon);

@@ -24,7 +24,9 @@ namespace {
 void DispatchManifestNotFound(
     std::vector<ManifestManagerHost::GetManifestCallback> callbacks) {
   for (ManifestManagerHost::GetManifestCallback& callback : callbacks)
-    std::move(callback).Run(GURL(), blink::mojom::Manifest::New());
+    std::move(callback).Run(
+        blink::mojom::ManifestRequestResult::kUnexpectedFailure, GURL(),
+        blink::mojom::Manifest::New());
 }
 
 }  // namespace
@@ -60,7 +62,9 @@ void ManifestManagerHost::GetManifest(GetManifestCallback callback) {
   // a primary page.
   // TODO(crbug.com/40214638): Maybe cancel prerendering if it hits this.
   if (!page().IsPrimary()) {
-    std::move(callback).Run(GURL(), blink::mojom::Manifest::New());
+    std::move(callback).Run(
+        blink::mojom::ManifestRequestResult::kUnexpectedFailure, GURL(),
+        blink::mojom::Manifest::New());
     return;
   }
 
@@ -105,15 +109,18 @@ void ManifestManagerHost::OnConnectionError() {
 
 void ManifestManagerHost::OnRequestManifestResponse(
     int request_id,
+    blink::mojom::ManifestRequestResult result,
     const GURL& url,
     blink::mojom::ManifestPtr manifest) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Note: An empty manifest signifies an error for callers. If a bad message
-  // occurs, this can be used to not drop the callback & signify an error.
-  if (!manifest) {
-    manifest = blink::mojom::Manifest::New();
-    mojo::ReportBadMessage("RequestManifest must return a non-null Manifest.");
-  } else if (!blink::IsEmptyManifest(manifest)) {
+  // Mojo bindings guarantee that `manifest` isn't null.
+  CHECK(manifest);
+  if (result == blink::mojom::ManifestRequestResult::kSuccess &&
+      blink::IsEmptyManifest(manifest)) {
+    mojo::ReportBadMessage(
+        "RequestManifest reported success but didn't return a manifest");
+  }
+  if (!blink::IsEmptyManifest(manifest)) {
     // `start_url`, `id`, and `scope` MUST be populated if the manifest is not
     // empty.
     bool start_url_valid = manifest->start_url.is_valid();
@@ -144,7 +151,7 @@ void ManifestManagerHost::OnRequestManifestResponse(
   auto callback = std::move(*callbacks_.Lookup(request_id));
   callbacks_.Remove(request_id);
 
-  std::move(callback).Run(url, std::move(manifest));
+  std::move(callback).Run(result, url, std::move(manifest));
 }
 
 void ManifestManagerHost::ManifestUrlChanged(const GURL& manifest_url) {

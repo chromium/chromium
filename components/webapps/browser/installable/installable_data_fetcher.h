@@ -48,6 +48,7 @@ class InstallableDataFetcher {
 
  private:
   void OnDidGetManifest(FetcherCallback finish_callback,
+                        blink::mojom::ManifestRequestResult result,
                         const GURL& manifest_url,
                         blink::mojom::ManifestPtr manifest);
 

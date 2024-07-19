@@ -76,12 +76,39 @@ class MODULES_EXPORT ManifestManager
   void Trace(Visitor*) const override;
 
  private:
-  enum class ResolveState { kSuccess, kFailure };
+  // Result of requesting the manifest. Storing as a class rather than
+  // individual member fields makes it easier to cache the result between
+  // requests and clear all that needs to be cleared when invalidating the
+  // cache. Additionally this makes it more immediately obvious that a result
+  // will never contain a null manifest or debug info, as we can enforce these
+  // invariants in the API of this class.
+  class Result {
+   public:
+    explicit Result(mojom::blink::ManifestRequestResult result,
+                    KURL manifest_url = KURL(),
+                    mojom::blink::ManifestPtr manifest = nullptr);
+    Result(Result&&);
+    Result& operator=(Result&&);
+
+    mojom::blink::ManifestRequestResult result() const { return result_; }
+    const KURL& manifest_url() const { return manifest_url_; }
+    const mojom::blink::Manifest& manifest() const { return *manifest_; }
+    const mojom::blink::ManifestDebugInfo& debug_info() const {
+      return *debug_info_;
+    }
+    mojom::blink::ManifestDebugInfo& debug_info() { return *debug_info_; }
+
+    void SetManifest(mojom::blink::ManifestPtr manifest);
+
+   private:
+    mojom::blink::ManifestRequestResult result_;
+    KURL manifest_url_;
+    mojom::blink::ManifestPtr manifest_;
+    mojom::blink::ManifestDebugInfoPtr debug_info_;
+  };
 
   using InternalRequestManifestCallback =
-      base::OnceCallback<void(const KURL&,
-                              const mojom::blink::ManifestPtr&,
-                              const mojom::blink::ManifestDebugInfo*)>;
+      base::OnceCallback<void(const Result&)>;
 
   // From ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
@@ -96,27 +123,21 @@ class MODULES_EXPORT ManifestManager
                              std::optional<KURL> manifest_url,
                              const String& data);
   void RecordMetrics(const mojom::blink::Manifest& manifest);
-  void ResolveCallbacks(ResolveState state);
+  void ResolveCallbacks(Result result);
 
   void BindReceiver(
       mojo::PendingReceiver<mojom::blink::ManifestManager> receiver);
+
+  mojom::blink::ManifestPtr DefaultManifest();
 
   friend class ManifestManagerTest;
 
   Member<ManifestFetcher> fetcher_;
   Member<ManifestChangeNotifier> manifest_change_notifier_;
 
-  // Whether the current Manifest is dirty.
-  bool manifest_dirty_;
-
-  // Current Manifest. Might be outdated if manifest_dirty_ is true.
-  mojom::blink::ManifestPtr manifest_;
-
-  // The URL of the current manifest.
-  KURL manifest_url_;
-
-  // Current Manifest debug information.
-  mojom::blink::ManifestDebugInfoPtr manifest_debug_info_;
+  // Contains the last RequestManifestImpl result as long as that result is
+  // still valid for subsequent requests.
+  std::optional<Result> cached_result_;
 
   Vector<InternalRequestManifestCallback> pending_callbacks_;
 

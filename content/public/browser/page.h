@@ -70,7 +70,9 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // frame document's manifest. The url will be empty if the document specifies
   // no manifest, and the manifest will be empty if any other failures occurred.
   using GetManifestCallback =
-      base::OnceCallback<void(const GURL&, blink::mojom::ManifestPtr)>;
+      base::OnceCallback<void(blink::mojom::ManifestRequestResult,
+                              const GURL&,
+                              blink::mojom::ManifestPtr)>;
 
   // Requests the manifest URL and the Manifest of the main frame's document.
   // |callback| may be called after the WebContents has been destroyed.

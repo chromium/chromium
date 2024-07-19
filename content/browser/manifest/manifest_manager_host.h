@@ -29,7 +29,9 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
   ~ManifestManagerHost() override;
 
   using GetManifestCallback =
-      base::OnceCallback<void(const GURL&, blink::mojom::ManifestPtr)>;
+      base::OnceCallback<void(blink::mojom::ManifestRequestResult,
+                              const GURL&,
+                              blink::mojom::ManifestPtr)>;
 
   // Calls the given callback with the manifest associated with the main frame.
   // If the main frame has no manifest or if getting it failed the callback will
@@ -56,6 +58,7 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
   void OnConnectionError();
 
   void OnRequestManifestResponse(int request_id,
+                                 blink::mojom::ManifestRequestResult result,
                                  const GURL& url,
                                  blink::mojom::ManifestPtr manifest);
 

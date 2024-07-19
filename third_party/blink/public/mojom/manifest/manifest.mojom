@@ -394,3 +394,23 @@ struct ManifestError {
   uint32 line;
   uint32 column;
 };
+
+// Possible results of requesting the manifest for a document.
+enum ManifestRequestResult {
+  // Something unexpectedly went wrong, no default manifest will be returned
+  // with this response.
+  kUnexpectedFailure,
+  // This page isn't allowed to have a manifest, for example because it has a
+  // unique origin. No default manifest will be returned, but the manifest url
+  // (if any) specified in the page is still returned.
+  kNoManifestAllowed,
+  // The page does not specify a manifest, a default manifest is returned
+  // instead.
+  kNoManifestSpecified,
+  // The manifest failed to fetch or failed to parse. An empty manifest will be
+  // returned with this response.
+  kManifestFailedToFetch,
+  kManifestFailedToParse,
+  // Success, the manifest was loaded from the URL specified by the page.
+  kSuccess
+};

@@ -69,6 +69,7 @@ class ContentFaviconDriver
 
   // Callback when a manifest is downloaded.
   void OnDidDownloadManifest(ManifestDownloadCallback callback,
+                             blink::mojom::ManifestRequestResult result,
                              const GURL& manifest_url,
                              blink::mojom::ManifestPtr manifest);
 

@@ -92,11 +92,13 @@ void PushMessagingClient::DidGetManifest(
     mojom::blink::PushSubscriptionOptionsPtr options,
     bool user_gesture,
     std::unique_ptr<PushSubscriptionCallbacks> callbacks,
+    mojom::blink::ManifestRequestResult result,
     const KURL& manifest_url,
     mojom::blink::ManifestPtr manifest) {
   // Get the application_server_key from the manifest since it wasn't provided
   // by the caller.
-  if (manifest_url.IsEmpty() || manifest == mojom::blink::Manifest::New()) {
+  if (manifest_url.IsEmpty() || manifest == mojom::blink::Manifest::New() ||
+      result != mojom::blink::ManifestRequestResult::kSuccess) {
     DidSubscribe(
         service_worker_registration, std::move(callbacks),
         mojom::blink::PushRegistrationStatus::MANIFEST_EMPTY_OR_MISSING,

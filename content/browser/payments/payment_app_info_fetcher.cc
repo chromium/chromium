@@ -155,6 +155,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::RunCallbackAndDestroy() {
 }
 
 void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
+    blink::mojom::ManifestRequestResult result,
     const GURL& url,
     blink::mojom::ManifestPtr manifest) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -171,7 +172,8 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
     return;
   }
 
-  if (blink::IsEmptyManifest(manifest)) {
+  if (blink::IsEmptyManifest(manifest) ||
+      result != blink::mojom::ManifestRequestResult::kSuccess) {
     WarnIfPossible(
         "Unable to download a valid payment handler web app manifest from \"" +
         manifest_url_.spec() +
