@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ArrowLeft in sideways-lr
-  editing/selection/arrow_key_in_vertical_writing_mode.html:168:3)\n	 expected <pre contenteditable style="writing-mode:sideways-lr">     te|xt1\n     text2\n     text3\n     </pre>,\n	 but got  <pre contenteditable style="writing-mode:sideways-lr">   |  text1\n     text2\n     text3\n     </pre>,\n	 sameupto <pre contenteditable style="writing-mode:sideways-lr">
-[FAIL] ArrowRight in sideways-lr
-  editing/selection/arrow_key_in_vertical_writing_mode.html:181:3)\n	 expected <pre contenteditable style="writing-mode:sideways-lr">     text1\n     text2\n     te|xt3\n     </pre>,\n	 but got  <pre contenteditable style="writing-mode:sideways-lr">     text1\n     text2\n   |  text3\n     </pre>,\n	 sameupto <pre contenteditable style="writing-mode:sideways-lr">     text1\n     text2\n
-Harness: the test ran to completion.
-

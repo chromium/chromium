@@ -39,47 +39,44 @@ TextDirection ResolvedDirection(const InlineCursor& cursor) {
 PhysicalRect ComputeLocalCaretRectByBoxSide(
     const InlineCursor& cursor,
     InlineCaretPositionType position_type) {
-  const bool is_horizontal = cursor.Current().Style().IsHorizontalWritingMode();
   InlineCursor line_box(cursor);
   line_box.MoveToContainingLine();
   DCHECK(line_box);
-  const PhysicalOffset offset = cursor.Current().OffsetInContainerFragment();
-  const PhysicalOffset line_box_offset =
-      line_box.Current().OffsetInContainerFragment();
-  LayoutUnit caret_height = is_horizontal ? line_box.Current().Size().height
-                                          : line_box.Current().Size().width;
-  LayoutUnit caret_top;
-  if (cursor.Current().IsAtomicInline()) {
-    caret_top = is_horizontal ? line_box_offset.top - offset.top
-                              : line_box_offset.left - offset.left;
-  } else {
-    caret_top = is_horizontal ? line_box_offset.top : line_box_offset.left;
+  bool is_atomic_inline = cursor.Current().IsAtomicInline();
+  // RTL is handled manually at the bottom of this function.
+  WritingModeConverter converter(
+      {cursor.Current().Style().GetWritingMode(), TextDirection::kLtr},
+      is_atomic_inline ? cursor.Current().Size()
+                       : cursor.ContainerFragment().Size());
+  LogicalRect line_rect =
+      converter.ToLogical(line_box.Current().RectInContainerFragment());
+  LogicalRect item_rect =
+      converter.ToLogical(cursor.Current().RectInContainerFragment());
+
+  LogicalRect caret_rect;
+  caret_rect.size.block_size = line_rect.size.block_size;
+  // The block-start of the caret is always the block-start of the line.
+  caret_rect.offset.block_offset = line_rect.offset.block_offset;
+  if (is_atomic_inline) {
+    // For atomic-inline, this function should return a rectangle relative to
+    // the atomic-inline.
+    caret_rect.offset.block_offset -= item_rect.offset.block_offset;
   }
 
   const LocalFrameView* frame_view =
       cursor.Current().GetLayoutObject()->GetDocument().View();
-  LayoutUnit caret_width = frame_view->CaretWidth();
+  caret_rect.size.inline_size = frame_view->CaretWidth();
 
   const bool is_ltr = IsLtr(ResolvedDirection(cursor));
-  LayoutUnit caret_left;
-  if (!cursor.Current().IsAtomicInline()) {
-    caret_left = is_horizontal ? offset.left : offset.top;
+  if (!is_atomic_inline) {
+    caret_rect.offset.inline_offset = item_rect.offset.inline_offset;
   }
   if (is_ltr != (position_type == InlineCaretPositionType::kBeforeBox)) {
-    if (is_horizontal)
-      caret_left += cursor.Current().Size().width - caret_width;
-    else
-      caret_left += cursor.Current().Size().height - caret_width;
+    caret_rect.offset.inline_offset +=
+        item_rect.size.inline_size - caret_rect.size.inline_size;
   }
 
-  if (!is_horizontal) {
-    std::swap(caret_top, caret_left);
-    std::swap(caret_width, caret_height);
-  }
-
-  const PhysicalOffset caret_location(caret_left, caret_top);
-  const PhysicalSize caret_size(caret_width, caret_height);
-  return PhysicalRect(caret_location, caret_size);
+  return converter.ToPhysical(caret_rect);
 }
 
 bool ShouldAlignCaretRight(ETextAlign text_align, TextDirection direction) {
@@ -123,9 +120,12 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
   const ComputedStyle& style = cursor.Current().Style();
   const bool is_horizontal = style.IsHorizontalWritingMode();
 
-  LayoutUnit caret_height = is_horizontal ? cursor.Current().Size().height
-                                          : cursor.Current().Size().width;
-  LayoutUnit caret_top;
+  WritingModeConverter converter({style.GetWritingMode(), TextDirection::kLtr},
+                                 cursor.Current().Size());
+  LogicalRect caret_rect;
+  caret_rect.size.inline_size = caret_width;
+  caret_rect.size.block_size =
+      converter.ToLogical(cursor.Current().Size()).block_size;
 
   LayoutUnit caret_left = cursor.CaretInlinePositionForOffset(offset);
   if (cursor.CurrentItem()->IsSvgText()) {
@@ -133,22 +133,19 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
   }
   if (!cursor.Current().IsLineBreak())
     caret_left -= caret_width / 2;
+  caret_rect.offset.inline_offset = caret_left;
 
-  if (!is_horizontal) {
-    std::swap(caret_top, caret_left);
-    std::swap(caret_width, caret_height);
-  }
+  PhysicalRect physical_caret_rect = converter.ToPhysical(caret_rect);
 
   // Adjust the location to be relative to the inline formatting context.
-  PhysicalOffset caret_location = PhysicalOffset(caret_left, caret_top) +
-                                  cursor.Current().OffsetInContainerFragment();
+  PhysicalOffset caret_location =
+      physical_caret_rect.offset + cursor.Current().OffsetInContainerFragment();
   const auto* const text_combine = DynamicTo<LayoutTextCombine>(
       cursor.Current().GetLayoutObject()->Parent());
   if (UNLIKELY(text_combine)) {
     caret_location =
         text_combine->AdjustOffsetForLocalCaretRect(caret_location);
   }
-  const PhysicalSize caret_size(caret_width, caret_height);
 
   const PhysicalBoxFragment& fragment = cursor.ContainerFragment();
   InlineCursor line_box(cursor);
@@ -179,15 +176,15 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
       caret_location.left =
           ClampAndRound(caret_location.left, line_box_rect.X(), right_limit);
     }
-    return PhysicalRect(caret_location, caret_size);
+    return PhysicalRect(caret_location, physical_caret_rect.size);
   }
 
   // Similar adjustment and rounding for vertical text.
   const LayoutUnit min_y = std::min(LayoutUnit(), line_box_offset.top);
   const LayoutUnit bottom_limit =
-      std::max(fragment.Size().height, line_box_rect.Bottom()) - caret_height;
+      std::max(fragment.Size().height, line_box_rect.Bottom()) - caret_width;
   caret_location.top = ClampAndRound(caret_location.top, min_y, bottom_limit);
-  return PhysicalRect(caret_location, caret_size);
+  return PhysicalRect(caret_location, physical_caret_rect.size);
 }
 
 }  // namespace
