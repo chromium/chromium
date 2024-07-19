@@ -16,12 +16,6 @@ assert(use_ozone)
 source_set("chromeos") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   sources = [
-    "enterprise/cloud_storage/one_drive_pref_observer.cc",
-    "enterprise/cloud_storage/one_drive_pref_observer.h",
-    "enterprise/cloud_storage/policy_utils.cc",
-    "enterprise/cloud_storage/policy_utils.h",
-    "enterprise/incognito_navigation_throttle.cc",
-    "enterprise/incognito_navigation_throttle.h",
     "extensions/accessibility_service_private.cc",
     "extensions/accessibility_service_private.h",
     "extensions/contact_center_insights/contact_center_insights_extension_manager.cc",
@@ -210,9 +204,11 @@ source_set("chromeos") {
     "extensions/wallpaper_api.cc",
     "extensions/wallpaper_api.h",
   ]
+
   allow_circular_includes_from = [
-    "//chrome/browser/extensions",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/chromeos/enterprise/cloud_storage",
+    "//chrome/browser/extensions",
   ]
   public_deps = [
     "//base",
@@ -275,6 +271,8 @@ source_set("chromeos") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/chromeos/echo",
+    "//chrome/browser/chromeos/enterprise",
+    "//chrome/browser/chromeos/enterprise/cloud_storage",
     "//chrome/browser/chromeos/smart_reader",
     "//chrome/browser/chromeos/tast_support",
     "//chrome/browser/enterprise/data_controls",

@@ -6320,6 +6320,8 @@ static_library("browser") {
       "//chrome/browser/chromeos/cros_apps/api",
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/echo",
+      "//chrome/browser/chromeos/enterprise",
+      "//chrome/browser/chromeos/enterprise/cloud_storage",
       "//chrome/browser/chromeos/extensions/telemetry",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/policy:onc",
