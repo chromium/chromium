@@ -25,6 +25,13 @@ namespace content {
 using ukm::GetExponentialBucketMinForCounts1000;
 using ukm::GetSemanticBucketMinForDurationTiming;
 
+namespace {
+int64_t GetBucketMinForPhaseTimeMetric(base::TimeDelta time_delta) {
+  return ukm::GetLinearBucketMin(time_delta.InMilliseconds(),
+                                 /*bucket_size=*/10);
+}
+}  // namespace
+
 AuctionMetricsRecorder::AuctionMetricsRecorder(ukm::SourceId ukm_source_id)
     : builder_(ukm_source_id), auction_start_time_(base::TimeTicks::Now()) {}
 
@@ -304,11 +311,12 @@ void AuctionMetricsRecorder::OnLoadInterestGroupPhaseComplete() {
   base::TimeTicks now = base::TimeTicks::Now();
   bidding_and_scoring_phase_start_time_ = now;
 
-  base::TimeDelta load_interest_group_phase_latency =
-      bidding_and_scoring_phase_start_time_.value() - auction_start_time_;
+  base::TimeDelta load_interest_group_phase_latency = now - auction_start_time_;
   builder_.SetLoadInterestGroupPhaseLatencyInMillis(
       GetSemanticBucketMinForDurationTiming(
           load_interest_group_phase_latency.InMilliseconds()));
+  builder_.SetLoadInterestGroupPhaseEndTimeInMillis(
+      GetBucketMinForPhaseTimeMetric(load_interest_group_phase_latency));
 }
 
 void AuctionMetricsRecorder::OnConfigPromisesResolved() {

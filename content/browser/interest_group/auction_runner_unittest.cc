@@ -2497,6 +2497,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kResultName,
                 Entry::kEndToEndLatencyInMillisName,
                 Entry::kLoadInterestGroupPhaseLatencyInMillisName,
+                Entry::kLoadInterestGroupPhaseEndTimeInMillisName,
                 Entry::kNumInterestGroupsName,
                 Entry::kNumNegativeInterestGroupsName,
                 Entry::kNumOwnersWithInterestGroupsName,
@@ -2933,6 +2934,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     EXPECT_THAT(
         ukm_metrics,
         HasMetric(UkmEntry::kLoadInterestGroupPhaseLatencyInMillisName));
+    EXPECT_THAT(
+        ukm_metrics,
+        HasMetric(UkmEntry::kLoadInterestGroupPhaseEndTimeInMillisName));
     EXPECT_THAT(ukm_metrics, HasMetric(UkmEntry::kEndToEndLatencyInMillisName));
 
     EXPECT_THAT(ukm_metrics,

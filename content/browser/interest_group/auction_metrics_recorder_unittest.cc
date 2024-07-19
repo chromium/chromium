@@ -117,17 +117,26 @@ TEST_F(AuctionMetricsRecorderTest, MostMethodsCrashAfterOnAuctionEnd) {
   EXPECT_DEATH_IF_SUPPORTED(recorder().SetNumInterestGroups(4), "");
 }
 
-TEST_F(AuctionMetricsRecorderTest, LoadInterestGroupPhaseLatencyInMillis) {
-  FastForwardTime(base::Milliseconds(720));
+TEST_F(AuctionMetricsRecorderTest, NoLoadInterestGroupPhaseLatencyAndEndTime) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+  EXPECT_FALSE(HasMetric(UkmEntry::kLoadInterestGroupPhaseLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kLoadInterestGroupPhaseEndTimeInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest, LoadInterestGroupPhaseLatencyAndEndTime) {
+  FastForwardTime(base::Milliseconds(722));
   recorder().OnLoadInterestGroupPhaseComplete();
-  FastForwardTime(base::Milliseconds(280));
   recorder().OnAuctionEnd(AuctionResult::kSuccess);
 
-  // e2e latency is reported as 700 and not 720 because of bucketing
+  // phase latency is reported as 700 (duration bucketing)
   EXPECT_EQ(
       GetMetricValue(UkmEntry::kLoadInterestGroupPhaseLatencyInMillisName),
       700);
-  EXPECT_EQ(GetMetricValue(UkmEntry::kEndToEndLatencyInMillisName), 1000);
+
+  // phase end time is reported as 720 (linear 10 ms bucketing)
+  EXPECT_EQ(
+      GetMetricValue(UkmEntry::kLoadInterestGroupPhaseEndTimeInMillisName),
+      720);
 }
 
 TEST_F(AuctionMetricsRecorderTest, NumInterestGroups) {
