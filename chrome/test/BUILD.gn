@@ -11560,6 +11560,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ash/app_list/app_service",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",
+        "//chrome/browser/ui/ash/privacy_hub:interactive_ui_tests",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chromeos/ash/components/dbus",
         "//chromeos/ash/components/login/auth",
@@ -11569,10 +11570,7 @@ if (!is_android && !is_chromeos_device) {
         "//ui/display:display_manager_test_api",
         "//ui/display/manager",
       ]
-      sources += [
-        "../browser/ui/ash/clipboard_history_interactive_uitest.cc",
-        "../browser/ui/ash/privacy_hub/geolocation_switch_interactive_uitest.cc",
-      ]
+      sources += [ "../browser/ui/ash/clipboard_history_interactive_uitest.cc" ]
 
       # These tests are not applicable on Chrome OS.
       sources -= [
