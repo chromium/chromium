@@ -240,10 +240,8 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
               checked: this.enabledLangs && this.enabledLangs.includes(lang),
               languageCode: lang,
               notification: {
-                isError:
-                    this.isNotificationError(lang, this.currentNotifications_),
-                text:
-                    this.getNotificationText(lang, this.currentNotifications_),
+                isError: this.isNotificationError(lang),
+                text: this.getNotificationText(lang),
               },
               disabled: this.enabledLangs && this.enabledLangs.includes(lang) &&
                   (lang.toLowerCase() === selectedLangLowerCase),
@@ -258,10 +256,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
             }));
   }
 
-  private isNotificationError(
-      lang: string,
-      currentNotifications: {[language: string]: VoiceClientSideStatusCode},
-      ): boolean {
+  private isNotificationError(lang: string): boolean {
     // Don't show notification text for a non-Google TTS language, as we're
     // not attempting a download.
     if (this.nonGoogleLanguages.includes(lang)) {
@@ -277,7 +272,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     }
 
     const notification: VoiceClientSideStatusCode|undefined =
-        currentNotifications[voicePackLanguage];
+        this.currentNotifications_[voicePackLanguage];
 
     if (notification === undefined) {
       return false;
@@ -290,10 +285,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         notification === VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
   }
 
-  private getNotificationText(
-      lang: string,
-      currentNotifications: {[language: string]: VoiceClientSideStatusCode}):
-      string {
+  private getNotificationText(lang: string): string {
     // Don't show notification text for a non-Google TTS language, as we're
     // not attempting a download.
     if (this.nonGoogleLanguages.includes(lang)) {
@@ -310,7 +302,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       return '';
     }
     const notification: VoiceClientSideStatusCode|undefined =
-        currentNotifications[voicePackLanguage];
+        this.currentNotifications_[voicePackLanguage];
 
     if (notification === undefined) {
       return '';
