@@ -7845,6 +7845,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "rich-bubble-without-image",
+    "owners": [ "nicolasmacbeth@google.com", "bling-mony-pod@google.com" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "rounded-display",
     "owners": [
       "zoraiznaeem@chromium.org",

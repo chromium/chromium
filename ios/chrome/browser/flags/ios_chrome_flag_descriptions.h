@@ -870,6 +870,10 @@ extern const char kRemoveOldWebStateRestoreDescription[];
 extern const char kRevampPageInfoIosName[];
 extern const char kRevampPageInfoIosDescription[];
 
+// Title and description for the flag to remove the image from rich IPH bubble.
+extern const char kRichBubbleWithoutImageName[];
+extern const char kRichBubbleWithoutImageDescription[];
+
 // Title and description for the flag that makes Safe Browsing available.
 extern const char kSafeBrowsingAvailableName[];
 extern const char kSafeBrowsingAvailableDescription[];

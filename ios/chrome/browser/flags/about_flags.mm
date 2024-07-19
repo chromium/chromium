@@ -940,6 +940,32 @@ const FeatureEntry::FeatureVariation kAutofillVcnEnrollRequestTimeoutOptions[] =
       std::size(kAutofillVcnEnrollRequestTimeout_10Seconds), nullptr}};
 // LINT.ThenChange(//chrome/browser/about_flags.cc:AutofillVcnEnrollRequestTimeouts)
 
+// Contextual Panel flag variations.
+const FeatureEntry::FeatureParam kContextualPanelRichIPHArms[] = {
+    {"entrypoint-highlight-iph", "true"},
+    {"entrypoint-rich-iph", "true"},
+};
+const FeatureEntry::FeatureParam kContextualPanelSmallIPHArm[] = {
+    {"entrypoint-highlight-iph", "false"},
+    {"entrypoint-rich-iph", "false"},
+};
+const FeatureEntry::FeatureParam
+    kContextualPanelSmallIPHWithBlueHighlightArm[] = {
+        {"entrypoint-highlight-iph", "true"},
+        {"entrypoint-rich-iph", "false"},
+};
+
+const FeatureEntry::FeatureVariation kContextualPanelEntrypointArmVariations[] =
+    {
+        {"- Rich IPH", kContextualPanelRichIPHArms,
+         std::size(kContextualPanelRichIPHArms), nullptr},
+        {"- Small IPH, no blue highlight", kContextualPanelSmallIPHArm,
+         std::size(kContextualPanelSmallIPHArm), nullptr},
+        {"- Small IPH with blue highlight",
+         kContextualPanelSmallIPHWithBlueHighlightArm,
+         std::size(kContextualPanelSmallIPHWithBlueHighlightArm), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1643,7 +1669,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(security_interstitials::features::kHttpsUpgrades)},
     {"contextual-panel", flag_descriptions::kContextualPanelName,
      flag_descriptions::kContextualPanelDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kContextualPanel)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kContextualPanel,
+                                    kContextualPanelEntrypointArmVariations,
+                                    "ContextualPanel")},
     {"contextual-panel-force-show-entrypoint",
      flag_descriptions::kContextualPanelForceShowEntrypointName,
      flag_descriptions::kContextualPanelForceShowEntrypointDescription,
@@ -1962,6 +1990,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSegmentedDefaultBrowserPromoName,
      flag_descriptions::kSegmentedDefaultBrowserPromoDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSegmentedDefaultBrowserPromo)},
+    {"rich-bubble-without-image",
+     flag_descriptions::kRichBubbleWithoutImageName,
+     flag_descriptions::kRichBubbleWithoutImageDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kRichBubbleWithoutImage)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

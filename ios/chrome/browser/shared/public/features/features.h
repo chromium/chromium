@@ -260,6 +260,19 @@ extern const base::FeatureParam<int>
 int LargeContextualPanelEntrypointDelayInSeconds();
 int LargeContextualPanelEntrypointDisplayedInSeconds();
 
+// A parameter representing whether the Contextual Panel entrypoint should be
+// highlighted in blue when showing an IPH.
+extern const base::FeatureParam<bool>
+    kContextualPanelEntrypointHighlightDuringIPH;
+
+bool ShouldHighlightContextualPanelEntrypointDuringIPH();
+
+// A parameter representing whether the Contextual Panel entrypoint should show
+// a rich IPH.
+extern const base::FeatureParam<bool> kContextualPanelEntrypointRichIPH;
+
+bool ShouldShowRichContextualPanelEntrypointIPH();
+
 // Feature flag to control the maximum amount of non-modal DB promo impressions
 // server-side. Enabled by default to always have a default impression limit
 // value.
@@ -730,5 +743,10 @@ BASE_DECLARE_FEATURE(kHomeMemoryImprovements);
 
 // Whether Home memory improvements are enabled.
 bool IsHomeMemoryImprovementsEnabled();
+
+// Feature to enable the removal of the image in the rich IPH bubble.
+BASE_DECLARE_FEATURE(kRichBubbleWithoutImage);
+
+bool IsRichBubbleWithoutImageEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

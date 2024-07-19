@@ -16240,6 +16240,7 @@ from previous Chrome versions.
   <int value="-1956349722" label="disable-smooth-scrolling"/>
   <int value="-1956231275" label="ForceSpectreVariant2Mitigation:enabled"/>
   <int value="-1955923385" label="EnableGamepadButtonAxisEvents:enabled"/>
+  <int value="-1955891825" label="RichBubbleWithoutImage:enabled"/>
   <int value="-1954918413" label="AccountManagementFlowsV2:disabled"/>
   <int value="-1954369543" label="NewWindowAppMenu:enabled"/>
   <int value="-1954246274"
@@ -23172,6 +23173,7 @@ from previous Chrome versions.
   <int value="1002247842" label="WebGPUService:enabled"/>
   <int value="1002585107" label="emphasize-titles-in-omnibox-dropdown"/>
   <int value="1003002105" label="MaterialDesignBookmarks:disabled"/>
+  <int value="1003006004" label="RichBubbleWithoutImage:disabled"/>
   <int value="1003081697" label="DesktopPWAsUnifiedInstall:enabled"/>
   <int value="1003612981"
       label="AutofillAutoTriggerManualFallbackForCards:enabled"/>

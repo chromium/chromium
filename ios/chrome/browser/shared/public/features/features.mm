@@ -238,6 +238,22 @@ int LargeContextualPanelEntrypointDisplayedInSeconds() {
   return kLargeContextualPanelEntrypointDisplayedInSeconds.Get();
 }
 
+constexpr base::FeatureParam<bool> kContextualPanelEntrypointHighlightDuringIPH{
+    &kContextualPanel,
+    /*name=*/"entrypoint-highlight-iph", /*default_value=*/true};
+
+bool ShouldHighlightContextualPanelEntrypointDuringIPH() {
+  return kContextualPanelEntrypointHighlightDuringIPH.Get();
+}
+
+constexpr base::FeatureParam<bool> kContextualPanelEntrypointRichIPH{
+    &kContextualPanel,
+    /*name=*/"entrypoint-rich-iph", /*default_value=*/true};
+
+bool ShouldShowRichContextualPanelEntrypointIPH() {
+  return kContextualPanelEntrypointRichIPH.Get();
+}
+
 BASE_FEATURE(kNonModalDefaultBrowserPromoImpressionLimit,
              "NonModalDefaultBrowserPromoImpressionLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -908,4 +924,12 @@ BASE_FEATURE(kHomeMemoryImprovements,
 
 bool IsHomeMemoryImprovementsEnabled() {
   return base::FeatureList::IsEnabled(kHomeMemoryImprovements);
+}
+
+BASE_FEATURE(kRichBubbleWithoutImage,
+             "RichBubbleWithoutImage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsRichBubbleWithoutImageEnabled() {
+  return base::FeatureList::IsEnabled(kRichBubbleWithoutImage);
 }

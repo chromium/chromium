@@ -981,6 +981,11 @@ const char kRevampPageInfoIosDescription[] =
     "Revamps Page Info to add two new sections, AboutThisPage and Last "
     "Visited.";
 
+const char kRichBubbleWithoutImageName[] = "Remove image from rich IPH bubble";
+const char kRichBubbleWithoutImageDescription[] =
+    "When enabled, the rich bubble IPH type will not feature an image, instead "
+    "will only have a title and body text.";
+
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "
