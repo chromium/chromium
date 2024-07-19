@@ -79,6 +79,14 @@
 +components/compose/
 +components/discardable_memory/
 +components/guest_view/
++components/optimization_guide/content
++components/optimization_guide/core
++components/optimization_guide/internal/testdata
++components/optimization_guide/internal/testing
++components/optimization_guide/internal/tools
++components/optimization_guide/optimization_guide_internals
++components/optimization_guide/proto
++components/optimization_guide/tools
 +components/password_manager/
 +components/performance_manager/
 +components/plus_addresses/
