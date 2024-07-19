@@ -121,42 +121,19 @@ void WaitUntilMahiMenuClosed(views::Widget* menu_view_widget) {
 
 // MahiUiBrowserTest -----------------------------------------------------------
 
-// Tests Mahi UI features in the following scenarios:
-// 1. The magic boost feature is disabled.
-// 2. The magic boost feature is enabled and the Mahi feature is approved.
-class MahiUiBrowserTest
-    : public MahiUiBrowserTestBase,
-      public WithParamInterface</*magic_boost_enabled=*/bool> {
+// Tests Mahi UI features when opt-in flow is approved.
+class MahiUiBrowserTest : public MahiUiBrowserTestBase {
  private:
   // MahiUiBrowserTestBase:
-  void SetUp() override {
-    // Always enable the Mahi feature. Enable the magic boost feature or not
-    // depending on the test param.
-    feature_list_.InitWithFeatureStates(
-        {{chromeos::features::kMagicBoost, GetParam()},
-         {chromeos::features::kMahi, true}});
-
-    MahiUiBrowserTestBase::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     MahiUiBrowserTestBase::SetUpOnMainThread();
 
-    // Approve the Mahi feature if the magic boost feature is enabled.
-    if (GetParam()) {
-      ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus::kApproved);
-    }
+    // Approve the Mahi feature to bypass opt-in flow.
+    ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus::kApproved);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MahiUiBrowserTest,
-                         /*magic_boost_enabled=*/::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, MahiMenuZOrder) {
+IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, MahiMenuZOrder) {
   EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
 
   // Have both the mahi menu and mahi panel open.
@@ -192,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, MahiMenuZOrder) {
             mahi_menu_widget->GetNativeWindow()->parent());
 }
 
-IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, OnContextMenuClickedSettings) {
+IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSettings) {
   // Ensure the Settings app installed.
   WaitForTestSystemAppInstall();
 
@@ -228,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, OnContextMenuClickedSettings) {
       settings_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, OnContextMenuClickedSummary) {
+IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
 
   // Open the Mahi menu by mouse right click on the web contents.
@@ -296,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   EXPECT_EQ(data->text(), GetMahiDefaultTestSummary());
 }
 
-IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, OnContextMenuQuestionSent) {
+IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuQuestionSent) {
   EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
 
   // Open the Mahi menu by mouse right click on the web contents.
@@ -366,20 +343,11 @@ IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, OnContextMenuQuestionSent) {
 
 // PendingConsentStatusMahiUiBrowserTest ---------------------------------------
 
-// Tests Mahi UI features when the magic boost feature is enabled and the
-// consent status before the test flow is kPending.
+// Tests Mahi UI features when the consent status before the test flow is
+// kPending.
 class PendingConsentStatusMahiUiBrowserTest : public MahiUiBrowserTestBase {
  private:
   // MahiUiBrowserTestBase:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kMahi,
-                              chromeos::features::kMagicBoost},
-        /*disabled_features=*/{});
-
-    MahiUiBrowserTestBase::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     MahiUiBrowserTestBase::SetUpOnMainThread();
     ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus::kPending);

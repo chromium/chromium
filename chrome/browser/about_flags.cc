@@ -11338,10 +11338,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContainerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kContainerAppPreinstall)},
 
-    {"magic-boost", flag_descriptions::kMagicBoostName,
-     flag_descriptions::kMagicBoostDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kMagicBoost)},
-
     {"mahi", flag_descriptions::kMahiName, flag_descriptions::kMahiDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(chromeos::features::kMahi)},
 

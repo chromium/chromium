@@ -164,9 +164,6 @@ BASE_FEATURE(kKioskHeartbeatsViaERP,
              "KioskHeartbeatsViaERP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls enabling / disabling the Magic Boost feature.
-BASE_FEATURE(kMagicBoost, "MagicBoost", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the mahi feature.
 BASE_FEATURE(kMahi, "Mahi", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -427,7 +424,7 @@ bool IsMagicBoostEnabled() {
   // Magic Boost does not work in Lacros.
   return false;
 #else
-  return base::FeatureList::IsEnabled(kMagicBoost);
+  return IsMahiEnabled();
 #endif
 }
 
