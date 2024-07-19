@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
-
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
 #import "net/base/apple/url_conversions.h"
 #include "ui/gfx/range/range.h"
 
@@ -40,7 +40,8 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
 @implementation CWVCreditCardSaver {
   autofill::AutofillClient::SaveCreditCardOptions _saveOptions;
-  autofill::AutofillClient::UploadSaveCardPromptCallback _saveCardCallback;
+  autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+      _saveCardCallback;
 
   // The callback to invoke for save completion results.
   void (^_Nullable _saveCompletionHandler)(BOOL);
@@ -61,8 +62,8 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
            saveOptions:
                (autofill::AutofillClient::SaveCreditCardOptions)saveOptions
      legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
-    savePromptCallback:(autofill::AutofillClient::UploadSaveCardPromptCallback)
-                           savePromptCallback {
+    savePromptCallback:(autofill::payments::PaymentsAutofillClient::
+                            UploadSaveCardPromptCallback)savePromptCallback {
   self = [super init];
   if (self) {
     _creditCard = [[CWVCreditCard alloc] initWithCreditCard:creditCard];

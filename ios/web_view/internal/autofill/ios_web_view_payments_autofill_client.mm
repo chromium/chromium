@@ -8,6 +8,7 @@
 
 #import "base/check_deref.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
@@ -42,7 +43,7 @@ void IOSWebViewPaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     AutofillClient::SaveCreditCardOptions options,
-    AutofillClient::UploadSaveCardPromptCallback callback) {
+    UploadSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
   [bridge_ confirmSaveCreditCardToCloud:card
                       legalMessageLines:legal_message_lines

@@ -267,14 +267,6 @@ class AutofillClient {
     ArrowPosition arrow_position;
   };
 
-  // Callback to run after upload credit card save or upload CVC save for
-  // existing server card is offered. Sends whether the prompt was accepted,
-  // declined, or ignored in |user_decision|, and additional
-  // |user_provided_card_details| if applicable.
-  using UploadSaveCardPromptCallback = base::OnceCallback<void(
-      SaveCardOfferUserDecision user_decision,
-      const UserProvidedCardDetails& user_provided_card_details)>;
-
   // Callback to run when the user makes a decision on whether to save the
   // profile. If the user edits the Autofill profile and then accepts edits, the
   // edited version of the profile should be passed as the second parameter. No

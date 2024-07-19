@@ -173,7 +173,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               (const CreditCard&,
                const LegalMessageLines&,
                AutofillClient::SaveCreditCardOptions,
-               AutofillClient::UploadSaveCardPromptCallback),
+               payments::PaymentsAutofillClient::UploadSaveCardPromptCallback),
               (override));
   MOCK_METHOD(
       void,
@@ -230,9 +230,8 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
             [offer_decision](
                 const CreditCard&, const LegalMessageLines&,
                 AutofillClient::SaveCreditCardOptions,
-                AutofillClient::UploadSaveCardPromptCallback callback) {
-              std::move(callback).Run(offer_decision, {});
-            });
+                payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+                    callback) { std::move(callback).Run(offer_decision, {}); });
   }
 };
 

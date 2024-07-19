@@ -23,6 +23,7 @@
 #import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #import "components/autofill/core/browser/payments/otp_unmask_result.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
@@ -98,7 +99,7 @@ void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     AutofillClient::SaveCreditCardOptions options,
-    AutofillClient::UploadSaveCardPromptCallback callback) {
+    UploadSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
 
   AccountInfo account_info =

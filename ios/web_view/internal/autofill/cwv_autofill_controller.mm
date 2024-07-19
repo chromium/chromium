@@ -340,7 +340,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
            saveCreditCardOptions:
                (autofill::AutofillClient::SaveCreditCardOptions)
                    saveCreditCardOptions
-                        callback:(autofill::AutofillClient::
+                        callback:(autofill::payments::PaymentsAutofillClient::
                                       UploadSaveCardPromptCallback)callback {
   if (![_delegate respondsToSelector:@selector(autofillController:
                                           saveCreditCardWithSaver:)]) {

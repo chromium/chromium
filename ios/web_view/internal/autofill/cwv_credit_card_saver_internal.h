@@ -5,12 +5,12 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_CREDIT_CARD_SAVER_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_CREDIT_CARD_SAVER_INTERNAL_H_
 
-#import "ios/web_view/public/cwv_credit_card_saver.h"
-
 #include <memory>
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "ios/web_view/public/cwv_credit_card_saver.h"
 
 namespace autofill {
 class CreditCard;
@@ -28,8 +28,10 @@ class CreditCard;
            saveOptions:
                (autofill::AutofillClient::SaveCreditCardOptions)saveOptions
      legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
-    savePromptCallback:(autofill::AutofillClient::UploadSaveCardPromptCallback)
-                           uploadSavePromptCallback NS_DESIGNATED_INITIALIZER;
+    savePromptCallback:
+        (autofill::payments::PaymentsAutofillClient::
+             UploadSaveCardPromptCallback)uploadSavePromptCallback
+    NS_DESIGNATED_INITIALIZER;
 
 // Called to notify when upload was completed.
 - (void)handleCreditCardUploadCompleted:(BOOL)cardSaved;

@@ -90,7 +90,8 @@ class SaveCardBubbleControllerImpl
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       AutofillClient::SaveCreditCardOptions options,
-      AutofillClient::UploadSaveCardPromptCallback save_card_prompt_callback);
+      payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+          save_card_prompt_callback);
 
   // Exists for testing purposes only. (Otherwise shown through ReshowBubble())
   // Sets up the controller for the Manage Cards view. This displays the card
@@ -197,7 +198,7 @@ class SaveCardBubbleControllerImpl
   // name provided/confirmed by the user if it was requested. Will also return
   // the expiration month and year provided by the user if the expiration date
   // was requested.
-  AutofillClient::UploadSaveCardPromptCallback
+  payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
       upload_save_card_prompt_callback_;
 
   // Callback to run once the user makes a decision with respect to the local

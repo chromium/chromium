@@ -203,7 +203,7 @@ AutofillSaveCardInfoBarDelegateMobileTest::
 
   credit_card_to_save_ = credit_card;
   absl::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-                AutofillClient::UploadSaveCardPromptCallback>
+                payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
       save_card_callback;
   AutofillSaveCardUiInfo ui_info;
   if (is_uploading) {

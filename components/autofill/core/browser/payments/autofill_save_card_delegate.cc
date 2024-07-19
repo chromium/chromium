@@ -5,12 +5,14 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
 
 AutofillSaveCardDelegate::AutofillSaveCardDelegate(
-    absl::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-                  AutofillClient::UploadSaveCardPromptCallback>
+    absl::variant<
+        payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+        payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
         save_card_callback,
     AutofillClient::SaveCreditCardOptions options)
     : options_(options),
@@ -85,7 +87,7 @@ void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
     AutofillClient::SaveCardOfferUserDecision user_decision,
     AutofillClient::UserProvidedCardDetails user_provided_details) {
   if (is_for_upload()) {
-    absl::get<AutofillClient::UploadSaveCardPromptCallback>(
+    absl::get<payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>(
         std::move(save_card_callback_))
         .Run(user_decision, user_provided_details);
   } else {

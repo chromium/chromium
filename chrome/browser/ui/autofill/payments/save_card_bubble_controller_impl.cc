@@ -168,7 +168,8 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     AutofillClient::SaveCreditCardOptions options,
-    AutofillClient::UploadSaveCardPromptCallback save_card_prompt_callback) {
+    payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+        save_card_prompt_callback) {
   // If the confirmation view is still showing, close it before showing the new
   // offer.
   if (current_bubble_type_ == BubbleType::UPLOAD_COMPLETED) {

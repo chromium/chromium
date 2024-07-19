@@ -53,7 +53,8 @@ class AutofillSaveCardDelegateTest : public ::testing::Test,
   MakeLocalCallback();
   void UploadCallback(SaveCardOfferUserDecision decision,
                       const UserProvidedCardDetails& user_card_details);
-  AutofillClient::UploadSaveCardPromptCallback MakeUploadCallback();
+  payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+  MakeUploadCallback();
   autofill::AutofillSaveCardDelegate CreateDelegate(
       AutofillClient::SaveCreditCardOptions options = {});
   bool IsUpload() const { return GetParam(); }
@@ -80,7 +81,7 @@ void AutofillSaveCardDelegateTest::UploadCallback(
   upload_offer_decisions_.emplace_back(decision, user_card_details);
 }
 
-AutofillClient::UploadSaveCardPromptCallback
+payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
 AutofillSaveCardDelegateTest::MakeUploadCallback() {
   return base::BindOnce(
       &AutofillSaveCardDelegateTest::UploadCallback,

@@ -154,6 +154,15 @@ class PaymentsAutofillClient : public RiskDataLoader {
   using LocalSaveCardPromptCallback = base::OnceCallback<void(
       AutofillClient::SaveCardOfferUserDecision user_decision)>;
 
+  // Callback to run after upload credit card save or upload CVC save for
+  // existing server card is offered. Sends whether the prompt was accepted,
+  // declined, or ignored in `user_decision`, and additional
+  // `user_provided_card_details` if applicable.
+  using UploadSaveCardPromptCallback = base::OnceCallback<void(
+      AutofillClient::SaveCardOfferUserDecision user_decision,
+      const AutofillClient::UserProvidedCardDetails&
+          user_provided_card_details)>;
+
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't
   // exist.
@@ -268,7 +277,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       AutofillClient::SaveCreditCardOptions options,
-      AutofillClient::UploadSaveCardPromptCallback callback);
+      UploadSaveCardPromptCallback callback);
 
   // Shows upload result to users. Called after credit card upload is finished.
   // `card_saved` indicates if the card is successfully saved.

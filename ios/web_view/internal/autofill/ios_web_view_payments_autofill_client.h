@@ -49,7 +49,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       AutofillClient::SaveCreditCardOptions options,
-      AutofillClient::UploadSaveCardPromptCallback callback) override;
+      UploadSaveCardPromptCallback callback) override;
   void CreditCardUploadCompleted(bool card_saved,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;

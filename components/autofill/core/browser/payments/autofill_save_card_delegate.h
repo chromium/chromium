@@ -20,14 +20,16 @@ class AutofillSaveCardDelegate {
   AutofillSaveCardDelegate(
       absl::variant<
           payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-          AutofillClient::UploadSaveCardPromptCallback> save_card_callback,
+          payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+          save_card_callback,
       AutofillClient::SaveCreditCardOptions options);
 
   virtual ~AutofillSaveCardDelegate();
 
   bool is_for_upload() const {
     return absl::holds_alternative<
-        AutofillClient::UploadSaveCardPromptCallback>(save_card_callback_);
+        payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>(
+        save_card_callback_);
   }
 
   void OnUiShown();
@@ -81,7 +83,7 @@ class AutofillSaveCardDelegate {
   // The callback to run once the user makes a decision with respect to the
   // credit card offer-to-save prompt.
   absl::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-                AutofillClient::UploadSaveCardPromptCallback>
+                payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
       save_card_callback_;
 
   // Callback to run immediately after `save_card_callback_`. An example of a

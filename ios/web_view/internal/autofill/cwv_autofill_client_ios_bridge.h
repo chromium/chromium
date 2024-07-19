@@ -25,14 +25,14 @@ class CreditCard;
 @protocol CWVAutofillClientIOSBridge<AutofillClientIOSBridge>
 
 // Bridge for AutofillClient's method |ConfirmSaveCreditCardToCloud|.
-- (void)confirmSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard
-                   legalMessageLines:
-                       (autofill::LegalMessageLines)legalMessageLines
-               saveCreditCardOptions:
-                   (autofill::AutofillClient::SaveCreditCardOptions)
-                       saveCreditCardOptions
-                            callback:(autofill::AutofillClient::
-                                          UploadSaveCardPromptCallback)callback;
+- (void)
+    confirmSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard
+               legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
+           saveCreditCardOptions:
+               (autofill::AutofillClient::SaveCreditCardOptions)
+                   saveCreditCardOptions
+                        callback:(autofill::payments::PaymentsAutofillClient::
+                                      UploadSaveCardPromptCallback)callback;
 
 // Bridge for AutofillClient's method |CreditCardUploadCompleted|.
 - (void)handleCreditCardUploadCompleted:(BOOL)cardSaved;

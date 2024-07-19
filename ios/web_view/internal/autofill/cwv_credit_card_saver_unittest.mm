@@ -41,7 +41,8 @@ TEST_F(CWVCreditCardSaverTest, Initialization) {
       autofill::TestLegalMessageLine("Test line 1",
                                      {autofill::LegalMessageLine::Link(
                                          5, 9, "http://www.chromium.org/")})};
-  autofill::AutofillClient::UploadSaveCardPromptCallback callback;
+  autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+      callback;
 
   CWVCreditCardSaver* credit_card_saver =
       [[CWVCreditCardSaver alloc] initWithCreditCard:credit_card
@@ -68,8 +69,8 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
   autofill::AutofillClient::SaveCreditCardOptions options;
 
   BOOL callback_called = NO;
-  autofill::AutofillClient::UploadSaveCardPromptCallback callback =
-      base::BindLambdaForTesting(
+  autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+      callback = base::BindLambdaForTesting(
           [&](autofill::AutofillClient::SaveCardOfferUserDecision decision,
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
@@ -98,8 +99,8 @@ TEST_F(CWVCreditCardSaverTest, Decline) {
       local_callback;
 
   BOOL callback_called = NO;
-  autofill::AutofillClient::UploadSaveCardPromptCallback callback =
-      base::BindLambdaForTesting(
+  autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+      callback = base::BindLambdaForTesting(
           [&](autofill::AutofillClient::SaveCardOfferUserDecision decision,
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
@@ -125,8 +126,8 @@ TEST_F(CWVCreditCardSaverTest, Accept) {
   autofill::AutofillClient::SaveCreditCardOptions options;
 
   BOOL callback_called = NO;
-  autofill::AutofillClient::UploadSaveCardPromptCallback callback =
-      base::BindLambdaForTesting(
+  autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+      callback = base::BindLambdaForTesting(
           [&](autofill::AutofillClient::SaveCardOfferUserDecision decision,
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
