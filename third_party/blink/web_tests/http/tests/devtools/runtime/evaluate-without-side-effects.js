@@ -20,11 +20,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await runtimeTestCase(expressionWithoutSideEffect, /* throwOnSideEffect */ true);
   await runtimeTestCase(expressionWithoutSideEffect, /* throwOnSideEffect */ false);
 
-  let supports = executionContext.runtimeModel.hasSideEffectSupport();
-  TestRunner.addResult(`Does the runtime support side effect checks? ${supports}`);
-  TestRunner.addResult(`\nClearing cached side effect support`);
-  executionContext.runtimeModel.hasSideEffectSupportInternal = null;
-
   // Debugger evaluateOnCallFrame test.
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -41,9 +36,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await debuggerTestCase(expressionWithSideEffect, /* throwOnSideEffect */ false);
   await debuggerTestCase(expressionWithoutSideEffect, /* throwOnSideEffect */ true);
   await debuggerTestCase(expressionWithoutSideEffect, /* throwOnSideEffect */ false);
-
-  supports = executionContext.runtimeModel.hasSideEffectSupport();
-  TestRunner.addResult(`Does the runtime support side effect checks? ${supports}`);
 
   SourcesTestRunner.completeDebuggerTest();
 

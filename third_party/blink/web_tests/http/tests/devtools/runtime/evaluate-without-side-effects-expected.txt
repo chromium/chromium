@@ -12,9 +12,6 @@ Result: 2
 
 Testing expression 1 + 1 with throwOnSideEffect false
 Result: 2
-Does the runtime support side effect checks? true
-
-Clearing cached side effect support
 Set timer for test function.
 Script execution paused.
 
@@ -29,6 +26,5 @@ Result: 2
 
 Testing expression 1 + 1 with throwOnSideEffect false
 Result: 2
-Does the runtime support side effect checks? true
 Script execution resumed.
 
