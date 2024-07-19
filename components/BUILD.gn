@@ -418,7 +418,6 @@ test("components_unittests") {
   if (use_blink) {
     deps += [
       "//components/autofill/content/browser:unit_tests",
-      "//components/autofill/content/renderer:unit_tests",
       "//components/autofill/core/common/mojom:unit_tests",
       "//components/browsing_data/content:unit_tests",
       "//components/browsing_topics:unit_tests",
@@ -563,6 +562,7 @@ test("components_unittests") {
     }
   } else {  #!is_ios
     deps += [
+      "//components/autofill/content/renderer:unit_tests",
       "//components/background_sync:unit_tests",
       "//components/blocked_content:unit_tests",
       "//components/content_settings/browser/ui:unit_tests",
