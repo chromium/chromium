@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -38,7 +39,7 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form);
 // Tests whether the given form is a GAIA form with a skip password argument.
 bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form);
 
-std::unique_ptr<FormData> CreateFormDataFromWebForm(
+std::optional<FormData> CreateFormDataFromWebForm(
     const blink::WebFormElement& web_form,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
@@ -46,8 +47,8 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
     const CallTimerState& timer_state);
 
 // Same as CreateFormDataFromWebForm() but for input elements that are
-// not enclosed in <form> element.
-std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
+// not owned by a <form> element.
+std::optional<FormData> CreateFormDataFromUnownedInputElements(
     const blink::WebLocalFrame& frame,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,

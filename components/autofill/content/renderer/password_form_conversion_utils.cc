@@ -118,21 +118,20 @@ bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form) {
   return should_skip_password == "1";
 }
 
-std::unique_ptr<FormData> CreateFormDataFromWebForm(
+std::optional<FormData> CreateFormDataFromWebForm(
     const WebFormElement& web_form,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache,
     const CallTimerState& timer_state) {
   if (!web_form) {
-    return nullptr;
+    return std::nullopt;
   }
-  std::optional<FormData> form = form_util::ExtractFormData(
+  std::optional<FormData> form_data = form_util::ExtractFormData(
       web_form.GetDocument(), web_form, field_data_manager, timer_state);
-  if (!form) {
-    return nullptr;
+  if (!form_data) {
+    return std::nullopt;
   }
-  auto form_data = std::make_unique<FormData>(std::move(*form));
   form_data->set_is_gaia_with_skip_save_password_form(
       IsGaiaWithSkipSavePasswordForm(web_form) ||
       IsGaiaReauthenticationForm(web_form));
@@ -141,22 +140,20 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
       GetUsernamePredictions(*form_data, username_detector_cache));
   form_data->set_button_titles(
       form_util::GetButtonTitles(web_form, button_titles_cache));
-
   return form_data;
 }
 
-std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
+std::optional<FormData> CreateFormDataFromUnownedInputElements(
     const WebLocalFrame& frame,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
     form_util::ButtonTitlesCache* button_titles_cache,
     const CallTimerState& timer_state) {
-  std::optional<FormData> form = form_util::ExtractFormData(
+  std::optional<FormData> form_data = form_util::ExtractFormData(
       frame.GetDocument(), WebFormElement(), field_data_manager, timer_state);
-  if (!form) {
-    return nullptr;
+  if (!form_data) {
+    return std::nullopt;
   }
-  auto form_data = std::make_unique<FormData>(std::move(*form));
   form_data->set_username_predictions(
       GetUsernamePredictions(*form_data, username_detector_cache));
   return form_data;

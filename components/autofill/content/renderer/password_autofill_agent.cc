@@ -507,7 +507,7 @@ bool HasTextInputs(const FormData& form_data) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool IsWebAuthnForm(const FormData* form_data) {
+bool IsWebAuthnForm(base::optional_ref<const FormData> form_data) {
   auto has_webauthn_attribute = [](const FormFieldData& field) {
     return field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
   };
@@ -1204,7 +1204,7 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
       password_element
           ? form_util::GetFormElementForPasswordInput(password_element)
           : form_util::GetFormElementForPasswordInput(username_element);
-  std::unique_ptr<FormData> form_data =
+  std::optional<FormData> form_data =
       form ? GetFormDataFromWebForm(form)
            : GetFormDataFromUnownedInputElements();
 
@@ -1212,7 +1212,7 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
       form_data ? CalculateSubmissionReadiness(*form_data, username_element,
                                                password_element)
                 : mojom::SubmissionReadinessState::kNoInformation,
-      IsWebAuthnForm(form_data.get()));
+      IsWebAuthnForm(form_data));
 
   keyboard_replacing_surface_state_ = KeyboardReplacingSurfaceState::kIsShowing;
   return true;
@@ -1255,7 +1255,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
   }
   WebDocument document = render_frame()->GetWebFrame()->GetDocument();
   for (const WebFormElement& form : forms) {
-    std::unique_ptr<FormData> form_data = GetFormDataFromWebForm(form);
+    std::optional<FormData> form_data = GetFormDataFromWebForm(form);
     std::string form_signature;
     std::string alternative_form_signature;
     if (form_data) {
@@ -1273,7 +1273,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
         form_signature, alternative_form_signature);
   }
 
-  std::unique_ptr<FormData> form_data = GetFormDataFromUnownedInputElements();
+  std::optional<FormData> form_data = GetFormDataFromUnownedInputElements();
   std::string form_signature;
   std::string alternative_form_signature;
   if (form_data) {
@@ -1342,7 +1342,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
         continue;
     }
 
-    std::unique_ptr<FormData> form_data(GetFormDataFromWebForm(form));
+    std::optional<FormData> form_data(GetFormDataFromWebForm(form));
     if (!form_data || !IsRendererRecognizedCredentialForm(*form_data)) {
       continue;
     }
@@ -1379,7 +1379,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   }
 
   if (add_unowned_inputs) {
-    std::unique_ptr<FormData> form_data(GetFormDataFromUnownedInputElements());
+    std::optional<FormData> form_data(GetFormDataFromUnownedInputElements());
     if (form_data && IsRendererRecognizedCredentialForm(*form_data)) {
       password_forms_data.push_back(std::move(*form_data));
     }
@@ -1605,7 +1605,7 @@ void PasswordAutofillAgent::TriggerFormSubmission() {
 }
 #endif
 
-std::unique_ptr<FormData> PasswordAutofillAgent::GetFormDataFromWebForm(
+std::optional<FormData> PasswordAutofillAgent::GetFormDataFromWebForm(
     const WebFormElement& web_form) {
   return CreateFormDataFromWebForm(
       web_form, field_data_manager(), &username_detector_cache_,
@@ -1614,7 +1614,7 @@ std::unique_ptr<FormData> PasswordAutofillAgent::GetFormDataFromWebForm(
           CallTimerState::CallSite::kGetFormDataFromWebForm));
 }
 
-std::unique_ptr<FormData>
+std::optional<FormData>
 PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
   // The element's frame might have been detached in the meantime (see
   // http://crbug.com/585363, comments 5 and 6), in which case `frame` will
@@ -1622,10 +1622,10 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
   // supernaturally quick), so it is OK to drop the ball here.
   content::RenderFrame* frame = render_frame();
   if (!frame)
-    return nullptr;
+    return std::nullopt;
   WebLocalFrame* web_frame = frame->GetWebFrame();
   if (!web_frame)
-    return nullptr;
+    return std::nullopt;
   return CreateFormDataFromUnownedInputElements(
       *web_frame, field_data_manager(), &username_detector_cache_,
       *enable_heavy_form_data_scraping_ ? &button_titles_cache_ : nullptr,
@@ -1870,7 +1870,7 @@ void PasswordAutofillAgent::InformBrowserAboutUserInput(
   DCHECK(form || element);
   if (!FrameCanAccessPasswordManager())
     return;
-  std::unique_ptr<FormData> form_data =
+  std::optional<FormData> form_data =
       form ? GetFormDataFromWebForm(form)
            : GetFormDataFromUnownedInputElements();
   if (!form_data)
@@ -2074,7 +2074,7 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
     return;
   }
 
-  std::unique_ptr<FormData> submitted_form_data = GetFormDataFromWebForm(form);
+  std::optional<FormData> submitted_form_data = GetFormDataFromWebForm(form);
 
   if (!submitted_form_data || !HasTextInputs(*submitted_form_data)) {
     return;
