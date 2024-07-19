@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 
@@ -43,6 +44,7 @@ FloatingWorkspaceServiceFactory::FloatingWorkspaceServiceFactory()
   DependsOn(DeskSyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
 FloatingWorkspaceServiceFactory::~FloatingWorkspaceServiceFactory() = default;
@@ -63,7 +65,8 @@ FloatingWorkspaceServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<FloatingWorkspaceService> service =
       std::make_unique<FloatingWorkspaceService>(profile, version);
   service->Init(SyncServiceFactory::GetForProfile(profile),
-                DeskSyncServiceFactory::GetForProfile(profile));
+                DeskSyncServiceFactory::GetForProfile(profile),
+                DeviceInfoSyncServiceFactory::GetForProfile(profile));
   return service;
 }
 
