@@ -36,6 +36,7 @@ class TrackingProtectionReminderServiceTest : public testing::Test {
   TrackingProtectionReminderServiceTest()
       : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     tracking_protection::RegisterProfilePrefs(prefs()->registry());
+    PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
   }
 
   void SetUp() override {

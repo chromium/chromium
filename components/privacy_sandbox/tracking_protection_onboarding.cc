@@ -17,6 +17,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/version_info/channel.h"
 
@@ -30,6 +32,11 @@ using ::privacy_sandbox::tracking_protection::
 
 using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
 using SurfaceType = privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
+
+constexpr std::string_view Full3PCDNoticeNames[] = {
+    kFull3PCDIPH,        kFull3PCDClankBrApp,        kFull3PCDClankCCT,
+    kFull3PCDSilentIPH,  kFull3PCDSilentClankBrApp,  kFull3PCDSilentClankCCT,
+    kFull3PCDWithIPPIPH, kFull3PCDWithIPPClankBrApp, kFull3PCDWithIPPClankCCT};
 
 TrackingProtectionOnboardingStatus GetInternalModeBOnboardingStatus(
     PrefService* pref_service) {
@@ -405,6 +412,60 @@ void ModeBSilentNoticeShown(PrefService* pref_service) {
   RecordSilentOnboardingDidNoticeShownOnboard(true);
 }
 
+std::string Get3PCDNoticeName(TrackingProtectionOnboarding::SurfaceType surface,
+                              NoticeType notice_type) {
+  switch (notice_type) {
+    case NoticeType::kFull3PCDOnboarding:
+      switch (surface) {
+        case SurfaceType::kDesktop:
+          return kFull3PCDIPH;
+        case SurfaceType::kBrApp:
+          return kFull3PCDClankBrApp;
+        case SurfaceType::kAGACCT:
+          return kFull3PCDClankCCT;
+      }
+      break;
+    case NoticeType::kFull3PCDSilentOnboarding:
+      switch (surface) {
+        case SurfaceType::kDesktop:
+          return kFull3PCDSilentIPH;
+        case SurfaceType::kBrApp:
+          return kFull3PCDSilentClankBrApp;
+        case SurfaceType::kAGACCT:
+          return kFull3PCDSilentClankCCT;
+      }
+      break;
+    case NoticeType::kFull3PCDOnboardingWithIPP:
+      switch (surface) {
+        case SurfaceType::kDesktop:
+          return kFull3PCDWithIPPIPH;
+        case SurfaceType::kBrApp:
+          return kFull3PCDWithIPPClankBrApp;
+        case SurfaceType::kAGACCT:
+          return kFull3PCDWithIPPClankCCT;
+      }
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+NoticeActionTaken ToNoticeActionTaken(
+    TrackingProtectionOnboarding::NoticeAction action) {
+  switch (action) {
+    case TrackingProtectionOnboarding::NoticeAction::kOther:
+      return NoticeActionTaken::kOther;
+    case TrackingProtectionOnboarding::NoticeAction::kGotIt:
+      return NoticeActionTaken::kAck;
+    case TrackingProtectionOnboarding::NoticeAction::kSettings:
+      return NoticeActionTaken::kSettings;
+    case TrackingProtectionOnboarding::NoticeAction::kLearnMore:
+      return NoticeActionTaken::kLearnMore;
+    case TrackingProtectionOnboarding::NoticeAction::kClosed:
+      return NoticeActionTaken::kClosed;
+  }
+}
+
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
@@ -418,6 +479,8 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
       is_silent_onboarding_enabled_(is_silent_onboarding_enabled) {
   CHECK(pref_service_);
   CHECK(delegate_);
+  notice_storage_ =
+      std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
@@ -437,6 +500,12 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
           base::Unretained(this)));
 
   RecordHistogramsOnStartup(pref_service_);
+  // TODO(crbug.com/333406690): After migration, move this portion to the
+  // chrome/browser/privacy_sandbox/privacy_sandbox_notice_service.h constructor
+  // and emit ALL startup histograms instead of just TP related histograms.
+  for (const std::string_view name_3pcd : Full3PCDNoticeNames) {
+    notice_storage_->RecordHistogramsOnStartup(pref_service_, name_3pcd);
+  }
 }
 
 TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;
@@ -592,8 +661,11 @@ void TrackingProtectionOnboarding::NoticeShown(SurfaceType surface,
     case NoticeType::kFull3PCDOnboarding:
     case NoticeType::kFull3PCDSilentOnboarding:
     case NoticeType::kFull3PCDOnboardingWithIPP:
-      // TODO(341975190) Add support for full 3PCD.
-      NOTREACHED_NORETURN();
+      // TODO(crbug.com/353396271): Set the 3pcd Onboarded pref (excluding the
+      // silent onboarding case)
+      notice_storage_->SetNoticeShown(pref_service_,
+                                      Get3PCDNoticeName(surface, notice_type),
+                                      base::Time::Now());
   }
 }
 
@@ -608,11 +680,14 @@ void TrackingProtectionOnboarding::NoticeActionTaken(SurfaceType surface,
       return;
     case NoticeType::kModeBSilentOnboarding:
       return;
-    case NoticeType::kFull3PCDOnboarding:
     case NoticeType::kFull3PCDSilentOnboarding:
+      return;
+    case NoticeType::kFull3PCDOnboarding:
     case NoticeType::kFull3PCDOnboardingWithIPP:
-      // TODO(341975190) Add support for full 3PCD.
-      NOTREACHED_NORETURN();
+      // TODO(crbug.com/353396271): Set the 3pcd ack bit.
+      notice_storage_->SetNoticeActionTaken(
+          pref_service_, Get3PCDNoticeName(surface, notice_type),
+          ToNoticeActionTaken(action), base::Time::Now());
   }
 }
 

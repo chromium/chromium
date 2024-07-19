@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/version_info/channel.h"
 
 class PrefService;
@@ -250,6 +251,7 @@ class TrackingProtectionOnboarding : public KeyedService {
   version_info::Channel channel_;
   bool is_silent_onboarding_enabled_;
   bool should_run_3pcd_ui_;
+  std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
 };
 
 }  // namespace privacy_sandbox

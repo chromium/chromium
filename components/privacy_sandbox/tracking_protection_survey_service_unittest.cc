@@ -27,6 +27,7 @@ class TrackingProtectionSurveyServiceTest : public testing::Test {
  public:
   TrackingProtectionSurveyServiceTest() {
     tracking_protection::RegisterProfilePrefs(prefs()->registry());
+    PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
   }
 
   void SetUp() override {
