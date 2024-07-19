@@ -12,9 +12,12 @@
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
-#include "base/files/file_path.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace ui {
 class ImageModel;
@@ -61,7 +64,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   // item is hovered on. If `update_icon` is true, then the leading icon of this
   // item will also be updated to match the thumbnail.
   void SetPreview(PickerPreviewBubbleController* preview_bubble_controller,
-                  base::FilePath file_path,
+                  const base::FilePath& file_path,
                   AsyncBitmapResolver async_bitmap_resolver,
                   bool update_icon = false);
 

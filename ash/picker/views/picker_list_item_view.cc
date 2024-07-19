@@ -19,6 +19,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -243,7 +244,7 @@ void PickerListItemView::SetBadgeVisible(bool visible) {
 
 void PickerListItemView::SetPreview(
     PickerPreviewBubbleController* preview_bubble_controller,
-    base::FilePath file_path,
+    const base::FilePath& file_path,
     AsyncBitmapResolver async_bitmap_resolver,
     bool update_icon) {
   if (preview_bubble_controller_ != nullptr) {
