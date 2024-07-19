@@ -176,14 +176,6 @@ void LayoutReplaced::RecalcVisualOverflow() {
     AddContentsVisualOverflow(ReplacedContentRect());
 }
 
-std::optional<gfx::SizeF>
-LayoutReplaced::ComputeObjectViewBoxSizeForIntrinsicSizing() const {
-  if (auto view_box = ComputeObjectViewBoxRect())
-    return static_cast<gfx::SizeF>(view_box->size);
-
-  return std::nullopt;
-}
-
 std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const PhysicalSize* overridden_intrinsic_size) const {
   const BasicShape* object_view_box = StyleRef().ObjectViewBox();
@@ -372,8 +364,8 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
 
-  if (auto view_box_size = ComputeObjectViewBoxSizeForIntrinsicSizing()) {
-    intrinsic_sizing_info.size = *view_box_size;
+  if (auto view_box = ComputeObjectViewBoxRect()) {
+    intrinsic_sizing_info.size = gfx::SizeF(view_box->size);
   } else {
     intrinsic_sizing_info.size = gfx::SizeF(IntrinsicSize());
   }

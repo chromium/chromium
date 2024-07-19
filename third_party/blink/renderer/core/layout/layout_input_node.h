@@ -251,15 +251,10 @@ class CORE_EXPORT LayoutInputNode {
   // https://drafts.csswg.org/css-sizing-4/#intrinsic-size-override
   // Note that this returns kIndefiniteSize if the override was not specified.
   LayoutUnit OverrideIntrinsicContentInlineSize() const {
-    if (box_->HasOverrideIntrinsicContentLogicalWidth())
-      return box_->OverrideIntrinsicContentLogicalWidth();
-    return kIndefiniteSize;
+    return box_->OverrideIntrinsicContentInlineSize();
   }
-  // Note that this returns kIndefiniteSize if the override was not specified.
   LayoutUnit OverrideIntrinsicContentBlockSize() const {
-    if (box_->HasOverrideIntrinsicContentLogicalHeight())
-      return box_->OverrideIntrinsicContentLogicalHeight();
-    return kIndefiniteSize;
+    return box_->OverrideIntrinsicContentBlockSize();
   }
 
   LayoutUnit DefaultIntrinsicContentInlineSize() const {

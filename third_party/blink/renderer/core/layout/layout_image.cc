@@ -324,10 +324,10 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
     intrinsic_sizing_info =
         image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom());
 
-    if (auto view_box_size = ComputeObjectViewBoxSizeForIntrinsicSizing()) {
+    if (auto view_box = ComputeObjectViewBoxRect()) {
       DCHECK(intrinsic_sizing_info.has_width);
       DCHECK(intrinsic_sizing_info.has_height);
-      intrinsic_sizing_info.size = *view_box_size;
+      intrinsic_sizing_info.size = gfx::SizeF(view_box->size);
     }
 
     // The value returned by LayoutImageResource will be in zoomed CSS

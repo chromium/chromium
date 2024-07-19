@@ -1145,6 +1145,15 @@ class ComputedStyle final : public ComputedStyleBase {
     return IsHorizontalWritingMode() ? MinHeight() : MinWidth();
   }
 
+  const StyleIntrinsicLength& ContainIntrinsicInlineSize() const {
+    return IsHorizontalWritingMode() ? ContainIntrinsicWidth()
+                                     : ContainIntrinsicHeight();
+  }
+  const StyleIntrinsicLength& ContainIntrinsicBlockSize() const {
+    return IsHorizontalWritingMode() ? ContainIntrinsicHeight()
+                                     : ContainIntrinsicWidth();
+  }
+
   // Margin utility functions.
   bool HasMarginBlockStartQuirk() const {
     return MayHaveMargin() && MarginBlockStart().Quirk();

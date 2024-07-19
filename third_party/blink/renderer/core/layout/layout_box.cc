@@ -1133,138 +1133,76 @@ void LayoutBox::UpdateAfterLayout() {
     GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 }
 
-bool LayoutBox::ShouldUseAutoIntrinsicSize() const {
-  DisplayLockContext* context = GetDisplayLockContext();
-  return context && context->IsLocked();
-}
-
-bool LayoutBox::HasOverrideIntrinsicContentWidth() const {
+LayoutUnit LayoutBox::OverrideIntrinsicContentInlineSize() const {
   NOT_DESTROYED();
 
   // We only override a size contained dimension.
-  if (!ShouldApplyWidthContainment())
-    return false;
+  if (!ShouldApplyInlineSizeContainment()) {
+    return kIndefiniteSize;
+  }
 
+  const auto& style = StyleRef();
   const StyleIntrinsicLength& intrinsic_length =
-      StyleRef().ContainIntrinsicWidth();
-  if (intrinsic_length.IsNoOp()) {
-    return false;
+      style.ContainIntrinsicInlineSize();
+
+  if (intrinsic_length.HasAuto()) {
+    const auto* context = GetDisplayLockContext();
+    if (context && context->IsLocked()) {
+      if (const auto* elem = DynamicTo<Element>(GetNode())) {
+        if (const auto inline_size = elem->LastRememberedInlineSize()) {
+          // ResizeObserverSize is adjusted to be in CSS space, we need to
+          // adjust it back to Layout space by applying the effective zoom.
+          return LayoutUnit::FromFloatRound(*inline_size *
+                                            style.EffectiveZoom());
+        }
+      }
+    }
   }
 
-  // If we have a length specified, we have an override in any case.
-  if (intrinsic_length.GetLength()) {
-    return true;
+  if (const auto& length = intrinsic_length.GetLength()) {
+    DCHECK(length->IsFixed());
+    return LayoutUnit(length->Value());
   }
 
-  // Now we must be in the "auto none" case, so we only have an override if we
-  // have a last remembered size in the appropriate dimension and we should use
-  // auto size.
-  DCHECK(intrinsic_length.HasAuto());
-  if (!ShouldUseAutoIntrinsicSize()) {
-    return false;
-  }
-
-  const Element* element = DynamicTo<Element>(GetNode());
-  if (!element) {
-    return false;
-  }
-
-  return StyleRef().IsHorizontalWritingMode()
-             ? element->LastRememberedInlineSize().has_value()
-             : element->LastRememberedBlockSize().has_value();
+  return kIndefiniteSize;
 }
 
-bool LayoutBox::HasOverrideIntrinsicContentHeight() const {
+LayoutUnit LayoutBox::OverrideIntrinsicContentBlockSize() const {
   NOT_DESTROYED();
 
   // We only override a size contained dimension.
-  if (!ShouldApplyHeightContainment())
-    return false;
+  if (!ShouldApplyBlockSizeContainment()) {
+    return kIndefiniteSize;
+  }
 
+  const auto& style = StyleRef();
   const StyleIntrinsicLength& intrinsic_length =
-      StyleRef().ContainIntrinsicHeight();
-  if (intrinsic_length.IsNoOp()) {
-    return false;
-  }
+      style.ContainIntrinsicBlockSize();
 
-  // If we have a length specified, we have an override in any case.
-  if (intrinsic_length.GetLength()) {
-    return true;
-  }
-
-  // Now we must be in the "auto none" case, so we only have an override if we
-  // have a last remembered size in the appropriate dimension and we should use
-  // auto size.
-  DCHECK(intrinsic_length.HasAuto());
-  if (!ShouldUseAutoIntrinsicSize()) {
-    return false;
-  }
-
-  const Element* element = DynamicTo<Element>(GetNode());
-  if (!element) {
-    return false;
-  }
-
-  return StyleRef().IsHorizontalWritingMode()
-             ? element->LastRememberedBlockSize().has_value()
-             : element->LastRememberedInlineSize().has_value();
-}
-
-LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverrideIntrinsicContentWidth());
-  const auto& style = StyleRef();
-  const StyleIntrinsicLength& intrinsic_length = style.ContainIntrinsicWidth();
-  DCHECK(!intrinsic_length.IsNoOp());
-  if (intrinsic_length.HasAuto() && ShouldUseAutoIntrinsicSize()) {
-    if (const Element* elem = DynamicTo<Element>(GetNode())) {
-      const std::optional<LayoutUnit> width =
-          StyleRef().IsHorizontalWritingMode()
-              ? elem->LastRememberedInlineSize()
-              : elem->LastRememberedBlockSize();
-      if (width) {
-        // ResizeObserverSize is adjusted to be in CSS space, we need to adjust
-        // it back to Layout space by applying the effective zoom.
-        return LayoutUnit::FromFloatRound(*width * style.EffectiveZoom());
+  if (intrinsic_length.HasAuto()) {
+    const auto* context = GetDisplayLockContext();
+    if (context && context->IsLocked()) {
+      if (const auto* elem = DynamicTo<Element>(GetNode())) {
+        if (const auto inline_size = elem->LastRememberedBlockSize()) {
+          // ResizeObserverSize is adjusted to be in CSS space, we need to
+          // adjust it back to Layout space by applying the effective zoom.
+          return LayoutUnit::FromFloatRound(*inline_size *
+                                            style.EffectiveZoom());
+        }
       }
     }
   }
-  // We must have a length because HasOverrideIntrinsicContentWidth() is true.
-  DCHECK(intrinsic_length.GetLength().has_value());
-  DCHECK(intrinsic_length.GetLength()->IsFixed());
-  return LayoutUnit(intrinsic_length.GetLength()->Value());
-}
 
-LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverrideIntrinsicContentHeight());
-  const auto& style = StyleRef();
-  const StyleIntrinsicLength& intrinsic_length = style.ContainIntrinsicHeight();
-  DCHECK(!intrinsic_length.IsNoOp());
-  if (intrinsic_length.HasAuto() && ShouldUseAutoIntrinsicSize()) {
-    if (const Element* elem = DynamicTo<Element>(GetNode())) {
-      const std::optional<LayoutUnit> height =
-          StyleRef().IsHorizontalWritingMode()
-              ? elem->LastRememberedBlockSize()
-              : elem->LastRememberedInlineSize();
-      if (height) {
-        // ResizeObserverSize is adjusted to be in CSS space, we need to adjust
-        // it back to Layout space by applying the effective zoom.
-        return LayoutUnit::FromFloatRound(*height * style.EffectiveZoom());
-      }
-    }
+  if (const auto& length = intrinsic_length.GetLength()) {
+    DCHECK(length->IsFixed());
+    return LayoutUnit(length->Value());
   }
-  // We must have a length because HasOverrideIntrinsicContentHeight() is true.
-  DCHECK(intrinsic_length.GetLength().has_value());
-  DCHECK(intrinsic_length.GetLength()->IsFixed());
-  return LayoutUnit(intrinsic_length.GetLength()->Value());
+
+  return kIndefiniteSize;
 }
 
 LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
   NOT_DESTROYED();
-  // If the intrinsic-inline-size is specified, then we shouldn't ever need to
-  // get here.
-  DCHECK(!HasOverrideIntrinsicContentLogicalWidth());
 
   if (!IsA<Element>(GetNode()))
     return kIndefiniteSize;
@@ -1312,9 +1250,6 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
 
 LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   NOT_DESTROYED();
-  // If the intrinsic-block-size is specified, then we shouldn't ever need to
-  // get here.
-  DCHECK(!HasOverrideIntrinsicContentLogicalHeight());
 
   auto effective_appearance = StyleRef().EffectiveAppearance();
   if (effective_appearance == kCheckboxPart) {

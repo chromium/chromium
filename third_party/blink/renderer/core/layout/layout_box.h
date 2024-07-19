@@ -448,39 +448,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                                 : ContentWidth();
   }
 
-  bool ShouldUseAutoIntrinsicSize() const;
   // CSS intrinsic sizing getters.
   // https://drafts.csswg.org/css-sizing-4/#intrinsic-size-override
-  // Physical:
-  bool HasOverrideIntrinsicContentWidth() const;
-  bool HasOverrideIntrinsicContentHeight() const;
-  LayoutUnit OverrideIntrinsicContentWidth() const;
-  LayoutUnit OverrideIntrinsicContentHeight() const;
-  // Logical:
-  bool HasOverrideIntrinsicContentLogicalWidth() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode()
-               ? HasOverrideIntrinsicContentWidth()
-               : HasOverrideIntrinsicContentHeight();
-  }
-  bool HasOverrideIntrinsicContentLogicalHeight() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode()
-               ? HasOverrideIntrinsicContentHeight()
-               : HasOverrideIntrinsicContentWidth();
-  }
-  LayoutUnit OverrideIntrinsicContentLogicalWidth() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode()
-               ? OverrideIntrinsicContentWidth()
-               : OverrideIntrinsicContentHeight();
-  }
-  LayoutUnit OverrideIntrinsicContentLogicalHeight() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode()
-               ? OverrideIntrinsicContentHeight()
-               : OverrideIntrinsicContentWidth();
-  }
+  LayoutUnit OverrideIntrinsicContentInlineSize() const;
+  LayoutUnit OverrideIntrinsicContentBlockSize() const;
 
   // Returns element-native intrinsic size. Returns kIndefiniteSize if no such
   // size.
