@@ -41,9 +41,20 @@ using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-class MahiMenuControllerTest : public ChromeViewsTestBase {
+class MahiMenuControllerTest : public ChromeViewsTestBase,
+                               public testing::WithParamInterface<bool> {
  public:
   MahiMenuControllerTest() {
+    if (IsMagicBoostEnabled()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kMahi, features::kMagicBoost},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kMahi},
+          /*disabled_features=*/{features::kMagicBoost});
+    }
+
     menu_controller_ =
         std::make_unique<MahiMenuController>(read_write_cards_ui_controller_);
 
@@ -56,6 +67,8 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
     // Sets the default pref is true for testing.
     ChangePrefValue(true);
   }
+
+  bool IsMagicBoostEnabled() const { return GetParam(); }
 
   MahiMenuControllerTest(const MahiMenuControllerTest&) = delete;
   MahiMenuControllerTest& operator=(const MahiMenuControllerTest&) = delete;
@@ -84,7 +97,7 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
   ReadWriteCardsUiController read_write_cards_ui_controller_;
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kMahi};
+  base::test::ScopedFeatureList feature_list_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::AutoReset<bool> ignore_mahi_secret_key_ =
@@ -105,7 +118,7 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
 
 // Tests the behavior of the controller when there's no text selected when
 // `OnTextAvailable()` is triggered.
-TEST_F(MahiMenuControllerTest, TextNotSelected) {
+TEST_P(MahiMenuControllerTest, TextNotSelected) {
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
   // Menu widget should show when text is displayed.
@@ -133,7 +146,7 @@ TEST_F(MahiMenuControllerTest, TextNotSelected) {
 
 // Tests the behavior of the controller when `OnAnchorBoundsChanged()` is
 // triggered.
-TEST_F(MahiMenuControllerTest, BoundsChanged) {
+TEST_P(MahiMenuControllerTest, BoundsChanged) {
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
   gfx::Rect anchor_bounds = gfx::Rect(50, 50, 25, 100);
@@ -160,7 +173,7 @@ TEST_F(MahiMenuControllerTest, BoundsChanged) {
 
 // Tests the behavior of the controller when there's text selected when
 // `OnTextAvailable()` is triggered.
-TEST_F(MahiMenuControllerTest, TextSelected) {
+TEST_P(MahiMenuControllerTest, TextSelected) {
   EXPECT_FALSE(read_write_cards_ui_controller_.widget_for_test());
 
   // Menu widget should show when text is displayed.
@@ -181,7 +194,7 @@ TEST_F(MahiMenuControllerTest, TextSelected) {
 }
 
 // Tests the behavior of the controller when pref state changed.
-TEST_F(MahiMenuControllerTest, PrefChange) {
+TEST_P(MahiMenuControllerTest, PrefChange) {
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
   // Menu widget should show when text is displayed as the default is that Mahi
@@ -217,7 +230,7 @@ TEST_F(MahiMenuControllerTest, PrefChange) {
       menu_controller()->menu_widget_for_test()->GetContentsView()));
 }
 
-TEST_F(MahiMenuControllerTest, DistillableMetrics) {
+TEST_P(MahiMenuControllerTest, DistillableMetrics) {
   base::HistogramTester histogram_tester;
 
   histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram, true,
@@ -242,6 +255,10 @@ TEST_F(MahiMenuControllerTest, DistillableMetrics) {
   histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram,
                                      false, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MahiMenuControllerTest,
+                         /*IsMagicBoostEnabled()=*/testing::Bool());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class MahiMenuControllerFeatureKeyTest : public ChromeViewsTestBase {

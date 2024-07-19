@@ -65,6 +65,7 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
     if (IsMahiEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{chromeos::features::kMahi,
+                                chromeos::features::kMagicBoost,
                                 chromeos::features::kOrca,
                                 chromeos::features::kFeatureManagementOrca},
           /*disabled_features=*/{});
@@ -72,7 +73,8 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{chromeos::features::kOrca,
                                 chromeos::features::kFeatureManagementOrca},
-          /*disabled_features=*/{chromeos::features::kMahi});
+          /*disabled_features=*/{chromeos::features::kMahi,
+                                 chromeos::features::kMagicBoost});
     }
 
     ChromeAshTestBase::SetUp();

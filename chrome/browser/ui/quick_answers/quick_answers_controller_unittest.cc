@@ -206,10 +206,10 @@ TEST_F(QuickAnswersControllerTest, DismissUserConsentView) {
 }
 
 TEST_F(QuickAnswersControllerTest, NoUserConsentView) {
-  // Note that `kMahi` is associated with the Magic Boost feature.
-  // `chromeos::features::IsMagicBoostEnabled()` is only accessible from Ash
-  // build. This test code is currently only included by Ash build.
-  base::test::ScopedFeatureList scoped_feature_list_(chromeos::features::kMahi);
+  // `chromeos::features::kMagicBoost` is only accessible from Ash build. This
+  // test code is currently only included by Ash build.
+  base::test::ScopedFeatureList scoped_feature_list_(
+      chromeos::features::kMagicBoost);
 
   chromeos::test::FakeMagicBoostState fake_magic_boost_state;
   fake_magic_boost_state.AsyncWriteConsentStatus(

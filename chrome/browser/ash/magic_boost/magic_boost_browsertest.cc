@@ -78,6 +78,7 @@ class MagicBoostBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kMagicBoost,
                               chromeos::features::kOrca,
                               chromeos::features::kFeatureManagementOrca},
         /*disabled_features=*/{});
@@ -337,6 +338,7 @@ class MahiUiWithOptInCardBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
                               chromeos::features::kMahi,
+                              chromeos::features::kMagicBoost,
                               chromeos::features::kOrca},
         /*disabled_features=*/{});
 
