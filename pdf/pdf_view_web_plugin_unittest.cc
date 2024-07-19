@@ -314,7 +314,8 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
               CreateAccessibilityDataHandler,
               (PdfAccessibilityActionHandler*,
                PdfAccessibilityImageFetcher*,
-               blink::WebPluginContainer*),
+               blink::WebPluginContainer*,
+               bool),
               (override));
 };
 

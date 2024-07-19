@@ -67,7 +67,8 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
       content::RenderFrame* render_frame,
       chrome_pdf::PdfAccessibilityActionHandler* action_handler,
       chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
-      blink::WebPluginContainer* plugin_container);
+      blink::WebPluginContainer* plugin_container,
+      bool print_preview);
   ~PdfAccessibilityTree() override;
 
   static bool IsDataFromPluginValid(
@@ -302,6 +303,8 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // Forces a WebAXObject for the plugin container to be returned, even if the
   // plugin container is nullptr. Enables lower level tests to function.
   blink::WebAXObject force_plugin_ax_object_for_testing_;
+
+  const bool print_preview_;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   std::unique_ptr<PdfOcrHelper> ocr_helper_;

@@ -234,7 +234,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler,
         PdfAccessibilityImageFetcher* image_fetcher,
-        blink::WebPluginContainer* plugin_container);
+        blink::WebPluginContainer* plugin_container,
+        bool print_preview);
   };
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,

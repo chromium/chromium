@@ -299,7 +299,8 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
       : PdfAccessibilityTree(render_frame,
                              action_handler,
                              image_fetcher,
-                             /*plugin_container=*/nullptr) {
+                             /*plugin_container=*/nullptr,
+                             /*print_preview=*/false) {
     ForcePluginAXObjectForTesting(blink::WebAXObject::FromWebNode(
         render_frame->GetWebFrame()->GetDocument().Body()));
   }

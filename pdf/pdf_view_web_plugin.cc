@@ -293,7 +293,8 @@ std::unique_ptr<PdfAccessibilityDataHandler>
 PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
     PdfAccessibilityActionHandler* action_handler,
     PdfAccessibilityImageFetcher* image_fetcher,
-    blink::WebPluginContainer* plugin_container) {
+    blink::WebPluginContainer* plugin_container,
+    bool print_preview) {
   return nullptr;
 }
 
@@ -318,15 +319,15 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   client_->SetPluginContainer(container);
   DCHECK_EQ(container->Plugin(), this);
 
-  pdf_accessibility_data_handler_ =
-      client_->CreateAccessibilityDataHandler(this, this, container);
+  pdf_accessibility_data_handler_ = client_->CreateAccessibilityDataHandler(
+      this, this, container, IsPrintPreview());
 
   return InitializeCommon();
 }
 
 bool PdfViewWebPlugin::InitializeForTesting() {
   pdf_accessibility_data_handler_ =
-      client_->CreateAccessibilityDataHandler(this, this, nullptr);
+      client_->CreateAccessibilityDataHandler(this, this, nullptr, false);
 
   return InitializeCommon();
 }

@@ -82,7 +82,8 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   CreateAccessibilityDataHandler(
       chrome_pdf::PdfAccessibilityActionHandler* action_handler,
       chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
-      blink::WebPluginContainer* plugin_element) override;
+      blink::WebPluginContainer* plugin_element,
+      bool print_preview) override;
 
  private:
   blink::WebLocalFrame* GetFrame() const;
