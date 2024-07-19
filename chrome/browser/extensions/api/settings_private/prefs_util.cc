@@ -787,6 +787,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kList;
   (*s_allowlist)[guest_os::prefs::kGuestOsContainers] =
       settings_api::PrefType::kList;
+  (*s_allowlist)[guest_os::prefs::kGuestOsUSBNotificationEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[crostini::prefs::kCrostiniPortForwarding] =
       settings_api::PrefType::kList;
   (*s_allowlist)[guest_os::prefs::kGuestOSPathsSharedToVms] =

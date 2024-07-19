@@ -10,6 +10,14 @@
     width: 100%;
   }
 </style>
+<settings-toggle-button
+    id="guestShowUsbNotificationToggle"
+    pref="{{prefs.guest_os.usb_notification_enabled}}"
+    no-set-pref
+    label="$i18n{guestOsSharedUsbDevicesNotificationsLabel}"
+    on-settings-boolean-control-change="onGuestUsbNotificationChange_"
+    deep-link-focus-id$="[[Setting.kGuestUsbNotification]]">
+</settings-toggle-button>
 <div class="settings-box first">
   <div class="settings-box-text">
     [[getDescriptionText_()]]
@@ -116,4 +124,14 @@
       </cr-button>
     </div>
   </cr-dialog>
+</template>
+<template is="dom-if" if="[[showGuestUsbNotificationDialog_]]" restamp>
+  <settings-guest-os-confirmation-dialog
+      id="guestShowUsbNotificationDialog"
+      accept-button-text="$i18n{guestOsSharedUsbDevicesNotificationDialogAccept}"
+      on-close="onGuestUsbNotificationDialogClose_">
+    <div slot="body">
+      [[getNotificationDialogText_()]]
+    </div>
+  </settings-guest-os-confirmation-dialog>
 </template>

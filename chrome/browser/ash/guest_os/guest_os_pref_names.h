@@ -64,6 +64,9 @@ inline constexpr char kBruschettaConfigId[] = "bruschetta_config_id";
 // Dictionary of terminal UI settings such as font style, colors, etc.
 inline constexpr char kGuestOsTerminalSettings[] = "crostini.terminal_settings";
 
+inline constexpr char kGuestOsUSBNotificationEnabled[] =
+    "guest_os.usb_notification_enabled";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace guest_os::prefs

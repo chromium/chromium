@@ -2609,6 +2609,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NONE_ATTACHED" desc="Indicates there are no USB devices currently shared.">
     No USB devices are attached.
   </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_DIALOG_TITLE_ENABLE" desc="Dialog title for enabling USB device notifications">
+    This will enable notifications for all new USB peripherals across the system. Are you sure you want to continue?
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_DIALOG_TITLE_DISABLE" desc="Dialog title for disabling USB device notifications">
+    This will disable notifications for all new USB peripherals across the system. Are you sure you want to continue?
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_DIALOG_ACCEPT" desc="Accept notification change dialog button">
+    Accept
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_LABEL" desc="Menu label for enabling/disabling USB device notifications">
+    Show popup notification for new USB devices.
+  </message>
 
   <!-- Crostini -->
   <message name="IDS_SETTINGS_CROSTINI_TITLE" desc="The title of Crostini section. It is meant to be used by software developers.">

@@ -37,6 +37,12 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.BOOLEAN,
   },
 
+  // Guest settings
+  'guest_os.usb_notification_enabled': {
+    setting: Setting.kGuestUsbNotification,
+    type: PrefType.BOOLEAN,
+  },
+
   // Date and time settings
   'settings.clock.use_24hour_clock': {
     setting: Setting.k24HourClock,

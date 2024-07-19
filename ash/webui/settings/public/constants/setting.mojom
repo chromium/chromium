@@ -202,6 +202,7 @@ enum Setting {
   kCrostiniMicAccess = 806,
   kCrostiniContainerUpgrade = 807,
   kBruschettaMicAccess = 808,
+  kGuestUsbNotification = 809,
 
   // Note: Plugin VM section is omitted (see https://crbug.com/1074101).
 

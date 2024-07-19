@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -523,7 +524,8 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 
 bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
   PrefService* prefs = profile()->GetPrefs();
-  if (!prefs->GetBoolean(ash::prefs::kUsbDetectorNotificationEnabled)) {
+  if (!prefs->GetBoolean(ash::prefs::kUsbDetectorNotificationEnabled) ||
+      !prefs->GetBoolean(guest_os::prefs::kGuestOsUSBNotificationEnabled)) {
     return false;
   }
 

@@ -5,15 +5,20 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {ContainerInfo, CrostiniBrowserProxyImpl, CrostiniSharedUsbDevicesElement, GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {CrToggleElement, Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGuestOsBrowserProxy} from '../guest_os/test_guest_os_browser_proxy.js';
 import {clearBody} from '../utils.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
+
+interface PrefParams {
+  usbNotificationEnabled?: boolean;
+}
 
 suite('<settings-crostini-shared-usb-devices>', () => {
   let subpage: CrostiniSharedUsbDevicesElement;
@@ -61,6 +66,110 @@ suite('<settings-crostini-shared-usb-devices>', () => {
 
   teardown(() => {
     Router.getInstance().resetRouteForTesting();
+  });
+
+  suite('USB notification toggle', () => {
+    const NOTIFICATION_ENABLED_PREF_PATH =
+        'prefs.guest_os.usb_notification_enabled.value';
+
+    function setGuestOsPrefs({usbNotificationEnabled = false}: PrefParams = {}):
+        void {
+      subpage.prefs = {
+        guest_os: {
+          usb_notification_enabled: {value: usbNotificationEnabled},
+        },
+      };
+    }
+
+    function getToggle(): SettingsToggleButtonElement|null {
+      return subpage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+          '#guestShowUsbNotificationToggle');
+    }
+
+    function getDialog(): HTMLElement|null {
+      return subpage.shadowRoot!.querySelector(
+          '#guestShowUsbNotificationDialog');
+    }
+
+    setup(async () => {
+      await initSubpage();
+      setGuestOsPrefs({usbNotificationEnabled: true});
+    });
+
+    test('Toggle is visible', () => {
+      assertTrue(isVisible(getToggle()));
+    });
+
+    test('Toggle notifications and accept', async () => {
+      let toggle = getToggle();
+      assertTrue(!!toggle);
+      assertTrue(toggle.checked);
+      assertTrue(subpage.get(NOTIFICATION_ENABLED_PREF_PATH));
+
+      let dialog = getDialog();
+      assertNull(dialog);
+
+      toggle.click();
+      await flushTasks();
+
+      dialog = getDialog();
+      assertTrue(!!dialog);
+      const dialogClosedPromise = eventToPromise('close', dialog);
+      const actionBtn =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
+      assertTrue(!!actionBtn);
+      actionBtn.click();
+      await Promise.all([dialogClosedPromise, flushTasks()]);
+      assertNull(getDialog());
+      toggle = getToggle();
+      assertTrue(!!toggle);
+      assertFalse(toggle.checked);
+      assertFalse(subpage.get(NOTIFICATION_ENABLED_PREF_PATH));
+    });
+
+    test('Toggle notifications and cancel', async () => {
+      let toggle = getToggle();
+      assertTrue(!!toggle);
+      assertTrue(toggle.checked);
+      assertTrue(subpage.get(NOTIFICATION_ENABLED_PREF_PATH));
+
+      let dialog = getDialog();
+      assertNull(dialog);
+
+      toggle.click();
+      await flushTasks();
+
+      dialog = getDialog();
+      assertTrue(!!dialog);
+      const dialogClosedPromise = eventToPromise('close', dialog);
+      const cancelBtn =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.cancel-button');
+      assertTrue(!!cancelBtn);
+      cancelBtn.click();
+      await Promise.all([dialogClosedPromise, flushTasks()]);
+      assertNull(getDialog());
+      toggle = getToggle();
+      assertTrue(!!toggle);
+      assertTrue(toggle.checked);
+      assertTrue(subpage.get(NOTIFICATION_ENABLED_PREF_PATH));
+    });
+
+    test('kGuestShowUsbNotification setting is deep-linkable', async () => {
+      const setting = settingMojom.Setting.kGuestUsbNotification;
+      const params = new URLSearchParams();
+      params.append('settingId', setting.toString());
+      Router.getInstance().navigateTo(
+          routes.CROSTINI_SHARED_USB_DEVICES, params);
+
+      const deepLinkElement = subpage.shadowRoot!.querySelector<HTMLElement>(
+          '#guestShowUsbNotificationToggle');
+      assertTrue(!!deepLinkElement);
+
+      await waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, subpage.shadowRoot!.activeElement,
+          `Element should be focused for settingId='${setting}'.`);
+    });
   });
 
   // Functionality is already tested in OSSettingsGuestOsSharedUsbDevicesTest,

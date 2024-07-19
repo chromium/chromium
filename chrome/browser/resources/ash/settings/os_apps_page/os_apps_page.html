@@ -243,7 +243,8 @@
   <template is="dom-if" if="[[isArcVmManageUsbAvailable_]]" restamp>
     <template is="dom-if" route-path="/androidAppsDetails/sharedUsbDevices">
       <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
-         <settings-guest-os-shared-usb-devices guest-os-type="arcvm">
+         <settings-guest-os-shared-usb-devices guest-os-type="arcvm"
+           prefs="{{prefs}}">
          </settings-guest-os-shared-usb-devices>
       </os-settings-subpage>
     </template>
@@ -261,7 +262,8 @@
     <template is="dom-if"
         route-path="/app-management/pluginVm/sharedUsbDevices">
       <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
-        <settings-guest-os-shared-usb-devices guest-os-type="pluginVm">
+        <settings-guest-os-shared-usb-devices guest-os-type="pluginVm"
+          prefs="{{prefs}}">
         </settings-guest-os-shared-usb-devices>
       </os-settings-subpage>
     </template>
