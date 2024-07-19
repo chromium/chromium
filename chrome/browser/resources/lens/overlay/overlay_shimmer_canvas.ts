@@ -398,13 +398,14 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       };
     });
 
-
     // Start the animation.
     requestAnimationFrame((timeMs: number) => {
       this.stepAnimation(timeMs);
 
       // Transition to the post selection region if it has already been set.
       if (this.regionCenter) {
+        // Do not wiggle if going into post selection state.
+        this.isWiggling = false;
         this.setTransitionState(ShimmerState.TRANSITION_FADE_IN_TO_REGION);
         return;
       }
