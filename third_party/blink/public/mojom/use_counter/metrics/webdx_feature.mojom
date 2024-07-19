@@ -133,6 +133,7 @@ enum WebDXFeature {
   kWillChange = 87,
   kAbortsignalAny = 88,
   kNavigation = 89,
+  kMathml = 90,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
