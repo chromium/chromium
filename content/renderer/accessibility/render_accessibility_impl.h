@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
@@ -101,6 +102,9 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void RecordInaccessiblePdfUkm() override;
   void SetPluginAXTreeActionTargetAdapter(
       PluginAXTreeActionTargetAdapter* adapter) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void FireLayoutComplete() override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // RenderFrameObserver implementation.
   void DidCreateNewDocument() override;

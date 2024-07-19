@@ -721,6 +721,18 @@ void PdfAccessibilityTree::SetOcrCompleteStatus() {
     LOG(FATAL) << tree_.error();
   }
   MarkPluginContainerDirty();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // `FireLayoutComplete()` will be captured by Select-to-Speak on ChromeOS for
+  // the "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened" metric.
+  // TODO(crbug/289010799): Remove `FireLayoutComplete()` when the
+  // Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened histogram expires.
+  CHECK(render_frame());
+  content::RenderAccessibility* render_accessibility =
+      render_frame()->GetRenderAccessibility();
+  CHECK(render_accessibility);
+  render_accessibility->FireLayoutComplete();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

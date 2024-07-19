@@ -138,8 +138,8 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
 
     const std::string expected_update(
         "AXTreeUpdate: root id -2\n"
-        "id=-2 region child_ids=-3,-5,-8 (0, 0)-(800, 900) "
-        "is_page_breaking_object=true\n"
+        "id=-2 region class_name=ocred_page child_ids=-3,-5,-8 (0, 0)-(800, "
+        "900) is_page_breaking_object=true\n"
         "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
         "  id=-5 paragraph child_ids=-6 (100, 100)-(500, 20)\n"
@@ -209,8 +209,8 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
 
     const std::string expected_update(
         "AXTreeUpdate: root id -2\n"
-        "id=-2 region child_ids=-3,-5,-9 (0, 0)-(800, 900) "
-        "is_page_breaking_object=true\n"
+        "id=-2 region class_name=ocred_page child_ids=-3,-5,-9 (0, 0)-(800, "
+        "900) is_page_breaking_object=true\n"
         "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
         "  id=-5 paragraph child_ids=-6 (100, 100)-(500, 20)\n"
@@ -382,8 +382,8 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
 
     const std::string expected_update(
         "AXTreeUpdate: root id -2\n"
-        "id=-2 region child_ids=-3,-5,-8 (0, 0)-(800, 900) "
-        "is_page_breaking_object=true\n"
+        "id=-2 region class_name=ocred_page child_ids=-3,-5,-8 (0, 0)-(800, "
+        "900) is_page_breaking_object=true\n"
         "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
         "  id=-5 paragraph child_ids=-6 (100, 100)-(500, 20)\n"
@@ -462,8 +462,8 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
 
     const std::string expected_update(
         "AXTreeUpdate: root id -2\n"
-        "id=-2 region child_ids=-3,-5,-8 (0, 0)-(800, 900) "
-        "is_page_breaking_object=true\n"
+        "id=-2 region class_name=ocred_page child_ids=-3,-5,-8 (0, 0)-(800, "
+        "900) is_page_breaking_object=true\n"
         "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
         "  id=-5 paragraph child_ids=-6 (100, 100)-(19, 19)\n"
@@ -542,8 +542,8 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
 
     const std::string expected_update(
         "AXTreeUpdate: root id -2\n"
-        "id=-2 region child_ids=-3,-5,-8 (0, 0)-(800, 900) "
-        "is_page_breaking_object=true\n"
+        "id=-2 region class_name=ocred_page child_ids=-3,-5,-8 (0, 0)-(800, "
+        "900) is_page_breaking_object=true\n"
         "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
         "  id=-5 paragraph child_ids=-6 (100, 100)-(19, 19)\n"

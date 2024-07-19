@@ -1820,6 +1820,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfOcr.CrosSelectToSpeak.PagesOcred"
+    units="count" expires_after="2025-07-31">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of OCRed pages in the PDF file opened by Select-to-Speak
+    users on ChromeOS.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.InaccessiblePdfPageCount" units="count"
     expires_after="2024-12-08">
   <owner>kyungjunlee@google.com</owner>

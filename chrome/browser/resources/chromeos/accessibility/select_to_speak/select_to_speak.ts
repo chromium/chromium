@@ -177,6 +177,10 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       desktop.addEventListener(
           EventType.MOUSE_RELEASED, evt => this.onAutomationHitTest_(evt),
           true);
+      // Chrome PDF Viewer with PDF OCR sends a layout complete event when
+      // finishing extracting text from inaccessible PDF pages.
+      desktop.addEventListener(
+          EventType.LAYOUT_COMPLETE, evt => this.onLayoutComplete_(evt), true);
 
       if (this.onLoadDesktopCallbackForTest_) {
         this.onLoadDesktopCallbackForTest_();
@@ -259,6 +263,31 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       return true;
     }
     return false;
+  }
+
+  private onLayoutComplete_(evt: AutomationEvent): void {
+    const root: AutomationNode = evt.target;
+    if (!root.url || !root.url.endsWith('.pdf')) {
+      return;
+    }
+
+    // Check if it's Chrome PDF Viewer with PDF OCR in the full-page view.
+    const pdfRoot: AutomationNode|null = root.find({role: RoleType.PDF_ROOT});
+    if (!pdfRoot) {
+      return;
+    }
+
+    this.recordOcredPagesInPdf_(pdfRoot);
+  }
+
+  /**
+   * Record the number of OCRed pages in the PDF accessibility tree.
+   */
+  private recordOcredPagesInPdf_(pdfRoot: AutomationNode): void {
+    // When PDF OCR successfully extracts text from inaccessible PDF pages, PDF
+    // pages with OCRed content will have the "ocred_page" class name.
+    const orcedPages = pdfRoot.findAll({attributes: {className: 'ocred_page'}});
+    MetricsUtils.recordNumPdfPagesOcred(orcedPages.length);
   }
 
   /**

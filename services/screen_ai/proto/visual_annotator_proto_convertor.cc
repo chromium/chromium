@@ -577,6 +577,8 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   update.root_id = page_node.id;
   page_node.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
                              true);
+  page_node.AddStringAttribute(ax::mojom::StringAttribute::kClassName,
+                               "ocred_page");
   page_node.relative_bounds.bounds = gfx::RectF(image_rect);
 
   // Add a disclaimer node informing the user of the beginning of extracted

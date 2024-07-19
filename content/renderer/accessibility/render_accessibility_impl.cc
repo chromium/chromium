@@ -212,6 +212,16 @@ void RenderAccessibilityImpl::set_reset_token(uint32_t reset_token) {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void RenderAccessibilityImpl::FireLayoutComplete() {
+  if (ax_context_) {
+    ax_context_->AddEventToSerializationQueue(
+        ui::AXEvent(ComputeRoot().AxID(), ax::mojom::Event::kLayoutComplete),
+        true);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void RenderAccessibilityImpl::FireLoadCompleteIfLoaded() {
   if (GetMainDocument().IsLoaded() &&
       GetMainDocument().GetFrame()->GetEmbeddingToken()) {
