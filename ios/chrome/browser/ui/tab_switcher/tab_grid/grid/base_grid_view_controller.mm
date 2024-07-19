@@ -363,6 +363,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Reconfigure all tabs.
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
+  [self updateSnapshotForModeUpdate:snapshot];
   [snapshot reconfigureItemsWithIdentifiers:snapshot.itemIdentifiers];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   [self.gridLayout invalidateLayout];
@@ -1589,6 +1590,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)addAdditionalItemsToSnapshot:(GridSnapshot*)snapshot {
+  // Base class implementation is doing nothing.
+}
+
+- (void)updateSnapshotForModeUpdate:(GridSnapshot*)snapshot {
   // Base class implementation is doing nothing.
 }
 

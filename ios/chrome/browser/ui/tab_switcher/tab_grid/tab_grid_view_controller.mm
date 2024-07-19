@@ -611,9 +611,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.topToolbar.mode = self.tabGridMode;
   self.bottomToolbar.mode = self.tabGridMode;
 
-  // Resetting search state when leaving the search mode should happen before
-  // changing the mode in the controllers so when they do the cleanup for the
-  // new mode they will have the correct items (tabs).
+  if (IsInactiveTabButtonRefactoringEnabled()) {
+    // Reset the mode of the grid before resetting search to make sure the right
+    // items are added.
+    self.regularTabsViewController.mode = self.tabGridMode;
+    self.incognitoTabsViewController.mode = self.tabGridMode;
+  } else {
+    // Resetting search state when leaving the search mode should happen before
+    // changing the mode in the controllers so when they do the cleanup for the
+    // new mode they will have the correct items (tabs).
+  }
   if (previousMode == TabGridModeSearch) {
     self.remoteTabsViewController.searchTerms = nil;
     self.regularTabsViewController.searchText = nil;
@@ -624,9 +631,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   [self setInsetForGridViews];
-  self.regularTabsViewController.mode = self.tabGridMode;
-  self.incognitoTabsViewController.mode = self.tabGridMode;
-
+  if (!IsInactiveTabButtonRefactoringEnabled()) {
+    self.regularTabsViewController.mode = self.tabGridMode;
+    self.incognitoTabsViewController.mode = self.tabGridMode;
+  }
   self.scrollView.scrollEnabled = (self.tabGridMode == TabGridModeNormal);
 }
 

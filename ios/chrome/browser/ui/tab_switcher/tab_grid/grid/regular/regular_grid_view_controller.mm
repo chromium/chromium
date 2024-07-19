@@ -163,18 +163,18 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   return [super tabsSectionHeaderTypeForMode:mode];
 }
 
-- (void)addAdditionalItemsToSnapshot:
-    (NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*>*)snapshot {
+- (void)addAdditionalItemsToSnapshot:(GridSnapshot*)snapshot {
   if (!IsInactiveTabButtonRefactoringEnabled()) {
     return;
   }
-  if (self.mode != TabGridModeNormal) {
+  [self updateInactiveTabsButtonInSnapshot:snapshot];
+}
+
+- (void)updateSnapshotForModeUpdate:(GridSnapshot*)snapshot {
+  if (!IsInactiveTabButtonRefactoringEnabled()) {
     return;
   }
-  if (_inactiveTabsCount == 0) {
-    return;
-  }
-  [self addInactiveTabsButtonToSnapshot:snapshot];
+  [self updateInactiveTabsButtonInSnapshot:snapshot];
 }
 
 #pragma mark - InactiveTabsInfoConsumer
@@ -187,7 +187,8 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   _inactiveTabsCount = count;
 
   if (IsInactiveTabButtonRefactoringEnabled()) {
-    [self updateInactiveTabsButton];
+    GridSnapshot* snapshot = [self.diffableDataSource snapshot];
+    [self updateInactiveTabsButtonInSnapshot:snapshot];
   } else {
     // Update the layout.
     [self updateTabsSectionHeaderType];
@@ -212,7 +213,8 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   _inactiveTabsDaysThreshold = daysThreshold;
 
   if (IsInactiveTabButtonRefactoringEnabled()) {
-    [self updateInactiveTabsButton];
+    GridSnapshot* snapshot = [self.diffableDataSource snapshot];
+    [self updateInactiveTabsButtonInSnapshot:snapshot];
   } else {
     // Update the header.
     if (oldDaysThreshold == kInactiveTabsDisabledByUser ||
@@ -246,10 +248,17 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 // Updates the inactive tabs button (reconfigure, show or remove) based on its
 // visible state.
-- (void)updateInactiveTabsButton {
-  BOOL visible = _inactiveTabsDaysThreshold != kInactiveTabsDisabledByUser &&
-                 _inactiveTabsCount != 0;
-  GridSnapshot* snapshot = [self.diffableDataSource snapshot];
+- (void)updateInactiveTabsButtonInSnapshot:(GridSnapshot*)snapshot {
+  if (!IsInactiveTabsAvailable()) {
+    return;
+  }
+
+  BOOL isEnabled = _inactiveTabsDaysThreshold != kInactiveTabsDisabledByUser;
+  BOOL hasInactiveTabs = _inactiveTabsCount != 0;
+  BOOL isInNormalMode = self.mode == TabGridModeNormal;
+
+  BOOL visible = isEnabled && hasInactiveTabs && isInNormalMode;
+
   if (visible) {
     GridItemIdentifier* item =
         [GridItemIdentifier inactiveTabsButtonIdentifier];

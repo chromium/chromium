@@ -67,8 +67,11 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 - (NSInteger)numberOfTabs;
 
 // Provides an opportunity to the subclasses to add items to `snapshot`.
-- (void)addAdditionalItemsToSnapshot:
-    (NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*>*)snapshot;
+- (void)addAdditionalItemsToSnapshot:(GridSnapshot*)snapshot;
+
+// Provides an opportunity to update `snapshot` after an update of the grid's
+// mode.
+- (void)updateSnapshotForModeUpdate:(GridSnapshot*)snapshot;
 
 @end
 
