@@ -144,7 +144,7 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
     base::TimeTicks policy_fetch_start_time,
     bool switch_to_entry,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
-    base::OnceClosure callback) {
+    PolicyFetchCallback callback) {
   FetchPolicyForSignedInUser(
       account_id, dm_token, client_id, user_affiliation_ids,
       std::move(profile_url_loader_factory),
@@ -210,7 +210,7 @@ void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
                          base::TimeTicks::Now(), /*switch_to_entry=*/false,
                          profile_->GetDefaultStoragePartition()
                              ->GetURLLoaderFactoryForBrowserProcess(),
-                         base::BindOnce([]() {}));
+                         base::BindOnce([](bool) {}));
 }
 
 void UserPolicyOidcSigninService::OnStoreLoaded(CloudPolicyStore* store) {
@@ -226,7 +226,7 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
     std::string user_email,
     base::TimeTicks policy_fetch_start_time,
     bool switch_to_entry,
-    base::OnceClosure callback,
+    PolicyFetchCallback callback,
     bool success) {
   bool dasher_based = !IsDasherlessProfile(profile_);
   RecordOidcEnrollmentPolicyFetchLatency(
@@ -292,7 +292,7 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
         dasher_based);
   }
 
-  std::move(callback).Run();
+  std::move(callback).Run(success);
 }
 
 void UserPolicyOidcSigninService::InitializeCloudPolicyManager(
@@ -322,7 +322,6 @@ void UserPolicyOidcSigninService::InitializeOnProfileReady(Profile* profile) {
   DCHECK_EQ(profile, profile_);
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Initializing OIDC Signin Service for profile " << GetProfileId();
-
   // If using a TestingProfile with no IdentityManager or
   // CloudPolicyManager, skip initialization.
   if (!policy_manager() || !identity_manager()) {

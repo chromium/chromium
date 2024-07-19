@@ -106,6 +106,8 @@ class ManagedUserProfileNoticeHandlerTestBase
 };
 
 struct HandleProceedTestParam {
+  ManagedUserProfileNoticeHandler::State state =
+      ManagedUserProfileNoticeHandler::State::kDisclosure;
   bool profile_creation_required_by_policy = false;
   bool should_link_data = false;
   signin::SigninChoice expected_choice = signin::SIGNIN_CHOICE_CANCEL;
@@ -113,32 +115,53 @@ struct HandleProceedTestParam {
       signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS;
 };
 const HandleProceedTestParam kHandleProceedParams[] = {
-    {false, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, false, false,
+     signin::SIGNIN_CHOICE_NEW_PROFILE,
      signin::SigninChoiceOperationResult::SIGNIN_ERROR},
-    {false, true, signin::SIGNIN_CHOICE_CONTINUE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, false, true,
+     signin::SIGNIN_CHOICE_CONTINUE,
      signin::SigninChoiceOperationResult::SIGNIN_ERROR},
-    {true, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, true, false,
+     signin::SIGNIN_CHOICE_NEW_PROFILE,
      signin::SigninChoiceOperationResult::SIGNIN_ERROR},
-    {true, true, signin::SIGNIN_CHOICE_CONTINUE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, true, true,
+     signin::SIGNIN_CHOICE_CONTINUE,
      signin::SigninChoiceOperationResult::SIGNIN_ERROR},
-    {false, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, false, false,
+     signin::SIGNIN_CHOICE_NEW_PROFILE,
      signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
-    {false, true, signin::SIGNIN_CHOICE_CONTINUE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, false, true,
+     signin::SIGNIN_CHOICE_CONTINUE,
      signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
-    {true, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, true, false,
+     signin::SIGNIN_CHOICE_NEW_PROFILE,
      signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
-    {true, true, signin::SIGNIN_CHOICE_CONTINUE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, true, true,
+     signin::SIGNIN_CHOICE_CONTINUE,
      signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
-    {false, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, false, false,
+     signin::SIGNIN_CHOICE_NEW_PROFILE,
      signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT},
-    {false, true, signin::SIGNIN_CHOICE_CONTINUE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, false, true,
+     signin::SIGNIN_CHOICE_CONTINUE,
      signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT},
-    {true, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, true, false,
+     signin::SIGNIN_CHOICE_NEW_PROFILE,
      signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT},
-    {true, true, signin::SIGNIN_CHOICE_CONTINUE,
+    {ManagedUserProfileNoticeHandler::State::kDisclosure, true, true,
+     signin::SIGNIN_CHOICE_CONTINUE,
      signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT},
+    {ManagedUserProfileNoticeHandler::State::kSuccess, false, false,
+     signin::SIGNIN_CHOICE_NEW_PROFILE,
+     signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
+    {ManagedUserProfileNoticeHandler::State::kError, false, false,
+     signin::SIGNIN_CHOICE_NEW_PROFILE,
+     signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
+    {ManagedUserProfileNoticeHandler::State::kTimeout, false, false,
+     signin::SIGNIN_CHOICE_NEW_PROFILE,
+     signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
 };
-
+// kTimeout, kProcessing, kError, kSuccess
 class ManagedUserProfileNoticeHandleProceedTest
     : public ManagedUserProfileNoticeHandlerTestBase,
       public testing::WithParamInterface<HandleProceedTestParam> {};
@@ -156,8 +179,9 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
       mock_done_callback.Get());
 
   base::Value::List args;
+  args.Append(GetParam().state);
   args.Append(GetParam().should_link_data);
-  args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
+
   EXPECT_CALL(mock_process_user_choice_callback,
               Run(GetParam().expected_choice));
   EXPECT_CALL(mock_done_callback, Run());
@@ -182,8 +206,8 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
       mock_done_callback.Get());
 
   base::Value::List args;
-  args.Append(GetParam().should_link_data);
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
+  args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
   EXPECT_CALL(mock_process_user_choice_callback,
               Run(GetParam().expected_choice, ::testing::_))
@@ -213,8 +237,8 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
       mock_done_callback.Get());
 
   base::Value::List args;
-  args.Append(GetParam().should_link_data);
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
+  args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
   EXPECT_CALL(mock_process_user_choice_callback,
               Run(GetParam().expected_choice, ::testing::_))

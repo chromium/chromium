@@ -51,8 +51,6 @@ using policy::MockProfileCloudPolicyStore;
 using policy::MockUserCloudPolicyStore;
 using policy::ProfileCloudPolicyManager;
 using policy::UserCloudPolicyManager;
-using PolicyFetchCallback =
-    policy::UserPolicySigninServiceBase::PolicyFetchCallback;
 
 namespace {
 const ProfileManagementOicdTokens kExampleOidcTokens =

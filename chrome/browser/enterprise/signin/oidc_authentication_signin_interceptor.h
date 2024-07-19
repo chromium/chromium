@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/enterprise/signin/token_managed_profile_creation_delegate.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -91,7 +92,7 @@ class OidcAuthenticationSigninInterceptor
   }
 
  protected:
-  virtual void OnPolicyFetchCompleteInNewProfile();
+  virtual void OnPolicyFetchCompleteInNewProfile(bool success);
   virtual void FinalizeSigninInterception();
   virtual void CreateBrowserAfterSigninInterception();
 
@@ -101,6 +102,15 @@ class OidcAuthenticationSigninInterceptor
   // Cancels any current signin interception and resets the interceptor to its
   // initial state.
   void Reset();
+
+  // `is_dasher_based` should be nullopt when `result` has type
+  // `OidcInterceptionResult` since its histogram does not have
+  // Dasher-based/Dasherless variants; it should be either True or False when
+  // `result` has type `OidcProfileCreationResult` and be used for histogram
+  // recording.
+  void HandleError(
+      std::variant<OidcInterceptionResult, OidcProfileCreationResult> result,
+      std::optional<bool> is_dasher_based = std::nullopt);
 
   // Try to send OIDC tokens to DM server for registration.
   void StartOidcRegistration();

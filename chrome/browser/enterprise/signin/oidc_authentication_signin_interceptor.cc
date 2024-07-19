@@ -18,7 +18,6 @@
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/oidc_managed_profile_creation_delegate.h"
-#include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -100,8 +99,6 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
   // want to retry the process or a different identity.
   if (interception_in_progress_) {
     VLOG_POLICY(1, OIDC_ENROLLMENT) << "OIDC Interception already in progress";
-    RecordOidcInterceptionResult(
-        OidcInterceptionResult::kInterceptionInProgress);
     return;
   }
 
@@ -110,12 +107,14 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
 
   if (!IsValidOidcToken(oidc_tokens)) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "Invalid tokens in the OIDC response";
+    Reset();
     return;
   }
 
   if (!intercepted_contents) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Web contents no longer available, aborting interception";
+    Reset();
     return;
   }
 
@@ -221,6 +220,39 @@ void OidcAuthenticationSigninInterceptor::Reset() {
   user_choice_handling_done_callback_.Reset();
 }
 
+void OidcAuthenticationSigninInterceptor::HandleError(
+    std::variant<OidcInterceptionResult, OidcProfileCreationResult> result,
+    std::optional<bool> is_dasher_based) {
+  auto operation_result = signin::SigninChoiceOperationResult::SIGNIN_ERROR;
+  if (std::holds_alternative<OidcInterceptionResult>(result)) {
+    CHECK(is_dasher_based == std::nullopt);
+    RecordOidcInterceptionResult(std::get<OidcInterceptionResult>(result));
+  } else {
+    CHECK(is_dasher_based != std::nullopt);
+    auto profile_creation_result = std::get<OidcProfileCreationResult>(result);
+    RecordOidcProfileCreationResult(profile_creation_result,
+                                    is_dasher_based.value());
+    if (profile_creation_result ==
+        OidcProfileCreationResult::kFailedToFetchPolicy) {
+      operation_result = signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT;
+    }
+  }
+
+  // Display the error dialog for profile creation case only
+  if (switch_to_entry_) {
+    Reset();
+    return;
+  }
+
+  if (interception_bubble_handle_ && user_choice_handling_done_callback_) {
+    std::move(user_choice_handling_done_callback_).Run(operation_result);
+    return;
+  }
+
+  // Reset in case the error dialog is not shown correctly.
+  Reset();
+}
+
 void OidcAuthenticationSigninInterceptor::StartOidcRegistration() {
   std::string preset_profile_guid =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -236,11 +268,7 @@ void OidcAuthenticationSigninInterceptor::StartOidcRegistration() {
   if (preset_profile_id == std::nullopt || preset_profile_id.value().empty()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Failed to create a preset profile ID for the new profile";
-
-    if (user_choice_handling_done_callback_) {
-      std::move(user_choice_handling_done_callback_)
-          .Run(signin::SigninChoiceOperationResult::SIGNIN_ERROR);
-    }
+    HandleError(OidcInterceptionResult::kInvalidProfile);
     return;
   }
   preset_profile_id_ = preset_profile_id.value();
@@ -292,19 +320,13 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
     std::string preset_profile_guid,
     base::TimeTicks registration_start_time) {
   if (client->last_dm_status() != policy::DM_STATUS_SUCCESS) {
-    RecordOidcInterceptionResult(
-        OidcInterceptionResult::kFailedToRegisterProfile);
     RecordOidcEnrollmentRegistrationLatency(
         std::nullopt, /*success=*/false,
         base::TimeTicks::Now() - registration_start_time);
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "OIDC client registration failed with DM Status: "
         << client->last_dm_status() << ". Enrollment process interrupted.";
-
-    if (user_choice_handling_done_callback_) {
-      std::move(user_choice_handling_done_callback_)
-          .Run(signin::SigninChoiceOperationResult::SIGNIN_ERROR);
-    }
+    HandleError(OidcInterceptionResult::kFailedToRegisterProfile);
     return;
   }
 
@@ -360,6 +382,7 @@ void OidcAuthenticationSigninInterceptor::OnProfileCreationChoice(
     signin::SigninChoice choice,
     signin::SigninChoiceOperationDoneCallback callback) {
   user_choice_handling_done_callback_ = std::move(callback);
+
   if (choice == signin::SIGNIN_CHOICE_CANCEL) {
     RecordOidcInterceptionResult(OidcInterceptionResult::kConsetDialogRejected);
       VLOG_POLICY(2, OIDC_ENROLLMENT) << "Profile creation refused by the user";
@@ -408,13 +431,9 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
   CHECK(profile_creator_);
 
   if (!new_profile) {
-    RecordOidcProfileCreationResult(
-        OidcProfileCreationResult::kFailedToCreateProfile, dasher_based_);
     LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "Failed to create new profile";
-    if (user_choice_handling_done_callback_) {
-      std::move(user_choice_handling_done_callback_)
-          .Run(signin::SIGNIN_SILENT_SUCCESS);
-    }
+    HandleError(OidcProfileCreationResult::kFailedToCreateProfile,
+                dasher_based_);
     return;
   }
   new_profile_ = new_profile->GetWeakPtr();
@@ -484,9 +503,7 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
   if (!oidc_signin_service) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Can not find OIDC policy sign in service. Policy fetch aborted";
-    RecordOidcProfileCreationResult(
-        OidcProfileCreationResult::kFailedToFetchPolicy, dasher_based_);
-    Reset();
+    HandleError(OidcProfileCreationResult::kFailedToFetchPolicy, dasher_based_);
     return;
   }
 
@@ -501,10 +518,13 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
                      weak_factory_.GetWeakPtr()));
 }
 
-void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile() {
+void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
+    bool success) {
   if (user_choice_handling_done_callback_) {
     std::move(user_choice_handling_done_callback_)
-        .Run(signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS);
+        .Run(success
+                 ? signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS
+                 : signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT);
   } else {
     FinalizeSigninInterception();
   }

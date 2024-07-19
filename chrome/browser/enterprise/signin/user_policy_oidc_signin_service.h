@@ -18,6 +18,8 @@
 
 namespace policy {
 
+using PolicyFetchCallback = UserPolicySigninServiceBase::PolicyFetchCallback;
+
 class ProfileCloudPolicyManager;
 class UserCloudPolicyManager;
 class UserPolicyOidcSigninService;
@@ -83,7 +85,7 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
       base::TimeTicks policy_fetch_start_time,
       bool switch_to_entry,
       scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
-      base::OnceClosure callback);
+      PolicyFetchCallback callback);
 
   // Attempt to restore the policies for the current profile using backup DM
   // token.
@@ -97,7 +99,7 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
       std::string user_email,
       base::TimeTicks policy_fetch_start_time,
       bool switch_to_entry,
-      base::OnceClosure callback,
+      PolicyFetchCallback callback,
       bool success);
 
   // UserPolicySigninServiceBase implementation:

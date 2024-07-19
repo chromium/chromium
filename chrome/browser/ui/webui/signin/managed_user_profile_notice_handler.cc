@@ -230,11 +230,11 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
     const base::Value::List& args) {
   CHECK_EQ(2u, args.size());
   AllowJavascript();
-  bool use_existing_profile = args[0].GetIfBool().value_or(false);
+  bool use_existing_profile = args[1].GetIfBool().value_or(false);
   auto result = use_existing_profile ? signin::SIGNIN_CHOICE_CONTINUE
                                      : signin::SIGNIN_CHOICE_NEW_PROFILE;
 
-  int state = args[1].GetIfInt().value_or(0);
+  int state = args[0].GetIfInt().value_or(0);
   CHECK_NE(state, ManagedUserProfileNoticeHandler::State::kProcessing)
       << "User should not be able to click the proceed button while processing";
   if (process_user_choice_with_confirmation_callback_ &&
