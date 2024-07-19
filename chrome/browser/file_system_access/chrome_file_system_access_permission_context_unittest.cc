@@ -142,7 +142,7 @@ bool CreateNonEmptyFile(const base::FilePath& path) {
 #if BUILDFLAG(IS_WIN)
 CreateSymbolicLinkResult CreateWinSymbolicLink(const base::FilePath& target,
                                                const base::FilePath& symlink,
-                                               bool is_directory = false) {
+                                               bool is_directory) {
   // Creating symbolic links on Windows requires Administrator privileges.
   // However, recent versions of Windows introduced the
   // SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE flag, which allows the
@@ -178,7 +178,7 @@ CreateSymbolicLinkResult CreateSymbolicLinkForTesting(
     const base::FilePath& target,
     const base::FilePath& symlink) {
 #if BUILDFLAG(IS_WIN)
-  return CreateWinSymbolicLink(target, symlink);
+  return CreateWinSymbolicLink(target, symlink, /*is_directory=*/true);
 #else
   if (!base::CreateSymbolicLink(target, symlink)) {
     return CreateSymbolicLinkResult::kFailed;
@@ -760,7 +760,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   }
 
   base::FilePath symlink1 = temp_dir_.GetPath().AppendASCII("symlink1");
+
   base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
+  ASSERT_TRUE(base::CreateDirectory(app_dir));
+
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
 
   CreateSymbolicLinkResult result =
@@ -776,7 +779,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             SensitiveDirectoryResult::kAbort);
 
   base::FilePath symlink2 = temp_dir_.GetPath().AppendASCII("symlink2");
+
   base::FilePath allowed_file = temp_dir_.GetPath().AppendASCII("foo");
+  ASSERT_TRUE(base::CreateDirectory(allowed_file));
 
   result = CreateSymbolicLinkForTesting(allowed_file, symlink2);
   if (result == CreateSymbolicLinkResult::kUnsupported) {

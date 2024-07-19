@@ -119,8 +119,7 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       base::File::Error result,
       std::vector<filesystem::mojom::DirectoryEntry> file_list,
       bool has_more_entries);
-  void AllEntriesReady(
-      bool has_more_entries,
+  void CurrentBatchEntriesReady(
       scoped_refptr<FileSystemAccessDirectoryEntriesListenerHolder>
           listener_holder,
       std::vector<blink::mojom::FileSystemAccessEntryPtr> entries);
@@ -136,7 +135,7 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       FileSystemAccessPermissionContext::SensitiveEntryResult
           sensitive_entry_result);
 
-  void MergeAllEntries(
+  void MergeCurrentBatchEntries(
       base::OnceCallback<void(
           std::vector<blink::mojom::FileSystemAccessEntryPtr>)> final_callback,
       std::vector<blink::mojom::FileSystemAccessEntryPtr> entries);

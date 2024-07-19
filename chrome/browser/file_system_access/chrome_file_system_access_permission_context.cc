@@ -354,7 +354,7 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   base::FilePath check_path;
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessSymbolicLinkCheck)) {
-    // `NormalizeFilePath()` is called to perform normalization. It
+    // `base::NormalizeFilePath()` is called to perform normalization. It
     // will resolve any file path elements like symbolic links or junctions by
     // returning the target file path.
     //
