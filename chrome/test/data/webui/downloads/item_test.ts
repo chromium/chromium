@@ -91,7 +91,7 @@ suite('item tests', function() {
                    hideDate: false,
                    state: State.kComplete,
                    referrerUrl: undefined,
-                   displayReferrerUrl: undefined,
+                   displayReferrerUrl: stringToMojoString16(''),
                  }));
         flush();
 
