@@ -109,7 +109,10 @@ class TestSharedImageInterface : public SharedImageInterface {
   }
 
   void UseTestGMBInSharedImageCreationWithBufferUsage() {
-    test_gmb_manager_ = std::make_unique<TestGpuMemoryBufferManager>();
+    // Create |test_gmb_manager_| only if it doesn't already exist.
+    if (!test_gmb_manager_) {
+      test_gmb_manager_ = std::make_unique<TestGpuMemoryBufferManager>();
+    }
   }
 
   void emulate_client_provided_native_buffer() {
