@@ -8,7 +8,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
-#include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -20,7 +20,7 @@
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/variations/service/google_groups_updater_service.h"
+#include "components/variations/service/google_groups_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
@@ -60,7 +60,7 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
   DependsOn(WebDataServiceFactory::GetInstance());
   DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
-  DependsOn(GoogleGroupsUpdaterServiceFactory::GetInstance());
+  DependsOn(GoogleGroupsManagerFactory::GetInstance());
 }
 
 PlusAddressServiceFactory::~PlusAddressServiceFactory() = default;
@@ -92,10 +92,9 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
           affiliation_service,
           /*feature_enabled_for_profile_check=*/
           base::BindRepeating(
-              &GoogleGroupsUpdaterService::IsFeatureEnabledForProfile,
+              &GoogleGroupsManager::IsFeatureEnabledForProfile,
               base::Unretained(
-                  GoogleGroupsUpdaterServiceFactory::GetForBrowserContext(
-                      context))));
+                  GoogleGroupsManagerFactory::GetForBrowserContext(context))));
 
   if (base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressAffiliations)) {

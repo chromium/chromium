@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_VARIATIONS_GOOGLE_GROUPS_UPDATER_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_METRICS_VARIATIONS_GOOGLE_GROUPS_UPDATER_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_METRICS_VARIATIONS_GOOGLE_GROUPS_MANAGER_FACTORY_H_
+#define CHROME_BROWSER_METRICS_VARIATIONS_GOOGLE_GROUPS_MANAGER_FACTORY_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
-class GoogleGroupsUpdaterService;
+class GoogleGroupsManager;
 
-class GoogleGroupsUpdaterServiceFactory : public ProfileKeyedServiceFactory {
+class GoogleGroupsManagerFactory : public ProfileKeyedServiceFactory {
  public:
-  GoogleGroupsUpdaterServiceFactory();
+  GoogleGroupsManagerFactory();
 
-  static GoogleGroupsUpdaterServiceFactory* GetInstance();
-  static GoogleGroupsUpdaterService* GetForBrowserContext(
+  static GoogleGroupsManagerFactory* GetInstance();
+  static GoogleGroupsManager* GetForBrowserContext(
       content::BrowserContext* context);
 
  private:
@@ -30,4 +30,4 @@ class GoogleGroupsUpdaterServiceFactory : public ProfileKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 
-#endif  // CHROME_BROWSER_METRICS_VARIATIONS_GOOGLE_GROUPS_UPDATER_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_METRICS_VARIATIONS_GOOGLE_GROUPS_MANAGER_FACTORY_H_

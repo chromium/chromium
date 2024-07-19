@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/variations/service/google_groups_updater_service.h"
+#include "components/variations/service/google_groups_manager.h"
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -14,19 +14,18 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_seed_processor.h"
-#include "google_groups_updater_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class GoogleGroupsUpdaterServiceTest : public ::testing::Test {
+class GoogleGroupsManagerTest : public ::testing::Test {
  public:
-  GoogleGroupsUpdaterServiceTest() {
+  GoogleGroupsManagerTest() {
     key_ = "Default";
     target_prefs_.registry()->RegisterDictionaryPref(
         variations::prefs::kVariationsGoogleGroups);
-    GoogleGroupsUpdaterService::RegisterProfilePrefs(source_prefs_.registry());
+    GoogleGroupsManager::RegisterProfilePrefs(source_prefs_.registry());
   }
-  ~GoogleGroupsUpdaterServiceTest() override = default;
+  ~GoogleGroupsManagerTest() override = default;
 
   void SetSourcePref(std::vector<std::string> groups) {
     base::Value::List pref_groups_list;
@@ -87,16 +86,16 @@ class GoogleGroupsUpdaterServiceTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable source_prefs_;
 };
 
-TEST_F(GoogleGroupsUpdaterServiceTest, NoSyncGroupsEmptyListWritten) {
-  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+TEST_F(GoogleGroupsManagerTest, NoSyncGroupsEmptyListWritten) {
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
 
   // Check there are no groups in the target pref.
   CheckTargetPref({});
 }
 
-TEST_F(GoogleGroupsUpdaterServiceTest, EmptySyncGroupsEmptyListWritten) {
-  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+TEST_F(GoogleGroupsManagerTest, EmptySyncGroupsEmptyListWritten) {
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
   SetSourcePref({});
 
@@ -104,8 +103,8 @@ TEST_F(GoogleGroupsUpdaterServiceTest, EmptySyncGroupsEmptyListWritten) {
   CheckTargetPref({});
 }
 
-TEST_F(GoogleGroupsUpdaterServiceTest, SourceSyncGroupsWrittenToEmptyTarget) {
-  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+TEST_F(GoogleGroupsManagerTest, SourceSyncGroupsWrittenToEmptyTarget) {
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
   SetSourcePref({"123", "456"});
 
@@ -113,9 +112,9 @@ TEST_F(GoogleGroupsUpdaterServiceTest, SourceSyncGroupsWrittenToEmptyTarget) {
   CheckTargetPref({"123", "456"});
 }
 
-TEST_F(GoogleGroupsUpdaterServiceTest,
+TEST_F(GoogleGroupsManagerTest,
        SourceSyncGroupsWrittenToNonEmptyTarget) {
-  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
   SetTargetPref({"123", "456"});
 
@@ -125,9 +124,9 @@ TEST_F(GoogleGroupsUpdaterServiceTest,
   CheckTargetPref({"123", "789"});
 }
 
-TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsNotPreviouslySet) {
+TEST_F(GoogleGroupsManagerTest, ClearProfilePrefsNotPreviouslySet) {
   syncer::TestSyncService sync_service;
-  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
   google_groups_updater.OnSyncServiceInitialized(&sync_service);
   // This just checks that ClearSigninScopedState() deals with the case where
@@ -138,9 +137,9 @@ TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsNotPreviouslySet) {
   CheckTargetPref({});
 }
 
-TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsClearsTargetPref) {
+TEST_F(GoogleGroupsManagerTest, ClearProfilePrefsClearsTargetPref) {
   syncer::TestSyncService sync_service;
-  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
   google_groups_updater.OnSyncServiceInitialized(&sync_service);
   SetSourcePref({"123", "456"});
@@ -155,13 +154,13 @@ TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsClearsTargetPref) {
 }
 
 // Tests that `IsFeatureEnabledForProfile` returns true if the feature is
-// enabled and the source prefs of the `GoogleGroupsUpdaterService` contain at
+// enabled and the source prefs of the `GoogleGroupsManager` contain at
 // least one of the google_groups specified for the feature.
-TEST_F(GoogleGroupsUpdaterServiceTest, IsFeatureEnabledForProfile) {
+TEST_F(GoogleGroupsManagerTest, IsFeatureEnabledForProfile) {
   static BASE_FEATURE(kSampleFeature, "SampleFeature",
                       base::FEATURE_DISABLED_BY_DEFAULT);
   auto feature_list = std::make_unique<base::FeatureList>();
-  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
 
   constexpr char kTrialName[] = "SampleTrial";
@@ -190,12 +189,12 @@ TEST_F(GoogleGroupsUpdaterServiceTest, IsFeatureEnabledForProfile) {
 
 // Tests that `IsFeatureEnabledForProfile` can deal properly with google_groups
 // parameters of size longer than 1.
-TEST_F(GoogleGroupsUpdaterServiceTest,
+TEST_F(GoogleGroupsManagerTest,
        IsFeatureEnabledForProfileMultipleGroups) {
   static BASE_FEATURE(kSampleFeature, "SampleFeature",
                       base::FEATURE_DISABLED_BY_DEFAULT);
   auto feature_list = std::make_unique<base::FeatureList>();
-  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
 
   constexpr char kTrialName[] = "SampleTrial";
@@ -221,12 +220,12 @@ TEST_F(GoogleGroupsUpdaterServiceTest,
 
 // Tests that `IsFeatureEnabledForProfile` is always false if the feature itself
 // is disabled.
-TEST_F(GoogleGroupsUpdaterServiceTest,
+TEST_F(GoogleGroupsManagerTest,
        IsFeatureEnabledForProfileForDisabledFeature) {
   static BASE_FEATURE(kSampleFeature, "SampleFeature",
                       base::FEATURE_DISABLED_BY_DEFAULT);
   auto feature_list = std::make_unique<base::FeatureList>();
-  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
 
   constexpr char kTrialName[] = "SampleTrial";

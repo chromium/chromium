@@ -2,34 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_METRICS_MODEL_GOOGLE_GROUPS_UPDATER_SERVICE_FACTORY_H_
-#define IOS_CHROME_BROWSER_METRICS_MODEL_GOOGLE_GROUPS_UPDATER_SERVICE_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_METRICS_MODEL_GOOGLE_GROUPS_MANAGER_FACTORY_H_
+#define IOS_CHROME_BROWSER_METRICS_MODEL_GOOGLE_GROUPS_MANAGER_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class ChromeBrowserState;
-class GoogleGroupsUpdaterService;
+class GoogleGroupsManager;
 
-class GoogleGroupsUpdaterServiceFactory
+class GoogleGroupsManagerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for `browser_state`.
-  static GoogleGroupsUpdaterService* GetForBrowserState(
+  static GoogleGroupsManager* GetForBrowserState(
       ChromeBrowserState* browser_state);
 
-  static GoogleGroupsUpdaterServiceFactory* GetInstance();
+  static GoogleGroupsManagerFactory* GetInstance();
 
-  GoogleGroupsUpdaterServiceFactory(const GoogleGroupsUpdaterServiceFactory&) =
+  GoogleGroupsManagerFactory(const GoogleGroupsManagerFactory&) =
       delete;
-  GoogleGroupsUpdaterServiceFactory& operator=(
-      const GoogleGroupsUpdaterServiceFactory&) = delete;
+  GoogleGroupsManagerFactory& operator=(
+      const GoogleGroupsManagerFactory&) = delete;
 
  private:
-  friend class base::NoDestructor<GoogleGroupsUpdaterServiceFactory>;
+  friend class base::NoDestructor<GoogleGroupsManagerFactory>;
 
-  GoogleGroupsUpdaterServiceFactory();
-  ~GoogleGroupsUpdaterServiceFactory() override = default;
+  GoogleGroupsManagerFactory();
+  ~GoogleGroupsManagerFactory() override = default;
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
@@ -43,4 +43,4 @@ class GoogleGroupsUpdaterServiceFactory
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 
-#endif  // IOS_CHROME_BROWSER_METRICS_MODEL_GOOGLE_GROUPS_UPDATER_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_METRICS_MODEL_GOOGLE_GROUPS_MANAGER_FACTORY_H_

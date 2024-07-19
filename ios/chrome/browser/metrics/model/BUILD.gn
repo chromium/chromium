@@ -40,8 +40,8 @@ source_set("constants") {
 
 source_set("google_groups_updater") {
   sources = [
-    "google_groups_updater_service_factory.h",
-    "google_groups_updater_service_factory.mm",
+    "google_groups_manager_factory.h",
+    "google_groups_manager_factory.mm",
   ]
   deps = [
     "//base",

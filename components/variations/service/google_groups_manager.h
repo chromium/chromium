@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_UPDATER_SERVICE_H_
-#define COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_UPDATER_SERVICE_H_
+#ifndef COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_MANAGER_H_
+#define COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_MANAGER_H_
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -38,21 +38,18 @@ inline constexpr char kDogfoodGroupsSyncPrefGaiaIdKey[] = "gaia_id";
 
 // Service responsible for one-way synchronization of Google group information
 // from per-profile sync data to local-state.
-// TODO: crbug.com/348575889 - Rename the service to GoogleGroupsManager to
-// reflect that it also allows looking up whether a group-controlled feature is
-// enabled for the BrowserContext that this service is associated with.
-class GoogleGroupsUpdaterService : public KeyedService,
+class GoogleGroupsManager : public KeyedService,
                                    public syncer::SyncServiceObserver {
  public:
-  explicit GoogleGroupsUpdaterService(PrefService& target_prefs,
+  explicit GoogleGroupsManager(PrefService& target_prefs,
                                       const std::string& key,
                                       PrefService& source_prefs);
 
-  GoogleGroupsUpdaterService(const GoogleGroupsUpdaterService&) = delete;
-  GoogleGroupsUpdaterService& operator=(const GoogleGroupsUpdaterService&) =
+  GoogleGroupsManager(const GoogleGroupsManager&) = delete;
+  GoogleGroupsManager& operator=(const GoogleGroupsManager&) =
       delete;
 
-  ~GoogleGroupsUpdaterService() override;
+  ~GoogleGroupsManager() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -111,4 +108,4 @@ class GoogleGroupsUpdaterService : public KeyedService,
       sync_service_observation_{this};
 };
 
-#endif  // COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_UPDATER_SERVICE_H_
+#endif  // COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_MANAGER_H_

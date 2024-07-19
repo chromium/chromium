@@ -96,7 +96,7 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_keyed_service_factory.h"
 #include "chrome/browser/media_effects/media_effects_service_factory.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences_factory.h"
-#include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
 #include "chrome/browser/net/dns_probe_service_factory.h"
@@ -884,7 +884,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   GalleryWatchManager::EnsureFactoryBuilt();
   GlobalErrorServiceFactory::GetInstance();
 #endif
-  GoogleGroupsUpdaterServiceFactory::GetInstance();
+  GoogleGroupsManagerFactory::GetInstance();
   HatsServiceFactory::GetInstance();
   HeavyAdServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

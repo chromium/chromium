@@ -2,57 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/metrics/model/google_groups_updater_service_factory.h"
+#import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/variations/service/google_groups_updater_service.h"
+#import "components/variations/service/google_groups_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 // static
-GoogleGroupsUpdaterService*
-GoogleGroupsUpdaterServiceFactory::GetForBrowserState(
+GoogleGroupsManager*
+GoogleGroupsManagerFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  return static_cast<GoogleGroupsUpdaterService*>(
+  return static_cast<GoogleGroupsManager*>(
       GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
 }
 
 // static
-GoogleGroupsUpdaterServiceFactory*
-GoogleGroupsUpdaterServiceFactory::GetInstance() {
-  static base::NoDestructor<GoogleGroupsUpdaterServiceFactory> instance;
+GoogleGroupsManagerFactory*
+GoogleGroupsManagerFactory::GetInstance() {
+  static base::NoDestructor<GoogleGroupsManagerFactory> instance;
   return instance.get();
 }
 
-GoogleGroupsUpdaterServiceFactory::GoogleGroupsUpdaterServiceFactory()
+GoogleGroupsManagerFactory::GoogleGroupsManagerFactory()
     : BrowserStateKeyedServiceFactory(
-          "GoogleGroupsUpdaterService",
+          "GoogleGroupsManager",
           BrowserStateDependencyManager::GetInstance()) {}
 
 std::unique_ptr<KeyedService>
-GoogleGroupsUpdaterServiceFactory::BuildServiceInstanceFor(
+GoogleGroupsManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<GoogleGroupsUpdaterService>(
+  return std::make_unique<GoogleGroupsManager>(
       *GetApplicationContext()->GetLocalState(),
       browser_state->GetStatePath().BaseName().AsUTF8Unsafe(),
       *browser_state->GetPrefs());
 }
 
-bool GoogleGroupsUpdaterServiceFactory::ServiceIsCreatedWithBrowserState()
+bool GoogleGroupsManagerFactory::ServiceIsCreatedWithBrowserState()
     const {
   return true;
 }
 
-bool GoogleGroupsUpdaterServiceFactory::ServiceIsNULLWhileTesting() const {
+bool GoogleGroupsManagerFactory::ServiceIsNULLWhileTesting() const {
   // Many unit tests don't initialize local state prefs, so disable this service
   // in unit tests.
   return true;
 }
 
-void GoogleGroupsUpdaterServiceFactory::RegisterBrowserStatePrefs(
+void GoogleGroupsManagerFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  GoogleGroupsUpdaterService::RegisterProfilePrefs(registry);
+  GoogleGroupsManager::RegisterProfilePrefs(registry);
 }

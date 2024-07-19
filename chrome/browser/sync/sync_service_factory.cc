@@ -20,7 +20,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_receiver_service_factory.h"
 #include "chrome/browser/password_manager/password_sender_service_factory.h"
@@ -61,7 +61,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "components/variations/service/google_groups_updater_service.h"
+#include "components/variations/service/google_groups_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -202,8 +202,8 @@ std::unique_ptr<KeyedService> BuildSyncService(
       PrefServiceSyncableFromProfile(profile);
   pref_service->OnSyncServiceInitialized(sync_service.get());
 
-  if (GoogleGroupsUpdaterService* groups_updater_service =
-          GoogleGroupsUpdaterServiceFactory::GetForBrowserContext(profile)) {
+  if (GoogleGroupsManager* groups_updater_service =
+          GoogleGroupsManagerFactory::GetForBrowserContext(profile)) {
     groups_updater_service->OnSyncServiceInitialized(sync_service.get());
   }
 

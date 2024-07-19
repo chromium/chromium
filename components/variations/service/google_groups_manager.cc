@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/variations/service/google_groups_updater_service.h"
+#include "components/variations/service/google_groups_manager.h"
 
 #include <iterator>
 #include <string>
@@ -20,7 +20,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_seed_processor.h"
 
-GoogleGroupsUpdaterService::GoogleGroupsUpdaterService(
+GoogleGroupsManager::GoogleGroupsManager(
     PrefService& target_prefs,
     const std::string& key,
     PrefService& source_prefs)
@@ -33,17 +33,17 @@ GoogleGroupsUpdaterService::GoogleGroupsUpdaterService(
 #else
       variations::kDogfoodGroupsSyncPrefName,
 #endif
-      base::BindRepeating(&GoogleGroupsUpdaterService::UpdateGoogleGroups,
+      base::BindRepeating(&GoogleGroupsManager::UpdateGoogleGroups,
                           base::Unretained(this)));
 
   // Also process the initial value.
   UpdateGoogleGroups();
 }
 
-GoogleGroupsUpdaterService::~GoogleGroupsUpdaterService() = default;
+GoogleGroupsManager::~GoogleGroupsManager() = default;
 
 // static
-void GoogleGroupsUpdaterService::RegisterProfilePrefs(
+void GoogleGroupsManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -56,7 +56,7 @@ void GoogleGroupsUpdaterService::RegisterProfilePrefs(
   );
 }
 
-bool GoogleGroupsUpdaterService::IsFeatureEnabledForProfile(
+bool GoogleGroupsManager::IsFeatureEnabledForProfile(
     const base::Feature& feature) const {
   if (!base::FeatureList::IsEnabled(feature)) {
     return false;
@@ -80,11 +80,11 @@ bool GoogleGroupsUpdaterService::IsFeatureEnabledForProfile(
   });
 }
 
-void GoogleGroupsUpdaterService::Shutdown() {
+void GoogleGroupsManager::Shutdown() {
   sync_service_observation_.Reset();
 }
 
-void GoogleGroupsUpdaterService::OnSyncServiceInitialized(
+void GoogleGroupsManager::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_service_observation_.Observe(sync_service);
 
@@ -92,7 +92,7 @@ void GoogleGroupsUpdaterService::OnSyncServiceInitialized(
   OnStateChanged(sync_service);
 }
 
-void GoogleGroupsUpdaterService::OnStateChanged(syncer::SyncService* sync) {
+void GoogleGroupsManager::OnStateChanged(syncer::SyncService* sync) {
   switch (sync->GetTransportState()) {
     case syncer::SyncService::TransportState::DISABLED:
       ClearSigninScopedState();
@@ -107,11 +107,11 @@ void GoogleGroupsUpdaterService::OnStateChanged(syncer::SyncService* sync) {
   }
 }
 
-void GoogleGroupsUpdaterService::OnSyncShutdown(syncer::SyncService* sync) {
+void GoogleGroupsManager::OnSyncShutdown(syncer::SyncService* sync) {
   sync_service_observation_.Reset();
 }
 
-void GoogleGroupsUpdaterService::ClearSigninScopedState() {
+void GoogleGroupsManager::ClearSigninScopedState() {
   source_prefs_->ClearPref(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       variations::kOsDogfoodGroupsSyncPrefName
@@ -124,7 +124,7 @@ void GoogleGroupsUpdaterService::ClearSigninScopedState() {
   // propagate this change to local state.
 }
 
-void GoogleGroupsUpdaterService::UpdateGoogleGroups() {
+void GoogleGroupsManager::UpdateGoogleGroups() {
   // Get the current value of the local state dict.
   ScopedDictPrefUpdate target_prefs_update(
       &target_prefs_.get(), variations::prefs::kVariationsGoogleGroups);

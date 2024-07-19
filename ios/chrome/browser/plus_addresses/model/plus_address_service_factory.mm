@@ -14,9 +14,9 @@
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_http_client_impl.h"
 #import "components/plus_addresses/plus_address_service.h"
-#import "components/variations/service/google_groups_updater_service.h"
+#import "components/variations/service/google_groups_manager.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
-#import "ios/chrome/browser/metrics/model/google_groups_updater_service_factory.h"
+#import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -46,7 +46,7 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
   DependsOn(ios::WebDataServiceFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
-  DependsOn(GoogleGroupsUpdaterServiceFactory::GetInstance());
+  DependsOn(GoogleGroupsManagerFactory::GetInstance());
 }
 
 PlusAddressServiceFactory::~PlusAddressServiceFactory() {}
@@ -78,10 +78,9 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
           affiliation_service,
           /*feature_enabled_for_profile_check=*/
           base::BindRepeating(
-              &GoogleGroupsUpdaterService::IsFeatureEnabledForProfile,
-              base::Unretained(
-                  GoogleGroupsUpdaterServiceFactory::GetForBrowserState(
-                      browser_state))));
+              &GoogleGroupsManager::IsFeatureEnabledForProfile,
+              base::Unretained(GoogleGroupsManagerFactory::GetForBrowserState(
+                  browser_state))));
 
   if (base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressAffiliations)) {
