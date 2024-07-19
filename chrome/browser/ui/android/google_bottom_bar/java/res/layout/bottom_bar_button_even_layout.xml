@@ -17,4 +17,4 @@ found in the LICENSE file.
     android:padding="@dimen/google_bottom_bar_button_padding"
     android:clickable="true"
     android:focusable="true"
-    android:background="@drawable/bottom_button_ripple_effect" />
+    android:background="?android:attr/actionBarItemBackground" />
