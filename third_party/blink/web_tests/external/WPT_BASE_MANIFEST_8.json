@@ -84318,6 +84318,136 @@
        {}
       ]
      ],
+     "box-decoration-break-clone-014.html": [
+      "f6b17e48c0f01297bbb82fb5001352a1d0e7691f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-015.html": [
+      "36751ef11aeea651dc859125ede70d8fd4b46448",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-016.html": [
+      "850e264f19143c3280695cfb5bbda87be04e1fca",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-017.html": [
+      "aad729907bfcbd8718d38f25799dad90c8aeae0e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-018.html": [
+      "ae9811f7a27ffa6ca1fa249b7a3e03a3bf28973c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-019.html": [
+      "55e1495f9c4b70ab50763af07435f1fe73ec21a5",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-020.html": [
+      "2f24cf48e21cbe8e1af3d5faef6f4d6e50d6be28",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-021.html": [
+      "825c25dbf52beaabdee9ae47b6fd3ffadc717118",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-022.html": [
+      "7250351fa08cfb86aba467d77238374563f9b7e4",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-023.html": [
+      "90d397494681f7dc8aefd080ebb0f07b177b6d51",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "box-shadow-001.html": [
       "d35aeb682dcfcc77c41f8b09642b3481a4b7f39d",
       [
@@ -89042,6 +89172,19 @@
       ],
       "grid-container-fragmentation-011.html": [
        "8615244bf5b2a94bc202b4570f1ae2c442525824",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-container-fragmentation-012.html": [
+       "1a6935291bbed2a1efc51aa7a7d2ab10f79b4575",
        [
         null,
         [
@@ -373418,7 +373561,7 @@
        ]
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
-       "3cc0dba1f7478daed848ab92f759b210b43f743d",
+       "9a732a9a5d63661b3e6ef94b7640655fd36f31af",
        []
       ]
      },
@@ -397373,7 +397516,7 @@
       []
      ],
      "embedded_responder.js": [
-      "3cca86154af7e26db37acb26761d98d9f531cfee",
+      "15ba640a1e5ce95572498dda285f02c3bfe883c2",
       []
      ],
      "embedded_worker.py": [
@@ -397421,7 +397564,7 @@
       []
      ],
      "script-with-cookie-header.py": [
-      "ae95b7593fbece5de63b7fc7fb7fe3ec45e16e57",
+      "2237bba463547e890dc12bd4b11edbd7b539d9d7",
       []
      ],
      "set-cookie-header.py": [
@@ -404460,14 +404603,6 @@
       "eb377b671679db714c350649c75ac41423391ed4",
       []
      ],
-     "elementwise_logical.https.any.worker_cpu-expected.txt": [
-      "3df902e80e5bc45e0bcfe45d3db44524d81c1e77",
-      []
-     ],
-     "elementwise_logical.https.any_cpu-expected.txt": [
-      "3df902e80e5bc45e0bcfe45d3db44524d81c1e77",
-      []
-     ],
      "elementwise_unary.https.any.worker_cpu-expected.txt": [
       "b3e688adc7b76745adeb4e79f62410d47adcb015",
       []
@@ -404933,7 +405068,7 @@
       ]
      },
      "utils.js": [
-      "2696062aaf2e01e31497d09f66a292c68c682773",
+      "7f99e3e1593b39648fbca13c06361c3c090797a9",
       []
      ],
      "utils_validation.js": [
@@ -425479,7 +425614,7 @@
    "attribution-reporting": {
     "aggregatable-debug": {
      "simple-source-aggregatable-debug-report.sub.https.html": [
-      "9b5d6fcb4e0298a008da8b17822ff8f34dd31ac4",
+      "511c9e35b819e54b288906394733998514778282",
       [
        null,
        {
@@ -425488,7 +425623,7 @@
       ]
      ],
      "simple-trigger-aggregatable-debug-report.sub.https.html": [
-      "68eae824a295020f45a1d2e37a8ab0a54e9b473d",
+      "e2a3bfa06b7031a2bcd4f9cf10cba078f023dd2d",
       [
        null,
        {
@@ -512840,7 +512975,7 @@
      ]
     ],
     "fedcm-identity-assertion-nocors.https.html": [
-     "612387b4a0dc69a428f85333868b7f9877c76a81",
+     "ae89f51ab4ef22ee1a9c9340a26270dff6d396ec",
      [
       null,
       {
@@ -622060,7 +622195,7 @@
     },
     "persistentDeviceId": {
      "get-persistendeviceid-from-pointer-event.tentative.html": [
-      "9f77c1c9e9559d29029bc376326fe655cefda3f1",
+      "294f36b5d3db1a0fd2648bbc30ae89d9edcec98e",
       [
        null,
        {
@@ -622069,7 +622204,7 @@
       ]
      ],
      "pointer-event-has-persistentdeviceid-from-pointer-event-init.tentative.html": [
-      "ef3f4d153566ac02d7e90fdd6962e395023356bd",
+      "c3fc4270f6177c94ccd191a29d86b77a220f3577",
       [
        null,
        {}
@@ -653239,7 +653374,7 @@
      ]
     ],
     "storage-access-permission.sub.https.window.js": [
-     "f0aadf4828dcb549c0d66ef4745b1e190d56f8d6",
+     "56a5425722e79d5fc702ea6745604885a43ef667",
      [
       "storage-access-api/storage-access-permission.sub.https.window.html",
       {
@@ -687949,225 +688084,6 @@
        }
       ]
      ],
-     "elementwise_logical.https.any.js": [
-      "826b21dd8fef7493aaa5ea31bbb7d8a5ed271bd8",
-      [
-       "webnn/conformance_tests/elementwise_logical.https.any.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API element-wise logical operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/elementwise_logical.https.any.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API element-wise logical operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/elementwise_logical.https.any.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API element-wise logical operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/elementwise_logical.https.any.worker.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API element-wise logical operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/elementwise_logical.https.any.worker.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API element-wise logical operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/elementwise_logical.https.any.worker.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN API element-wise logical operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
      "elementwise_unary.https.any.js": [
       "54406005e89639c8f856830e9cc7d922c18c3c6b",
       [
@@ -688576,6 +688492,225 @@
          [
           "title",
           "test WebNN API elu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "equal.https.any.js": [
+      "4b8c6c646d8e764ed271b2238f3cdc5e5287c618",
+      [
+       "webnn/conformance_tests/equal.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/equal.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/equal.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/equal.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/equal.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/equal.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
          ],
          [
           "global",
@@ -689452,6 +689587,444 @@
          [
           "title",
           "test WebNN API gemm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "greater.https.any.js": [
+      "8d642413e2952c3584ea066e9eb5fce555b0afad",
+      [
+       "webnn/conformance_tests/greater.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "greater_or_equal.https.any.js": [
+      "676116aff6674b93bf6aec2fe83a956a88664be6",
+      [
+       "webnn/conformance_tests/greater_or_equal.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater_or_equal.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater_or_equal.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater_or_equal.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater_or_equal.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/greater_or_equal.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
          ],
          [
           "global",
@@ -690577,6 +691150,444 @@
        }
       ]
      ],
+     "lesser.https.any.js": [
+      "246c3ed2c26c6bbd139efc963f2f0f331d13b2c3",
+      [
+       "webnn/conformance_tests/lesser.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "lesser_or_equal.https.any.js": [
+      "75d60bd73ceedab60f827887acfcb2a69a5a71bf",
+      [
+       "webnn/conformance_tests/lesser_or_equal.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser_or_equal.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser_or_equal.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser_or_equal.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser_or_equal.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lesser_or_equal.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "linear.https.any.js": [
       "c011229db8f1f50f6ab3f7930d754984fb58f866",
       [
@@ -690766,6 +691777,225 @@
          [
           "title",
           "test WebNN API linear operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "logical_not.https.any.js": [
+      "db0cc4e8c607d3a8b55dfc9062e2696919cab4cf",
+      [
+       "webnn/conformance_tests/logical_not.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/logical_not.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/logical_not.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/logical_not.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/logical_not.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/logical_not.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise binary operations"
          ],
          [
           "global",
@@ -738910,7 +740140,7 @@
          ]
         ],
         "invalid.py": [
-         "46afcfbc8ac37a3536befbba9cae34ba19d27d7d",
+         "047496b4c210b5369d062234db89a9903e4f0fa9",
          [
           null,
           {}
@@ -738975,7 +740205,7 @@
          ]
         ],
         "invalid.py": [
-         "af94e86efe10c3e353f952111a3054d9d7525cff",
+         "ccd5bcfa439e5bf661715fb31fc9ccb00fe5c09b",
          [
           null,
           {}
