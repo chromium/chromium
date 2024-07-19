@@ -30,7 +30,6 @@ CompanionSidePanelWebView::CompanionSidePanelWebView(Profile* profile)
               GURL(chrome::kChromeUIUntrustedCompanionSidePanelURL),
               profile,
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,
-              /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false)) {}
 
 bool CompanionSidePanelWebView::HandleContextMenu(

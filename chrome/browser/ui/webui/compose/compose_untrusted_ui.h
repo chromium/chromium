@@ -33,6 +33,7 @@ class ComposeUIUntrustedConfig
 
   // DefaultTopChromeWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  bool ShouldAutoResizeHost() override;
 };
 
 // TODO(b/317056725): update mojom to reflect that the page is untrusted.

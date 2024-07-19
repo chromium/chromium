@@ -62,4 +62,8 @@ bool SearchBubbleUIConfig::IsWebUIEnabled(
   return lens::features::IsLensOverlayEnabled();
 }
 
+bool SearchBubbleUIConfig::ShouldAutoResizeHost() {
+  return true;
+}
+
 }  // namespace lens

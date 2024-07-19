@@ -30,6 +30,10 @@ bool DataSharingUIConfig::IsWebUIEnabled(
       data_sharing::features::kDataSharingFeature);
 }
 
+bool DataSharingUIConfig::ShouldAutoResizeHost() {
+  return true;
+}
+
 DataSharingUI::DataSharingUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(

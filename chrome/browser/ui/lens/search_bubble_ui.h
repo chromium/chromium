@@ -51,6 +51,7 @@ class SearchBubbleUIConfig
 
   // DefaultTopChromeWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  bool ShouldAutoResizeHost() override;
 };
 
 }  // namespace lens

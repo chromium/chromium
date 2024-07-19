@@ -526,7 +526,6 @@ CommerceUiTabHelper::CreateShoppingInsightsWebView() {
               GURL(kChromeUIShoppingInsightsSidePanelUrl),
               Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
-              /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false));
   // Call ShowUI() to make the UI ready, this doesn't really open/switch the
   // side panel.

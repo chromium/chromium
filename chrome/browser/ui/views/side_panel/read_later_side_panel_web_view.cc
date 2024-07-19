@@ -34,7 +34,6 @@ ReadLaterSidePanelWebView::ReadLaterSidePanelWebView(
               GURL(chrome::kChromeUIReadLaterURL),
               browser->profile(),
               IDS_READ_LATER_TITLE,
-              /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false)),
       browser_(browser) {
   SetProperty(views::kElementIdentifierKey,

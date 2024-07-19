@@ -20,7 +20,9 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -127,6 +129,9 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   }
 
  protected:
+  content::ScopedWebUIConfigRegistration webui_config_registration_{
+      std::make_unique<ReadAnythingUIUntrustedConfig>()};
+
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
       nullptr;
   std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
@@ -265,6 +270,9 @@ class ReadAnythingCoordinatorScreen2xDataCollectionModeTest
   }
 
  protected:
+  content::ScopedWebUIConfigRegistration webui_config_registration_{
+      std::make_unique<ReadAnythingUIUntrustedConfig>()};
+
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
       nullptr;
   raw_ptr<ReadAnythingCoordinator, DanglingUntriaged>

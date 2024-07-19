@@ -37,6 +37,10 @@ bool ComposeUIUntrustedConfig::IsWebUIEnabled(
       Profile::FromBrowserContext(browser_context));
 }
 
+bool ComposeUIUntrustedConfig::ShouldAutoResizeHost() {
+  return true;
+}
+
 ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(

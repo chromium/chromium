@@ -31,9 +31,10 @@ class TabSearchUI;
 
 class TabSearchUIConfig : public DefaultTopChromeWebUIConfig<TabSearchUI> {
  public:
-  TabSearchUIConfig()
-      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                    chrome::kChromeUITabSearchHost) {}
+  TabSearchUIConfig();
+
+  // DefaultTopChromeWebUIConfig:
+  bool ShouldAutoResizeHost() override;
 };
 
 class TabSearchUI : public TopChromeWebUIController,

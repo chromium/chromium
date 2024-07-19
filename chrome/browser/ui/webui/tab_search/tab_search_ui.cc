@@ -31,6 +31,14 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+TabSearchUIConfig::TabSearchUIConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUITabSearchHost) {}
+
+bool TabSearchUIConfig::ShouldAutoResizeHost() {
+  return true;
+}
+
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui,
                                true /* Needed for webui browser tests */),

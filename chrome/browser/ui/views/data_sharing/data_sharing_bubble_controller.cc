@@ -45,7 +45,6 @@ void DataSharingBubbleController::Show() {
       std::make_unique<WebUIContentsWrapperT<DataSharingUI>>(
           GURL(chrome::kChromeUIUntrustedDataSharingURL),
           GetBrowser().profile(), IDS_DATA_SHARING_BUBBLE_DIALOG_TITLE,
-          /*webui_resizes_host=*/true,
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
 

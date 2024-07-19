@@ -71,7 +71,6 @@ void LensSearchBubbleController::Show() {
       std::make_unique<WebUIContentsWrapperT<SearchBubbleUI>>(
           GURL(chrome::kChromeUILensSearchBubbleURL),
           contents->GetBrowserContext(), IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE,
-          /*webui_resizes_host=*/true,
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
 

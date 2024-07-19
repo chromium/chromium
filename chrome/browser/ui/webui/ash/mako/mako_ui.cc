@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/hash/sha1.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
@@ -45,6 +47,13 @@ MakoUntrustedUIConfig::~MakoUntrustedUIConfig() = default;
 bool MakoUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return chromeos::features::IsOrcaEnabled();
+}
+
+bool MakoUntrustedUIConfig::ShouldAutoResizeHost() {
+  // With resizing support enabled, we should let web viewport resize according
+  // to dimension of web view rather than updating the dimension of web view
+  // based on inner web content.
+  return !base::FeatureList::IsEnabled(ash::features::kOrcaResizingSupport);
 }
 
 MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)

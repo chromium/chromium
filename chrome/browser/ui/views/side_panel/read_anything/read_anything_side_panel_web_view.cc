@@ -26,7 +26,6 @@ ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(Profile* profile)
               GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
               profile,
               IDS_READING_MODE_TITLE,
-              /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false)) {}
 
 content::WebContents* ReadAnythingSidePanelWebView::OpenURLFromTab(

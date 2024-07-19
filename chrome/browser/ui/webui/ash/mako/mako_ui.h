@@ -25,6 +25,7 @@ class MakoUntrustedUIConfig
 
   // DefaultTopChromeWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  bool ShouldAutoResizeHost() override;
 };
 
 // The WebUI for chrome://mako

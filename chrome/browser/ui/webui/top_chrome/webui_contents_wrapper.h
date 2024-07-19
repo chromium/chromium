@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui_name_variants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
@@ -175,16 +176,17 @@ class WebUIContentsWrapperT : public WebUIContentsWrapper {
   WebUIContentsWrapperT(const GURL& webui_url,
                         content::BrowserContext* browser_context,
                         int task_manager_string_id,
-                        bool webui_resizes_host = true,
                         bool esc_closes_ui = true,
                         bool supports_draggable_regions = false)
-      : WebUIContentsWrapper(webui_url,
-                             browser_context,
-                             task_manager_string_id,
-                             webui_resizes_host,
-                             esc_closes_ui,
-                             supports_draggable_regions,
-                             T::GetWebUIName()),
+      : WebUIContentsWrapper(
+            webui_url,
+            browser_context,
+            task_manager_string_id,
+            TopChromeWebUIConfig::From(browser_context, webui_url)
+                ->ShouldAutoResizeHost(),
+            esc_closes_ui,
+            supports_draggable_regions,
+            T::GetWebUIName()),
         webui_url_(webui_url) {
     static_assert(views_metrics::IsValidWebUIName("." + T::GetWebUIName()));
     if (is_ready_to_show()) {

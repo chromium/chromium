@@ -98,7 +98,6 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
           base::RepeatingClosure(), base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<HistoryClustersSidePanelUI>>(
               url, GetBrowser().profile(), IDS_HISTORY_TITLE,
-              /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false));
 
   history_clusters_ui_ =

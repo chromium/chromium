@@ -19,6 +19,7 @@ class DataSharingUIConfig : public DefaultTopChromeWebUIConfig<DataSharingUI> {
 
   // DefaultTopChromeWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  bool ShouldAutoResizeHost() override;
 };
 
 class DataSharingUI : public UntrustedTopChromeWebUIController,

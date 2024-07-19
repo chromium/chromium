@@ -50,7 +50,6 @@ LensOverlaySidePanelWebView::LensOverlaySidePanelWebView(
               GURL(chrome::kChromeUILensUntrustedSidePanelURL),
               browser_context,
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,
-              /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false)),
       coordinator_(coordinator) {}
 

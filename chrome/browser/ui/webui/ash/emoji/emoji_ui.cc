@@ -74,6 +74,14 @@ emoji_picker::mojom::Category ConvertCategoryEnum(
 
 namespace ash {
 
+EmojiUIConfig::EmojiUIConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUIEmojiPickerHost) {}
+
+bool EmojiUIConfig::ShouldAutoResizeHost() {
+  return true;
+}
+
 EmojiUI::EmojiUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui,
                                true /* Needed for webui browser tests */),

@@ -41,9 +41,10 @@ class EmojiUI;
 // WebUIConfig for chrome://emoji-picker
 class EmojiUIConfig : public DefaultTopChromeWebUIConfig<EmojiUI> {
  public:
-  EmojiUIConfig()
-      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                    chrome::kChromeUIEmojiPickerHost) {}
+  EmojiUIConfig();
+
+  // DefaultTopChromeWebUIConfig:
+  bool ShouldAutoResizeHost() override;
 };
 
 class EmojiUI : public TopChromeWebUIController,
