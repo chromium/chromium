@@ -982,15 +982,13 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
     // Verbatim results don't get suggestions and hence, answers.
     // Scan previous matches if the last answer-bearing suggestion matches
     // verbatim, and if so, copy over answer contents.
-    SuggestionAnswer answer;
-    bool has_answer = false;
+    AutocompleteMatch* match_with_answer = nullptr;
     std::u16string trimmed_verbatim_lower =
         base::i18n::ToLower(trimmed_verbatim);
     for (auto it = matches_.begin(); it != matches_.end(); ++it) {
-      if (it->answer &&
+      if (it->answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED &&
           base::i18n::ToLower(it->fill_into_edit) == trimmed_verbatim_lower) {
-        answer = *it->answer;
-        has_answer = true;
+        match_with_answer = &(*it);
         break;
       }
     }
@@ -1003,8 +1001,15 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         /*navigational_intent=*/omnibox::NAV_INTENT_NONE, verbatim_relevance,
         relevance_from_server,
         /*input_text=*/trimmed_verbatim);
-    if (has_answer)
-      verbatim.SetAnswer(answer);
+    if (match_with_answer) {
+      verbatim.SetAnswerType(match_with_answer->answer_type);
+      if (match_with_answer->answer) {
+        verbatim.SetAnswer(*match_with_answer->answer);
+      }
+      if (match_with_answer->answer_template) {
+        verbatim.SetRichAnswerTemplate(*match_with_answer->answer_template);
+      }
+    }
     AddMatchToMap(verbatim, std::string(), GetInput(verbatim.from_keyword()),
                   GetTemplateURL(verbatim.from_keyword()),
                   client()->GetTemplateURLService()->search_terms_data(),

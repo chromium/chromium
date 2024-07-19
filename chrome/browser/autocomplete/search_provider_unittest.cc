@@ -4156,6 +4156,25 @@ TEST_F(SearchProviderTest, DuplicateCardAnswer) {
   EXPECT_EQ(matches[0].type, matches[3].type);
 }
 
+TEST_F(SearchProviderTest, CopyAnswerToVerbatim) {
+  QueryForInput(u"weather los angeles ", false, false);
+
+  AutocompleteMatch match;
+  match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
+  match.answer_template = omnibox::RichAnswerTemplate();
+  match.answer_template->add_answers();
+  match.fill_into_edit = u"weather los angeles";
+  match.type = AutocompleteMatchType::SEARCH_HISTORY;
+  provider_->matches_.push_back(match);
+  provider_->ConvertResultsToAutocompleteMatches();
+
+  EXPECT_EQ(1u, provider_->matches().size());
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+            provider_->matches()[0].type);
+  EXPECT_EQ(omnibox::ANSWER_TYPE_WEATHER, provider_->matches()[0].answer_type);
+  EXPECT_TRUE(provider_->matches()[0].answer_template);
+}
+
 TEST_F(SearchProviderTest, DoesNotProvideOnFocus) {
   AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
