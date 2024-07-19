@@ -180,12 +180,14 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
       ios::provider::GetBrandedProductRegularFont(kLogoLabelFontSize);
   logoLabel.font = [[[UIFontMetrics alloc]
       initForTextStyle:UIFontTextStyleCaption1] scaledFontForFont:productFont];
+  logoLabel.adjustsFontForContentSizeCategory = YES;
   logoLabel.textColor = [UIColor colorNamed:kGrey700Color];
 
   UIStackView* logo = [[UIStackView alloc]
       initWithArrangedSubviews:@[ logoImageView, logoLabel ]];
   logo.translatesAutoresizingMaskIntoConstraints = NO;
   logo.spacing = 5;
+  logo.alignment = UIStackViewAlignmentCenter;
 
   logo.isAccessibilityElement = true;
   logo.accessibilityLabel = l10n_util::GetNSString(
