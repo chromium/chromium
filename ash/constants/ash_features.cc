@@ -3370,6 +3370,12 @@ BASE_FEATURE(kEnableFastInkForSoftwareCursor,
              "EnableFastInkForSoftwareCursor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the feature deferring vm_concierge startup until all the critical
+// login tasks are finished.
+BASE_FEATURE(kDeferConciergeStartup,
+             "DeferConciergeStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreDesksTemplatesEnabled() {

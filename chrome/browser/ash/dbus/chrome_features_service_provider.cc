@@ -187,6 +187,7 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
       &features::kSessionManagerLongKillTimeout,
       &features::kSessionManagerLivenessCheck,
       &features::kBorealisProvision,
+      &features::kDeferConciergeStartup,
   };
 
   dbus::MessageReader reader(method_call);
