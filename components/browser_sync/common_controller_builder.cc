@@ -176,6 +176,11 @@ void CommonControllerBuilder::SetAutofillWebDataService(
   autofill_web_data_service_in_memory_.Set(web_data_service_in_memory);
 }
 
+void CommonControllerBuilder::SetBookmarkModel(
+    bookmarks::BookmarkModel* bookmark_model) {
+  bookmark_model_.Set(bookmark_model);
+}
+
 void CommonControllerBuilder::SetBookmarkSyncService(
     sync_bookmarks::BookmarkSyncService*
         local_or_syncable_bookmark_sync_service,
@@ -439,10 +444,11 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
                             favicon_service_.value())
                         .get())
               : nullptr;
-      controllers.push_back(std::make_unique<
-                            sync_bookmarks::BookmarkModelTypeController>(
-          std::move(full_mode_delegate), std::move(transport_mode_delegate),
-          std::make_unique<sync_bookmarks::BookmarkLocalDataBatchUploader>()));
+      controllers.push_back(
+          std::make_unique<sync_bookmarks::BookmarkModelTypeController>(
+              std::move(full_mode_delegate), std::move(transport_mode_delegate),
+              std::make_unique<sync_bookmarks::BookmarkLocalDataBatchUploader>(
+                  bookmark_model_.value())));
     }
 
     if (!disabled_types.Has(syncer::POWER_BOOKMARK) &&

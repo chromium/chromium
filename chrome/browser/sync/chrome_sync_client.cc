@@ -302,6 +302,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       account_web_data_service, profile_password_store, account_password_store,
       LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile_),
       AccountBookmarkSyncServiceFactory::GetForProfile(profile_),
+      BookmarkModelFactory::GetForBrowserContext(profile_),
       PowerBookmarkServiceFactory::GetForBrowserContext(profile_),
       supervised_user_settings_service,
       PlusAddressSettingServiceFactory::GetForBrowserContext(profile_),

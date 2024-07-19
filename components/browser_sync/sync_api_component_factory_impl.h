@@ -44,6 +44,7 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       sync_bookmarks::BookmarkSyncService*
           local_or_syncable_bookmark_sync_service,
       sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
+      bookmarks::BookmarkModel* bookmark_model,
       power_bookmarks::PowerBookmarkService* power_bookmark_service,
       supervised_user::SupervisedUserSettingsService*
           supervised_user_settings_service,

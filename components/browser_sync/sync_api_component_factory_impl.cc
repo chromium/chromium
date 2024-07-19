@@ -54,6 +54,7 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
     sync_bookmarks::BookmarkSyncService*
         local_or_syncable_bookmark_sync_service,
     sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
+    bookmarks::BookmarkModel* bookmark_model,
     power_bookmarks::PowerBookmarkService* power_bookmark_service,
     supervised_user::SupervisedUserSettingsService*
         supervised_user_settings_service,
@@ -73,6 +74,7 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
   controller_builder_.SetAutofillWebDataService(ui_thread, db_thread,
                                                 web_data_service_on_disk,
                                                 web_data_service_in_memory);
+  controller_builder_.SetBookmarkModel(bookmark_model);
   controller_builder_.SetBookmarkSyncService(
       local_or_syncable_bookmark_sync_service, account_bookmark_sync_service);
   controller_builder_.SetDataSharingService(data_sharing_service);

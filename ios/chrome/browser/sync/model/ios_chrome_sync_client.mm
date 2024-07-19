@@ -126,6 +126,7 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
           profile_password_store_, account_password_store_,
           local_or_syncable_bookmark_sync_service,
           account_bookmark_sync_service,
+          ios::BookmarkModelFactory::GetForBrowserState(browser_state_),
           PowerBookmarkServiceFactory::GetForBrowserState(browser_state_),
           supervised_user_settings_service,
           PlusAddressSettingServiceFactory::GetForBrowserState(browser_state_),

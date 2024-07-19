@@ -24,6 +24,10 @@ namespace autofill {
 class AutofillWebDataService;
 }  // namespace autofill
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 namespace commerce {
 class ProductSpecificationsService;
 }  // namespace commerce
@@ -125,6 +129,7 @@ class CommonControllerBuilder {
           web_data_service_on_disk,
       const scoped_refptr<autofill::AutofillWebDataService>&
           web_data_service_in_memory);
+  void SetBookmarkModel(bookmarks::BookmarkModel* bookmark_model);
   void SetBookmarkSyncService(
       sync_bookmarks::BookmarkSyncService*
           local_or_syncable_bookmark_sync_service,
@@ -267,6 +272,7 @@ class CommonControllerBuilder {
       local_or_syncable_bookmark_sync_service_;
   SafeOptional<raw_ptr<sync_bookmarks::BookmarkSyncService>>
       account_bookmark_sync_service_;
+  SafeOptional<raw_ptr<bookmarks::BookmarkModel>> bookmark_model_;
   SafeOptional<raw_ptr<power_bookmarks::PowerBookmarkService>>
       power_bookmark_service_;
   SafeOptional<raw_ptr<supervised_user::SupervisedUserSettingsService>>

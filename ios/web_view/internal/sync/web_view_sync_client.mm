@@ -99,6 +99,7 @@ WebViewSyncClient::WebViewSyncClient(
           profile_password_store_, account_password_store_,
           /*local_or_syncable_bookmark_sync_service=*/nullptr,
           /*account_bookmark_sync_service=*/nullptr,
+          /*bookmark_model=*/nullptr,
           /*power_bookmark_service=*/nullptr,
           /*supervised_user_settings_service=*/nullptr,
           /*plus_address_setting_service=*/nullptr,
