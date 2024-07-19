@@ -23,11 +23,7 @@ class SitePerProcessBrowserTouchActionTest;
 
 namespace input {
 
-enum class FilterGestureEventResult {
-  kFilterGestureEventAllowed,
-  kFilterGestureEventFiltered,
-  kFilterGestureEventDelayed
-};
+enum class FilterGestureEventResult { kAllowed, kFiltered, kDelayed };
 
 // The TouchActionFilter is responsible for filtering scroll and pinch gesture
 // events according to the CSS touch-action values the renderer has sent for
@@ -42,12 +38,10 @@ class COMPONENT_EXPORT(INPUT) TouchActionFilter {
 
   ~TouchActionFilter();
 
-  // Returns kFilterGestureEventFiltered if the supplied gesture event should be
-  // dropped based on the current touch-action state.
-  // kFilterGestureEventDelayed if the |scrolling_touch_action_| has no value.
-  // Returns kFilterGestureEventAllowed, and possibly modifies the event's
-  // directional parameters to make the event compatible with the effective
-  // touch-action.
+  // Returns kFiltered if the supplied gesture event should be dropped based on
+  // current touch-action state. kDelayed if the |scrolling_touch_action_| has
+  // no value. Returns kAllowed, and possibly modifies the event's directional
+  // parameters to make the event compatible with the effective touch-action.
   FilterGestureEventResult FilterGestureEvent(
       blink::WebGestureEvent* gesture_event);
 

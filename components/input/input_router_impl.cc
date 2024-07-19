@@ -147,7 +147,7 @@ void InputRouterImpl::SendGestureEvent(
 
   FilterGestureEventResult result =
       touch_action_filter_.FilterGestureEvent(&gesture_event.event);
-  if (result == FilterGestureEventResult::kFilterGestureEventDelayed) {
+  if (result == FilterGestureEventResult::kDelayed) {
     TRACE_EVENT_INSTANT0("input", "DeferredForTouchAction",
                          TRACE_EVENT_SCOPE_THREAD);
     gesture_event_queue_.QueueDeferredEvents(gesture_event);
@@ -160,10 +160,8 @@ void InputRouterImpl::SendGestureEventWithoutQueueing(
     GestureEventWithLatencyInfo& gesture_event,
     const FilterGestureEventResult& existing_result) {
   TRACE_EVENT0("input", "InputRouterImpl::SendGestureEventWithoutQueueing");
-  DCHECK_NE(existing_result,
-            FilterGestureEventResult::kFilterGestureEventDelayed);
-  if (existing_result ==
-      FilterGestureEventResult::kFilterGestureEventFiltered) {
+  DCHECK_NE(existing_result, FilterGestureEventResult::kDelayed);
+  if (existing_result == FilterGestureEventResult::kFiltered) {
     TRACE_EVENT_INSTANT0("input", "FilteredForTouchAction",
                          TRACE_EVENT_SCOPE_THREAD);
     disposition_handler_->OnGestureEventAck(

@@ -61,11 +61,11 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     WebGestureEvent* gesture_event) {
   TRACE_EVENT0("input", "TouchActionFilter::FilterGestureEvent");
   if (gesture_event->SourceDevice() != blink::WebGestureDevice::kTouchscreen)
-    return FilterGestureEventResult::kFilterGestureEventAllowed;
+    return FilterGestureEventResult::kAllowed;
 
   if (has_deferred_events_) {
     TRACE_EVENT_INSTANT0("input", "Has Deferred", TRACE_EVENT_SCOPE_THREAD);
-    return FilterGestureEventResult::kFilterGestureEventDelayed;
+    return FilterGestureEventResult::kDelayed;
   }
 
   TRACE_EVENT_INSTANT1(
@@ -116,14 +116,14 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
         if (allow_cursor_control_) {
           SetCursorControlIfNecessary(gesture_event, touch_action);
         }
-        res = FilterGestureEventResult::kFilterGestureEventAllowed;
+        res = FilterGestureEventResult::kAllowed;
       } else if (active_touch_action_.has_value()) {
-        res = FilterGestureEventResult::kFilterGestureEventFiltered;
+        res = FilterGestureEventResult::kFiltered;
       } else {
         TRACE_EVENT_INSTANT0("input", "Deferring Events",
                              TRACE_EVENT_SCOPE_THREAD);
         has_deferred_events_ = true;
-        res = FilterGestureEventResult::kFilterGestureEventDelayed;
+        res = FilterGestureEventResult::kDelayed;
       }
       return res;
     }
@@ -131,7 +131,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     case WebInputEvent::Type::kGestureScrollUpdate: {
       if (drop_scroll_events_) {
         TRACE_EVENT_INSTANT0("input", "Drop Events", TRACE_EVENT_SCOPE_THREAD);
-        return FilterGestureEventResult::kFilterGestureEventFiltered;
+        return FilterGestureEventResult::kFiltered;
       }
 
       // Scrolls restricted to a specific axis shouldn't permit movement
@@ -148,7 +148,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
           TRACE_EVENT_INSTANT0("input", "Defer Due to YAxis",
                                TRACE_EVENT_SCOPE_THREAD);
           has_deferred_events_ = true;
-          return FilterGestureEventResult::kFilterGestureEventDelayed;
+          return FilterGestureEventResult::kDelayed;
         }
         gesture_event->data.scroll_update.delta_y = 0;
         gesture_event->data.scroll_update.velocity_y = 0;
@@ -158,7 +158,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
           TRACE_EVENT_INSTANT0("input", "Defer Due to XAxis",
                                TRACE_EVENT_SCOPE_THREAD);
           has_deferred_events_ = true;
-          return FilterGestureEventResult::kFilterGestureEventDelayed;
+          return FilterGestureEventResult::kDelayed;
         }
         gesture_event->data.scroll_update.delta_x = 0;
         gesture_event->data.scroll_update.velocity_x = 0;
@@ -189,12 +189,12 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       [[fallthrough]];
     case WebInputEvent::Type::kGesturePinchUpdate:
       if (!drop_pinch_events_)
-        return FilterGestureEventResult::kFilterGestureEventAllowed;
+        return FilterGestureEventResult::kAllowed;
       if (!active_touch_action_.has_value()) {
         has_deferred_events_ = true;
-        return FilterGestureEventResult::kFilterGestureEventDelayed;
+        return FilterGestureEventResult::kDelayed;
       }
-      return FilterGestureEventResult::kFilterGestureEventFiltered;
+      return FilterGestureEventResult::kFiltered;
     case WebInputEvent::Type::kGesturePinchEnd:
       return FilterPinchEventAndResetState();
 
@@ -234,14 +234,14 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       gesture_sequence_in_progress_ = false;
       if (drop_current_tap_ending_event_) {
         drop_current_tap_ending_event_ = false;
-        return FilterGestureEventResult::kFilterGestureEventFiltered;
+        return FilterGestureEventResult::kFiltered;
       }
       break;
 
     case WebInputEvent::Type::kGestureTapCancel:
       if (drop_current_tap_ending_event_) {
         drop_current_tap_ending_event_ = false;
-        return FilterGestureEventResult::kFilterGestureEventFiltered;
+        return FilterGestureEventResult::kFiltered;
       }
       break;
 
@@ -273,7 +273,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       break;
   }
 
-  return FilterGestureEventResult::kFilterGestureEventAllowed;
+  return FilterGestureEventResult::kAllowed;
 }
 
 void TouchActionFilter::SetTouchAction(cc::TouchAction touch_action) {
@@ -287,17 +287,17 @@ void TouchActionFilter::SetTouchAction(cc::TouchAction touch_action) {
 FilterGestureEventResult TouchActionFilter::FilterPinchEventAndResetState() {
   if (drop_pinch_events_) {
     drop_pinch_events_ = false;
-    return FilterGestureEventResult::kFilterGestureEventFiltered;
+    return FilterGestureEventResult::kFiltered;
   }
-  return FilterGestureEventResult::kFilterGestureEventAllowed;
+  return FilterGestureEventResult::kAllowed;
 }
 
 FilterGestureEventResult TouchActionFilter::FilterScrollEventAndResetState() {
   if (drop_scroll_events_) {
     drop_scroll_events_ = false;
-    return FilterGestureEventResult::kFilterGestureEventFiltered;
+    return FilterGestureEventResult::kFiltered;
   }
-  return FilterGestureEventResult::kFilterGestureEventAllowed;
+  return FilterGestureEventResult::kAllowed;
 }
 
 void TouchActionFilter::ForceResetTouchActionForTest() {
