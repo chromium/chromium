@@ -60,10 +60,9 @@ class CacheStorageCacheTest;
 //  https://w3c.github.io/ServiceWorker/#cache-interface
 //
 // The asynchronous methods are executed serially. Callbacks to the public
-// functions will be called so long as the cache object lives. It is important
-// to for client code hold a |CacheStorageCacheHandle| to the cache for the
-// duration of any operations. Otherwise it is possible the operation may
-// get cancelled in some circumstances.
+// functions will be called so long as the cache object lives. Client code must
+// hold a `CacheStorageCacheHandle` for the duration of operations, otherwise
+// the operation may be cancelled in some circumstances.
 class CONTENT_EXPORT CacheStorageCache {
  public:
   using CacheEntriesCallback =
