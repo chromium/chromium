@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
-#include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_metrics.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_ui_controller.h"
 #include "content/public/browser/sms_fetcher.h"
@@ -25,13 +24,6 @@ base::OnceClosure FetchRemoteSms(
                             std::optional<std::string>,
                             std::optional<content::SmsFetchFailureType>)>
         callback) {
-  if (!base::FeatureList::IsEnabled(kWebOTPCrossDevice)) {
-    std::move(callback).Run(std::nullopt, std::nullopt,
-                            content::SmsFetchFailureType::kCrossDeviceFailure);
-
-    RecordWebOTPCrossDeviceFailure(WebOTPCrossDeviceFailure::kFeatureDisabled);
-    return base::NullCallback();
-  }
 
   if (!SharingServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())) {

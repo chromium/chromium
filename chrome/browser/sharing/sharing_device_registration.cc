@@ -20,7 +20,6 @@
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/sharing/sharing_utils.h"
-#include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing/vapid_key_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
@@ -324,7 +323,7 @@ bool SharingDeviceRegistration::IsSharedClipboardSupported() const {
 
 bool SharingDeviceRegistration::IsSmsFetcherSupported() const {
 #if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(kWebOTPCrossDevice);
+  return true;
 #else
   return false;
 #endif

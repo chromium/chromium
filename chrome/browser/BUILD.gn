@@ -1574,8 +1574,6 @@ static_library("browser") {
     "sharing/sharing_target_device_info.h",
     "sharing/sharing_utils.cc",
     "sharing/sharing_utils.h",
-    "sharing/sms/sms_flags.cc",
-    "sharing/sms/sms_flags.h",
     "sharing/sms/sms_remote_fetcher.cc",
     "sharing/sms/sms_remote_fetcher.h",
     "sharing/sms/sms_remote_fetcher_metrics.cc",
