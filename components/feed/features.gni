@@ -4,5 +4,5 @@
 
 declare_args() {
   # Whether Feed is enabled in the build.
-  enable_feed_v2 = !is_ios
+  enable_feed_v2 = is_android
 }

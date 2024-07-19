@@ -249,9 +249,11 @@
 #endif
 
 #include "components/feed/buildflags.h"
-#include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/shared_prefs/pref_names.h"
-#include "components/feed/core/v2/ios_shared_prefs.h"
+#if BUILDFLAG(ENABLE_FEED_V2)
+#include "components/feed/core/common/pref_names.h"        // nogncheck
+#include "components/feed/core/shared_prefs/pref_names.h"  // nogncheck
+#include "components/feed/core/v2/ios_shared_prefs.h"      // nogncheck
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
