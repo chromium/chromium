@@ -457,6 +457,25 @@ TEST_F(ExtensionTelemetryServiceTest, DoesNotGenerateEmptyTelemetryReport) {
   EXPECT_FALSE(GetTelemetryReport());
 }
 
+TEST_F(ExtensionTelemetryServiceTest,
+       DoesNotGenerateEmptyTelemetryReportForEnterprise) {
+  // Enable enterprise policy.
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/
+      {enterprise_connectors::kExtensionTelemetryEvent},
+      /*enabled_opt_in_events=*/{});
+
+  // Check that telemetry service does not generate a telemetry report for
+  // enterprise when there are no signals.
+  task_environment_.FastForwardBy(
+      telemetry_service_->current_reporting_interval());
+
+  // Verify that no telemetry report is generated.
+  EXPECT_FALSE(GetTelemetryReportForEnterprise());
+}
+
 TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithNoSignals) {
   // Check that telemetry service generates a telemetry report even when
   // there are no signals to report. The report consists of only extension

@@ -619,10 +619,11 @@ void ExtensionTelemetryService::CreateAndSendEnterpriseReport() {
 
   std::unique_ptr<ExtensionTelemetryReportRequest> enterprise_report =
       CreateReportForEnterprise();
-
-  RecordEnterpriseReportSize(enterprise_report->ByteSizeLong());
-  GetExtensionTelemetryEventRouter(profile_)->UploadTelemetryReport(
-      std::move(enterprise_report));
+  if (enterprise_report) {
+    RecordEnterpriseReportSize(enterprise_report->ByteSizeLong());
+    GetExtensionTelemetryEventRouter(profile_)->UploadTelemetryReport(
+        std::move(enterprise_report));
+  }
 }
 
 void ExtensionTelemetryService::OnUploadComplete(
