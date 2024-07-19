@@ -50,9 +50,12 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
         if (mBulkActionConfirmed && !notificationPermissionsList.isEmpty()) {
             mNotificationPermissionReviewBridge.bulkResetNotificationPermissions();
             showSnackbarOnLastFocusedActivity(
-                    getString(
-                            R.string.safety_hub_notifications_bulk_reset_snackbar,
-                            notificationPermissionsList.size()),
+                    getContext()
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.safety_hub_notifications_bulk_reset_snackbar,
+                                    notificationPermissionsList.size(),
+                                    notificationPermissionsList.size()),
                     Snackbar.UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS,
                     new SnackbarManager.SnackbarController() {
                         @Override

@@ -1691,7 +1691,9 @@ Your Google account may have other forms of browsing history like searches and a
         Permissions allowed again for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
       </message>
       <message name="IDS_SAFETY_HUB_MULTIPLE_PERMISSIONS_SNACKBAR" desc="Snackbar text displayed when the user click the 'Got it' at the bottom of the permissions review subpage or in the permissions review module of the dashboard. Informs the user about the number of sites for which the revoked permissions were reviewed.">
-        Permissions reviewed for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
+        {NUM_SITES, plural,
+        =1 {Permissions reviewed for 1 site}
+        other {Permissions reviewed for {NUM_SITES} sites}}
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_OK_TITLE" desc="Title for the notifications module in the Safety Hub dashboard. It is displayed when the user has no notification permissions that need to be reviewed.">
         Notifications look good
@@ -1748,7 +1750,9 @@ Your Google account may have other forms of browsing history like searches and a
         Notifications allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_RESET_SNACKBAR" desc="Snackbar text displayed when the user click the 'Unsubscribe all' button at the bottom of the notifications review subpage or in the notifications review module of the dashboard. Informs the user about the number of sites for which the notifications were unsubscribed.">
-        Notifications not allowed for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
+        {NUM_SITES, plural,
+        =1 {Notifications not allowed for 1 site}
+        other {Notifications not allowed for {NUM_SITES} sites}}
       </message>
       <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_TITLE" desc="Title for the Safe Browsing check row in the Safety Check page indicating that the user currently has Safe Browsing turned on and is getting the standard level of protection.">
         Safe Browsing is on

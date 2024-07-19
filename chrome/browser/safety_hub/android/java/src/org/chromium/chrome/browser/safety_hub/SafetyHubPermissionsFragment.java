@@ -48,9 +48,12 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
         if (mBulkActionConfirmed && permissionsDataList.length != 0) {
             mUnusedSitePermissionsBridge.clearRevokedPermissionsReviewList();
             showSnackbarOnLastFocusedActivity(
-                    getString(
-                            R.string.safety_hub_multiple_permissions_snackbar,
-                            permissionsDataList.length),
+                    getContext()
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.safety_hub_multiple_permissions_snackbar,
+                                    permissionsDataList.length,
+                                    permissionsDataList.length),
                     Snackbar.UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS,
                     new SnackbarManager.SnackbarController() {
                         @Override

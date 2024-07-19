@@ -205,10 +205,12 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                     mUnusedSitePermissionsBridge
                                             .clearRevokedPermissionsReviewList();
                                     showSnackbar(
-                                            getString(
-                                                    R.string
-                                                            .safety_hub_multiple_permissions_snackbar,
-                                                    permissionsDataList.length),
+                                            getResources()
+                                                    .getQuantityString(
+                                                            R.plurals
+                                                                    .safety_hub_multiple_permissions_snackbar,
+                                                            permissionsDataList.length,
+                                                            permissionsDataList.length),
                                             Snackbar.UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS,
                                             new SnackbarManager.SnackbarController() {
                                                 @Override
@@ -253,10 +255,12 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                     mNotificationPermissionReviewBridge
                                             .bulkResetNotificationPermissions();
                                     showSnackbar(
-                                            getString(
-                                                    R.string
-                                                            .safety_hub_notifications_bulk_reset_snackbar,
-                                                    notificationPermissionsList.size()),
+                                            getResources()
+                                                    .getQuantityString(
+                                                            R.plurals
+                                                                    .safety_hub_notifications_bulk_reset_snackbar,
+                                                            notificationPermissionsList.size(),
+                                                            notificationPermissionsList.size()),
                                             Snackbar.UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS,
                                             new SnackbarManager.SnackbarController() {
                                                 @Override
