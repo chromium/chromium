@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.gesturenav;
 
 import android.graphics.Bitmap;
+import android.os.Build.VERSION_CODES;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -19,17 +20,23 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
@@ -70,6 +77,15 @@ public class ScreenshotCaptureTest {
 
     private static final String TEST_PAGE = "/chrome/test/data/android/simple.html";
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/google.html";
+    private static final String LONG_HTML_TEST_PAGE =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html>"
+                            + "<head>"
+                            + "  <meta name=\"viewport\" content=\"width=device-width\">"
+                            + "</head>"
+                            + "<body style='height:100000px;'>"
+                            + "</body>"
+                            + "</html>");
 
     private EmbeddedTestServer mTestServer;
     private Bitmap mCapturedBitmap;
@@ -93,9 +109,10 @@ public class ScreenshotCaptureTest {
 
     @Before
     public void setUp() {
+        // Fix the port cause the screenshot includes the url bar
         mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
+                EmbeddedTestServer.createAndStartServerWithPort(
+                        ApplicationProvider.getApplicationContext(), 46985);
 
         var mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
         var mMostVisitedSites = new FakeMostVisitedSites();
@@ -187,6 +204,91 @@ public class ScreenshotCaptureTest {
 
         callbackHelper.waitForOnly();
         mRenderTestRule.compareForResult(mCapturedBitmap, "navigate_away_from_ntp_to_webui_page");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    // The test is based on 3-button mode. The newer version defaults to gesture mode.
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testNavigatingBackToNtpFromNormalPage(boolean nightModeEnabled)
+            throws IOException, TimeoutException, InterruptedException {
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
+
+        GestureNavigationUtils mNavUtils = new GestureNavigationUtils(mActivityTestRule);
+        mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mActivityTestRule
+                .getWebContents()
+                .captureContentAsBitmapForTesting(
+                        bitmap -> {
+                            try {
+                                mRenderTestRule.compareForResult(
+                                        bitmap, "navigate_back_to_ntp_from_normal_page");
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            callbackHelper.notifyCalled();
+                        });
+        callbackHelper.waitForOnly();
+        ThreadUtils.runOnUiThreadBlocking(() -> mNavUtils.getNavigationHandler().release(true));
+        // Wait animation to be finished. Reduce flakiness caused by being destroyed during a
+        // running animation.
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    // The test is based on 3-button mode. The newer version defaults to gesture mode.
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testNavigatingBackToNtpFromNormalPageWithoutTopControls(boolean nightModeEnabled)
+            throws Throwable {
+        ThreadUtils.runOnUiThreadBlocking(
+                TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        FullscreenManagerTestUtils.disableBrowserOverrides();
+        mActivityTestRule.loadUrl(LONG_HTML_TEST_PAGE);
+        BrowserControlsManager browserControlManager =
+                mActivityTestRule.getActivity().getBrowserControlsManager();
+        int browserControlsHeight = browserControlManager.getTopControlsHeight();
+        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
+                mActivityTestRule, mActivityTestRule.getActivity().getActivityTab());
+        FullscreenManagerTestUtils.scrollBrowserControls(mActivityTestRule, false);
+
+        FullscreenManagerTestUtils.waitForBrowserControlsPosition(
+                mActivityTestRule, -browserControlsHeight);
+        GestureNavigationUtils mNavUtils = new GestureNavigationUtils(mActivityTestRule);
+        mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mActivityTestRule
+                .getWebContents()
+                .captureContentAsBitmapForTesting(
+                        bitmap -> {
+                            try {
+                                mRenderTestRule.compareForResult(
+                                        bitmap,
+                                        "navigate_back_to_ntp_from_normal_page_without_top_controls");
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            callbackHelper.notifyCalled();
+                        });
+        callbackHelper.waitForOnly();
+        ThreadUtils.runOnUiThreadBlocking(() -> mNavUtils.getNavigationHandler().release(true));
+        // Wait animation to be finished. Reduce flakiness caused by being destroyed during a
+        // running animation.
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
     }
 
     @Test
