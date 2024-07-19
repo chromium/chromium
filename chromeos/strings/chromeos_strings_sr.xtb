@@ -321,6 +321,7 @@
 <translation id="2538719227433767804">и још <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">лимунови</translation>
 <translation id="2570743873672969996">Покреће се тест <ph name="TEST_NAME" />...</translation>
+<translation id="2576253868710695442">Ово ће заузети до 2 GB меморијског простора</translation>
 <translation id="2584547424703650812">Светлећи пејзажи</translation>
 <translation id="2584559707064218956">Да бисте подесили мрежу, идите у Подешавања</translation>
 <translation id="2586146417912237930">плаве и тамноплаве боје</translation>
@@ -346,6 +347,7 @@
 <translation id="2712812801627182647">Кључ за TLS потврду идентитета</translation>
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2715723665057727940">река</translation>
+<translation id="271640182849234126">Не можемо да вам помогнемо са овим. Пробајте са другим захтевом</translation>
 <translation id="2717139507051041123">Омогућите режим тамне боје</translation>
 <translation id="2728460467788544679">Обриши сву историју штампања</translation>
 <translation id="2740531572673183784">Потврди</translation>
@@ -609,6 +611,7 @@
 <translation id="4310735698903592804">Недавне позадине које омогућава Google AI</translation>
 <translation id="4320904097188876154">флуоресцентно розе</translation>
 <translation id="4333390807948134856">Тастер <ph name="KEY_NAME" /> је притиснут</translation>
+<translation id="4334293042716981313">Можете и да <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />напишете свој упит<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">тастер</translation>
 <translation id="4361257691546579041">Назив приступне тачке је подразумеваног типа.</translation>
 <translation id="437294888293595148">Ресетуј све пречице</translation>
@@ -654,6 +657,7 @@
 <translation id="456077979087158257">урбани пејзаж</translation>
 <translation id="4561801978359312462">SIM је откључан</translation>
 <translation id="4562494484721939086">Мобилна мрежа није доступна</translation>
+<translation id="4570558255126759859">Желите да преузмете Gemini модел да бисте резимирали снимке?</translation>
 <translation id="4573777384450697571">Није успело – сертификат је истекао</translation>
 <translation id="458794348635939462">Разрешење свих хостова није успело</translation>
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
@@ -976,6 +980,7 @@
 <translation id="6327262166342360252">Ова позадина је направљена помоћу вештачке интелигенције користећи следећи текст: „<ph name="PROMPT" />“.</translation>
 <translation id="6331191339300272798">Аутоматска тамна тема</translation>
 <translation id="6340526405444716530">Персонализација</translation>
+<translation id="6348252528297699679">Можете да искључите локацију у одељку Подешавања &gt; Приватност и безбедност &gt; Контроле приватности &gt; Приступ локацији. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Корисничко име и лозинка</translation>
 <translation id="6352210854422428614">друга планета</translation>
 <translation id="6359706544163531585">Онемогући светлу тему</translation>
@@ -1162,6 +1167,7 @@
 <translation id="7212547870105584639">Управљајте подешавањима назива приступне тачке мреже. Називи приступних тачака успостављају везу између мобилне мреже и интернета. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ажурирања фирмвера за екстерне уређаје</translation>
 <translation id="7216409898977639127">Мобилни оператер</translation>
+<translation id="7223952304612664117">Ово омогућава системским услугама да користе прецизност локације за утврђивање локације. Прецизност локације користи информације о бежичним сигналима и сензорима за процену локације уређаја.</translation>
 <translation id="7233782086689993269">Пречица је враћена</translation>
 <translation id="725133483556299729">Изаберите имејл</translation>
 <translation id="7255187042098209569">розе и љубичасте боје</translation>
@@ -1400,6 +1406,7 @@
 <translation id="8498220429738806196">Бројачи саобраћаја</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Још само пар минута…</translation>
+<translation id="8505011850330200833">Gemini модел захтева 2 GB меморијског простора за обраду транскрипата и прављење резимеа</translation>
 <translation id="8508640263392900755">Детаљи назива приступне тачке</translation>
 <translation id="8522687886059337719">Сада имате приступ новим <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />позадинама<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />чувару екрана<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
@@ -1415,6 +1422,7 @@
 <translation id="86356131183441916">Светлољубичасто</translation>
 <translation id="8647595191512746911">Транскрипција звука</translation>
 <translation id="8651481478098336970">искључи звук</translation>
+<translation id="8652096837042642071">Резиме снимка, омогућава Google вештачка интелигенција</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Дели URL:</translation>
 <translation id="8660881923941176839">фунте</translation>

@@ -291,6 +291,7 @@
 <translation id="2034971124472263449">Усе одно зберегти</translation>
 <translation id="204259843076055848">Комбінацію клавіш для дії "<ph name="SIX_PACK_KEY_NAME" />" зараз вимкнено</translation>
 <translation id="2049240716062114887">Назву робочого столу змінено на "<ph name="DESK_NAME" />"</translation>
+<translation id="2050339315714019657">Вертикальна</translation>
 <translation id="2064048859448024834">Попередній перегляд зображення з камери ввімкнено</translation>
 <translation id="2067602449040652523">Яскравість клавіатури</translation>
 <translation id="2075520525463668108">Увімкнути або вимкнути функцію "<ph name="CAPTURE_MEDIUM" />". Функція "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
@@ -781,7 +782,6 @@
 <translation id="3900355044994618856">Сеанс закінчиться через <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Під’єднання до <ph name="NAME" /></translation>
 <translation id="3904768293285573640">Зміна розміру вікна витягуванням ліворуч у мозаїчному макеті</translation>
-<translation id="3906954721959377182">Планшет</translation>
 <translation id="3923494859158167397">Мобільні мережі не налаштовано</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, завантаження подій.</translation>
 <translation id="3927049937406914450">Не можна ввімкнути прогноз погоди, оскільки вимкнено доступ до геоданих. Ви можете надати цей доступ у налаштуваннях.</translation>
@@ -912,7 +912,6 @@
 <translation id="4364101114148522660"><ph name="DURATION" />  Записується</translation>
 <translation id="4371348193907997655">Налаштування трансляції</translation>
 <translation id="4375482231364171368">Шукати в адресному рядку</translation>
-<translation id="4378154925671717803">Телефон</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4379531060876907730">Це ваші інструменти стилуса</translation>
@@ -2274,6 +2273,7 @@
 <translation id="974545358917229949">Показано результати (<ph name="RESULT_COUNT" />) для запиту "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">Термін здачі не вказано</translation>
 <translation id="98120814841227350">Перейти в кінець документа</translation>
+<translation id="98515147261107953">Горизонтальна</translation>
 <translation id="987589956647469042">Мобільний Інтернет увімкнено</translation>
 <translation id="989374776391122812">Елементи керування камерою та аудіо</translation>
 <translation id="990277280839877440">Вікно <ph name="WINDOW_TITILE" /> закрито.</translation>

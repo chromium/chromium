@@ -226,6 +226,7 @@
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2178545675770638239">Select password</translation>
+<translation id="2188919919468240749">Delete tab group?</translation>
 <translation id="2195124168004379331">Your Browser Looks Good</translation>
 <translation id="2218443599109088993">Zoom out</translation>
 <translation id="2220529011494928058">Report an issue</translation>
@@ -1091,6 +1092,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6445051938772793705">Country</translation>
 <translation id="6445981559479772097">Message sent.</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6449554712554071184">This will permanently delete the group from your device.</translation>
 <translation id="6453018583485750254">Check never run.</translation>
 <translation id="6459307836338400162">For more settings that relate to privacy, security and data collection, see both <ph name="BEGIN_LINK" />Sync<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Details hidden</translation>

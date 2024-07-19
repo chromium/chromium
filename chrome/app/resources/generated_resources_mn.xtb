@@ -4091,7 +4091,6 @@
 <translation id="3949999964543783947">Файлууд татахыг илүү аюулгүй болгохын тулд <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="3950841222883198950">Дуу хоолойгоор бичих</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome танд үүнийг хасахыг зөвлөж байна. <ph name="BEGIN_LINK" />Дэмжигдсэн өргөтгөлийн талаар нэмэлт мэдээлэл авна уу.<ph name="END_LINK" />}other{Chrome танд тэдгээрийг хасахыг зөвлөж байна. <ph name="BEGIN_LINK" />Дэмжигдсэн өргөтгөлийн талаар нэмэлт мэдээлэл авна уу.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">Миний бүртгэл</translation>
 <translation id="3954354850384043518">Боловсруулж байна</translation>
 <translation id="3954468641195530330">Аппуудад таны микрофоныг ашиглахыг зөвшөөрөөгүй</translation>
@@ -7834,7 +7833,6 @@
 <translation id="6798780071646309401">томоор бичих горим асаалттай</translation>
 <translation id="6798954102094737107">Нэмэлт өргөтгөл: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Самбарын нуусан товчлуурууд</translation>
-<translation id="6800623240347398745">Тухайн табд ямар ч бүлэг байхгүй хэдий ч эдгээр бүлгийг шалгаж үзнэ үү</translation>
 <translation id="6800893479155997609">Таны <ph name="DEVICE_TYPE" />-д зориулсан шилдэг аппууд</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөл уг сайтыг уншиж эсвэл өөрчилж болох эсэхийг сонгоно уу}other{Эдгээр өргөтгөл уг сайтыг уншиж эсвэл өөрчилж болох эсэхийг сонгоно уу}}</translation>
 <translation id="6801435275744557998">Мэдрэмтгий дэлгэцийг тохируулах</translation>

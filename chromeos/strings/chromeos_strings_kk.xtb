@@ -321,6 +321,7 @@
 <translation id="2538719227433767804">+ тағы <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">лимондар</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
+<translation id="2576253868710695442">Жадтың 2 ГБ орнына дейін алады.</translation>
 <translation id="2584547424703650812">Жылтыр пейзаждар</translation>
 <translation id="2584559707064218956">Реттеу үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="2586146417912237930">көк және индиго</translation>
@@ -346,6 +347,7 @@
 <translation id="2712812801627182647">TLS аутентификация кілті</translation>
 <translation id="2713444072780614174">Ақ</translation>
 <translation id="2715723665057727940">өзен</translation>
+<translation id="271640182849234126">Бұған көмектесе алмаймын. Басқа сұрау жіберіңіз.</translation>
 <translation id="2717139507051041123">Қараңғы түс режимін қосу</translation>
 <translation id="2728460467788544679">Барлық басып шығару тарихын өшіру</translation>
 <translation id="2740531572673183784">Жарайды</translation>
@@ -609,6 +611,7 @@
 <translation id="4310735698903592804">Google AI жасаған соңғы тұсқағаздар</translation>
 <translation id="4320904097188876154">неон қызғылт</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> пернесі басылды.</translation>
+<translation id="4334293042716981313"><ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />Өз нұсқауыңызды жазсаңыз<ph name="END_LINK_FREEFORM_SUBPAGE" /> да болады.</translation>
 <translation id="4354430579665871434">перне</translation>
 <translation id="4361257691546579041">APN әдепкі.</translation>
 <translation id="437294888293595148">Барлық таңбашаны қайта орнату</translation>
@@ -654,6 +657,7 @@
 <translation id="456077979087158257">қала көрінісі</translation>
 <translation id="4561801978359312462">SIM құлпы ашық</translation>
 <translation id="4562494484721939086">Қызмет жоқ</translation>
+<translation id="4570558255126759859">Жазбаларды қорытындылау үшін Gemini моделін жүктеп алу қажет пе?</translation>
 <translation id="4573777384450697571">Сәтсіз болды – сертификат мерзімі біткен</translation>
 <translation id="458794348635939462">Барлық хост атаулары түрлендірілмеді.</translation>
 <translation id="4593212453765072419">Прокси растауы талап етіледі.</translation>
@@ -976,6 +980,7 @@
 <translation id="6327262166342360252">Бұл тұсқағазды жасанды интеллект "<ph name="PROMPT" />" мәтінін қолданып жасады.</translation>
 <translation id="6331191339300272798">Автоматты қараңғы режим</translation>
 <translation id="6340526405444716530">Жекелендіру</translation>
+<translation id="6348252528297699679">Локацияны "Параметрлер &gt; Құпиялық және қауіпсіздік &gt; Құпиялық параметрлері &gt; Локацияны пайдалану рұқсаты" тармағында өшіруге болады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Пайдаланушы аты және құпия сөз</translation>
 <translation id="6352210854422428614">басқа планета</translation>
 <translation id="6359706544163531585">Жарық режимді өшіру</translation>
@@ -1162,6 +1167,7 @@
 <translation id="7212547870105584639">Желінің APN параметрлерін басқаруға арналған. APN аттары ұялы желі мен интернет арасында байланыс орнатады. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Сыртқы құрылғыларға арналған микробағдарламаның жаңа нұсқалары</translation>
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
+<translation id="7223952304612664117">Бұл жағдайда жүйелік қызметтер локацияңызды анықтау үшін локация дәлдігі параметрін пайдалана алады. Локация дәлдігі параметрі құрылғы локациясын анықтау үшін сымсыз сигналдар мен датчиктер туралы ақпаратты пайдаланады.</translation>
 <translation id="7233782086689993269">Пернелер тіркесімі қалпына келді</translation>
 <translation id="725133483556299729">Электрондық поштаны таңдау</translation>
 <translation id="7255187042098209569">қызғылт және күлгін</translation>
@@ -1400,6 +1406,7 @@
 <translation id="8498220429738806196">Трафик есептегіштері</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8503836310948963452">Бірнеше минут қана…</translation>
+<translation id="8505011850330200833">Gemini моделіне транскрипцияларды өңдеу және қорытындылар жасау үшін 2 ГБ жад қажет.</translation>
 <translation id="8508640263392900755">APN мәліметтері</translation>
 <translation id="8522687886059337719">Енді жаңа <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тұсқағаздар<ph name="END_LINK_WALLPAPER_SUBPAGE" /> мен <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />скринсейверді<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> пайдалана алатын боласыз</translation>
 <translation id="8528615187455571738">Crosvm</translation>
@@ -1415,6 +1422,7 @@
 <translation id="86356131183441916">Ашық күлгін</translation>
 <translation id="8647595191512746911">Аудио транскрипциясы</translation>
 <translation id="8651481478098336970">дыбысты өшіру</translation>
+<translation id="8652096837042642071">Google AI технологиясына негізделген жазба қорытындысы</translation>
 <translation id="8655295600908251630">Арна</translation>
 <translation id="8655828773034788261">URL мекенжайын бөлісу:</translation>
 <translation id="8660881923941176839">фунт</translation>

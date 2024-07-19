@@ -321,6 +321,7 @@
 <translation id="2538719227433767804">他 <ph name="NUM_HIDDEN_OPTIONS" /> 件</translation>
 <translation id="2561093647892030937">レモン</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
+<translation id="2576253868710695442">この処理には最大 2 GB の保存容量が必要です</translation>
 <translation id="2584547424703650812">グロースケープ</translation>
 <translation id="2584559707064218956">設定を行うには [設定] に移動します</translation>
 <translation id="2586146417912237930">青色とインディゴ</translation>
@@ -346,6 +347,7 @@
 <translation id="2712812801627182647">TLS 認証鍵</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2715723665057727940">川</translation>
+<translation id="271640182849234126">サポートできません。別のリクエストをお試しください</translation>
 <translation id="2717139507051041123">ダークカラー モードを有効にする</translation>
 <translation id="2728460467788544679">印刷履歴をすべて削除</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -609,6 +611,7 @@
 <translation id="4310735698903592804">Google AI を活用した最近の壁紙</translation>
 <translation id="4320904097188876154">ネオンピンク</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
+<translation id="4334293042716981313"><ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />独自のプロンプトを記述する<ph name="END_LINK_FREEFORM_SUBPAGE" />こともできます</translation>
 <translation id="4354430579665871434">キー</translation>
 <translation id="4361257691546579041">APN の種類はデフォルトです。</translation>
 <translation id="437294888293595148">すべてのショートカットをリセットする</translation>
@@ -654,6 +657,7 @@
 <translation id="456077979087158257">都市</translation>
 <translation id="4561801978359312462">SIM のロックは解除されています</translation>
 <translation id="4562494484721939086">サービスなし</translation>
+<translation id="4570558255126759859">Gemini モデルをダウンロードして録音を要約しますか？</translation>
 <translation id="4573777384450697571">失敗 - 証明書が期限切れです</translation>
 <translation id="458794348635939462">すべてのホストを解決できませんでした</translation>
 <translation id="4593212453765072419">プロキシ認証が必要です</translation>
@@ -976,6 +980,7 @@
 <translation id="6327262166342360252">この壁紙は「<ph name="PROMPT" />」というテキストを使用して AI で作成されました。</translation>
 <translation id="6331191339300272798">ダークモードを自動的に設定する</translation>
 <translation id="6340526405444716530">カスタマイズ</translation>
+<translation id="6348252528297699679">位置情報は、[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] でオフにできます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ユーザー名とパスワード</translation>
 <translation id="6352210854422428614">別の惑星</translation>
 <translation id="6359706544163531585">ライトモードを無効にする</translation>
@@ -1162,6 +1167,7 @@
 <translation id="7212547870105584639">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部デバイスのファームウェア アップデート</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
+<translation id="7223952304612664117">これにより、システム サービスは [位置情報の精度] の機能を使用してユーザーの現在地を特定できるようになります。[位置情報の精度] をオンにした場合、ワイヤレス シグナルとセンサーに関する情報に基づいて、デバイスの位置情報が推定されます。</translation>
 <translation id="7233782086689993269">ショートカットを復元しました</translation>
 <translation id="725133483556299729">メールアドレスを選択</translation>
 <translation id="7255187042098209569">ピンクと紫色</translation>
@@ -1400,6 +1406,7 @@
 <translation id="8498220429738806196">トラフィック カウンタ</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
+<translation id="8505011850330200833">Gemini モデルを使用した文字起こしと要約の作成には 2 GB の保存容量が必要です</translation>
 <translation id="8508640263392900755">APN の詳細</translation>
 <translation id="8522687886059337719">新しい<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁紙<ph name="END_LINK_WALLPAPER_SUBPAGE" />と<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />スクリーン セーバー<ph name="END_LINK_SCREENSAVER_SUBPAGE" />にアクセスできるようになりました</translation>
 <translation id="8528615187455571738">Crosvm</translation>
@@ -1415,6 +1422,7 @@
 <translation id="86356131183441916">ライトパープル</translation>
 <translation id="8647595191512746911">音声文字起こし</translation>
 <translation id="8651481478098336970">音量をミュート</translation>
+<translation id="8652096837042642071">Google AI による録音の要約</translation>
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8655828773034788261">URL を共有:</translation>
 <translation id="8660881923941176839">ポンド</translation>

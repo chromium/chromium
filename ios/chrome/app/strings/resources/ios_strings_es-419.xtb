@@ -226,6 +226,7 @@
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2178545675770638239">Seleccionar contraseña</translation>
+<translation id="2188919919468240749">¿Quieres borrar el grupo de pestañas?</translation>
 <translation id="2195124168004379331">Tu navegador parece estar bien</translation>
 <translation id="2218443599109088993">Alejar</translation>
 <translation id="2220529011494928058">Informar un problema</translation>
@@ -1091,6 +1092,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6445051938772793705">País</translation>
 <translation id="6445981559479772097">Mensaje enviado</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6449554712554071184">Esta acción borrará el grupo de tu dispositivo de forma permanente.</translation>
 <translation id="6453018583485750254">No se ejecutó nunca la verificación.</translation>
 <translation id="6459307836338400162">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Se ocultaron los detalles</translation>

@@ -4085,7 +4085,6 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, чтобы скачивать файлы было безопаснее.</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3950841222883198950">Голосовой ввод</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome рекомендует удалить его. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}one{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}few{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}many{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}other{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}}</translation>
 <translation id="3953834000574892725">Мои аккаунты</translation>
 <translation id="3954354850384043518">Скачивание…</translation>
 <translation id="3954468641195530330">У приложений нет доступа к микрофону</translation>
@@ -5159,6 +5158,7 @@
 <translation id="4777813841994368231">Включено • Разработчик отменил публикацию этого расширения</translation>
 <translation id="4777825441726637019">Play Маркет</translation>
 <translation id="4777943778632837590">Настроить серверы доменных имен</translation>
+<translation id="4778630024246633221">Менеджер сертификатов</translation>
 <translation id="4778653490315793244">Контент отсутствует</translation>
 <translation id="4779083564647765204">Масштаб</translation>
 <translation id="4779136857077979611">Онигири</translation>
@@ -7834,7 +7834,6 @@
 <translation id="6798780071646309401">клавиша Caps Lock нажата</translation>
 <translation id="6798954102094737107">Плагин: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Скрытые кнопки на панели инструментов</translation>
-<translation id="6800623240347398745">Для этой вкладки не удалось найти группы, но вы можете посмотреть другие:</translation>
 <translation id="6800893479155997609">Лучшие приложения для устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Выберите, сможет ли это расширение просматривать или менять сайт}one{Выберите, смогут ли эти расширения просматривать или менять сайт}few{Выберите, смогут ли эти расширения просматривать или менять сайт}many{Выберите, смогут ли эти расширения просматривать или менять сайт}other{Выберите, смогут ли эти расширения просматривать или менять сайт}}</translation>
 <translation id="6801435275744557998">Откалибровать сенсорный экран</translation>

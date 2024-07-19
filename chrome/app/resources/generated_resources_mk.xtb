@@ -4097,7 +4097,6 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> за да го направите преземањето датотеки побезбедно</translation>
 <translation id="3950820424414687140">Најави се</translation>
 <translation id="3950841222883198950">Гласовно пишување</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome препорачува да ја отстраните. <ph name="BEGIN_LINK" />Дознајте повеќе за поддржаните екстензии.<ph name="END_LINK" />}one{Chrome препорачува да ги отстраните. <ph name="BEGIN_LINK" />Дознајте повеќе за поддржаните екстензии.<ph name="END_LINK" />}other{Chrome препорачува да ги отстраните. <ph name="BEGIN_LINK" />Дознајте повеќе за поддржаните екстензии.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">Мои сметки</translation>
 <translation id="3954354850384043518">Во тек</translation>
 <translation id="3954468641195530330">Апликациите немаат дозвола да го користат микрофонот</translation>
@@ -7842,7 +7841,6 @@
 <translation id="6798780071646309401">Caps Lock е вклучено</translation>
 <translation id="6798954102094737107">Приклучок: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Скриени копчиња на алатникот</translation>
-<translation id="6800623240347398745">Нема група за таа картичка, но погледнете ги овие групи</translation>
 <translation id="6800893479155997609">Најпопуларни апликации за вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Изберете дали екстензијава ќе може да го чита или променува сајтов}one{Изберете дали екстензииве ќе може да го читаат или променуваат сајтов}other{Изберете дали екстензииве ќе може да го читаат или променуваат сајтов}}</translation>
 <translation id="6801435275744557998">Калибрирајте го екранот на допир</translation>

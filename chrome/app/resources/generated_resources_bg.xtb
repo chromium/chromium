@@ -4093,7 +4093,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, за да направите изтеглянето на файлове по-безопасно</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3950841222883198950">Печатане с глас</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome препоръчва да го премахнете. <ph name="BEGIN_LINK" />Научете повече за поддържаните разширения<ph name="END_LINK" />.}other{Chrome препоръчва да ги премахнете. <ph name="BEGIN_LINK" />Научете повече за поддържаните разширения<ph name="END_LINK" />.}}</translation>
 <translation id="3953834000574892725">Моите профили</translation>
 <translation id="3954354850384043518">В ход</translation>
 <translation id="3954468641195530330">На приложенията е забранено да използват микрофона ви</translation>
@@ -5167,6 +5166,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4777813841994368231">Включено • Публикуването на това разширение бе прекратено от програмиста му</translation>
 <translation id="4777825441726637019">Google Play Магазин</translation>
 <translation id="4777943778632837590">Конфигуриране на сървърите за имена в мрежата</translation>
+<translation id="4778630024246633221">Диспечер на сертификатите</translation>
 <translation id="4778653490315793244">Още няма нищо за показване</translation>
 <translation id="4779083564647765204">Промяна на мащаба</translation>
 <translation id="4779136857077979611">Онигири</translation>
@@ -7837,7 +7837,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6798780071646309401">caps lock е включен</translation>
 <translation id="6798954102094737107">Приставка: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Скрити бутони в лентата с инструменти</translation>
-<translation id="6800623240347398745">Няма група за този раздел, но разгледайте тези групи</translation>
 <translation id="6800893479155997609">Водещи приложения за вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Изберете дали това разширение да може да чете или променя този сайт}other{Изберете дали тези разширения да могат да четат или променят този сайт}}</translation>
 <translation id="6801435275744557998">Калибриране на сензорния екран</translation>

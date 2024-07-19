@@ -4096,7 +4096,6 @@
 <translation id="3949999964543783947">सुरक्षित तरीके से फ़ाइलें डाउनलोड करने के लिए, <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="3950841222883198950">बोली को लिखाई में बदलने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome का सुझाव है कि आप यह एक्सटेंशन हटा दें. <ph name="BEGIN_LINK" />Chrome पर इस्तेमाल किए जा सकने वाले एक्सटेंशन के बारे में ज़्यादा जानें.<ph name="END_LINK" />}one{Chrome का सुझाव है कि आप यह एक्सटेंशन हटा दें. <ph name="BEGIN_LINK" />Chrome पर इस्तेमाल किए जा सकने वाले एक्सटेंशन के बारे में ज़्यादा जानें.<ph name="END_LINK" />}other{Chrome का सुझाव है कि आप ये एक्सटेंशन हटा दें. <ph name="BEGIN_LINK" />Chrome पर इस्तेमाल किए जा सकने वाले एक्सटेंशन के बारे में ज़्यादा जानें.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">मेरे खाते</translation>
 <translation id="3954354850384043518">जारी है</translation>
 <translation id="3954468641195530330">किसी भी ऐप्लिकेशन के पास डिवाइस का माइक्रोफ़ोन इस्तेमाल करने की अनुमति नहीं है</translation>
@@ -5170,6 +5169,7 @@
 <translation id="4777813841994368231">चालू है • इस एक्सटेंशन को इसके डेवलपर ने अनपब्लिश कर दिया था</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">नेटवर्क के नाम सर्वर कॉन्फ़िगर करें</translation>
+<translation id="4778630024246633221">प्रमाणपत्र मैनेजर</translation>
 <translation id="4778653490315793244">फ़िलहाल, कोई कॉन्टेंट मौजूद नहीं है</translation>
 <translation id="4779083564647765204">ज़ूम</translation>
 <translation id="4779136857077979611">ओनिगिरी</translation>
@@ -7840,7 +7840,6 @@
 <translation id="6798780071646309401">caps lock चालू है</translation>
 <translation id="6798954102094737107">प्‍लग इन: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">छिपे हुए टूलबार बटन</translation>
-<translation id="6800623240347398745">इस टैब के लिए कोई ग्रुप नहीं है, लेकिन इन ग्रुप को देखें</translation>
 <translation id="6800893479155997609">आपके <ph name="DEVICE_TYPE" /> के लिए सबसे लोकप्रिय ऐप्लिकेशन</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{चुनें कि क्या यह एक्सटेंशन इस साइट को पढ़ या बदल सकता है}one{चुनें कि क्या यह एक्सटेंशन इस साइट को पढ़ या बदल सकता है}other{चुनें कि क्या ये एक्सटेंशन इस साइट को पढ़ या बदल सकते हैं}}</translation>
 <translation id="6801435275744557998">टचस्क्रीन कैलिब्रेट करें</translation>

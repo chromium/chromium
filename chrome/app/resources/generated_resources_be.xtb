@@ -4082,7 +4082,6 @@
 <translation id="3949999964543783947">Для бяспечнага спампоўвання файлаў <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3950841222883198950">Галасавы ўвод</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome рэкамендуе выдаліць яго. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца.<ph name="END_LINK" />}one{Chrome рэкамендуе выдаліць іх. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца.<ph name="END_LINK" />}few{Chrome рэкамендуе выдаліць іх. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца.<ph name="END_LINK" />}many{Chrome рэкамендуе выдаліць іх. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца.<ph name="END_LINK" />}other{Chrome рэкамендуе выдаліць іх. <ph name="BEGIN_LINK" />Даведацца больш пра пашырэнні, якія падтрымліваюцца.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">Мае ўліковыя запісы</translation>
 <translation id="3954354850384043518">Выконваецца</translation>
 <translation id="3954468641195530330">Праграмам не дазваляецца выкарыстоўваць мікрафон</translation>
@@ -7830,7 +7829,6 @@
 <translation id="6798780071646309401">Caps Lock уключаны</translation>
 <translation id="6798954102094737107">Убудова "<ph name="PLUGIN_NAME" />"</translation>
 <translation id="679905836499387150">Схаваныя кнопкі на панэлі інструментаў</translation>
-<translation id="6800623240347398745">Для гэтай укладкі няма групы – паглядзіце гэтыя групы</translation>
 <translation id="6800893479155997609">Найлепшыя праграмы для гэтай прылады "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Выберыце, ці можа гэта пашырэнне праглядаць або змяняць гэты сайт}one{Выберыце, ці могуць гэтыя пашырэнні праглядаць або змяняць гэты сайт}few{Выберыце, ці могуць гэтыя пашырэнні праглядаць або змяняць гэты сайт}many{Выберыце, ці могуць гэтыя пашырэнні праглядаць або змяняць гэты сайт}other{Выберыце, ці могуць гэтыя пашырэнні праглядаць або змяняць гэты сайт}}</translation>
 <translation id="6801435275744557998">Каліброўка сэнсарнага экрана</translation>

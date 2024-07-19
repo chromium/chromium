@@ -225,6 +225,7 @@
 <translation id="2149973817440762519">Измени Обележувач</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Изберете лозинка</translation>
+<translation id="2188919919468240749">Да се избрише групата картички?</translation>
 <translation id="2195124168004379331">Вашиот прелистувач изгледа безбедно</translation>
 <translation id="2218443599109088993">Одзумирај</translation>
 <translation id="2220529011494928058">Пријави проблем</translation>
@@ -1090,6 +1091,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6445051938772793705">Земја</translation>
 <translation id="6445981559479772097">Пораката е испратена.</translation>
 <translation id="6447842834002726250">Колачиња</translation>
+<translation id="6449554712554071184">Ова трајно ќе ја избрише групата од вашиот уред.</translation>
 <translation id="6453018583485750254">Никогаш не е извршена проверка.</translation>
 <translation id="6459307836338400162">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Синхронизација<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Деталите се скриени</translation>

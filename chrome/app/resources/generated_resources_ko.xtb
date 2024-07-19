@@ -4098,7 +4098,6 @@
 <translation id="3949999964543783947">파일을 더 안전하게 다운로드하려면 <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">로그인</translation>
 <translation id="3950841222883198950">음성 입력</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" />}other{Chrome에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">내 계정</translation>
 <translation id="3954354850384043518">진행 중</translation>
 <translation id="3954468641195530330">앱에서 마이크를 사용하도록 허용되지 않습니다.</translation>
@@ -5171,6 +5170,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4777813841994368231">사용 중 • 개발자가 이 확장 프로그램의 게시를 취소했습니다.</translation>
 <translation id="4777825441726637019">Play 스토어</translation>
 <translation id="4777943778632837590">네트워크 네임서버 구성</translation>
+<translation id="4778630024246633221">인증서 관리자</translation>
 <translation id="4778653490315793244">표시할 콘텐츠 없음</translation>
 <translation id="4779083564647765204">확대/축소</translation>
 <translation id="4779136857077979611">오니기리</translation>
@@ -7840,7 +7840,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6798780071646309401">Caps Lock 사용</translation>
 <translation id="6798954102094737107">플러그인: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">숨겨진 툴바 버튼</translation>
-<translation id="6800623240347398745">해당 탭에는 그룹이 없지만 다음 그룹을 확인해 보세요</translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" />에 제공되는 인기 앱</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램이 이 사이트를 읽거나 변경할 수 있는지 선택}other{이러한 확장 프로그램이 이 사이트를 읽거나 변경할 수 있는지 선택}}</translation>
 <translation id="6801435275744557998">터치스크린 보정</translation>

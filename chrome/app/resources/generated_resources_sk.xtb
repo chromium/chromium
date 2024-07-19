@@ -4085,7 +4085,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> a zvýšte tak bezpečnosť pri sťahovaní súborov</translation>
 <translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="3950841222883198950">Hlasové zadávanie</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome odporúča, aby ste ho odstránili. <ph name="BEGIN_LINK" />Ďalšie informácie o podporovaných rozšíreniach<ph name="END_LINK" />}few{Chrome odporúča, aby ste ich odstránili. <ph name="BEGIN_LINK" />Ďalšie informácie o podporovaných rozšíreniach<ph name="END_LINK" />}many{Chrome recommends that you remove them. <ph name="BEGIN_LINK" />Learn more about supported extensions.<ph name="END_LINK" />}other{Chrome odporúča, aby ste ich odstránili. <ph name="BEGIN_LINK" />Ďalšie informácie o podporovaných rozšíreniach<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">Moje účty</translation>
 <translation id="3954354850384043518">Prebieha</translation>
 <translation id="3954468641195530330">Aplikácie nemôžu používať váš mikrofón</translation>
@@ -5159,6 +5158,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4777813841994368231">Zapnuté • Zverejnenie tohto rozšírenia zrušil vývojár</translation>
 <translation id="4777825441726637019">Obchod Play</translation>
 <translation id="4777943778632837590">Konfigurovať servery s názvami siete</translation>
+<translation id="4778630024246633221">Správca certifikátov</translation>
 <translation id="4778653490315793244">Zatiaľ nie je čo zobraziť</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4779136857077979611">Onigiri</translation>
@@ -7831,7 +7831,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6798780071646309401">Funkcia Caps Lock je zapnutá</translation>
 <translation id="6798954102094737107">Doplnok: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Skryté tlačidlá panela s nástrojmi</translation>
-<translation id="6800623240347398745">Táto karta nemá žiadnu skupinu, ale môžete skontrolovať tieto skupiny</translation>
 <translation id="6800893479155997609">Najlepšie aplikácie pre vaše zariadenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Vyberte, či môže toto rozšírenie čítať alebo meniť tento web}few{Vyberte, či môžu tieto rozšírenia čítať alebo meniť tento web}many{Choose if these extensions can read or change this site}other{Vyberte, či môžu tieto rozšírenia čítať alebo meniť tento web}}</translation>
 <translation id="6801435275744557998">Kalibrovať dotykovú obrazovku</translation>

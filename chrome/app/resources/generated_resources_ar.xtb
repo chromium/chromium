@@ -4086,7 +4086,6 @@
 <translation id="3949999964543783947">يمكنك <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> لتنزيل الملفات بطريقة أكثر أمانًا.</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3950841222883198950">الكتابة بالصوت</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{‏ينصح متصفِّح Chrome بإزالة هذه الإضافة. <ph name="BEGIN_LINK" />تعرَّف على مزيد من المعلومات عن الإضافات المتوافقة.<ph name="END_LINK" />}zero{‏ينصح متصفِّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />تعرَّف على مزيد من المعلومات عن الإضافات المتوافقة.<ph name="END_LINK" />}two{‏ينصح متصفِّح Chrome بإزالة هاتين الإضافتين. <ph name="BEGIN_LINK" />تعرَّف على مزيد من المعلومات عن الإضافات المتوافقة.<ph name="END_LINK" />}few{‏ينصح متصفِّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />تعرَّف على مزيد من المعلومات عن الإضافات المتوافقة.<ph name="END_LINK" />}many{‏ينصح متصفِّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />تعرَّف على مزيد من المعلومات عن الإضافات المتوافقة.<ph name="END_LINK" />}other{‏ينصح متصفِّح Chrome بإزالة هذه الإضافات. <ph name="BEGIN_LINK" />تعرَّف على مزيد من المعلومات عن الإضافات المتوافقة.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">الحسابات الخاصة بي</translation>
 <translation id="3954354850384043518">جارية</translation>
 <translation id="3954468641195530330">لا يُسمح للتطبيقات باستخدام الميكروفون</translation>
@@ -5160,6 +5159,7 @@
 <translation id="4777813841994368231">مفعَّلة • ألغى المطوِّر نشر هذه الإضافة.</translation>
 <translation id="4777825441726637019">‏متجر Play</translation>
 <translation id="4777943778632837590">ضبط خوادم أسماء الشبكة</translation>
+<translation id="4778630024246633221">إدارة الشهادات</translation>
 <translation id="4778653490315793244">ما من محتوى متوفّر حتى الآن</translation>
 <translation id="4779083564647765204">تكبير/تصغير</translation>
 <translation id="4779136857077979611">كرات الأرز</translation>
@@ -7837,7 +7837,6 @@
 <translation id="6798780071646309401">‏مفتاح caps lock قيد التفعيل</translation>
 <translation id="6798954102094737107">المكوّن الإضافي: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">أزرار شريط الأدوات المخفية</translation>
-<translation id="6800623240347398745">ما مِن مجموعة لعلامة التبويب هذه، ولكن يمكنك الاطّلاع على هذه المجموعات</translation>
 <translation id="6800893479155997609">أبرز تطبيقات <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{اختيار ما إذا كان بإمكان هذه الإضافة الاطّلاع على محتوى هذا الموقع الإلكتروني أو تغييره}zero{اختيار ما إذا كان بإمكان هذه الإضافات الاطّلاع على محتوى هذا الموقع الإلكتروني أو تغييره}two{اختيار ما إذا كان بإمكان هاتين الإضافتَين الاطّلاع على محتوى هذا الموقع الإلكتروني أو تغييره}few{اختيار ما إذا كان بإمكان هذه الإضافات الاطّلاع على محتوى هذا الموقع الإلكتروني أو تغييره}many{اختيار ما إذا كان بإمكان هذه الإضافات الاطّلاع على محتوى هذا الموقع الإلكتروني أو تغييره}other{اختيار ما إذا كان بإمكان هذه الإضافات الاطّلاع على محتوى هذا الموقع الإلكتروني أو تغييره}}</translation>
 <translation id="6801435275744557998">معايرة الشاشة التي تعمل باللمس</translation>

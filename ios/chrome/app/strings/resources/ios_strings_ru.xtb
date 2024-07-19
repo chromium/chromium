@@ -226,6 +226,7 @@
 <translation id="2149973817440762519">Закладка</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Выберите пароль</translation>
+<translation id="2188919919468240749">Удалить группу вкладок?</translation>
 <translation id="2195124168004379331">Ваш браузер в безопасности</translation>
 <translation id="2218443599109088993">Уменьшить</translation>
 <translation id="2220529011494928058">Сообщить о проблеме</translation>
@@ -763,7 +764,7 @@
 <translation id="4856841893565072365">Умная сортировка для строки меню</translation>
 <translation id="4860895144060829044">Позвонить</translation>
 <translation id="4881695831933465202">Открыть</translation>
-<translation id="4883824756452868502">Определять единицы измерения</translation>
+<translation id="4883824756452868502">Конвертер единиц измерения</translation>
 <translation id="488785315393301722">Показать сведения</translation>
 <translation id="4889521386764567563">Текущий профиль</translation>
 <translation id="4894963374040315706">Это нужно, чтобы использовать голосовой поиск.</translation>
@@ -898,7 +899,7 @@
 <translation id="5551897871312988470">Предлагать перевести</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="555749644339804659">Проверка паролей…</translation>
-<translation id="5559567453458728487">Конвертировать единицы измерения в Сети.</translation>
+<translation id="5559567453458728487">Определять единицы измерения и предлагать конвертировать их на страницах</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5572648434713976849">В адресной строке появятся улучшенные подсказки.</translation>
 <translation id="5572684875078967866">Объем данных</translation>
@@ -1091,6 +1092,7 @@
 <translation id="6445051938772793705">Страна</translation>
 <translation id="6445981559479772097">Сообщение отправлено</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
+<translation id="6449554712554071184">Группа будет навсегда удалена с устройства.</translation>
 <translation id="6453018583485750254">Пароли не проверялись.</translation>
 <translation id="6459307836338400162">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделах <ph name="BEGIN_LINK" />Синхронизация<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Сервисы Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Сведения скрыты</translation>

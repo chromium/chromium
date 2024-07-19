@@ -4083,7 +4083,6 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, ფაილების ჩამოტვირთვა უფრო უსაფრთხო რომ იყოს</translation>
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="3950841222883198950">ხმოვანი აკრეფა</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome გირჩევთ, ამოშალოთ ის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი მხარდაჭერილი გაფართოებების შესახებ.<ph name="END_LINK" />}other{Chrome გირჩევთ, ამოშალოთ ისინი. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი მხარდაჭერილი გაფართოებების შესახებ.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">ჩემი ანგარიშები</translation>
 <translation id="3954354850384043518">მიმდინარეობს</translation>
 <translation id="3954468641195530330">აპებს არ აქვს თქვენი მიკროფონის გამოყენების უფლება</translation>
@@ -7826,7 +7825,6 @@
 <translation id="6798780071646309401">Caps Lock ჩართულია</translation>
 <translation id="6798954102094737107">დანამატი: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">ხელსაწყოთა ზოლის დამალული ღილაკები</translation>
-<translation id="6800623240347398745">ამ ჩანართისთვის ჯგუფი არ არსებობს, მაგრამ გაეცანით ამ ჯგუფებს</translation>
 <translation id="6800893479155997609">რჩეული აპები თქვენი <ph name="DEVICE_TYPE" />-ისთვის</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{აირჩიეთ, შეეძლოს თუ არა ამ გაფართოებას ამ საიტის წაკითხვა ან შეცვლა}other{აირჩიეთ, შეეძლოს თუ არა ამ გაფართოებებს ამ საიტის წაკითხვა ან შეცვლა}}</translation>
 <translation id="6801435275744557998">სენსორული ეკრანის კალიბრაცია</translation>

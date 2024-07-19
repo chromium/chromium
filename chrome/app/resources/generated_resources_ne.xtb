@@ -4078,7 +4078,6 @@
 <translation id="3949999964543783947">सुरक्षित तरिकाले फाइलहरू डाउनलोड गर्न <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="3950841222883198950">भ्वाइस टाइपिङ</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome तपाईंलाई यो एक्स्टेन्सन हटाउन सिफारिस गर्छ। <ph name="BEGIN_LINK" />प्रयोग गर्न सकिने एक्स्टेन्सनहरूका बारेमा थप जान्नुहोस्।<ph name="END_LINK" />}other{Chrome तपाईंलाई ती एक्स्टेन्सनहरू हटाउन सिफारिस गर्छ। <ph name="BEGIN_LINK" />प्रयोग गर्न सकिने एक्स्टेन्सनहरूका बारेमा थप जान्नुहोस्।<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">मेरा खाताहरू</translation>
 <translation id="3954354850384043518">प्रक्रियामा छ</translation>
 <translation id="3954468641195530330">एपहरूलाई तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छैन</translation>
@@ -7820,7 +7819,6 @@
 <translation id="6798780071646309401">क्याप्स लक सक्रिय छ</translation>
 <translation id="6798954102094737107">प्लगइन: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">टुलबारका लुकाइएका बटनहरू</translation>
-<translation id="6800623240347398745">यो ट्याब कुनै पनि समूहमा समावेश गरिएको छैन तर यी समूहहरू हेर्नुहोस्</translation>
 <translation id="6800893479155997609">तपाईंको <ph name="DEVICE_TYPE" /> का लागि सिफारिस गरिएका उत्कृष्ट एपहरू</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{यो एक्स्टेन्सनले यो साइट रिड गर्न वा परिवर्तन गर्न सक्छ कि सक्दैन भन्ने कुरा छनौट गर्नुहोस्}other{यी एक्स्टेन्सनहरूले यो साइट रिड गर्न वा परिवर्तन गर्न सक्छन् कि सक्दैनन् भन्ने कुरा छनौट गर्नुहोस्}}</translation>
 <translation id="6801435275744557998">टचस्क्रिनलाई क्यालिब्रेट गर्नुहोस्</translation>

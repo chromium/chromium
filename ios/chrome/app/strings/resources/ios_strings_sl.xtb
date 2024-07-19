@@ -226,6 +226,7 @@
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2175927920773552910">Koda QR</translation>
 <translation id="2178545675770638239">Izbira gesla</translation>
+<translation id="2188919919468240749">Želite izbrisati skupino zavihkov?</translation>
 <translation id="2195124168004379331">Vaš brskalnik je videti v redu</translation>
 <translation id="2218443599109088993">Pomanjšaj</translation>
 <translation id="2220529011494928058">Prijavite težavo</translation>
@@ -1091,6 +1092,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6445051938772793705">Država</translation>
 <translation id="6445981559479772097">Sporočilo poslano.</translation>
 <translation id="6447842834002726250">Piškotki</translation>
+<translation id="6449554712554071184">S tem boste skupino trajno izbrisali iz naprave.</translation>
 <translation id="6453018583485750254">Preverjanje še ni bilo izvedeno.</translation>
 <translation id="6459307836338400162">Če vas zanima več nastavitev, povezanih z zasebnostjo, varnostjo in zbiranjem podatkov, si oglejte razdelka <ph name="BEGIN_LINK" />Sinhronizacija<ph name="END_LINK" /> in <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Podrobnosti so skrite</translation>

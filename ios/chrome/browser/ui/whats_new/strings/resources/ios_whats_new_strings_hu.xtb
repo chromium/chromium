@@ -1,23 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
-<translation id="1239866612142087073">3. Lépjen a „Beállítások” &gt; „Jelszókezelő” menübe.</translation>
 <translation id="1363028406613469049">Szám</translation>
 <translation id="1554523534964039554">Jelszavak megosztása a családi csoporttal</translation>
-<translation id="1556556838855011466">1. Nyissa meg a Chrome alkalmazást.</translation>
 <translation id="2319645462410562206">A Chrome képes észlelni a webhelyeken megadott azonosító számokat, és megjelenítheti a csomagokkal kapcsolatos friss információkat az Új lap oldalon.</translation>
 <translation id="2551790923936684824">Nyomon szeretné követni ezt a csomagot?</translation>
 <translation id="2734585994146185878">Az Ön csomagja</translation>
 <translation id="282865025718505166">1ZX32F000348211000</translation>
 <translation id="3092996224604267355">Május 1-jén (szerdán) 19:00-ig</translation>
 <translation id="3770157741494890119">Engedélyezze a Chrome számára a csomagjai nyomon követését.</translation>
-<translation id="401853092657437412">2. Koppintson a hárompontos menüre.</translation>
 <translation id="5475069061743940393">Csomagkövetés</translation>
+<translation id="5777468213129569553">A Chrome megnyitása</translation>
 <translation id="6147071803535394951">A csomagra vonatkozó friss információkat az Új lap oldal kártyáin tekintheti meg.</translation>
-<translation id="6292962033060948789">Megoszthatja a kívánt jelszó másolatát a Google Jelszókezelőben</translation>
-<translation id="6297866979658584786">4. Válassza ki a kívánt jelszót, majd koppintson a „Megosztás” ikonra.</translation>
+<translation id="6494974875566443634">Személyre szabás</translation>
+<translation id="7108338896283013870">Elrejtés</translation>
 <translation id="7343651556898151354">A Chrome segíthet a csomag nyomon követésében az Új lap oldalon.</translation>
-<translation id="7425802352219229154">5. Válassza ki azokat a családtagokat, akikkel meg szeretné osztani.</translation>
 <translation id="8094734579697217987">A Google Jelszókezelőben egyszerűen és biztonságosan megoszthatja a jelszavak másolatát a családi csoportjával.</translation>
 <translation id="9085041112720733880">Adja meg azonosító számát a postai vagy vásárlásra szolgáló webhelyen.</translation>
 <translation id="9093047661118118915">Kézbesítés várható időpontja</translation>

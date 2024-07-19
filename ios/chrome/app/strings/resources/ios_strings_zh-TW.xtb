@@ -226,6 +226,7 @@
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2178545675770638239">選取密碼</translation>
+<translation id="2188919919468240749">要刪除分頁群組嗎？</translation>
 <translation id="2195124168004379331">你的瀏覽器安全無虞</translation>
 <translation id="2218443599109088993">縮小</translation>
 <translation id="2220529011494928058">回報問題</translation>
@@ -1091,6 +1092,7 @@
 <translation id="6445051938772793705">國家/地區</translation>
 <translation id="6445981559479772097">訊息已送出。</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6449554712554071184">這項操作會將群組從裝置中永久刪除。</translation>
 <translation id="6453018583485750254">未曾執行過檢查。</translation>
 <translation id="6459307836338400162">如需更多有關隱私權、安全性和資料收集的設定，請參閱 <ph name="BEGIN_LINK" />Google Sync<ph name="END_LINK" /> 和 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="6459411599807878608">已隱藏詳細資料</translation>

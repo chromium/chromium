@@ -4099,7 +4099,6 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, щоб завантажувати файли безпечніше</translation>
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="3950841222883198950">Голосовий ввід</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome радить вилучити його. <ph name="BEGIN_LINK" />Докладніше про підтримувані розширення.<ph name="END_LINK" />}one{Chrome радить вилучити їх. <ph name="BEGIN_LINK" />Докладніше про підтримувані розширення.<ph name="END_LINK" />}few{Chrome радить вилучити їх. <ph name="BEGIN_LINK" />Докладніше про підтримувані розширення.<ph name="END_LINK" />}many{Chrome радить вилучити їх. <ph name="BEGIN_LINK" />Докладніше про підтримувані розширення.<ph name="END_LINK" />}other{Chrome радить вилучити їх. <ph name="BEGIN_LINK" />Докладніше про підтримувані розширення.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">Мої облікові записи</translation>
 <translation id="3954354850384043518">Завантаження триває</translation>
 <translation id="3954468641195530330">Додаткам заборонено використовувати ваш мікрофон</translation>
@@ -7845,7 +7844,6 @@
 <translation id="6798780071646309401">Caps Lock увімкнено</translation>
 <translation id="6798954102094737107">Плагін: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Приховані кнопки на панелі інструментів</translation>
-<translation id="6800623240347398745">Для вибраної вкладки немає груп. Перегляньте ці пропозиції.</translation>
 <translation id="6800893479155997609">Найкращі додатки для вашого пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Укажіть, чи може розширення переглядати або змінювати цей сайт}one{Укажіть, чи можуть розширення переглядати або змінювати цей сайт}few{Укажіть, чи можуть розширення переглядати або змінювати цей сайт}many{Укажіть, чи можуть розширення переглядати або змінювати цей сайт}other{Укажіть, чи можуть розширення переглядати або змінювати цей сайт}}</translation>
 <translation id="6801435275744557998">Калібрувати сенсорний екран</translation>

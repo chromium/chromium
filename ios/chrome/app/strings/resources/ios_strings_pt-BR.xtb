@@ -226,6 +226,7 @@
 <translation id="2149973817440762519">Editar favoritos</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2178545675770638239">Selecionar senha</translation>
+<translation id="2188919919468240749">Excluir grupo de guias?</translation>
 <translation id="2195124168004379331">Parece que está tudo certo com seu navegador</translation>
 <translation id="2218443599109088993">Diminuir zoom</translation>
 <translation id="2220529011494928058">Informar um problema</translation>
@@ -1091,6 +1092,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6445051938772793705">País</translation>
 <translation id="6445981559479772097">Mensagem enviada.</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6449554712554071184">Essa ação vai excluir permanentemente o grupo do seu dispositivo.</translation>
 <translation id="6453018583485750254">Verificação nunca executada.</translation>
 <translation id="6459307836338400162">Para acessar mais opções relacionadas à privacidade, segurança e coleta de dados, acesse as configurações de <ph name="BEGIN_LINK" />Sincronização<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Detalhes ocultos</translation>

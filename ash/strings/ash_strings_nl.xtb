@@ -291,6 +291,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2034971124472263449">Toch opslaan</translation>
 <translation id="204259843076055848">De sneltoets <ph name="SIX_PACK_KEY_NAME" /> staat op dit moment uit</translation>
 <translation id="2049240716062114887">Bureaunaam is veranderd in <ph name="DESK_NAME" /></translation>
+<translation id="2050339315714019657">Staand</translation>
 <translation id="2064048859448024834">Het cameravoorbeeld staat aan</translation>
 <translation id="2067602449040652523">Toetsenbordhelderheid</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> schakelen. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
@@ -781,7 +782,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3900355044994618856">Je sessie loopt over <ph name="SESSION_TIME_REMAINING" /> af</translation>
 <translation id="3901991538546252627">Verbinding maken met <ph name="NAME" /></translation>
 <translation id="3904768293285573640">Venster met tegels voor formaat aanpassen naar links verplaatsen</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Geen mobiele netwerken ingesteld</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, afspraken laden.</translation>
 <translation id="3927049937406914450">Weer is niet beschikbaar omdat locatietoegang uitstaat. Je kunt dit wijzigen in de instellingen.</translation>
@@ -912,7 +912,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> opnemen</translation>
 <translation id="4371348193907997655">Cast-instellingen</translation>
 <translation id="4375482231364171368">Zoeken via adresbalk</translation>
-<translation id="4378154925671717803">Telefoon</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4379531060876907730">Dit zijn je stylustools</translation>
@@ -2274,6 +2273,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Geen inleverdatum</translation>
 <translation id="98120814841227350">Naar het einde van het document gaan</translation>
+<translation id="98515147261107953">Liggend</translation>
 <translation id="987589956647469042">Mobiele data staan aan</translation>
 <translation id="989374776391122812">Camera- en audiobediening</translation>
 <translation id="990277280839877440">Venster <ph name="WINDOW_TITILE" /> gesloten.</translation>

@@ -321,6 +321,7 @@
 <translation id="2538719227433767804">E mais <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">limões</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
+<translation id="2576253868710695442">Isto vai ocupar até 2 GB de armazenamento</translation>
 <translation id="2584547424703650812">Paisagens brilhantes</translation>
 <translation id="2584559707064218956">Para configurar, aceda às Definições</translation>
 <translation id="2586146417912237930">azul e índigo</translation>
@@ -346,6 +347,7 @@
 <translation id="2712812801627182647">Chave de autenticação TLS</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2715723665057727940">rio</translation>
+<translation id="271640182849234126">Não podemos ajudar com isto. Experimente outro pedido</translation>
 <translation id="2717139507051041123">Ativar modo de cor escura</translation>
 <translation id="2728460467788544679">Limpe todo o histórico de impressões</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -609,6 +611,7 @@
 <translation id="4310735698903592804">Imagens de fundo recentes com tecnologia de IA da Google</translation>
 <translation id="4320904097188876154">rosa fluorescente</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> pressionada</translation>
+<translation id="4334293042716981313">Também pode <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />escrever o seu próprio comando<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4361257691546579041">O tipo de APN é predefinido.</translation>
 <translation id="437294888293595148">Repor todos os atalhos</translation>
@@ -654,6 +657,7 @@
 <translation id="456077979087158257">paisagem urbana</translation>
 <translation id="4561801978359312462">SIM desbloqueado</translation>
 <translation id="4562494484721939086">Sem serviço</translation>
+<translation id="4570558255126759859">Transferir o modelo do Gemini para resumir as gravações?</translation>
 <translation id="4573777384450697571">Falha – Certificado expirado</translation>
 <translation id="458794348635939462">Falha ao resolver todos os anfitriões.</translation>
 <translation id="4593212453765072419">Autenticação proxy necessária</translation>
@@ -976,6 +980,7 @@
 <translation id="6327262166342360252">Esta imagem de fundo foi criada com IA através do seguinte texto: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema escuro automático</translation>
 <translation id="6340526405444716530">Personalização</translation>
+<translation id="6348252528297699679">Pode desativar a localização em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nome de utilizador e palavra-passe</translation>
 <translation id="6352210854422428614">planeta diferente</translation>
 <translation id="6359706544163531585">Desativar tema claro</translation>
@@ -1162,6 +1167,7 @@
 <translation id="7212547870105584639">Faça a gestão das definições do APN da rede. Os APNs estabelecem uma ligação entre uma rede móvel e a Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Atualizações de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Operador de telemóvel</translation>
+<translation id="7223952304612664117">Isto permite que os serviços do sistema usem a Precisão da localização para determinar a sua localização. A Precisão da localização usa informações sobre sensores e sinais sem fios para estimar a localização do dispositivo.</translation>
 <translation id="7233782086689993269">Atalho restaurado</translation>
 <translation id="725133483556299729">Selecionar email</translation>
 <translation id="7255187042098209569">rosa e roxo</translation>
@@ -1400,6 +1406,7 @@ Pode desativar esta funcionalidade em qualquer altura nas Definições.</transla
 <translation id="8498220429738806196">Contadores de tráfego</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
+<translation id="8505011850330200833">O modelo Gemini requer 2 GB de armazenamento para processar transcrições e criar resumos</translation>
 <translation id="8508640263392900755">Detalhes do APN (Nome do Ponto de Acesso)</translation>
 <translation id="8522687886059337719">Agora, tem acesso a novas <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagens de fundo<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />proteção de ecrã<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
@@ -1415,6 +1422,7 @@ Pode desativar esta funcionalidade em qualquer altura nas Definições.</transla
 <translation id="86356131183441916">Roxo-claro</translation>
 <translation id="8647595191512746911">Transcrição de áudio</translation>
 <translation id="8651481478098336970">desativar o som</translation>
+<translation id="8652096837042642071">Resumo da gravação com tecnologia de IA da Google</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Partilhar URL:</translation>
 <translation id="8660881923941176839">libras</translation>

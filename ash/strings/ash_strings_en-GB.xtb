@@ -291,6 +291,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2034971124472263449">Save anyway</translation>
 <translation id="204259843076055848">The <ph name="SIX_PACK_KEY_NAME" /> shortcut is currently off</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
+<translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Camera preview on</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
 <translation id="2075520525463668108">Toggle <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
@@ -781,7 +782,6 @@ Connect your device to power.</translation>
 <translation id="3900355044994618856">Your session will end in <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connecting to <ph name="NAME" /></translation>
 <translation id="3904768293285573640">Tiled resize window towards the left</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">No mobile networks set up</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Loading events.</translation>
 <translation id="3927049937406914450">Weather isn't available because location access is turned off. You can change this in settings.</translation>
@@ -912,7 +912,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Recording</translation>
 <translation id="4371348193907997655">Cast settings</translation>
 <translation id="4375482231364171368">Search in address bar</translation>
-<translation id="4378154925671717803">Phone</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signal strength <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4379531060876907730">These are your stylus tools</translation>
@@ -2274,6 +2273,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
 <translation id="981011780479609956">No due date</translation>
 <translation id="98120814841227350">Go to end of document</translation>
+<translation id="98515147261107953">Landscape</translation>
 <translation id="987589956647469042">Mobile data is turned on</translation>
 <translation id="989374776391122812">Camera and audio controls</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> closed.</translation>

@@ -4097,7 +4097,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para tornar o download de arquivos mais seguro</translation>
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="3950841222883198950">Digitação por voz</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{O Chrome recomenda a remoção dela. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões compatíveis<ph name="END_LINK" />.}one{O Chrome recomenda a remoção dela. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões compatíveis<ph name="END_LINK" />.}other{O Chrome recomenda a remoção delas. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões compatíveis<ph name="END_LINK" />.}}</translation>
 <translation id="3953834000574892725">Minhas contas</translation>
 <translation id="3954354850384043518">Em andamento</translation>
 <translation id="3954468641195530330">Os apps não têm permissão para usar seu microfone</translation>
@@ -5171,6 +5170,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4777813841994368231">Ativada • A publicação desta extensão foi cancelada pelo desenvolvedor</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configurar servidores de nomes da rede</translation>
+<translation id="4778630024246633221">Gerenciador de certificados</translation>
 <translation id="4778653490315793244">Nada para mostrar no momento</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Oniguiri</translation>
@@ -7843,7 +7843,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6798780071646309401">tecla caps lock ativada</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Botões ocultos da barra de ferramentas</translation>
-<translation id="6800623240347398745">Não há um grupo para essa guia, mas confira estes grupos</translation>
 <translation id="6800893479155997609">Principais apps para seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Escolha se a extensão pode ler ou mudar este site}one{Escolha se a extensão pode ler ou mudar este site}other{Escolha se as extensões podem ler ou mudar este site}}</translation>
 <translation id="6801435275744557998">Calibrar touchscreen</translation>

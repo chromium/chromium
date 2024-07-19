@@ -4072,7 +4072,6 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />可更安全地下载文件</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="3950841222883198950">语音输入</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome 建议您移除它。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序。<ph name="END_LINK" />}other{Chrome 建议您移除它们。<ph name="BEGIN_LINK" />详细了解受支持的扩展程序。<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">我的账号</translation>
 <translation id="3954354850384043518">正在下载</translation>
 <translation id="3954468641195530330">不允许应用使用您的麦克风</translation>
@@ -5146,6 +5145,7 @@
 <translation id="4777813841994368231">已开启 • 此扩展程序已被其开发者取消发布</translation>
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4777943778632837590">配置网络域名服务器</translation>
+<translation id="4778630024246633221">证书管理器</translation>
 <translation id="4778653490315793244">尚无可显示的内容</translation>
 <translation id="4779083564647765204">缩放</translation>
 <translation id="4779136857077979611">饭团</translation>
@@ -7811,7 +7811,6 @@
 <translation id="6798780071646309401">已开启大写锁定模式</translation>
 <translation id="6798954102094737107">插件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">隐藏的工具栏按钮</translation>
-<translation id="6800623240347398745">未找到该标签页的分组，但您可以查看这些分组</translation>
 <translation id="6800893479155997609">适合 <ph name="DEVICE_TYPE" /> 的热门应用</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{选择是否允许这款扩展程序读取或更改该网站的数据}other{选择是否允许这些扩展程序读取或更改该网站的数据}}</translation>
 <translation id="6801435275744557998">校准触摸屏</translation>

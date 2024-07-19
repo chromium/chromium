@@ -4081,7 +4081,6 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />՝ ֆայլերի ներբեռնումն ավելի անվտանգ դարձնելու համար</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="3950841222883198950">Ձայնային մուտքագրում</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome-ը խորհուրդ է տալիս հեռացնել այն։ <ph name="BEGIN_LINK" />Իմանալ ավելին աջակցվող ընդլայնումների մասին։<ph name="END_LINK" />}one{Chrome-ը խորհուրդ է տալիս հեռացնել այն։ <ph name="BEGIN_LINK" />Իմանալ ավելին աջակցվող ընդլայնումների մասին։<ph name="END_LINK" />}other{Chrome-ը խորհուրդ է տալիս հեռացնել դրանք։ <ph name="BEGIN_LINK" />Իմանալ ավելին աջակցվող ընդլայնումների մասին։<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">Իմ հաշիվները</translation>
 <translation id="3954354850384043518">Ընթացքում</translation>
 <translation id="3954468641195530330">Հավելվածներին չի թույլատրվում օգտագործել ձեր խոսափողը</translation>
@@ -7823,7 +7822,6 @@
 <translation id="6798780071646309401">Caps Lock-ը միացված է</translation>
 <translation id="6798954102094737107">Փլագին՝ <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Գործիքագոտու թաքցված կոճակներ</translation>
-<translation id="6800623240347398745">Այս ներդիրի համար խումբ չի գտնվել, սակայն կարող եք ստուգել հետևյալ խմբերը՝</translation>
 <translation id="6800893479155997609">Լավագույն հավելվածները ձեր <ph name="DEVICE_TYPE" /> սարքի համար</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Ընտրեք՝ արդյոք այս ընդլայնումը կարող է կարդալ կամ փոփոխել այս կայքը}one{Ընտրեք՝ արդյոք այս ընդլայնումը կարող է կարդալ կամ փոփոխել այս կայքը}other{Ընտրեք՝ արդյոք այս ընդլայնումները կարող են կարդալ կամ փոփոխել այս կայքը}}</translation>
 <translation id="6801435275744557998">Չափաբերել հպէկրանը</translation>

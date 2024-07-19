@@ -4096,7 +4096,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> để việc tải tệp xuống trở nên an toàn hơn</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
 <translation id="3950841222883198950">Nhập liệu bằng giọng nói</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome khuyên bạn nên xoá tiện ích đó. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />.}other{Chrome khuyên bạn nên xoá các tiện ích đó. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />.}}</translation>
 <translation id="3953834000574892725">Tài khoản của tôi</translation>
 <translation id="3954354850384043518">Đang diễn ra</translation>
 <translation id="3954468641195530330">Các ứng dụng không được phép sử dụng micrô của bạn</translation>
@@ -7840,7 +7839,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6798780071646309401">caps lock bật</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Nút ẩn trên thanh công cụ</translation>
-<translation id="6800623240347398745">Không có nhóm nào có thẻ đó, nhưng hãy xem các nhóm sau</translation>
 <translation id="6800893479155997609">Các ứng dụng hàng đầu cho <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Chọn xem tiện ích này có thể đọc hoặc thay đổi trang web này không}other{Chọn xem các tiện ích này có thể đọc hoặc thay đổi trang web này không}}</translation>
 <translation id="6801435275744557998">Hiệu chỉnh màn hình cảm ứng</translation>

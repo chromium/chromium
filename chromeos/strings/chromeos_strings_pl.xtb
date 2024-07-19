@@ -321,6 +321,7 @@
 <translation id="2538719227433767804">jeszcze <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">cytryny</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
+<translation id="2576253868710695442">Zajmie to do 2 GB miejsca na dane</translation>
 <translation id="2584547424703650812">Rozświetlone krajobrazy</translation>
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
 <translation id="2586146417912237930">niebieskim i indygo</translation>
@@ -346,6 +347,7 @@
 <translation id="2712812801627182647">Klucz uwierzytelniania TLS</translation>
 <translation id="2713444072780614174">Biały</translation>
 <translation id="2715723665057727940">rzekę</translation>
+<translation id="271640182849234126">Tej prośby nie można spełnić. Poproś o coś innego.</translation>
 <translation id="2717139507051041123">Włącz ciemny tryb kolorów</translation>
 <translation id="2728460467788544679">Wyczyść całą historię drukowania</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -609,6 +611,7 @@
 <translation id="4310735698903592804">Najnowsze tapety utworzone z wykorzystaniem AI od Google</translation>
 <translation id="4320904097188876154">neonowy róż</translation>
 <translation id="4333390807948134856">Naciśnięto klawisz <ph name="KEY_NAME" /></translation>
+<translation id="4334293042716981313">Możesz też <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />wpisać własny prompt<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">klawisz</translation>
 <translation id="4361257691546579041">APN jest typu domyślnego.</translation>
 <translation id="437294888293595148">Zresetuj wszystkie skróty</translation>
@@ -654,6 +657,7 @@
 <translation id="456077979087158257">panoramę miasta</translation>
 <translation id="4561801978359312462">Karta SIM odblokowana</translation>
 <translation id="4562494484721939086">Brak usługi</translation>
+<translation id="4570558255126759859">Pobrać model Gemini, aby podsumowywać nagrania?</translation>
 <translation id="4573777384450697571">Niepowodzenie – certyfikat wygasł</translation>
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
@@ -976,6 +980,7 @@
 <translation id="6327262166342360252">Ta tapeta została utworzona za pomocą AI przy użyciu tego tekstu: „<ph name="PROMPT" />”.</translation>
 <translation id="6331191339300272798">Automatyczny ciemny motyw</translation>
 <translation id="6340526405444716530">Personalizacja</translation>
+<translation id="6348252528297699679">Możesz wyłączyć lokalizację, klikając Ustawienia &gt; Prywatność i bezpieczeństwo &gt; Ustawienia prywatności &gt; Dostęp do lokalizacji. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nazwa użytkownika i hasło</translation>
 <translation id="6352210854422428614">inna planeta</translation>
 <translation id="6359706544163531585">Wyłącz jasny motyw</translation>
@@ -1161,6 +1166,7 @@
 <translation id="7212547870105584639">Zarządzaj ustawieniami APN sieci. Punkty APN nawiązują połączenie między siecią komórkową a internetem. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aktualizacje oprogramowania urządzeń zewnętrznych</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
+<translation id="7223952304612664117">Pozwoli to usługom systemowym na określanie Twojej lokalizacji przy użyciu Dokładności lokalizacji. Dokładność lokalizacji używa danych o sygnałach bezprzewodowych i czujnikach, aby określać w przybliżeniu lokalizację urządzenia.</translation>
 <translation id="7233782086689993269">Skrót został przywrócony</translation>
 <translation id="725133483556299729">Wybierz adres e-mail</translation>
 <translation id="7255187042098209569">różowym i fioletowym</translation>
@@ -1397,6 +1403,7 @@ W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation
 <translation id="8498220429738806196">Liczniki natężenia ruchu</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8503836310948963452">Jeszcze kilka minut…</translation>
+<translation id="8505011850330200833">Aby przetwarzać transkrypcje i tworzyć podsumowania, model Gemini wymaga 2 GB miejsca na dane</translation>
 <translation id="8508640263392900755">Dane APN</translation>
 <translation id="8522687886059337719">Teraz masz dostęp do nowych <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapet<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />wygaszacza ekranu<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
@@ -1412,6 +1419,7 @@ W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation
 <translation id="86356131183441916">Jasnofioletowy</translation>
 <translation id="8647595191512746911">Transkrypcja</translation>
 <translation id="8651481478098336970">wycisz</translation>
+<translation id="8652096837042642071">Podsumowanie nagrania z wykorzystaniem AI od Google</translation>
 <translation id="8655295600908251630">Kanał</translation>
 <translation id="8655828773034788261">Udostępnij adres URL:</translation>
 <translation id="8660881923941176839">funty</translation>

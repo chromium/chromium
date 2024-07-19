@@ -291,6 +291,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2034971124472263449">Guardar de todos modos</translation>
 <translation id="204259843076055848">En este momento, la combinación de teclas <ph name="SIX_PACK_KEY_NAME" /> está desactivada</translation>
 <translation id="2049240716062114887">Se cambió el nombre del escritorio a <ph name="DESK_NAME" /></translation>
+<translation id="2050339315714019657">Vertical</translation>
 <translation id="2064048859448024834">Se muestra la vista previa de la cámara</translation>
 <translation id="2067602449040652523">Brillo del teclado</translation>
 <translation id="2075520525463668108">Activar o desactivar <ph name="CAPTURE_MEDIUM" /> (estado de <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />)</translation>
@@ -782,7 +783,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3900355044994618856">Tu sesión finalizará en <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Conectando con: <ph name="NAME" /></translation>
 <translation id="3904768293285573640">Ajustar el tamaño de la ventana del mosaico hacia la izquierda</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">No se configuró ninguna red móvil.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, cargando eventos.</translation>
 <translation id="3927049937406914450">El clima no está disponible porque el acceso a la ubicación está desactivado. Puedes cambiar esta opción en la configuración.</translation>
@@ -913,7 +913,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4364101114148522660"><ph name="DURATION" /> Grabando</translation>
 <translation id="4371348193907997655">Configuración de transmisión</translation>
 <translation id="4375482231364171368">Buscar en la barra de direcciones</translation>
-<translation id="4378154925671717803">Teléfono</translation>
 <translation id="4378479437904450384">Intensidad de la señal de <ph name="WIRELESS_PROVIDER" />: <ph name="SIGNAL_STRENGTH" /> por ciento</translation>
 <translation id="4378551569595875038">Conectando…</translation>
 <translation id="4379531060876907730">Estas son las herramientas de la pluma stylus</translation>
@@ -2275,6 +2274,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="974545358917229949">Mostrando <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Sin fecha límite</translation>
 <translation id="98120814841227350">Ir al final del documento</translation>
+<translation id="98515147261107953">Horizontal</translation>
 <translation id="987589956647469042">Los datos móviles están activados</translation>
 <translation id="989374776391122812">Controles de cámara y audio</translation>
 <translation id="990277280839877440">Se cerró la ventana <ph name="WINDOW_TITILE" />.</translation>

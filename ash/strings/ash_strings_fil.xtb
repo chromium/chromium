@@ -291,6 +291,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2034971124472263449">I-save pa rin</translation>
 <translation id="204259843076055848">Kasalukuyang naka-off ang shortcut para sa <ph name="SIX_PACK_KEY_NAME" /></translation>
 <translation id="2049240716062114887">Ginawang <ph name="DESK_NAME" /> ang pangalan ng desk</translation>
+<translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Naka-on ang preview ng camera</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
 <translation id="2075520525463668108">I-toggle ang <ph name="CAPTURE_MEDIUM" />. Ang <ph name="CAPTURE_MEDIUM" /> ay <ph name="CAPTURE_STATE" /></translation>
@@ -781,7 +782,6 @@ Isaksak ang iyong device.</translation>
 <translation id="3900355044994618856">Matatapos ang iyong session sa loob ng <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Kumokonekta sa <ph name="NAME" /></translation>
 <translation id="3904768293285573640">I-resize ang naka-tile na window papuntang kaliwa</translation>
-<translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Walang naka-set up na mobile network</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Nilo-load ang mga event.</translation>
 <translation id="3927049937406914450">Hindi available ang lagay ng panahon dahil naka-off ang access sa lokasyon. Puwede mo itong baguhin sa mga setting.</translation>
@@ -912,7 +912,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Nire-record</translation>
 <translation id="4371348193907997655">Mga Cast Setting</translation>
 <translation id="4375482231364171368">Maghanap sa address bar</translation>
-<translation id="4378154925671717803">Telepono</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, lakas ng signal <ph name="SIGNAL_STRENGTH" /> porsyento</translation>
 <translation id="4378551569595875038">Kumokonekta...</translation>
 <translation id="4379531060876907730">Ito ang iyong mga stylus tool</translation>
@@ -2272,6 +2271,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="974545358917229949">Ipinapakita ang <ph name="RESULT_COUNT" /> (na) resulta para sa <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Walang takdang petsa</translation>
 <translation id="98120814841227350">Pumunta sa dulo ng dokumento</translation>
+<translation id="98515147261107953">Landscape</translation>
 <translation id="987589956647469042">Naka-on ang mobile data</translation>
 <translation id="989374776391122812">Mga kontrol ng camera at audio</translation>
 <translation id="990277280839877440">Isinara ang window na <ph name="WINDOW_TITILE" />.</translation>

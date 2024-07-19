@@ -4094,7 +4094,6 @@
 <translation id="3949999964543783947">ဖိုင်များ ပိုမိုလုံခြုံစွာ ဒေါင်းလုဒ်လုပ်ရန် <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">ဝင်ရောက်</translation>
 <translation id="3950841222883198950">အသံဖြင့်စာရိုက်ခြင်း</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{၎င်းကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။ <ph name="BEGIN_LINK" />ပံ့ပိုးထားသည့် နောက်ဆက်တွဲများအကြောင်း ပိုမိုလေ့လာရန်။<ph name="END_LINK" />}other{၎င်းတို့ကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။ <ph name="BEGIN_LINK" />ပံ့ပိုးထားသည့် နောက်ဆက်တွဲများအကြောင်း ပိုမိုလေ့လာရန်။<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">ကျွန်ုပ်၏ အကောင့်များ</translation>
 <translation id="3954354850384043518">ဆောင်ရွက်နေဆဲ</translation>
 <translation id="3954468641195530330">အက်ပ်များအား သင့်မိုက်ခရိုဖုန်း သုံးခွင့်မပြုပါ</translation>
@@ -7835,7 +7834,6 @@
 <translation id="6798780071646309401">စာလုံးကြီး ခလုတ် ဖွင့်ထားသည်</translation>
 <translation id="6798954102094737107">ပလတ်အင်- <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">ဖျောက်ထားသော ကိရိယာဘားခလုတ်</translation>
-<translation id="6800623240347398745">ယင်းတဘ်အတွက် အုပ်စုမရှိသော်လည်း ဤအုပ်စုများကို ကြည့်ပါ</translation>
 <translation id="6800893479155997609">သင့် <ph name="DEVICE_TYPE" /> အတွက် ထိပ်တန်းအက်ပ်များ</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{ဤနောက်ဆက်တွဲက ဤဝဘ်ဆိုက်ကို ဖတ်ခြင်း၊ ပြောင်းလဲခြင်း လုပ်၍ ရ၊ မရ ရွေးပါ}other{ဤနောက်ဆက်တွဲများက ဤဝဘ်ဆိုက်ကို ဖတ်ခြင်း၊ ပြောင်းလဲခြင်း လုပ်၍ ရ၊ မရ ရွေးပါ}}</translation>
 <translation id="6801435275744557998">တို့ထိမျက်နှာပြင်ကို တိုင်းတာချိန်ညှိရန်</translation>

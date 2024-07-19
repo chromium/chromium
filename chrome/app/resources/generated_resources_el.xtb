@@ -4096,7 +4096,6 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> για ασφαλέστερη λήψη αρχείων</translation>
 <translation id="3950820424414687140">Σύνδεση</translation>
 <translation id="3950841222883198950">Φωνητική πληκτρολόγηση</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Το Chrome συνιστά να την καταργήσετε. <ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με τις υποστηριζόμενες επεκτάσεις.<ph name="END_LINK" />}other{Το Chrome συνιστά να τις καταργήσετε. <ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με τις υποστηριζόμενες επεκτάσεις.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">Οι λογαριασμοί μου</translation>
 <translation id="3954354850384043518">Σε εξέλιξη</translation>
 <translation id="3954468641195530330">Οι εφαρμογές δεν έχουν την άδεια να χρησιμοποιούν το μικρόφωνό σας</translation>
@@ -7841,7 +7840,6 @@
 <translation id="6798780071646309401">η λειτουργία Caps Lock ενεργοποιήθηκε</translation>
 <translation id="6798954102094737107">Προσθήκη: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Κρυφά κουμπιά γραμμής εργαλείων</translation>
-<translation id="6800623240347398745">Δεν υπάρχει ομάδα για αυτή την καρτέλα, αλλά ρίξτε μια ματιά σε αυτές τις ομάδες</translation>
 <translation id="6800893479155997609">Κορυφαίες εφαρμογές για τη συσκευή σας <ph name="DEVICE_TYPE" /></translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Επιλέξτε αν αυτή η επέκταση μπορεί να διαβάσει ή να αλλάξει αυτόν τον ιστότοπο}other{Επιλέξτε εάν αυτές οι επεκτάσεις μπορούν να διαβάσουν ή να αλλάξουν αυτόν τον ιστότοπο}}</translation>
 <translation id="6801435275744557998">Βαθμονόμηση οθόνης αφής</translation>

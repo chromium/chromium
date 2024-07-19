@@ -4096,7 +4096,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3949999964543783947">Файлдарды тезирээк жүктөп алуу үчүн <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">Кирүү</translation>
 <translation id="3950841222883198950">Айтып терүү</translation>
-<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome аны өчүрүүнү сунуштайт. <ph name="BEGIN_LINK" />Колдоого алынган кеңейтүүлөр жөнүндө кеңири маалымат.<ph name="END_LINK" />}other{Chrome аларды өчүрүүнү сунуштайт. <ph name="BEGIN_LINK" />Колдоого алынган кеңейтүүлөр жөнүндө кеңири маалымат.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">Менин аккаунттарым</translation>
 <translation id="3954354850384043518">Аткарылууда</translation>
 <translation id="3954468641195530330">Колдонмолор микрофонду колдоно алышпайт</translation>
@@ -7839,7 +7838,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6798780071646309401">Caps Lock күйүк</translation>
 <translation id="6798954102094737107">Плагин: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Куралдар тилкесинин баскычтары жашырылды</translation>
-<translation id="6800623240347398745">Бул өтмөк үчүн топ жок, бирок бул топторду текшериңиз</translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" /> түзмөгүңүз үчүн мыкты колдонмолор</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Бул кеңейтүү бул сайтты окуп же өзгөртсүнбү?}other{Бул кеңейтүүлөр бул сайтты окуп же өзгөртсүнбү?}}</translation>
 <translation id="6801435275744557998">Сенсордук экранды калибрлөө</translation>
