@@ -67,6 +67,8 @@ const noArgStrings = [
   'recordTranscriptionOffDescription',
   'recordTranscriptionOffHeader',
   'recordingListHeader',
+  'recordingListNoMatchText',
+  'recordingListSearchBoxPlaceholder',
   'recordingListSortByDateOption',
   'recordingListSortByNameOption',
   'recordingListThisMonthHeader',

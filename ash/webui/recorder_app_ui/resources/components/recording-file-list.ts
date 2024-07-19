@@ -11,6 +11,7 @@ import 'chrome://resources/mwc/@material/web/list/list.js';
 import 'chrome://resources/mwc/@material/web/list/list-item.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
+import './cra/cra-image.js';
 import './cra/cra-menu.js';
 import './recording-file-list-item.js';
 import './recording-search-box.js';
@@ -108,6 +109,21 @@ export class RecordingFileList extends ReactiveLitElement {
       color: var(--cros-sys-on_surface);
       font: var(--cros-title-1-font);
       margin: 16px 32px 0;
+    }
+
+    .illustration-container {
+      align-items: center;
+      display: flex;
+      flex-flow: column;
+      font: var(--cros-headline-1-font);
+      gap: 16px;
+      /* The height is full height minus footer size. */
+      height: calc(100% - 48px);
+      justify-content: center;
+
+      @container style(--small-viewport: 1) {
+        height: calc(100% - 32px);
+      }
     }
   `;
 
@@ -296,9 +312,10 @@ export class RecordingFileList extends ReactiveLitElement {
   private renderRecordingList() {
     const renderedItems = this.getRenderRecordingItems();
     if (renderedItems.length === 0) {
-      // TODO: b/344782992 - Add an illustration together with no recording
-      // case.
-      return html`No matching results`;
+      return html`<div class="illustration-container">
+        <cra-image name="recording_list_no_result_found"></cra-image>
+        <div>${i18n.recordingListNoMatchText}</div>
+      </div>`;
     }
     return repeat(
       renderedItems,
@@ -324,9 +341,14 @@ export class RecordingFileList extends ReactiveLitElement {
 
   override render(): RenderResult {
     if (Object.keys(this.recordingMetadataMap).length === 0) {
-      // TODO: b/336963138 - Add a placeholder illustration and add the
-      // illustration for no recording when it's ready.
-      return html`No recording`;
+      return html`
+        <div class="illustration-container">
+          <cra-image
+            name="recording_list_empty"
+            sizing="fit-container"
+          ></cra-image>
+        </div>
+      `;
     }
     return [
       this.renderHeader(),

@@ -45,6 +45,8 @@ images = [
   "onboarding_speaker_id.svg",
   "onboarding_transcription.svg",
   "onboarding_welcome.svg",
+  "recording_list_empty.svg",
+  "recording_list_no_result_found.svg",
   "transcription_enable.svg",
   "transcription_no_speech.svg",
   "transcription_off.svg",

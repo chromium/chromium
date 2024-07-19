@@ -98,6 +98,12 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header of the recording list." name="IDS_RECORDER_RECORDING_LIST_HEADER">
     My Recordings
   </message>
+  <message desc="Message when there’re no recordings with the titles matching with the search keyword." name="IDS_RECORDER_RECORDING_LIST_NO_MATCH_TEXT">
+    No matching results
+  </message>
+  <message desc="Placeholder text on the search box used to search recordings." name="IDS_RECORDER_RECORDING_LIST_SEARCH_BOX_PLACEHOLDER">
+    Search recording name
+  </message>
   <message desc="Label of the menu item to sort the recordings by the recorded date." name="IDS_RECORDER_RECORDING_LIST_SORT_BY_DATE_OPTION">
     Date modified
   </message>

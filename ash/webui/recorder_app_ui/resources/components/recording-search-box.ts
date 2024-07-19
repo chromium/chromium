@@ -17,6 +17,7 @@ import {
   ref,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
 import {assertExists} from '../core/utils/assert.js';
@@ -148,8 +149,9 @@ export class RecordingSearchBox extends ReactiveLitElement {
     // after the transition is completed.
     const searchBox = html`<cros-textfield
       ?disabled=${!this.opened.value}
-      type="text"
+      placeholder=${i18n.recordingListSearchBoxPlaceholder}
       shaded
+      type="text"
       @focusout=${this.onFocusOut}
       @keydown=${this.onKeyDown}
       @input=${this.onInputUpdated}
