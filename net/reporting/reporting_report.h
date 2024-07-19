@@ -61,11 +61,11 @@ struct NET_EXPORT ReportingReport {
   ReportingReport& operator=(ReportingReport&& other);
   ~ReportingReport();
 
-  // Bundles together the NAK, origin of the report URL, and group name.
-  // This is not exactly the same as the group key of the endpoint that the
-  // report will be delivered to. The origin may differ if the endpoint is
-  // configured for a superdomain of the report's origin. The NAK and group name
-  // will be the same.
+  // Bundles together the NAK, reporting source, origin of the report URL, group
+  // name, and target type. This is not exactly the same as the group key of the
+  // endpoint that the report will be delivered to. The origin may differ if the
+  // endpoint is configured for a superdomain of the report's origin. The NAK,
+  // group name, and target type will be the same.
   ReportingEndpointGroupKey GetGroupKey() const;
 
   static void RecordReportDiscardedForNoURLRequestContext();
