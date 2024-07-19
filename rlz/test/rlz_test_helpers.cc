@@ -4,6 +4,11 @@
 //
 // Main entry point for all unit tests.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "rlz_test_helpers.h"
 
 #include <stddef.h>

@@ -13,6 +13,11 @@
 // The "GGLA" brand is used to test the normal code flow of the code, and the
 // "TEST" brand is used to test the supplementary brand code code flow.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <algorithm>
