@@ -61,18 +61,19 @@ StreamParser::ParseStreamIfAvailable() {
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
       receive_messages_responses;
 
-  int unparsed_bytes_available = unparsed_data_buffer_->offset();
-  if (unparsed_bytes_available < kMinimumBytesToParseNextMessagesField)
+  base::span<uint8_t> unparsed_bytes_available =
+      unparsed_data_buffer_->span_before_offset();
+  if (unparsed_bytes_available.size() < kMinimumBytesToParseNextMessagesField) {
     return receive_messages_responses;
+  }
 
   google::protobuf::io::CodedInputStream input_stream(
-      reinterpret_cast<const uint8_t*>(unparsed_data_buffer_->StartOfBuffer()),
-      unparsed_bytes_available);
+      unparsed_bytes_available.data(), unparsed_bytes_available.size());
   int bytes_consumed = 0;
 
   // We can't use StreamBody::ParseFromString() here, as it can't do partial
   // parsing, nor can it tell how many bytes are consumed.
-  bool continue_parsing = unparsed_bytes_available > 0;
+  bool continue_parsing = unparsed_bytes_available.size() > 0;
   while (continue_parsing) {
     chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
         parsed_response;
@@ -84,7 +85,8 @@ StreamParser::ParseStreamIfAvailable() {
         [[fallthrough]];
       case StreamParser::StreamParsingResult::kNoop:
         bytes_consumed = input_stream.CurrentPosition();
-        continue_parsing = bytes_consumed < unparsed_bytes_available;
+        continue_parsing = base::checked_cast<size_t>(bytes_consumed) <
+                           unparsed_bytes_available.size();
         break;
       case StreamParser::StreamParsingResult::kNotEnoughDataYet:
       case StreamParser::StreamParsingResult::kParsingUnexpectedlyFailed:
@@ -96,15 +98,12 @@ StreamParser::ParseStreamIfAvailable() {
   if (bytes_consumed == 0)
     return receive_messages_responses;
 
-  CHECK_LE(bytes_consumed, unparsed_bytes_available);
-  int bytes_not_consumed = unparsed_bytes_available - bytes_consumed;
-
   // Shift the unread data back to the beginning of the buffer for the next
   // iteration of reading data.
-  memmove(unparsed_data_buffer_->StartOfBuffer(),
-          unparsed_data_buffer_->StartOfBuffer() + bytes_consumed,
-          bytes_not_consumed);
-  unparsed_data_buffer_->set_offset(bytes_not_consumed);
+  base::span<uint8_t> bytes_not_consumed =
+      unparsed_bytes_available.subspan(bytes_consumed);
+  unparsed_bytes_available.copy_prefix_from(bytes_not_consumed);
+  unparsed_data_buffer_->set_offset(bytes_not_consumed.size());
 
   return receive_messages_responses;
 }

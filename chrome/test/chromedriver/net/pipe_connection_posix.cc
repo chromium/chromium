@@ -7,10 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/net/command_id.h"
@@ -148,17 +150,18 @@ class PipeReader {
       }
       return;
     }
-    for (int k = 0; k < rv;) {
-      int j = k;
-      for (; j < rv && read_buffer_->StartOfBuffer()[j] != '\0'; ++j) {
-      }
-      next_message_.insert(next_message_.end(),
-                           read_buffer_->StartOfBuffer() + k,
-                           read_buffer_->StartOfBuffer() + j);
-      k = j + 1;
-      if (j < rv) {
+    base::span<uint8_t> buffer =
+        read_buffer_->everything().first(base::checked_cast<size_t>(rv));
+    auto iter = buffer.begin();
+    while (iter != buffer.end()) {
+      auto pos = std::find(iter, buffer.end(), '\0');
+      next_message_.insert(next_message_.end(), iter, pos);
+      if (pos != buffer.end()) {
         OnMessageReceivedOnIOThread(std::move(next_message_));
         next_message_ = std::string();
+        iter = pos + 1;
+      } else {
+        break;
       }
     }
     if (read_again) {

@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/threading/thread.h"
@@ -135,17 +136,18 @@ class PipeReader {
       int offset = 0;
       for (int i = read_buffer_->offset() - bytes_read;
            i < read_buffer_->offset(); ++i) {
-        if (read_buffer_->StartOfBuffer()[i] == '\0') {
+        if (read_buffer_->everything()[i] == '\0') {
           OnMessageReceivedOnIOThread(
-              std::string(read_buffer_->StartOfBuffer() + offset,
-                          read_buffer_->StartOfBuffer() + i));
+              std::string(base::as_string_view(read_buffer_->everything())
+                              .substr(offset, i - offset)));
           offset = i + 1;
         }
       }
       if (offset) {
-        std::copy(read_buffer_->StartOfBuffer() + offset, read_buffer_->data(),
-                  read_buffer_->StartOfBuffer());
-        read_buffer_->set_offset(read_buffer_->offset() - offset);
+        base::span<const uint8_t> subspan =
+            read_buffer_->span_before_offset().subspan(offset);
+        read_buffer_->everything().copy_prefix_from(subspan);
+        read_buffer_->set_offset(subspan.size());
         int new_capacity = std::max(
             kMinReadBufferCapacity,
             std::min(read_buffer_->offset() * 2, read_buffer_->capacity()));
