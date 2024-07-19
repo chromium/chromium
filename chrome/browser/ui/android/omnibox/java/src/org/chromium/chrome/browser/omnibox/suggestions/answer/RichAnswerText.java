@@ -270,7 +270,6 @@ class RichAnswerText implements AnswerText {
         return OmniboxFeatures.shouldShowAnswerActions()
                 && (answerType == AnswerType.ANSWER_TYPE_FINANCE
                         || answerType == AnswerType.ANSWER_TYPE_SPORTS
-                        || answerType == AnswerType.ANSWER_TYPE_GENERIC_ANSWER
                         || answerType == AnswerType.ANSWER_TYPE_WEATHER);
     }
 }
