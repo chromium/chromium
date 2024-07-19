@@ -7609,3 +7609,8 @@ crbug.com/352481804 [ Linux ] external/wpt/html/semantics/embedded-content/the-o
 
 # Gardener 2024-07-17
 crbug.com/353790533 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/handle_user_prompt/handle_user_prompt.py [ Failure Timeout ]
+
+# Flaky 2024-07-18
+crbug.com/352093460 external/wpt/webtransport/stats.https.any.worker.html [ Failure Pass ]
+crbug.com/352093460 external/wpt/webtransport/stats.https.any.serviceworker.html [ Failure Pass ]
+
