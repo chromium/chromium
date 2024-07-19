@@ -238,10 +238,11 @@ export class AppElement extends AppElementBase {
         'Actions.CustomizeToolbarSidePanel.OpenedFromCustomizeChrome');
   }
 
-  private openToolbarCustomizationPage() {
+  private async openToolbarCustomizationPage() {
     this.page_ = CustomizeChromePage.TOOLBAR;
     const page = this.shadowRoot!.querySelector('customize-chrome-toolbar');
     assert(page);
+    await this.updateComplete;
     page.focusOnBackButton();
   }
 }
