@@ -12,7 +12,7 @@ namespace features {
 // the flag "kEnableBleV2" owned by Nearby Connections.
 BASE_FEATURE(kEnableNearbyBleV2,
              "EnableNearbyBleV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the use of Extended Advertising from within the implementation of BLE
 // V2, for incremental testing purposes. Assumes that the caller will also check
