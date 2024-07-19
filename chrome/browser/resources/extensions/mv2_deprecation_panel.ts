@@ -95,16 +95,20 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   private async onExtensionsChanged_(): Promise<void> {
     let headerVar: string;
     let subtitleVar: string;
+    let subtitleLink: string;
     switch (this.mv2ExperimentStage) {
       case Mv2ExperimentStage.NONE:
         assertNotReached();
       case Mv2ExperimentStage.WARNING:
         headerVar = 'mv2DeprecationPanelWarningHeader';
         subtitleVar = 'mv2DeprecationPanelWarningSubtitle';
+        subtitleLink = 'https://chromewebstore.google.com/category/extensions';
         break;
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
         headerVar = 'mv2DeprecationPanelDisabledHeader';
         subtitleVar = 'mv2DeprecationPanelDisabledSubtitle';
+        subtitleLink = 'https://support.google.com/chrome_webstore?' +
+            'p=unsupported_extensions';
         break;
       default:
         assertNotReached();
@@ -113,9 +117,9 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             headerVar, this.extensions.length);
-    this.subtitleString_ =
-        await PluralStringProxyImpl.getInstance().getPluralString(
-            subtitleVar, this.extensions.length);
+    const subtitle = await PluralStringProxyImpl.getInstance().getPluralString(
+        subtitleVar, this.extensions.length);
+    this.subtitleString_ = subtitle.replace('$1', subtitleLink);
   }
 
   /**

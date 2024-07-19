@@ -650,16 +650,26 @@ export class ExtensionsDetailViewElement extends
   }
 
   /**
-   * Returns the Manifest V2 deprecation message subtitle.
+   * Returns the HTML representation of the Manifest V2 deprecation message
+   * subtitle string. We need the HTML representation instead of the string
+   * since the string holds a link.
    */
-  private getMv2DeprecationMessageSubtitle_(): string {
+  private getMv2DeprecationMessageSubtitle_(): TrustedHTML|string {
     switch (this.mv2ExperimentStage_) {
       case Mv2ExperimentStage.NONE:
         return '';
       case Mv2ExperimentStage.WARNING:
-        return this.i18n('mv2DeprecationMessageWarningSubtitle');
+        return this.i18nAdvanced('mv2DeprecationMessageWarningSubtitle', {
+          substitutions:
+              ['https://chromewebstore.google.com/category/extensions'],
+        });
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-        return this.i18n('mv2DeprecationMessageDisabledSubtitle');
+        return this.i18nAdvanced('mv2DeprecationMessageDisabledSubtitle', {
+          substitutions: [
+            'https://support.google.com/chrome_webstore' +
+                '?p=unsupported_extensions',
+          ],
+        });
       default:
         assertNotReached();
     }
