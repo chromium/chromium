@@ -100,9 +100,19 @@ std::optional<IDCollectionKey> GetKeyForWebExperiment(
 }
 
 // If there are VariationIDs associated with |experiment|, register the
-// VariationIDs.
+// VariationIDs. When `is_trial_overridden` is true, this does not register
+// `google_web_experiment_id` as it would have no effect, and would impact
+// collected metrics.
 void RegisterVariationIds(const Study::Experiment& experiment,
-                          const std::string& trial_name) {
+                          const std::string& trial_name,
+                          bool is_trial_overridden) {
+  if (is_trial_overridden && experiment.has_google_web_experiment_id()) {
+    Study::Experiment updated_experiment = experiment;
+    updated_experiment.clear_google_web_experiment_id();
+    RegisterVariationIds(updated_experiment, trial_name, false);
+    return;
+  }
+
   if (experiment.has_google_app_experiment_id()) {
     const VariationID variation_id =
         static_cast<VariationID>(experiment.google_app_experiment_id());
@@ -146,7 +156,7 @@ void ForceExperimentState(
     const VariationsSeedProcessor::UIStringOverrideCallback& override_callback,
     base::FieldTrial* trial) {
   RegisterExperimentParams(study, experiment);
-  RegisterVariationIds(experiment, study.name());
+  RegisterVariationIds(experiment, study.name(), trial->IsOverridden());
   if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
@@ -309,8 +319,10 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   if (existing_trial) {
     int experiment_index = processed_study.GetExperimentIndexByName(
         existing_trial->GetGroupNameWithoutActivation());
-    if (experiment_index == -1)
+    if (experiment_index == -1) {
       return;
+    }
+
     // If the selected group exists in |processed_study|, then there may be some
     // variation ids, params, and features to pick up, so do not return early.
     // For example, if a user specifies the command line flag
@@ -376,8 +388,9 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
 
   // This study has no randomized experiments and none of its experiments were
   // forced by flags so don't create a field trial.
-  if (processed_study.total_probability() <= 0)
+  if (processed_study.total_probability() <= 0) {
     return;
+  }
 
   base::optional_ref<const base::FieldTrial::EntropyProvider> entropy_provider =
       layers.SelectEntropyProviderForStudy(processed_study, entropy_providers);
@@ -407,7 +420,9 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     if (experiment.name() != study.default_experiment_name())
       trial->AppendGroup(experiment.name(), experiment.probability_weight());
 
-    RegisterVariationIds(experiment, study.name());
+    RegisterVariationIds(experiment, study.name(),
+                         /*is_trial_overridden=*/existing_trial &&
+                             existing_trial->IsOverridden());
 
     has_overrides = has_overrides || experiment.override_ui_string_size() > 0;
     if (experiment.feature_association().enable_feature_size() != 0 ||

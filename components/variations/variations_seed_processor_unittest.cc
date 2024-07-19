@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
@@ -364,6 +365,87 @@ TYPED_TEST(VariationsSeedProcessorTest, ForceGroupWithFlag2) {
   this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kFlagGroup2Name,
             base::FieldTrialList::FindFullName(kFlagStudyName));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, FieldTrialOverride) {
+  struct Case {
+    std::string name;
+    std::optional<int> experiment_id;
+    std::optional<int> triggering_experiment_id;
+    bool overridden = false;
+
+    int expected_experiment_id = 0;
+    int expected_triggering_id = 0;
+  };
+
+  std::vector<Case> cases = {
+      {
+          .name = "Override Enabled with experiment id",
+          .experiment_id = kExperimentId,
+          .overridden = true,
+          .expected_experiment_id = 0,
+          .expected_triggering_id = 0,
+      },
+      {
+          .name = "Enabled with experiment id",
+          .experiment_id = kExperimentId,
+          .overridden = false,
+          .expected_experiment_id = kExperimentId,
+          .expected_triggering_id = 0,
+      },
+      {
+          .name = "Override Enabled with triggering id",
+          .triggering_experiment_id = kExperimentId,
+          .overridden = true,
+          .expected_experiment_id = 0,
+          .expected_triggering_id = kExperimentId,
+      },
+      {
+          .name = "Enabled with triggering id",
+          .triggering_experiment_id = kExperimentId,
+          .overridden = false,
+          .expected_experiment_id = 0,
+          .expected_triggering_id = kExperimentId,
+      },
+  };
+
+  for (auto& c : cases) {
+    SCOPED_TRACE(c.name);
+    base::test::ScopedFeatureList empty_state;
+    empty_state.InitWithEmptyFeatureAndFieldTrialLists();
+
+    VariationsSeed seed;
+    Study* study = seed.add_study();
+    study->set_name(kRepeated.name);
+    Study::Experiment* experiment = AddExperiment("Enabled", 1, study);
+    experiment->mutable_feature_association()->add_enable_feature(
+        kRepeated.name);
+    if (c.experiment_id) {
+      experiment->set_google_web_experiment_id(*c.experiment_id);
+    }
+    if (c.triggering_experiment_id) {
+      experiment->set_google_web_trigger_experiment_id(
+          *c.triggering_experiment_id);
+    }
+
+    base::FieldTrialList::CreateFieldTrial(
+        "Repeated", "Enabled", /*is_low_anonymity=*/false, c.overridden);
+
+    auto feature_list = std::make_unique<base::FeatureList>();
+    this->CreateTrialsFromSeed(seed, feature_list.get());
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+    EXPECT_EQ(c.expected_experiment_id,
+              GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+                                   "Repeated", "Enabled"));
+    EXPECT_EQ(c.expected_triggering_id,
+              GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
+                                   "Repeated", "Enabled"));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kRepeated));
+
+    testing::ClearAllVariationIDs();
+  }
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, ForceGroup_ChooseFirstGroupWithFlag) {
