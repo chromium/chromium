@@ -3624,6 +3624,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="EnterpriseCheck.WindowsProfileType" enum="WindowsProfileType"
+    expires_after="2025-01-05">
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-platform-security-core@google.com</owner>
+  <summary>
+    The Windows profile type of the current user. This is obtained by calling
+    the GetProfileType API once at start-up on Windows.
+  </summary>
+</histogram>
+
 <histogram name="SkyVault.LocalUserFilesCleanupCount" units="count"
     expires_after="2025-03-01">
   <owner>poromov@chromium.org</owner>

@@ -2510,6 +2510,28 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Explore"/>
 </enum>
 
+<enum name="WindowsProfileType">
+  <int value="0" label="API Failed">The API call to GetProfileType failed.</int>
+  <int value="1" label="Invalid">
+    GetProfileType returned an invalid profile type.
+  </int>
+  <int value="2" label="None">
+    GetProfileType returned no profile type. This usually implies a local
+    (non-roaming) profile.
+  </int>
+  <int value="3" label="PT_MANDATORY">
+    The user has a Mandatory User Profiles.
+  </int>
+  <int value="4" label="PT_ROAMING">The user has a Roaming User Profiles.</int>
+  <int value="5" label="PT_ROAMING_PREEXISTING">
+    The user has a Roaming User Profile that was created on another PC and is
+    being downloaded. This profile type implies PT_ROAMING.
+  </int>
+  <int value="6" label="PT_TEMPORARY">
+    The user has a Temporary User Profiles; it will be deleted at logoff.
+  </int>
+</enum>
+
 <enum name="WmiQueryError">
   <int value="0" label="Failed to create instance"/>
   <int value="1" label="Failed to initialize product list"/>
