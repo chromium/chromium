@@ -6182,6 +6182,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
+      "//chrome/browser/chromeos/full_restore",
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/browser/chromeos/office_web_app",
       "//chrome/browser/chromeos/smart_reader",
