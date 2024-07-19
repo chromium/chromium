@@ -4834,25 +4834,7 @@ if (!is_android) {
           "//printing:test_support",
         ]
       }
-      if (enable_assistant_integration_tests) {
-        sources +=
-            [ "../browser/ash/app_list/launcher_search_iph_browsertest.cc" ]
 
-        deps += [
-          "//ash/assistant/model",
-          "//ash/assistant/ui",
-          "//ash/assistant/ui:constants",
-          "//chrome/browser/ui/ash/assistant:browser_tests",
-          "//chrome/browser/ui/ash/assistant/test_support",
-          "//chromeos/ash/components/assistant/test_support",
-          "//chromeos/assistant/internal:libassistant",
-        ]
-
-        data += [ "//chromeos/assistant/internal/test_data/" ]
-
-        data_deps +=
-            [ "//chromeos/assistant/internal:build_fake_s3_server_main" ]
-      }
       sources -= [
         "../../apps/load_and_launch_browsertest.cc",
 

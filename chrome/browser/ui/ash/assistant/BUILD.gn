@@ -92,6 +92,38 @@ source_set("unit_tests") {
 }
 
 if (enable_assistant_integration_tests) {
+  static_library("browser_test_support") {
+    testonly = true
+
+    sources = [
+      "assistant_test_mixin.cc",
+      "assistant_test_mixin.h",
+    ]
+
+    deps = [
+      "//ash:test_support",
+      "//ash/assistant/model",
+      "//ash/assistant/ui",
+      "//ash/assistant/ui:constants",
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/ash/assistant/test_support",
+      "//chrome/test:test_support_ui",
+      "//chromeos/ash/components/login/auth/public:authpublic",
+      "//components/account_id",
+      "//components/language/core/browser",
+      "//google_apis",
+      "//net:test_support",
+      "//ui/events:test_support",
+      "//ui/views",
+    ]
+  }
+
   source_set("browser_tests") {
     testonly = true
 
@@ -99,13 +131,12 @@ if (enable_assistant_integration_tests) {
 
     sources = [
       "assistant_browsertest.cc",
-      "assistant_test_mixin.cc",
-      "assistant_test_mixin.h",
       "assistant_timers_browsertest.cc",
     ]
 
     deps = [
       ":assistant",
+      ":browser_test_support",
       "//ash/assistant/model",
       "//ash/assistant/ui",
       "//ash/assistant/ui",
