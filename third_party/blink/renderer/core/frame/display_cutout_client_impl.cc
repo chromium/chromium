@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -16,7 +17,11 @@ namespace blink {
 DisplayCutoutClientImpl::DisplayCutoutClientImpl(
     LocalFrame* frame,
     mojo::PendingAssociatedReceiver<mojom::blink::DisplayCutoutClient> receiver)
-    : frame_(frame), receiver_(this, std::move(receiver)) {}
+    : frame_(frame),
+      receiver_(this, frame->DomWindow()->GetExecutionContext()) {
+  receiver_.Bind(std::move(receiver), frame->GetFrameScheduler()->GetTaskRunner(
+                                          TaskType::kInternalDefault));
+}
 
 void DisplayCutoutClientImpl::BindMojoReceiver(
     LocalFrame* frame,
@@ -34,6 +39,7 @@ void DisplayCutoutClientImpl::SetSafeArea(const gfx::Insets& safe_area) {
 
 void DisplayCutoutClientImpl::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(receiver_);
 }
 
 }  // namespace blink
