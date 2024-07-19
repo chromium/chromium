@@ -125,16 +125,43 @@ _UKM_CONFIGURATION_TYPE = models.ObjectNodeType(
 
 UKM_XML_TYPE = models.DocumentType(_UKM_CONFIGURATION_TYPE)
 
-def PrettifyXML(original_xml):
-  """Parses the original xml and return a pretty printed version.
+
+def PrettifyXmlAndTrimObsolete(original_xml: str) -> str:
+  """Parses the original XML and returns a pretty-printed version.
+
+  This also removes any events and metrics tagged as <obsolete>, and prints
+  a warning if applicable.
 
   Args:
-    original_xml: A string containing the original xml file contents.
+    original_xml: A string containing the original XML file contents.
 
   Returns:
-    A pretty-printed xml string, or None if the config contains errors.
+    A pretty-printed XML string, or None if the config contains errors.
   """
   config = UKM_XML_TYPE.Parse(original_xml)
+  event_tag = _EVENT_TYPE.tag
+  metric_tag = _METRIC_TYPE.tag
+  all_event_names = {event['name'] for event in config[event_tag]}
+  config[event_tag] = list(filter(IsNotObsolete, config[event_tag]))
+  non_obsolete_event_names = {event['name'] for event in config[event_tag]}
+  if all_event_names != non_obsolete_event_names:
+    print(f'Events {str(all_event_names - non_obsolete_event_names)} are'
+          ' tagged as <obsolete>; deleting their definition as per'
+          ' go/ukm-api#obsolete-events.\n')
+  for event in config[event_tag]:
+    all_metrics_names = {metric['name'] for metric in event[metric_tag]}
+    event[metric_tag] = list(filter(IsNotObsolete, event[metric_tag]))
+    non_obsolete_metrics_names = {
+        metric['name']
+        for metric in event[metric_tag]
+    }
+    if all_metrics_names != non_obsolete_metrics_names:
+      event_name = event['name']
+      print(f'Under the event {event_name!r}, metrics'
+            f' {str(all_metrics_names - non_obsolete_metrics_names)} are'
+            ' tagged as <obsolete>; deleting their definition as per'
+            ' go/ukm-api#obsolete-events.\n')
+
   return UKM_XML_TYPE.PrettyPrint(config)
 
 
