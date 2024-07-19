@@ -14,6 +14,7 @@
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -595,5 +596,22 @@ TEST_F(MagicStackRankingModelTest,
   OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
                                    didRemoveItem:[OCMArg any]]);
   [_magicStackRankingModel removeSafetyCheckModule];
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
+}
+
+// Test that disabling the Magic Stack ranking model doesn't crash and doesn't
+// perform a valid fetch.
+TEST_F(MagicStackRankingModelTest, TestDisabledSegmentationRanking) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {}, {{segmentation_platform::features::
+                kSegmentationPlatformIosModuleRanker}});
+  id mockDelegate =
+      OCMStrictProtocolMock(@protocol(MagicStackRankingModelDelegate));
+  _magicStackRankingModel.delegate = mockDelegate;
+  OCMReject([mockDelegate magicStackRankingModel:[OCMArg any]
+                        didGetLatestRankingOrder:[OCMArg any]]);
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
+  base::RunLoop().RunUntilIdle();
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }

@@ -267,6 +267,14 @@
 
 // Starts a fetch of the Segmentation module ranking.
 - (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
+  if (!base::FeatureList::IsEnabled(segmentation_platform::features::
+                                        kSegmentationPlatformIosModuleRanker)) {
+    segmentation_platform::ClassificationResult result(
+        segmentation_platform::PredictionStatus::kNotReady);
+    self.hasReceivedMagicStackResponse = YES;
+    [self didReceiveSegmentationServiceResult:result];
+    return;
+  }
   auto inputContext =
       base::MakeRefCounted<segmentation_platform::InputContext>();
   if (base::FeatureList::IsEnabled(
