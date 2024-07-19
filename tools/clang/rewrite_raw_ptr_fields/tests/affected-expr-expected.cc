@@ -444,11 +444,9 @@ void foo() {
 
 namespace implicit_constructors {
 
-// Based on //base/strings/string_piece.h:
 template <typename CharT>
 class BasicStringPiece;
 typedef BasicStringPiece<char> StringPiece;
-// Based on //base/strings/string_piece.h:
 template <typename CharT>
 class BasicStringPiece {
  public:
@@ -487,11 +485,9 @@ void foo() {
 
 namespace implicit_constructors_raw_ref_tests {
 
-// Based on //base/strings/string_piece.h:
 template <typename CharT>
 class BasicStringPiece;
 typedef BasicStringPiece<char> StringPiece;
-// Based on //base/strings/string_piece.h:
 template <typename CharT>
 class BasicStringPiece {
  public:

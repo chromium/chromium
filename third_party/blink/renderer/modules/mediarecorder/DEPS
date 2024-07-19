@@ -7,7 +7,6 @@ include_rules = [
     "+base/files/file_path.h",
     "+base/files/memory_mapped_file.h",
     "+base/path_service.h",
-    "+base/strings/string_piece.h",
     "+base/strings/string_number_conversions.h",
     "+base/task/task_runner_util.h",
     "+base/task/task_traits.h",

@@ -3,9 +3,6 @@ specific_include_rules = {
         "+base/hash/md5.h",
         "+url/url_constants.h",
     ],
-    "background_tracing_helper.h": [
-        "+base/strings/string_piece.h",
-    ],
     "background_tracing_helper_test.cc": [
         "+base/hash/md5_constexpr.h",
     ],
