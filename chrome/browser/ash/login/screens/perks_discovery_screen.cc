@@ -14,7 +14,50 @@ namespace {
 
 // constexpr const char kUserActionNext[] = "next";
 
+std::vector<SinglePerkDiscoveryPayload> ParsePayload(
+    const growth::Payload* payload) {
+  std::vector<SinglePerkDiscoveryPayload> perks_result;
+  if (payload->empty()) {
+    LOG(ERROR) << "Payload empty.";
+    return perks_result;
+  }
+
+  // TODO(b:353480634) Add sanity check for the payload data format.
+  const base::Value::List* perks = payload->FindList("perks");
+  for (const auto& perk : *perks) {
+    perks_result.push_back(SinglePerkDiscoveryPayload(perk.GetDict()));
+  }
+  return perks_result;
+}
+
 }  // namespace
+
+SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
+    const base::Value::Dict& perk_data)
+    : id(*perk_data.FindString("id")),
+      title(*perk_data.FindString("title")),
+      subtitle(*perk_data.FindString("text")),
+      icon_url(*perk_data.FindString("icon")),
+      primary_button(perk_data.FindDict("primaryButton")->Clone()),
+      secondary_button(perk_data.FindDict("secondaryButton")->Clone()) {
+  auto* oobe_content = perk_data.FindDict("content");
+  if (oobe_content->FindDict("illustration")) {
+    Illustration perk_illustration;
+    perk_illustration.url =
+        *oobe_content->FindStringByDottedPath("illustration.url");
+    perk_illustration.width =
+        *oobe_content->FindStringByDottedPath("illustration.width");
+    perk_illustration.height =
+        *oobe_content->FindStringByDottedPath("illustration.height");
+    content.illustration = perk_illustration;
+  }
+}
+
+SinglePerkDiscoveryPayload::~SinglePerkDiscoveryPayload() = default;
+
+Content::Content() = default;
+
+Content::~Content() = default;
 
 // static
 std::string PerksDiscoveryScreen::GetResultString(Result result) {
@@ -64,6 +107,8 @@ void PerksDiscoveryScreen::GetOobePerksPayload() {
     exit_callback_.Run(Result::kError);
     return;
   }
+
+  perks_data_ = ParsePayload(payload);
 }
 
 void PerksDiscoveryScreen::ShowImpl() {
