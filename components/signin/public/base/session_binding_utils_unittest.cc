@@ -13,8 +13,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
+#include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -30,6 +33,13 @@ base::Value Base64UrlEncodedJsonToValue(std::string_view input) {
   std::optional<base::Value> result = base::JSONReader::Read(json);
   EXPECT_TRUE(result.has_value());
   return std::move(*result);
+}
+
+std::string Base64UrlEncode(std::string_view input) {
+  std::string result;
+  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &result);
+  return result;
 }
 
 }  // namespace
@@ -107,11 +117,23 @@ TEST(SessionBindingUtilsTest,
   EXPECT_EQ(actual_payload, expected_payload);
 }
 
-TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayload) {
+class SessionBindingUtilsEphemeralKeyParamTest
+    : public testing::TestWithParam<bool> {
+ public:
+  bool UseEphemeralKey() { return GetParam(); }
+};
+
+TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
+       CreateKeyAssertionHeaderAndPayload) {
+  std::optional<HybridEncryptionKey> ephemeral_key;
+  if (UseEphemeralKey()) {
+    ephemeral_key = CreateHybridEncryptionKeyForTesting();
+  }
   std::optional<std::string> result = CreateKeyAssertionHeaderAndPayload(
       crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
       std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
-      GURL("https://accounts.google.com/VerifyKey"), "test_namespace");
+      GURL("https://accounts.google.com/VerifyKey"), "test_namespace",
+      base::OptionalToPtr(ephemeral_key));
   ASSERT_TRUE(result.has_value());
 
   std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
@@ -135,10 +157,28 @@ TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayload) {
           // Base64UrlEncode(SHA256(public_key));
           .Set("iss", "A5BYxvLAy0ksUzsKTRTvd8wPeKvMztUofYShogEc-4E")
           .Set("namespace", "test_namespace");
+  if (UseEphemeralKey()) {
+    expected_payload.Set(
+        "ephemeral_key",
+        base::Value::Dict()
+            .Set(
+                "kty",
+                "type.googleapis.com/google.crypto.tink.EciesAeadHkdfPublicKey")
+            .Set("TinkKeysetPublicKeyInfo",
+                 Base64UrlEncode(ephemeral_key->ExportPublicKey())));
+  }
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SessionBindingUtilsEphemeralKeyParamTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithEphemeralKey"
+                                             : "WithoutEphemeralKey";
+                         });
 
 TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(

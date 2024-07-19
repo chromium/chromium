@@ -132,12 +132,14 @@ void TokenBindingHelper::SignAssertionToken(
 
   crypto::SignatureVerifier::SignatureAlgorithm algorithm =
       *unexportable_key_service_->GetAlgorithm(*binding_key);
+  // TODO(b/279026351): append an ephemeral key to the assertion and use it to
+  // decrypt the response.
   std::optional<std::string> header_and_payload =
       signin::CreateKeyAssertionHeaderAndPayload(
           algorithm,
           *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key),
           GaiaUrls::GetInstance()->oauth2_chrome_client_id(), challenge,
-          destination_url, kTokenBindingNamespace);
+          destination_url, kTokenBindingNamespace, /*ephemeral_key=*/nullptr);
 
   if (!header_and_payload.has_value()) {
     // TODO(alexilin): Record a histogram.

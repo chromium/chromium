@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -58,6 +59,13 @@ base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
            "accounts.google.com/.well-known/kty/"
            "SubjectPublicKeyInfo")
       .Set("SubjectPublicKeyInfo", Base64UrlEncode(pubkey));
+}
+
+base::Value::Dict CreateHybridPublicKeyInfo(const HybridEncryptionKey& key) {
+  return base::Value::Dict()
+      .Set("kty",
+           "type.googleapis.com/google.crypto.tink.EciesAeadHkdfPublicKey")
+      .Set("TinkKeysetPublicKeyInfo", Base64UrlEncode(key.ExportPublicKey()));
 }
 
 std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
@@ -164,13 +172,17 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
     std::string_view client_id,
     std::string_view challenge,
     const GURL& destination_url,
-    std::string_view name_space) {
+    std::string_view name_space,
+    HybridEncryptionKey* ephemeral_key) {
   auto payload = base::Value::Dict()
                      .Set("sub", client_id)
                      .Set("aud", destination_url.spec())
                      .Set("jti", challenge)
                      .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)))
                      .Set("namespace", name_space);
+  if (ephemeral_key) {
+    payload.Set("ephemeral_key", CreateHybridPublicKeyInfo(*ephemeral_key));
+  }
   return CreateHeaderAndPayloadWithCustomPayload(
       algorithm, "DEVICE_BOUND_SESSION_CREDENTIALS_ASSERTION", payload);
 }

@@ -59,7 +59,7 @@ HybridEncryptionKey& HybridEncryptionKey::operator=(
     HybridEncryptionKey&& other) noexcept = default;
 
 std::optional<std::vector<uint8_t>> HybridEncryptionKey::Decrypt(
-    base::span<const uint8_t> encrypted_data) {
+    base::span<const uint8_t> encrypted_data) const {
   if (encrypted_data.size() < kEncapsulatedKeySize) {
     return std::nullopt;
   }
@@ -87,7 +87,7 @@ std::optional<std::vector<uint8_t>> HybridEncryptionKey::Decrypt(
   return plaintext;
 }
 
-std::string HybridEncryptionKey::ExportPublicKey() {
+std::string HybridEncryptionKey::ExportPublicKey() const {
   tink::HpkePublicKey hpke_public_key;
   hpke_public_key.set_version(0);
   tink::HpkeParams* params = hpke_public_key.mutable_params();
@@ -114,7 +114,7 @@ std::string HybridEncryptionKey::ExportPublicKey() {
 }
 
 std::vector<uint8_t> HybridEncryptionKey::EncryptForTesting(
-    base::span<const uint8_t> plaintext) {
+    base::span<const uint8_t> plaintext) const {
   std::vector<uint8_t> public_key = GetPublicKey();
   // This vector will hold the encapsulated key followed by the ciphertext.
   std::vector<uint8_t> encrypted_data(kEncapsulatedKeySize);
@@ -153,7 +153,7 @@ HybridEncryptionKey::HybridEncryptionKey(
                           private_key.size()));
 }
 
-std::vector<uint8_t> HybridEncryptionKey::GetPublicKey() {
+std::vector<uint8_t> HybridEncryptionKey::GetPublicKey() const {
   std::vector<uint8_t> public_key(EVP_HPKE_MAX_PUBLIC_KEY_LENGTH);
   size_t public_key_len;
   EVP_HPKE_KEY_public_key(key_.get(), public_key.data(), &public_key_len,

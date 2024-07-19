@@ -24,23 +24,26 @@ class HybridEncryptionKey {
   HybridEncryptionKey& operator=(HybridEncryptionKey&& other) noexcept;
 
   std::optional<std::vector<uint8_t>> Decrypt(
-      base::span<const uint8_t> ciphertext);
+      base::span<const uint8_t> ciphertext) const;
 
   // Returns the public key in a keyset serialized as Tink's ProtoKeysetFormat.
-  std::string ExportPublicKey();
+  std::string ExportPublicKey() const;
 
   // Returns concatenated encapsulated key & ciphertext, or empty vector if
   // encryption fails.
-  std::vector<uint8_t> EncryptForTesting(base::span<const uint8_t> plaintext);
+  std::vector<uint8_t> EncryptForTesting(
+      base::span<const uint8_t> plaintext) const;
 
  private:
-  friend class HybridEncryptionKeyTest;
+  friend std::vector<uint8_t> GetHybridEncryptionPublicKeyForTesting(
+      const HybridEncryptionKey& key);
+  friend HybridEncryptionKey CreateHybridEncryptionKeyForTesting();
 
   // Initializes a new Hybrid key with a provided `private_key`.
   // Used for testing.
   explicit HybridEncryptionKey(base::span<const uint8_t> private_key);
 
-  std::vector<uint8_t> GetPublicKey();
+  std::vector<uint8_t> GetPublicKey() const;
 
   bssl::ScopedEVP_HPKE_KEY key_;
 };
