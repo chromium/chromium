@@ -199,9 +199,11 @@ webauthn::PasskeyModel* IOSChromeSyncClient::GetPasskeyModel() {
   return IOSPasskeyModelFactory::GetForBrowserState(browser_state_);
 }
 
-ReadingListModel* IOSChromeSyncClient::GetReadingListModel() {
+reading_list::DualReadingListModel*
+IOSChromeSyncClient::GetDualReadingListModel() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return ReadingListModelFactory::GetForBrowserState(browser_state_);
+  return ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
+      browser_state_);
 }
 
 syncer::UserEventService* IOSChromeSyncClient::GetUserEventService() {

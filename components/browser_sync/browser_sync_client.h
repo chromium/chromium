@@ -20,12 +20,14 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
-class ReadingListModel;
-
 namespace password_manager {
 class PasswordReceiverService;
 class PasswordSenderService;
 }  // namespace password_manager
+
+namespace reading_list {
+class DualReadingListModel;
+}  // namespace reading_list
 
 namespace send_tab_to_self {
 class SendTabToSelfSyncService;
@@ -81,7 +83,7 @@ class BrowserSyncClient : public syncer::SyncClient {
   GetPasswordSenderService() = 0;
   virtual sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() = 0;
   virtual sync_sessions::SessionSyncService* GetSessionSyncService() = 0;
-  virtual ReadingListModel* GetReadingListModel() = 0;
+  virtual reading_list::DualReadingListModel* GetDualReadingListModel() = 0;
   virtual send_tab_to_self::SendTabToSelfSyncService*
   GetSendTabToSelfSyncService() = 0;
   virtual syncer::UserEventService* GetUserEventService() = 0;

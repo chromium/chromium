@@ -19,7 +19,6 @@
 #include "components/sync/base/model_type.h"
 
 class PrefService;
-class ReadingListModel;
 
 namespace autofill {
 class AutofillWebDataService;
@@ -59,6 +58,10 @@ class PlusAddressWebDataService;
 namespace power_bookmarks {
 class PowerBookmarkService;
 }  // namespace power_bookmarks
+
+namespace reading_list {
+class DualReadingListModel;
+}  // namespace reading_list
 
 namespace send_tab_to_self {
 class SendTabToSelfSyncService;
@@ -161,7 +164,8 @@ class CommonControllerBuilder {
       sync_preferences::PrefServiceSyncable* pref_service_syncable);
   void SetProductSpecificationsService(
       commerce::ProductSpecificationsService* product_specifications_service);
-  void SetReadingListModel(ReadingListModel* reading_list_model);
+  void SetDualReadingListModel(
+      reading_list::DualReadingListModel* dual_reading_list_model);
   void SetSendTabToSelfSyncService(send_tab_to_self::SendTabToSelfSyncService*
                                        send_tab_to_self_sync_service);
   void SetSessionSyncService(
@@ -242,7 +246,8 @@ class CommonControllerBuilder {
       pref_service_syncable_;
   SafeOptional<raw_ptr<sync_sessions::SessionSyncService>>
       session_sync_service_;
-  SafeOptional<raw_ptr<ReadingListModel>> reading_list_model_;
+  SafeOptional<raw_ptr<reading_list::DualReadingListModel>>
+      dual_reading_list_model_;
   SafeOptional<raw_ptr<send_tab_to_self::SendTabToSelfSyncService>>
       send_tab_to_self_sync_service_;
   SafeOptional<raw_ptr<syncer::UserEventService>> user_event_service_;

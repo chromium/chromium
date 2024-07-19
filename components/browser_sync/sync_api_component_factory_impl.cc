@@ -121,7 +121,8 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
       sync_client_->GetPrefServiceSyncable());
   controller_builder_.SetSessionSyncService(
       sync_client_->GetSessionSyncService());
-  controller_builder_.SetReadingListModel(sync_client_->GetReadingListModel());
+  controller_builder_.SetDualReadingListModel(
+      sync_client_->GetDualReadingListModel());
   controller_builder_.SetSendTabToSelfSyncService(
       sync_client_->GetSendTabToSelfSyncService());
   controller_builder_.SetUserEventService(sync_client_->GetUserEventService());

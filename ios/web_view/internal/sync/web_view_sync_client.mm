@@ -152,7 +152,8 @@ webauthn::PasskeyModel* WebViewSyncClient::GetPasskeyModel() {
   return nullptr;
 }
 
-ReadingListModel* WebViewSyncClient::GetReadingListModel() {
+reading_list::DualReadingListModel*
+WebViewSyncClient::GetDualReadingListModel() {
   return nullptr;
 }
 

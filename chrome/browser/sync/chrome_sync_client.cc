@@ -418,9 +418,11 @@ webauthn::PasskeyModel* ChromeSyncClient::GetPasskeyModel() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-ReadingListModel* ChromeSyncClient::GetReadingListModel() {
+reading_list::DualReadingListModel*
+ChromeSyncClient::GetDualReadingListModel() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ReadingListModelFactory::GetForBrowserContext(profile_);
+  return ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
+      profile_);
 }
 
 send_tab_to_self::SendTabToSelfSyncService*

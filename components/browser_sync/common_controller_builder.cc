@@ -45,8 +45,8 @@
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/reading_list_local_data_batch_uploader.h"
-#include "components/reading_list/core/reading_list_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sync/base/features.h"
@@ -273,9 +273,9 @@ void CommonControllerBuilder::SetProductSpecificationsService(
   product_specifications_service_.Set(product_specifications_service);
 }
 
-void CommonControllerBuilder::SetReadingListModel(
-    ReadingListModel* reading_list_model) {
-  reading_list_model_.Set(reading_list_model);
+void CommonControllerBuilder::SetDualReadingListModel(
+    reading_list::DualReadingListModel* dual_reading_list_model) {
+  dual_reading_list_model_.Set(dual_reading_list_model);
 }
 
 void CommonControllerBuilder::SetSendTabToSelfSyncService(
@@ -616,7 +616,7 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
     // The transport-mode delegate may or may not be null depending on
     // platform and feature toggle state.
     syncer::ModelTypeControllerDelegate* delegate_for_transport_mode =
-        reading_list_model_.value()
+        dual_reading_list_model_.value()
             ->GetSyncControllerDelegateForTransportMode()
             .get();
 
@@ -624,13 +624,16 @@ CommonControllerBuilder::Build(syncer::ModelTypeSet disabled_types,
         syncer::READING_LIST,
         /*delegate_for_full_sync_mode=*/
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            reading_list_model_.value()->GetSyncControllerDelegate().get()),
+            dual_reading_list_model_.value()
+                ->GetSyncControllerDelegate()
+                .get()),
         /*delegate_for_transport_mode=*/
         delegate_for_transport_mode
             ? std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
                   delegate_for_transport_mode)
             : nullptr,
-        std::make_unique<reading_list::ReadingListLocalDataBatchUploader>()));
+        std::make_unique<reading_list::ReadingListLocalDataBatchUploader>(
+            dual_reading_list_model_.value())));
   }
 
   if (!disabled_types.Has(syncer::USER_EVENTS)) {

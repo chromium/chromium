@@ -49,7 +49,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
   webauthn::PasskeyModel* GetPasskeyModel() override;
-  ReadingListModel* GetReadingListModel() override;
+  reading_list::DualReadingListModel* GetDualReadingListModel() override;
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
   syncer::UserEventService* GetUserEventService() override;
