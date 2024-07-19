@@ -8130,6 +8130,94 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
                   EqualsSuggestion(SuggestionType::kManagePlusAddress)));
 }
 
+// Tests that single field form suggestions (IBANs in this case) are shown
+// normally if plus address suggestions are not available for the field.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       NoPlusAddressOnlyIBANsSuggestions) {
+  using enum AutofillPlusAddressDelegate::SuggestionContext;
+  using enum AutofillClient::PasswordFormType;
+  personal_data().test_address_data_manager().ClearProfiles();
+
+  // No plus address suggestions request.
+  EXPECT_CALL(plus_address_delegate(), GetSuggestions).Times(0);
+  // Single field form fill suggestions request.
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFormFiller::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned)
+            .Run(field.global_id(),
+                 std::vector<Suggestion>{
+                     Suggestion(SuggestionType::kIbanEntry),
+                     Suggestion(SuggestionType::kIbanEntry),
+                     Suggestion(SuggestionType::kSeparator),
+                     Suggestion(SuggestionType::kManageIban)});
+        return true;
+      });
+
+  EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
+
+  // Set up our form data. Notably, the first field is an IBAN field.
+  FormData form = CreateTestIbanFormData();
+  FormsSeen({form});
+
+  // Check that only IBAN related suggestions are offered.
+  GetAutofillSuggestions(form, form.fields()[0]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(SuggestionType::kIbanEntry),
+                          EqualsSuggestion(SuggestionType::kIbanEntry),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsSuggestion(SuggestionType::kManageIban)));
+}
+
+// Tests that single field form suggestions (Merchant promo code in this case)
+// are shown normally if plus address suggestions are not available for the
+// field.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       NoPlusAddressOnlyPromoCodesSuggestions) {
+  using enum AutofillPlusAddressDelegate::SuggestionContext;
+  using enum AutofillClient::PasswordFormType;
+  personal_data().test_address_data_manager().ClearProfiles();
+
+  // No plus address suggestions request.
+  EXPECT_CALL(plus_address_delegate(), GetSuggestions).Times(0);
+  // Single field form fill suggestions request.
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFormFiller::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned)
+            .Run(field.global_id(),
+                 std::vector<Suggestion>{
+                     Suggestion(SuggestionType::kMerchantPromoCodeEntry),
+                     Suggestion(SuggestionType::kMerchantPromoCodeEntry),
+                     Suggestion(SuggestionType::kSeparator),
+                     Suggestion(SuggestionType::kSeePromoCodeDetails)});
+        return true;
+      });
+
+  EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
+
+  // Set up our form data. Notably, the first field is a promo code field.
+  FormData form;
+  form.set_fields({CreateTestFormField("Promo code", "promocode", "",
+                                       FormControlType::kInputText)});
+  FormsSeen({form});
+
+  // Check that only promo code related suggestions are offered.
+  GetAutofillSuggestions(form, form.fields()[0]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      ElementsAre(EqualsSuggestion(SuggestionType::kMerchantPromoCodeEntry),
+                  EqualsSuggestion(SuggestionType::kMerchantPromoCodeEntry),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kSeePromoCodeDetails)));
+}
+
 // Tests that plus address suggestions are queried and shown for email fields
 // when single field form suggestions are available. Tests also that plus
 // address suggestions are prioritized over single field form fill suggestions.

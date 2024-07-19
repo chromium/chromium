@@ -1552,21 +1552,7 @@ void BrowserAutofillManager::
   }
 
   auto GetSuggestionPriority = [](autofill::FillingProduct product) {
-    switch (product) {
-      case FillingProduct::kAutocomplete:
-      case FillingProduct::kIban:
-      case FillingProduct::kMerchantPromoCode:
-        return 2;
-      case FillingProduct::kPlusAddresses:
-        return 1;
-      case FillingProduct::kNone:
-      case FillingProduct::kAddress:
-      case FillingProduct::kCompose:
-      case FillingProduct::kCreditCard:
-      case FillingProduct::kPassword:
-      case FillingProduct::kStandaloneCvc:
-        NOTREACHED_NORETURN();
-    }
+    return product == FillingProduct::kPlusAddresses ? 1 : 2;
   };
 
   // Prioritize plus address over single field form fill suggestions.
