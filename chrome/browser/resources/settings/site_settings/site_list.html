@@ -9,7 +9,8 @@
           [[categoryHeader]]
         </h2>
         <cr-button id="addSite" class="header-aligned-button"
-            hidden$="[[!showAddSiteButton_]]" on-click="onAddSiteClick_">
+            hidden$="[[!showAddSiteButton_]]" on-click="onAddSiteClick_"
+            aria-label$="[[getAddButtonLabel_()]]">
           $i18n{add}
         </cr-button>
       </div>

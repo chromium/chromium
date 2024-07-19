@@ -16,6 +16,7 @@ import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -37,7 +38,7 @@ export interface SiteListEntryElement {
 }
 
 const SiteListEntryElementBase =
-    FocusRowMixin(BaseMixin(SiteSettingsMixin(PolymerElement)));
+    FocusRowMixin(BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))));
 
 export class SiteListEntryElement extends SiteListEntryElementBase {
   static get is() {
@@ -293,6 +294,11 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     this.browserProxy.isOriginValid(this.model.origin).then((valid) => {
       this.allowNavigateToSiteDetail_ = valid;
     });
+  }
+
+  private getActionMenuButtonLabel_() {
+    return this.i18n(
+        'siteDataPageAddSiteContextMenuLabel', this.computeDisplayName_());
   }
 }
 

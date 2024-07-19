@@ -21,6 +21,7 @@ import './edit_exception_dialog.js';
 import './site_list_entry.js';
 
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -46,7 +47,7 @@ export interface SiteListElement {
 }
 
 const SiteListElementBase = TooltipMixin(ListPropertyUpdateMixin(
-    SiteSettingsMixin(WebUiListenerMixin(PolymerElement))));
+    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 export class SiteListElement extends SiteListElementBase {
   static get is() {
@@ -478,6 +479,16 @@ export class SiteListElement extends SiteListElementBase {
     return this.sites.filter(
         site => propNames.some(
             propName => site[propName].toLowerCase().includes(searchFilter)));
+  }
+
+  private getAddButtonLabel_(): string {
+    if (this.categorySubtype === ContentSetting.ALLOW) {
+      return this.i18n('siteDataPageAddSiteToAllowListLabel');
+    } else if (this.categorySubtype === ContentSetting.BLOCK) {
+      return this.i18n('siteDataPageAddSiteToBlockListLabel');
+    } else {
+      return '';
+    }
   }
 }
 

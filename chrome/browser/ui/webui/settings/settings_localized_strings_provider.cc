@@ -3455,6 +3455,12 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CONFIRM_BUTTON},
       {"siteDataPageBlockConfirmDialogCancelButton",
        IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CANCEL_BUTTON},
+      {"siteDataPageAddSiteToAllowListLabel",
+       IDS_SETTINGS_ADD_SITE_TO_ALLOW_LIST_LABEL},
+      {"siteDataPageAddSiteToBlockListLabel",
+       IDS_SETTINGS_ADD_SITE_TO_BLOCK_LIST_LABEL},
+      {"siteDataPageAddSiteContextMenuLabel",
+       IDS_SETTINGS_ADD_SITE_CONTEXT_MENU_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString(

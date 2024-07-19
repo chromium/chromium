@@ -62,6 +62,7 @@
           focus-type="reset"></cr-icon-button>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           hidden="[[!shouldShowActionMenu_(model, readOnlyList)]]"
-          on-click="onShowActionMenuClick_" title="$i18n{moreActions}"
+          on-click="onShowActionMenuClick_"
+          title$="[[getActionMenuButtonLabel_(model)]]"
           focus-row-control focus-type="menu"></cr-icon-button>
     </div>

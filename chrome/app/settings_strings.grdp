@@ -3812,7 +3812,15 @@
   <message name="IDS_SETTINGS_SITE_DATA_PAGE_BLOCK_CONFIRM_DIALOG_CANCEL_BUTTON" desc="A button label on the 'Sites you visit may stop working as designed' dialog.">
     Cancel
   </message>
-
+  <message name="IDS_SETTINGS_ADD_SITE_TO_ALLOW_LIST_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the Add button. The user can use this button to add sites to the allowlist.">
+    Add site to allowed list
+  </message>
+  <message name="IDS_SETTINGS_ADD_SITE_TO_BLOCK_LIST_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the Add button. The user can use this button to add sites to the blocklist.">
+    Add site to not-allowed list
+  </message>
+  <message name = "IDS_SETTINGS_ADD_SITE_CONTEXT_MENU_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the three dot menu. The user can use this menu to remove or edit sites in the block/allow list">
+    More options for <ph name="ORIGIN">$1<ex>example.com</ex></ph>
+  </message>
   <!-- Site Settings - Storage Access Page -->
   <message name="IDS_SETTINGS_STORAGE_ACCESS_DESCRIPTION" desc="The body description on the Embedded content settings page.">
     Sites you visit can embed content from other sites, for example images, ads, and text. These other sites can ask for permission to use info they've saved about you as you browse the site.
