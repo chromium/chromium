@@ -167,4 +167,8 @@ if (is_cfi) {
     "crostini.BackupRestore.bookworm_stable@betty",
     "crostini.FsCorruption.bookworm_stable@betty",
   ]
+
+  # b/354218429
+  tast_disabled_tests_from_chrome_all +=
+      [ "crostini.LaunchBrowser.bookworm_stable_lacros@betty" ]
 }
