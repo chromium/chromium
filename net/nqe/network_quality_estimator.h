@@ -570,8 +570,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // Minimum duration between two consecutive computations of effective
   // connection type. Set to non-zero value as a performance optimization.
-  const base::TimeDelta effective_connection_type_recomputation_interval_ =
-      base::Seconds(10);
+  const base::TimeDelta effective_connection_type_recomputation_interval_;
 
   // Time when the effective connection type was last computed.
   base::TimeTicks last_effective_connection_type_computation_;

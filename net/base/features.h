@@ -138,6 +138,20 @@ NET_EXPORT extern const base::FeatureParam<int>
 NET_EXPORT extern const base::FeatureParam<int>
     kRecentEndToEndThresholdInSeconds;
 
+// Number of observations received after which the effective connection type
+// should be recomputed.
+NET_EXPORT extern const base::FeatureParam<int>
+    kCountNewObservationsReceivedComputeEct;
+
+// Maximum number of observations that can be held in a single
+// ObservationBuffer.
+NET_EXPORT extern const base::FeatureParam<int> kObservationBufferSize;
+
+// Minimum duration between two consecutive computations of effective
+// connection type. Set to non-zero value as a performance optimization.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kEffectiveConnectionTypeRecomputationInterval;
+
 // Splits cache entries by the request's includeCredentials.
 NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByIncludeCredentials);
 

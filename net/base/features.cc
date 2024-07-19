@@ -111,6 +111,14 @@ const base::FeatureParam<int> kRecentTransportThresholdInSeconds{
     &kNetworkQualityEstimator, "RecentTransportThresholdInSeconds", -1};
 const base::FeatureParam<int> kRecentEndToEndThresholdInSeconds{
     &kNetworkQualityEstimator, "RecentEndToEndThresholdInSeconds", -1};
+const base::FeatureParam<int> kCountNewObservationsReceivedComputeEct{
+    &kNetworkQualityEstimator, "CountNewObservationsReceivedComputeEct", 50};
+const base::FeatureParam<int> kObservationBufferSize{
+    &kNetworkQualityEstimator, "ObservationBufferSize", 300};
+const base::FeatureParam<base::TimeDelta>
+    kEffectiveConnectionTypeRecomputationInterval{
+        &kNetworkQualityEstimator,
+        "EffectiveConnectionTypeRecomputationInterval", base::Seconds(10)};
 
 BASE_FEATURE(kSplitCacheByIncludeCredentials,
              "SplitCacheByIncludeCredentials",

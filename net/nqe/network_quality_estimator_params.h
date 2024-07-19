@@ -221,11 +221,13 @@ class NET_EXPORT NetworkQualityEstimatorParams {
 
   // Number of observations received after which the effective connection type
   // should be recomputed.
-  size_t count_new_observations_received_compute_ect() const { return 50; }
+  size_t count_new_observations_received_compute_ect() const {
+    return count_new_observations_received_compute_ect_;
+  }
 
   // Maximum number of observations that can be held in a single
   // ObservationBuffer.
-  size_t observation_buffer_size() const { return 300; }
+  size_t observation_buffer_size() const { return observation_buffer_size_; }
 
   // Minimun interval between consecutive notifications from socket
   // watchers who live on the same thread as the network quality estimator.
@@ -286,6 +288,8 @@ class NET_EXPORT NetworkQualityEstimatorParams {
   const base::TimeDelta hanging_request_min_duration_ =
       base::Milliseconds(3000);
   const bool add_default_platform_observations_;
+  const size_t count_new_observations_received_compute_ect_;
+  const size_t observation_buffer_size_;
   const base::TimeDelta socket_watchers_min_notification_interval_;
   const bool use_end_to_end_rtt_ = true;
   const double upper_bound_typical_kbps_multiplier_;

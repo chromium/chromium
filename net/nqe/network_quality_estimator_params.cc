@@ -13,6 +13,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 
 namespace net {
 
@@ -479,6 +480,9 @@ NetworkQualityEstimatorParams::NetworkQualityEstimatorParams(
               params_,
               "add_default_platform_observations",
               "true") == "true"),
+      count_new_observations_received_compute_ect_(
+          features::kCountNewObservationsReceivedComputeEct.Get()),
+      observation_buffer_size_(features::kObservationBufferSize.Get()),
       socket_watchers_min_notification_interval_(
           base::Milliseconds(GetValueForVariationParam(
               params_,
