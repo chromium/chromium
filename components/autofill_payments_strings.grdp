@@ -830,8 +830,13 @@
     Virtual card
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for virtual card prompt in loading state showing a throbber.">
-      Turning on virtual card
+    Turning on virtual card
   </message>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLED_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessible text announced by the screenreader when the virtual card enrollment bottom shows the confirmation checkmark.">
+      Virtual card turned on
+    </message>
+  </if>
   <if expr="is_android">
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION" desc="The accessibility description for a UI element that contains the credit card icon, the card name and last four digits (in placeholder), and the text 'Virtual card'. This UI element is in the dialog that lets users enroll their credit card into the virtual card number feature.">
       <ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS">$1<ex>Visa **** 1234</ex></ph>, virtual card
