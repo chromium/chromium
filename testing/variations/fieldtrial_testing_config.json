@@ -11560,6 +11560,21 @@
             ]
         }
     ],
+    "IOSInactiveTabButtonRefactoring": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InactiveTabButtonRefactoring"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [
