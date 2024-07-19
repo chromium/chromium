@@ -212,16 +212,6 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
     // signin policy has been disabled.
     SetBool(kForceSigninProfileLockedKey, false);
   }
-
-  // If the kOutlineSilhouetteIcon feature state has changed, notify that the
-  // avatar icon has changed once so that cached avatar images will be updated
-  // (e.g. the application badge icon on Windows).
-  if (base::FeatureList::IsEnabled(kOutlineSilhouetteIcon) !=
-      GetBool(kIsUsingNewPlaceholderAvatarIcon)) {
-    SetBool(kIsUsingNewPlaceholderAvatarIcon,
-            base::FeatureList::IsEnabled(kOutlineSilhouetteIcon));
-    profile_attributes_storage_->NotifyOnProfileAvatarChanged(profile_path_);
-  }
 }
 
 void ProfileAttributesEntry::InitializeLastNameToDisplay() {
@@ -796,8 +786,22 @@ void ProfileAttributesEntry::SetProfileThemeColors(
 
   if (changed) {
     profile_attributes_storage_->NotifyProfileThemeColorsChanged(GetPath());
-    if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex())
-      profile_attributes_storage_->NotifyOnProfileAvatarChanged(GetPath());
+  }
+
+  // If the kOutlineSilhouetteIcon feature state has changed, notify that the
+  // avatar icon has changed once so that cached avatar images will be updated
+  // (e.g. the application badge icon on Windows).
+  if (base::FeatureList::IsEnabled(kOutlineSilhouetteIcon) !=
+      GetBool(kIsUsingNewPlaceholderAvatarIcon)) {
+    SetBool(kIsUsingNewPlaceholderAvatarIcon,
+            base::FeatureList::IsEnabled(kOutlineSilhouetteIcon));
+    changed = true;
+  }
+
+  // Only notify if the profile uses the placeholder avatar.
+  if (changed &&
+      GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
+    profile_attributes_storage_->NotifyOnProfileAvatarChanged(GetPath());
   }
 }
 
