@@ -1,6 +1,7 @@
 Name: Mockito
 URL: https://github.com/mockito/mockito
 Version: v5.2.0
+Revision: 74c811a60a5bf6b9ecb10d79ea95dba860b5cbf8
 License: MIT
 License File: LICENSE
 Security Critical: no
