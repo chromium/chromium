@@ -429,7 +429,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (void)ungroupTabGroup:(const TabGroup*)group {
+- (void)ungroupTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
   NOTREACHED_NORETURN();
 }
 

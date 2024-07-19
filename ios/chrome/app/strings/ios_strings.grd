@@ -6108,6 +6108,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITHOUT_EMAIL" desc="Message of the confirmation to delete a tab group in the action sheet. This text is displayed when a user is not signed in.">
         This will permanently delete the group from your device.
       </message>
+      <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_UNGROUP_TITLE" desc="Titie of the confirmation to delete a tab group in the action sheet.">
+        Ungroup Tab Group?
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_UNGROUP_MESSAGE_WITH_EMAIL" desc="Message of the confirmation to delete a tab group in the action sheet. This text is displayed when a user is signed in to Chrome with their account.">
+        The tabs will remain open on this device but the group will be deleted from all devices signed into <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_CONFIRMATION_UNGROUP_MESSAGE_WITHOUT_EMAIL" desc="Message of the confirmation to delete a tab group in the action sheet. This text is displayed when a user is not signed in.">
+        The tabs will remain open on this device but the group will be permanently deleted.
+      </message>
     </messages>
   </release>
 </grit>

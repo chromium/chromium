@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_group_confirmation_coordinator.h"
 
-#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_commands.h"
@@ -89,51 +89,59 @@
 - (NSString*)itemTitle {
   switch (_actionType) {
     case TabGroupActionType::kUngroupTabGroup:
-      // TODO(crbug.com/329631586): Implement the confirmation for ungrouping a
-      // tab group.
-      break;
+      return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_UNGROUP);
     case TabGroupActionType::kDeleteTabGroup:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETEGROUP);
   }
-  NOTREACHED();
 }
 
 // Returns a string used in the action sheet as a title.
 - (NSString*)sheetTitle {
   switch (_actionType) {
     case TabGroupActionType::kUngroupTabGroup:
-      // TODO(crbug.com/329631586): Implement the confirmation for ungrouping a
-      // tab group.
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_GROUP_CONFIRMATION_UNGROUP_TITLE);
     case TabGroupActionType::kDeleteTabGroup:
       return l10n_util::GetNSString(
           IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_TITLE);
   }
-  NOTREACHED();
 }
 
 // Returns a string used in the action sheet as a message.
 - (NSString*)sheetMessage {
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
+  // Show a user's email in the message if it's not incognito and a user is
+  // signed in.
+  NSString* userEmail = nil;
+  if (!browserState->IsOffTheRecord()) {
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForBrowserState(browserState);
+    id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+    userEmail = identity.userEmail;
+  }
 
   switch (_actionType) {
     case TabGroupActionType::kUngroupTabGroup:
-      // TODO(crbug.com/329631586): Implement the confirmation for ungrouping a
-      // tab group.
+      if (userEmail) {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_TAB_GROUP_CONFIRMATION_UNGROUP_MESSAGE_WITH_EMAIL,
+            base::SysNSStringToUTF16(userEmail));
+      } else {
+        return l10n_util::GetNSString(
+            IDS_IOS_TAB_GROUP_CONFIRMATION_UNGROUP_MESSAGE_WITHOUT_EMAIL);
+      }
     case TabGroupActionType::kDeleteTabGroup:
-      if (identity) {
+      if (userEmail) {
         return l10n_util::GetNSStringF(
             IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITH_EMAIL,
-            base::SysNSStringToUTF16(identity.userEmail));
+            base::SysNSStringToUTF16(userEmail));
       } else {
         return l10n_util::GetNSString(
             IDS_IOS_TAB_GROUP_CONFIRMATION_DELETE_MESSAGE_WITHOUT_EMAIL);
       }
   }
-  NOTREACHED();
 }
 
 @end

@@ -264,7 +264,14 @@
   base::WeakPtr<const TabGroup> weakGroup = tabGroup->GetWeakPtr();
   __weak BaseGridCoordinator* weakSelf = self;
   _tabGroupConfirmationCoordinator.action = ^{
-    [weakSelf closeTabsAndDeleteGroup:weakGroup];
+    switch (actionType) {
+      case TabGroupActionType::kUngroupTabGroup:
+        [weakSelf ungroupTabGroup:weakGroup];
+        break;
+      case TabGroupActionType::kDeleteTabGroup:
+        [weakSelf closeTabsAndDeleteGroup:weakGroup];
+        break;
+    }
   };
 
   [_tabGroupConfirmationCoordinator start];
@@ -323,10 +330,20 @@
       arrayByAddingObjectsFromArray:secondaryInactiveItems];
 }
 
-// Helper method to close a tab group and dismiss the action sheet coordinator.
+// Helper method to close a tab group and dismiss the confirmation coordinator.
 - (void)closeTabsAndDeleteGroup:(base::WeakPtr<const TabGroup>)weakGroup {
   if (weakGroup) {
     [self.mediator closeTabGroup:weakGroup.get() andDeleteGroup:YES];
+  }
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
+}
+
+// Helper method to ungroup a tab group and dismiss the confirmation
+// coordinator.
+- (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)weakGroup {
+  if (weakGroup) {
+    [self.mediator ungroupTabGroup:weakGroup.get()];
   }
   [_tabGroupConfirmationCoordinator stop];
   _tabGroupConfirmationCoordinator = nil;

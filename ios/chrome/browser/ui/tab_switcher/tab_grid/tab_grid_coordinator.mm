@@ -1523,16 +1523,18 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.regularTabsMediator closeTabGroup:group];
 }
 
-- (void)ungroupTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+- (void)ungroupTabGroup:(const TabGroup*)group
+              incognito:(BOOL)incognito
+             sourceView:(UIView*)sourceView {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to ungroup a tab group outside the Tab Groups "
          "experiment.";
   if (incognito) {
-    [self.incognitoTabsMediator ungroupTabGroup:group];
+    [self.incognitoTabsMediator ungroupTabGroup:group sourceView:sourceView];
     return;
   }
 
-  [self.regularTabsMediator ungroupTabGroup:group];
+  [self.regularTabsMediator ungroupTabGroup:group sourceView:sourceView];
 }
 
 - (void)selectTabs {

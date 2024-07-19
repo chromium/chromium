@@ -327,7 +327,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                 }]];
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                   [weakSelf.contextMenuDelegate ungroupTabGroup:group
-                                                      incognito:incognito];
+                                                      incognito:incognito
+                                                     sourceView:cell];
                 }]];
 
   if (IsTabGroupSyncEnabled()) {

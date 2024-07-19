@@ -85,8 +85,11 @@ class WebStateID;
 - (void)closeTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
 
 // Tells the delegate to ungroup the `group`. `incognito` tracks the incognito
-// state of the group.
-- (void)ungroupTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
+// state of the group. `sourceView` is the view that the delete action
+// originated from.
+- (void)ungroupTabGroup:(const TabGroup*)group
+              incognito:(BOOL)incognito
+             sourceView:(UIView*)sourceView;
 
 @end
 

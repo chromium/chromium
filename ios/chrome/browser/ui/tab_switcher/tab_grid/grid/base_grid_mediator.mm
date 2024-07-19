@@ -464,6 +464,32 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 }
 
+- (void)ungroupTabGroup:(const TabGroup*)group {
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
+
+  WebStateList* groupWebStateList = [self groupWebStateList:group];
+  if (!groupWebStateList) {
+    // The group has already been removed.
+    return;
+  }
+
+  if (groupWebStateList != _webStateList) {
+    // `group` is not in the set of groups of the `_webStateList`, so `group`
+    // should be a search result from a different window. Since this item is not
+    // from the current browser, no UI updates will be sent to the current grid.
+    // Notify the current grid consumer about the change.
+    CHECK(self.currentMode == TabGridModeSearch, base::NotFatalUntil::M130);
+    GridItemIdentifier* identifierToRemove =
+        [GridItemIdentifier groupIdentifier:group
+                           withWebStateList:groupWebStateList];
+    [self.consumer removeItemWithIdentifier:identifierToRemove
+                     selectedItemIdentifier:nil];
+  }
+
+  groupWebStateList->DeleteGroup(group);
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
@@ -1063,30 +1089,11 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   [self closeTabGroup:group andDeleteGroup:NO];
 }
 
-- (void)ungroupTabGroup:(const TabGroup*)group {
-  [self.tabGridIdleStatusHandler
-      tabGridDidPerformAction:TabGridActionType::kInPageAction];
-
-  WebStateList* groupWebStateList = [self groupWebStateList:group];
-  if (!groupWebStateList) {
-    // The group has already been removed.
-    return;
-  }
-
-  if (groupWebStateList != _webStateList) {
-    // `group` is not in the set of groups of the `_webStateList`, so `group`
-    // should be a search result from a different window. Since this item is not
-    // from the current browser, no UI updates will be sent to the current grid.
-    // Notify the current grid consumer about the change.
-    CHECK(self.currentMode == TabGridModeSearch, base::NotFatalUntil::M130);
-    GridItemIdentifier* identifierToRemove =
-        [GridItemIdentifier groupIdentifier:group
-                           withWebStateList:groupWebStateList];
-    [self.consumer removeItemWithIdentifier:identifierToRemove
-                     selectedItemIdentifier:nil];
-  }
-
-  groupWebStateList->DeleteGroup(group);
+- (void)ungroupTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
+  [self.tabGroupsHandler
+      showTabGroupConfirmationForAction:TabGroupActionType::kUngroupTabGroup
+                                  group:group
+                             sourceView:sourceView];
 }
 
 - (void)closeAllItems {

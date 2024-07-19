@@ -127,6 +127,9 @@ class WebState;
 // service.
 - (void)closeTabGroup:(const TabGroup*)group andDeleteGroup:(BOOL)deleteGroup;
 
+// Ungroups all tabs in `group`. The tabs in the group remain open.
+- (void)ungroupTabGroup:(const TabGroup*)group;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_MEDIATOR_H_
