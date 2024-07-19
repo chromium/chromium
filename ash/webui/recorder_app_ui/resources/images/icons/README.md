@@ -9,6 +9,7 @@ Icons in go/ea-icons are added similarly with the ic_ prefix removed.
 
 List of icons that are exported from figma:
 * close.svg
+* remove_fill.svg
 
 [//]: # (TODO(pihsun): Check / update all SVG to the file from the designer,
 and check file names)

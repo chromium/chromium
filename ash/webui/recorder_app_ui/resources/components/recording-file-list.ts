@@ -13,6 +13,7 @@ import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './cra/cra-menu.js';
 import './recording-file-list-item.js';
+import './recording-search-box.js';
 
 import {Menu} from 'chrome://resources/cros_components/menu/menu.js';
 import {
@@ -26,6 +27,7 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
+import {signal} from '../core/reactive/signal.js';
 import {
   RecordingMetadata,
   RecordingMetadataMap,
@@ -39,8 +41,13 @@ import {
   isInThisMonth,
 } from '../core/utils/datetime.js';
 
+interface RecordingSearchResult {
+  highlight: [number, number]|null;
+  recording: RecordingMetadata;
+}
+
 interface RecordingGroup {
-  recordings: RecordingMetadata[];
+  recordings: RecordingSearchResult[];
   sectionLabel: string;
 }
 
@@ -52,6 +59,7 @@ type RenderRecordingItem = {
   label: string,
 }|{
   kind: 'recording',
+  searchHighlight: [number, number] | null,
   recording: RecordingMetadata,
 });
 
@@ -109,6 +117,8 @@ export class RecordingFileList extends ReactiveLitElement {
 
   recordingMetadataMap: RecordingMetadataMap = {};
 
+  private readonly searchQuery = signal('');
+
   private readonly sortMenuRef = createRef<Menu>();
 
   private onSortingTypeClick(newSortType: RecordingSortType) {
@@ -143,11 +153,16 @@ export class RecordingFileList extends ReactiveLitElement {
   }
 
   private renderHeader() {
+    const onQueryChange = (ev: CustomEvent<string>) => {
+      this.searchQuery.value = ev.detail;
+    };
+
     return html`<div id="header">
         <span>${i18n.recordingListHeader}</span>
-        <cra-icon-button buttonstyle="floating">
-          <cra-icon slot="icon" name="search"></cra-icon>
-        </cra-icon-button>
+        <recording-search-box
+          @query-changed=${onQueryChange}
+        >
+        </recording-search-box>
         <cra-icon-button
           id="sort-recording-button"
           buttonstyle="floating"
@@ -162,8 +177,10 @@ export class RecordingFileList extends ReactiveLitElement {
       ${this.renderSortMenu()}`;
   }
 
-  private groupRecordings(recordings: RecordingMetadata[]) {
-    recordings = recordings.toSorted((a, b) => b.recordedAt - a.recordedAt);
+  private groupRecordings(entries: RecordingSearchResult[]) {
+    entries = entries.toSorted(
+      (a, b) => b.recording.recordedAt - a.recording.recordedAt,
+    );
     const today = getToday();
     const yesterday = getYesterday();
     const todayLabel = i18n.recordingListTodayHeader;
@@ -176,8 +193,8 @@ export class RecordingFileList extends ReactiveLitElement {
       recordings: [],
     };
 
-    for (const recording of recordings) {
-      const recordedAt = recording.recordedAt;
+    for (const entry of entries) {
+      const recordedAt = entry.recording.recordedAt;
       let dateGroup = getMonthLabel(recordedAt);
       if (recordedAt >= today) {
         dateGroup = todayLabel;
@@ -194,10 +211,10 @@ export class RecordingFileList extends ReactiveLitElement {
         }
         currentGroup = {
           sectionLabel: dateGroup,
-          recordings: [recording],
+          recordings: [entry],
         };
       } else {
-        currentGroup.recordings.push(recording);
+        currentGroup.recordings.push(entry);
       }
     }
     if (currentGroup.recordings.length > 0) {
@@ -206,20 +223,47 @@ export class RecordingFileList extends ReactiveLitElement {
     return groups;
   }
 
+  private searchRecordings(recordings: RecordingMetadata[]
+  ): RecordingSearchResult[] {
+    const query = this.searchQuery.value.trim().toLocaleLowerCase();
+
+    // No active search, returns all recordings.
+    if (query.length === 0) {
+      return recordings.map((recording) => ({highlight: null, recording}));
+    }
+
+    const filteredEntries: RecordingSearchResult[] = [];
+    for (const recording of recordings) {
+      const lowerTitle = recording.title.toLocaleLowerCase();
+      const startIndex = lowerTitle.indexOf(query);
+      if (startIndex >= 0) {
+        filteredEntries.push({
+          highlight: [startIndex, startIndex + query.length],
+          recording,
+        });
+      }
+    }
+
+    return filteredEntries;
+  }
+
   private getRenderRecordingItems(): RenderRecordingItem[] {
     function recordingToRenderRecordingItem(
-      recording: RecordingMetadata,
+      {highlight, recording}: RecordingSearchResult,
     ): RenderRecordingItem {
       return {
         id: `record-${recording.id}`,
         kind: 'recording',
+        searchHighlight: highlight,
         recording,
       };
     }
 
+    const allRecordings = Object.values(this.recordingMetadataMap);
+    const recordings = this.searchRecordings(allRecordings);
+
     // Sort most recent recordings first.
     if (settings.value.recordingSortType === RecordingSortType.DATE) {
-      const recordings = Object.values(this.recordingMetadataMap);
       const recordingGroups = this.groupRecordings(recordings);
 
       return recordingGroups.flatMap((group) => {
@@ -238,11 +282,10 @@ export class RecordingFileList extends ReactiveLitElement {
 
     // Sort by recording titles ascendingly (A to Z).
     if (settings.value.recordingSortType === RecordingSortType.NAME) {
-      const recordings = Object.values(this.recordingMetadataMap)
-                           .sort(
-                             (a, b) => a.title.localeCompare(b.title),
-                           );
-      return recordings.map(
+      const sortedRecordings = recordings.sort(
+        (a, b) => a.recording.title.localeCompare(b.recording.title)
+      );
+      return sortedRecordings.map(
         (recording) => recordingToRenderRecordingItem(recording),
       );
     }
@@ -251,8 +294,14 @@ export class RecordingFileList extends ReactiveLitElement {
   }
 
   private renderRecordingList() {
+    const renderedItems = this.getRenderRecordingItems();
+    if (renderedItems.length === 0) {
+      // TODO: b/344782992 - Add an illustration together with no recording
+      // case.
+      return html`No matching results`;
+    }
     return repeat(
-      this.getRenderRecordingItems(),
+      renderedItems,
       (item) => item.id,
       (item) => {
         switch (item.kind) {
@@ -260,7 +309,10 @@ export class RecordingFileList extends ReactiveLitElement {
             return html`<div class="section-heading">${item.label}</div>`;
           case 'recording':
             return html`
-              <recording-file-list-item .recording=${item.recording}>
+              <recording-file-list-item
+                .recording=${item.recording}
+                .searchHighlight=${item.searchHighlight}
+              >
               </recording-file-list-item>
             `;
           default:

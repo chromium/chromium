@@ -87,6 +87,10 @@ export class RecordingFileListItem extends ReactiveLitElement {
       white-space: nowrap;
     }
 
+    span.highlight {
+      background-color: var(--cros-sys-highlight_text);
+    }
+
     #timeline {
       background-color: var(--cros-sys-primary);
       border-radius: 2px;
@@ -132,9 +136,12 @@ export class RecordingFileListItem extends ReactiveLitElement {
 
   static override properties: PropertyDeclarations = {
     recording: {attribute: false},
+    searchHighlight: {attribute: false},
   };
 
   recording: RecordingMetadata|null = null;
+
+  searchHighlight: [number, number]|null = null;
 
   menuShown = signal(false);
 
@@ -203,6 +210,18 @@ export class RecordingFileListItem extends ReactiveLitElement {
     this.menuShown.value = false;
   }
 
+  private renderTitle(title: string, highlight: [number, number]|null) {
+    if (highlight === null) {
+      return html`<div class="title">${title}</div>`;
+    }
+    const [start, end] = highlight;
+    return html`<div class="title">
+      ${title.slice(0, start)}<span class="highlight"
+        >${title.slice(start, end)}</span
+      >${title.slice(end)}
+    </div>`;
+  }
+
   private renderRecordingTimeline(recording: RecordingMetadata) {
     const recordingDurationDisplay = formatDuration({
       milliseconds: recording.durationMs,
@@ -250,7 +269,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
               <cra-icon slot="icon" name="play_arrow"></cra-icon>
             </cra-icon-button>
             <div id="recording-info">
-              <div id="title">${this.recording.title}</div>
+              ${this.renderTitle(this.recording.title, this.searchHighlight)}
               ${this.renderRecordingTimeline(this.recording)}
             </div>
           </cros-card>
