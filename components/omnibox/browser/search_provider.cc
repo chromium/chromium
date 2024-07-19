@@ -1124,11 +1124,13 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
 void SearchProvider::RemoveExtraAnswers(ACMatches* matches) {
   bool answer_seen = false;
   for (auto it = matches->begin(); it != matches->end(); ++it) {
-    if (it->answer) {
+    if (it->answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
       if (!answer_seen) {
         answer_seen = true;
       } else {
+        it->answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
         it->answer.reset();
+        it->answer_template.reset();
       }
     }
   }

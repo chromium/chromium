@@ -4101,17 +4101,16 @@ TEST_F(SearchProviderTest, AnswersCache) {
 
 TEST_F(SearchProviderTest, RemoveExtraAnswers) {
   SuggestionAnswer answer1;
-  answer1.set_type(42);
   SuggestionAnswer answer2;
-  answer2.set_type(1983);
-  SuggestionAnswer answer3;
-  answer3.set_type(423);
 
   ACMatches matches;
   AutocompleteMatch match1, match2, match3, match4, match5;
   match1.answer = answer1;
+  match1.answer_type = omnibox::ANSWER_TYPE_WEATHER;
   match3.answer = answer2;
-  match5.answer = answer3;
+  match3.answer_type = omnibox::ANSWER_TYPE_TRANSLATION;
+  match5.answer_template = omnibox::RichAnswerTemplate();
+  match5.answer_type = omnibox::ANSWER_TYPE_FINANCE;
 
   matches.push_back(match1);
   matches.push_back(match2);
@@ -4120,12 +4119,16 @@ TEST_F(SearchProviderTest, RemoveExtraAnswers) {
   matches.push_back(match5);
 
   SearchProvider::RemoveExtraAnswers(&matches);
-  EXPECT_EQ(42, matches[0].answer->type());
+  EXPECT_EQ(omnibox::ANSWER_TYPE_WEATHER, matches[0].answer_type);
   EXPECT_TRUE(answer1.Equals(*matches[0].answer));
-  EXPECT_FALSE(matches[1].answer);
-  EXPECT_FALSE(matches[2].answer);
-  EXPECT_FALSE(matches[3].answer);
-  EXPECT_FALSE(matches[4].answer);
+  EXPECT_FALSE(matches[1].answer || matches[1].answer_template);
+  EXPECT_FALSE(matches[2].answer || matches[2].answer_template);
+  EXPECT_FALSE(matches[3].answer || matches[3].answer_template);
+  EXPECT_FALSE(matches[4].answer || matches[4].answer_template);
+  EXPECT_EQ(omnibox::ANSWER_TYPE_UNSPECIFIED, matches[1].answer_type);
+  EXPECT_EQ(omnibox::ANSWER_TYPE_UNSPECIFIED, matches[2].answer_type);
+  EXPECT_EQ(omnibox::ANSWER_TYPE_UNSPECIFIED, matches[3].answer_type);
+  EXPECT_EQ(omnibox::ANSWER_TYPE_UNSPECIFIED, matches[4].answer_type);
 }
 
 TEST_F(SearchProviderTest, DuplicateCardAnswer) {
