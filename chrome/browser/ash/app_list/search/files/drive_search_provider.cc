@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <optional>
+#include <utility>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_util.h"
@@ -51,7 +52,7 @@ void LogStatus(Status status) {
                                 status);
 }
 
-// Stats each file to retrieve its last accessed time.
+// Reparents file paths.
 std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> GetFileInfo(
     std::vector<drivefs::mojom::QueryItemPtr> items,
     base::FilePath mount_path) {
@@ -70,10 +71,17 @@ std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> GetFileInfo(
     DCHECK(!relative_path.IsAbsolute());
     base::FilePath reparented_path = mount_path.Append(relative_path.value());
 
-    base::File::Info info;
     std::optional<base::Time> last_accessed;
-    if (base::GetFileInfo(reparented_path, &info))
-      last_accessed = info.last_accessed;
+    // DriveFS surfaces atime in the virtual vilesystem as
+    // `last_viewed_by_me_time` (http://go/lkrez), which does not account for
+    // "last viewed by other users".
+    // We can use `last_viewed_by_me_time` from the metadata response directly
+    // as it should be the same (http://go/yufhv).
+    // This avoids needing to perform I/O to stat the file.
+    if (base::Time viewed_time = item->metadata->last_viewed_by_me_time;
+        !viewed_time.is_null()) {
+      last_accessed = viewed_time;
+    }
 
     item_info.push_back(std::make_unique<DriveSearchProvider::FileInfo>(
         reparented_path, std::move(item->metadata), last_accessed));
@@ -175,12 +183,8 @@ void DriveSearchProvider::OnSearchDriveByFileName(
                           base::TimeTicks::Now() - query_start_time_);
   results_returned_time_ = base::TimeTicks::Now();
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&GetFileInfo, std::move(items),
-                     drive_service_->GetMountPointPath()),
-      base::BindOnce(&DriveSearchProvider::SetSearchResults,
-                     weak_factory_.GetWeakPtr()));
+  SetSearchResults(
+      GetFileInfo(std::move(items), drive_service_->GetMountPointPath()));
 }
 
 void DriveSearchProvider::SetSearchResults(
