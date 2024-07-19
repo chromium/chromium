@@ -16,10 +16,10 @@
 
 namespace ash {
 
-// Placeholder for the disclaimer terms of service url.
-constexpr char kDisclaimerTOSURL[] = "https://www.google.com";
-// Placeholder for the learn more url.
-constexpr char kLearnMoreURL[] = "https://www.google.com";
+// The disclaimer terms of service and learn more urls.
+constexpr char kDisclaimerTOSURL[] = "https://policies.google.com/terms";
+constexpr char kLearnMoreURL[] =
+    "https://support.google.com/chromebook/?p=settings_help_me_read_write";
 
 using TransitionAction = crosapi::mojom::MagicBoostController::TransitionAction;
 
