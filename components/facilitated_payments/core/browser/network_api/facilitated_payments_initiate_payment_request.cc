@@ -76,11 +76,11 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
   }
   request_dict.Set("context", std::move(context));
 
-  if (request_details_->merchant_payment_page_url_.has_value()) {
+  if (request_details_->merchant_payment_page_hostname_.has_value()) {
     base::Value::Dict merchant_info;
     merchant_info.Set(
         "merchant_checkout_page_url",
-        request_details_->merchant_payment_page_url_.value().spec());
+        request_details_->merchant_payment_page_hostname_.value());
     request_dict.Set("merchant_info", std::move(merchant_info));
   }
 

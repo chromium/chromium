@@ -15,8 +15,8 @@ FacilitatedPaymentsInitiatePaymentRequestDetails::
 bool FacilitatedPaymentsInitiatePaymentRequestDetails::IsReadyForPixPayment() {
   return !risk_data_.empty() && !client_token_.empty() &&
          billing_customer_number_.has_value() &&
-         merchant_payment_page_url_.has_value() && instrument_id_.has_value() &&
-         pix_code_.has_value();
+         merchant_payment_page_hostname_.has_value() &&
+         instrument_id_.has_value() && pix_code_.has_value();
 }
 
 }  // namespace payments::facilitated

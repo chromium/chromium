@@ -48,7 +48,7 @@ class FacilitatedPaymentsNetworkInterfaceTest
     request_details->client_token_ =
         std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
     request_details->billing_customer_number_ = 11;
-    request_details->merchant_payment_page_url_ = GURL("https://foo.com/bar");
+    request_details->merchant_payment_page_hostname_ = "foo.com";
     request_details->instrument_id_ = 13;
     request_details->pix_code_ = "a valid code";
     payments_network_interface_->InitiatePayment(

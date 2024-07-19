@@ -63,7 +63,8 @@ void FacilitatedPaymentsManager::
   switch (GetAllowlistCheckResult(url)) {
     case optimization_guide::OptimizationGuideDecision::kTrue: {
       ukm_source_id_ = ukm_source_id;
-      initiate_payment_request_details_->merchant_payment_page_url_ = url;
+      initiate_payment_request_details_->merchant_payment_page_hostname_ =
+          url.host();
       // The PIX code detection should be triggered after `kPageLoadWaitTime`.
       // Time spent waiting for the allowlist checking infra should be accounted
       // for.
@@ -108,8 +109,8 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
     // because a Pix code would've already been found via DOM search.
     return;
   }
-  initiate_payment_request_details_->merchant_payment_page_url_ =
-      render_frame_host_url;
+  initiate_payment_request_details_->merchant_payment_page_hostname_ =
+      render_frame_host_url.host();
   // Trigger Pix code validation.
   utility_process_validator_.ValidatePixCode(
       pix_code, base::BindOnce(&FacilitatedPaymentsManager::OnPixCodeValidated,
