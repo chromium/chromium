@@ -93,6 +93,8 @@ class NeverRunsExternalProtocolHandlerDelegate
 
 }  // namespace
 
+constexpr char kSecondaryDomain[] = "www.foo.com";
+
 TestNoStatePrefetchContents::TestNoStatePrefetchContents(
     NoStatePrefetchManager* no_state_prefetch_manager,
     content::BrowserContext* browser_context,
@@ -509,6 +511,7 @@ void PrerenderInProcessBrowserTest::UseHttpsSrcServer() {
   https_src_server_->RegisterRequestMonitor(base::BindRepeating(
       &PrerenderInProcessBrowserTest::MonitorResourceRequest,
       base::Unretained(this)));
+  https_src_server_->SetCertHostnames({kSecondaryDomain});
   net::test_server::RegisterDefaultHandlers(https_src_server_.get());
   CHECK(https_src_server_->Start());
 }

@@ -34,6 +34,8 @@ namespace prerender {
 
 namespace test_utils {
 
+extern const char kSecondaryDomain[];
+
 class TestNoStatePrefetchContents : public NoStatePrefetchContents,
                                     public content::RenderWidgetHostObserver {
  public:
