@@ -111,6 +111,9 @@ tast_disabled_tests_from_chrome_all = [
   "nacl.Pnacl@brya",
   "terminal.SSH@brya",
 
+  # b/354218429
+  "crostini.LaunchBrowser.bookworm_stable_lacros@betty-cfi-thin-lto",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
@@ -167,8 +170,4 @@ if (is_cfi) {
     "crostini.BackupRestore.bookworm_stable@betty",
     "crostini.FsCorruption.bookworm_stable@betty",
   ]
-
-  # b/354218429
-  tast_disabled_tests_from_chrome_all +=
-      [ "crostini.LaunchBrowser.bookworm_stable_lacros@betty" ]
 }
