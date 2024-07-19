@@ -1693,8 +1693,11 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
   from_previous = from_previous && duplicate_match.from_previous;
 
   // Absorb the `actions` and `takeover_action` so they won't be buried.
+  // Don't absorb answer actions; they should always be created fresh.
   if (actions.empty() && !duplicate_match.actions.empty() &&
-      IsActionCompatible()) {
+      IsActionCompatible() &&
+      OmniboxAnswerAction::FromAction(duplicate_match.actions[0].get()) ==
+          nullptr) {
     actions = std::move(duplicate_match.actions);
     takeover_action = std::move(duplicate_match.takeover_action);
   }
