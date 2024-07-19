@@ -8025,6 +8025,11 @@
     "expiry_milestone":130
   },
   {
+    "name": "segmented-default-browser-promo",
+    "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "send-tab-ios-push-notifications",
     "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 132

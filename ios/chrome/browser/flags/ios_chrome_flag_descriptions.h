@@ -909,6 +909,11 @@ extern const char kSegmentationPlatformIosModuleRankerSplitBySurfaceName[];
 extern const char
     kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[];
 
+// Title and description for the flag to enable personalized messaging for
+// Default Browser First Run, Set Up List, and video promos.
+extern const char kSegmentedDefaultBrowserPromoName[];
+extern const char kSegmentedDefaultBrowserPromoDescription[];
+
 // Title and description for the flag to enable iOS push notifications option
 // for Send Tab To Self feature.
 extern const char kSendTabToSelfIOSPushNotificationsName[];

@@ -22,6 +22,14 @@ bool IsFeedBackgroundRefreshEnabledOnly() {
 
 }  // namespace
 
+BASE_FEATURE(kSegmentedDefaultBrowserPromo,
+             "SegmentedDefaultBrowserPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSegmentedDefaultBrowserPromoEnabled() {
+  return base::FeatureList::IsEnabled(kSegmentedDefaultBrowserPromo);
+}
+
 BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
              "kIOSKeyboardAccessoryUpgrade",
              base::FEATURE_DISABLED_BY_DEFAULT);

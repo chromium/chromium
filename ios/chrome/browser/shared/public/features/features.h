@@ -16,6 +16,14 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
+// Feature flag to enable personalized messaging for Default Browser First Run,
+// Set Up List, and video promos.
+BASE_DECLARE_FEATURE(kSegmentedDefaultBrowserPromo);
+
+// Whether personalized messaging for Default Browser First Run, Set Up List,
+// and video promos is enabled.
+bool IsSegmentedDefaultBrowserPromoEnabled();
+
 // Feature flag to enable the Keyboard Accessory Upgrade.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgrade);
 
