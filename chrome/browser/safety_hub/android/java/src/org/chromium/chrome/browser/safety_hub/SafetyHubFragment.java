@@ -114,6 +114,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         setUpSafeBrowsingModule();
         setUpSafetyTipsModule();
         setUpBrowserStateModule();
+
+        updateAllModules();
         setHasOptionsMenu(true);
     }
 
@@ -379,12 +381,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @Override
     public void onResume() {
         super.onResume();
-
-        updateUpdateCheckPreference();
-        updatePasswordCheckPreference();
-        updateSafeBrowsingPreference();
-        updatePermissionsPreference();
-        updateNotificationsReviewPreference();
+        updateAllModules();
 
         // Fetch the passwords again to get the latest result.
         mSafetyHubFetchService.fetchBreachedCredentialsCount(success -> {});
@@ -446,6 +443,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
             mPasswordStoreBridge = null;
         }
         updatePasswordCheckPreference();
+    }
+
+    private void updateAllModules() {
+        updateUpdateCheckPreference();
+        updatePasswordCheckPreference();
+        updateSafeBrowsingPreference();
+        updatePermissionsPreference();
+        updateNotificationsReviewPreference();
     }
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
