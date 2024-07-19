@@ -19,15 +19,13 @@ namespace {
 
 class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
  public:
-  GpuMemoryBufferImpl(TestGpuMemoryBufferManager* manager,
-                      int id,
+  GpuMemoryBufferImpl(int id,
                       const gfx::Size& size,
                       gfx::BufferFormat format,
                       base::UnsafeSharedMemoryRegion shared_memory_region,
                       size_t offset,
                       size_t stride)
-      : manager_(manager),
-        id_(id),
+      : id_(id),
         size_(size),
         format_(format),
         region_(std::move(shared_memory_region)),
@@ -35,7 +33,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
         stride_(stride),
         mapped_(false) {}
 
-  ~GpuMemoryBufferImpl() override { manager_->OnGpuMemoryBufferDestroyed(id_); }
+  ~GpuMemoryBufferImpl() override = default;
 
   // Overridden from gfx::GpuMemoryBuffer:
   bool Map() override {
@@ -85,7 +83,6 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
       int importance) const override {}
 
  private:
-  raw_ptr<TestGpuMemoryBufferManager> manager_;
   gfx::GpuMemoryBufferId id_;
   const gfx::Size size_;
   gfx::BufferFormat format_;
@@ -98,14 +95,10 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
 
 class GpuMemoryBufferFromClient : public gfx::GpuMemoryBuffer {
  public:
-  GpuMemoryBufferFromClient(TestGpuMemoryBufferManager* manager,
-                            int id,
-                            gfx::GpuMemoryBuffer* client_buffer)
-      : manager_(manager), id_(id), client_buffer_(client_buffer) {}
+  GpuMemoryBufferFromClient(int id, gfx::GpuMemoryBuffer* client_buffer)
+      : id_(id), client_buffer_(client_buffer) {}
 
-  ~GpuMemoryBufferFromClient() override {
-    manager_->OnGpuMemoryBufferDestroyed(id_);
-  }
+  ~GpuMemoryBufferFromClient() override = default;
 
   bool Map() override { return client_buffer_->Map(); }
   void* memory(size_t plane) override { return client_buffer_->memory(plane); }
@@ -131,7 +124,6 @@ class GpuMemoryBufferFromClient : public gfx::GpuMemoryBuffer {
       int importance) const override {}
 
  private:
-  raw_ptr<TestGpuMemoryBufferManager> manager_;
   gfx::GpuMemoryBufferId id_;
   raw_ptr<gfx::GpuMemoryBuffer> client_buffer_;
 };
@@ -142,7 +134,6 @@ TestGpuMemoryBufferManager::TestGpuMemoryBufferManager() {}
 
 TestGpuMemoryBufferManager::~TestGpuMemoryBufferManager() {
   base::AutoLock hold(lock_);
-  DCHECK(buffers_.empty());
   DCHECK(clients_.empty());
   if (parent_gpu_memory_buffer_manager_)
     parent_gpu_memory_buffer_manager_->clients_.erase(client_id_);
@@ -186,8 +177,8 @@ TestGpuMemoryBufferManager::CreateGpuMemoryBuffer(
 
   last_gpu_memory_buffer_id_ += 1;
   std::unique_ptr<gfx::GpuMemoryBuffer> result(new GpuMemoryBufferImpl(
-      this, last_gpu_memory_buffer_id_, size, format,
-      std::move(shared_memory_region), 0,
+      last_gpu_memory_buffer_id_, size, format, std::move(shared_memory_region),
+      0,
       base::checked_cast<int>(
           gfx::RowSizeForBufferFormat(size.width(), format, 0))));
   buffers_[last_gpu_memory_buffer_id_] = result.get();
