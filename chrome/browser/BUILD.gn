@@ -4810,8 +4810,7 @@ static_library("browser") {
     }
 
     if (is_mac) {
-      deps +=
-          [ "//chrome/browser/web_applications:web_app_shortcut_copier_lib" ]
+      deps += [ "//chrome/browser/web_applications/os_integration/mac:web_app_shortcut_copier_lib" ]
     }
 
     if (enable_extensions) {

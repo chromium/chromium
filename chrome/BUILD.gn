@@ -916,7 +916,7 @@ if (is_win) {
 
     public_deps = [
       "//chrome/app_shim:app_mode_loader",
-      "//chrome/browser/web_applications:web_app_shortcut_copier",
+      "//chrome/browser/web_applications/os_integration/mac:web_app_shortcut_copier",
       "//components/crash/core/app:chrome_crashpad_handler",
     ]
 
