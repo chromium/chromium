@@ -16,14 +16,6 @@ assert(use_ozone)
 source_set("chromeos") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   sources = [
-    "arc/arc_external_protocol_dialog.cc",
-    "arc/arc_external_protocol_dialog.h",
-    "arc/arc_web_contents_data.cc",
-    "arc/arc_web_contents_data.h",
-    "arc/open_with_menu.cc",
-    "arc/open_with_menu.h",
-    "arc/start_smart_selection_action_menu.cc",
-    "arc/start_smart_selection_action_menu.h",
     "container_app/container_app_tab_helper.cc",
     "container_app/container_app_tab_helper.h",
     "enterprise/cloud_storage/one_drive_pref_observer.cc",
@@ -283,6 +275,7 @@ source_set("chromeos") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/apps/link_capturing",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/chromeos/arc",
     "//chrome/browser/chromeos/smart_reader",
     "//chrome/browser/chromeos/tast_support",
     "//chrome/browser/enterprise/data_controls",
@@ -593,8 +586,6 @@ source_set("unit_tests") {
 
   sources = [
     "../ui/views/frame/immersive_mode_controller_chromeos_unittest.cc",
-    "arc/arc_external_protocol_dialog_unittest.cc",
-    "arc/open_with_menu_unittest.cc",
     "container_app/container_app_tab_helper_unittest.cc",
     "extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",
     "extensions/desk_api/desk_api_extension_manager_unittest.cc",
@@ -705,6 +696,7 @@ source_set("unit_tests") {
 
     # Unit tests from subdirectories.
     "//chrome/browser/chromeos/app_mode:unit_tests",
+    "//chrome/browser/chromeos/arc:unit_tests",
     "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",

@@ -6317,6 +6317,7 @@ static_library("browser") {
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/cros_apps",
       "//chrome/browser/chromeos/cros_apps/api",
       "//chrome/browser/chromeos/drivefs",
@@ -6375,6 +6376,7 @@ static_library("browser") {
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/policy:onc",
 

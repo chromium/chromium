@@ -2211,6 +2211,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/chromeos:browser_tests",
         "//chrome/browser/chromeos/app_mode",
+        "//chrome/browser/chromeos/arc",
         "//chromeos/dbus/dlp:dlp",
         "//components/onc",
         "//ui/chromeos",

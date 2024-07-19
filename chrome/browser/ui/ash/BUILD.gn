@@ -179,6 +179,7 @@ static_library("ash") {
     "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/arc",
     "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
     "//chrome/browser/extensions",

@@ -1099,6 +1099,7 @@ static_library("ash") {
     "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/autofill",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/chromeos/arc",
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/devtools",

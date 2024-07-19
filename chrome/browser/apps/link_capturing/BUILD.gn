@@ -54,6 +54,11 @@ source_set("link_capturing") {
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/apps/app_service",
     ]
+
+    # Needed only to allow circular includes.
+    deps += [ "//chrome/browser/chromeos/arc" ]
+
+    allow_circular_includes_from = [ "//chrome/browser/chromeos/arc" ]
   } else {
     sources += [
       "enable_link_capturing_infobar_delegate.cc",

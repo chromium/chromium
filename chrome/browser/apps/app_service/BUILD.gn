@@ -95,6 +95,7 @@ source_set("app_service") {
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/apps/app_service/app_install",
       "//chrome/browser/apps/browser_instance",
+      "//chrome/browser/chromeos/arc",
       "//chromeos/crosapi/mojom",
       "//chromeos/startup",
       "//components/webapk:proto",
@@ -105,7 +106,10 @@ source_set("app_service") {
     # Needed only to allow circular includes.
     deps += [ "//chrome/browser/chromeos/app_mode" ]
 
-    allow_circular_includes_from += [ "//chrome/browser/chromeos/app_mode" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/arc",
+    ]
   }
 
   if (is_chromeos_ash) {

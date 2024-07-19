@@ -3821,6 +3821,7 @@ static_library("ui") {
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/arc",
     ]
     sources += [
       "chromeos/window_pin_util.h",
@@ -3870,6 +3871,7 @@ static_library("ui") {
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/app_mode",
+      "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/cros_apps",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/ui/views/editor_menu",
