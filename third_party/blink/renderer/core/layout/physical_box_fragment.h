@@ -441,6 +441,12 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return bit_field_.get<IsMonolithicOverflowPropagationDisabledFlag>();
   }
 
+  // Returns true if we've called moved children in the block direction (for
+  // alignment). See: `BoxFragmentBuilder::MoveChildrenInBlockDirection`.
+  bool HasMovedChildrenInBlockDirection() const {
+    return bit_field_.get<HasMovedChildrenInBlockDirectionFlag>();
+  }
+
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const PhysicalBoxFragment&,
                                     bool check_same_block_size,
@@ -640,6 +646,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
       IsFragmentationContextRootFlag::DefineNextValue<bool, 1>;
   using IsMonolithicOverflowPropagationDisabledFlag =
       IsMonolithicFlag::DefineNextValue<bool, 1>;
+  using HasMovedChildrenInBlockDirectionFlag =
+      IsMonolithicOverflowPropagationDisabledFlag::DefineNextValue<bool, 1>;
 
   bool IncludeBorderTop() const {
     return bit_field_.get<IncludeBorderTopFlag>();

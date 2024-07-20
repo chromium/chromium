@@ -332,6 +332,8 @@ void BoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   DCHECK_NE(FragmentBlockSize(), kIndefiniteSize);
   DCHECK(oof_positioned_descendants_.empty());
 
+  has_moved_children_in_block_direction_ = true;
+
   if (delta == LayoutUnit())
     return;
 
