@@ -46,6 +46,12 @@ class MEDIA_EXPORT ByteQueue {
   // Remove |count| bytes from the front of the queue.
   void Pop(int count);
 
+  // Get a read-only span view of the data. This is only valid until the next
+  // Push() or Pop() call.
+  base::span<const uint8_t> Data() {
+    return {Front(), base::checked_cast<size_t>(used_)};
+  }
+
  private:
   // Default starting size for the queue.
   enum { kDefaultQueueSize = 1024 };

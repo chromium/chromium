@@ -45,7 +45,7 @@ int TsPacket::Sync(const uint8_t* buf, int size) {
 }
 
 // static
-TsPacket* TsPacket::Parse(const uint8_t* buf, int size) {
+TsPacket* TsPacket::Parse(const uint8_t* buf, size_t size) {
   if (size < kPacketSize) {
     DVLOG(1) << "Buffer does not hold one full TS packet:"
              << " buffer_size=" << size;
@@ -77,8 +77,7 @@ TsPacket::~TsPacket() {
 
 bool TsPacket::ParseHeader(const uint8_t* buf) {
   BitReader bit_reader(buf, kPacketSize);
-  payload_ = buf;
-  payload_size_ = kPacketSize;
+  payload_ = {buf, kPacketSize};
 
   // Read the TS header: 4 bytes.
   int syncword;
@@ -96,8 +95,7 @@ bool TsPacket::ParseHeader(const uint8_t* buf) {
   RCHECK(bit_reader.ReadBits(2, &adaptation_field_control));
   RCHECK(bit_reader.ReadBits(4, &continuity_counter_));
   payload_unit_start_indicator_ = (payload_unit_start_indicator != 0);
-  payload_ += 4;
-  payload_size_ -= 4;
+  payload_ = payload_.subspan(4);
 
   // Default values when no adaptation field.
   discontinuity_indicator_ = false;
@@ -111,8 +109,7 @@ bool TsPacket::ParseHeader(const uint8_t* buf) {
   int adaptation_field_length;
   RCHECK(bit_reader.ReadBits(8, &adaptation_field_length));
   DVLOG(LOG_LEVEL_TS) << "adaptation_field_length=" << adaptation_field_length;
-  payload_ += 1;
-  payload_size_ -= 1;
+  payload_ = payload_.subspan(1);
   if ((adaptation_field_control & 0x1) == 0 &&
        adaptation_field_length != 183) {
     DVLOG(1) << "adaptation_field_length=" << adaptation_field_length;
@@ -133,8 +130,7 @@ bool TsPacket::ParseHeader(const uint8_t* buf) {
     return true;
 
   bool status = ParseAdaptationField(&bit_reader, adaptation_field_length);
-  payload_ += adaptation_field_length;
-  payload_size_ -= adaptation_field_length;
+  payload_ = payload_.subspan(adaptation_field_length);
   return status;
 }
 

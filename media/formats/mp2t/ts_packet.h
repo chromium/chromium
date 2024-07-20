@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
+#include "base/containers/span.h"
 
 namespace media {
 
@@ -17,7 +17,7 @@ namespace mp2t {
 
 class TsPacket {
  public:
-  static const int kPacketSize = 188;
+  static const size_t kPacketSize = 188;
 
   // Return the number of bytes to discard
   // to be synchronized on a TS syncword.
@@ -26,7 +26,7 @@ class TsPacket {
   // Parse a TS packet.
   // Return a TsPacket only when parsing was successful.
   // Return NULL otherwise.
-  static TsPacket* Parse(const uint8_t* buf, int size);
+  static TsPacket* Parse(const uint8_t* buf, size_t size);
 
   TsPacket(const TsPacket&) = delete;
   TsPacket& operator=(const TsPacket&) = delete;
@@ -43,8 +43,7 @@ class TsPacket {
   bool random_access_indicator() const { return random_access_indicator_; }
 
   // Return the offset and the size of the payload.
-  const uint8_t* payload() const { return payload_; }
-  int payload_size() const { return payload_size_; }
+  const base::span<const uint8_t> payload() const { return payload_; }
 
  private:
   TsPacket();
@@ -55,9 +54,7 @@ class TsPacket {
   bool ParseAdaptationField(BitReader* bit_reader,
                             int adaptation_field_length);
 
-  // Size of the payload.
-  raw_ptr<const uint8_t, AllowPtrArithmetic> payload_;
-  int payload_size_;
+  base::span<const uint8_t> payload_;
 
   // TS header.
   bool payload_unit_start_indicator_;

@@ -170,7 +170,7 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   // able to pop it from the queue. So this value may be lower than the actual
   // amount of bytes in `ts_byte_queue_`, since more data is needed to complete
   // the parse.
-  int uninspected_pending_bytes_ = 0;
+  size_t uninspected_pending_bytes_ = 0;
   ByteQueue ts_byte_queue_;
 
   // List of PIDs and their state.
