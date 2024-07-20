@@ -28,7 +28,7 @@ class TitleView : public views::BoxLayoutView {
 
   void OnSidetoneButtonClicked(const ui::Event& event);
   void CloseSidetoneBubble();
-  void ShowSidetoneBubble();
+  void ShowSidetoneBubble(const bool supported);
   base::WeakPtrFactory<TitleView> weak_ptr_factory_{this};
 };
 

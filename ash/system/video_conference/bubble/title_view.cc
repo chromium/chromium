@@ -108,23 +108,37 @@ TitleView::TitleView() {
       cros_tokens::kCrosSysSystemPrimaryContainer);
   sidetone_button_->SetToggled(
       VideoConferenceTrayController::Get()->GetSidetoneEnabled());
+
+  VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
 }
 
 void TitleView::OnSidetoneButtonClicked(const ui::Event& event) {
   auto* controller = VideoConferenceTrayController::Get();
   const bool enabled = !controller->GetSidetoneEnabled();
-  sidetone_button_->SetToggled(enabled);
-  controller->SetSidetoneEnabled(enabled);
 
   if (enabled) {
-    ShowSidetoneBubble();
+    const bool supported = controller->IsSidetoneSupported();
+    ShowSidetoneBubble(supported);
+
+    if (supported) {
+      sidetone_button_->SetToggled(enabled);
+      controller->SetSidetoneEnabled(enabled);
+    }
   } else {
     CloseSidetoneBubble();
+
+    sidetone_button_->SetToggled(enabled);
+    controller->SetSidetoneEnabled(enabled);
   }
 }
 
-void TitleView::ShowSidetoneBubble() {
+void TitleView::ShowSidetoneBubble(const bool supported) {
   CloseSidetoneBubble();
+
+  // TODO(b/353775770): Change labels
+  auto title_id = supported ? IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU_OPEN
+                            : IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED;
+  auto body_id = IDS_UPDATE_NOTIFICATION_MESSAGE_DEFERRED_UPDATE;
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -161,7 +175,7 @@ void TitleView::ShowSidetoneBubble() {
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
               // TODO(b/353775770): Change label
-              IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU_OPEN))
+              title_id))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(kColorAshTextColorPrimary)
           .Build());
@@ -171,7 +185,7 @@ void TitleView::ShowSidetoneBubble() {
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
               // TODO(b/353775770): Change label
-              IDS_UPDATE_NOTIFICATION_MESSAGE_DEFERRED_UPDATE))
+              body_id))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(kColorAshTextColorPrimary)
           .SetMultiLine(true)
