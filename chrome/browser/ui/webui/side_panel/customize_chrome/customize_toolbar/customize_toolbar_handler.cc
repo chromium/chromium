@@ -199,7 +199,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
           side_panel::customize_chrome::mojom::CategoryId category) {
         const actions::ActionItem* const action_item =
             actions::ActionManager::Get().FindAction(id, scope_action);
-        if (!action_item) {
+        if (!action_item || !action_item->GetVisible()) {
           return;
         }
 
