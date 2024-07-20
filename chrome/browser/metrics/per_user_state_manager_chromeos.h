@@ -186,6 +186,15 @@ class PerUserStateManagerChromeOS
   // profile prefs.
   virtual void WaitForOwnershipStatus();
 
+  // Returns true if a user log store in the user cryptohome should be used for
+  // the current logged in user.
+  // Certain users (ie demo mode sessions with metrics consent on) should not
+  // use a user log store since the user log store will be stored on the
+  // temporary cryptohome and will be deleted at the end of the session.
+  // Demo mode sessions with metric consent on should be stored in local state
+  // to be persistent.
+  bool ShouldUseUserLogStore() const;
+
   // Loads appropriate prefs from |current_user_| and creates new log storage
   // using profile prefs.
   //
