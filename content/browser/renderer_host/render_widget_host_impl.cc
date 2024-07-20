@@ -422,6 +422,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
           (frame_tree && frame_tree->is_primary())
               ? std::make_unique<CompositorMetricRecorder>(this)
               : nullptr) {
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.RenderWidgetHostConstructor");
   CHECK(frame_token_message_queue_);
   frame_token_message_queue_->Init(this);
 
@@ -470,6 +472,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 }
 
 RenderWidgetHostImpl::~RenderWidgetHostImpl() {
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.RenderWidgetHostDestructor");
   CHECK(!self_owned_);
   render_frame_metadata_provider_.RemoveObserver(this);
   if (!destroyed_) {

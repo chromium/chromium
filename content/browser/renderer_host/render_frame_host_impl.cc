@@ -1888,6 +1888,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl",
                     perfetto::Track::FromPointer(this),
                     "render_frame_host_when_created", this);
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.RenderFrameHostConstructor");
   // Update lifecycle state on track of RenderFrameHostImpl.
   TRACE_EVENT_BEGIN(
       "navigation",
@@ -2030,6 +2032,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
                              LifecycleStateImplToString(lifecycle_state()));
   TRACE_EVENT("navigation", "~RenderFrameHostImpl()",
               ChromeTrackEvent::kRenderFrameHost, this);
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.RenderFrameHostDestructor");
 
   MaybeResetBoostRenderProcessForLoading();
 
@@ -5585,6 +5589,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("navigation", "RenderFrameHostImpl::Unload",
                                     TRACE_ID_LOCAL(this), "render_frame_host",
                                     this);
+  base::ScopedUmaHistogramTimer histogram_timer("Navigation.Unload");
 
   // If this RenderFrameHost is already pending deletion, it must have already
   // gone through this, therefore just return.

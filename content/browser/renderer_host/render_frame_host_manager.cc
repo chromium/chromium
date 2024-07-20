@@ -1530,6 +1530,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // renderer).
   TRACE_EVENT("navigation", "RenderFrameHostManager::GetFrameHostForNavigation",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.GetFrameHostForNavigation");
 
   DCHECK(!request->common_params().url.SchemeIs(url::kJavaScriptScheme))
       << "Don't call this method for JavaScript URLs as those create a "
@@ -3919,6 +3921,8 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
     SiteInstanceImpl* old_instance,
     SiteInstanceImpl* new_instance,
     bool recovering_without_early_commit) {
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.CreateSpeculativeRFH");
   CHECK(new_instance);
   // This DCHECK is going to be fully removed as part of RenderDocument [1].
   //

@@ -619,6 +619,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.CommitRenderFrame" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for the RenderFrameImpl::CommitNavigation() to run.
+    Recorded on every RenderFrameImpl::CommitNavigation() call.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.CompositorCreationTo{Stage}2" units="ms"
     expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
@@ -647,6 +657,17 @@ chromium-metrics-reviews@google.com.
   <token key="Stage" variants="NavigationStage"/>
 </histogram>
 
+<histogram name="Navigation.CreateSpeculativeRFH" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for
+    RenderFrameHostManager::CreateSpeculativeRenderFrameHost() to run. Recorded
+    on every RenderFrameHostManager::CreateSpeculativeRenderFrameHost() call.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.DeferSpeculativeRFHAction"
     enum="DeferSpeculativeRFHAction" expires_after="2024-11-03">
   <owner>gjc@google.com</owner>
@@ -655,6 +676,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the speculative RFH is deferred when the navigation starts
     and whether a spare render process is warmed up.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.DeleteRenderFrame" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for the RenderFrameImpl::Delete() to run. Recorded on
+    every RenderFrameImpl::Delete() call.
   </summary>
 </histogram>
 
@@ -863,6 +894,17 @@ chromium-metrics-reviews@google.com.
     Counts the occurrence of cache hit or cache miss reasons when the user
     starts a back/forward navigation gesture. This is recorded once per user
     gesture.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.GetFrameHostForNavigation" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for RenderFrameHostManager::GetFrameHostForNavigation() to
+    run. Recorded on every RenderFrameHostManager::GetFrameHostForNavigation()
+    call.
   </summary>
 </histogram>
 
@@ -1664,6 +1706,66 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
+<histogram name="Navigation.RenderFrameHostConstructor" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for the RenderFrameHost constructor to run. Recorded on
+    every RenderFrameHost construction.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.RenderFrameHostDestructor" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for the RenderFrameHost destructor to run. Recorded on
+    every RenderFrameHost destruction.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.RenderViewHostConstructor" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for the RenderViewHost constructor to run. Recorded on
+    every RenderViewHost construction.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.RenderViewHostDestructor" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for the RenderViewHost destructor to run. Recorded on
+    every RenderViewHost destruction.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.RenderWidgetHostConstructor" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for the RenderWidgetHost constructor to run. Recorded on
+    every RenderWidgetHost construction.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.RenderWidgetHostDestructor" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for the RenderWidgetHost destructor to run. Recorded on
+    every RenderWidgetHost destruction.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.RequiresDedicatedProcess"
     enum="NavigationRequiresDedicatedProcess" expires_after="2025-03-21">
   <owner>alexmos@chromium.org</owner>
@@ -1917,6 +2019,15 @@ chromium-metrics-reviews@google.com.
 
     This metric is recorded at most once for every new metadata version
     installed.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Unload" units="ms" expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for RenderFrameHostImpl::Unload() to run. Recorded on
+    every RenderFrameHostImpl::Unload() call.
   </summary>
 </histogram>
 

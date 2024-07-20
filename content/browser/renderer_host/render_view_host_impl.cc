@@ -326,6 +326,8 @@ RenderViewHostImpl::RenderViewHostImpl(
               ? std::make_optional(main_browsing_context_state->GetSafeRef())
               : std::nullopt),
       is_speculative_(create_case == CreateRenderViewHostCase::kSpeculative) {
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.RenderViewHostConstructor");
   TRACE_EVENT("navigation", "RenderViewHostImpl::RenderViewHostImpl",
               ChromeTrackEvent::kRenderViewHost, *this);
   TRACE_EVENT_BEGIN("navigation", "RenderViewHost",
@@ -372,6 +374,8 @@ RenderViewHostImpl::RenderViewHostImpl(
 RenderViewHostImpl::~RenderViewHostImpl() {
   TRACE_EVENT_INSTANT("navigation", "~RenderViewHostImpl()",
                       ChromeTrackEvent::kRenderViewHost, *this);
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.RenderViewHostDestructor");
 
   PerProcessRenderViewHostSet::GetOrCreateForProcess(GetProcess())->Erase(this);
 
