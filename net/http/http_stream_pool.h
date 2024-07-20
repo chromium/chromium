@@ -8,10 +8,12 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+#include "net/socket/ssl_client_socket.h"
 
 namespace net {
 
@@ -24,7 +26,8 @@ class HttpNetworkSession;
 //
 // Currently only supports non-proxy streams.
 class NET_EXPORT_PRIVATE HttpStreamPool
-    : public NetworkChangeNotifier::IPAddressObserver {
+    : public NetworkChangeNotifier::IPAddressObserver,
+      public SSLClientContext::Observer {
  public:
   // The maximum number of sockets per pool. The same as
   // ClientSocketPoolManager::max_sockets_per_pool().
@@ -73,6 +76,12 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   // NetworkChangeNotifier::IPAddressObserver methods:
   void OnIPAddressChanged() override;
+
+  // SSLClientContext::Observer methods.
+  void OnSSLConfigChanged(
+      SSLClientContext::SSLConfigChangeType change_type) override;
+  void OnSSLConfigForServersChanged(
+      const base::flat_set<HostPortPair>& servers) override;
 
   // Checks if there are any pending requests in groups and processes them. If
   // `this` reached the maximum number of streams, it will try to close idle

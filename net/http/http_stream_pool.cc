@@ -7,10 +7,14 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "net/base/network_change_notifier.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/socket/ssl_client_socket.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -22,9 +26,13 @@ HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
   if (cleanup_on_ip_address_change) {
     NetworkChangeNotifier::AddIPAddressObserver(this);
   }
+
+  http_network_session_->ssl_client_context()->AddObserver(this);
 }
 
 HttpStreamPool::~HttpStreamPool() {
+  http_network_session_->ssl_client_context()->RemoveObserver(this);
+
   if (cleanup_on_ip_address_change_) {
     NetworkChangeNotifier::RemoveIPAddressObserver(this);
   }
@@ -66,6 +74,26 @@ void HttpStreamPool::OnIPAddressChanged() {
     group.second->Refresh();
     group.second->CancelRequests(ERR_NETWORK_CHANGED);
   }
+}
+
+void HttpStreamPool::OnSSLConfigChanged(
+    SSLClientContext::SSLConfigChangeType change_type) {
+  for (const auto& group : groups_) {
+    group.second->Refresh();
+  }
+  ProcessPendingRequestsInGroups();
+}
+
+void HttpStreamPool::OnSSLConfigForServersChanged(
+    const base::flat_set<HostPortPair>& servers) {
+  for (const auto& group : groups_) {
+    if (GURL::SchemeIsCryptographic(group.first.destination().scheme()) &&
+        servers.contains(
+            HostPortPair::FromSchemeHostPort(group.first.destination()))) {
+      group.second->Refresh();
+    }
+  }
+  ProcessPendingRequestsInGroups();
 }
 
 void HttpStreamPool::ProcessPendingRequestsInGroups() {

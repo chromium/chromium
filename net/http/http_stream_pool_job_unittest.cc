@@ -413,6 +413,10 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
     return session_deps_.socket_factory.get();
   }
 
+  SSLConfigService* ssl_config_service() {
+    return session_deps_.ssl_config_service.get();
+  }
+
  private:
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_network_session_;
@@ -1227,6 +1231,60 @@ TEST_F(HttpStreamPoolJobTest, IPAddressChangeAfterNeedsClientAuth) {
   RunUntilIdle();
   EXPECT_THAT(*requester1.result(), IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
   EXPECT_THAT(*requester2.result(), IsError(ERR_NETWORK_CHANGED));
+}
+
+TEST_F(HttpStreamPoolJobTest, SSLConfigChangedCloseIdleStream) {
+  StreamRequester requester;
+  requester.set_destination("https://a.test");
+  Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
+  group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+
+  ssl_config_service()->NotifySSLContextConfigChange();
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolJobTest,
+       SSLConfigChangedReleasedStreamGenerationOutdated) {
+  StreamRequester requester;
+  requester.set_destination("https://a.test");
+  Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
+  std::unique_ptr<HttpStream> stream =
+      group.CreateTextBasedStream(std::make_unique<FakeStreamSocket>());
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+
+  ssl_config_service()->NotifySSLContextConfigChange();
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+
+  // Release the HttpStream, the underlying StreamSocket should not be pooled
+  // as an idle stream since the generation is different.
+  stream.reset();
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolJobTest, SSLConfigForServersChanged) {
+  // Create idle streams in group A and group B.
+  StreamRequester requester_a;
+  requester_a.set_destination("https://a.test");
+  Group& group_a =
+      pool().GetOrCreateGroupForTesting(requester_a.GetStreamKey());
+  group_a.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+  ASSERT_EQ(group_a.IdleStreamSocketCount(), 1u);
+
+  StreamRequester requester_b;
+  requester_b.set_destination("https://b.test");
+  Group& group_b =
+      pool().GetOrCreateGroupForTesting(requester_b.GetStreamKey());
+  group_b.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+  ASSERT_EQ(group_b.IdleStreamSocketCount(), 1u);
+
+  // Simulate an SSLConfigForServers change event for group A. The idle stream
+  // in group A should be gone but the idle stream in group B should remain.
+  pool().OnSSLConfigForServersChanged({HostPortPair::FromSchemeHostPort(
+      requester_a.GetStreamKey().destination())});
+  ASSERT_EQ(group_a.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(group_b.IdleStreamSocketCount(), 1u);
 }
 
 }  // namespace net
