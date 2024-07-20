@@ -126,6 +126,20 @@ suite('LanguageChanged', () => {
       assertEquals(otherVoice, app.getSpeechSynthesisVoice());
     });
 
+    test('and enables the stored voice language', () => {
+      const voice = createSpeechSynthesisVoice({lang: 'es-us', name: 'Mush'});
+      chrome.readingMode.getStoredVoice = () => voice.name;
+      chrome.readingMode.baseLanguageForSpeech = 'es';
+      setInstalled(voice.lang);
+      setVoices(app, speechSynthesis, [voice]);
+      assertFalse(app.enabledLangs.includes(voice.lang));
+
+      app.languageChanged();
+
+      assertTrue(app.enabledLangs.includes(voice.lang));
+      assertEquals(voice, app.getSpeechSynthesisVoice());
+    });
+
     suite('when there is no stored voice for this language', () => {
       setup(() => {
         chrome.readingMode.getStoredVoice = () => '';

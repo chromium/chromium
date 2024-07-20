@@ -2291,6 +2291,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.selectedVoice_ = selectedVoice && (selectedVoice.length > 0) ?
         selectedVoice[0] :
         this.defaultVoice();
+
+    // Enable the locale for the preferred voice for this language.
+    if (this.selectedVoice_ &&
+        !this.enabledLangs.includes(this.selectedVoice_.lang)) {
+      this.enabledLangs = [...this.enabledLangs, this.selectedVoice_.lang];
+    }
   }
 
   private onLineSpacingChange_(event: CustomEvent<{data: number}>) {
