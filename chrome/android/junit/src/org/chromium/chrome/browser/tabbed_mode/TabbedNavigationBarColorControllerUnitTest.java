@@ -164,6 +164,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     @Test
     public void testMatchBottomAttachedColor_forceShowDivider() {
         ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
+        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(false);
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mNavColorController.updateActiveTabForTesting();
@@ -189,17 +190,49 @@ public class TabbedNavigationBarColorControllerUnitTest {
     @Test
     public void testToEdgeDoesntMatchTabBackgroundColor() {
         ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
+        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(false);
         when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mEdgeToEdgeController.getBottomInset()).thenReturn(100);
+        when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(false);
+
         mNavColorController.updateActiveTabForTesting();
 
-        assertFalse(
-                "Shouldn't be using tab background color.",
+        assertTrue(
+                "Should be using tab background color for the navigation bar color.",
                 mNavColorController.getUseActiveTabColorForTesting());
         assertEquals(
-                "Incorrect nav bar color.",
-                Color.TRANSPARENT,
+                "The nav bar color should match the active tab.",
+                Color.BLUE,
                 mNavColorController.getNavigationBarColorForTesting());
+        assertEquals(
+                "The window (OS) nav bar color should match the active tab.",
+                Color.BLUE,
+                mNavColorController.getWindowNavigationBarColorForTesting());
+    }
+
+    @Test
+    public void testToEdgeDoesntMatchTabBackgroundColor_bottomChinEnabled() {
+        ChromeFeatureList.sNavBarColorMatchesTabBackground.setForTesting(true);
+        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(true);
+
+        when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mEdgeToEdgeController.getBottomInset()).thenReturn(100);
+        when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);
+
+        mNavColorController.updateActiveTabForTesting();
+
+        assertTrue(
+                "Should be using tab background color for the navigation bar color.",
+                mNavColorController.getUseActiveTabColorForTesting());
+        assertEquals(
+                "The nav bar color should match the active tab.",
+                Color.BLUE,
+                mNavColorController.getNavigationBarColorForTesting());
+        assertEquals(
+                "The window (OS) nav bar color should be transparent.",
+                Color.TRANSPARENT,
+                mNavColorController.getWindowNavigationBarColorForTesting());
     }
 }

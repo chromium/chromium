@@ -9,8 +9,6 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinPr
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isBottomChinAllowed;
 
-import android.graphics.Color;
-
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -20,7 +18,9 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class EdgeToEdgeBottomChinMediator
-        implements LayoutStateProvider.LayoutStateObserver, EdgeToEdgeSupplier.ChangeObserver {
+        implements LayoutStateProvider.LayoutStateObserver,
+                EdgeToEdgeSupplier.ChangeObserver,
+                NavigationBarColorProvider.Observer {
     /** The model for the bottom controls component that holds all of its view state. */
     private final PropertyModel mModel;
 
@@ -29,6 +29,7 @@ class EdgeToEdgeBottomChinMediator
 
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull EdgeToEdgeController mEdgeToEdgeController;
+    private final @NonNull NavigationBarColorProvider mNavigationBarColorProvider;
     private final @NonNull BottomControlsStacker mBottomControlsStacker;
 
     /**
@@ -39,6 +40,8 @@ class EdgeToEdgeBottomChinMediator
      * @param layoutManager The {@link LayoutManager} for observing active layout type.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
+     * @param navigationBarColorProvider The {@link NavigationBarColorProvider} for observing the
+     *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
      */
@@ -46,28 +49,29 @@ class EdgeToEdgeBottomChinMediator
             PropertyModel model,
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
+            @NonNull NavigationBarColorProvider navigationBarColorProvider,
             @NonNull BottomControlsStacker bottomControlsStacker) {
         mModel = model;
         mLayoutManager = layoutManager;
         mEdgeToEdgeController = edgeToEdgeController;
+        mNavigationBarColorProvider = navigationBarColorProvider;
         mBottomControlsStacker = bottomControlsStacker;
 
         mModel.set(Y_OFFSET, 0);
-        mModel.set(COLOR, Color.RED);
 
         mLayoutManager.addObserver(this);
         mEdgeToEdgeController.registerObserver(this);
+        mNavigationBarColorProvider.addObserver(this);
     }
 
     void destroy() {
-        // Check that each is not null, since during activity shutdown these might get destroyed /
-        // cleaned up before this is called.
-        if (mLayoutManager != null) {
-            mLayoutManager.removeObserver(this);
-        }
-        if (mEdgeToEdgeController != null) {
-            mEdgeToEdgeController.unregisterObserver(this);
-        }
+        assert mLayoutManager != null;
+        assert mEdgeToEdgeController != null;
+        assert mNavigationBarColorProvider != null;
+
+        mLayoutManager.removeObserver(this);
+        mEdgeToEdgeController.unregisterObserver(this);
+        mNavigationBarColorProvider.removeObserver(this);
     }
 
     private void updateVisibility() {
@@ -92,5 +96,11 @@ class EdgeToEdgeBottomChinMediator
         mEdgeToEdgeBottomInset = bottomInset;
         mModel.set(HEIGHT, bottomInset);
         updateVisibility();
+    }
+
+    @Override
+    public void onNavigationBarColorChanged(int color) {
+        // TODO(): Animate the color change.
+        mModel.set(COLOR, color);
     }
 }

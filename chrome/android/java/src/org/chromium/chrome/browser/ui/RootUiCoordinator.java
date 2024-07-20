@@ -1938,15 +1938,19 @@ public class RootUiCoordinator
             supplier.set(mEdgeToEdgeController);
 
             if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
-                mEdgeToEdgeBottomChin =
-                        EdgeToEdgeControllerFactory.createBottomChin(
-                                mLayoutManager, mEdgeToEdgeController, mBottomControlsStacker);
+                mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();
             }
         }
     }
 
+    /** Create a bottom chin for Edge-to-Edge. */
+    protected Destroyable createEdgeToEdgeBottomChin() {
+        return null;
+    }
+
     /**
      * TODO(jinsukkim): remove/hide this in favor of wiring it directly.
+     *
      * @return {@link TabObscuringHandler} object.
      */
     public TabObscuringHandler getTabObscuringHandler() {

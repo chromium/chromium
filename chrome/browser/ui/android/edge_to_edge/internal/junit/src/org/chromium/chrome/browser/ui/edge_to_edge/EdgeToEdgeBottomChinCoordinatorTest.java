@@ -23,6 +23,7 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
     @Mock private LayoutManager mLayoutManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomControlsStacker mBottomControlsStacker;
+    @Mock private NavigationBarColorProvider mNavigationBarColorProvider;
     @Mock private EdgeToEdgeBottomChinSceneLayer mEdgeToEdgeBottomChinSceneLayer;
 
     @Before
@@ -36,6 +37,7 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
                 new EdgeToEdgeBottomChinCoordinator(
                         mLayoutManager,
                         mEdgeToEdgeController,
+                        mNavigationBarColorProvider,
                         mBottomControlsStacker,
                         mEdgeToEdgeBottomChinSceneLayer);
         verify(mLayoutManager).addSceneOverlay(any());

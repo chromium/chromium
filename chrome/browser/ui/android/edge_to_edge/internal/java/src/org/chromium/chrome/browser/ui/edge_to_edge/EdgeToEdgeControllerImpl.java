@@ -332,9 +332,9 @@ public class EdgeToEdgeControllerImpl
             mIsPageOptedIntoEdgeToEdge =
                     mIsPageOptedIntoEdgeToEdge
                             && EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
-            // Note that we cannot adjustEdges earlier since we need the system
+            // Note that we cannot #drawToEdge earlier since we need the system
             // insets.
-            adjustEdges(mIsPageOptedIntoEdgeToEdge, rootView.findViewById(ROOT_UI_VIEW_ID));
+            drawToEdge(mIsPageOptedIntoEdgeToEdge);
         }
         return windowInsets;
     }

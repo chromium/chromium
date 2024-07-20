@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -1169,6 +1170,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mToolbarManager.getOmniboxStub() != null) {
             mToolbarManager.getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
         }
+    }
+
+    @Override
+    protected Destroyable createEdgeToEdgeBottomChin() {
+        return EdgeToEdgeControllerFactory.createBottomChin(
+                mLayoutManager,
+                mEdgeToEdgeControllerSupplier.get(),
+                mSystemUiCoordinator.getNavigationBarColorController(),
+                mBottomControlsStacker);
     }
 
     private void initTabStripTransitionCoordinator() {

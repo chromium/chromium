@@ -29,16 +29,20 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
+     * @param navigationBarColorProvider The {@link NavigationBarColorProvider} for observing the
+     *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
      */
     public EdgeToEdgeBottomChinCoordinator(
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
+            @NonNull NavigationBarColorProvider navigationBarColorProvider,
             @NonNull BottomControlsStacker bottomControlsStacker) {
         this(
                 layoutManager,
                 edgeToEdgeController,
+                navigationBarColorProvider,
                 bottomControlsStacker,
                 new EdgeToEdgeBottomChinSceneLayer());
     }
@@ -47,6 +51,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
     EdgeToEdgeBottomChinCoordinator(
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
+            @NonNull NavigationBarColorProvider navigationBarColorProvider,
             @NonNull BottomControlsStacker bottomControlsStacker,
             @NonNull EdgeToEdgeBottomChinSceneLayer sceneLayer) {
         mLayoutManager = layoutManager;
@@ -61,7 +66,11 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
 
         mMediator =
                 new EdgeToEdgeBottomChinMediator(
-                        model, mLayoutManager, edgeToEdgeController, bottomControlsStacker);
+                        model,
+                        mLayoutManager,
+                        edgeToEdgeController,
+                        navigationBarColorProvider,
+                        bottomControlsStacker);
 
         mLayoutManager.addSceneOverlay(sceneLayer);
     }

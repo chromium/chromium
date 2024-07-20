@@ -68,15 +68,21 @@ public class EdgeToEdgeControllerFactory {
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
+     * @param navigationBarColorProvider The {@link NavigationBarColorProvider} for observing the
+     *     color for the navigation bar.
      * @param bottomControlsStacker The {@link BottomControlsStacker} for observing and changing
      *     browser controls heights.
      */
     public static Destroyable createBottomChin(
             LayoutManager layoutManager,
             EdgeToEdgeController edgeToEdgeController,
+            NavigationBarColorProvider navigationBarColorProvider,
             BottomControlsStacker bottomControlsStacker) {
         return new EdgeToEdgeBottomChinCoordinator(
-                layoutManager, edgeToEdgeController, bottomControlsStacker);
+                layoutManager,
+                edgeToEdgeController,
+                navigationBarColorProvider,
+                bottomControlsStacker);
     }
 
     /**

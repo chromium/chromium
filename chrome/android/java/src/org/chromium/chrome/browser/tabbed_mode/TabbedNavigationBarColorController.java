@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -55,7 +57,8 @@ import java.util.Optional;
 
 /** Controls the bottom system navigation bar color for the provided {@link Window}. */
 @RequiresApi(Build.VERSION_CODES.O_MR1)
-class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Observer {
+class TabbedNavigationBarColorController
+        implements BottomAttachedUiObserver.Observer, NavigationBarColorProvider {
     /** The amount of time transitioning from one color to another should take in ms. */
     public static final long NAVBAR_COLOR_TRANSITION_DURATION_MS = 250;
 
@@ -75,7 +78,16 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
     private @Nullable LayoutStateObserver mLayoutStateObserver;
     private CallbackController mCallbackController = new CallbackController();
 
+    /**
+     * The color intended for the navigation bar, as well as any similar UI (such as the bottom chin
+     * in edge-to-edge). This may differ from the window navigation bar color when that color is
+     * transparent (as in edge-to-edge mode).
+     */
     private @ColorInt int mNavigationBarColor;
+
+    /** The color that was set for the {@link Window}'s navigation bar. */
+    private @ColorInt int mWindowNavigationBarColor;
+
     private boolean mForceDarkNavigationBarColor;
     private boolean mIsInFullscreen;
     private float mNavigationBarScrimFraction;
@@ -92,6 +104,7 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
     private boolean mForceShowDivider;
 
     private ValueAnimator mNavbarColorTransitionAnimation;
+    private ObserverList<Observer> mObservers = new ObserverList<>();
 
     /**
      * Creates a new {@link TabbedNavigationBarColorController} instance.
@@ -328,38 +341,47 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
     @SuppressLint("NewApi")
     private void updateNavigationBarColor(
             @Nullable Integer bottomInset, boolean forceShowDivider, boolean disableAnimation) {
-        boolean toEdge = bottomInset != null && bottomInset != 0;
+        boolean toEdge = isDrawingToEdge();
         boolean forceDarkNavigation = mTabModelSelector.isIncognitoSelected();
 
         forceDarkNavigation &= !UiUtils.isSystemUiThemingDisabled();
         forceDarkNavigation |= mIsInFullscreen;
-
         mForceDarkNavigationBarColor = forceDarkNavigation;
-        final @ColorInt int newNavigationBarColor =
-                toEdge ? Color.TRANSPARENT : getNavigationBarColor(mForceDarkNavigationBarColor);
 
-        if (mNavigationBarColor == newNavigationBarColor && mForceShowDivider == forceShowDivider) {
-            return;
+        final @ColorInt int newNavigationBarColor =
+                getNavigationBarColor(mForceDarkNavigationBarColor);
+        if (mNavigationBarColor != newNavigationBarColor) {
+            mNavigationBarColor = newNavigationBarColor;
+
+            for (NavigationBarColorProvider.Observer observer : mObservers) {
+                observer.onNavigationBarColorChanged(mNavigationBarColor);
+            }
         }
 
-        @ColorInt int currentNavigationBarColor = mNavigationBarColor;
-        mNavigationBarColor = newNavigationBarColor;
-        mForceShowDivider = forceShowDivider;
+        final @ColorInt int newWindowNavigationBarColor =
+                toEdge ? Color.TRANSPARENT : newNavigationBarColor;
+        final @ColorInt int currentWindowNavigationBarColor = mWindowNavigationBarColor;
+        if (mWindowNavigationBarColor != newWindowNavigationBarColor
+                || mForceShowDivider != forceShowDivider) {
+            mWindowNavigationBarColor = newWindowNavigationBarColor;
+            mForceShowDivider = forceShowDivider;
+            if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
+                    && !isNavBarColorAnimationDisabled()
+                    && !toEdge
+                    && !disableAnimation) {
+                animateNavigationBarColor(
+                        currentWindowNavigationBarColor, mWindowNavigationBarColor);
+            } else {
+                mWindow.setNavigationBarColor(mWindowNavigationBarColor);
 
-        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
-                && !isNavBarColorAnimationDisabled()
-                && !toEdge
-                && !disableAnimation) {
-            animateNavigationBarColor(currentNavigationBarColor, newNavigationBarColor);
-        } else {
-            mWindow.setNavigationBarColor(mNavigationBarColor);
+                if (toEdge) return;
 
-            if (toEdge) return;
-
-            setNavigationBarDividerColor(
-                    getNavigationBarDividerColor(mForceDarkNavigationBarColor, mForceShowDivider));
-            UiUtils.setNavigationBarIconColor(
-                    mRootView, !mForceDarkNavigationBarColor && mLightNavigationBar);
+                setNavigationBarDividerColor(
+                        getNavigationBarDividerColor(
+                                mForceDarkNavigationBarColor, mForceShowDivider));
+                UiUtils.setNavigationBarIconColor(
+                        mRootView, !mForceDarkNavigationBarColor && mLightNavigationBar);
+            }
         }
     }
 
@@ -470,22 +492,30 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
 
     private boolean useBottomAttachedUiColor() {
         return ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
-                && mBottomAttachedUiColor != null
-                && getBottomInset() == 0;
+                && mBottomAttachedUiColor != null;
     }
 
     private boolean useActiveTabColor() {
         return ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
                 && mLayoutManager != null
                 && mLayoutManager.getActiveLayoutType() == LayoutType.BROWSING
-                && mActiveTab != null
-                && getBottomInset() == 0;
+                && mActiveTab != null;
     }
 
     private int getBottomInset() {
         return mEdgeToEdgeControllerSupplier != null && mEdgeToEdgeControllerSupplier.get() != null
                 ? mEdgeToEdgeControllerSupplier.get().getBottomInset()
                 : 0;
+    }
+
+    /**
+     * Indicates whether the page is drawing to edge, either due to being on a page that's opted
+     * into edge-to-edge or to displaying the bottom chin.
+     */
+    private boolean isDrawingToEdge() {
+        return mEdgeToEdgeControllerSupplier != null
+                && mEdgeToEdgeControllerSupplier.get() != null
+                && mEdgeToEdgeControllerSupplier.get().isDrawingToEdge();
     }
 
     void setLayoutManagerForTesting(LayoutManager layoutManager) {
@@ -508,7 +538,21 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
         return mNavigationBarColor;
     }
 
+    int getWindowNavigationBarColorForTesting() {
+        return mWindowNavigationBarColor;
+    }
+
     private static boolean isNavBarColorAnimationDisabled() {
         return TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM.getValue();
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
     }
 }

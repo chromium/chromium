@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -31,7 +30,6 @@ import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsets;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -82,18 +80,18 @@ public class EdgeToEdgeControllerTest {
 
     private static final int TOP_INSET = 113;
     private static final int BOTTOM_INSET = 59;
-    private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, 100);
-    private static final Insets STATUS_BAR_INSETS = Insets.of(0, 100, 0, 0);
+    private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, BOTTOM_INSET);
+    private static final Insets STATUS_BAR_INSETS = Insets.of(0, TOP_INSET, 0, 0);
+    private static final Insets SYSTEM_INSETS = Insets.of(0, TOP_INSET, 0, BOTTOM_INSET);
+    private static final Insets IME_INSETS = Insets.of(0, 0, 0, 0);
 
     private static final WindowInsetsCompat SYSTEM_BARS_WINDOW_INSETS =
             new WindowInsetsCompat.Builder()
                     .setInsets(WindowInsetsCompat.Type.navigationBars(), NAVIGATION_BAR_INSETS)
                     .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
+                    .setInsets(WindowInsetsCompat.Type.systemBars(), SYSTEM_INSETS)
+                    .setInsets(WindowInsetsCompat.Type.ime(), IME_INSETS)
                     .build();
-
-    @SuppressLint("NewApi")
-    private static final Insets SYSTEM_INSETS =
-            Insets.of(0, TOP_INSET, 0, BOTTOM_INSET); // Typical.
 
     private Activity mActivity;
     private EdgeToEdgeControllerImpl mEdgeToEdgeControllerImpl;
@@ -117,7 +115,6 @@ public class EdgeToEdgeControllerTest {
 
     @Mock private View mViewMock;
 
-    @Mock private WindowInsetsCompat mWindowInsetsMock;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private LayoutManager mLayoutManager;
 
@@ -158,10 +155,6 @@ public class EdgeToEdgeControllerTest {
                         })
                 .when(mInsetObserver)
                 .updateBottomInsetForEdgeToEdge(anyInt());
-
-        doReturn(SYSTEM_INSETS)
-                .when(mWindowInsetsMock)
-                .getInsets(WindowInsets.Type.statusBars() + WindowInsets.Type.navigationBars());
 
         mEdgeToEdgeControllerImpl =
                 new EdgeToEdgeControllerImpl(
@@ -449,8 +442,10 @@ public class EdgeToEdgeControllerTest {
 
     // Regression test for https://crbug.com/329875254.
     @Test
-    public void testViewportFitAfterListenerSet_ToNormal() {
+    public void testViewportFitAfterListenerSet_ToNormal_BottomChinDisabled() {
+        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(false);
         when(mTab.isNativePage()).thenReturn(false);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
         assertFalse("Shouldn't be toEdge.", mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
@@ -462,15 +457,55 @@ public class EdgeToEdgeControllerTest {
 
         // Simulate insets being available.
         assertNotNull(mWindowInsetsListenerCaptor.getValue());
-        mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
+        mWindowInsetsListenerCaptor
+                .getValue()
+                .onApplyWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
         assertFalse(
-                "Shouldn't be toEdge after toggling viewport-fit.",
+                "Shouldn't be opted into edge-to-edge after toggling viewport-fit.",
                 mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
-        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(BOTTOM_INSET));
+        assertFalse(
+                "Shouldn't be drawing edge-to-edge after toggling viewport-fit.",
+                mEdgeToEdgeControllerImpl.isDrawingToEdge());
+        verify(mOsWrapper, atLeastOnce())
+                .setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(BOTTOM_INSET));
+    }
+
+    @Test
+    public void testViewportFitAfterListenerSet_ToNormal() {
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+        assertFalse(
+                "Shouldn't be opted into edge-to-edge.",
+                mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertTrue(
+                "Should be drawing edge-to-edge for the bottom chin.",
+                mEdgeToEdgeControllerImpl.isDrawingToEdge());
+
+        // Simulate a viewport fit change to kick off WindowInsetConsumer being hooked up.
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        // Simulate another viewport fit change prior to #handleWindowInsets being called.
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.CONTAIN);
+
+        // Simulate insets being available.
+        assertNotNull(mWindowInsetsListenerCaptor.getValue());
+        mWindowInsetsListenerCaptor
+                .getValue()
+                .onApplyWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        assertFalse(
+                "Shouldn't be opted into edge-to-edge after toggling viewport-fit.",
+                mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertTrue(
+                "Should still be drawing edge-to-edge after toggling viewport-fit to account for"
+                        + " the bottom chin.",
+                mEdgeToEdgeControllerImpl.isDrawingToEdge());
+        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
     }
 
     @Test
     public void testViewportFitAfterListenerSet_ToEdge() {
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mTab.isNativePage()).thenReturn(false);
         mTabProvider.set(mTab);
         verifyInteractions(mTab);
@@ -485,10 +520,15 @@ public class EdgeToEdgeControllerTest {
 
         // Simulate insets being available.
         assertNotNull(mWindowInsetsListenerCaptor.getValue());
-        mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
+        mWindowInsetsListenerCaptor
+                .getValue()
+                .onApplyWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(
-                "Should be toEdge after toggling viewport-fit.",
+                "Should be opted into edge-to-edge after toggling viewport-fit.",
                 mEdgeToEdgeControllerImpl.isPageOptedIntoEdgeToEdge());
+        assertTrue(
+                "Should be drawing toEdge after toggling viewport-fit.",
+                mEdgeToEdgeControllerImpl.isDrawingToEdge());
         verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
     }
 
@@ -564,7 +604,9 @@ public class EdgeToEdgeControllerTest {
 
     void assertToEdgeExpectations() {
         assertNotNull(mWindowInsetsListenerCaptor.getValue());
-        mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
+        mWindowInsetsListenerCaptor
+                .getValue()
+                .onApplyWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
         // Pad the top only, bottom is ToEdge.
         verify(mOsWrapper, atLeastOnce())
                 .setPadding(any(), eq(0), intThat(Matchers.greaterThan(0)), eq(0), eq(0));

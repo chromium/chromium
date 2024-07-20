@@ -34,6 +34,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class EdgeToEdgeBottomChinMediatorTest {
     @Mock private LayoutManager mLayoutManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private NavigationBarColorProvider mNavigationBarColorProvider;
     @Mock private BottomControlsStacker mBottomControlsStacker;
 
     private PropertyModel mModel;
@@ -45,13 +46,16 @@ public class EdgeToEdgeBottomChinMediatorTest {
         mModel = new PropertyModel.Builder(EdgeToEdgeBottomChinProperties.ALL_KEYS).build();
         mMediator =
                 new EdgeToEdgeBottomChinMediator(
-                        mModel, mLayoutManager, mEdgeToEdgeController, mBottomControlsStacker);
+                        mModel,
+                        mLayoutManager,
+                        mEdgeToEdgeController,
+                        mNavigationBarColorProvider,
+                        mBottomControlsStacker);
     }
 
     @Test
     public void testInitialization() {
         assertEquals(0, mModel.get(Y_OFFSET));
-        assertEquals(Color.RED, mModel.get(COLOR));
 
         verify(mLayoutManager).addObserver(eq(mMediator));
         verify(mEdgeToEdgeController).registerObserver(eq(mMediator));
@@ -78,6 +82,15 @@ public class EdgeToEdgeBottomChinMediatorTest {
                 "The height should have been cleared to 0 to match the edge-to-edge bottom inset.",
                 0,
                 mModel.get(HEIGHT));
+    }
+
+    @Test
+    public void testUpdateColor() {
+        mMediator.onNavigationBarColorChanged(Color.BLUE);
+        assertEquals("The color should have been updated to blue.", Color.BLUE, mModel.get(COLOR));
+
+        mMediator.onNavigationBarColorChanged(Color.RED);
+        assertEquals("The color should have been updated to red.", Color.RED, mModel.get(COLOR));
     }
 
     @Test

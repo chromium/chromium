@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeOSWrapperImpl;
@@ -422,7 +423,8 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
-    public void testNavigationBarColor() {
+    @Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    public void testNavigationBarColor_BottomChinDisabled() {
         optOutOfToEdge();
         int originalNavigationBarColor = SemanticColorUtils.getBottomSystemNavColor(mActivity);
 
@@ -437,6 +439,37 @@ public class EdgeToEdgeInstrumentationTest {
                 "Navigation bar should have the right color when transitioning away from edge to"
                         + " edge,",
                 originalNavigationBarColor,
+                mActivity.getWindow().getNavigationBarColor());
+    }
+
+    @Test
+    @MediumTest
+    public void testNavigationBarColor() {
+        optOutOfToEdge();
+
+        goToEdge();
+        assertEquals(
+                "Navigation bar should be transparent in edge to edge.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+
+        optOutOfToEdge();
+        assertEquals(
+                "Navigation bar should stay transparent for the bottom chin even when not"
+                        + "opted in.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+
+        TabUiTestHelper.enterTabSwitcher(mActivity);
+        assertNotEquals(
+                "Should not be drawing toEdge in the Tab Switcher.",
+                Color.TRANSPARENT,
+                mActivity.getWindow().getNavigationBarColor());
+
+        TabUiTestHelper.leaveTabSwitcher(mActivity);
+        assertNotEquals(
+                "Should return toEdge upon leaving the Tab Switcher.",
+                Color.TRANSPARENT,
                 mActivity.getWindow().getNavigationBarColor());
     }
 

@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgePadAdjuster.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeSupplier.java",
     "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/NavigationBarColorProvider.java",
   ]
   deps = [
     "//base:base_cached_flags_java",
