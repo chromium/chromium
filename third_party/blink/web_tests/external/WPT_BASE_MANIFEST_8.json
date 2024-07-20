@@ -8317,6 +8317,13 @@
        {}
       ]
      ],
+     "selection-modify-line-from-contenteditable-to-textarea.html": [
+      "41d377a9a60f30c8ccc8995832995c2d4450a902",
+      [
+       null,
+       {}
+      ]
+     ],
      "selection-modify-line-next-to-input-and-make-it-invisible.html": [
       "09e018f581905b35fcdb4ba70aade0de27785efb",
       [
@@ -72938,6 +72945,19 @@
        [
         [
          "/css/css-animations/inheritance-pseudo-element-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "jump-start-animation-before-phase.html": [
+      "86cca0bcda1a490718a99a4299ee9f8e1b78d386",
+      [
+       null,
+       [
+        [
+         "/css/css-animations/jump-start-animation-before-phase-ref.html",
          "=="
         ]
        ],
@@ -308725,6 +308745,10 @@
       "a25f465fdf9c10d3d51e7576eb475d025516b2ad",
       []
      ],
+     "jump-start-animation-before-phase-ref.html": [
+      "3e1d363058f1378aeb45e94389517410359a4010",
+      []
+     ],
      "nested-scale-animations-ref.html": [
       "6dd3cde31126329fd3012c0fc1feac5855b24826",
       []
@@ -466428,6 +466452,13 @@
        {}
       ]
      ],
+     "position-sticky-dynamic-ancestor-001.html": [
+      "e3f3debcc34411d6ae251eab957e4a45a056ac97",
+      [
+       null,
+       {}
+      ]
+     ],
      "positon-absolute-scrollable-overflow-001.html": [
       "67e24a247570cdc56033d509e0fb7cbddda17591",
       [
@@ -512792,7 +512823,7 @@
       ]
      ],
      "fedcm-userinfo-after-resolve.https.html": [
-      "e92f48988637e55f4b3f12d826c2aebb81567bc2",
+      "e1244df1c8ee01b407053c1cb1a3c3e9e5a09512",
       [
        null,
        {
@@ -513150,7 +513181,7 @@
      ]
     ],
     "fedcm-pending-userinfo.https.html": [
-     "1c85d4dc57de343b4ac09763de4b84a280f39ef4",
+     "5d3ffe221dabb23fd422b49d09d82dd5b6b74e8f",
      [
       null,
       {
@@ -513226,7 +513257,7 @@
      ]
     ],
     "fedcm-userinfo.https.html": [
-     "9f7be9fbbf33fffea1be9f62c49ddba05a6fd051",
+     "d256f685f7c8f90402a7505b4d9343ad1b1c9fa3",
      [
       null,
       {
@@ -551075,10 +551106,12 @@
        ]
       ],
       "window-indexed-properties-delete-no-cache.html": [
-       "22262943aadd775424645d79b0dfb2429f837e61",
+       "c3b49d50ffa7936a50f0b337527b3c0036b35678",
        [
         null,
-        {}
+        {
+         "timeout": "long"
+        }
        ]
       ],
       "window-indexed-properties-strict.html": [
