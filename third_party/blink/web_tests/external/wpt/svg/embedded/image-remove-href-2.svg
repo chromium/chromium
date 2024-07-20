@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     xmlns:h="http://www.w3.org/1999/xhtml" viewBox="0 0 3 3" width="200" height="200" class="reftest-wait">
+  <metadata>
+    <title>removing href from an SVG image that has an xlink:href</title>
+    <h:link rel="match" href="reference/green-rect-100x100.svg"/>
+  </metadata>
+  <script href="/common/reftest-wait.js"></script>
+  <script href="/common/rendering-utils.js"></script>
+  <image href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' width='50' height='50' &gt;&lt;rect width='50' height='50' fill='red'/&gt;&lt;/svg&gt;" xlink:href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='50' height='50' &gt;&lt;rect width='50' height='50' fill='green'/&gt;&lt;/svg&gt;" width="1.5" onload="test()"/>
+  <script>
+    function test() {
+      document.querySelector('image').removeAttribute('href');
+      waitForAtLeastOneFrame().then(takeScreenshot);
+    }
+  </script>
+</svg>
