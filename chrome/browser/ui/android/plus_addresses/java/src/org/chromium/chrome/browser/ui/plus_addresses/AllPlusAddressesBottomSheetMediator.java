@@ -4,29 +4,39 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ON_QUERY_TEXT_CHANGE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.QUERY_HINT;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.TITLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.VISIBLE;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.WARNING;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ItemType;
 import org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PlusProfileProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+import java.util.Locale;
+
 /** Mediator for the all plus addresses bottom sheet UI component. */
 class AllPlusAddressesBottomSheetMediator {
     private final PropertyModel mModel;
+    private @Nullable List<PlusProfile> mProfiles;
 
     AllPlusAddressesBottomSheetMediator(PropertyModel model) {
         mModel = model;
     }
 
     void showPlusProfiles(AllPlusAddressesBottomSheetUIInfo uiInfo) {
+        mProfiles = uiInfo.getPlusProfiles();
+
         mModel.set(TITLE, uiInfo.getTitle());
         mModel.set(WARNING, uiInfo.getWarning());
         mModel.set(QUERY_HINT, uiInfo.getQueryHint());
+        mModel.set(ON_QUERY_TEXT_CHANGE, this::onQueryTextChanged);
 
         mModel.get(PLUS_PROFILES).clear();
         for (PlusProfile profile : uiInfo.getPlusProfiles()) {
@@ -34,5 +44,22 @@ class AllPlusAddressesBottomSheetMediator {
             mModel.get(PLUS_PROFILES).add(new ListItem(ItemType.PLUS_PROFILE, model));
         }
         mModel.set(VISIBLE, true);
+    }
+
+    private void onQueryTextChanged(String query) {
+        assert mProfiles != null;
+
+        mModel.get(PLUS_PROFILES).clear();
+        for (PlusProfile profile : mProfiles) {
+            if (!shouldFilter(query.toLowerCase(Locale.ENGLISH), profile)) {
+                final PropertyModel model = PlusProfileProperties.createPlusProfileModel(profile);
+                mModel.get(PLUS_PROFILES).add(new ListItem(ItemType.PLUS_PROFILE, model));
+            }
+        }
+    }
+
+    private boolean shouldFilter(String query, PlusProfile profile) {
+        return !profile.getPlusAddress().toLowerCase(Locale.ENGLISH).contains(query)
+                && !profile.getOrigin().toLowerCase(Locale.ENGLISH).contains(query);
     }
 }

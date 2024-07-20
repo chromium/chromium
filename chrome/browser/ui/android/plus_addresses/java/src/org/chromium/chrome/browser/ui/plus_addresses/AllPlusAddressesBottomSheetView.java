@@ -9,12 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -56,6 +58,23 @@ class AllPlusAddressesBottomSheetView implements BottomSheetContent {
     void setQueryHint(String queryHint) {
         ((SearchView) mContentView.findViewById(R.id.all_plus_addresses_search_view))
                 .setQueryHint(queryHint);
+    }
+
+    void setOnQueryChangedCallback(Callback<String> callback) {
+        ((SearchView) mContentView.findViewById(R.id.all_plus_addresses_search_view))
+                .setOnQueryTextListener(
+                        new OnQueryTextListener() {
+                            @Override
+                            public boolean onQueryTextSubmit(String s) {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onQueryTextChange(String newString) {
+                                callback.onResult(newString);
+                                return true;
+                            }
+                        });
     }
 
     void setSheetItemListAdapter(RecyclerView.Adapter adapter) {

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,11 +19,13 @@ class AllPlusAddressesBottomSheetProperties {
             new WritableObjectPropertyKey<>("warning");
     static final WritableObjectPropertyKey<String> QUERY_HINT =
             new WritableObjectPropertyKey<>("query_hint");
+    static final PropertyModel.WritableObjectPropertyKey<Callback<String>> ON_QUERY_TEXT_CHANGE =
+            new PropertyModel.WritableObjectPropertyKey<>("on_query_text_change");
     static final ReadableObjectPropertyKey<ModelList> PLUS_PROFILES =
             new ReadableObjectPropertyKey<>("plus_profiles");
 
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE, TITLE, WARNING, QUERY_HINT, PLUS_PROFILES,
+        VISIBLE, TITLE, WARNING, QUERY_HINT, ON_QUERY_TEXT_CHANGE, PLUS_PROFILES,
     };
 
     static PropertyModel createDefaultModel() {

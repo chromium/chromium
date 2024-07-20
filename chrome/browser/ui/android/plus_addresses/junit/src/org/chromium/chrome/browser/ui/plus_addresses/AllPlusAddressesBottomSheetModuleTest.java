@@ -11,9 +11,11 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.View.MeasureSpec;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -84,6 +86,41 @@ public class AllPlusAddressesBottomSheetModuleTest {
         ChipView plusAddress = view.getContentView().findViewById(R.id.plus_address);
         assertNotNull(plusAddress);
         assertEquals(plusAddress.getPrimaryTextView().getText(), PROFILE_1.getPlusAddress());
+    }
+
+    @Test
+    @SmallTest
+    public void testFilterPlusProfiles() {
+        mCoordinator.showPlusProfiles(mUIInfo);
+        verify(mBottomSheetController).requestShowContent(mViewCaptor.capture(), eq(true));
+
+        AllPlusAddressesBottomSheetView view = mViewCaptor.getValue();
+        assertNotNull(view);
+
+        // Robolectric doesn't layout recycler views.
+        layoutPlusAddressView(view);
+
+        RecyclerView profilesView = view.getContentView().findViewById(R.id.sheet_item_list);
+        assertEquals(profilesView.getAdapter().getItemCount(), 1);
+
+        SearchView searchView =
+                view.getContentView().findViewById(R.id.all_plus_addresses_search_view);
+
+        // Query by origin, the plus profile should stay.
+        searchView.setQuery("google", /* submit= */ true);
+        assertEquals(profilesView.getAdapter().getItemCount(), 1);
+
+        // Query by email, the plus profile should stay.
+        searchView.setQuery("gmail.com", /* submit= */ true);
+        assertEquals(profilesView.getAdapter().getItemCount(), 1);
+
+        // No profiles should be shown for this field.
+        searchView.setQuery("fff", /* submit= */ true);
+        assertEquals(profilesView.getAdapter().getItemCount(), 0);
+
+        // All profiles should be displayed for an empty query.
+        searchView.setQuery("", /* submit= */ true);
+        assertEquals(profilesView.getAdapter().getItemCount(), 1);
     }
 
     /**

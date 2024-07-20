@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
@@ -28,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -92,6 +94,19 @@ public class AllPlusAddressesBottomSheetViewTest {
         SearchView search =
                 mView.getContentView().findViewById(R.id.all_plus_addresses_search_view);
         assertEquals(search.getQueryHint(), BOTTOMSHEET_QUERY_HINT);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetOnQueryChangedCallback() {
+        Callback<String> callback = mock(Callback.class);
+
+        mView.setOnQueryChangedCallback(callback);
+
+        SearchView searchView =
+                mView.getContentView().findViewById(R.id.all_plus_addresses_search_view);
+        searchView.setQuery("Test query", /* submit= */ true);
+        verify(callback).onResult("Test query");
     }
 
     @Test
