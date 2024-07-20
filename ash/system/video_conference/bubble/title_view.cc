@@ -4,26 +4,56 @@
 
 #include "ash/system/video_conference/bubble/title_view.h"
 
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash::video_conference {
 
 namespace {
 
+constexpr auto kBubbleCornerRadius = 16;
+constexpr auto kBubbleChildSpacing = 4;
+constexpr auto kBubblePadding = gfx::Insets::TLBR(12, 12, 12, 12);
+constexpr auto kBubbleArrowOffset = 8;
+constexpr auto kBubbleMaxWidth = 250;
+
 constexpr gfx::Size kIconSize{20, 20};
 constexpr auto kTitleChildSpacing = 8;
 constexpr auto kTitleViewPadding = gfx::Insets::TLBR(16, 16, 0, 16);
+
+gfx::Rect CalculateBubbleBounds(const gfx::Rect& anchor_view_bounds,
+                                const gfx::Size bubble_size) {
+  // The sidetone bubble will be located on top of the sidetone button
+  // with the right side of the sidetone bubble aligned with the center
+  // of the button.
+
+  gfx::Point anchor_top_center = anchor_view_bounds.top_center();
+  int bubble_x = anchor_top_center.x() - bubble_size.width();
+  int bubble_y =
+      anchor_top_center.y() - bubble_size.height() - kBubbleArrowOffset;
+  gfx::Point bubble_top_right(bubble_x, bubble_y);
+
+  gfx::Rect bubble_bounds(bubble_top_right, bubble_size);
+
+  return bubble_bounds;
+}
 
 }  // namespace
 
@@ -85,6 +115,88 @@ void TitleView::OnSidetoneButtonClicked(const ui::Event& event) {
   const bool enabled = !controller->GetSidetoneEnabled();
   sidetone_button_->SetToggled(enabled);
   controller->SetSidetoneEnabled(enabled);
+
+  if (enabled) {
+    ShowSidetoneBubble();
+  } else {
+    CloseSidetoneBubble();
+  }
+}
+
+void TitleView::ShowSidetoneBubble() {
+  CloseSidetoneBubble();
+
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
+
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.name = "SidetoneBubble";
+  params.parent =
+      sidetone_button_->GetWidget()->GetNativeWindow()->GetRootWindow();
+
+  auto bubble_widget = std::make_unique<views::Widget>(std::move(params));
+
+  auto rounded_corners = gfx::RoundedCornersF(kBubbleCornerRadius);
+  rounded_corners.set_lower_right(0);
+  auto bubble_view =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetBetweenChildSpacing(kBubbleChildSpacing)
+          .SetInsideBorderInsets(kBubblePadding)
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              cros_tokens::kCrosSysSystemBaseElevated, rounded_corners))
+          .Build();
+
+  bubble_view->SetPaintToLayer();
+  bubble_view->layer()->SetBackgroundBlur(
+      ash::ColorProvider::kBackgroundBlurSigma);
+  bubble_view->layer()->SetBackdropFilterQuality(
+      ash::ColorProvider::kBackgroundBlurQuality);
+  bubble_view->layer()->SetRoundedCornerRadius(rounded_corners);
+  bubble_view->layer()->SetFillsBoundsOpaquely(false);
+
+  auto* title = bubble_view->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              // TODO(b/353775770): Change label
+              IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU_OPEN))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetEnabledColorId(kColorAshTextColorPrimary)
+          .Build());
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle2, *title);
+
+  auto* body = bubble_view->AddChildView(
+      views::Builder<views::Label>()
+          .SetText(l10n_util::GetStringUTF16(
+              // TODO(b/353775770): Change label
+              IDS_UPDATE_NOTIFICATION_MESSAGE_DEFERRED_UPDATE))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetEnabledColorId(kColorAshTextColorPrimary)
+          .SetMultiLine(true)
+          .SetMaximumWidth(kBubbleMaxWidth)
+          .Build());
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *body);
+
+  gfx::Size bubble_size = bubble_view->GetPreferredSize();
+  bubble_widget->SetContentsView(std::move(bubble_view));
+
+  gfx::Rect anchor_view_bounds = sidetone_button_->GetBoundsInScreen();
+  gfx::Rect bubble_bounds =
+      CalculateBubbleBounds(anchor_view_bounds, bubble_size);
+  bubble_widget->SetBounds(bubble_bounds);
+
+  sidetone_bubble_widget_ = std::move(bubble_widget);
+  sidetone_bubble_widget_->Show();
+}
+
+void TitleView::CloseSidetoneBubble() {
+  if (!sidetone_bubble_widget_ || sidetone_bubble_widget_->IsClosed()) {
+    return;
+  }
+
+  sidetone_bubble_widget_->Close();
 }
 
 TitleView::~TitleView() {
@@ -92,6 +204,8 @@ TitleView::~TitleView() {
   if (controller->GetSidetoneEnabled()) {
     controller->SetSidetoneEnabled(false);
   }
+
+  CloseSidetoneBubble();
 }
 
 BEGIN_METADATA(TitleView)

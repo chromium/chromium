@@ -8,6 +8,7 @@
 #include "ash/style/icon_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash::video_conference {
 
@@ -23,8 +24,11 @@ class TitleView : public views::BoxLayoutView {
 
  private:
   raw_ptr<IconButton> sidetone_button_ = nullptr;
+  views::UniqueWidgetPtr sidetone_bubble_widget_;
 
   void OnSidetoneButtonClicked(const ui::Event& event);
+  void CloseSidetoneBubble();
+  void ShowSidetoneBubble();
   base::WeakPtrFactory<TitleView> weak_ptr_factory_{this};
 };
 
