@@ -354,7 +354,8 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       suggest_tiles(match.suggest_tiles),
       scoring_signals(match.scoring_signals),
       culled_by_provider(match.culled_by_provider),
-      shortcut_boosted(match.shortcut_boosted) {}
+      shortcut_boosted(match.shortcut_boosted),
+      iph_type(match.iph_type) {}
 
 AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept {
   *this = std::move(match);
@@ -415,6 +416,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   scoring_signals = std::move(match.scoring_signals);
   culled_by_provider = std::move(match.culled_by_provider);
   shortcut_boosted = std::move(match.shortcut_boosted);
+  iph_type = std::move(match.iph_type);
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
   std::swap(java_match_, match.java_match_);
@@ -493,6 +495,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   scoring_signals = match.scoring_signals;
   culled_by_provider = match.culled_by_provider;
   shortcut_boosted = match.shortcut_boosted;
+  iph_type = match.iph_type;
 
 #if BUILDFLAG(IS_ANDROID)
   // In case the target element previously held a java object, release it.
@@ -603,10 +606,13 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       // Select the icon according to the type of IPH. Otherwise (for No Results
       // Found), fallthrough to use the empty icon.
       if (IsIPHSuggestion()) {
-        switch (FeaturedSearchProvider::GetIPHType(*this)) {
-          case FeaturedSearchProvider::IPHType::kGemini:
+        switch (iph_type) {
+          case IphType::kNone:
+            // `IsIPHSuggestion()` would have returned false.
+            NOTREACHED();
+          case IphType::kGemini:
             return omnibox::kSparkIcon;
-          case FeaturedSearchProvider::IPHType::kFeaturedEnterpriseSearch:
+          case IphType::kFeaturedEnterpriseSearch:
             return omnibox::kEnterpriseIcon;
         }
       }

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,12 +41,25 @@ namespace {
 
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
-std::string GetShowIPHPrefNameFor(FeaturedSearchProvider::IPHType iph_type) {
+std::string GetShowIPHPrefNameFor(IphType iph_type) {
   switch (iph_type) {
-    case FeaturedSearchProvider::IPHType::kGemini:
+    case IphType::kNone:
+      NOTREACHED();
+    case IphType::kGemini:
       return omnibox::kShowGeminiIPH;
-    case FeaturedSearchProvider::IPHType::kFeaturedEnterpriseSearch:
+    case IphType::kFeaturedEnterpriseSearch:
       return omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName;
+  }
+}
+
+std::string IphTypeDebugString(IphType iph_type) {
+  switch (iph_type) {
+    case IphType::kNone:
+      NOTREACHED();
+    case IphType::kGemini:
+      return "gemini";
+    case IphType::kFeaturedEnterpriseSearch:
+      return "featured enterprise search";
   }
 }
 
@@ -67,21 +81,6 @@ FeaturedSearchProvider::FeaturedSearchProvider(
   template_url_service_ = client->GetTemplateURLService();
 }
 
-// static
-FeaturedSearchProvider::IPHType FeaturedSearchProvider::GetIPHType(
-    const AutocompleteMatch& match) {
-  // TODO (manukh): `GetAdditionalInfoForDebugging()` shouldn't be used for
-  //   non-debugging purposes.
-  std::string info =
-      match.GetAdditionalInfoForDebugging(kIPHTypeAdditionalInfoKey);
-  CHECK(!info.empty());
-  int converted_value = 0;
-  CHECK(base::StringToInt(info, &converted_value));
-  CHECK_GE(converted_value, static_cast<int>(kMinIPHType));
-  CHECK_LE(converted_value, static_cast<int>(kMaxIPHType));
-  return static_cast<IPHType>(converted_value);
-}
-
 void FeaturedSearchProvider::Start(const AutocompleteInput& input,
                                    bool minimal_changes) {
   matches_.clear();
@@ -89,7 +88,7 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
   if (ShouldShowEnterpriseFeaturedSearchIPHMatch(input)) {
     AddFeaturedEnterpriseSearchIPHMatch();
   } else if (ShouldShowGeminiIPHMatch(input)) {
-    AddIPHMatch(IPHType::kGemini,
+    AddIPHMatch(IphType::kGemini,
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_GEMINI_IPH), u"@gemini");
   }
 
@@ -108,7 +107,8 @@ void FeaturedSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
 
   // Set the pref so this provider doesn't continue to offer the suggestion.
   PrefService* prefs = client_->GetPrefs();
-  prefs->SetBoolean(GetShowIPHPrefNameFor(GetIPHType(match)), false);
+  CHECK(match.iph_type != IphType::kNone);
+  prefs->SetBoolean(GetShowIPHPrefNameFor(match.iph_type), false);
 
   // Delete `match` from `matches_`.
   std::erase_if(matches_, [&match](const auto& i) {
@@ -220,7 +220,7 @@ void FeaturedSearchProvider::AddStarterPackMatch(
   matches_.push_back(match);
 }
 
-void FeaturedSearchProvider::AddIPHMatch(IPHType iph_type,
+void FeaturedSearchProvider::AddIPHMatch(IphType iph_type,
                                          const std::u16string& iph_contents,
                                          const std::u16string& matched_term) {
   // This value doesn't really matter as this suggestion is grouped after all
@@ -233,8 +233,8 @@ void FeaturedSearchProvider::AddIPHMatch(IPHType iph_type,
   // cannot be acted upon.
   match.contents = iph_contents;
   match.deletable = true;
-  match.RecordAdditionalInfo(kIPHTypeAdditionalInfoKey,
-                             static_cast<int>(iph_type));
+  match.iph_type = iph_type;
+  match.RecordAdditionalInfo("iph type", IphTypeDebugString(iph_type));
 
   // Bolds just the portion of the IPH string corresponding to `matched_terms`.
   // The rest of the string is dimmed.
@@ -283,7 +283,7 @@ bool FeaturedSearchProvider::ShouldShowGeminiIPHMatch(
     const AutocompleteInput& input) const {
   // The IPH suggestion should only be shown in Zero prefix state.
   if (!OmniboxFieldTrial::IsStarterPackIPHEnabled() || !input.IsZeroSuggest() ||
-      !ShouldShowIPH(IPHType::kGemini)) {
+      !ShouldShowIPH(IphType::kGemini)) {
     return false;
   }
 
@@ -311,13 +311,13 @@ bool FeaturedSearchProvider::ShouldShowEnterpriseFeaturedSearchIPHMatch(
       template_url_service_->GetFeaturedEnterpriseSearchEngines();
   return OmniboxFieldTrial::IsFeaturedEnterpriseSearchIPHEnabled() &&
          input.IsZeroSuggest() && !featured_engines.empty() &&
-         ShouldShowIPH(IPHType::kFeaturedEnterpriseSearch) &&
+         ShouldShowIPH(IphType::kFeaturedEnterpriseSearch) &&
          base::ranges::all_of(featured_engines, [](auto turl) {
            return turl->usage_count() == 0;
          });
 }
 
-bool FeaturedSearchProvider::ShouldShowIPH(IPHType iph_type) const {
+bool FeaturedSearchProvider::ShouldShowIPH(IphType iph_type) const {
   PrefService* prefs = client_->GetPrefs();
   size_t iph_shown_limit =
       OmniboxFieldTrial::kStarterPackIPHPerSessionLimit.Get();
@@ -333,7 +333,7 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchIPHMatch() {
         return url_formatter::StripWWW(GURL(turl->url()).host());
       });
   base::ranges::sort(sites);
-  AddIPHMatch(IPHType::kFeaturedEnterpriseSearch,
+  AddIPHMatch(IphType::kFeaturedEnterpriseSearch,
               l10n_util::GetStringFUTF16(
                   IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH,
                   base::UTF8ToUTF16(base::JoinString(sites, ", "))),

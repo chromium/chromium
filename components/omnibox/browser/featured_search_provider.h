@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/search_engines/template_url_service.h"
 
@@ -21,24 +22,9 @@ class TemplateURLService;
 // chrome://version, as well as the built-in Starter Pack search engines.
 class FeaturedSearchProvider : public AutocompleteProvider {
  public:
-  static constexpr char kIPHTypeAdditionalInfoKey[] = "iph_type";
-
-  enum class IPHType {
-    kGemini,
-    kFeaturedEnterpriseSearch,
-    // Update `kMaxIPHType` below if you add a new type.
-  };
-
-  static constexpr IPHType kMinIPHType = IPHType::kGemini;
-  static constexpr IPHType kMaxIPHType = IPHType::kFeaturedEnterpriseSearch;
-
   explicit FeaturedSearchProvider(AutocompleteProviderClient* client);
   FeaturedSearchProvider(const FeaturedSearchProvider&) = delete;
   FeaturedSearchProvider& operator=(const FeaturedSearchProvider&) = delete;
-
-  // Returns the IPH type corresponding to `match` by checking the information
-  // stored in `additional_info`.
-  static IPHType GetIPHType(const AutocompleteMatch& match);
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
@@ -63,7 +49,7 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   // Constructs a NULL_RESULT_MESSAGE match that is informational only and
   // cannot be acted upon.  This match delivers an IPH message directing users
   // to the starter pack feature.
-  void AddIPHMatch(IPHType iph_type,
+  void AddIPHMatch(IphType iph_type,
                    const std::u16string& iph_contents,
                    const std::u16string& matched_term);
 
@@ -85,7 +71,7 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   // - It has been shown fewer times than the session limit;
   // - The user has not manually deleted it.
   // If the limit is set to INT_MAX, it is not limited.
-  bool ShouldShowIPH(IPHType iph_type) const;
+  bool ShouldShowIPH(IphType iph_type) const;
 
   void AddFeaturedEnterpriseSearchIPHMatch();
 

@@ -65,7 +65,7 @@ const char kACMatchPropertyContentsStartIndex[] = "match contents start index";
 // scoring non-default match.
 const char kACMatchPropertyScoreBoostedFrom[] = "score_boosted_from";
 
-// RichAutocompletionParams ---------------------------------------------------
+// Util structs/enums ----------------------------------------------------------
 
 // `RichAutocompletionParams` is a cache for the params used by
 // `TryRichAutocompletion()`. `TryRichAutocompletion()` is called about 80 times
@@ -87,6 +87,12 @@ struct RichAutocompletionParams {
   int autocomplete_shortcut_text_min_char;
   bool counterfactual;
   bool autocomplete_prefer_urls_over_prefixes;
+};
+
+enum class IphType {
+  kNone,
+  kGemini,
+  kFeaturedEnterpriseSearch,
 };
 
 // AutocompleteMatch ----------------------------------------------------------
@@ -942,6 +948,9 @@ struct AutocompleteMatch {
   //   launches. In the meantime, shortcut grouping won't work for users in the
   //   grouping experiments.
   bool shortcut_boosted = false;
+
+  // E.g. the gemini IPH match shown at the bottom of the popup.
+  IphType iph_type = IphType::kNone;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char16_t kEllipsis[];

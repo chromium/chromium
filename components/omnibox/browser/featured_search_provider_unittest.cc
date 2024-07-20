@@ -324,8 +324,7 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NULL_RESULT_MESSAGE);
-  EXPECT_EQ(FeaturedSearchProvider::GetIPHType(matches[0]),
-            FeaturedSearchProvider::IPHType::kGemini);
+  EXPECT_EQ(matches[0].iph_type, IphType::kGemini);
 
   // Not in ZPS, the IPH should not be provided.
   input.set_focus_type(metrics::INTERACTION_DEFAULT);
@@ -358,8 +357,7 @@ TEST_F(FeaturedSearchProviderTest,
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NULL_RESULT_MESSAGE);
-  EXPECT_EQ(FeaturedSearchProvider::GetIPHType(matches[0]),
-            FeaturedSearchProvider::IPHType::kGemini);
+  EXPECT_EQ(matches[0].iph_type, IphType::kGemini);
 
   // Call `DeleteMatch()`, match should be deleted from `matches_` and the pref
   // should be set to false.
@@ -397,8 +395,7 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestFeaturedSearchIPHSuggestion) {
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NULL_RESULT_MESSAGE);
-  EXPECT_EQ(FeaturedSearchProvider::GetIPHType(matches[0]),
-            FeaturedSearchProvider::IPHType::kFeaturedEnterpriseSearch);
+  EXPECT_EQ(matches[0].iph_type, IphType::kFeaturedEnterpriseSearch);
 
   // Not in ZPS, the IPH should not be provided.
   input.set_focus_type(metrics::INTERACTION_DEFAULT);
@@ -442,8 +439,7 @@ TEST_F(FeaturedSearchProviderTest,
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NULL_RESULT_MESSAGE);
-  EXPECT_EQ(FeaturedSearchProvider::GetIPHType(matches[0]),
-            FeaturedSearchProvider::IPHType::kFeaturedEnterpriseSearch);
+  EXPECT_EQ(matches[0].iph_type, IphType::kFeaturedEnterpriseSearch);
 
   // Call `DeleteMatch()`, match should be deleted from `matches_` and the pref
   // should be set to false.
@@ -491,8 +487,7 @@ TEST_F(FeaturedSearchProviderTest,
   ACMatches matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NULL_RESULT_MESSAGE);
-  EXPECT_EQ(FeaturedSearchProvider::GetIPHType(matches[0]),
-            FeaturedSearchProvider::IPHType::kFeaturedEnterpriseSearch);
+  EXPECT_EQ(matches[0].iph_type, IphType::kFeaturedEnterpriseSearch);
 
   // Call `DeleteMatch()`, match should be deleted from `matches_` and the pref
   // should be set to false.
@@ -510,8 +505,7 @@ TEST_F(FeaturedSearchProviderTest,
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 1u);
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NULL_RESULT_MESSAGE);
-  EXPECT_EQ(FeaturedSearchProvider::GetIPHType(matches[0]),
-            FeaturedSearchProvider::IPHType::kGemini);
+  EXPECT_EQ(matches[0].iph_type, IphType::kGemini);
 
   // Call `DeleteMatch()`, match should be deleted from `matches_` and the pref
   // should be set to false.
