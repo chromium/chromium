@@ -684,7 +684,7 @@ void ZeroSuggestProvider::ConvertSuggestResultsToAutocompleteMatches(
   // suggestions as unbolded.
   MatchMap map;
   for (size_t i = 0; i < results.suggest_results.size(); ++i) {
-    AddMatchToMap(results.suggest_results[i], std::string(), input,
+    AddMatchToMap(results.suggest_results[i], input,
                   client()->GetTemplateURLService()->GetDefaultSearchProvider(),
                   client()->GetTemplateURLService()->search_terms_data(), i,
                   false, false, &map);

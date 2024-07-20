@@ -140,13 +140,6 @@ SearchProvider::SearchProvider(AutocompleteProviderClient* client,
     observation_.Observe(template_url_service);
 }
 
-// static
-std::string SearchProvider::GetSuggestMetadata(const AutocompleteMatch& match) {
-  // TODO(manukh): Unused, delete this method, `kSuggestMetadataKey`, writing to
-  //   `kSuggestMetadataKey`, and the wiring for metadata.
-  return match.GetAdditionalInfoForDebugging(kSuggestMetadataKey);
-}
-
 void SearchProvider::RegisterDisplayedAnswers(
     const AutocompleteResult& result) {
   if (result.empty())
@@ -1010,7 +1003,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         verbatim.SetRichAnswerTemplate(*match_with_answer->answer_template);
       }
     }
-    AddMatchToMap(verbatim, std::string(), GetInput(verbatim.from_keyword()),
+    AddMatchToMap(verbatim, GetInput(verbatim.from_keyword()),
                   GetTemplateURL(verbatim.from_keyword()),
                   client()->GetTemplateURLService()->search_terms_data(),
                   did_not_accept_default_suggestion, false,
@@ -1044,8 +1037,7 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
             /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
             keyword_verbatim_relevance, keyword_relevance_from_server,
             /*input_text=*/trimmed_verbatim);
-        AddMatchToMap(verbatim, std::string(),
-                      GetInput(verbatim.from_keyword()),
+        AddMatchToMap(verbatim, GetInput(verbatim.from_keyword()),
                       GetTemplateURL(verbatim.from_keyword()),
                       client()->GetTemplateURLService()->search_terms_data(),
                       did_not_accept_keyword_suggestion, false, true, &map);
@@ -1055,11 +1047,9 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
   AddRawHistoryResultsToMap(true, did_not_accept_keyword_suggestion, &map);
   if (!should_curb_default_suggestions)
     AddRawHistoryResultsToMap(false, did_not_accept_default_suggestion, &map);
-  AddSuggestResultsToMap(keyword_results_.suggest_results,
-                         keyword_results_.metadata, &map);
+  AddSuggestResultsToMap(keyword_results_.suggest_results, &map);
   if (!should_curb_default_suggestions) {
-    AddSuggestResultsToMap(default_results_.suggest_results,
-                           default_results_.metadata, &map);
+    AddSuggestResultsToMap(default_results_.suggest_results, &map);
   }
   ACMatches matches;
   for (MatchMap::const_iterator i(map.begin()); i != map.end(); ++i)
@@ -1202,10 +1192,9 @@ void SearchProvider::AddTransformedHistoryResultsToMap(
     const SearchSuggestionParser::SuggestResults& transformed_results,
     int did_not_accept_suggestion,
     MatchMap* map) {
-  for (auto i(transformed_results.begin()); i != transformed_results.end();
-       ++i) {
-    AddMatchToMap(*i, std::string(), GetInput(i->from_keyword()),
-                  GetTemplateURL(i->from_keyword()),
+  for (const auto& result : transformed_results) {
+    AddMatchToMap(result, GetInput(result.from_keyword()),
+                  GetTemplateURL(result.from_keyword()),
                   client()->GetTemplateURLService()->search_terms_data(),
                   did_not_accept_suggestion, true,
                   providers_.GetKeywordProviderURL() != nullptr, map);
@@ -1362,10 +1351,9 @@ void SearchProvider::ScoreHistoryResults(
 
 void SearchProvider::AddSuggestResultsToMap(
     const SearchSuggestionParser::SuggestResults& results,
-    const std::string& metadata,
     MatchMap* map) {
   for (size_t i = 0; i < results.size(); ++i) {
-    AddMatchToMap(results[i], metadata, GetInput(results[i].from_keyword()),
+    AddMatchToMap(results[i], GetInput(results[i].from_keyword()),
                   GetTemplateURL(results[i].from_keyword()),
                   client()->GetTemplateURLService()->search_terms_data(), i,
                   false, providers_.GetKeywordProviderURL() != nullptr, map);

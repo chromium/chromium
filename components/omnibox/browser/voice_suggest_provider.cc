@@ -54,8 +54,7 @@ void VoiceSuggestProvider::Start(const AutocompleteInput& input,
             /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
             ConfidenceScoreToSuggestionScore(score_and_suggestion_pair.first),
             false, {}),
-        {}, input,
-        client()->GetTemplateURLService()->GetDefaultSearchProvider(),
+        input, client()->GetTemplateURLService()->GetDefaultSearchProvider(),
         client()->GetTemplateURLService()->search_terms_data(), index, false,
         false, &map);
     ++index;

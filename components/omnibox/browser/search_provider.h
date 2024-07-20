@@ -59,10 +59,6 @@ class SearchProvider : public BaseSearchProvider,
   SearchProvider(const SearchProvider&) = delete;
   SearchProvider& operator=(const SearchProvider&) = delete;
 
-  // Extracts the suggest response metadata which SearchProvider previously
-  // stored for |match|.
-  static std::string GetSuggestMetadata(const AutocompleteMatch& match);
-
   // Answers prefetch handling - register displayed answers. Takes the top
   // match for Autocomplete and registers the contained answer data, if any.
   void RegisterDisplayedAnswers(const AutocompleteResult& result);
@@ -344,10 +340,9 @@ class SearchProvider : public BaseSearchProvider,
       bool is_keyword,
       SearchSuggestionParser::SuggestResults* scored_results);
 
-  // Adds matches for |results| to |map|.
+  // Adds matches for `results` to `map`.
   void AddSuggestResultsToMap(
       const SearchSuggestionParser::SuggestResults& results,
-      const std::string& metadata,
       MatchMap* map);
 
   // Gets the relevance score for the verbatim result.  This value may be
