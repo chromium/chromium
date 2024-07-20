@@ -68,8 +68,17 @@ class HttpStreamPool::Job
   // Tries to process a pending request.
   void ProcessPendingRequest();
 
+  // Returns the number of total requests in this job.
+  size_t RequestCount() const { return requests_.size(); }
+
   // Returns the number of in-flight attempts.
   size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
+
+  // Cancels all in-flight attempts.
+  void CancelInFlightAttempts();
+
+  // Cancels all requests.
+  void CancelRequests(int error);
 
   // Returns the number of pending requests. The number is calculated by
   // subtracting the number of in-flight attempts (excluding slow attempts) from
@@ -80,6 +89,14 @@ class HttpStreamPool::Job
   RequestPriority GetPriority() const;
 
  private:
+  // Represents failure of connection attempts. Used to call request's delegate
+  // methods.
+  enum class FailureKind {
+    kStreamFailed,
+    kCertifcateError,
+    kNeedsClientAuth,
+  };
+
   // A peer of an HttpStreamRequest. Holds the HttpStreamRequest's delegate
   // pointer and implements HttpStreamRequest::Helper.
   class RequestEntry : public HttpStreamRequest::Helper {
@@ -148,14 +165,12 @@ class HttpStreamPool::Job
   std::optional<IPEndPoint> FindUnattemptedIPEndPoint(
       const std::vector<IPEndPoint>& ip_endpoints);
 
+  // Calculate the failure kind to notify requests of failure. Used to call
+  // one of the delegate's methods.
+  FailureKind DetermineFailureKind();
+
   // Notifies a failure to all requests.
-  void NotifyFailure(int rv);
-
-  // Notifies a certificate error to all requests.
-  void NotifyCertificateError(int rv, const SSLInfo& ssl_info);
-
-  // Notifies a client cert is needed to all requests.
-  void NotifyNeedsClientAuth(scoped_refptr<SSLCertRequestInfo> cert_info);
+  void NotifyFailure();
 
   // Creates a text based stream and notifies the highest priority request.
   void CreateTextBasedStreamAndNotify(
@@ -202,11 +217,23 @@ class HttpStreamPool::Job
   // existing requests.
   bool is_failing_ = false;
 
+  // Set to true when `CancelRequests()` is called.
+  bool is_canceling_requests_ = false;
+
   NetErrorDetails net_error_details_;
   ResolveErrorInfo resolve_error_info_;
-  // Set to the latest stream attempt failure result. Used to notify delegates
-  // when all attempts failed.
-  int last_attempt_error_ = ERR_FAILED;
+
+  // Set to an error from the latest stream attempt failure or network change
+  // events. Used to notify delegates when all attempts failed.
+  int error_to_notify_ = ERR_FAILED;
+
+  // Set to a SSLInfo when an attempt has failed with a certificate error. Used
+  // to notify requests.
+  std::optional<SSLInfo> cert_error_ssl_info_;
+
+  // Set to a SSLCertRequestInfo when an attempt has requested a client cert.
+  // Used to notify requests.
+  scoped_refptr<SSLCertRequestInfo> client_auth_cert_info_;
 
   // Allowed bad certificates from the newest request.
   std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;

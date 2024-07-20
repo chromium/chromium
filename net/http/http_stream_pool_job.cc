@@ -151,7 +151,8 @@ void HttpStreamPool::Job::OnServiceEndpointRequestFinished(int rv) {
   resolve_error_info_ = service_endpoint_request_->GetResolveErrorInfo();
 
   if (rv != OK) {
-    NotifyFailure(rv);
+    error_to_notify_ = rv;
+    NotifyFailure();
     return;
   }
 
@@ -186,6 +187,17 @@ void HttpStreamPool::Job::ProcessPendingRequest() {
   }
 
   MaybeAttemptConnection(/*max_attempts=*/1);
+}
+
+void HttpStreamPool::Job::CancelInFlightAttempts() {
+  in_flight_attempts_.clear();
+  slow_attempt_count_ = 0;
+}
+
+void HttpStreamPool::Job::CancelRequests(int error) {
+  error_to_notify_ = error;
+  is_canceling_requests_ = true;
+  NotifyFailure();
 }
 
 size_t HttpStreamPool::Job::PendingRequestCount() const {
@@ -319,7 +331,7 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
   if (!ip_endpoint.has_value()) {
     if (service_endpoint_request_finished_ && in_flight_attempts_.empty()) {
       // Tried all endpoints.
-      NotifyFailure(last_attempt_error_);
+      NotifyFailure();
     }
     return;
   }
@@ -417,55 +429,52 @@ std::optional<IPEndPoint> HttpStreamPool::Job::FindUnattemptedIPEndPoint(
   return std::nullopt;
 }
 
-void HttpStreamPool::Job::NotifyFailure(int rv) {
+HttpStreamPool::Job::FailureKind HttpStreamPool::Job::DetermineFailureKind() {
+  if (is_canceling_requests_) {
+    return FailureKind::kStreamFailed;
+  }
+
+  if (IsCertificateError(error_to_notify_)) {
+    return FailureKind::kCertifcateError;
+  }
+
+  if (error_to_notify_ == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+    return FailureKind::kNeedsClientAuth;
+  }
+
+  return FailureKind::kStreamFailed;
+}
+
+void HttpStreamPool::Job::NotifyFailure() {
   is_failing_ = true;
 
   RequestEntry* entry = ExtractFirstRequestToNotify();
   if (!entry) {
+    // TODO(crbug.com/346835898): Ensure that MaybeComplete() is called
+    // eventually.
     return;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&Job::NotifyFailure, weak_ptr_factory_.GetWeakPtr(), rv));
+      base::BindOnce(&Job::NotifyFailure, weak_ptr_factory_.GetWeakPtr()));
 
-  entry->delegate()->OnStreamFailed(rv, net_error_details_, proxy_info_,
-                                    resolve_error_info_);
-  // `this` may be deleted.
-}
-
-void HttpStreamPool::Job::NotifyCertificateError(int rv,
-                                                 const SSLInfo& ssl_info) {
-  is_failing_ = true;
-
-  RequestEntry* entry = ExtractFirstRequestToNotify();
-  if (!entry) {
-    return;
+  FailureKind kind = DetermineFailureKind();
+  switch (kind) {
+    case FailureKind::kStreamFailed:
+      entry->delegate()->OnStreamFailed(error_to_notify_, net_error_details_,
+                                        proxy_info_, resolve_error_info_);
+      break;
+    case FailureKind::kCertifcateError:
+      CHECK(cert_error_ssl_info_.has_value());
+      entry->delegate()->OnCertificateError(error_to_notify_,
+                                            *cert_error_ssl_info_);
+      break;
+    case FailureKind::kNeedsClientAuth:
+      CHECK(client_auth_cert_info_.get());
+      entry->delegate()->OnNeedsClientAuth(client_auth_cert_info_.get());
+      break;
   }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&Job::NotifyCertificateError,
-                                weak_ptr_factory_.GetWeakPtr(), rv, ssl_info));
-
-  entry->delegate()->OnCertificateError(rv, ssl_info);
-  // `this` may be deleted.
-}
-
-void HttpStreamPool::Job::NotifyNeedsClientAuth(
-    scoped_refptr<SSLCertRequestInfo> cert_info) {
-  is_failing_ = true;
-
-  RequestEntry* entry = ExtractFirstRequestToNotify();
-  if (!entry) {
-    return;
-  }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&Job::NotifyNeedsClientAuth,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                base::RetainedRef(cert_info)));
-
-  entry->delegate()->OnNeedsClientAuth(cert_info.get());
   // `this` may be deleted.
 }
 
@@ -589,14 +598,13 @@ void HttpStreamPool::Job::HandleAttemptFailure(
     return;
   }
 
-  last_attempt_error_ = rv;
+  error_to_notify_ = rv;
 
   if (rv == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     CHECK(UsingTls());
-    scoped_refptr<SSLCertRequestInfo> cert_info =
-        in_flight_attempt->attempt->GetCertRequestInfo();
+    client_auth_cert_info_ = in_flight_attempt->attempt->GetCertRequestInfo();
     in_flight_attempt.reset();
-    NotifyNeedsClientAuth(cert_info);
+    NotifyFailure();
     return;
   }
 
@@ -609,8 +617,9 @@ void HttpStreamPool::Job::HandleAttemptFailure(
     bool has_ssl_info =
         in_flight_attempt->attempt->stream_socket()->GetSSLInfo(&ssl_info);
     CHECK(has_ssl_info);
+    cert_error_ssl_info_ = ssl_info;
     in_flight_attempt.reset();
-    NotifyCertificateError(rv, ssl_info);
+    NotifyFailure();
   } else {
     in_flight_attempt.reset();
     MaybeAttemptConnection();

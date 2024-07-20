@@ -191,9 +191,18 @@ HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
   return in_flight_job_->GetPriority();
 }
 
-void HttpStreamPool::Group::IncrementGeneration() {
+void HttpStreamPool::Group::Refresh() {
   ++generation_;
   CleanupIdleStreamSockets(CleanupMode::kForce);
+  if (in_flight_job_) {
+    in_flight_job_->CancelInFlightAttempts();
+  }
+}
+
+void HttpStreamPool::Group::CancelRequests(int error) {
+  if (in_flight_job_) {
+    in_flight_job_->CancelRequests(error);
+  }
 }
 
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {

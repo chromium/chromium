@@ -63,7 +63,8 @@ void HttpStreamPool::DecrementTotalConnectingStreamCount() {
 void HttpStreamPool::OnIPAddressChanged() {
   CHECK(cleanup_on_ip_address_change_);
   for (const auto& group : groups_) {
-    group.second->IncrementGeneration();
+    group.second->Refresh();
+    group.second->CancelRequests(ERR_NETWORK_CHANGED);
   }
 }
 

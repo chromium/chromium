@@ -345,6 +345,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override {
     CHECK(!cert_info_);
+    result_ = ERR_SSL_CLIENT_AUTH_CERT_NEEDED;
     cert_info_ = cert_info;
   }
 
@@ -1144,6 +1145,88 @@ TEST_F(HttpStreamPoolJobTest,
 
   ASSERT_TRUE(request->completed());
   ASSERT_EQ(group_a.IdleStreamSocketCount(), 1u);
+}
+
+// Tests that all in-flight requests and connection attempts are canceled
+// when an IP address change event happens.
+TEST_F(HttpStreamPoolJobTest, CancelAttemptAndRequestsOnIPAddressChange) {
+  FakeServiceEndpointRequest* endpoint_request1 = resolver()->AddFakeRequest();
+  FakeServiceEndpointRequest* endpoint_request2 = resolver()->AddFakeRequest();
+
+  auto data1 = std::make_unique<SequencedSocketData>();
+  data1->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(data1.get());
+
+  auto data2 = std::make_unique<SequencedSocketData>();
+  data2->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(data2.get());
+
+  StreamRequester requester1;
+  requester1.set_destination("https://a.test").RequestStream(pool());
+
+  StreamRequester requester2;
+  requester2.set_destination("https://b.test").RequestStream(pool());
+
+  endpoint_request1->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.1").endpoint());
+  endpoint_request1->CallOnServiceEndpointRequestFinished(OK);
+  endpoint_request2->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.2").endpoint());
+  endpoint_request2->CallOnServiceEndpointRequestFinished(OK);
+
+  Job* job1 = pool()
+                  .GetOrCreateGroupForTesting(requester1.GetStreamKey())
+                  .GetJobForTesting();
+  Job* job2 = pool()
+                  .GetOrCreateGroupForTesting(requester2.GetStreamKey())
+                  .GetJobForTesting();
+  ASSERT_EQ(job1->RequestCount(), 1u);
+  ASSERT_EQ(job1->InFlightAttemptCount(), 1u);
+  ASSERT_EQ(job2->RequestCount(), 1u);
+  ASSERT_EQ(job2->InFlightAttemptCount(), 1u);
+
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  RunUntilIdle();
+  ASSERT_EQ(job1->RequestCount(), 0u);
+  ASSERT_EQ(job1->InFlightAttemptCount(), 0u);
+  ASSERT_EQ(job2->RequestCount(), 0u);
+  ASSERT_EQ(job2->InFlightAttemptCount(), 0u);
+  EXPECT_THAT(*requester1.result(), IsError(ERR_NETWORK_CHANGED));
+  EXPECT_THAT(*requester2.result(), IsError(ERR_NETWORK_CHANGED));
+}
+
+// Tests that the network change error is reported even when a different error
+// has already happened.
+TEST_F(HttpStreamPoolJobTest, IPAddressChangeAfterNeedsClientAuth) {
+  // Set the per-group limit to one to allow only one attempt.
+  constexpr size_t kMaxPerGroup = 1;
+  pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  const url::SchemeHostPort kDestination(GURL("https://a.test"));
+
+  auto data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(data.get());
+  SSLSocketDataProvider ssl(SYNCHRONOUS, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
+  ssl.cert_request_info->host_and_port =
+      HostPortPair::FromSchemeHostPort(kDestination);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDestination).RequestStream(pool());
+  StreamRequester requester2;
+  requester2.set_destination(kDestination).RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  RunUntilIdle();
+  EXPECT_THAT(*requester1.result(), IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+  EXPECT_THAT(*requester2.result(), IsError(ERR_NETWORK_CHANGED));
 }
 
 }  // namespace net

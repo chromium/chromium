@@ -97,8 +97,12 @@ class HttpStreamPool::Group {
   std::optional<RequestPriority> GetPriorityIfStalledByPoolLimit() const;
 
   // Increments the generation of this group. Closes idle streams. Streams
-  // handed out before this increment won't be reused.
-  void IncrementGeneration();
+  // handed out before this increment won't be reused. Cancels in-flight
+  // connection attempts.
+  void Refresh();
+
+  // Cancels all on-going requests.
+  void CancelRequests(int error);
 
   void CleanupTimedoutIdleStreamSocketsForTesting();
 
