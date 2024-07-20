@@ -506,8 +506,9 @@ void AuthenticatorRequestDialogModel::SetStep(Step step) {
 
 void AuthenticatorRequestDialogModel::DisableUiOrShowLoadingDialog() {
   // If the current step is showing a dialog, disable it. Else, show the GPM
-  // Connecting dialog.
-  if (should_dialog_be_closed()) {
+  // Connecting dialog. The native Touch ID control cannot be effectively
+  // disabled so that sheet is an exception.
+  if (should_dialog_be_closed() || step() == Step::kGPMTouchID) {
     SetStep(Step::kGPMConnecting);
   } else {
     ui_disabled_ = true;
