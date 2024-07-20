@@ -227,12 +227,38 @@ suite('ExtensionItemTest', function() {
         return verifyEventPromise(true);
       });
 
+  test('Description', function() {
+    // Description is visible if there are no warnings.
+    assertTrue(isChildVisible(item, '#description'));
+
+    // Description is hidden if there is a severe warning.
+    item.set('data.disableReasons.corruptInstall', true);
+    flush();
+    assertFalse(isChildVisible(item, '#description'));
+
+    // Description is hidden if there is a MV2 deprecation warning.
+    item.set('data.disableReasons.corruptInstall', false);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    assertFalse(isChildVisible(item, '#description'));
+
+    // Description is hidden if there is an allowlist warning.
+    item.set('data.disableReasons.unsupportedManifestVersion', false);
+    item.set('data.showSafeBrowsingAllowlistWarning', true);
+    flush();
+    assertFalse(isChildVisible(item, '#description'));
+  });
+
   test('Warnings', function() {
+    // Severe warnings.
     const kCorrupt = 1 << 0;
     const kSuspicious = 1 << 1;
     const kBlacklisted = 1 << 2;
     const kRuntime = 1 << 3;
+    // Allowlist warning.
     const kSafeBrowsingAllowlist = 1 << 4;
+    // MV2 deprecation warning.
+    const kMv2Deprecation = 1 << 5;
 
     function assertWarnings(mask: number) {
       assertEquals(
@@ -247,10 +273,14 @@ suite('ExtensionItemTest', function() {
       assertEquals(
           !!(mask & kSafeBrowsingAllowlist),
           isChildVisible(item, '#allowlist-warning'));
+      assertEquals(
+          !!(mask & kMv2Deprecation),
+          isChildVisible(item, '#mv2-deprecation-warning'));
     }
 
     assertWarnings(0);
 
+    // Show severe warnings by updating the corresponding properties.
     item.set('data.disableReasons.corruptInstall', true);
     flush();
     assertWarnings(kCorrupt);
@@ -271,21 +301,41 @@ suite('ExtensionItemTest', function() {
     flush();
     assertWarnings(kCorrupt | kSuspicious | kRuntime);
 
+    // Reset all properties affecting warnings.
     item.set('data.disableReasons.corruptInstall', false);
     item.set('data.disableReasons.suspiciousInstall', false);
     item.set('data.runtimeWarnings', []);
     flush();
     assertWarnings(0);
 
-    item.set('data.showSafeBrowsingAllowlistWarning', true);
+    // Show MV2 deprecation warning.
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
     flush();
-    assertWarnings(kSafeBrowsingAllowlist);
-
-    // Test that the allowlist warning is not shown when there is already a
-    // warning message.
+    assertWarnings(kMv2Deprecation);
+    // MV2 deprecation warning is hidden if there are any severe warnings.
     item.set('data.disableReasons.suspiciousInstall', true);
     flush();
     assertWarnings(kSuspicious);
+
+    // Reset all properties affecting warnings.
+    item.set('data.disableReasons.unsupportedManifestVersion', false);
+    item.set('data.disableReasons.suspiciousInstall', false);
+    flush();
+    assertWarnings(0);
+
+    // Show allowlist warning.
+    item.set('data.showSafeBrowsingAllowlistWarning', true);
+    flush();
+    assertWarnings(kSafeBrowsingAllowlist);
+    // Allowlist warning is not visible if there are any severe warnings.
+    item.set('data.disableReasons.suspiciousInstall', true);
+    flush();
+    assertWarnings(kSuspicious);
+    // Allowlist warning is not visible if there is a MV2 deprecation warning
+    item.set('data.disableReasons.suspiciousInstall', false);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    assertWarnings(kMv2Deprecation);
   });
 
   test('SourceIndicator', function() {
