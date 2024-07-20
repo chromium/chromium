@@ -1971,6 +1971,11 @@ config("default_warnings") {
     }
   }
 
+  # TODO(crbug.com/354162568): Clean up and enable.
+  if (llvm_force_head_revision && is_apple && use_lld) {
+    ldflags += [ "-Wl,--no-warn-duplicate-rpath" ]
+  }
+
   # Rust warnings
 
   # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
