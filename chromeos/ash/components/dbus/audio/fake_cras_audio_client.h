@@ -82,6 +82,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void SetFlossEnabled(bool enabled) override;
   void SetSpeakOnMuteDetection(bool enabled) override;
   void SetSidetoneEnabled(bool enabled) override;
+  void GetSidetoneSupported(
+      chromeos::DBusMethodCallback<bool> callback) override;
   void AddActiveInputNode(uint64_t node_id) override;
   void RemoveActiveInputNode(uint64_t node_id) override;
   void AddActiveOutputNode(uint64_t node_id) override;
@@ -210,6 +212,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   bool style_transfer_enabled_ = false;
   bool speak_on_mute_detection_enabled_ = false;
   bool sidetone_enabled_ = false;
+  bool sidetone_supported_ = false;
   bool force_respect_ui_gains_enabled_ = false;
   bool hfp_mic_sr_enabled_ = false;
   bool hfp_mic_sr_supported_ = false;

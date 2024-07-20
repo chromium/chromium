@@ -401,6 +401,14 @@ bool VideoConferenceTrayController::GetHasMicrophonePermissions() const {
   return state_.has_microphone_permission;
 }
 
+void VideoConferenceTrayController::UpdateSidetoneSupportedState() {
+  CrasAudioHandler::Get()->UpdateSidetoneSupportedState();
+}
+
+bool VideoConferenceTrayController::IsSidetoneSupported() const {
+  return CrasAudioHandler::Get()->IsSidetoneSupported();
+}
+
 bool VideoConferenceTrayController::GetSidetoneEnabled() const {
   return CrasAudioHandler::Get()->GetSidetoneEnabled();
 }

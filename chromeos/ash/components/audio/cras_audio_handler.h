@@ -579,6 +579,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Get whether the sidetone is enabled or not
   bool GetSidetoneEnabled() const;
 
+  // Based on the output device, get whether sidetone is available or not.
+  bool IsSidetoneSupported() const;
+
+  // Request to CRAS to check whether the current device support sidetone or
+  // not.
+  void UpdateSidetoneSupportedState();
+
+  // Handles dbus callback for GetNodes.
+  void HandleGetSidetoneSupported(std::optional<bool> available);
+
   // Changes the active nodes to the nodes specified by |new_active_ids|.
   // The caller can pass in the "complete" active node list of either input
   // nodes, or output nodes, or both. If only input nodes are passed in,
@@ -734,6 +744,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void NumberOfNonChromeOutputStreamsChanged() override;
   void NumStreamIgnoreUiGains(int32_t num) override;
   void NumberOfArcStreamsChanged() override;
+  void SidetoneSupportedChanged(bool supported) override;
 
   // AudioPrefObserver overrides.
   void OnAudioPolicyPrefChanged() override;
@@ -1138,6 +1149,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Whether the sidetone is enabled in CRAS.
   bool sidetone_enabled_ = false;
+
+  // Whether the current has sidetone available or not.
+  bool sidetone_supported_ = false;
 
   // Indicates whether the audio selection notification should be displayed.
   bool should_show_notification_ = false;

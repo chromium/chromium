@@ -181,6 +181,13 @@ class ASH_EXPORT VideoConferenceTrayController
   // Gets the state for sidetone.
   bool GetSidetoneEnabled() const;
 
+  // Gets whether sidetone is supported.
+  bool IsSidetoneSupported() const;
+
+  // Update the sidetone supported value.
+  // Should be called before calling IsSidetoneSupported.
+  void UpdateSidetoneSupportedState();
+
   // Handles device usage from a VC app while the device is system disabled.
   virtual void HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device,

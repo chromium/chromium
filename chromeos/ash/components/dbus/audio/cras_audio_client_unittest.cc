@@ -146,6 +146,7 @@ class MockObserver : public CrasAudioClient::Observer {
   MOCK_METHOD0(NumberOfNonChromeOutputStreamsChanged, void());
   MOCK_METHOD1(NumStreamIgnoreUiGains, void(int32_t num));
   MOCK_METHOD0(NumberOfArcStreamsChanged, void());
+  MOCK_METHOD1(SidetoneSupportedChanged, void(bool supported));
 };
 
 // Expect the reader to be empty.
@@ -544,6 +545,15 @@ class CrasAudioClientTest : public testing::Test {
         .WillRepeatedly(
             Invoke(this, &CrasAudioClientTest::OnNumberOfArcStreamsChanged));
 
+    // Set an expectation so mock_cras_proxy's monitoring
+    // SidetoneSupportedChanged ConnectToSignal will use
+    // OnSidetoneSupportedChanged() to run the callback.
+    EXPECT_CALL(
+        *mock_cras_proxy_.get(),
+        DoConnectToSignal(interface_name_, "SidetoneSupportedChanged", _, _))
+        .WillRepeatedly(
+            Invoke(this, &CrasAudioClientTest::OnSidetoneSupportedChanged));
+
     // Set an expectation so mock_bus's GetObjectProxy() for the given
     // service name and the object path will return mock_cras_proxy_.
     EXPECT_CALL(*mock_bus_.get(),
@@ -678,6 +688,12 @@ class CrasAudioClientTest : public testing::Test {
     number_of_arc_streams_changed_handler_.Run(signal);
   }
 
+  // Send sidetone supported changed signal to the tested client.
+  void SendSidetoneSupportedChangedSignal(dbus::Signal* signal) {
+    ASSERT_FALSE(sidetone_supported_changed_handler_.is_null());
+    sidetone_supported_changed_handler_.Run(signal);
+  }
+
   CrasAudioClient* client() { return CrasAudioClient::Get(); }
 
   // The interface name.
@@ -726,6 +742,8 @@ class CrasAudioClientTest : public testing::Test {
   // The NumberOfArcStreamsChanged signal handler given by the
   // tested client.
   dbus::ObjectProxy::SignalCallback number_of_arc_streams_changed_handler_;
+  // The SidetoneSupportedChanged signal handler given by the tested client.
+  dbus::ObjectProxy::SignalCallback sidetone_supported_changed_handler_;
   // The name of the method which is expected to be called.
   std::string expected_method_name_;
   // The response which the mock cras proxy returns.
@@ -947,6 +965,20 @@ class CrasAudioClientTest : public testing::Test {
       const dbus::ObjectProxy::SignalCallback& signal_callback,
       dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
     number_of_arc_streams_changed_handler_ = signal_callback;
+    constexpr bool success = true;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
+                                  interface_name, signal_name, success));
+  }
+
+  // Checks the requested interface name and signal name.
+  // Used to implement the mock cras proxy.
+  void OnSidetoneSupportedChanged(
+      const std::string& interface_name,
+      const std::string& signal_name,
+      const dbus::ObjectProxy::SignalCallback& signal_callback,
+      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+    sidetone_supported_changed_handler_ = signal_callback;
     constexpr bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
@@ -1258,6 +1290,26 @@ TEST_F(CrasAudioClientTest, NumberOfArcStreamsChanged) {
   EXPECT_CALL(observer, NumberOfArcStreamsChanged()).Times(0);
   // Run the signal callback again and make sure the observer isn't called.
   SendNumberOfArcStreamsChangedSignal(&signal);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, SidetoneSupportedChanged) {
+  const bool kSupported = true;
+
+  dbus::Signal signal(cras::kCrasControlInterface, "SidetoneSupportedChanged");
+  dbus::MessageWriter writer(&signal);
+  writer.AppendBool(kSupported);
+
+  MockObserver observer;
+  EXPECT_CALL(observer, SidetoneSupportedChanged(kSupported)).Times(1);
+  client()->AddObserver(&observer);
+  SendSidetoneSupportedChangedSignal(&signal);
+  client()->RemoveObserver(&observer);
+
+  EXPECT_CALL(observer, SidetoneSupportedChanged(kSupported)).Times(0);
+  // Run the signal callback again and make sure the observer isn't called.
+  SendSidetoneSupportedChangedSignal(&signal);
 
   base::RunLoop().RunUntilIdle();
 }

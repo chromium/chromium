@@ -87,6 +87,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     // Called when NumberOfArcStreamsChanged is detected.
     virtual void NumberOfArcStreamsChanged();
 
+    // Called when there is a new active node to indicate whether sidetone is
+    // supported.
+    virtual void SidetoneSupportedChanged(bool supported);
+
    protected:
     virtual ~Observer();
   };
@@ -217,6 +221,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void SetSpeakOnMuteDetection(bool enabled) = 0;
 
   virtual void SetSidetoneEnabled(bool enabled) = 0;
+
+  // Gets the number of active output streams.
+  virtual void GetSidetoneSupported(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
 
   // Adds input node |node_id| to the active input list. This is used to add
   // an additional active input node besides the one set by SetActiveInputNode.

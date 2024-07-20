@@ -864,6 +864,26 @@ bool CrasAudioHandler::GetSidetoneEnabled() const {
   return sidetone_enabled_;
 }
 
+bool CrasAudioHandler::IsSidetoneSupported() const {
+  return sidetone_supported_;
+}
+
+void CrasAudioHandler::UpdateSidetoneSupportedState() {
+  CrasAudioClient::Get()->GetSidetoneSupported(
+      base::BindOnce(&CrasAudioHandler::HandleGetSidetoneSupported,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrasAudioHandler::HandleGetSidetoneSupported(
+    std::optional<bool> supported) {
+  if (!supported.has_value()) {
+    LOG(ERROR) << "Failed to check whether sidetone is supported.";
+    return;
+  }
+
+  sidetone_supported_ = *supported;
+}
+
 void CrasAudioHandler::AddActiveNode(uint64_t node_id, bool notify) {
   const AudioDevice* device = GetDeviceFromId(node_id);
   if (!device) {
@@ -1592,6 +1612,10 @@ void CrasAudioHandler::NumStreamIgnoreUiGains(int32_t num) {
   }
 }
 
+void CrasAudioHandler::SidetoneSupportedChanged(bool supported) {
+  sidetone_supported_ = supported;
+}
+
 void CrasAudioHandler::ResendBluetoothBattery() {
   CrasAudioClient::Get()->ResendBluetoothBattery();
 }
@@ -1778,6 +1802,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   // previous state if CRAS restarts.
   CrasAudioClient::Get()->SetForceRespectUiGains(GetForceRespectUiGainsState());
 
+  UpdateSidetoneSupportedState();
   CrasAudioClient::Get()->SetSidetoneEnabled(sidetone_enabled_);
 }
 
