@@ -70,15 +70,14 @@ TitleView::TitleView() {
   title_column->AddChildView(
       views::Builder<views::ImageView>()
           .SetImage(ui::ImageModel::FromVectorIcon(
-              // TODO(b/353775770): change icon
-              kPrivacyIndicatorsCameraIcon, cros_tokens::kCrosSysOnSurface))
+              kSystemMenuVideocamIcon, cros_tokens::kCrosSysOnSurface))
           .SetImageSize(kIconSize)
           .Build());
 
   auto* title_label = title_column->AddChildView(
       views::Builder<views::Label>()
-          // TODO(b/353775770): change label
-          .SetText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME))
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_BUBBLE_TITLE))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(kColorAshTextColorPrimary)
           .SetAutoColorReadabilityEnabled(false)
@@ -97,10 +96,9 @@ TitleView::TitleView() {
   sidetone_button_ = mic_test_column->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&TitleView::OnSidetoneButtonClicked,
                           weak_ptr_factory_.GetWeakPtr()),
-      IconButton::Type::kMedium,
-      // TODO(b/353775770): change icon and text
-      &kPrivacyIndicatorsMicrophoneIcon,
-      VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE, /*is_toggleable=*/true,
+      IconButton::Type::kMedium, &kVideoConferenceSidetoneIcon,
+      IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP,
+      /*is_toggleable=*/true,
       /*has_border=*/false));
 
   sidetone_button_->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -135,10 +133,12 @@ void TitleView::OnSidetoneButtonClicked(const ui::Event& event) {
 void TitleView::ShowSidetoneBubble(const bool supported) {
   CloseSidetoneBubble();
 
-  // TODO(b/353775770): Change labels
-  auto title_id = supported ? IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU_OPEN
-                            : IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED;
-  auto body_id = IDS_UPDATE_NOTIFICATION_MESSAGE_DEFERRED_UPDATE;
+  auto title_id =
+      supported ? IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE
+                : IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE;
+  auto body_id =
+      supported ? IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_BODY
+                : IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_BODY;
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -173,9 +173,7 @@ void TitleView::ShowSidetoneBubble(const bool supported) {
 
   auto* title = bubble_view->AddChildView(
       views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(
-              // TODO(b/353775770): Change label
-              title_id))
+          .SetText(l10n_util::GetStringUTF16(title_id))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(kColorAshTextColorPrimary)
           .Build());
@@ -183,9 +181,7 @@ void TitleView::ShowSidetoneBubble(const bool supported) {
 
   auto* body = bubble_view->AddChildView(
       views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(
-              // TODO(b/353775770): Change label
-              body_id))
+          .SetText(l10n_util::GetStringUTF16(body_id))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(kColorAshTextColorPrimary)
           .SetMultiLine(true)

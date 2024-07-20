@@ -1777,6 +1777,27 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_STUDIO_LOOK_NAME" desc="Text for name of the studio look effect in the VC bubble, which is a toggle for enabling or disabling face retouching and portrait relighting.">
         Studio Look
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_TITLE" desc="The title of the video conference bubble.">
+        Video call controls
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_SIDETONE_TOGGLE_TOOLTIP" desc="Tooltip shown for a toggle to enable or disable sidetone.">
+        Toggle sidetone
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE" desc="The title of the bubble when sidetone is enabled.">
+        Listen to your mic sound
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_BODY" desc="The body of the bubble when sidetone is enabled.">
+        You can monitor your microphone sound from wired headphones. Close panel to stop.
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE" desc="The title of the bubble when the active device doesn't support sidetone.">
+        Connect wired headphone
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_BODY" desc="The body of the bubble when the active device doesn't support sidetone.">
+        To avoid echo, you can listen to your mic only with wired headphone.
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
+        Dismiss
+      </message>
         <message name="IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME" desc="Text for name of the 'Create With AI' button in the VC bubble, which invokes the webui for the creation.">
         Create with AI
       </message>
