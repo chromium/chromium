@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/no_destructor.h"
 #import "components/affiliations/core/browser/affiliation_service.h"
@@ -67,6 +68,19 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
   affiliations::AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
 
+  // `groups_manager` can be null in tests.
+  GoogleGroupsManager* groups_manager =
+      GoogleGroupsManagerFactory::GetForBrowserState(browser_state);
+  plus_addresses::PlusAddressService::FeatureEnabledForProfileCheck
+      feature_check =
+          (groups_manager &&
+           base::FeatureList::IsEnabled(
+               plus_addresses::features::kPlusAddressProfileAwareFeatureCheck))
+              ? base::BindRepeating(
+                    &GoogleGroupsManager::IsFeatureEnabledForProfile,
+                    base::Unretained(groups_manager))
+              : base::BindRepeating(&base::FeatureList::IsEnabled);
+
   std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressService>(
           identity_manager,
@@ -75,12 +89,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
               identity_manager, browser_state->GetSharedURLLoaderFactory()),
           ios::WebDataServiceFactory::GetPlusAddressWebDataForBrowserState(
               browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-          affiliation_service,
-          /*feature_enabled_for_profile_check=*/
-          base::BindRepeating(
-              &GoogleGroupsManager::IsFeatureEnabledForProfile,
-              base::Unretained(GoogleGroupsManagerFactory::GetForBrowserState(
-                  browser_state))));
+          affiliation_service, std::move(feature_check));
 
   if (base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressAffiliations)) {

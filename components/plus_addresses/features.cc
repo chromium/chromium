@@ -66,6 +66,13 @@ BASE_FEATURE(kPlusAddressGlobalToggle,
              "PlusAddressGlobalToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `GoogleGroupsManager::IsFeatureEnabledForProfile` is used to
+// check whether `kPlusAddressesEnabled` is enabled. Used as a killswitch.
+// TODO: crbug.com/348575889 - Clean up.
+BASE_FEATURE(kPlusAddressProfileAwareFeatureCheck,
+             "PlusAddressProfileAwareFeatureCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, plus address refresh requests to the backend are supported.
 BASE_FEATURE(kPlusAddressRefresh,
              "PlusAddressRefresh",

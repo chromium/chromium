@@ -5,6 +5,7 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/no_destructor.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
@@ -81,6 +82,19 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
   affiliations::AffiliationService* affiliation_service =
       AffiliationServiceFactory::GetForProfile(profile);
 
+  // `groups_manager` can be null in tests.
+  GoogleGroupsManager* groups_manager =
+      GoogleGroupsManagerFactory::GetForBrowserContext(context);
+  plus_addresses::PlusAddressService::FeatureEnabledForProfileCheck
+      feature_check =
+          (groups_manager &&
+           base::FeatureList::IsEnabled(
+               plus_addresses::features::kPlusAddressProfileAwareFeatureCheck))
+              ? base::BindRepeating(
+                    &GoogleGroupsManager::IsFeatureEnabledForProfile,
+                    base::Unretained(groups_manager))
+              : base::BindRepeating(&base::FeatureList::IsEnabled);
+
   std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressService>(
           identity_manager,
@@ -89,12 +103,7 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
               identity_manager, profile->GetURLLoaderFactory()),
           WebDataServiceFactory::GetPlusAddressWebDataForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
-          affiliation_service,
-          /*feature_enabled_for_profile_check=*/
-          base::BindRepeating(
-              &GoogleGroupsManager::IsFeatureEnabledForProfile,
-              base::Unretained(
-                  GoogleGroupsManagerFactory::GetForBrowserContext(context))));
+          affiliation_service, std::move(feature_check));
 
   if (base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressAffiliations)) {
