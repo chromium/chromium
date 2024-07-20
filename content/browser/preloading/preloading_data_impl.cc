@@ -331,6 +331,14 @@ void PreloadingDataImpl::WebContentsDestroyed() {
   experimental_predictions_.clear();
   total_seen_experimental_predictions_ = 0;
 
+  const std::optional<double> sampling_likelihood = GetSamplingLikelihood(
+      max_predictions_is_ten_for_testing_, total_seen_ml_predictions_);
+  for (auto& ml_prediction : ml_predictions_) {
+    ml_prediction.Record(sampling_likelihood);
+  }
+  ml_predictions_.clear();
+  total_seen_ml_predictions_ = 0;
+
   // Delete the user data after logging.
   web_contents()->RemoveUserData(UserDataKey());
 }
@@ -428,6 +436,15 @@ void PreloadingDataImpl::SetIsAccurateTriggeringAndPrediction(
   experimental_predictions_.clear();
   total_seen_experimental_predictions_ = 0;
 
+  const std::optional<double> sampling_likelihood = GetSamplingLikelihood(
+      max_predictions_is_ten_for_testing_, total_seen_ml_predictions_);
+  for (auto& ml_prediction : ml_predictions_) {
+    ml_prediction.SetIsAccuratePrediction(navigated_url);
+    ml_prediction.Record(sampling_likelihood);
+  }
+  ml_predictions_.clear();
+  total_seen_ml_predictions_ = 0;
+
   for (auto& attempt : preloading_attempts_) {
     attempt->SetIsAccurateTriggering(navigated_url);
     RecordPreloadingAttemptPrecisionToUMA(*attempt);
@@ -446,6 +463,16 @@ void PreloadingDataImpl::SetHasSpeculationRulesPrerender() {
 }
 bool PreloadingDataImpl::HasSpeculationRulesPrerender() {
   return has_speculation_rules_prerender_;
+}
+
+void PreloadingDataImpl::OnPreloadingHeuristicsModelInput(
+    const GURL& url,
+    ModelPredictionTrainingData::OutcomeCallback on_record_outcome) {
+  PredictionReservoirSample(
+      ml_predictions_, total_seen_ml_predictions_,
+      max_predictions_is_ten_for_testing_,
+      ModelPredictionTrainingData{std::move(on_record_outcome),
+                                  GetSameURLMatcher(url)});
 }
 
 void PreloadingDataImpl::RecordMetricsForPreloadingAttempts(

@@ -114,18 +114,6 @@ class NavigationPredictor
   void RecordMetricsOnLoad(
       const blink::mojom::AnchorElementMetrics& metric) const;
 
-  // Returns the minimum of the bucket that |value| belongs in, for page-wide
-  // metrics, excluding |median_link_location_|.
-  int GetBucketMinForPageMetrics(int value) const;
-
-  // Returns the minimum of the bucket that |value| belongs in, used for
-  // |median_link_location_| and the |ratio_distance_root_top|.
-  int GetLinearBucketForLinkLocation(int value) const;
-
-  // Returns the minimum of the bucket that |value| belongs in, used for
-  // |ratio_area|.
-  int GetLinearBucketForRatioArea(int value) const;
-
   // Returns `NavigationPredictorMetricsDocumentData` for the current page.
   NavigationPredictorMetricsDocumentData&
   GetNavigationPredictorMetricsDocumentData() const;

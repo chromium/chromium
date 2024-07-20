@@ -137,6 +137,34 @@ class ExperimentalPreloadingPrediction {
   PreloadingURLMatchCallback url_match_predicate_;
 };
 
+// Stores data relating to a prediction made by the preloading ML model. Once
+// the outcome of whether the prediction is accurate is known, the provided
+// callback is invoked.
+class ModelPredictionTrainingData {
+ public:
+  using OutcomeCallback =
+      base::OnceCallback<void(std::optional<double> sampling_likelihood,
+                              bool is_accurate_prediction)>;
+
+  ModelPredictionTrainingData(OutcomeCallback on_record_outcome,
+                              PreloadingURLMatchCallback url_match_predicate);
+
+  ~ModelPredictionTrainingData();
+  ModelPredictionTrainingData(const ModelPredictionTrainingData&) = delete;
+  ModelPredictionTrainingData& operator=(const ModelPredictionTrainingData&) =
+      delete;
+  ModelPredictionTrainingData(ModelPredictionTrainingData&&);
+  ModelPredictionTrainingData& operator=(ModelPredictionTrainingData&&);
+
+  void SetIsAccuratePrediction(const GURL& navigated_url);
+  void Record(std::optional<double> sampling_likelihood);
+
+ private:
+  OutcomeCallback on_record_outcome_;
+  PreloadingURLMatchCallback url_match_predicate_;
+  bool is_accurate_prediction_ = false;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRELOADING_PREDICTION_H_

@@ -117,4 +117,26 @@ void ExperimentalPreloadingPrediction::RecordToUMA() const {
                                 normalized_score_ * buckets_, buckets_ + 1);
 }
 
+ModelPredictionTrainingData::ModelPredictionTrainingData(
+    OutcomeCallback on_record_outcome,
+    PreloadingURLMatchCallback url_match_predicate)
+    : on_record_outcome_(std::move(on_record_outcome)),
+      url_match_predicate_(std::move(url_match_predicate)) {}
+ModelPredictionTrainingData::~ModelPredictionTrainingData() = default;
+ModelPredictionTrainingData::ModelPredictionTrainingData(
+    ModelPredictionTrainingData&&) = default;
+ModelPredictionTrainingData& ModelPredictionTrainingData::operator=(
+    ModelPredictionTrainingData&&) = default;
+
+void ModelPredictionTrainingData::SetIsAccuratePrediction(
+    const GURL& navigated_url) {
+  is_accurate_prediction_ = url_match_predicate_.Run(navigated_url);
+}
+
+void ModelPredictionTrainingData::Record(
+    std::optional<double> sampling_likelihood) {
+  std::move(on_record_outcome_)
+      .Run(sampling_likelihood, is_accurate_prediction_);
+}
+
 }  // namespace content

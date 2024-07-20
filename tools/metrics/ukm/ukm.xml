@@ -17649,6 +17649,123 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Preloading.NavigationPredictorModelTrainingData">
+  <owner>isaboori@google.com</owner>
+  <owner>mcnee@chromium.org</owner>
+  <summary>
+    Metrics that describe an anchor element, the user's interaction therewith,
+    and whether a prediction of a navigation to the target destination would be
+    accurate. This event is emitted on navigation. The number of events emitted
+    at a time depends on the number of predictions the model makes, subject to
+    sampling. See also NavigationPredictorAnchorElementMetrics and
+    NavigationPredictorUserInteractions.
+  </summary>
+  <metric name="ContainsImage">
+    <summary>
+      1 if the anchor element contains an image.
+    </summary>
+  </metric>
+  <metric name="FontSize">
+    <summary>
+      The bucketed font size of the anchor element, according to its computed
+      style. 1 corresponds to a pixel font size in [0, 10), 2 corresponds to a
+      fonts size in [10, 18) and 3 is logged when the font size is 18 pixels or
+      larger.
+    </summary>
+  </metric>
+  <metric name="HasTextSibling">
+    <summary>
+      1 if the anchor element has an immediate text sibling, 0 otherwise.
+    </summary>
+  </metric>
+  <metric name="HoverDwellTimeMs">
+    <summary>
+      Dwell time of pointer hovering over the anchor element in milliseconds.
+      Exponentially bucketed using GetExponentialBucketMin with a value of 1.3.
+    </summary>
+  </metric>
+  <metric name="IsAccurate">
+    <summary>
+      1 if a navigation to the anchor's destination occurs.
+    </summary>
+  </metric>
+  <metric name="IsBold">
+    <summary>
+      1 if the anchor's computed style's font-weight is greater than 500, 0
+      otherwise.
+    </summary>
+  </metric>
+  <metric name="IsInIframe">
+    <summary>
+      1 if the anchor element is in an iframe.
+    </summary>
+  </metric>
+  <metric name="IsURLIncrementedByOne">
+    <summary>
+      1 if the anchor element's target URL and the document's source URL only
+      differ by one number, and the target URL increments that number in the
+      source URL by 1.
+    </summary>
+  </metric>
+  <metric name="NavigationStartToLinkLoggedMs">
+    <summary>
+      The time in ms between navigation start and the moment the anchor was
+      first seen. Exponentially bucketed using GetExponentialBucketMin with a
+      value of 1.3.
+    </summary>
+  </metric>
+  <metric name="PathDepth">
+    <summary>
+      The number of slashes in the anchor element's href URL path. Truncated at
+      5.
+    </summary>
+  </metric>
+  <metric name="PathLength">
+    <summary>
+      The number of characters in the anchor element's href URL path. Buckets of
+      size 10, truncated at 100.
+    </summary>
+  </metric>
+  <metric name="PercentClickableArea">
+    <summary>
+      The percent of the total document area that this anchor element's
+      clickable area occupies.
+    </summary>
+  </metric>
+  <metric name="PercentVerticalDistance">
+    <summary>
+      How far down the document the top of the anchor element is, expressed as a
+      ratio with the total document height.
+    </summary>
+  </metric>
+  <metric name="PointerHoveringOverCount">
+    <summary>
+      How many times the pointer was hovering over the anchor element.
+      Exponentially bucketed using GetExponentialBucketMin a value of 1.3.
+    </summary>
+  </metric>
+  <metric name="SameHost">
+    <summary>
+      1 if the anchor element's target URL and the document's source URL are the
+      same host.
+    </summary>
+  </metric>
+  <metric name="SamplingAmount">
+    <summary>
+      Indicates whether the number of predictions for the associated page was
+      over a limit and needed to be downsampled. All events for a given page
+      logged at the same time have the same SamplingAmount. The value is the
+      exponentially bucketed value of (1,000,000 - (1,000,000 * sampling_rate)).
+      The multiplication by 1,000,000 is because we cannot log floating point
+      values in UKM, and we have larger values indicate more sampling so that a
+      lack of sampling can be unambiguous by having its own bucket. For example,
+      if the number of predictions was under the limit and no sampling was done,
+      then the value would be 0. If the number of predictions was double the
+      limit, the value would be 500,000.
+    </summary>
+  </metric>
+</event>
+
 <event name="Preloading.Prediction">
   <owner>domenic@chromium.org</owner>
   <owner>chrome-instant-ecosystem@google.com</owner>

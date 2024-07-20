@@ -1301,6 +1301,7 @@ TEST_F(NavigationPredictorUserInteractionsTest,
 
 TEST_F(NavigationPredictorUserInteractionsTest,
        ProcessPointerEventUsingMLModel) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
   auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
       main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
@@ -1374,6 +1375,28 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   task_runner()->AdvanceMockTickClock(base::Milliseconds(200));
   task_runner()->RunUntilIdle();
   EXPECT_FALSE(did_ml_score_called);
+
+  // Navigate to trigger metrics recording.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://google.com/"), main_rfh());
+
+  // Verify the recording of model training metrics.
+  using UkmEntry =
+      ukm::builders::Preloading_NavigationPredictorModelTrainingData;
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(5u, entries.size());
+  auto get_metric = [&](int entry_num, const auto& name) {
+    return *ukm_recorder.GetEntryMetric(entries[entry_num], name);
+  };
+  for (int i = 0; i < 5; i++) {
+    EXPECT_EQ(1, get_metric(i, UkmEntry::kIsAccurateName));
+    EXPECT_EQ(0, get_metric(i, UkmEntry::kSamplingAmountName));
+    EXPECT_EQ(1, get_metric(i, UkmEntry::kIsBoldName));
+    EXPECT_EQ(10, get_metric(i, UkmEntry::kPercentClickableAreaName));
+    constexpr double kBucketSpacing = 1.3;
+    EXPECT_EQ(ukm::GetExponentialBucketMin(i * 100, kBucketSpacing),
+              get_metric(i, UkmEntry::kHoverDwellTimeMsName));
+  }
 }
 
 TEST_F(NavigationPredictorUserInteractionsTest, MLModelMaxHoverTime) {
