@@ -786,9 +786,6 @@ crbug.com/350292231 [ Fuchsia ] tables/mozilla/bugs/bug2479-4.html [ Failure ]
 crbug.com/350292231 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug2479-5.html [ Failure ]
 crbug.com/350292231 [ Fuchsia ] virtual/text-antialias/international/003.html [ Failure ]
 
-crbug.com/350628679 [ Win ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Crash Pass ]
-crbug.com/350628679 [ Win ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Crash Pass ]
-
 # ====== Paint team owned tests to here ======
 
 # WPT speculative-parsing tests failing

@@ -214,6 +214,9 @@ class CORE_EXPORT ScrollbarTheme {
 
   virtual bool UsesNinePatchThumbResource() const { return false; }
   virtual bool UsesSolidColorThumb() const { return false; }
+  virtual gfx::Insets SolidColorThumbInsets(const Scrollbar& scrollbar) const {
+    NOTREACHED_NORETURN();
+  }
   virtual bool UsesNinePatchTrackAndButtonsResource() const { return false; }
 
   // For a nine-patch scrollbar, this defines the painting canvas size which the

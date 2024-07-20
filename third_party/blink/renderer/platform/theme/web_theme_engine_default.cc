@@ -16,7 +16,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_features.h"
-#include "ui/native_theme/native_theme_fluent.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace blink {
@@ -251,21 +250,24 @@ void WebThemeEngineDefault::Paint(
       in_forced_colors, accent_color);
 }
 
-SkColor4f WebThemeEngineDefault::GetFluentScrollbarThumbColor(
+gfx::Insets WebThemeEngineDefault::GetScrollbarSolidColorThumbInsets(
+    Part part) const {
+  return ui::NativeTheme::GetInstanceForWeb()
+      ->GetScrollbarSolidColorThumbInsets(NativeThemePart(part));
+}
+
+SkColor4f WebThemeEngineDefault::GetScrollbarThumbColor(
     WebThemeEngine::State state,
     const WebThemeEngine::ExtraParams* extra_params,
     const ui::ColorProvider* color_provider) const {
-  CHECK(IsFluentScrollbarEnabled());
   const ui::NativeTheme::ScrollbarThumbExtraParams native_theme_extra_params =
       absl::get<ui::NativeTheme::ScrollbarThumbExtraParams>(
           GetNativeThemeExtraParams(
               /*part=*/WebThemeEngine::kPartScrollbarVerticalThumb, state,
               extra_params));
 
-  return static_cast<ui::NativeThemeFluent*>(
-             ui::NativeTheme::GetInstanceForWeb())
-      ->GetScrollbarThumbColor(*color_provider, NativeThemeState(state),
-                               native_theme_extra_params);
+  return ui::NativeTheme::GetInstanceForWeb()->GetScrollbarThumbColor(
+      *color_provider, NativeThemeState(state), native_theme_extra_params);
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {

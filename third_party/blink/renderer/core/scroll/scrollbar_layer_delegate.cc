@@ -162,6 +162,10 @@ bool ScrollbarLayerDelegate::UsesSolidColorThumb() const {
   return scrollbar_->GetTheme().UsesSolidColorThumb();
 }
 
+gfx::Insets ScrollbarLayerDelegate::SolidColorThumbInsets() const {
+  return scrollbar_->GetTheme().SolidColorThumbInsets(*scrollbar_);
+}
+
 bool ScrollbarLayerDelegate::UsesNinePatchTrackAndButtonsResource() const {
   return scrollbar_->GetTheme().UsesNinePatchTrackAndButtonsResource();
 }
