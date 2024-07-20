@@ -199,12 +199,12 @@ TEST_F(CustomizeToolbarHandlerTest, ListActions) {
       contains_action(side_panel::customize_chrome::mojom::ActionId::kForward));
   EXPECT_TRUE(contains_action(
       side_panel::customize_chrome::mojom::ActionId::kNewIncognitoWindow));
-  // EXPECT_TRUE(contains_action(
-  //     side_panel::customize_chrome::mojom::ActionId::kShowPasswordManager));
-  // EXPECT_TRUE(contains_action(
-  //     side_panel::customize_chrome::mojom::ActionId::kShowPaymentMethods));
-  // EXPECT_TRUE(contains_action(
-  //     side_panel::customize_chrome::mojom::ActionId::kShowAddresses));
+  EXPECT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kShowPasswordManager));
+  EXPECT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kShowPaymentMethods));
+  EXPECT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kShowAddresses));
   // EXPECT_TRUE(contains_action(
   //     side_panel::customize_chrome::mojom::ActionId::kShowDownloads));
   EXPECT_TRUE(contains_action(

@@ -45,12 +45,12 @@ MojoActionForChromeAction(actions::ActionId action_id) {
       return side_panel::customize_chrome::mojom::ActionId::kForward;
     case kActionNewIncognitoWindow:
       return side_panel::customize_chrome::mojom::ActionId::kNewIncognitoWindow;
-    case kActionShowPasswordManager:
+    case kActionShowPasswordsBubbleOrPage:
       return side_panel::customize_chrome::mojom::ActionId::
           kShowPasswordManager;
-    case kActionShowPaymentMethods:
+    case kActionShowPaymentsBubbleOrPage:
       return side_panel::customize_chrome::mojom::ActionId::kShowPaymentMethods;
-    case kActionShowAddresses:
+    case kActionShowAddressesBubbleOrPage:
       return side_panel::customize_chrome::mojom::ActionId::kShowAddresses;
     case kActionShowDownloads:
       return side_panel::customize_chrome::mojom::ActionId::kShowDownloads;
@@ -99,11 +99,11 @@ std::optional<actions::ActionId> ChromeActionForMojoAction(
     case side_panel::customize_chrome::mojom::ActionId::kNewIncognitoWindow:
       return kActionNewIncognitoWindow;
     case side_panel::customize_chrome::mojom::ActionId::kShowPasswordManager:
-      return kActionShowPasswordManager;
+      return kActionShowPasswordsBubbleOrPage;
     case side_panel::customize_chrome::mojom::ActionId::kShowPaymentMethods:
-      return kActionShowPaymentMethods;
+      return kActionShowPaymentsBubbleOrPage;
     case side_panel::customize_chrome::mojom::ActionId::kShowAddresses:
-      return kActionShowAddresses;
+      return kActionShowAddressesBubbleOrPage;
     case side_panel::customize_chrome::mojom::ActionId::kShowDownloads:
       return kActionShowDownloads;
     case side_panel::customize_chrome::mojom::ActionId::kClearBrowsingData:
@@ -215,15 +215,15 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   add_action(kActionNewIncognitoWindow,
              side_panel::customize_chrome::mojom::CategoryId::kNavigation);
 
-  add_action(kActionShowPasswordManager,
+  add_action(kActionShowPasswordsBubbleOrPage,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionSidePanelShowBookmarks,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionSidePanelShowReadingList,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
-  add_action(kActionShowPaymentMethods,
+  add_action(kActionShowPaymentsBubbleOrPage,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
-  add_action(kActionShowAddresses,
+  add_action(kActionShowAddressesBubbleOrPage,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionSidePanelShowHistoryCluster,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
