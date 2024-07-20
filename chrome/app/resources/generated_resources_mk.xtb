@@ -976,6 +976,7 @@
 <translation id="169675691788639886">Уредот има конфигурирано сервер за SSH. Не најавувајте се со чувствителни сметки.</translation>
 <translation id="1697122132646041614">„Не ми се допаѓа“ отвора формулар за испраќање детални повратни информации за тоа зошто не ви се допаѓаат резултативе.</translation>
 <translation id="1697150536837697295">Уметност</translation>
+<translation id="1697532407822776718">Подготвени сте.</translation>
 <translation id="1697686431566694143">Измени датотека</translation>
 <translation id="1698796500103229697">Начини на плаќање</translation>
 <translation id="1698899521169711967">Прелистување со курсор</translation>
@@ -1407,7 +1408,6 @@
 <translation id="199610894463449797">{0,plural, =1{Затвори го профилов}one{Затвори го профилов (# прозорец)}other{Затвори го профилов (# прозорци)}}</translation>
 <translation id="1997433994358798851">На Chrome му треба дозвола за користење на Bluetooth за да се поврзе со вашиот уред</translation>
 <translation id="1997616988432401742">Ваши сертификати</translation>
-<translation id="199801374788581808">Може да се обидете повторно или да контактирате со администраторот за помош</translation>
 <translation id="1999115740519098545">На стартување</translation>
 <translation id="2002109485265116295">Реално време</translation>
 <translation id="2002160221914907025">Експериментална AI</translation>
@@ -2513,6 +2513,7 @@
 <translation id="2776560192867872731">Променете го името на уредот за <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Избришете го контејнеров</translation>
 <translation id="2777525873368474674">Залепете линк од сликата</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{Најден е 1 сајт со многу известувања}one{Најдени се {NUM_SITES} сајт со многу известувања}other{Најдени се {NUM_SITES} сајта со многу известувања}}</translation>
 <translation id="2778471504622896352">Додајте далечински апликации на стартерот на ChromeOS</translation>
 <translation id="2779728796406650689">Ова овозможува „Помошникот на Google“ да дава приспособени одговори кога поставувате прашања.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2670,7 +2671,6 @@
 <translation id="2893180576842394309">Google може да ја користи вашата историја за да го персонализира „Пребарувањето“ и другите услуги на Google</translation>
 <translation id="2893701697603065178">Управувана околина за програмирање</translation>
 <translation id="2894757982205307093">Нова картичка во групата</translation>
-<translation id="2895730582088342039">Зачувајте, споделете и емитувајте</translation>
 <translation id="289695669188700754">ИД на клуч: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Оваа приспособена поставка ќе биде отстранета кога ќе ги затворите сите ваши прозорци „Инкогнито“</translation>
 <translation id="2897878306272793870">Дали сте сигурни дека сакате да отворите <ph name="TAB_COUNT" /> картички?</translation>
@@ -3458,7 +3458,6 @@
 <translation id="3503995387997205657">Може да ги вратите претходните апликации</translation>
 <translation id="3505100368357440862">Предлози за купување</translation>
 <translation id="3505602163050943406">Кога користите некои функции, тие може да испраќаат делови од отворените страници, поврзани неодамнешни страници и нивните URL-адреси до Google</translation>
-<translation id="3505762711681798106">Го подготвуваме вашиот работен простор! Во меѓувреме, слободно истражете. Сѐ ќе биде подготвено наскоро.</translation>
 <translation id="3507132249039706973">Вклучена е „Стандардната заштита“</translation>
 <translation id="3507888235492474624">Повторно скенирајте уреди со Bluetooth</translation>
 <translation id="3508492320654304609">Не може да се избришат податоците за најавување</translation>
@@ -5141,7 +5140,6 @@
 <translation id="4750185073185658673">Одете на телефонот за да прегледате уште неколку дозволи. Проверете дали се вклучени Bluetooth и Wi-Fi на телефонот.</translation>
 <translation id="4750394297954878236">Предлози</translation>
 <translation id="475088594373173692">Прв корисник</translation>
-<translation id="4754167810863682207">Поставувањето на профилот е речиси готово</translation>
 <translation id="4756378406049221019">Сопри/Вчитај повторно</translation>
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4756671452988984333">Текст за аудио</translation>
@@ -5801,7 +5799,6 @@
 <translation id="5247243947166567755">Изберете <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Прелистувачот падна пред да заврши преземањето.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ја користи вашата локација за да ви даде локални содржини. Ова може да го промените во <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5251885976619018662">Создајте PIN за враќање за Google Password Manager</translation>
 <translation id="5252496130205799136">Да се користи сметката на Google за зачувување и пополнување лозинки?</translation>
 <translation id="5252653240322147470">PIN-кодот мора да содржи помалку од <ph name="MAXIMUM" /> цифри</translation>
 <translation id="5253554634804500860">Користи <ph name="DEVICE_NAME" /></translation>
@@ -7449,7 +7446,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ сака да ја инсталира следнава апликација на уредов:}one{„<ph name="APP_NAME" />“ сака да ги инсталира следниве апликации на уредов:}other{„<ph name="APP_NAME" />“ сака да ги инсталира следниве апликации на уредов:}}</translation>
 <translation id="6508248480704296122">Поврзанo со <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Апликација: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">Подготвени сте да го користите профилот за работа</translation>
 <translation id="6511607461419653612">Рестартирајте го вашиот Chromebook и обидете се повторно</translation>
 <translation id="6511827214781912955">Размислете да ја избришете <ph name="FILENAME" /> за да не можат другите луѓе кои го користат уредов да ги гледаат вашите лозинки</translation>
 <translation id="6512759338201777379">Генерирана слика: <ph name="INDEX" /> од <ph name="SUBJECT" />, со расположение: <ph name="MOOD" />.</translation>
@@ -9585,7 +9581,6 @@
 <translation id="8084429490152575036">Поставки за APN за мобилна мрежа</translation>
 <translation id="8084510406207562688">&amp;Врати ги сите картички</translation>
 <translation id="8084628902026812045">Сајтов не користи безбедна врска и датотеката може да е неовластено изменета</translation>
-<translation id="8085701268329068646">Внесете го вашиот PIN за Google Password Manager</translation>
 <translation id="8086015605808120405">Се конфигурира <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Картичкава го споделува вашиот екран</translation>
 <translation id="8086610718778464681">Не може да се направи бекап на апликациите и датотеките на Linux</translation>
@@ -10420,7 +10415,6 @@
 <translation id="8694596275649352090">Заклучи при спиење или затворен капак</translation>
 <translation id="8695139659682234808">Додајте родителски контроли по поставувањето</translation>
 <translation id="8695825812785969222">Отвори &amp;локација...</translation>
-<translation id="8697753370348182287">Работниот профил е подготвен</translation>
 <translation id="8698269656364382265">За да се вратите на претходниот екран, повлечете од левата страна.</translation>
 <translation id="8698432579173128320">Правење бекап на Google Drive. Лесно враќајте ги податоците или менувајте ги уредите кога сакате. Бекапот опфаќа податоци од апликациите. Бекапот се прикачува на Google и се шифрира со вашата лозинка за сметката на Google. <ph name="BEGIN_LINK1" />Дознајте повеќе за бекапот<ph name="BEGIN_LINK1_END" />Дознајте повеќе<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Мени со апликации</translation>
@@ -11123,7 +11117,6 @@
 <translation id="920045321358709304">Пребарај на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Прегледано претходно</translation>
 <translation id="9201220332032049474">Опции за заклучување на екранот</translation>
-<translation id="9201762611758697018">PIN за враќање помага да пристапите до вашите зачувани криптографски клучеви на секој уред</translation>
 <translation id="9201842707396338580">Нешто тргна наопаку. Контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Црвена и зелена, слаба зелена (девтераномалија)</translation>
 <translation id="9203398526606335860">&amp;Профилирањето е овозможено</translation>

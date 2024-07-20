@@ -598,6 +598,7 @@
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
 <translation id="4054572406751135230">隨時掌握新聞、體育賽事等資訊。</translation>
 <translation id="4068959193278821990">開啟強化防護...</translation>
+<translation id="4088879333319441249">要將所有分頁移出群組嗎？</translation>
 <translation id="4092655288299341041">顯示說明資訊</translation>
 <translation id="4105841739161771091">{count,plural, =1{刪除地址}other{刪除地址}}</translation>
 <translation id="4108998448622696017">可偵測不安全事件，並在這類事件發生時顯示警告訊息。</translation>
@@ -1405,6 +1406,7 @@
 <translation id="7975036700432177008">試用</translation>
 <translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
 <translation id="7978018860671536736">3. 輕觸 [自動填入密碼]</translation>
+<translation id="797824194429476746">這些分頁會在這部裝置上保持開啟，但該群組會永久刪除。</translation>
 <translation id="7982789257301363584">網路</translation>
 <translation id="7987685713885608670">為進一步加強安全性，系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員。</translation>
 <translation id="7993619969781047893">某些網站的功能可能無法正常運作</translation>

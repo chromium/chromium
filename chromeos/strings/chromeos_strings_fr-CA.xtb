@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">Pour obtenir un résultat approximatif, diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Réinitialise automatiquement l'utilisation de données tous les mois à un jour défini</translation>
 <translation id="1442433966118452622">Source de l'image</translation>
-<translation id="1445573806602812670">Obtenir une transcription de votre enregistrement</translation>
 <translation id="1446954767133808402">saphir</translation>
 <translation id="1449035143498573192">Ouvrir dans Recherche Google</translation>
 <translation id="1451536289672181509">L'appareil est un clavier.</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">lac</translation>
 <translation id="1720424726586960395">forêt de lucioles</translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
-<translation id="1728792932018505912">Vous pouvez modifier cette option dans les paramètres ou dans le menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="1731082422893354635">Pavé tactile Bluethooth</translation>
 <translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Impossible de charger les images. Vérifiez votre connexion réseau ou essayez de charger les images à nouveau.</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2364498172489649528">Vérification réussie</translation>
 <translation id="2367335866686097760">Clé d'affectation des touches</translation>
-<translation id="2370739752330685659">Peut-être plus tard</translation>
 <translation id="2380886658946992094">Légal</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
 <translation id="2407209115954268704">État de verrouillage de la carte SIM</translation>
@@ -635,6 +632,7 @@
 <translation id="4454245904991689773">Numériser vers</translation>
 <translation id="4456812688969919973">Le bouton Enregistrer le nom de point d'accès est désormais désactivé</translation>
 <translation id="4469288414739283461">Écran de veille Earth Flow</translation>
+<translation id="4474142134969976028">Aucun résultat correspondant</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
 <translation id="4500722292849917410">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Majuscule ou <ph name="META_KEY" />).</translation>
@@ -751,7 +749,6 @@
 <translation id="5099354524039520280">haut</translation>
 <translation id="5107243100836678918">Un raccourci ne comprenant pas la touche de <ph name="META_KEY" /> peut entrer en conflit avec le raccourci de certaines applications. Appuyez à nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci à l'aide de la touche de <ph name="KEY" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Mots de sens similaire :</translation>
-<translation id="5109744590306245079">L'Enregistreur peut créer des transcriptions pour les enregistrements avec voix. Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces transcriptions.</translation>
 <translation id="5130848777448318809">poneys</translation>
 <translation id="5137451382116112100">Plein écran</translation>
 <translation id="5142961317498132443">Authentification</translation>
@@ -913,6 +910,7 @@
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6040852767465482106">Authentification anonyme</translation>
 <translation id="604124094241169006">Automatique</translation>
+<translation id="6042308850641462728">Plus</translation>
 <translation id="6048107060512778456">Échec : bourrage de papier</translation>
 <translation id="6050189528197190982">Échelle de gris</translation>
 <translation id="6054711098834486579">expressionniste</translation>
@@ -937,7 +935,6 @@
 <translation id="6136285399872347291">effacement arrière</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificat utilisateur</translation>
-<translation id="6141004321363227868">Lorsque cette fonctionnalité est activée, les transcriptions instantanées seront également affichées pendant que vous effectuez un enregistrement.</translation>
 <translation id="6146993107019042706">Pour terminer cette opération, entrez votre nouveau mot de passe</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">bordeaux et rose</translation>
@@ -1022,7 +1019,6 @@
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6551839203326557324">pommes</translation>
 <translation id="65526652485742171">Le bouton de confirmation est maintenant activé</translation>
-<translation id="6556016675518580850">Le fait de quitter cette page mettra fin à votre enregistrement en cours.</translation>
 <translation id="6557784757915238407">Le nom de point d'accès est de type <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">À plat</translation>
 <translation id="6560196641871357166">Vibrant</translation>
@@ -1077,8 +1073,6 @@
 <translation id="6798678288485555829">Navigation dans le texte</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Des renseignements concernant votre sélection sont accessibles. Servez-vous de la touche de flèche vers le haut pour y accéder.</translation>
-<translation id="6818844233294698434">Recherche d'une voix en cours…</translation>
-<translation id="6837645039518471192">Quitter l'enregistrement</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
 <translation id="6866732840889595464">marguerite</translation>
 <translation id="6871256179359663621">violet pâle</translation>
@@ -1220,6 +1214,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="7528507600602050979">Le contenu de l'aide n'est pas accessible</translation>
 <translation id="7535791657097741517">Activer le thème clair</translation>
 <translation id="7544126681856613971">forêt brumeuse</translation>
+<translation id="7544853251252956727">Aléatoire</translation>
 <translation id="7550715992156305117">Routines de diagnostic</translation>
 <translation id="7551123448725492271">L'appareil est un appareil audio.</translation>
 <translation id="7559239713112547082">Capture d'écran de l'aperçu</translation>
@@ -1276,7 +1271,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="7850847810298646851">Fond d'écran propulsé par l'IA de Google</translation>
 <translation id="785170686607360576">tulipe</translation>
 <translation id="7856267634822906833">Écran tactile Bluetooth</translation>
-<translation id="7857744683152972248">Autoriser l'Enregistreur à identifier les locuteurs?</translation>
 <translation id="7859006200041800233">fleur de cactus</translation>
 <translation id="7869143217755017858">Désactiver le mode sombre</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1332,7 +1326,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="8162776280680283326">renards</translation>
 <translation id="8167413449582155132">Arrière-plan propulsé par l'IA de Google</translation>
 <translation id="8171020708598805594">Créez automatiquement des transcriptions, obtenez des résumés d'enregistrement à l'aide de l'IA de Google et recherchez des contenus audio. Créez des enregistrements même lorsque vous n'êtes pas connecté à Internet.</translation>
-<translation id="8174280683348521982">Supprimer l'enregistrement en cours?</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8183975772394450380">plage</translation>
 <translation id="819278132617411009">Utiliser l'IA de Google pour être plus productif</translation>
@@ -1348,6 +1341,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8262870577632766028">1 heure</translation>
 <translation id="827422111966801947">Indigo</translation>
+<translation id="8281886186245836920">Ignorer</translation>
 <translation id="8286154143153872371">Veuillez vous connecter au réseau et actualiser la page pour afficher le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du propriétaire</translation>
 <translation id="8294431847097064396">Source</translation>
@@ -1370,9 +1364,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="8372477600026034341">Hôtes supplémentaires</translation>
 <translation id="8372667721254470022">olive</translation>
 <translation id="8373046809163484087">Utiliser des ensembles de couleurs qui correspondent à votre fond d'écran</translation>
-<translation id="8379123594780452422">Lorsque vous autorisez cette option, l'Enregistreur traite vos enregistrements audio à l'aide d'une analyse audio avancée.
-
-Vous pouvez la désactiver en tout temps dans les paramètres.</translation>
 <translation id="8380114448424469341">Ancrer la fenêtre sur la moitié <ph name="DIRECTION" /> de l'écran</translation>
 <translation id="8391349326751432483">Vous avez besoin d'au moins 500 Mo d'espace libre pour exécuter un test de mémoire. Pour libérer de la mémoire, fermez les onglets et les applications.</translation>
 <translation id="8395584934117017006">Cet appareil <ph name="DEVICE_TYPE" /> est géré par l'entreprise</translation>
@@ -1520,7 +1511,6 @@ Vous pouvez la désactiver en tout temps dans les paramètres.</translation>
 <translation id="9122602430962285795">Pour vous reconnecter, accédez à Paramètres</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Enregistrer plusieurs pages en un seul PDF</translation>
-<translation id="9129549320890412487">Fonctionnalité de transcription</translation>
 <translation id="9133772297793293778">Appuyez sur les modificateurs 1 à 4 et sur 1 autre touche de votre clavier. Pour quitter le mode de modification, appuyez sur alt+esc.</translation>
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9138630967333032450">Majuscule gauche</translation>

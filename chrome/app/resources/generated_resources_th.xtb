@@ -974,6 +974,7 @@
 <translation id="169675691788639886">อุปกรณ์กำหนดค่าเซิร์ฟเวอร์ SSH เอาไว้ อย่าลงชื่อเข้าใช้ด้วยบัญชีที่มีความละเอียดอ่อน</translation>
 <translation id="1697122132646041614">ปุ่ม "ไม่ชอบ" จะเปิดแบบฟอร์มสำหรับส่งความคิดเห็นโดยละเอียดเกี่ยวกับสาเหตุที่คุณไม่ชอบผลการค้นหาเหล่านี้</translation>
 <translation id="1697150536837697295">ศิลปะ</translation>
+<translation id="1697532407822776718">คุณพร้อมแล้ว!</translation>
 <translation id="1697686431566694143">แก้ไขไฟล์</translation>
 <translation id="1698796500103229697">วิธีการชำระเงิน</translation>
 <translation id="1698899521169711967">การเรียกดูด้วยแป้นพิมพ์</translation>
@@ -1396,7 +1397,6 @@
 <translation id="199610894463449797">{0,plural, =1{ปิดโปรไฟล์นี้}other{ปิดโปรไฟล์นี้ (# หน้าต่าง)}}</translation>
 <translation id="1997433994358798851">Chrome ต้องได้รับสิทธิ์ในการใช้บลูทูธเพื่อเชื่อมต่อกับอุปกรณ์</translation>
 <translation id="1997616988432401742">ใบรับรองของคุณ</translation>
-<translation id="199801374788581808">คุณจะลองอีกครั้ง หรือติดต่อผู้ดูแลระบบเพื่อขอความช่วยเหลือก็ได้</translation>
 <translation id="1999115740519098545">เมื่อเริ่มต้นใช้งาน</translation>
 <translation id="2002109485265116295">เรียลไทม์</translation>
 <translation id="2002160221914907025">AI เวอร์ชันทดลอง</translation>
@@ -2499,6 +2499,7 @@
 <translation id="2776560192867872731">เปลี่ยนชื่ออุปกรณ์สำหรับ <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">ลบคอนเทนเนอร์นี้</translation>
 <translation id="2777525873368474674">วางลิงก์รูปภาพ</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{พบ 1 เว็บไซต์ที่มีการแจ้งเตือนจำนวนมาก}other{พบ {NUM_SITES} เว็บไซต์ที่มีการแจ้งเตือนจำนวนมาก}}</translation>
 <translation id="2778471504622896352">เพิ่มแอประยะไกลลงใน Launcher ของ Chrome OS</translation>
 <translation id="2779728796406650689">วิธีนี้ช่วยให้ Google Assistant แสดงคำตอบที่ปรับเปลี่ยนให้เหมาะกับคุณได้เมื่อคุณถามคำถาม</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2656,7 +2657,6 @@
 <translation id="2893180576842394309">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เข้ากับคุณ</translation>
 <translation id="2893701697603065178">สภาพแวดล้อมในการพัฒนาซอฟต์แวร์ที่มีการจัดการ</translation>
 <translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
-<translation id="2895730582088342039">บันทึก แชร์ และแคสต์</translation>
 <translation id="289695669188700754">รหัสคีย์: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ระบบจะนำการตั้งค่าที่กำหนดเองนี้ออกเมื่อคุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="2897878306272793870">คุณแน่ใจหรือไม่ว่าต้องการเปิด <ph name="TAB_COUNT" /> แท็บ</translation>
@@ -3442,7 +3442,6 @@
 <translation id="3503995387997205657">คุณสามารถคืนค่าแอปก่อนหน้าได้</translation>
 <translation id="3505100368357440862">คำแนะนำการเลือกซื้อ</translation>
 <translation id="3505602163050943406">เมื่อคุณใช้ฟีเจอร์บางอย่าง ฟีเจอร์เหล่านั้นจะส่งบางส่วนของหน้าที่เปิดอยู่ หน้าล่าสุดที่เกี่ยวข้อง และ URL ให้ Google ได้</translation>
-<translation id="3505762711681798106">เรากำลังเตรียมพื้นที่ทํางานให้พร้อม คุณสามารถสำรวจดูส่วนต่างๆ ได้ในระหว่างนี้ เราจะพร้อมให้บริการในไม่ช้า</translation>
 <translation id="3507132249039706973">การปกป้องแบบมาตรฐานเปิดอยู่</translation>
 <translation id="3507888235492474624">สแกนหาอุปกรณ์บลูทูธอีกครั้ง</translation>
 <translation id="3508492320654304609">ลบข้อมูลการลงชื่อเข้าใช้ของคุณไม่ได้</translation>
@@ -5125,7 +5124,6 @@
 <translation id="4750185073185658673">ไปที่โทรศัพท์เพื่อดูสิทธิ์อื่นๆ เพิ่มเติม ตรวจสอบว่าบลูทูธและ Wi-Fi ของโทรศัพท์เปิดอยู่</translation>
 <translation id="4750394297954878236">คำแนะนำ</translation>
 <translation id="475088594373173692">ผู้ใช้แรก</translation>
-<translation id="4754167810863682207">การตั้งค่าโปรไฟล์ของคุณใกล้เสร็จแล้ว</translation>
 <translation id="4756378406049221019">หยุด/โหลดซ้ำ</translation>
 <translation id="4756388243121344051">&amp;ประวัติการเข้าชม</translation>
 <translation id="4756671452988984333">ข้อความสำหรับเสียง</translation>
@@ -5786,7 +5784,6 @@
 <translation id="5247243947166567755">เลือก <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">เบราว์เซอร์ขัดข้องก่อนที่จะดาวน์โหลดเสร็จ</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ใช้ตำแหน่งของคุณเพื่อแสดงเนื้อหาในท้องที่ โดยคุณจะเปลี่ยนแปลงได้ใน<ph name="SETTINGS_LINK" /></translation>
-<translation id="5251885976619018662">สร้าง PIN การกู้คืนสำหรับเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="5252496130205799136">ต้องการใช้บัญชี Google เพื่อบันทึกและกรอกรหัสผ่านไหม</translation>
 <translation id="5252653240322147470">PIN ต้องมีน้อยกว่า <ph name="MAXIMUM" /> หลัก</translation>
 <translation id="5253554634804500860">ใช้ <ph name="DEVICE_NAME" /></translation>
@@ -7430,7 +7427,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ต้องการติดตั้งแอปต่อไปนี้บนอุปกรณ์}other{"<ph name="APP_NAME" />" ต้องการติดตั้งแอปต่อไปนี้บนอุปกรณ์}}</translation>
 <translation id="6508248480704296122">เกี่ยวกับ <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">แอปพลิเคชัน: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">คุณพร้อมใช้โปรไฟล์สำหรับงานแล้ว</translation>
 <translation id="6511607461419653612">รีสตาร์ท Chromebook แล้วลองอีกครั้ง</translation>
 <translation id="6511827214781912955">พิจารณาลบไฟล์ <ph name="FILENAME" /> เพื่อให้ผู้อื่นที่ใช้อุปกรณ์นี้ไม่เห็นรหัสผ่านของคุณ</translation>
 <translation id="6512759338201777379">สร้างรูปภาพ <ph name="INDEX" /> ของ <ph name="SUBJECT" /> ในอารมณ์ <ph name="MOOD" /> แล้ว</translation>
@@ -9565,7 +9561,6 @@
 <translation id="8084429490152575036">การตั้งค่า APN เครือข่ายมือถือ</translation>
 <translation id="8084510406207562688">คืนค่าแท็บทั้งหมด</translation>
 <translation id="8084628902026812045">เว็บไซต์นี้ไม่ได้ใช้การเชื่อมต่อที่ปลอดภัยและไฟล์อาจมีการดัดแปลง</translation>
-<translation id="8085701268329068646">ป้อน PIN สำหรับเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="8086015605808120405">กำลังกำหนดค่า <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">แท็บนี้กำลังแชร์หน้าจอของคุณ</translation>
 <translation id="8086610718778464681">สำรองแอปและไฟล์ Linux ไม่ได้</translation>
@@ -10397,7 +10392,6 @@
 <translation id="8694596275649352090">ล็อกเมื่ออยู่ในโหมดสลีปหรือเมื่อพับจอ</translation>
 <translation id="8695139659682234808">เพิ่มการควบคุมโดยผู้ปกครองหลังจากที่ตั้งค่า</translation>
 <translation id="8695825812785969222">เปิด&amp;ตำแหน่ง...</translation>
-<translation id="8697753370348182287">โปรไฟล์งานของคุณพร้อมแล้ว</translation>
 <translation id="8698269656364382265">หากต้องการกลับไปยังหน้าจอก่อนหน้า ให้เลื่อนจากด้านซ้าย</translation>
 <translation id="8698432579173128320">สำรองข้อมูลไปที่ Google ไดรฟ์ กู้คืนข้อมูลหรือเปลี่ยนอุปกรณ์ได้ง่ายๆ ทุกเมื่อ ข้อมูลสำรองจะมีข้อมูลแอปอยู่ด้วย ระบบจะอัปโหลดข้อมูลสำรองไปยัง Google และเข้ารหัสโดยใช้รหัสผ่านบัญชี Google ของคุณ <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการสำรองข้อมูล<ph name="BEGIN_LINK1_END" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">เมนูของแอปพลิเคชัน</translation>
@@ -11099,7 +11093,6 @@
 <translation id="920045321358709304">ค้นหา <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">ดูก่อนหน้านี้</translation>
 <translation id="9201220332032049474">ตัวเลือกการล็อกหน้าจอ</translation>
-<translation id="9201762611758697018">PIN การกู้คืนช่วยให้คุณเข้าถึงพาสคีย์ในอุปกรณ์ทุกเครื่องที่คุณบันทึกไว้ได้</translation>
 <translation id="9201842707396338580">มีข้อผิดพลาดเกิดขึ้น โปรดติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="9203296457393252944">สีแดง/เขียว เห็นสีเขียวได้น้อย (ตาบอดสีเขียว)</translation>
 <translation id="9203398526606335860">&amp;เปิดใช้งานการทำแฟ้มประวัติ</translation>

@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">ခန့်မှန်းခြေရလဒ်အတွက် <ph name="CATEGORY_TEXT" /> တန်ဖိုးကို <ph name="CONVERSION_RATE" /> နှင့်စားပါ</translation>
 <translation id="1435763214710588005">လစဉ်လတိုင်း ရွေးချယ်ထားသည့်နေ့တွင် ဒေတာသုံးစွဲမှုကို အလိုအလျောက် ပြင်ဆင်သတ်မှတ်သည်</translation>
 <translation id="1442433966118452622">ပုံရင်းမြစ်</translation>
-<translation id="1445573806602812670">သင့်အသံသွင်းချက်အတွက် စာသားမှတ်တမ်း ရယူခြင်း</translation>
 <translation id="1446954767133808402">နီလာ</translation>
 <translation id="1449035143498573192">Google Search တွင် ဖွင့်ရန်</translation>
 <translation id="1451536289672181509">ကိရိယာသည် ကီးဘုတ်ဖြစ်သည်။</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">ရေကန်</translation>
 <translation id="1720424726586960395">ပိုးစုန်းကြူးတော</translation>
 <translation id="1726100011689679555">အမည်ဆာဗာများ</translation>
-<translation id="1728792932018505912">၎င်းကို ဆက်တင်များ (သို့) <ph name="THREE_DOTS_MENU_ICON" /> မီနူးတွင် ပြင်ဆင်နိုင်သည်</translation>
 <translation id="1731082422893354635">Bluetooth တာ့ချ်ပက်</translation>
 <translation id="1738949837603788263">အပိုင်း <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">ပုံများဖွင့်၍ မရပါ။ ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ (သို့) ပုံများကို ထပ်ဖွင့်ကြည့်ပါ။</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2364498172489649528">အောင်မြင်သည်</translation>
 <translation id="2367335866686097760">ကီးနေရာချသည့်ကီး</translation>
-<translation id="2370739752330685659">နောက်မှ လုပ်ရန်</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">တုံ့ပြန်ချက် အစီရင်ခံစာ ပို့ရန်</translation>
 <translation id="2407209115954268704">ဆင်းမ်ကတ်လော့ခ် အခြေအနေ</translation>
@@ -635,6 +632,7 @@
 <translation id="4454245904991689773">စကင်သိမ်းရန် နေရာ</translation>
 <translation id="4456812688969919973">‘APN သိမ်းရန်’ ခလုတ်ကို ယခု ပိတ်လိုက်သည်</translation>
 <translation id="4469288414739283461">ပြတ်ရွေ့သွားသည့်မြေ စခရင်နားချိန်ပုံ</translation>
+<translation id="4474142134969976028">ထပ်တူကျသည့် ရလဒ်မရှိပါ</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4483049906298469269">မူရင်းမဟုတ်သည့် ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="4500722292849917410">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ မွမ်းမံခလုတ် (Ctrl၊ Alt၊ Shift သို့မဟုတ် <ph name="META_KEY" />) ဖြင့် ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
@@ -751,7 +749,6 @@
 <translation id="5099354524039520280">အပေါ်သို့</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ခလုတ်မပါသော ဖြတ်လမ်းလင့်ခ်သည် အက်ပ်အချို့၏ ဖြတ်လမ်းလင့်ခ်နှင့် ငြိနိုင်သည်။ ဆက်သုံးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ (သို့) <ph name="KEY" /> ခလုတ်သုံးပြီး ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">အလားတူ-</translation>
-<translation id="5109744590306245079">Recorder သည် စကားသံဖြင့် အသံသွင်းချက်များအတွက် စာသားမှတ်တမ်းများ ပြုလုပ်နိုင်သည်။ ဤစာသားမှတ်တမ်းများ ရရှိရန် စာသားမှတ်တမ်းမော်ဒယ် (၁၀၀ MB အထိ) ဒေါင်းလုဒ်လုပ်နိုင်သည်။</translation>
 <translation id="5130848777448318809">မြင်းပု</translation>
 <translation id="5137451382116112100">အပြည့်</translation>
 <translation id="5142961317498132443">အထောက်အထားစိစစ်မှု</translation>
@@ -913,6 +910,7 @@
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6040852767465482106">အမည်မသိ အထောက်အထား:</translation>
 <translation id="604124094241169006">အလိုအလျောက်</translation>
+<translation id="6042308850641462728">နောက်ထပ်</translation>
 <translation id="6048107060512778456">မအောင်မြင်ပါ - စာရွက်ညပ်နေသည်</translation>
 <translation id="6050189528197190982">ဖြူမဲစကေး</translation>
 <translation id="6054711098834486579">အိတ်စ်ပရက်ရှင်နစ်</translation>
@@ -937,7 +935,6 @@
 <translation id="6136285399872347291">နောက်ပြန်</translation>
 <translation id="6137614725462089991">ဆိုက်ဘာသိပ္ပံ</translation>
 <translation id="6137767437444130246">အသုံးပြုသူ အသိအမှတ်ပြုလက်မှတ်</translation>
-<translation id="6141004321363227868">ဤဝန်ဆောင်မှုကို ဖွင့်ထားခြင်းဖြင့် သင်အသံသွင်းနေစဉ် တိုက်ရိုက်စာသားမှတ်တမ်းများကိုလည်း ပြပါမည်။</translation>
 <translation id="6146993107019042706">အပြီးသတ်ရန် သင့်စကားဝှက်အသစ်ကို ထည့်ပါ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">ကြက်သွေးနှင့် ပန်းရောင်</translation>
@@ -1022,7 +1019,6 @@
 <translation id="6543412779435705598">တာကိုစ်မုန့်</translation>
 <translation id="6551839203326557324">ပန်းသီး</translation>
 <translation id="65526652485742171">အတည်ပြုခလုတ်ကို ဖွင့်လိုက်ပါပြီ</translation>
-<translation id="6556016675518580850">ဤစာမျက်နှာမှ ထွက်ပါက သင့်လက်ရှိအသံသွင်းခြင်း ရပ်သွားပါမည်။</translation>
 <translation id="6557784757915238407">APN သည် အမျိုးအစား <ph name="ATTACH" /> ဖြစ်သည်။</translation>
 <translation id="65587193855025101">ပက်လက်တင်ရန်ဗန်း</translation>
 <translation id="6560196641871357166">မြူးကြွ</translation>
@@ -1077,8 +1073,6 @@
 <translation id="6798678288485555829">စာသား လမ်းညွှန်မှု</translation>
 <translation id="680983167891198932">ကီး</translation>
 <translation id="6816797338148849397">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရနိုင်သည်။ ဝင်ကြည့်ရန် အပေါ်ညွှန်မြား အသုံးပြုပါ။</translation>
-<translation id="6818844233294698434">စကားသံကို နားထောင်နေသည်…</translation>
-<translation id="6837645039518471192">အသံသွင်းချက်မှ ထွက်ခြင်း</translation>
 <translation id="6853312040151791195">အားလျော့နှုန်း</translation>
 <translation id="6866732840889595464">ဒေစီပန်း</translation>
 <translation id="6871256179359663621">ခရမ်းဖျော့</translation>
@@ -1220,6 +1214,7 @@
 <translation id="7528507600602050979">အကူအညီ အကြောင်းအရာ မရနိုင်ပါ</translation>
 <translation id="7535791657097741517">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="7544126681856613971">မြူဆိုင်းတော</translation>
+<translation id="7544853251252956727">ရောသမမွှေပါ</translation>
 <translation id="7550715992156305117">အမှားရှာဖွေမှု ပုံမှန်အစီအစဉ်များ</translation>
 <translation id="7551123448725492271">ကိရိယာသည် အသံစက်ပစ္စည်းဖြစ်သည်။</translation>
 <translation id="7559239713112547082">ဖန်သားပြင်ဓာတ်ပုံ အစမ်းကြည့်ရှုရန်</translation>
@@ -1276,7 +1271,6 @@
 <translation id="7850847810298646851">Google AI က ပံ့ပိုးထားသော နောက်ခံ</translation>
 <translation id="785170686607360576">ကျူးလစ်ပန်း</translation>
 <translation id="7856267634822906833">ဘလူးတုသ် တို့ထိမျက်နှာပြင်</translation>
-<translation id="7857744683152972248">Recorder အား စပီကာများကို ခွဲခြားဖော်ထုတ်ခွင့်ပြုမလား။</translation>
 <translation id="7859006200041800233">ရှားစောင်းပင် အပွင့်</translation>
 <translation id="7869143217755017858">အမှောင်မုဒ် ပိတ်ရန်</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1332,7 +1326,6 @@
 <translation id="8162776280680283326">မြေခွေး</translation>
 <translation id="8167413449582155132">Google AI က ပံ့ပိုးထားသော နောက်ခံ</translation>
 <translation id="8171020708598805594">စာသားမှတ်တမ်းများကို အလိုအလျောက် ပြုလုပ်နိုင်သည်။ Google AI အသုံးပြု၍ အသံသွင်းချက် အနှစ်ချုပ်များကို ရယူပြီး အသံရှာဖွေနိုင်သည်။ အင်တာနက်ချိတ်မထားချိန်၌ပင် အသံသွင်းချက်များကို ပြုလုပ်နိုင်သည်။</translation>
-<translation id="8174280683348521982">လက်ရှိအသံသွင်းချက်ကို ဖျက်မလား။</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8183975772394450380">ကမ်းခြေ</translation>
 <translation id="819278132617411009">ပိုမိုလုပ်ဆောင်နိုင်ရန် Google AI သုံးပါ</translation>
@@ -1348,6 +1341,7 @@
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8262870577632766028">၁ နာရီ</translation>
 <translation id="827422111966801947">မဲနယ်</translation>
+<translation id="8281886186245836920">ကျော်ရန်</translation>
 <translation id="8286154143153872371">နောက်ခံကိုကြည့်ရန် ကွန်ရက်ချိတ်ဆက်၍ စာမျက်နှာကို ပြန်လည် စတင်ပါ။</translation>
 <translation id="8291967909914612644">ပင်မထောက်ပံ့သူ နိုင်ငံ</translation>
 <translation id="8294431847097064396">အရင်းအမြစ်</translation>
@@ -1370,9 +1364,6 @@
 <translation id="8372477600026034341">အပို ဆာဗာပင်ရင်းများ</translation>
 <translation id="8372667721254470022">သံလွင်သီးရောင်</translation>
 <translation id="8373046809163484087">သင့်နောက်ခံပုံနှင့် ကိုက်ညီသော အရောင်စုများကို သုံးနိုင်သည်</translation>
-<translation id="8379123594780452422">၎င်းကို ခွင့်ပြုသည့်အခါ Recorder သည် အဆင့်မြင့် အသံစိတ်ဖြာလေ့လာချက်သုံး၍ သင့်အသံဖမ်းယူမှုများကို စီမံဆောင်ရွက်ပါမည်။
-
-၎င်းကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="8380114448424469341">စခရင်၏ <ph name="DIRECTION" /> အခြမ်းတွင် ဝင်းဒိုးနေရာချရန်</translation>
 <translation id="8391349326751432483">‘မှတ်ဉာဏ်’ စစ်ဆေးမှု လုပ်ဆောင်ရန် အနည်းဆုံး ၅၀၀ MB လွတ်နေရမည်။ မှတ်ဉာဏ်ရှင်းရန် တဘ်နှင့် အက်ပ်များကို ပိတ်ပါ။</translation>
 <translation id="8395584934117017006">ဤ <ph name="DEVICE_TYPE" /> ကို လုပ်ငန်းက စီမံပါသည်</translation>
@@ -1520,7 +1511,6 @@
 <translation id="9122602430962285795">ပြန်ချိတ်ဆက်ရန် ဆက်တင်များသို့ သွားပါ</translation>
 <translation id="9122865513525855321">ဇင်</translation>
 <translation id="9126720536733509015">စာမျက်နှာအများအပြားကို PDF တစ်ခုအဖြစ်သိမ်းရန်</translation>
-<translation id="9129549320890412487">စာသားမှတ်တမ်း ဝန်ဆောင်မှု</translation>
 <translation id="9133772297793293778">သင့်ကီးဘုတ်တွင် မွမ်းမံခလုတ် ၁-၄ ခုနှင့်အတူ အခြားခလုတ် ၁ ခုကို နှိပ်ပါ။ တည်းဖြတ်မုဒ်မှ ထွက်ရန် Alt + Esc နှိပ်ပါ။</translation>
 <translation id="9137526406337347448">Google ဝန်ဆောင်မှုများ</translation>
 <translation id="9138630967333032450">ဘယ်ဘက် shift</translation>

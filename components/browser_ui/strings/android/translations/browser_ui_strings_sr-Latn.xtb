@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Onemogućite da sajt čuva podatke na uređaju</translation>
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="2910701580606108292">Pitaj pre nego što dozvoliš sajtovima da puštaju zaštićeni sadržaj</translation>
+<translation id="2918484639460781603">Idi na podešavanja</translation>
 <translation id="2932883381142163287">Prijavi zloupotrebu</translation>
 <translation id="2939338015096024043">Kada je uključeno, sajtovi mogu da traže da prate položaj kamere i saznaju više o okruženju. Kada je isključeno, sajtovi ne mogu da prate položaj kamere niti da saznaju više o okruženju.</translation>
 <translation id="2968755619301702150">Prikazivač sertifikata</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Senzori za pokret ili svetlo</translation>
 <translation id="4755971844837804407">Kada je uključeno, sajtovi mogu da vam prikažu bilo koji oglas. Kada je isključeno, sajtovi ne mogu da prikazuju oglase koji ometaju ili obmanjujuće oglase.</translation>
 <translation id="4779083564647765204">Zumiranje</translation>
+<translation id="4807122856660838973">Uključite Bezbedno pregledanje</translation>
 <translation id="4811450222531576619">Saznajte više o njenom izvoru i temi</translation>
 <translation id="4836046166855586901">Pitaj kada sajt želi da zna kada aktivno koristim ovaj uređaj</translation>
 <translation id="483914009762354899">Uvrsti sve sajtove u okviru ovog domena</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
 <translation id="4996978546172906250">Deljenje preko</translation>
 <translation id="5001526427543320409">Kolačići treće strane</translation>
+<translation id="5007392906805964215">Pregledaj</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5048398596102334565">Dozvoli sajtovima da pristupaju senzorima za pokret (preporučeno)</translation>
 <translation id="5050380848339752099">Ovaj sajt će deliti informacije sa aplikacijom izvan režima bez arhiviranja.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Dodajte sajt</translation>
 <translation id="7368695150573390554">Svi oflajn podaci će biti izbrisani</translation>
 <translation id="7383715096023715447">Podešavanja za <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Bezbednosna provera</translation>
 <translation id="7406113532070524618">Ovo podešavanje radi, a da ne mora da vas identifikuje ili da dozvoli sajtovima da vide istoriju pregledanja, iako sajtovi mogu da dele malu količinu podataka u okviru verifikacije</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje privremene memorije je blokirano</translation>

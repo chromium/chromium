@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">ግምታዊ የሆነ ውጤት ለማግኘት፣ የ<ph name="CATEGORY_TEXT" /> እሴቱን በ<ph name="CONVERSION_RATE" /> ያካፍሉት</translation>
 <translation id="1435763214710588005">በተመረጠው ቀን በየወሩ የውሂብ አጠቃቀምን በራስሰር ዳግም ያስጀምራል</translation>
 <translation id="1442433966118452622">የምስል ምንጭ</translation>
-<translation id="1445573806602812670">ለቅጂዎ የጽሑፍ ግልባጭ ያግኙ</translation>
 <translation id="1446954767133808402">ሳፋየር</translation>
 <translation id="1449035143498573192">በGoogle ፍለጋ ውስጥ ክፈት</translation>
 <translation id="1451536289672181509">መሣሪያ ቁልፍ ሰሌዳ ነው።</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">ሐይቅ</translation>
 <translation id="1720424726586960395">የብርሃን ነፍሳት ጫካ</translation>
 <translation id="1726100011689679555">የስም አገልጋዩች</translation>
-<translation id="1728792932018505912">ይህን በቅንብሮች ውስጥ ወይም በ<ph name="THREE_DOTS_MENU_ICON" /> ምናሌ ውስጥ ማስተካከል ይችላሉ</translation>
 <translation id="1731082422893354635">የብሉቱዝ መዳሰሻ ሰሌዳ</translation>
 <translation id="1738949837603788263">ዞን <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">ምስሎችን መጫን አልተቻለም። የአውታረ መረብ ግንኙነትዎን ይፈትሹ ወይም ምስሎቹን እንደገና ለመጫን ይሞክሩ።</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2364498172489649528">አልፏል</translation>
 <translation id="2367335866686097760">የKeymapping ቁልፍ</translation>
-<translation id="2370739752330685659">ምናልባት በኋላ</translation>
 <translation id="2380886658946992094">የሕግ</translation>
 <translation id="2391082728065870591">የግብረመልስ ሪፖርት ላክ</translation>
 <translation id="2407209115954268704">የሲም ቁልፍ ሁኔታ</translation>
@@ -635,6 +632,7 @@
 <translation id="4454245904991689773">ቃኝ ወደ</translation>
 <translation id="4456812688969919973">ኤፒኤን አስቀምጥ አዝራር አሁን ተሰናክሏል</translation>
 <translation id="4469288414739283461">የመሬት ፍሰት የማያ ገፅ ቆጣቢ</translation>
+<translation id="4474142134969976028">ምንም የሚዛመዱ ውጤቶች የሉም</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="4500722292849917410">አቋራጭ አይገኝም። የአሻሻይ ቁልፍ (ctrl, alt, shift, ወይም <ph name="META_KEY" />) በመጠቀም አዲስ አቋራጭ ይጫኑ።</translation>
@@ -751,7 +749,6 @@
 <translation id="5099354524039520280">ላይ</translation>
 <translation id="5107243100836678918">የ<ph name="META_KEY" /> ቁልፍ የሌለው አቋራጭ ከተወሰነ የመተግበሪያ አቋራጭ ጋር ሊጋጭ ይችላል። ይህን አቋራጭ መጠቀም መቀጠል ከፈለጉ በድጋሚ ይጫኑት፣ ወይም ደግሞ የ<ph name="KEY" /> ቁልፉን በመጠቀም አዲስ አቋራጭ ይጫኑ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ተመሳሳይ፦</translation>
-<translation id="5109744590306245079">መቅጃ ንግግር ላላቸው ቅጂዎች የጽሑፍ ግልባጮችን መፍጠር ይችላል። እነዚህን የጽሑፍ ግልባጮች ለማግኘት ጽሑፍ ግልባጭ ሞዴሉን (እስከ 100 ሜባ) ያውርዱ።</translation>
 <translation id="5130848777448318809">ትናንሽ ፈረሶች</translation>
 <translation id="5137451382116112100">ሙሉ</translation>
 <translation id="5142961317498132443">ማረጋገጥ</translation>
@@ -913,6 +910,7 @@
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6040852767465482106">ስም-አልባ መታወቂያ</translation>
 <translation id="604124094241169006">ራስ-ሰር</translation>
+<translation id="6042308850641462728">ተጨማሪ</translation>
 <translation id="6048107060512778456">አልተሳካም - የወረቀት መታጨቅ</translation>
 <translation id="6050189528197190982">ግራጫማ ምጥጥን</translation>
 <translation id="6054711098834486579">ኤክስፕሬሽኒስት</translation>
@@ -937,7 +935,6 @@
 <translation id="6136285399872347291">የኋሊት ደምሳሽ</translation>
 <translation id="6137614725462089991">ሳይበርፓንክ</translation>
 <translation id="6137767437444130246">የተጠቃሚ እውቅና ማረጋገጫ</translation>
-<translation id="6141004321363227868">ይህ ባህሪ ከነቃ እርስዎ እየቀረጹ ሳሉ የቀጥታ ጽሑፍ ግልባጮችም ይታያሉ።</translation>
 <translation id="6146993107019042706">ለማጠናቀቅ፣ የእርስዎን አዲስ የይለፍ ቃል ያስገቡ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">ማሩን እና ሮዝ</translation>
@@ -1022,7 +1019,6 @@
 <translation id="6543412779435705598">ታኮዎች</translation>
 <translation id="6551839203326557324">ፖሞች</translation>
 <translation id="65526652485742171">የአረጋግጥ አዝራር አሁን ነቅቷል</translation>
-<translation id="6556016675518580850">ከዚህ ገጽ መውጣት የአሁኑ ቀረጻዎን ያጠናቅቀዋል።</translation>
 <translation id="6557784757915238407">ኤፒኤን ዓይነት <ph name="ATTACH" /> ነው።</translation>
 <translation id="65587193855025101">ጠፍጣፋ ወለል</translation>
 <translation id="6560196641871357166">ደማቅ ቀለሞች</translation>
@@ -1077,8 +1073,6 @@
 <translation id="6798678288485555829">የጽሁፍ አሰሳ</translation>
 <translation id="680983167891198932">ቁልፍ</translation>
 <translation id="6816797338148849397">ከሚገኘው የእርስዎ ምርጫ ጋር የተገናኘ መረጃ ለመድረስ የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
-<translation id="6818844233294698434">ንግግርን ለማግኘት በማዳመጥ ላይ...</translation>
-<translation id="6837645039518471192">ከመቅዳት ይውጡ</translation>
 <translation id="6853312040151791195">የኃይል ማለቂያ ፍጥነት</translation>
 <translation id="6866732840889595464">ዴይዚ</translation>
 <translation id="6871256179359663621">ፈካ ያለ ሐምራዊ</translation>
@@ -1220,6 +1214,7 @@
 <translation id="7528507600602050979">የእገዛ ይዘት አይገኝም</translation>
 <translation id="7535791657097741517">ነጣ ያለ ገጽታን አብራ</translation>
 <translation id="7544126681856613971">ጭጋጋማ ጫካ</translation>
+<translation id="7544853251252956727">በውዝ</translation>
 <translation id="7550715992156305117">የምርመራ የዕለት ተዕለት ሥራዎች</translation>
 <translation id="7551123448725492271">መሣሪያ የኦዲዮ መሣሪያ ነው።</translation>
 <translation id="7559239713112547082">የቅጸበታዊ ገፅ ቅድመ ዕይታ</translation>
@@ -1276,7 +1271,6 @@
 <translation id="7850847810298646851">በGoogle AI የተጎላበተ ልጣፍ</translation>
 <translation id="785170686607360576">ቱሊፕ</translation>
 <translation id="7856267634822906833">የብሉቱዝ መነካት የሚችል ማያ</translation>
-<translation id="7857744683152972248">መቅጃው ተናጋሪዎችን እንዲለይ ይፈቀድለት?</translation>
 <translation id="7859006200041800233">የቁልቋል አበባ</translation>
 <translation id="7869143217755017858">ጨለማ ሁነታን አሰናክል</translation>
 <translation id="7881066108824108340">ዲኤንኤስ</translation>
@@ -1332,7 +1326,6 @@
 <translation id="8162776280680283326">ቀበሮዎች</translation>
 <translation id="8167413449582155132">በGoogle ሰው ሠራሽ አስተውሎት የተጎላበተ ዳራ</translation>
 <translation id="8171020708598805594">በራስ-ሰር የጽሑፍ ግልባጮችን ይፍጠሩ፣ Google AIን በመጠቀም የቀረጻ ማጠቃለያዎችን ያግኙ እና ኦዲዮን ይፈልጉ። ከበይነመረብ ጋር ባልተገናኙበት ጊዜ እንኳን ቅጂዎችን ይፍጠሩ።</translation>
-<translation id="8174280683348521982">የአሁኑ ቅጂ ይሰረዝ?</translation>
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8183975772394450380">የባህር ዳርቻ</translation>
 <translation id="819278132617411009">የበለጠ ውጤታማ ለመሆን Google AI ይጠቀሙ</translation>
@@ -1348,6 +1341,7 @@
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8262870577632766028">1 ሰዓት</translation>
 <translation id="827422111966801947">ወይን ጠጅ</translation>
+<translation id="8281886186245836920">ዝለል</translation>
 <translation id="8286154143153872371">ልጣፍን ለማየት እባክዎን ከአውታረ መረብ ጋር ይገናኙ እና ገጹን እንደገና ይጫኑ።</translation>
 <translation id="8291967909914612644">የመነሻ አቅራቢ አገር</translation>
 <translation id="8294431847097064396">ምንጭ</translation>
@@ -1370,9 +1364,6 @@
 <translation id="8372477600026034341">ተጨማሪ አስተናጋጆች</translation>
 <translation id="8372667721254470022">ደማቅ ቢጫ-አረንጓዴ</translation>
 <translation id="8373046809163484087">ከልጣፍዎ ጋር የሚመሳሰሉ የቀለም ስብስቦችን ይጠቀሙ</translation>
-<translation id="8379123594780452422">ይህን ሲፈቅዱ መቅጃ የላቀ የኦዲዮ ትንታኔን በመጠቀም የድምጽ ቅጂዎችዎን ያሰናዳል።
-
-ይህንን በማንኛውም ጊዜ በቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="8380114448424469341">መስኮትን በ<ph name="DIRECTION" /> የማያ ገጹ አጋማሽ ላይ ትከል</translation>
 <translation id="8391349326751432483">የማህደረ ትውስታ ሙከራን ለማካሄድ ቢያንስ 500 ሜባ ነጻ ያስፈልግዎታል። ማህደረ ትውስታን ለማስለቀቅ፣ ትሮችን እና መተግበሪያዎችን ይዝጉ።</translation>
 <translation id="8395584934117017006">ይህ <ph name="DEVICE_TYPE" /> በድርጅት የሚተዳደር ነው</translation>
@@ -1520,7 +1511,6 @@
 <translation id="9122602430962285795">ዳግም ለመገናኘት ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="9122865513525855321">ሰላማዊ</translation>
 <translation id="9126720536733509015">በርካታ ገጾችን በአንድ PDF ያስቀምጡ</translation>
-<translation id="9129549320890412487">የጽሑፍ ግልባጭ ባህሪ</translation>
 <translation id="9133772297793293778">በእርስዎ የቁልፎች ሰሌዳ ላይ ከ1-4 አሻሻዮችን እና 1 ሌላ ቁልፍን ይጫኑ። ከአርትዖት ሁነታ ለመውጣት alt + esc ይጫኑ።</translation>
 <translation id="9137526406337347448">Google አገልግሎቶች</translation>
 <translation id="9138630967333032450">የግራ ቀያይር</translation>

@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">近似値を求めるには、<ph name="CATEGORY_TEXT" /> の値を <ph name="CONVERSION_RATE" /> で割る</translation>
 <translation id="1435763214710588005">指定した日に毎月データ使用量が自動的にリセットされます</translation>
 <translation id="1442433966118452622">画像ソース</translation>
-<translation id="1445573806602812670">録音の文字起こしを作成</translation>
 <translation id="1446954767133808402">サファイア</translation>
 <translation id="1449035143498573192">Google 検索で開く</translation>
 <translation id="1451536289672181509">デバイスの種類はキーボードです。</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">湖</translation>
 <translation id="1720424726586960395">ホタルの森</translation>
 <translation id="1726100011689679555">ネームサーバー</translation>
-<translation id="1728792932018505912">[設定] または <ph name="THREE_DOTS_MENU_ICON" /> メニューで調整できます</translation>
 <translation id="1731082422893354635">Bluetooth タッチパッド</translation>
 <translation id="1738949837603788263">ゾーン <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">画像を読み込めませんでした。ネットワーク接続を確認するか、画像をもう一度読み込んでみてください。</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">続行</translation>
 <translation id="2364498172489649528">成功</translation>
 <translation id="2367335866686097760">キーマッピングのキー</translation>
-<translation id="2370739752330685659">後で</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
 <translation id="2407209115954268704">SIM ロック ステータス</translation>
@@ -638,6 +635,7 @@
 <translation id="4454245904991689773">スキャンの保存先</translation>
 <translation id="4456812688969919973">[APN を保存] ボタンが無効になりました</translation>
 <translation id="4469288414739283461">「地球の動き」のスクリーン セーバー</translation>
+<translation id="4474142134969976028">一致する結果がありません</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="4500722292849917410">このショートカットは使用できません。修飾キー（Ctrl、Alt、Shift、または <ph name="META_KEY" />）を使用して新しいショートカットを押してください。</translation>
@@ -755,7 +753,6 @@
 <translation id="5099354524039520280">上</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> キーを使わないショートカットは、一部のアプリのショートカットと競合する可能性があります。そのまま使用する場合は、このショートカットをもう一度押します。または、<ph name="KEY" /> キーを使用した新しいショートカットを押します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">類義語:</translation>
-<translation id="5109744590306245079">レコーダーで会話を含む録音の文字起こしを作成できます。文字起こしを作成するには、音声文字変換モデル（最大 100 MB）をダウンロードする必要があります。</translation>
 <translation id="5130848777448318809">ポニー</translation>
 <translation id="5137451382116112100">全画面表示</translation>
 <translation id="5142961317498132443">認証</translation>
@@ -917,6 +914,7 @@
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6040852767465482106">匿名 ID</translation>
 <translation id="604124094241169006">自動設定</translation>
+<translation id="6042308850641462728">もっと見る</translation>
 <translation id="6048107060512778456">失敗 - 紙詰まりです</translation>
 <translation id="6050189528197190982">グレースケール</translation>
 <translation id="6054711098834486579">表現主義</translation>
@@ -941,7 +939,6 @@
 <translation id="6136285399872347291">Backspace</translation>
 <translation id="6137614725462089991">サイバーパンク</translation>
 <translation id="6137767437444130246">ユーザー証明書</translation>
-<translation id="6141004321363227868">この機能を有効にすると、録音中もリアルタイムで文字起こしが表示されます。</translation>
 <translation id="6146993107019042706">終了するには、新しいパスワードを入力してください</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">マルーンとピンク</translation>
@@ -1027,7 +1024,6 @@
 <translation id="6543412779435705598">タコス</translation>
 <translation id="6551839203326557324">リンゴ</translation>
 <translation id="65526652485742171">確認ボタンが有効になりました</translation>
-<translation id="6556016675518580850">このページから移動すると、現在の録音が終了します。</translation>
 <translation id="6557784757915238407">APN の種類は <ph name="ATTACH" /> です。</translation>
 <translation id="65587193855025101">フラットベッド</translation>
 <translation id="6560196641871357166">Vibrant</translation>
@@ -1082,8 +1078,6 @@
 <translation id="6798678288485555829">テキスト内の移動</translation>
 <translation id="680983167891198932">キー</translation>
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
-<translation id="6818844233294698434">会話を聞き取っています...</translation>
-<translation id="6837645039518471192">録音を終了</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6866732840889595464">デイジー</translation>
 <translation id="6871256179359663621">ライトパープル</translation>
@@ -1226,6 +1220,7 @@
 <translation id="7528507600602050979">ヘルプ コンテンツをご利用いただけません</translation>
 <translation id="7535791657097741517">ライトモードをオンにする</translation>
 <translation id="7544126681856613971">霧の立ち込めた森</translation>
+<translation id="7544853251252956727">シャッフル</translation>
 <translation id="7550715992156305117">ルーティン診断</translation>
 <translation id="7551123448725492271">デバイスの種類はオーディオ機器です。</translation>
 <translation id="7559239713112547082">スクリーンショットのプレビュー</translation>
@@ -1282,7 +1277,6 @@
 <translation id="7850847810298646851">Google AI を活用した壁紙</translation>
 <translation id="785170686607360576">チューリップ</translation>
 <translation id="7856267634822906833">Bluetooth タッチスクリーン</translation>
-<translation id="7857744683152972248">話し手の識別をレコーダーに許可しますか？</translation>
 <translation id="7859006200041800233">サボテンの花</translation>
 <translation id="7869143217755017858">ダークモードを無効にする</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1338,7 +1332,6 @@
 <translation id="8162776280680283326">キツネ</translation>
 <translation id="8167413449582155132">Google AI による背景</translation>
 <translation id="8171020708598805594">文字起こしを自動で作成したり、Google AI を使用して録音の概要を生成したり、音声を検索したりできます。インターネットに接続していなくても録音できます。</translation>
-<translation id="8174280683348521982">現在の録音を削除しますか？</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ビーチ</translation>
 <translation id="819278132617411009">Google AI を使用して生産性を高める</translation>
@@ -1354,6 +1347,7 @@
 <translation id="8261506727792406068">削除</translation>
 <translation id="8262870577632766028">1 時間</translation>
 <translation id="827422111966801947">インディゴ</translation>
+<translation id="8281886186245836920">スキップ</translation>
 <translation id="8286154143153872371">壁紙を表示するには、ネットワークに接続してページを再読み込みしてください。</translation>
 <translation id="8291967909914612644">ホーム プロバイダの国</translation>
 <translation id="8294431847097064396">ソース</translation>
@@ -1376,9 +1370,6 @@
 <translation id="8372477600026034341">その他のホスト</translation>
 <translation id="8372667721254470022">オリーブ色</translation>
 <translation id="8373046809163484087">壁紙に合ったカラーセットを使用できます</translation>
-<translation id="8379123594780452422">許可すると、レコーダーは高度な音声分析を使用して音声録音を処理します。
-
-これは [設定] でいつでもオフにできます。</translation>
 <translation id="8380114448424469341">ウィンドウを画面の <ph name="DIRECTION" /> の半分に固定</translation>
 <translation id="8391349326751432483">メモリテストを実行するには 500 MB 以上の空き容量が必要です。メモリを解放するには、タブとアプリを閉じてください。</translation>
 <translation id="8395584934117017006">この <ph name="DEVICE_TYPE" /> は企業の管理対象デバイスです</translation>
@@ -1422,7 +1413,6 @@
 <translation id="86356131183441916">ライトパープル</translation>
 <translation id="8647595191512746911">音声文字起こし</translation>
 <translation id="8651481478098336970">音量をミュート</translation>
-<translation id="8652096837042642071">Google AI による録音の要約</translation>
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8655828773034788261">URL を共有:</translation>
 <translation id="8660881923941176839">ポンド</translation>
@@ -1528,7 +1518,6 @@
 <translation id="9122602430962285795">再接続するには　[設定] に移動します</translation>
 <translation id="9122865513525855321">禅</translation>
 <translation id="9126720536733509015">複数のページを保存して 1 つの PDF にまとめる</translation>
-<translation id="9129549320890412487">文字起こし機能</translation>
 <translation id="9133772297793293778">キーボードで、1～4 個の修飾子と別の 1 個のキーを押します。編集モードを終了するには、Alt+Esc キーを押します。</translation>
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9138630967333032450">左シフト</translation>

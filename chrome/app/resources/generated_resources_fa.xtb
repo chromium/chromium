@@ -973,6 +973,7 @@
 <translation id="169675691788639886">‏دستگاه سرور SSH پیکربندی‌شده دارد. با حساب‌های حساس به سیستم وارد نشوید.</translation>
 <translation id="1697122132646041614">«رأی مخالف» فرمی را برای ارسال بازخورد دقیق درباره علت نپسندیدن این نتایج باز می‌کند.</translation>
 <translation id="1697150536837697295">هنری</translation>
+<translation id="1697532407822776718">همه چیز مرتب است.</translation>
 <translation id="1697686431566694143">ویرایش فایل</translation>
 <translation id="1698796500103229697">&amp;روش‌های پرداخت</translation>
 <translation id="1698899521169711967">مرور با هشتک</translation>
@@ -1403,7 +1404,6 @@
 <translation id="199610894463449797">{0,plural, =1{بستن این نمایه}one{بستن این نمایه (# پنجره)}other{بستن این نمایه (# پنجره)}}</translation>
 <translation id="1997433994358798851">‏Chrome برای استفاده از بلوتوث به اجازه نیاز دارد تا به دستگاهتان وصل شود</translation>
 <translation id="1997616988432401742">گواهی‌نامه‌های شما</translation>
-<translation id="199801374788581808">می‌توانید دوباره امتحان کنید یا برای دریافت راهنمایی با سرپرستتان تماس بگیرید</translation>
 <translation id="1999115740519098545">هنگام شروع به کار</translation>
 <translation id="2002109485265116295">بی‌درنگ</translation>
 <translation id="2002160221914907025">هوش مصنوعی آزمایشی</translation>
@@ -2509,6 +2509,7 @@
 <translation id="2776560192867872731">تغییر نام دستگاه <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">حذف این محتوی</translation>
 <translation id="2777525873368474674">جای‌گذاری پیوند تصویر</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{۱ سایت با اعلان‌های فراوان پیدا شد}one{{NUM_SITES} سایت با اعلان‌های فراوان پیدا شد}other{{NUM_SITES} سایت با اعلان‌های فراوان پیدا شد}}</translation>
 <translation id="2778471504622896352">‏افزودن برنامه‌های کنترل ازراه‌دور به راه‌انداز ChromeOS</translation>
 <translation id="2779728796406650689">‏با این کار، وقتی سؤال می‌پرسید، «دستیار Google» می‌تواند پاسخ‌های سفارشی‌سازی‌شده ارائه دهد.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2666,7 +2667,6 @@
 <translation id="2893180576842394309">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو و سایر سرویس‌های Google استفاده کند</translation>
 <translation id="2893701697603065178">محیط توسعه نرم‌افزار تحت‌مدیریت</translation>
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
-<translation id="2895730582088342039">ذخیره، هم‌رسانی، و پخش محتوا</translation>
 <translation id="289695669188700754">شناسه کلید: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">وقتی همه پنجره‌های ناشناس را ببندید، این تنظیم سفارشی برداشته خواهد شد</translation>
 <translation id="2897878306272793870">آیا می‌خواهید برگه‌های <ph name="TAB_COUNT" /> باز شوند؟</translation>
@@ -3454,7 +3454,6 @@
 <translation id="3503995387997205657">می‌توانید برنامه‌های قبلی‌تان را بازیابی کنید</translation>
 <translation id="3505100368357440862">پیشنهادهای خرید</translation>
 <translation id="3505602163050943406">‏وقتی از برخی ویژگی‌ها استفاده می‌کنید، آن‌ها می‌توانند بخش‌هایی از صفحه‌های باز، صفحه‌های اخیر مرتبط، و نشانی‌های وب آن‌ها را به Google ارسال کنند</translation>
-<translation id="3505762711681798106">درحال آماده‌سازی فضای کاری شما هستیم! در این فاصله می‌توانید کاوش کنید، کار ما هم به‌زودی تمام خواهد شد.</translation>
 <translation id="3507132249039706973">«محافظت استاندارد» روشن است</translation>
 <translation id="3507888235492474624">اسکن مجدد دستگاه‌های بلوتوث</translation>
 <translation id="3508492320654304609">داده‌های ورود به سیستم شما حذف نشد</translation>
@@ -5137,7 +5136,6 @@
 <translation id="4750185073185658673">‏برای مرور چند اجازه دیگر، به تلفن برگردید. مطمئن شوید بلوتوث و Wi-Fi تلفن روشن باشند.</translation>
 <translation id="4750394297954878236">پیشنهادات</translation>
 <translation id="475088594373173692">کاربر اول</translation>
-<translation id="4754167810863682207">راه‌اندازی نمایه شما تقریباً تمام است</translation>
 <translation id="4756378406049221019">توقف/بار کردن مجدد</translation>
 <translation id="4756388243121344051">&amp;سابقه</translation>
 <translation id="4756671452988984333">نوشتار برای صدا</translation>
@@ -5798,7 +5796,6 @@
 <translation id="5247243947166567755">انتخاب <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">مرورگر پیش از تکمیل بارگیری ناگهان خارج شد.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> از مکانتان برای ارائه محتوای محلی استفاده می‌کند. می‌توانید در <ph name="SETTINGS_LINK" /> آن را تغییر دهید.</translation>
-<translation id="5251885976619018662">‏پین بازیابی برای «مدیر گذرواژه Google» ایجاد کنید</translation>
 <translation id="5252496130205799136">‏برای ذخیره و تکمیل گذرواژه‌ها از «حساب Google» شما استفاده شود؟</translation>
 <translation id="5252653240322147470">کد پین باید کمتر از <ph name="MAXIMUM" /> رقم باشد</translation>
 <translation id="5253554634804500860">استفاده از <ph name="DEVICE_NAME" /></translation>
@@ -7446,7 +7443,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{«<ph name="APP_NAME" />» می‌خواهد برنامه زیر را در این دستگاه نصب کند:}one{«<ph name="APP_NAME" />» می‌خواهد برنامه‌های زیر را در این دستگاه نصب کند:}other{«<ph name="APP_NAME" />» می‌خواهد برنامه‌های زیر را در این دستگاه نصب کند:}}</translation>
 <translation id="6508248480704296122">مرتبط با <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">برنامه: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">برای استفاده از نمایه کاری‌تان آماده هستید</translation>
 <translation id="6511607461419653612">‏Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید</translation>
 <translation id="6511827214781912955">توصیه می‌کنیم <ph name="FILENAME" /> را حذف کنید تا افراد دیگری که از این دستگاه استفاده می‌کنند نتوانند گذرواژه‌هایتان را ببینند</translation>
 <translation id="6512759338201777379">تصویر تولیدشده <ph name="INDEX" /> از <ph name="SUBJECT" />، با حال‌وهوای <ph name="MOOD" />.</translation>
@@ -9583,7 +9579,6 @@
 <translation id="8084429490152575036">تنظیمات «نام نقطه دستیابی» شبکه تلفن همراه</translation>
 <translation id="8084510406207562688">بازیابی همه برگه‌ها</translation>
 <translation id="8084628902026812045">این سایت از اتصال ایمن استفاده نمی‌کند و ممکن است فایل دستکاری شده باشد</translation>
-<translation id="8085701268329068646">‏پین «مدیر گذرواژه Google» را وارد کنید</translation>
 <translation id="8086015605808120405">درحال پیکربندی <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">این برگه درحال هم‌رسانی صفحه‌نمایش شما است</translation>
 <translation id="8086610718778464681">‏برنامه‌ها و فایل‌های Linux پشتیبان‌گیری نشدند</translation>
@@ -10415,7 +10410,6 @@
 <translation id="8694596275649352090">قفل شدن دستگاه وقتی در حالت خواب است یا در آن بسته است</translation>
 <translation id="8695139659682234808">افزودن کنترل‌های والدین بعد از راه‌اندازی</translation>
 <translation id="8695825812785969222">باز کردن &amp;مکان...</translation>
-<translation id="8697753370348182287">نمایه کاری شما آماده است</translation>
 <translation id="8698269656364382265">برای برگشتن به صفحه قبل، از سمت راست تند به‌سمت دیگر بکشید.</translation>
 <translation id="8698432579173128320">‏پشتیبان‌گیری در Google Drive. هرزمان خواستید داده‌هایتان را به‌آسانی بازیابی کنید یا دستگاهتان را عوض کنید. نسخه پشتیبان شما حاوی داده‌های برنامه است. نسخه‌های پشتیبان در Google بارگذاری می‌شود و بااستفاده از گذرواژه «حساب Google» رمزگذاری می‌شود. <ph name="BEGIN_LINK1" />درباره پشتیبان‌گیری بیشتر بدانید<ph name="BEGIN_LINK1_END" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">منوی برنامه</translation>
@@ -11118,7 +11112,6 @@
 <translation id="920045321358709304">جستجوی <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">قبلاً مشاهده شده</translation>
 <translation id="9201220332032049474">گزینه‌های قفل صفحه</translation>
-<translation id="9201762611758697018">پین بازیابی به شما کمک می‌کند به گذرکلیدهای ذخیره‌شده‌تان در هر دستگاهی دسترسی داشته باشید</translation>
 <translation id="9201842707396338580">مشکلی پیش آمد. لطفاً با مالک یا سرپرست دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">قرمز-سبز، ضعف در سبز (سبزدشواربینی)</translation>
 <translation id="9203398526606335860">&amp;نمایه سازی فعال شد</translation>

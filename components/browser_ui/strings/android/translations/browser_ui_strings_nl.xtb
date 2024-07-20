@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Voorkomen dat een site gegevens op je apparaat opslaat</translation>
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="2910701580606108292">Vragen voordat sites beschermde content mogen afspelen</translation>
+<translation id="2918484639460781603">Ga naar instellingen</translation>
 <translation id="2932883381142163287">Misbruik melden</translation>
 <translation id="2939338015096024043">Als deze optie aanstaat, kunnen sites vragen of ze je camerapositie mogen volgen en meer informatie over je omgeving mogen krijgen. Staat de optie uit, dan kunnen sites je camerapositie niet volgen en geen informatie over je omgeving krijgen.</translation>
 <translation id="2968755619301702150">Certificaatviewer</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Bewegings- of lichtsensoren</translation>
 <translation id="4755971844837804407">Als deze optie aanstaat, kunnen sites elke advertentie aan je tonen. Staat de optie uit, dan kunnen sites geen opdringerige of misleidende advertenties tonen.</translation>
 <translation id="4779083564647765204">Zoom</translation>
+<translation id="4807122856660838973">Safe Browsing aanzetten</translation>
 <translation id="4811450222531576619">Meer informatie over de bron en het onderwerp</translation>
 <translation id="4836046166855586901">Vragen als een site wil weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="483914009762354899">Alle sites in dit domein opnemen</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Geen contacten gevonden</translation>
 <translation id="4996978546172906250">Delen via</translation>
 <translation id="5001526427543320409">Cookies van derden</translation>
+<translation id="5007392906805964215">Bekijken</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5048398596102334565">Sites toegang geven tot bewegingssensoren (aanbevolen)</translation>
 <translation id="5050380848339752099">Deze site staat op het punt buiten de incognitomodus informatie met een app te delen.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Een site toevoegen</translation>
 <translation id="7368695150573390554">Alle offline gegevens worden verwijderd</translation>
 <translation id="7383715096023715447">Instellingen voor <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Veiligheidscheck</translation>
 <translation id="7406113532070524618">Deze instelling werkt zonder je te identificeren of sites toegang te geven tot je browsegeschiedenis, maar sites kunnen wel een kleine hoeveelheid informatie delen als onderdeel van de verificatie</translation>
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>

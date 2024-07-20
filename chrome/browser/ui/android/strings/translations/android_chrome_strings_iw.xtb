@@ -513,6 +513,7 @@
 <translation id="3557336313807607643">הוספה לאנשי הקשר</translation>
 <translation id="3563767357928833671">מוצג התוכן שבלוח</translation>
 <translation id="3566639033325271639">עדכון ההגדרות</translation>
+<translation id="3568945271227339929">אין סיסמאות שנחשפו</translation>
 <translation id="357465026686164600">שימוש בטלפון בתור מפתח אבטחה</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577558748185201054">אפשר לנהל את תחומי העניין וההעדפות</translation>
@@ -946,7 +947,6 @@
 <translation id="5698878456427040674">עליך לבדוק אם יש תמיכה בחשבון שנבחר.</translation>
 <translation id="570347048394355941">מעבר לכרטיסייה</translation>
 <translation id="5715150588940290235">למחוק את קודי האבטחה שנשמרו?</translation>
-<translation id="5718049162805123412">עליך לשנות את הסיסמאות האלה עכשיו</translation>
 <translation id="571930967925877633">‏הסימניות, ההיסטוריה ונתונים אחרים ב-Chrome כבר לא יסונכרנו עם חשבון Google</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5726692708398506830">הגדלת כל מה שמופיע בדף</translation>
@@ -1538,7 +1538,6 @@
 <translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="8354977102499939946">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
 <translation id="835847953965672673">שוחזרו <ph name="NUMBER_OF_DOWNLOADS" /> הורדות</translation>
-<translation id="8367705492654390392">אפשר לשאול הכל</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>
 <translation id="8378850197701296741">יש לך סימניות, היסטוריה והגדרות אחרות מהחשבון <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">אימות הזהות שלך</translation>

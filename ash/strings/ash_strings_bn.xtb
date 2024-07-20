@@ -254,6 +254,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> তে প্রতিবিম্বিত হচ্ছে</translation>
 <translation id="1885785240814121742">আঙ্গুলের ছাপ দিয়ে আনলক করুন</translation>
 <translation id="1894024878080591367">আপনার কীবোর্ডের মাধ্যমে খেলতে সেট-আপ করুন</translation>
+<translation id="1896383923047738322">আপনার কীবোর্ড কাস্টমাইজ করুন</translation>
 <translation id="1904997243703671177">আপনি ব্লুটুথ বন্ধ করলে, আপনার <ph name="DEVICE_TYPE" /> থেকে <ph name="DEVICE_COUNT" />টি এক্সটার্নাল ডিভাইস ডিসকানেক্ট হয়ে যাবে, যার মধ্যে এগুলি আছে:</translation>
 <translation id="1908992311423394684">নতুন ইনস্টল</translation>
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
@@ -289,6 +290,7 @@
 <translation id="2018630726571919839">একটি জোকস শোনাও</translation>
 <translation id="2021864487439853900">আনলক করতে ক্লিক করুন</translation>
 <translation id="2034971124472263449">যাই হোক সেভ করুন</translation>
+<translation id="2041220428661959602">ব্যাটারি লেভেল: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> শর্টকার্ট বর্তমানে বন্ধ করা আছে</translation>
 <translation id="2049240716062114887">ডেস্কের নাম পরিবর্তন করে <ph name="DESK_NAME" /> রাখা হয়েছে</translation>
 <translation id="2050339315714019657">পোর্ট্রেট</translation>
@@ -388,6 +390,7 @@
 <translation id="2453860139492968684">সমাপ্ত করুন</translation>
 <translation id="2455994958736234930">অ্যাড্রেসবারে www. এবং .com যোগ করুন তারপরে ওয়েবসাইট খুলুন</translation>
 <translation id="2456008742792828469">ক্যালেন্ডার, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="246052086404491029">ড্রিল ডাউন করুন</translation>
 <translation id="2465145153332031561"><ph name="BATTERY_HEALTH_PERCENTAGE" />% ব্যাটারি আছে, সাইকেল কাউন্ট <ph name="CYCLE_COUNT" />টি</translation>
 <translation id="2473177541599297363">রেজোলিউশন কনফার্ম করুন</translation>
 <translation id="2475982808118771221">একটি ত্রুটি ঘটেছে</translation>
@@ -749,6 +752,7 @@
 <translation id="3756485814916578707">স্ক্রিন কাস্ট করা হচ্ছে</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> শর্টকার্ট <ph name="OLD_SHORTCUT" /> থেকে <ph name="NEW_SHORTCUT" />-এ আপডেট করা হয়েছে</translation>
 <translation id="3765841986579723851">আজ এডিট করা হয়েছে</translation>
+<translation id="3772109172035555611">আপনার TrackPoint কাস্টমাইজ করুন</translation>
 <translation id="3773700760453577392">একজন অ্যাডমিনিস্ট্রেটর <ph name="USER_EMAIL" />-র জন্য একাধিক সাইন-ইন বাতিল করেছেন। চালিয়ে যাওয়ার জন্য, সব ব্যবহারকারীকে অবশ্যই সাইন-আউট করতে হবে।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> কানেক্ট করা হচ্ছে</translation>
 <translation id="3781910048497807059">আগের প্যানেলে ফোকাস সরান</translation>
@@ -990,6 +994,7 @@
 <translation id="4648249871170053485"><ph name="APP_NAME" />, অ্যাপের সাজেশন</translation>
 <translation id="4649019912155580914">আপনি এডিট করেছেন</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> চেক বক্সে টিকচিহ্ন দেওয়া আছে।</translation>
+<translation id="465686131535918331">আপনি <ph name="PERIPHERAL_NAME" />-এর সেটিংস পছন্দমতো করে নিতে পারবেন</translation>
 <translation id="4657775630156561295">নিম্নলিখিত সাজেশনটি আপনার অ্যাকাউন্টের সাজেশনের ইতিহাস থেকে স্থায়ীভাবে মুছে ফেলা হবে:
 
 <ph name="QUERY" /></translation>
@@ -1380,6 +1385,7 @@
 <translation id="5982119059638483922">Fn+Search অথবা Shift বোতাম প্রেস করে বাতিল করুন।</translation>
 <translation id="5983567367406220847">ইনঅ্যাক্টিভ থাকার কারণে, হটস্পট বন্ধ করা হয়েছে।</translation>
 <translation id="598407983968395253">টেমপ্লেট ব্যবহার করুন</translation>
+<translation id="5986723678596105470">Google Meet-এর মাধ্যমে যোগ দিন</translation>
 <translation id="598882571027504733">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করুন।</translation>
 <translation id="5998374579424866922">গেম কন্ট্রোল বন্ধ করুন</translation>
 <translation id="6000279412553873020">কী, বোতাম ও আরও অনেক কিছু</translation>
@@ -1395,6 +1401,7 @@
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />-এ কোনও ইভেন্ট নেই। ব্রাউজারে Google Calendar খোলার জন্য Enter প্রেস করুন।</translation>
 <translation id="6030495522958826102">স্ক্রিনের নিচে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
+<translation id="6030608926359652298">আপনার টাচপ্যাড কাস্টমাইজ করুন</translation>
 <translation id="6032620807120418574">ফুল স্ক্রিন ছবি রেকর্ড করতে, যেকোনও জায়গায় ক্লিক করুন</translation>
 <translation id="6040071906258664830">মাইক্রোফোনে রেকর্ড করুন <ph name="STATE" /></translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -2244,6 +2251,7 @@
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" ব্যবহার করুন</translation>
 <translation id="9193626018745640770">অজানা ডিভাইসে কাস্ট করা হচ্ছে</translation>
 <translation id="9194617393863864469">অন্য ব্যবহারকারীকে সাইন-ইন করান...</translation>
+<translation id="9195857219954068558">আপনার Chromebook আপডেট করা হয়েছে। আপনার আগের উইন্ডো ও অ্যাপ খুলুন।</translation>
 <translation id="9195990613383871904">আগামীকাল</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-এর রেজোলিউশন পরিবর্তন করে <ph name="RESOLUTION" /> করা হয়েছে। পরিবর্তিত সেটিংস বজায় রাখতে, 'কনফার্ম করুন' বোতামে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="9201044636667689546">এই Chromebook-এ <ph name="NAME" /> কানেক্ট করুন</translation>

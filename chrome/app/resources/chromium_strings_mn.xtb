@@ -48,7 +48,6 @@
 <translation id="1749104137266986751">HTTPS боломжгүй үед Chromium танд сануулалгүйгээр аюултай холболт ашиглана</translation>
 <translation id="1774152462503052664">Chromium-ыг арын орчинд ажиллуулах</translation>
 <translation id="1779356040007214683">Chromium аюулгүй байдлыг нэмэгдүүлэхийн тулд бид <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ны жагсаалтад байхгүй бөгөөд танд мэдэгдэлгүйгээр нэмэгдсэн байж болзошгүй зарим өргөтгөлүүдийг идэвхгүй болгосон.</translation>
-<translation id="1804128559285178512">Та нэвтэрсэн байхдаа Chromium-д Google Бүртгэлээсээ нууц үг болон бусад зүйлээ ашиглах боломжтой</translation>
 <translation id="1808667845054772817">Chromium-ыг дахин суулгах</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> оролдож байна</translation>
 <translation id="18552579716432081">Интернэтээр үзсэн өгөгдлөө Google Бүртгэлдээ үлдээж, зөвхөн энэ төхөөрөмжөөс устгахын тулд <ph name="BEGIN_LINK" />Chromium-с гарна уу<ph name="END_LINK" />.</translation>

@@ -974,6 +974,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="169675691788639886">Er is een SSH-server ingesteld voor het apparaat. Log niet in met gevoelige accounts.</translation>
 <translation id="1697122132646041614">Met Niet leuk open je een formulier waarmee je gedetailleerde feedback kunt sturen over waarom je deze resultaten niet leuk vindt.</translation>
 <translation id="1697150536837697295">Kunst</translation>
+<translation id="1697532407822776718">Je bent nu klaar!</translation>
 <translation id="1697686431566694143">Bestand bewerken</translation>
 <translation id="1698796500103229697">&amp;Betaalmethoden</translation>
 <translation id="1698899521169711967">Browsen met navigatietoetsen</translation>
@@ -1396,7 +1397,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="199610894463449797">{0,plural, =1{Dit profiel sluiten}other{Dit profiel sluiten (# vensters)}}</translation>
 <translation id="1997433994358798851">Je moet Chrome rechten geven via bluetooth verbinding te maken met je apparaat</translation>
 <translation id="1997616988432401742">Je certificaten</translation>
-<translation id="199801374788581808">Je kunt het opnieuw proberen of contact opnemen met je beheerder voor hulp</translation>
 <translation id="1999115740519098545">Bij opstarten</translation>
 <translation id="2002109485265116295">Realtime</translation>
 <translation id="2002160221914907025">Experimentele AI</translation>
@@ -2499,6 +2499,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2776560192867872731">Apparaatnaam wijzigen voor <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Deze container verwijderen</translation>
 <translation id="2777525873368474674">Afbeeldingslink plakken</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{1 site met veel meldingen gevonden}other{{NUM_SITES} sites met veel meldingen gevonden}}</translation>
 <translation id="2778471504622896352">Externe apps toevoegen aan de ChromeOS Launcher</translation>
 <translation id="2779728796406650689">Hierdoor kan de Google Assistent aangepaste antwoorden geven als je vragen stelt.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2656,7 +2657,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2893180576842394309">Google kan je geschiedenis gebruiken om Google Zoeken en andere Google-services te personaliseren</translation>
 <translation id="2893701697603065178">Beheerde ontwikkelomgeving</translation>
 <translation id="2894757982205307093">Nieuw tabblad in groep</translation>
-<translation id="2895730582088342039">Opslaan, delen en casten</translation>
 <translation id="289695669188700754">Sleutel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Deze aangepaste instelling wordt verwijderd als je al je incognitovensters sluit</translation>
 <translation id="2897878306272793870">Weet je zeker dat je <ph name="TAB_COUNT" /> tabbladen wilt openen?</translation>
@@ -3442,7 +3442,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3503995387997205657">Je kunt je vorige apps herstellen</translation>
 <translation id="3505100368357440862">Winkelsuggesties</translation>
 <translation id="3505602163050943406">Als je bepaalde functies gebruikt, kunnen ze delen van geopende pagina's, gerelateerde recente pagina's en de bijbehorende URL's naar Google sturen</translation>
-<translation id="3505762711681798106">We maken je werkruimte klaar. Je kunt in de tussentijd alvast rondkijken. Alles staat gauw voor je klaar.</translation>
 <translation id="3507132249039706973">Standaardbeveiliging staat aan</translation>
 <translation id="3507888235492474624">Opnieuw scannen naar Bluetooth-apparaten</translation>
 <translation id="3508492320654304609">Je inloggegevens kunnen niet worden verwijderd</translation>
@@ -5124,7 +5123,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4750185073185658673">Check nog een paar rechten op je telefoon. Zorg dat bluetooth en wifi op je telefoon aanstaan.</translation>
 <translation id="4750394297954878236">Suggesties</translation>
 <translation id="475088594373173692">Eerste gebruiker</translation>
-<translation id="4754167810863682207">Je profiel is bijna klaar</translation>
 <translation id="4756378406049221019">Stoppen/opnieuw laden</translation>
 <translation id="4756388243121344051">Gesc&amp;hiedenis</translation>
 <translation id="4756671452988984333">Tekst voor audio</translation>
@@ -5785,7 +5783,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> selecteren</translation>
 <translation id="5249624017678798539">De browser is gecrasht voordat het downloaden is voltooid.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> gebruikt je locatie om lokale content te leveren. Je kunt dit wijzigen in <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5251885976619018662">Maak een herstelpincode voor Google Wachtwoordmanager</translation>
 <translation id="5252496130205799136">Je Google-account gebruiken om wachtwoorden op te slaan en in te vullen?</translation>
 <translation id="5252653240322147470">Pincode kan maximaal <ph name="MAXIMUM" /> cijfers bevatten</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> gebruiken</translation>
@@ -7429,7 +7426,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> wil de volgende app installeren op dit apparaat:}other{<ph name="APP_NAME" /> wil de volgende apps installeren op dit apparaat:}}</translation>
 <translation id="6508248480704296122">Gerelateerd aan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Applicatie: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">Je kunt je werkprofiel gebruiken</translation>
 <translation id="6511607461419653612">Start je Chromebook opnieuw op en probeer het nog een keer</translation>
 <translation id="6511827214781912955">Overweeg <ph name="FILENAME" /> te verwijderen, zodat anderen die dit apparaat gebruiken je wachtwoorden niet kunnen zien.</translation>
 <translation id="6512759338201777379">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd, met de stemming <ph name="MOOD" />.</translation>
@@ -9563,7 +9559,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8084429490152575036">Instellingen voor mobiele APN</translation>
 <translation id="8084510406207562688">Alle tabbladen her&amp;stellen</translation>
 <translation id="8084628902026812045">Deze site gebruikt geen beveiligde verbinding en er is misschien met het bestand geknoeid</translation>
-<translation id="8085701268329068646">Voer je pincode in voor Google Wachtwoordmanager</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> configureren...</translation>
 <translation id="8086121155774250556">Dit tabblad deelt je scherm</translation>
 <translation id="8086610718778464681">Kan geen back-up maken van Linux-apps en -bestanden</translation>
@@ -10395,7 +10390,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8694596275649352090">Vergrendelen in de slaapstand of als de klep is gesloten</translation>
 <translation id="8695139659682234808">Ouderlijk toezicht toevoegen na het instellen</translation>
 <translation id="8695825812785969222">&amp;Locatie openen...</translation>
-<translation id="8697753370348182287">Je werkprofiel is klaar</translation>
 <translation id="8698269656364382265">Swipe vanaf de linkerkant om terug te gaan naar het vorige scherm.</translation>
 <translation id="8698432579173128320">Maak een back-up op Google Drive. Zet je gegevens eenvoudig terug of wissel wanneer je wilt tussen apparaten. De back-up omvat app-gegevens. Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account. <ph name="BEGIN_LINK1" />Meer informatie over back-ups<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Menu 'Applicaties'</translation>
@@ -11098,7 +11092,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="920045321358709304">Zoeken op <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Eerder bekeken</translation>
 <translation id="9201220332032049474">Schermvergrendelingsopties</translation>
-<translation id="9201762611758697018">Met een herstelpincode kun je op elk apparaat toegang krijgen tot je opgeslagen toegangssleutels</translation>
 <translation id="9201842707396338580">Er is iets misgegaan. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Rood-groen, groen zwak (deuteranomalie)</translation>
 <translation id="9203398526606335860">&amp;Profiling staat aan</translation>

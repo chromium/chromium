@@ -982,6 +982,7 @@
 <translation id="169675691788639886">Құрылғыда SSH сервері конфигурацияланған. Құпия аккаунттармен кірмеңіз.</translation>
 <translation id="1697122132646041614">"Ұнамайды" белгішесін бассаңыз, бұл нәтижелердің ұнамау себебін толықтай жазуға арналған үлгі ашылады.</translation>
 <translation id="1697150536837697295">Өнер</translation>
+<translation id="1697532407822776718">Барлығын орнаттыңыз!</translation>
 <translation id="1697686431566694143">Файлды өңдеу</translation>
 <translation id="1698796500103229697">&amp;Төлеу әдістері</translation>
 <translation id="1698899521169711967">Белсенді курсор режимі</translation>
@@ -1409,7 +1410,6 @@
 <translation id="199610894463449797">{0,plural, =1{Бұл профильді жабу}other{Бұл профильді (# терезені) жабу}}</translation>
 <translation id="1997433994358798851">Құрылғыңызға қосылу үшін Chrome браузеріне Bluetooth-ты пайдалану рұқсаты қажет</translation>
 <translation id="1997616988432401742">Сертификаттарыңыз</translation>
-<translation id="199801374788581808">Әрекетті қайталауыңызға немесе әкімшіге хабарласып, көмек сұрауыңызға болады.</translation>
 <translation id="1999115740519098545">Іске қосу кезінде</translation>
 <translation id="2002109485265116295">Нақты уақыт</translation>
 <translation id="2002160221914907025">Эксперименттік AI</translation>
@@ -2518,6 +2518,7 @@
 <translation id="2776560192867872731">Құрылғы атауын <ph name="DEVICE_NAME" /> деп өзгерту</translation>
 <translation id="2777251078198759550">Бұл контейнерді жою</translation>
 <translation id="2777525873368474674">Кескін сілтемесін қою</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{Хабарландырулары көп 1 сайт табылды}other{Хабарландырулары көп {NUM_SITES} сайт табылды}}</translation>
 <translation id="2778471504622896352">ChromeOS іске қосу панеліне қашықтағы құрылғыларды қосу</translation>
 <translation id="2779728796406650689">Сұрақ қойған кезіңізде, Google Assistant сізге арнаулы жауаптар береді.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2676,7 +2677,6 @@
 <translation id="2893180576842394309">Search және басқа да Google қызметтерін жеке қажеттеліктерге бейімдеу үшін Google интернеттегі әрекеттеріңізді пайдалануы мүмкін.</translation>
 <translation id="2893701697603065178">Басқарылатын әзірлеу ортасы</translation>
 <translation id="2894757982205307093">Топқа жаңа қойынды енгізу</translation>
-<translation id="2895730582088342039">Сақтау, бөлісу және трансляциялау</translation>
 <translation id="289695669188700754">Кілт индентификаторы: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Сіз барлық инкогнито терезесін жапқан кезде, бұл арнаулы параметр өз күшін жояды.</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> қойындыны ашқыңыз келе ме?</translation>
@@ -3472,7 +3472,6 @@
 <translation id="3503995387997205657">Алдыңғы қолданбаларды қалпына келтіре аласыз.</translation>
 <translation id="3505100368357440862">Сатып алу ұсыныстары</translation>
 <translation id="3505602163050943406">Белгілі бір функцияларды пайдаланған кезіңізде, олар ашық беттердің, соңғы қатысы бар беттердің бөліктерін және олардың URL мекенжайларын Google-ға жібере алады.</translation>
-<translation id="3505762711681798106">Жұмыс орныңыз сәлден соң дайын болады! Ол дайын болғанша, функцияларды қарап көріңіз.</translation>
 <translation id="3507132249039706973">Стандартты қорғаныс қосулы.</translation>
 <translation id="3507888235492474624">Bluetooth құрылғыларын қайта іздеу</translation>
 <translation id="3508492320654304609">Кіру деректері жойылмады.</translation>
@@ -5165,7 +5164,6 @@
 <translation id="4750185073185658673">Тағы бірнеше рұқсатты қарау үшін телефонға өтіңіз. Телефонда Bluetooth және Wi-Fi қосылып тұрғанына көз жеткізіңіз.</translation>
 <translation id="4750394297954878236">Ұсыныстар</translation>
 <translation id="475088594373173692">Алғашқы пайдаланушы</translation>
-<translation id="4754167810863682207">Профиліңізді реттеу сәлден соң аяқталады</translation>
 <translation id="4756378406049221019">Тоқтату/Қайта жүктеу</translation>
 <translation id="4756388243121344051">&amp;Тарих</translation>
 <translation id="4756671452988984333">Аудиоға арналған мәтін</translation>
@@ -5833,7 +5831,6 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> таңдау</translation>
 <translation id="5249624017678798539">Браузер жүктеу аяқталмасынан бұрын бұзылды.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> жергілікті контентті беру үшін орналасу орны мәліметін пайдаланады. Мұны <ph name="SETTINGS_LINK" /> бөлімінде өзгерте аласыз.</translation>
-<translation id="5251885976619018662">Google Password Manager үшін қалпына келтірудің PIN кодын жасаңыз</translation>
 <translation id="5252496130205799136">Құпия сөздерді сақтау және толтыру үшін Google аккаунтыңызды пайдалану керек пе?</translation>
 <translation id="5252653240322147470">PIN коды <ph name="MAXIMUM" /> таңбадан аз болуы керек</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> пайдалану</translation>
@@ -7498,7 +7495,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" бұл құрылғыға келесі қолданбаны орнатқысы келеді:}other{"<ph name="APP_NAME" />" бұл құрылғыға келесі қолданбаларды орнатқысы келеді:}}</translation>
 <translation id="6508248480704296122">Келесіге қатысты: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Қолданба: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">Профильді жұмыс үшін пайдалана беруге болады.</translation>
 <translation id="6511607461419653612">Chromebook-ты өшіріп қосып, әрекетті қайталаңыз.</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> файлын жойып көріңіз, мұндайда осы құрылғыны пайдаланатын басқа адамдар құпия сөздеріңізді көре алмайды.</translation>
 <translation id="6512759338201777379">Келесі сипаттарға ие жасалған сурет: <ph name="INDEX" />, <ph name="SUBJECT" />, <ph name="MOOD" /> реңкі.</translation>
@@ -9649,7 +9645,6 @@
 <translation id="8084429490152575036">Ұялы APN параметрлері</translation>
 <translation id="8084510406207562688">Барлық қойындыны қалпына келтіру</translation>
 <translation id="8084628902026812045">Бұл сайтта қауіпсіз байланыс пайдаланылып жатқан жоқ және файл өзгертілген болуы мүмкін</translation>
-<translation id="8085701268329068646">Google Password Manager қызметіне кіруге арналған PIN кодын енгізіңіз</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> конфигурациялануда...</translation>
 <translation id="8086121155774250556">Бұл қойынды экраныңызды бөлісіп жатыр</translation>
 <translation id="8086610718778464681">Linux қолданбалары мен файлдарының сақтық көшірмесін жасау мүмкін емес</translation>
@@ -10486,7 +10481,6 @@
 <translation id="8694596275649352090">Ұйқы режимінде болғанда немесе беті жабылғанда құлыптау</translation>
 <translation id="8695139659682234808">Реттеуден кейін ата-ана бақылауын қосу</translation>
 <translation id="8695825812785969222">&amp;Орналасқан жерді ашу…</translation>
-<translation id="8697753370348182287">Жұмыс профиліңіз дайын</translation>
 <translation id="8698269656364382265">Алдыңғы экранға оралу үшін экранның сол шетінен ортаға қарай сырғытыңыз.</translation>
 <translation id="8698432579173128320">Google Drive қызметіне сақтық көшірме жасау. Деректерді оңай қалпына келтіруге және кез келген уақытта бір құрылғыдан екіншісіне ауысуға болады. Сақтық көшірмеде қолданба деректері қамтылады. Сақтық көшірмелер Google-ға жүктеп салынады және Google аккаунтыңыздың құпия сөзімен шифрланады. <ph name="BEGIN_LINK1" />Сақтық көшірме туралы толық ақпарат<ph name="BEGIN_LINK1_END" />Толық ақпарат<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Қолданбалар мәзірі</translation>
@@ -11197,7 +11191,6 @@
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> арқылы іздеу</translation>
 <translation id="9201117361710210082">Бұрын көрген</translation>
 <translation id="9201220332032049474">Экран құлпы опциялары</translation>
-<translation id="9201762611758697018">Қалпына келтіруге арналған PIN коды кез келген құрылғыдағы сақталған кіру кілттеріне қол жеткізуге мүмкіндік береді.</translation>
 <translation id="9201842707396338580">Бірдеңе дұрыс болмады. Құрылғының иесіне немесе әкімшісіне хабарласыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Қызыл-жасыл, жасыл түсті ажырату қабілеті әлсіз (дейтераномалия)</translation>
 <translation id="9203398526606335860">&amp;Профильдеу қосылған</translation>

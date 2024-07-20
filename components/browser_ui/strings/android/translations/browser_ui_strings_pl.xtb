@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Nie zezwalaj witrynie na zapisywanie danych na Twoim urządzeniu</translation>
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Pytaj, zanim zezwolisz stronom na odtwarzanie treści chronionej</translation>
+<translation id="2918484639460781603">Przejdź do ustawień</translation>
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
 <translation id="2939338015096024043">Gdy ta opcja jest włączona, strony internetowe mogą prosić o możliwość śledzenia pozycji kamery i uzyskiwania informacji o otoczeniu. Gdy jest wyłączona, strony nie mogą śledzić pozycji kamery ani poznawać otoczenia.</translation>
 <translation id="2968755619301702150">Przeglądarka certyfikatów</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
 <translation id="4755971844837804407">Gdy ta opcja jest włączona, strony internetowe mogą wyświetlać dowolne reklamy. Gdy jest wyłączona, strony nie mogą wyświetlać reklam uciążliwych ani wprowadzających w błąd.</translation>
 <translation id="4779083564647765204">Powiększ</translation>
+<translation id="4807122856660838973">Włącz Bezpieczne przeglądanie</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
 <translation id="483914009762354899">Uwzględnij wszystkie witryny w tej domenie</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Nie znaleziono kontaktów</translation>
 <translation id="4996978546172906250">Udostępnij przez</translation>
 <translation id="5001526427543320409">Pliki cookie innych firm</translation>
+<translation id="5007392906805964215">Sprawdź</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5048398596102334565">Zezwalaj stronom na dostęp do czujników ruchu (zalecane)</translation>
 <translation id="5050380848339752099">Ta strona zamierza udostępnić informacje aplikacji poza trybem incognito.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Dodawanie strony</translation>
 <translation id="7368695150573390554">Wszystkie dane offline zostaną usunięte</translation>
 <translation id="7383715096023715447">Ustawienia domeny <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
 <translation id="7406113532070524618">To ustawienie działa bez ujawniania Twojej tożsamości i udzielania witrynom dostępu do Twojej historii przeglądania, chociaż witryny mogą w ramach weryfikacji udostępniać niewielką ilość informacji.</translation>
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>

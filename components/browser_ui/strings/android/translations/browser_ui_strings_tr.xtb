@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Bir sitenin cihazınıza veri kaydetmesini engelleyin</translation>
 <translation id="2903493209154104877">Adresler</translation>
 <translation id="2910701580606108292">Sitelerin korumalı içeriği oynatmasına izin verilmeden önce size sorulur</translation>
+<translation id="2918484639460781603">Ayarlara git</translation>
 <translation id="2932883381142163287">Kötüye kullanım bildir</translation>
 <translation id="2939338015096024043">Bu düğme açıkken siteler kameranızın konumunu izlemek ve çevreniz hakkında bilgi edinmek isteyebilir. Düğme kapalıyken siteler kameranızın konumunu izleyemez veya çevreniz hakkında bilgi edinemez.</translation>
 <translation id="2968755619301702150">Sertifika görüntüleyici</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Hareket veya ışık sensörleri</translation>
 <translation id="4755971844837804407">Bu düğme açıkken siteler size tüm reklamları gösterebilir. Düğme kapalıyken siteler size araya giren veya yanıltıcı reklamlar gösteremez.</translation>
 <translation id="4779083564647765204">Yakınlaştır</translation>
+<translation id="4807122856660838973">Güvenli Tarama'yı açın</translation>
 <translation id="4811450222531576619">Kaynağı ve konusu hakkında bilgi edinin</translation>
 <translation id="4836046166855586901">Bir site bu cihazı etkin olarak kullandığımı bilmek istediğinde sor</translation>
 <translation id="483914009762354899">Bu alandaki tüm siteleri dahil et</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Kişi bulunamadı</translation>
 <translation id="4996978546172906250">Paylaşım yöntemi:</translation>
 <translation id="5001526427543320409">Üçüncü taraf çerezleri</translation>
+<translation id="5007392906805964215">İncele</translation>
 <translation id="5039804452771397117">İzin ver</translation>
 <translation id="5048398596102334565">Sitelerin hareket sensörlerine erişmesine izin ver (önerilen)</translation>
 <translation id="5050380848339752099">Bu site, Gizli mod dışında bir uygulama ile bilgi paylaşımında bulunmak üzere.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Site ekle</translation>
 <translation id="7368695150573390554">Tüm çevrimdışı veriler silinecek</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> ayarları</translation>
+<translation id="7399802613464275309">Güvenlik Kontrolü</translation>
 <translation id="7406113532070524618">Bu ayar çalışırken kimliğinizin belirlenmesine veya sitelerin tarama geçmişinizi görmesine izin verilmez. Ancak siteler, doğrulama kapsamında az miktarda bilgi paylaşabilir</translation>
 <translation id="7423098979219808738">Önce sor</translation>
 <translation id="7423538860840206698">Pano okuma engellendi</translation>

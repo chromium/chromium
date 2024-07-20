@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Estä sivustoa tallentamasta dataa laitteellesi</translation>
 <translation id="2903493209154104877">Osoitteet</translation>
 <translation id="2910701580606108292">Kysy, saavatko sivustot toistaa suojattua sisältöä</translation>
+<translation id="2918484639460781603">Avaa asetukset</translation>
 <translation id="2932883381142163287">Ilmoita väärinkäytöstä</translation>
 <translation id="2939338015096024043">Kun tämä on päällä, sivustot voivat pyytää lupaa seurata kameran sijaintia ja saada tietoa ympäristöstäsi. Kun tämä on pois päältä, sivustot eivät voi seurata kameran sijaintia tai saada tietoa ympäristöstäsi.</translation>
 <translation id="2968755619301702150">Varmennetiedot</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Liike- tai valotunnistimet</translation>
 <translation id="4755971844837804407">Kun tämä on päällä, sivustot voivat näyttää sinulle mitä tahansa mainoksia. Kun tämä on pois päältä, sivustoilla ei voi näkyä häiritseviä tai harhaanjohtavia mainoksia.</translation>
 <translation id="4779083564647765204">Lähennä</translation>
+<translation id="4807122856660838973">Laita Selaussuoja päälle</translation>
 <translation id="4811450222531576619">Lisätietoa lähteestä ja aiheesta</translation>
 <translation id="4836046166855586901">Kysy aina, kun sivusto pyytää lupaa nähdä, käytätkö tätä laitetta aktiivisesti</translation>
 <translation id="483914009762354899">Lisää kaikki tämän verkkotunnuksen sivustot</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Kontakteja ei löytynyt</translation>
 <translation id="4996978546172906250">Jaa palvelussa:</translation>
 <translation id="5001526427543320409">Kolmannen osapuolen evästeet</translation>
+<translation id="5007392906805964215">Tarkista</translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5048398596102334565">Anna sivustojen käyttää liiketunnistimien lukemia (suositus)</translation>
 <translation id="5050380848339752099">Tämä sivusto aikoo jakaa tietoja sovellukselle incognito-tilan ulkopuolella.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Lisää sivusto</translation>
 <translation id="7368695150573390554">Kaikki offline-data poistetaan</translation>
 <translation id="7383715096023715447">Asetukset: <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Turvatarkistus</translation>
 <translation id="7406113532070524618">Tämä asetus toimii niin, että sinua ei tunnisteta eivätkä sivustot näe selaushistoriaasi, mutta sivustot voivat jakaa pienen määrän tietoja osana todennusta</translation>
 <translation id="7423098979219808738">Kysy ensin</translation>
 <translation id="7423538860840206698">Leikepöydältä lukeminen estetty</translation>

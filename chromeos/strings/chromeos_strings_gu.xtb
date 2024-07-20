@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">એક અંદાજિત પરિણામ માટે, <ph name="CONVERSION_RATE" />થી <ph name="CATEGORY_TEXT" /> મૂલ્યનો ભાગાકાર કરો</translation>
 <translation id="1435763214710588005">પસંદ કરેલા દિવસે દર મહિને ઑટોમૅટિક રીતે ડેટા વપરાશ રીસેટ કરે છે</translation>
 <translation id="1442433966118452622">છબીનો સૉર્સ</translation>
-<translation id="1445573806602812670">તમારા રેકોર્ડિંગ માટે ટ્રાન્સક્રિપ્શન મેળવો</translation>
 <translation id="1446954767133808402">નીલમ</translation>
 <translation id="1449035143498573192">Google Searchમાં ખોલો</translation>
 <translation id="1451536289672181509">ડિવાઇસ એક કીબોર્ડ છે.</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">તળાવ</translation>
 <translation id="1720424726586960395">આગિયાનું જંગલ</translation>
 <translation id="1726100011689679555">નામ સર્વર</translation>
-<translation id="1728792932018505912">તમે આને સેટિંગમાં અથવા <ph name="THREE_DOTS_MENU_ICON" /> મેનૂમાં ગોઠવી શકો છો</translation>
 <translation id="1731082422893354635">બ્લૂટૂથ ટચપૅડ</translation>
 <translation id="1738949837603788263">ઝોન <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">છબીઓ લોડ કરી શકાઈ નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અથવા છબીઓ ફરી લોડ કરવાનો પ્રયાસ કરો.</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2364498172489649528">તપાસ પાર કરી</translation>
 <translation id="2367335866686097760">કીમૅપિંગ કી</translation>
-<translation id="2370739752330685659">કદાચ થોડા સમય પછી</translation>
 <translation id="2380886658946992094">કાનૂની</translation>
 <translation id="2391082728065870591">પ્રતિસાદ રિપોર્ટ મોકલો</translation>
 <translation id="2407209115954268704">સિમ કાર્ડનું લૉક સ્ટેટસ</translation>
@@ -635,6 +632,7 @@
 <translation id="4454245904991689773">સ્કૅન કરીને અહીં સાચવો</translation>
 <translation id="4456812688969919973">APN સાચવો બટન હમણાં બંધ છે</translation>
 <translation id="4469288414739283461">અર્થ ફ્લો સ્ક્રીન સેવર</translation>
+<translation id="4474142134969976028">કોઈ મેળ ખાતું પરિણામ નથી</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4500722292849917410">શૉર્ટકટ ઉપલબ્ધ નથી. મૉડિફાયર કી (ctrl, alt, shift અથવા <ph name="META_KEY" />)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
@@ -751,7 +749,6 @@
 <translation id="5099354524039520280">ઉપર</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> કી વિનાનો શૉર્ટકટ કોઈ ઍપના શૉર્ટકટ સાથે વિસંગત હોઈ શકે છે. આ શૉર્ટકટનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે તેને ફરીથી દબાવો અથવા <ph name="KEY" /> કીનો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">સમાન:</translation>
-<translation id="5109744590306245079">રેકોર્ડર સ્પીચવાળા રેકોર્ડિંગ માટે ટ્રાન્સક્રિપ્શન બનાવી શકે છે. આ ટ્રાન્સક્રિપ્શન મેળવવા માટે, ટ્રાન્સક્રિપ્શન મૉડલ (વધુમાં વધુ 100MB) ડાઉનલોડ કરો.</translation>
 <translation id="5130848777448318809">ટટ્ટુઓ</translation>
 <translation id="5137451382116112100">સંપૂર્ણ</translation>
 <translation id="5142961317498132443">પ્રમાણીકરણ</translation>
@@ -913,6 +910,7 @@
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6040852767465482106">અજાણ ઓળખાણ</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
+<translation id="6042308850641462728">વધુ</translation>
 <translation id="6048107060512778456">નિષ્ફળ થયું - કાગળ ભરાઈ ગયું છે</translation>
 <translation id="6050189528197190982">ગ્રેસ્કેલ</translation>
 <translation id="6054711098834486579">અભિવ્યક્તિવાદી</translation>
@@ -937,7 +935,6 @@
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">સાઇબરપન્ક</translation>
 <translation id="6137767437444130246">વપરાશકર્તા પ્રમાણપત્ર</translation>
-<translation id="6141004321363227868">આ સુવિધા ચાલુ હોય ત્યારે, તમે રેકોર્ડિંગ કરી રહ્યાં હો તે વખતે લાઇવ ટ્રાન્સક્રિપ્ટ પણ બતાવવામાં આવશે.</translation>
 <translation id="6146993107019042706">સમાપ્ત કરવા માટે, તમારો નવો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">મરૂન અને ગુલાબી</translation>
@@ -1022,7 +1019,6 @@
 <translation id="6543412779435705598">ટાકોસ</translation>
 <translation id="6551839203326557324">સફરજન</translation>
 <translation id="65526652485742171">કન્ફર્મ બટન હવે ચાલુ છે</translation>
-<translation id="6556016675518580850">આ પેજ છોડવાથી તમારું વર્તમાન રેકોર્ડિંગ સમાપ્ત થઈ જશે.</translation>
 <translation id="6557784757915238407">APNનો પ્રકાર <ph name="ATTACH" /> છે.</translation>
 <translation id="65587193855025101">ફ્લૅટબેડ</translation>
 <translation id="6560196641871357166">વાઇબ્રન્ટ</translation>
@@ -1077,8 +1073,6 @@
 <translation id="6798678288485555829">ટેક્સ્ટ નૅવિગેશન</translation>
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
-<translation id="6818844233294698434">સ્પીચની ભાળ મેળવવા માટે સાંભળી રહ્યાં છીએ...</translation>
-<translation id="6837645039518471192">રેકોર્ડિંગમાંથી બહાર નીકળો</translation>
 <translation id="6853312040151791195">ડિસ્ચાર્જ થવાની ટકાવારી</translation>
 <translation id="6866732840889595464">ગુલબહાર</translation>
 <translation id="6871256179359663621">આછો જાંબલી</translation>
@@ -1220,6 +1214,7 @@
 <translation id="7528507600602050979">સહાયક કન્ટેન્ટ ઉપલબ્ધ નથી</translation>
 <translation id="7535791657097741517">ઝાંખી થીમ ચાલુ કરો</translation>
 <translation id="7544126681856613971">ઝાકળવાળું જંગલ</translation>
+<translation id="7544853251252956727">શફલ કરો</translation>
 <translation id="7550715992156305117">નિદાન માટેના રૂટિન</translation>
 <translation id="7551123448725492271">ડિવાઇસ એક ઑડિયો ડિવાઇસ છે.</translation>
 <translation id="7559239713112547082">સ્ક્રીનશૉટનો પ્રીવ્યૂ જુઓ</translation>
@@ -1276,7 +1271,6 @@
 <translation id="7850847810298646851">Google AI દ્વારા સંચાલિત વૉલપેપર</translation>
 <translation id="785170686607360576">ટ્યૂલિપ</translation>
 <translation id="7856267634822906833">બ્લૂટૂથ ટચસ્ક્રીન</translation>
-<translation id="7857744683152972248">રેકોર્ડરને સ્પીકર ઓળખવાની મંજૂરી આપીએ?</translation>
 <translation id="7859006200041800233">થોરનું ફૂલ</translation>
 <translation id="7869143217755017858">ઘેરો મોડ બંધ કરો</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1332,7 +1326,6 @@
 <translation id="8162776280680283326">શિયાળ</translation>
 <translation id="8167413449582155132">Google AI દ્વારા સંચાલિત બૅકગ્રાઉન્ડ</translation>
 <translation id="8171020708598805594">ઑટોમૅટિક રીતે ટ્રાન્સક્રિપ્શન બનાવો, Google AIનો ઉપયોગ કરીને રેકોર્ડિંગના સારાંશો મેળવો અને ઑડિયો શોધો. તમે ઇન્ટરનેટ સાથે કનેક્ટ ન કર્યું હોય, ત્યારે પણ રેકોર્ડિંગ બનાવો.</translation>
-<translation id="8174280683348521982">વર્તમાન રેકોર્ડિંગ ડિલીટ કરીએ?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">સમુદ્ર કિનારો</translation>
 <translation id="819278132617411009">વધુ પ્રોડક્ટિવ બનવા માટે Google AIનો ઉપયોગ કરો</translation>
@@ -1348,6 +1341,7 @@
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8262870577632766028">1 કલાક</translation>
 <translation id="827422111966801947">ઘેરો ભૂરો</translation>
+<translation id="8281886186245836920">છોડો</translation>
 <translation id="8286154143153872371">કૃપા કરીને નેટવર્ક સાથે કનેક્ટ કરો અને વૉલપેપર જોવા માટે પેજને ફરીથી લોડ કરો.</translation>
 <translation id="8291967909914612644">હોમ પ્રદાતાનો દેશ</translation>
 <translation id="8294431847097064396">સ્રોત</translation>
@@ -1370,9 +1364,6 @@
 <translation id="8372477600026034341">અતિરિક્ત હોસ્ટ</translation>
 <translation id="8372667721254470022">ઑલિવ</translation>
 <translation id="8373046809163484087">તમારા વૉલપેપરથી મેળ થતા કલર સેટનો ઉપયોગ કરો</translation>
-<translation id="8379123594780452422">જ્યારે તમે આને મંજૂરી આપો છો, ત્યારે રેકોર્ડર ઑડિયોના વિગતવાર વિશ્લેષણનો ઉપયોગ કરીને, તમારા ઑડિયો રેકોર્ડિંગ પર પ્રક્રિયા કરશે.
-
-તમે કોઈપણ સમયે સેટિંગમાં જઈને આ સુવિધાને બંધ કરી શકો છો.</translation>
 <translation id="8380114448424469341">વિન્ડોને સ્ક્રીનના <ph name="DIRECTION" /> અડધા ભાગ પર ડૉક કરો</translation>
 <translation id="8391349326751432483">મેમરીનું પરીક્ષણ કરવા માટે, તમારી પાસે ઓછામાં ઓછી 500 MB સ્પેસ ખાલી હોવી જરૂરી છે. મેમરી ખાલી કરવા માટે, ટૅબ અને ઍપ બંધ કરો.</translation>
 <translation id="8395584934117017006">આ <ph name="DEVICE_TYPE" /> એન્ટરપ્રાઇઝ દ્વારા મેનેજ થાય છે</translation>
@@ -1499,6 +1490,7 @@
 <translation id="9025198690966128418">વ્યક્તિગત ડિવાઇસ તરીકે ઉપયોગ કરો</translation>
 <translation id="902638246363752736">કીબોર્ડ સેટિંગ્સ</translation>
 <translation id="9028832514430399253">સ્ક્રીન સેવરના વિકલ્પો પસંદ કરવા માટે ટૉગલને ચાલુ કરો</translation>
+<translation id="9030883440316693822">શું રેકોર્ડિંગ ડિલીટ કરીએ?</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">પુસ્તકો</translation>
 <translation id="9049868303458988905">APN સાચવો બટન હમણાં ચાલુ છે</translation>
@@ -1520,7 +1512,6 @@
 <translation id="9122602430962285795">ફરીથી કનેક્ટ કરવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="9122865513525855321">ઝેન</translation>
 <translation id="9126720536733509015">એક PDFમાં એકથી વધુ પેજ સાચવો</translation>
-<translation id="9129549320890412487">ટ્રાન્સક્રિપ્શનની સુવિધા</translation>
 <translation id="9133772297793293778">તમારા કીબોર્ડ પર 1-4 મૉડિફાયર અને અન્ય 1 કી દબાવો. એડિટિંગ મોડમાંથી બહાર નીકળવા માટે, alt + esc દબાવો.</translation>
 <translation id="9137526406337347448">Google સેવાઓ</translation>
 <translation id="9138630967333032450">ડાબી Shift કી</translation>

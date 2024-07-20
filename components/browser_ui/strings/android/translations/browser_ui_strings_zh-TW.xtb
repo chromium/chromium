@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">禁止特定網站將資料儲存到裝置</translation>
 <translation id="2903493209154104877">地址</translation>
 <translation id="2910701580606108292">允許網站播放受保護的內容前，必須先詢問你</translation>
+<translation id="2918484639460781603">前往設定</translation>
 <translation id="2932883381142163287">檢舉濫用情形</translation>
 <translation id="2939338015096024043">如果啟用，網站就可以要求追蹤攝影機位置，並瞭解周遭環境動靜。如果停用，網站將無法追蹤攝影機位置，也無法瞭解周遭環境動靜。</translation>
 <translation id="2968755619301702150">憑證檢視器</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">動作或光源感應器</translation>
 <translation id="4755971844837804407">如果啟用，網站就可以向你顯示任何廣告。如果停用，網站將無法顯示誤導性或侵入式廣告。</translation>
 <translation id="4779083564647765204">縮放</translation>
+<translation id="4807122856660838973">開啟安全瀏覽功能</translation>
 <translation id="4811450222531576619">瞭解來源和主題</translation>
 <translation id="4836046166855586901">允許網站詢問你使用這部裝置的時間</translation>
 <translation id="483914009762354899">包括這個網域中的所有網站</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">找不到任何聯絡人</translation>
 <translation id="4996978546172906250">分享方式：</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
+<translation id="5007392906805964215">查看</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5048398596102334565">允許網站存取動作感應器 (建議)</translation>
 <translation id="5050380848339752099">這個網站即將退出無痕模式並與外部應用程式分享資訊。</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7368695150573390554">所有離線資料都會刪除</translation>
 <translation id="7383715096023715447">「<ph name="DOMAIN" />」的設定</translation>
+<translation id="7399802613464275309">安全檢查</translation>
 <translation id="7406113532070524618">你不必提供身分識別資訊或授權讓網站查看瀏覽記錄，這項設定也能完成驗證。不過，網站在驗證時，可能會分享少量資訊</translation>
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>

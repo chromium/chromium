@@ -48,7 +48,6 @@
 <translation id="1749104137266986751">ເມື່ອບໍ່ສາມາດໃຊ້ HTTPS ໄດ້, Chromium ຈະໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພໂດຍບໍ່ເຕືອນທ່ານ</translation>
 <translation id="1774152462503052664">ປ່ອຍໃຫ້ Chromium ແລ່ນຢູ່ໃນພື້ນຫຼັງ</translation>
 <translation id="1779356040007214683">ເພື່ອເຮັດໃຫ້ Chromium ປອດໄພຂຶ້ນ, ພວກເຮົາປິດໃຊ້ງານບາງສ່ວນຂະຫຍາຍທີ່ບໍ່ໄດ້ມີລາຍຊື່ຢູ່ໃນ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ແລະອາດຈະຖືກເພີ່ມເຂົ້າໂດຍທີ່ທ່ານບໍ່ຮູ້ຈັກ.</translation>
-<translation id="1804128559285178512">ໃນລະຫວ່າງທີ່ທ່ານເຂົ້າສູ່ລະບົບ, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໄດ້ຈາກບັນຊີ Google ຂອງທ່ານໃນ Chromium</translation>
 <translation id="1808667845054772817">ຕິດຕັ້ງ Chromium ຄືນໃໝ່</translation>
 <translation id="1820835682567584003">Chromium ກຳລັງພະຍາຍາມໃຊ້ <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">ເພື່ອລຶບຂໍ້ມູນການທ່ອງເວັບໃນອຸປະກອນນີ້ເທົ່ານັ້ນ, ແຕ່ຍັງຮັກສາຂໍ້ມູນດັ່ງກ່າວໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ໃຫ້ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chromium<ph name="END_LINK" />.</translation>

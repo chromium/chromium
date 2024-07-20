@@ -46,7 +46,6 @@
 <translation id="1749104137266986751">Когато HTTPS не е налице, Chromium ще използва незащитени връзки, без да ви предупреждава</translation>
 <translation id="1774152462503052664">Нека Chromium да се изпълнява на заден план</translation>
 <translation id="1779356040007214683">За да направим Chromium по-безопасен, деактивирахме някои разширения, които не са посочени в <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да са били добавени без ваше знание.</translation>
-<translation id="1804128559285178512">Докато сте в профила си, можете да използвате в Chromium паролите си и др. от профила си в Google</translation>
 <translation id="1808667845054772817">Повторно инсталиране на Chromium</translation>
 <translation id="1820835682567584003">Chromium се опитва да <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">За да изтриете данните за сърфирането само от това устройство, но да ги запазите в профила си в Google, <ph name="BEGIN_LINK" />излезте от профила си в Chromium<ph name="END_LINK" />.</translation>

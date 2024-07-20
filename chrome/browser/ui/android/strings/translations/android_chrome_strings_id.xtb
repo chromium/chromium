@@ -513,6 +513,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3557336313807607643">Tambahkan ke kontak</translation>
 <translation id="3563767357928833671">Konten papan klip ditampilkan</translation>
 <translation id="3566639033325271639">Perbarui setelan</translation>
+<translation id="3568945271227339929">Tidak ada sandi yang telah dibobol</translation>
 <translation id="357465026686164600">Ponsel sebagai kunci keamanan</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3577558748185201054">Kelola minat dan preferensi Anda</translation>
@@ -946,7 +947,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5698878456427040674">Periksa apakah akun yang dipilih didukung.</translation>
 <translation id="570347048394355941">Beralih ke Tab</translation>
 <translation id="5715150588940290235">Hapus kode keamanan yang tersimpan?</translation>
-<translation id="5718049162805123412">Anda harus mengubahnya sekarang</translation>
 <translation id="571930967925877633">Bookmark, histori, dan data Chrome lainnya tidak akan disinkronkan lagi ke Akun Google Anda</translation>
 <translation id="572328651809341494">Tab terbaru</translation>
 <translation id="5726692708398506830">Memperbesar semua yang ada di halaman</translation>
@@ -1538,7 +1538,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8348430946834215779">Gunakan HTTPS jika memungkinkan dan dapatkan peringatan sebelum memuat situs yang tidak mendukungnya</translation>
 <translation id="8354977102499939946">Telusuri dengan cepat menggunakan suara Anda. Untuk mengedit pintasan ini, buka Setelan.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> download dipulihkan</translation>
-<translation id="8367705492654390392">Tanyakan apa saja</translation>
 <translation id="8368001212524806591">Pantau harga</translation>
 <translation id="8378850197701296741">Anda memiliki bookmark, histori, dan setelan lain dari <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifikasi diri Anda</translation>

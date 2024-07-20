@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Memblokir situs agar tidak menyimpan data di perangkat Anda</translation>
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="2910701580606108292">Tanyakan sebelum mengizinkan situs untuk memutar konten yang dilindungi</translation>
+<translation id="2918484639460781603">Buka setelan</translation>
 <translation id="2932883381142163287">Laporkan penyalahgunaan</translation>
 <translation id="2939338015096024043">Jika diaktifkan, situs dapat meminta untuk melacak posisi kamera dan mempelajari lingkungan sekitar Anda. Jika dinonaktifkan, situs tidak dapat melacak posisi kamera Anda atau mempelajari lingkungan sekitar Anda.</translation>
 <translation id="2968755619301702150">Penampil sertifikat</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Sensor gerakan atau cahaya</translation>
 <translation id="4755971844837804407">Jika diaktifkan, situs dapat menampilkan iklan apa pun kepada Anda. Jika dinonaktifkan, situs tidak dapat menampilkan iklan yang mengganggu atau menyesatkan.</translation>
 <translation id="4779083564647765204">Zoom</translation>
+<translation id="4807122856660838973">Aktifkan Safe Browsing</translation>
 <translation id="4811450222531576619">Pelajari sumber dan topik halaman ini</translation>
 <translation id="4836046166855586901">Tanyakan saat situs ingin mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="483914009762354899">Sertakan semua situs di domain ini</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Kontak tidak ditemukan</translation>
 <translation id="4996978546172906250">Bagikan dengan</translation>
 <translation id="5001526427543320409">Cookie pihak ketiga</translation>
+<translation id="5007392906805964215">Tinjau</translation>
 <translation id="5039804452771397117">Izinkan</translation>
 <translation id="5048398596102334565">Mengizinkan situs mengakses sensor gerakan (disarankan)</translation>
 <translation id="5050380848339752099">Situs ini akan membagikan informasi ke aplikasi di luar mode Samaran.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Tambahkan situs</translation>
 <translation id="7368695150573390554">Semua data offline akan dihapus</translation>
 <translation id="7383715096023715447">Setelan untuk <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Pemeriksaan Keamanan</translation>
 <translation id="7406113532070524618">Setelan ini berfungsi tanpa mengidentifikasi Anda atau mengizinkan situs melihat histori penjelajahan Anda, meskipun situs dapat membagikan info dalam jumlah kecil sebagai bagian dari verifikasi</translation>
 <translation id="7423098979219808738">Tanyakan dulu</translation>
 <translation id="7423538860840206698">Diblokir agar tidak membaca papan klip</translation>

@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Impide que un sitio garde datos no teu dispositivo</translation>
 <translation id="2903493209154104877">Enderezos</translation>
 <translation id="2910701580606108292">Preguntar antes de permitir que os sitios reproduzan contido protexido</translation>
+<translation id="2918484639460781603">Ir a Configuración</translation>
 <translation id="2932883381142163287">Informar de uso inadecuado</translation>
 <translation id="2939338015096024043">Cando esta opción está activada, os sitios poden pedirche permiso para facer un seguimento da posición da cámara e obter información do que te rodea. Cando esta opción está desactivada, os sitios non poden facer o seguimento da posición da cámara nin obter información do que te rodea.</translation>
 <translation id="2968755619301702150">Visor de certificados</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
 <translation id="4755971844837804407">Cando esta opción está activada, os sitios poden mostrarche todo tipo de anuncios. Cando esta opción está desactivada, os sitios non poden mostrarche anuncios enganosos nin intrusivos.</translation>
 <translation id="4779083564647765204">Zoom</translation>
+<translation id="4807122856660838973">Activar Navegación segura</translation>
 <translation id="4811450222531576619">Obtén información sobre esta fonte e este tema</translation>
 <translation id="4836046166855586901">Pregúntache sempre que un sitio quere saber se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="483914009762354899">Incluír todos os sitios deste dominio</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Non se atopou ningún contacto</translation>
 <translation id="4996978546172906250">Compartir a través de</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
+<translation id="5007392906805964215">Revisar</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permite aos sitios acceder aos teus sensores de movemento (recomendado)</translation>
 <translation id="5050380848339752099">Neste sitio estase a piques de compartir información cunha aplicación fóra do modo de incógnito.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Engade un sitio</translation>
 <translation id="7368695150573390554">Eliminaranse todos os datos sen conexión</translation>
 <translation id="7383715096023715447">Opcións de configuración de <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Revisión de seguranza</translation>
 <translation id="7406113532070524618">Esta opción de configuración non te identifica nin permite que os sitios vexan o teu historial de navegación. Aínda así, os sitios poden compartir certa información mínima como parte da verificación</translation>
 <translation id="7423098979219808738">Preguntar primeiro</translation>
 <translation id="7423538860840206698">Bloqueouse a lectura do portapapeis</translation>

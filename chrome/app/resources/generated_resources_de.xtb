@@ -971,6 +971,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="169675691788639886">Für dieses Gerät ist ein SSH-Server eingerichtet. Melde dich nicht mit vertraulichen Konten an.</translation>
 <translation id="1697122132646041614">Wenn du „Mag ich nicht“ auswählst, wird ein Formular geöffnet, über das du detailliertes Feedback dazu geben kannst, warum dir diese Ergebnisse nicht gefallen.</translation>
 <translation id="1697150536837697295">Kunst</translation>
+<translation id="1697532407822776718">Fertig!</translation>
 <translation id="1697686431566694143">Datei bearbeiten</translation>
 <translation id="1698796500103229697">&amp;Zahlungsmethoden</translation>
 <translation id="1698899521169711967">Tastaturnavigation</translation>
@@ -1393,7 +1394,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="199610894463449797">{0,plural, =1{Dieses Profil schließen}other{Dieses Profil schließen (# Fenster)}}</translation>
 <translation id="1997433994358798851">Chrome benötigt eine Berechtigung, um sich mit deinem Gerät über Bluetooth zu verbinden</translation>
 <translation id="1997616988432401742">Meine Zertifikate</translation>
-<translation id="199801374788581808">Versuch es noch mal oder wende dich an deinen Administrator, um Hilfe zu erhalten</translation>
 <translation id="1999115740519098545">Beim Start</translation>
 <translation id="2002109485265116295">Echtzeit</translation>
 <translation id="2002160221914907025">Experimentelle KI</translation>
@@ -2496,6 +2496,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2776560192867872731">Gerätename für <ph name="DEVICE_NAME" /> ändern</translation>
 <translation id="2777251078198759550">Diesen Container löschen</translation>
 <translation id="2777525873368474674">Bildlink einfügen</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{1 Website mit vielen Benachrichtigungen gefunden}other{{NUM_SITES} Websites mit vielen Benachrichtigungen gefunden}}</translation>
 <translation id="2778471504622896352">Remote-Apps zum Chrome OS-Launcher hinzufügen</translation>
 <translation id="2779728796406650689">Durch diese Option kann Google Assistant relevantere Antworten auf deine Fragen geben.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2653,7 +2654,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2893180576842394309">Anhand deines Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren</translation>
 <translation id="2893701697603065178">Verwaltete Entwicklungsumgebung</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
-<translation id="2895730582088342039">Speichern, teilen und streamen</translation>
 <translation id="289695669188700754">Schlüssel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Diese benutzerdefinierte Einstellung wird entfernt, wenn du alle deine Inkognitofenster schließt</translation>
 <translation id="2897878306272793870">Möchtest du wirklich <ph name="TAB_COUNT" /> Tabs öffnen?</translation>
@@ -3439,7 +3439,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3503995387997205657">Du kannst deine vorherigen Apps wiederherstellen</translation>
 <translation id="3505100368357440862">Shopping-Vorschläge</translation>
 <translation id="3505602163050943406">Bei der Verwendung einiger Funktionen können Teile der geöffneten Seiten und der zugehörigen kürzlich aufgerufenen Seiten sowie ihre URLs an Google gesendet werden</translation>
-<translation id="3505762711681798106">Dein Arbeitsbereich wird vorbereitet. Du kannst dich in der Zwischenzeit gerne umsehen und in Kürze ist alles bereit.</translation>
 <translation id="3507132249039706973">Standardschutz ist aktiviert</translation>
 <translation id="3507888235492474624">Noch einmal nach Bluetooth-Geräten suchen</translation>
 <translation id="3508492320654304609">Deine Anmeldedaten konnten nicht gelöscht werden</translation>
@@ -5122,7 +5121,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4750185073185658673">Auf deinem Smartphone kannst du weitere Berechtigungen prüfen. Bluetooth und WLAN müssen auf dem Gerät aktiviert sein.</translation>
 <translation id="4750394297954878236">Vorschläge</translation>
 <translation id="475088594373173692">Erster Nutzer</translation>
-<translation id="4754167810863682207">Profileinrichtung ist fast abgeschlossen</translation>
 <translation id="4756378406049221019">Stopp/Neu laden</translation>
 <translation id="4756388243121344051">&amp;Verlauf</translation>
 <translation id="4756671452988984333">Text für Audio</translation>
@@ -5783,7 +5781,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> auswählen</translation>
 <translation id="5249624017678798539">Der Browser ist während des Downloads abgestürzt.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> verwendet deinen Standort, um dir lokale Inhalte bereitzustellen. Du kannst dies unter <ph name="SETTINGS_LINK" /> ändern.</translation>
-<translation id="5251885976619018662">Wiederherstellungs‑PIN für den Google Passwortmanager erstellen</translation>
 <translation id="5252496130205799136">Dein Google-Konto verwenden, um Passwörter zu speichern und automatisch auszufüllen?</translation>
 <translation id="5252653240322147470">PIN muss weniger als <ph name="MAXIMUM" /> Ziffern umfassen</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> verwenden</translation>
@@ -7427,7 +7424,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ möchte die folgende App auf diesem Gerät installieren:}other{„<ph name="APP_NAME" />“ möchte die folgenden Apps auf diesem Gerät installieren:}}</translation>
 <translation id="6508248480704296122">Verknüpft mit <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">Du kannst dein Arbeitsprofil jetzt verwenden</translation>
 <translation id="6511607461419653612">Starte Chromebook neu und versuche es noch einmal</translation>
 <translation id="6511827214781912955">Du kannst „<ph name="FILENAME" />“ löschen, damit andere Nutzer dieses Geräts deine Passwörter nicht sehen können</translation>
 <translation id="6512759338201777379">Generiertes Bild <ph name="INDEX" /> von <ph name="SUBJECT" /> mit der Stimmung „<ph name="MOOD" />“</translation>
@@ -9563,7 +9559,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8084429490152575036">Einstellungen für Mobilfunk-APN</translation>
 <translation id="8084510406207562688">Alle Tabs wi&amp;ederherstellen</translation>
 <translation id="8084628902026812045">Diese Website verwendet keine verschlüsselte Verbindung und die Datei wurde möglicherweise manipuliert</translation>
-<translation id="8085701268329068646">PIN für den Google Passwortmanager eingeben</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> wird konfiguriert...</translation>
 <translation id="8086121155774250556">Über diesen Tab wird dein Bildschirm geteilt</translation>
 <translation id="8086610718778464681">Fehler beim Sichern der Linux-Apps und -Dateien</translation>
@@ -10395,7 +10390,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8694596275649352090">Im Ruhemodus oder beim Zuklappen sperren</translation>
 <translation id="8695139659682234808">Jugendschutzeinstellungen nach der Einrichtung hinzufügen</translation>
 <translation id="8695825812785969222">&amp;Adresse öffnen...</translation>
-<translation id="8697753370348182287">Dein Arbeitsprofil ist bereit</translation>
 <translation id="8698269656364382265">Du gelangst zum vorherigen Bildschirm, indem du von der linken Seite zur Mitte wischst.</translation>
 <translation id="8698432579173128320">In Google Drive sichern. Du kannst deine Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. In der Sicherung sind auch App-Daten enthalten. Deine Sicherungen werden an Google gesendet und mit dem Passwort deines Google-Kontos verschlüsselt. <ph name="BEGIN_LINK1" />Weitere Informationen zur Sicherung<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Apps-Menü</translation>
@@ -11097,7 +11091,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />-Suche</translation>
 <translation id="9201117361710210082">Zuvor angesehen</translation>
 <translation id="9201220332032049474">Optionen für die Displaysperre</translation>
-<translation id="9201762611758697018">Mit einer Wiederherstellungs-PIN kannst du auf jedem Gerät auf deine gespeicherten Passkeys zugreifen</translation>
 <translation id="9201842707396338580">Es gab ein Problem. Bitte an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Rot-Grün, Grün-Sehschwäche (Deuteranomalie)</translation>
 <translation id="9203398526606335860">&amp;Profilerstellung aktiviert</translation>

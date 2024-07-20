@@ -971,6 +971,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="169675691788639886">El dispositivo tiene configurado un servidor SSH. No accedas con cuentas sensibles.</translation>
 <translation id="1697122132646041614">La opción No me gusta abre un formulario para enviar comentarios detallados sobre los motivos por los que no te gustan estos resultados.</translation>
 <translation id="1697150536837697295">Arte</translation>
+<translation id="1697532407822776718">¡Listo!</translation>
 <translation id="1697686431566694143">Editar archivo</translation>
 <translation id="1698796500103229697">&amp;Formas de pago</translation>
 <translation id="1698899521169711967">Navegación por cursor de texto</translation>
@@ -1393,7 +1394,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="199610894463449797">{0,plural, =1{Cerrar este perfil}other{Cerrar este perfil (# ventanas)}}</translation>
 <translation id="1997433994358798851">Chrome necesita permiso para conectarse a tu dispositivo mediante Bluetooth.</translation>
 <translation id="1997616988432401742">Tus certificados</translation>
-<translation id="199801374788581808">Puedes volver a intentarlo o comunicarte con el administrador para obtener ayuda</translation>
 <translation id="1999115740519098545">Al iniciar</translation>
 <translation id="2002109485265116295">En tiempo real</translation>
 <translation id="2002160221914907025">IA experimental</translation>
@@ -2496,6 +2496,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2776560192867872731">Cambiar el nombre de dispositivo de <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Borrar este contenedor</translation>
 <translation id="2777525873368474674">Pegar vínculo de imagen</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{Se encontró 1 sitio con muchas notificaciones}other{Se encontraron {NUM_SITES} sitios con muchas notificaciones}}</translation>
 <translation id="2778471504622896352">Agregar apps remotas al selector de ChromeOS</translation>
 <translation id="2779728796406650689">Esto permite que Asistente de Google proporcione respuestas personalizadas cuando hagas preguntas.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2653,7 +2654,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2893180576842394309">Es posible que Google use tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="2893701697603065178">Entorno de desarrollo administrado</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
-<translation id="2895730582088342039">Guardar, compartir y transmitir</translation>
 <translation id="289695669188700754">ID de clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Se quitará esta configuración personalizada cuando cierres todas las ventanas de incógnito</translation>
 <translation id="2897878306272793870">¿Estás seguro de que deseas abrir <ph name="TAB_COUNT" /> pestañas?</translation>
@@ -3441,7 +3441,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3503995387997205657">Puedes restablecer tus apps anteriores.</translation>
 <translation id="3505100368357440862">Sugerencias de compra</translation>
 <translation id="3505602163050943406">Cuando usas algunas funciones, el usuario puede enviar a Google partes de las páginas abiertas, las páginas recientes relacionadas y sus URLs</translation>
-<translation id="3505762711681798106">Estamos preparando tu espacio de trabajo. Puedes explorar mientras esperas. Todo estará listo pronto.</translation>
 <translation id="3507132249039706973">Se activó la protección estándar.</translation>
 <translation id="3507888235492474624">Vuelve a buscar dispositivos Bluetooth</translation>
 <translation id="3508492320654304609">No se pudieron borrar tus datos de acceso</translation>
@@ -5124,7 +5123,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4750185073185658673">Revisa algunos permisos en tu teléfono. Asegúrate de que las conexiones Bluetooth y Wi-Fi del teléfono estén activadas.</translation>
 <translation id="4750394297954878236">Sugerencias</translation>
 <translation id="475088594373173692">Primer usuario</translation>
-<translation id="4754167810863682207">La configuración del perfil está casi lista</translation>
 <translation id="4756378406049221019">Detener/volver a cargar</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756671452988984333">Texto para audio</translation>
@@ -5785,7 +5783,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5247243947166567755">Seleccionar <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">El navegador se bloqueó antes de que finalizara la descarga.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> usa tu ubicación para proporcionarte contenido local. Puedes cambiar esta configuración en <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5251885976619018662">Crea un PIN de recuperación para el Administrador de contraseñas de Google</translation>
 <translation id="5252496130205799136">¿Deseas usar tu Cuenta de Google para guardar y completar contraseñas?</translation>
 <translation id="5252653240322147470">El PIN debe tener <ph name="MAXIMUM" /> dígitos como máximo</translation>
 <translation id="5253554634804500860">Usar <ph name="DEVICE_NAME" /></translation>
@@ -7433,7 +7430,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" quiere instalar la siguiente app en este dispositivo:}other{"<ph name="APP_NAME" />" quiere instalar las siguientes apps en este dispositivo:}}</translation>
 <translation id="6508248480704296122">Relacionada con <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">Ya puedes usar tu perfil para el trabajo</translation>
 <translation id="6511607461419653612">Reinicia la Chromebook y vuelve a intentarlo.</translation>
 <translation id="6511827214781912955">Considera borrar <ph name="FILENAME" /> para que las otras personas que usan este dispositivo no puedan ver tus contraseñas</translation>
 <translation id="6512759338201777379">Imagen generada <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estado de ánimo <ph name="MOOD" />.</translation>
@@ -9569,7 +9565,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8084429490152575036">Configuración del APN de la red móvil</translation>
 <translation id="8084510406207562688">R&amp;establecer todas las pestañas</translation>
 <translation id="8084628902026812045">Este sitio no usa una conexión segura y es posible que el archivo se haya alterado</translation>
-<translation id="8085701268329068646">Ingresa tu PIN del Administrador de contraseñas de Google</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Esta pestaña está compartiendo tu pantalla</translation>
 <translation id="8086610718778464681">No se pudo crear la copia de seguridad de apps y archivos de Linux</translation>
@@ -10039,7 +10034,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Falta la bandeja</translation>
 <translation id="8424250197845498070">La Protección avanzada lo bloqueó.</translation>
-<translation id="842501938276307467">Prueba las funciones experimentales de IA</translation>
+<translation id="842501938276307467">Probar las funciones experimentales de IA</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8425492902634685834">Anclar a la barra de tareas</translation>
 <translation id="8425768983279799676">Puedes usar el PIN para desbloquear tu dispositivo.</translation>
@@ -10401,7 +10396,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8694596275649352090">Bloquear al cerrar la tapa o en el modo de suspensión</translation>
 <translation id="8695139659682234808">Agrega los controles parentales cuando finalices la configuración</translation>
 <translation id="8695825812785969222">Abrir &amp;ubicación...</translation>
-<translation id="8697753370348182287">Tu perfil de trabajo está listo</translation>
 <translation id="8698269656364382265">Si quieres regresar a la pantalla anterior, desliza el dedo desde el lado izquierdo.</translation>
 <translation id="8698432579173128320">Crear una copia de seguridad en Google Drive. Restablece tus datos o cambia de dispositivo en cualquier momento con facilidad. Se incluyen datos de apps. Las copias de seguridad se suben a Google y se encriptan con la contraseña de tu Cuenta de Google. <ph name="BEGIN_LINK1" />Más información sobre las copias de seguridad<ph name="BEGIN_LINK1_END" />Más información<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Menú Aplicaciones</translation>
@@ -11103,7 +11097,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="920045321358709304">Buscar en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Visto anteriormente</translation>
 <translation id="9201220332032049474">Opciones de bloqueo de pantalla</translation>
-<translation id="9201762611758697018">Un PIN de recuperación te ayuda a acceder a tus llaves de acceso guardadas en cualquier dispositivo</translation>
 <translation id="9201842707396338580">Se produjo un error. Comunícate con el administrador o el propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Rojo-verde, verde débil (deuteranomalía)</translation>
 <translation id="9203398526606335860">&amp;Perfiles activados</translation>

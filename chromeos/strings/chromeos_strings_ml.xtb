@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">ഒരു ഏകദേശ ഫലത്തിനായി, <ph name="CONVERSION_RATE" /> കൊണ്ട് <ph name="CATEGORY_TEXT" /> എന്ന മൂല്യത്തെ ഭാഗിക്കുക</translation>
 <translation id="1435763214710588005">ഓരോ മാസവും തിരഞ്ഞെടുത്ത ദിവസം ഡാറ്റാ ഉപയോഗം സ്വയമേവ റീസെറ്റ് ചെയ്യുന്നു</translation>
 <translation id="1442433966118452622">ചിത്രത്തിന്റെ ഉറവിടം</translation>
-<translation id="1445573806602812670">നിങ്ങളുടെ റെക്കോർഡിംഗിനുള്ള ട്രാൻസ്‌ക്രിപ്ഷൻ നേടുക</translation>
 <translation id="1446954767133808402">സഫയർ</translation>
 <translation id="1449035143498573192">Google Search-ൽ തുറക്കുക</translation>
 <translation id="1451536289672181509">ഉപകരണം ഒരു കീബോർഡാണ്.</translation>
@@ -111,7 +110,6 @@
 <translation id="1526389707933164996">സ്ക്രീൻ സേവർ ആനിമേഷൻ</translation>
 <translation id="152892567002884378">ശബ്ദം കൂട്ടുക</translation>
 <translation id="1539864135338521185">ലാപിസ് ലസുലി</translation>
-<translation id="1543888759911145368">ഈ പ്രവർത്തനം ശാശ്വതമാണ്, പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="1555130319947370107">നീല</translation>
 <translation id="155865706765934889">ടച്ച്‌പാഡ്</translation>
 <translation id="1561927818299383735">ബാക്ക്‌ലൈറ്റിന്റെ നിറം</translation>
@@ -153,7 +151,6 @@
 <translation id="1718553040985966377">തടാകം</translation>
 <translation id="1720424726586960395">മിന്നാമിനുങ്ങുകളുള്ള കാട്</translation>
 <translation id="1726100011689679555">നെയിം സെർവറുകൾ</translation>
-<translation id="1728792932018505912">നിങ്ങൾക്ക് ഇത് ക്രമീകരണത്തിലോ <ph name="THREE_DOTS_MENU_ICON" /> മെനുവിലോ മാറ്റാം</translation>
 <translation id="1731082422893354635">Bluetooth ടച്ച്പാഡ്</translation>
 <translation id="1738949837603788263">മേഖല <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">ചിത്രങ്ങൾ ലോഡ് ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിക്കുകയോ ചിത്രങ്ങൾ വീണ്ടും ലോഡ് ചെയ്യാൻ ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
@@ -289,7 +286,6 @@
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2364498172489649528">വിജയിച്ചു</translation>
 <translation id="2367335866686097760">കീമാപ്പിംഗ് കീ</translation>
-<translation id="2370739752330685659">പിന്നീടാകാം</translation>
 <translation id="2380886658946992094">നിയമപരം</translation>
 <translation id="2391082728065870591">ഫീഡ്‌ബാക്ക് റിപ്പോർട്ട് അയയ്‌ക്കുക</translation>
 <translation id="2407209115954268704">സിം ലോക്ക് നില</translation>
@@ -636,6 +632,7 @@
 <translation id="4454245904991689773">ഇതിലേക്ക് സ്‌കാൻ ചെയ്ത് സംരക്ഷിക്കുക</translation>
 <translation id="4456812688969919973">APN സംരക്ഷിക്കുക ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="4469288414739283461">എർത്ത് ഫ്ലോ സ്ക്രീൻ സേവർ</translation>
+<translation id="4474142134969976028">പൊരുത്തപ്പെടുന്ന ഫലങ്ങളൊന്നുമില്ല</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4483049906298469269">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
 <translation id="4500722292849917410">കുറുക്കുവഴി ലഭ്യമല്ല. മോഡിഫയർ കീ (ctrl, alt, shift അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
@@ -752,7 +749,6 @@
 <translation id="5099354524039520280">മുകളിലേക്ക്</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ <ph name="KEY" /> കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">സമാനമായത്:</translation>
-<translation id="5109744590306245079">Recorder-ന് സംഭാഷണത്തിനൊപ്പം ട്രാൻസ്‌ക്രിപ്റ്റുകൾ സൃഷ്ടിക്കാൻ കഴിയും. ഈ ട്രാൻസ്‌ക്രിപ്റ്റുകൾ നേടാൻ ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ (100MB വരെ) ഡൗൺലോഡ് ചെയ്യുക.</translation>
 <translation id="5130848777448318809">പോണികൾ</translation>
 <translation id="5137451382116112100">പൂർണ്ണ സ്ക്രീൻ</translation>
 <translation id="5142961317498132443">പരിശോധിച്ചുറപ്പിക്കൽ</translation>
@@ -914,6 +910,7 @@
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6040852767465482106">അജ്ഞാത ഐഡന്‍റിറ്റി</translation>
 <translation id="604124094241169006">സ്വയമേവ</translation>
+<translation id="6042308850641462728">കൂടുതൽ</translation>
 <translation id="6048107060512778456">പ്രിന്റ് ചെയ്യാനായില്ല - പേപ്പർ ജാമായിരിക്കുന്നു</translation>
 <translation id="6050189528197190982">ഗ്രേസ്‌കെയിൽ</translation>
 <translation id="6054711098834486579">എക്‌സ്പ്രഷനിസ്റ്റ്</translation>
@@ -938,7 +935,6 @@
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">സൈബർപങ്ക്</translation>
 <translation id="6137767437444130246">ഉപയോക്തൃ സർട്ടിഫിക്കറ്റ്</translation>
-<translation id="6141004321363227868">ഈ ഫീച്ചർ പ്രവർത്തനക്ഷമമാക്കിയിരിക്കുമ്പോൾ, നിങ്ങൾ റെക്കോർഡ് ചെയ്യുന്നതിനനുസരിച്ച് തത്സമയ ട്രാൻസ്‌ക്രിപ്റ്റുകളും കാണിക്കും.</translation>
 <translation id="6146993107019042706">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പുതിയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">മെറൂണും പിങ്കും</translation>
@@ -1023,7 +1019,6 @@
 <translation id="6543412779435705598">ടാകോസ്</translation>
 <translation id="6551839203326557324">ആപ്പിളുകൾ</translation>
 <translation id="65526652485742171">'സ്ഥിരീകരിക്കുക' ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനക്ഷമമാക്കി</translation>
-<translation id="6556016675518580850">ഈ പേജിൽ നിന്ന് പുറത്തുകടന്നാൽ നിലവിലുള്ള റെക്കോർഡിംഗ് അവസാനിപ്പിക്കും.</translation>
 <translation id="6557784757915238407">APN തരം <ph name="ATTACH" /> ആണ്.</translation>
 <translation id="65587193855025101">ഫ്ലാറ്റ്ബെഡ്</translation>
 <translation id="6560196641871357166">വൈബ്രന്റ്</translation>
@@ -1078,8 +1073,6 @@
 <translation id="6798678288485555829">ടെക്സ്റ്റ് നാവിഗേഷൻ</translation>
 <translation id="680983167891198932">കീ</translation>
 <translation id="6816797338148849397">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ലഭ്യമാണ്. ആക്‌സസ് ചെയ്യാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
-<translation id="6818844233294698434">സംഭാഷണം കേൾക്കാൻ കാത്തിരിക്കുന്നു...</translation>
-<translation id="6837645039518471192">റെക്കോർഡിംഗിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
 <translation id="6853312040151791195">ഡിസ്‌ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
 <translation id="6866732840889595464">ഡെയ്‌സി</translation>
 <translation id="6871256179359663621">ഇളം പർപ്പിൾ നിറം</translation>
@@ -1221,6 +1214,7 @@
 <translation id="7528507600602050979">സഹായ ഉള്ളടക്കം ലഭ്യമല്ല</translation>
 <translation id="7535791657097741517">ലൈറ്റ് തീം ഓണാക്കുക</translation>
 <translation id="7544126681856613971">മഞ്ഞ് മൂടിയ വനം</translation>
+<translation id="7544853251252956727">ഷഫിൾ ചെയ്യുക</translation>
 <translation id="7550715992156305117">പ്രശ്‌നനിർണ്ണയ ദിനചര്യകൾ</translation>
 <translation id="7551123448725492271">ഉപകരണം ഒരു ഓഡിയോ ഉപകരണമാണ്.</translation>
 <translation id="7559239713112547082">പ്രിവ്യൂ സ്‌ക്രീൻഷോട്ട്</translation>
@@ -1277,7 +1271,6 @@
 <translation id="7850847810298646851">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന വാൾപേപ്പർ</translation>
 <translation id="785170686607360576">ടുലിപ്</translation>
 <translation id="7856267634822906833">Bluetooth ടച്ച്സ്ക്രീൻ</translation>
-<translation id="7857744683152972248">സ്‌പീക്കറുകൾ തിരിച്ചറിയാൻ റെക്കോർഡറിനെ അനുവദിക്കണോ?</translation>
 <translation id="7859006200041800233">കള്ളിമുൾച്ചെടിയുടെ പൂവ്</translation>
 <translation id="7869143217755017858">ഡാർക്ക് മോഡ് പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1333,7 +1326,6 @@
 <translation id="8162776280680283326">കുറുക്കന്മാർ</translation>
 <translation id="8167413449582155132">പശ്ചാത്തലത്തിൽ Google AI കൊണ്ട് പ്രവർത്തിക്കുന്നത്</translation>
 <translation id="8171020708598805594">Google AI ഉപയോഗിച്ച് സ്വയമേവ ട്രാൻസ്‌ക്രിപ്ഷനുകൾ സൃഷ്ടിക്കൂ, സംഗ്രഹങ്ങൾ റെക്കോർഡ് ചെയ്യൂ, ഓഡിയോ തിരയൂ. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാത്തപ്പോൾ പോലും റെക്കോർഡിംഗുകൾ സൃഷ്ടിക്കൂ.</translation>
-<translation id="8174280683348521982">നിലവിലുള്ള റെക്കോർഡിംഗ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ബീച്ച്</translation>
 <translation id="819278132617411009">ഉൽപ്പാദനക്ഷമത വർദ്ധിപ്പിക്കാൻ Google AI ഉപയോഗിക്കൂ</translation>
@@ -1349,6 +1341,7 @@
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
 <translation id="8262870577632766028">1 മണിക്കൂർ</translation>
 <translation id="827422111966801947">ഇൻഡിഗോ</translation>
+<translation id="8281886186245836920">ഉപേക്ഷിക്കുക</translation>
 <translation id="8286154143153872371">വാൾപേപ്പർ കാണാൻ ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="8291967909914612644">ഹോം പ്രൊവൈഡറിന്റെ രാജ്യം</translation>
 <translation id="8294431847097064396">ഉറവിടം</translation>
@@ -1371,9 +1364,6 @@
 <translation id="8372477600026034341">അധിക ഹോസ്‌റ്റുകൾ</translation>
 <translation id="8372667721254470022">ഒലിവ്</translation>
 <translation id="8373046809163484087">നിങ്ങളുടെ വാൾപേപ്പറുമായി പൊരുത്തപ്പെടുന്ന വർണ്ണ സെറ്റുകൾ ഉപയോഗിക്കുക</translation>
-<translation id="8379123594780452422">ഇത് അനുവദിക്കുമ്പോൾ, വിപുലമായ ഓഡിയോ വിശകലനം ഉപയോഗിച്ച് Recorder നിങ്ങളുടെ ഓഡിയോ റെക്കോർഡിംഗുകൾ പ്രോസസ് ചെയ്യും.
-
-നിങ്ങൾക്ക് ഇത് എപ്പോൾ വേണമെങ്കിലും ക്രമീകരണത്തിൽ ഓഫാക്കാം.</translation>
 <translation id="8380114448424469341">സ്ക്രീനിന്റെ <ph name="DIRECTION" /> ഭാഗത്തെ വലിയ വശത്ത് വിൻഡോ ഡോക്ക് ചെയ്യുക</translation>
 <translation id="8391349326751432483">മെമ്മറി ടെസ്റ്റ് റൺ ചെയ്യാൻ, കുറഞ്ഞത് 500 MB ശേഷിച്ചിരിക്കണം. ഇടം സൃഷ്‌ടിക്കാൻ, ടാബുകളും ആപ്പുകളും അടയ്ക്കുക.</translation>
 <translation id="8395584934117017006">ഈ <ph name="DEVICE_TYPE" /> എന്റർപ്രൈസ് മാനേജ് ചെയ്യുന്നു</translation>
@@ -1522,7 +1512,6 @@
 <translation id="9122602430962285795">വീണ്ടും കണക്റ്റ് ചെയ്യാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="9122865513525855321">സെൻ</translation>
 <translation id="9126720536733509015">ഒരു PDF-ൽ ഒന്നിലധികം പേജുകൾ സംരക്ഷിക്കുക</translation>
-<translation id="9129549320890412487">ട്രാൻസ്‌ക്രിപ്ഷൻ ഫീച്ചർ</translation>
 <translation id="9133772297793293778">കീബോഡിലെ 1-4 മോഡിഫയറുകളും മറ്റൊരു കീയും അമർത്തുക. എഡിറ്റിംഗ് മോഡിൽ നിന്ന് പുറത്തുകടക്കാൻ alt + esc അമർത്തുക.</translation>
 <translation id="9137526406337347448">Google സേവനങ്ങൾ</translation>
 <translation id="9138630967333032450">ഇടത് Shift കീ</translation>

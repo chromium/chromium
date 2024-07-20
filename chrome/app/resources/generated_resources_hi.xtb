@@ -976,6 +976,7 @@
 <translation id="169675691788639886">डिवाइस के लिए एसएसएच सर्वर कॉन्फ़िगर किया गया है. संवेदनशील खातों से साइन इन न करें.</translation>
 <translation id="1697122132646041614">'पसंद नहीं है' बटन को दबाने से एक फ़ॉर्म खुलता है. इस फ़ॉर्म में आपको इस बारे में पूरी जानकारी देनी होती है कि आपको ये नतीजे क्यों पसंद नहीं हैं.</translation>
 <translation id="1697150536837697295">कला</translation>
+<translation id="1697532407822776718">आप बिलकुल तैयार हैं!</translation>
 <translation id="1697686431566694143">फ़ाइल में बदलाव करें</translation>
 <translation id="1698796500103229697">पैसे चुकाने के तरीके</translation>
 <translation id="1698899521169711967">कैरेट ब्राउज़िंग</translation>
@@ -1407,7 +1408,6 @@
 <translation id="199610894463449797">{0,plural, =1{इस प्रोफ़ाइल को बंद करें}one{इस प्रोफ़ाइल को बंद करें (# विंडो)}other{इस प्रोफ़ाइल को बंद करें (# विंडो)}}</translation>
 <translation id="1997433994358798851">आपके डिवाइस से कनेक्ट करने के लिए, Chrome को ब्लूटूथ इस्तेमाल करने की अनुमति चाहिए</translation>
 <translation id="1997616988432401742">आपके प्रमाणपत्र</translation>
-<translation id="199801374788581808">फिर से कोशिश करें या मदद पाने के लिए, अपने एडमिन से संपर्क करें</translation>
 <translation id="1999115740519098545">शुरुआत करने पर</translation>
 <translation id="2002109485265116295">रीयल-टाइम</translation>
 <translation id="2002160221914907025">एक्सपेरिमेंट के तौर पर उपलब्ध एआई</translation>
@@ -2513,6 +2513,7 @@
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> के लिए डिवाइस का नाम बदलें</translation>
 <translation id="2777251078198759550">यह कंटेनर मिटाएं</translation>
 <translation id="2777525873368474674">इमेज का लिंक चिपकाएं</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{बहुत सारी सूचनाओं वाली 1 साइट मिली}one{बहुत सारी सूचनाओं वाली {NUM_SITES} साइट मिली}other{बहुत सारी सूचनाओं वाली {NUM_SITES} साइट मिलीं}}</translation>
 <translation id="2778471504622896352">ChromeOS लॉन्चर में रिमोट ऐप्लिकेशन जोड़ें</translation>
 <translation id="2779728796406650689">इससे Google Assistant, आपके सवाल पूछने पर ज़रूरत के हिसाब से जवाब दे पाती है.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2670,7 +2671,6 @@
 <translation id="2893180576842394309">Search और अन्य Google सेवाओं को आपके हिसाब से बनाने के लिए, Google आपका ब्राउज़िंग इतिहास इस्तेमाल कर सकता है.</translation>
 <translation id="2893701697603065178">मैनेज किए जा रहे डेवलपमेंट एनवायरमेंट</translation>
 <translation id="2894757982205307093">ग्रुप में नया टैब जोड़ें</translation>
-<translation id="2895730582088342039">सेव, शेयर, और कास्ट करें</translation>
 <translation id="289695669188700754">कुंजी ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">इस कस्टम सेटिंग को तब हटाया जाएगा, जब आप अपने सभी गुप्त विंडो बंद करेंगे</translation>
 <translation id="2897878306272793870">क्या आप वाकई <ph name="TAB_COUNT" /> टैब खोलना चाहते हैं?</translation>
@@ -3458,7 +3458,6 @@
 <translation id="3503995387997205657">आप अपने पुराने ऐप्लिकेशन वापस पा सकते हैं</translation>
 <translation id="3505100368357440862">खरीदारी के लिए सुझाव</translation>
 <translation id="3505602163050943406">जब कुछ सुविधाओं का इस्तेमाल किया जाता है, तो वे खुले हुए पेजों के कुछ हिस्से, इनसे जुड़े हाल ही में खोले गए पेज, और इनके यूआरएल की जानकारी Google को भेज सकती हैं</translation>
-<translation id="3505762711681798106">हम आपका फ़ाइल फ़ोल्डर तैयार कर रहे हैं! इस दौरान, साइट को एक्सप्लोर करें. कुछ ही समय में आपके लिए सभी सुविधाएं उपलब्ध होंगी.</translation>
 <translation id="3507132249039706973">मानक सुरक्षा की सुविधा चालू है</translation>
 <translation id="3507888235492474624">ब्लूटूथ डिवाइस के लिए दोबारा स्कैन करें</translation>
 <translation id="3508492320654304609">आपका साइन-इन डेटा मिटाया नहीं जा सका</translation>
@@ -5140,7 +5139,6 @@
 <translation id="4750185073185658673">कुछ और अनुमतियां देखने के लिए अपने फ़ोन के अनुमतियों वाले सेक्शन पर जाएं. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.</translation>
 <translation id="4750394297954878236">सुझाव</translation>
 <translation id="475088594373173692">पहला उपयोगकर्ता</translation>
-<translation id="4754167810863682207">आपकी प्रोफ़ाइल का सेटअप करीब-करीब पूरा हो गया है</translation>
 <translation id="4756378406049221019">रोकें/फिर से लोड करें</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756671452988984333">ऑडियो के लिए टेक्स्ट</translation>
@@ -5801,7 +5799,6 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> चुनें</translation>
 <translation id="5249624017678798539">डाउनलोड पूरा होने से पहले ही ब्राउज़र क्रैश हो गया था.</translation>
 <translation id="5250372599208556903">आपको स्थानीय सामग्री देने के लिए, <ph name="SEARCH_ENGINE_NAME" /> आपके स्थान की जानकारी का इस्तेमाल करता है. आप इसे <ph name="SETTINGS_LINK" /> में बदल सकते हैं.</translation>
-<translation id="5251885976619018662">Google Password Manager के लिए एक रिकवरी पिन सेट करें</translation>
 <translation id="5252496130205799136">क्या आपको पासवर्ड सेव करने और इन्हें अपने-आप भरने के लिए, Google खाते का इस्तेमाल करना है?</translation>
 <translation id="5252653240322147470">पिन <ph name="MAXIMUM" /> से कम अंकों का होना चाहिए</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> का इस्तेमाल करें</translation>
@@ -7448,7 +7445,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" को इस डिवाइस पर यह ऐप्लिकेशन इंस्टॉल करना है:}one{"<ph name="APP_NAME" />" को इस डिवाइस पर यह ऐप्लिकेशन इंस्टॉल करना है:}other{"<ph name="APP_NAME" />" को इस डिवाइस पर ये ऐप्लिकेशन इंस्टॉल करने हैं:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> से संबंधित</translation>
 <translation id="6508261954199872201">ऐप्‍लिकेशन: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">आपकी वर्क प्रोफ़ाइल बन गई है और अब इसे इस्तेमाल किया जा सकता है</translation>
 <translation id="6511607461419653612">अपना Chromebook रीस्टार्ट करें और फिर से कोशिश करें</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> को मिटाएं, ताकि इस डिवाइस का इस्तेमाल करने वाले अन्य लोग, आपके पासवर्ड न देख सकें</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> मूड के साथ <ph name="SUBJECT" /> की हाल में जनरेट की गई इमेज <ph name="INDEX" />.</translation>
@@ -9584,7 +9580,6 @@
 <translation id="8084429490152575036">मोबाइल की एपीएन सेटिंग</translation>
 <translation id="8084510406207562688">सभी टैब पहले जैसे करें</translation>
 <translation id="8084628902026812045">यह साइट सुरक्षित कनेक्शन का इस्तेमाल नहीं कर रही है और हो सकता है कि फ़ाइल के साथ छेड़छाड़ की गई हो</translation>
-<translation id="8085701268329068646">Google Password Manager के लिए अपना पिन डालें</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फ़िगर किया जा रहा है ...</translation>
 <translation id="8086121155774250556">यह टैब आपकी स्क्रीन शेयर कर रहा है</translation>
 <translation id="8086610718778464681">Linux के ऐप्लिकेशन और फ़ाइलों का बैक अप नहीं लिया जा सकता</translation>
@@ -10416,7 +10411,6 @@
 <translation id="8694596275649352090">स्लीप मोड (कम बैटरी मोड) में रहने या लिड के बंद होने पर लॉक करें</translation>
 <translation id="8695139659682234808">सेट अप करने के बाद माता-पिता के कंट्रोल की सुविधा जोड़ें</translation>
 <translation id="8695825812785969222">&amp;स्‍थान खोलें...</translation>
-<translation id="8697753370348182287">आपकी वर्क प्रोफ़ाइल तैयार है</translation>
 <translation id="8698269656364382265">पिछली स्क्रीन पर वापस जाने के लिए, स्क्रीन की बाईं ओर से स्वाइप करें.</translation>
 <translation id="8698432579173128320">Google Drive में बैक अप लें. जब चाहें, आसानी से अपना डेटा वापस पाएं या डिवाइस बदलें. बैकअप में ऐप्लिकेशन डेटा शामिल होता है. आपके डेटा का बैकअप, Google पर अपलोड किया जाता है और उसे आपके Google खाते के पासवर्ड से एन्क्रिप्ट (सुरक्षित) किया जाता है. <ph name="BEGIN_LINK1" />बैकअप लेने के बारे में ज़्यादा जानें<ph name="BEGIN_LINK1_END" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">ऐप्लिकेशन मेन्यू</translation>
@@ -11119,7 +11113,6 @@
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> खोजें</translation>
 <translation id="9201117361710210082">पहले देखा गया</translation>
 <translation id="9201220332032049474">स्क्रीन लॉक विकल्प</translation>
-<translation id="9201762611758697018">रिकवरी पिन से सेव की गई पासकी को किसी भी डिवाइस पर ऐक्सेस किया जा सकता है</translation>
 <translation id="9201842707396338580">कोई गड़बड़ी हुई. कृपया डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">लाल-हरे रंग की पहचान से जुड़ी समस्या (ड्यूटरनॉमली) के लिए फ़िल्टर</translation>
 <translation id="9203398526606335860">&amp;प्रोफ़ाइलिंग सक्षम</translation>

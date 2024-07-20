@@ -819,7 +819,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1634989431648355062">允许这些网站运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
 <translation id="1635450837608153975">在所有网站上停用高级 JavaScript 优化功能</translation>
 <translation id="1635748761015837179">允许写入外部存储设备</translation>
-<translation id="163653062822010558">已启用：CSS 缩放将遵循标准规范。</translation>
 <translation id="1639468541408865385">启用全局范围的 HTTP 身份验证缓存</translation>
 <translation id="1639673466479276550">为登录屏幕启用屏保。</translation>
 <translation id="1640824698339859203">启用流动单点登录，并将用户的 Web 服务身份验证移至新设备</translation>

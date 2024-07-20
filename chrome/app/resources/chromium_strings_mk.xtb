@@ -48,7 +48,6 @@
 <translation id="1749104137266986751">Кога не е достапна HTTPS, Chromium ќе користи небезбедна врска без да ве предупреди</translation>
 <translation id="1774152462503052664">Остави го Chromium да работи во заднина</translation>
 <translation id="1779356040007214683">За Chromium да биде побезбеден, оневозможивме неколку наставки што не се наведени во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и можеби се додадени без ваше знаење.</translation>
-<translation id="1804128559285178512">Додека сте најавени, може да ги користите вашите лозинки и друго од вашата сметка на Google во Chromium</translation>
 <translation id="1808667845054772817">Преинсталирај го Chromium</translation>
 <translation id="1820835682567584003">Chromium се обидува да <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">За да ги избришете податоците од прелистување само од овој уред, а притоа да ги задржите во сметката на Google, <ph name="BEGIN_LINK" />одјавете се од Chromium<ph name="END_LINK" />.</translation>

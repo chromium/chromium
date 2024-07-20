@@ -515,6 +515,7 @@
 <translation id="3557336313807607643">إضافة إلى جهات الاتصال</translation>
 <translation id="3563767357928833671">تم عرض محتوى الحافظة.</translation>
 <translation id="3566639033325271639">تعديل الإعدادات</translation>
+<translation id="3568945271227339929">ما مِن كلمات مرور معرّضة للاختراق.</translation>
 <translation id="357465026686164600">استخدام الهاتف كمفتاح أمان</translation>
 <translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3577558748185201054">يمكنك إدارة اهتماماتك وتفضيلاتك</translation>
@@ -948,7 +949,6 @@
 <translation id="5698878456427040674">تحقَّق مما إذا كان الحساب الذي اخترته صحيحًا.</translation>
 <translation id="570347048394355941">‏التبديل إلى مفتاح التبويب (Tab)</translation>
 <translation id="5715150588940290235">هل تريد حذف رموز الأمان المحفوظة؟</translation>
-<translation id="5718049162805123412">يجب تغيير كلمات المرور هذه الآن</translation>
 <translation id="571930967925877633">‏ستتوقّف مزامنة الإشارات المرجعية والسجلّ وبيانات Chrome الأخرى مع حسابك على Google.</translation>
 <translation id="572328651809341494">علامات التبويب الأخيرة</translation>
 <translation id="5726692708398506830">تكبير كامل محتوى الصفحة</translation>
@@ -1542,7 +1542,6 @@
 <translation id="8348430946834215779">‏استخدِم بروتوكول HTTPS كلما أمكن ذلك واحصل على تحذيرات قبل تحميل المواقع الإلكترونية غير المتوافقة معه.</translation>
 <translation id="8354977102499939946">يتيح لك هذا الزر إجراء بحث صوتي بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
 <translation id="835847953965672673">تمّت استعادة <ph name="NUMBER_OF_DOWNLOADS" /> عملية تنزيل.</translation>
-<translation id="8367705492654390392">البحث عن أي شيء</translation>
 <translation id="8368001212524806591">تتبُّع السعر</translation>
 <translation id="8378850197701296741">تمت مزامنة الإشارات المرجعية والسجلّ وإعدادات أخرى من <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">إثبات هويتك</translation>

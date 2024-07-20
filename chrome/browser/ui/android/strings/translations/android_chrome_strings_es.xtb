@@ -513,6 +513,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3557336313807607643">Añadir a contactos</translation>
 <translation id="3563767357928833671">Contenido del portapapeles mostrado</translation>
 <translation id="3566639033325271639">Actualizar configuración</translation>
+<translation id="3568945271227339929">No hay contraseñas vulneradas</translation>
 <translation id="357465026686164600">Teléfono como llave de seguridad</translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="3577558748185201054">Gestiona tus intereses y preferencias</translation>
@@ -946,7 +947,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5698878456427040674">Comprueba que la cuenta seleccionada es compatible.</translation>
 <translation id="570347048394355941">Cambiar a la pestaña</translation>
 <translation id="5715150588940290235">¿Eliminar códigos de seguridad guardados?</translation>
-<translation id="5718049162805123412">Deberías cambiarlas de inmediato</translation>
 <translation id="571930967925877633">Tus marcadores, el historial y otros datos de Chrome dejarán de sincronizarse con tu cuenta de Google</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5726692708398506830">Amplía todo el contenido de la página</translation>
@@ -1538,7 +1538,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8348430946834215779">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no sean compatibles con este protocolo</translation>
 <translation id="8354977102499939946">Busca rápidamente con la voz. Para editar esta combinación de teclas, ve a Configuración.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> descargas restauradas</translation>
-<translation id="8367705492654390392">Pregunta lo que quieras</translation>
 <translation id="8368001212524806591">Seguir precio</translation>
 <translation id="8378850197701296741">Tienes marcadores, historial, contraseñas y otros ajustes de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica que eres tú</translation>

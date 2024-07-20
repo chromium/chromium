@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">Ili upate kadirio la matokeo, gawanya thamani ya <ph name="CATEGORY_TEXT" /> kwa <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Huweka upya matumizi ya data kiotomatiki kila mwezi kwenye siku iliyochaguliwa</translation>
 <translation id="1442433966118452622">Chanzo cha picha</translation>
-<translation id="1445573806602812670">Pata manukuu kwenye rekodi yako</translation>
 <translation id="1446954767133808402">johari ya rangi ya buluu</translation>
 <translation id="1449035143498573192">Fungua kwenye Tafuta na Google</translation>
 <translation id="1451536289672181509">Kifaa hiki ni kibodi.</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">ziwa</translation>
 <translation id="1720424726586960395">msitu wa vimulimuli</translation>
 <translation id="1726100011689679555">Seva za majina</translation>
-<translation id="1728792932018505912">Unaweza kurekebisha hali hii kwenye Mipangilio au menyu ya <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="1731082422893354635">Padi ya kugusa yenye bluetooth</translation>
 <translation id="1738949837603788263">Eneo la <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Imeshindwa kupakia picha. Angalia muunganisho wa mtandao wako au jaribu kupakia picha tena.</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2364498172489649528">Amefaulu</translation>
 <translation id="2367335866686097760">Kitufe cha kukabidhi majukumu ya kitufe</translation>
-<translation id="2370739752330685659">Labda baadaye</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Tuma Ripoti ya Maoni</translation>
 <translation id="2407209115954268704">Hali ya Kufunga SIM</translation>
@@ -635,6 +632,7 @@
 <translation id="4454245904991689773">Hifadhi faili iliyochanganuliwa kwenye</translation>
 <translation id="4456812688969919973">Kitufe cha "Hifadhi APN" sasa kimewashwa</translation>
 <translation id="4469288414739283461">Taswira ya skrini kulingana na mwelekeo wa dunia</translation>
+<translation id="4474142134969976028">Hakuna matokeo yanayolingana</translation>
 <translation id="4479639480957787382">Ethaneti</translation>
 <translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
 <translation id="4500722292849917410">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato ukitumia kitufe cha kurekebisha (ctrl, alt, shift au <ph name="META_KEY" />).</translation>
@@ -751,7 +749,6 @@
 <translation id="5099354524039520280">juu</translation>
 <translation id="5107243100836678918">Njia ya mkato isiyo na kitufe cha <ph name="META_KEY" /> inaweza kukinzana na njia ya mkato ya baadhi ya programu. Bonyeza tena njia hii ya mkato ili uendelee kuitumia au ubonyeze njia ya mkato mpya ukitumia kitufe cha <ph name="KEY" />. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Yanayofanana:</translation>
-<translation id="5109744590306245079">Kinasa sauti kinaweza kubuni manukuu kwenye rekodi zenye matamshi. Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="5130848777448318809">farasi wadogo</translation>
 <translation id="5137451382116112100">Skrini nzima</translation>
 <translation id="5142961317498132443">Uthibitishaji</translation>
@@ -913,6 +910,7 @@
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6040852767465482106">Kitambulisho Hakijulikani</translation>
 <translation id="604124094241169006">Otomatiki</translation>
+<translation id="6042308850641462728">Zaidi</translation>
 <translation id="6048107060512778456">Haijakamilika - Karatasi imekwama</translation>
 <translation id="6050189528197190982">Mtindo wa rangi nyeupe na nyeusi</translation>
 <translation id="6054711098834486579">sanaa ya uhalisi nafsi</translation>
@@ -937,7 +935,6 @@
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">sayansi dhahania</translation>
 <translation id="6137767437444130246">Cheti cha mtumiaji</translation>
-<translation id="6141004321363227868">Ukiwasha kipengele hiki, manukuu ya papo hapo pia yataonyeshwa unaporekodi.</translation>
 <translation id="6146993107019042706">Ili ukamilishe, weka nenosiri jipya</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">rangi ya waridi na damu ya mzee</translation>
@@ -1022,7 +1019,6 @@
 <translation id="6543412779435705598">taco</translation>
 <translation id="6551839203326557324">matofaa</translation>
 <translation id="65526652485742171">Kitufe cha 'Kuthibitisha' sasa kimewashwa</translation>
-<translation id="6556016675518580850">Kuondoka kwenye ukurasa huu kutakomesha rekodi yako ya sasa.</translation>
 <translation id="6557784757915238407">Aina ya APN ni <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Kichanganuzi bapa</translation>
 <translation id="6560196641871357166">Rangi inayong'aa</translation>
@@ -1077,8 +1073,6 @@
 <translation id="6798678288485555829">Usogezaji kwenye maandishi</translation>
 <translation id="680983167891198932">Ufunguo</translation>
 <translation id="6816797338148849397">Maelezo yanayohusiana na chaguo lako yanapatikana. Tumia kishale cha Juu ili uyafikie.</translation>
-<translation id="6818844233294698434">Inasikiliza matamshi...</translation>
-<translation id="6837645039518471192">Acha kurekodi</translation>
 <translation id="6853312040151791195">Kasi ya kutumia chaji</translation>
 <translation id="6866732840889595464">ua la daisy</translation>
 <translation id="6871256179359663621">rangi ya zambarau isiyokolea</translation>
@@ -1220,6 +1214,7 @@
 <translation id="7528507600602050979">Maudhui ya usaidizi hayapatikani</translation>
 <translation id="7535791657097741517">Washa mandhari meupe</translation>
 <translation id="7544126681856613971">msitu wenye umande</translation>
+<translation id="7544853251252956727">Changanya</translation>
 <translation id="7550715992156305117">Ratiba za Uchunguzi</translation>
 <translation id="7551123448725492271">Kifaa hiki ni cha sauti.</translation>
 <translation id="7559239713112547082">Kagua kwanza picha ya skrini</translation>
@@ -1276,7 +1271,6 @@
 <translation id="7850847810298646851">Mandhari yanaendeshwa na Google AI</translation>
 <translation id="785170686607360576">ua la tulipu</translation>
 <translation id="7856267634822906833">Skrini ya kugusa yenye bluetooth</translation>
-<translation id="7857744683152972248">Ungependa kuruhusu Kinasa sauti kitambue wanaozungumza?</translation>
 <translation id="7859006200041800233">ua la dungusi kakati</translation>
 <translation id="7869143217755017858">Zima hali nyeusi</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1332,7 +1326,6 @@
 <translation id="8162776280680283326">mbweha</translation>
 <translation id="8167413449582155132">Mandharinyuma ya kamera yanayoendeshwa na Google AI</translation>
 <translation id="8171020708598805594">Buni manukuu kiotomatiki, pata muhtasari wa rekodi ukitumia Google AI na utafute sauti. Buni rekodi hata ukiwa hujaunganishwa kwenye intaneti.</translation>
-<translation id="8174280683348521982">Ungependa kufuta rekodi ya sasa?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ufukwe</translation>
 <translation id="819278132617411009">Tumia Google AI ili uwe na tija zaidi</translation>
@@ -1348,6 +1341,7 @@
 <translation id="8261506727792406068">Futa</translation>
 <translation id="8262870577632766028">Saa 1</translation>
 <translation id="827422111966801947">Nili</translation>
+<translation id="8281886186245836920">Ruka</translation>
 <translation id="8286154143153872371">Tafadhali unganisha kwenye mtandao kisha upakie ukurasa upya ili uangalie mandhari.</translation>
 <translation id="8291967909914612644">Nchi ya mtoa huduma</translation>
 <translation id="8294431847097064396">Chanzo</translation>
@@ -1370,9 +1364,6 @@
 <translation id="8372477600026034341">Seva pangishi za ziada</translation>
 <translation id="8372667721254470022">rangi ya mzeituni</translation>
 <translation id="8373046809163484087">Tumia rangi zinazolingana na mandhari yako</translation>
-<translation id="8379123594780452422">Utakaporuhusu mipangilio hii, Kinasa sauti kitachakata rekodi zako za sauti kwa kutumia takwimu za kina za sauti.
-
-Unaweza kuzima wakati wowote kwenye Mipangilio.</translation>
 <translation id="8380114448424469341">Dirisha la kupachika kwenye sehemu nusu ya <ph name="DIRECTION" /> ya skrini</translation>
 <translation id="8391349326751432483">Unahitaji nafasi ya hifadhi ya angalau MB 500 ili uweze kufanya jaribio la Hifadhi. Ili ufute baadhi ya vipengee, funga vichupo na programu.</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> hii inasimamiwa na biashara</translation>
@@ -1520,7 +1511,6 @@ Unaweza kuzima wakati wowote kwenye Mipangilio.</translation>
 <translation id="9122602430962285795">Nenda kwenye Mipangilio ili uunganishe tena</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Hifadhi kurasa nyingi kwenye PDF moja</translation>
-<translation id="9129549320890412487">Kipengele cha unukuzi</translation>
 <translation id="9133772297793293778">Bonyeza virekebishi 1 hadi 4 na kitufe kingine 1 kwenye kibodi yako. Ili uondoke katika hali ya kubadilisha, bonyeza alt pamoja na esc.</translation>
 <translation id="9137526406337347448">Huduma za Google</translation>
 <translation id="9138630967333032450">Kitufe cha Shift cha kushoto</translation>

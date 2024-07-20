@@ -606,6 +606,7 @@
 <translation id="4049507953662678203">ネットワークに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="4054572406751135230">ニュースやスポーツなどの最新情報をチェックできます。</translation>
 <translation id="4068959193278821990">保護強化機能をオンにする…</translation>
+<translation id="4088879333319441249">タブグループを解除しますか？</translation>
 <translation id="4092655288299341041">ヘルプを表示</translation>
 <translation id="4105841739161771091">{count,plural, =1{住所を削除}other{住所を削除}}</translation>
 <translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
@@ -1420,6 +1421,7 @@
 <translation id="7975036700432177008">使ってみる</translation>
 <translation id="7977451675950311423">データ侵害で流出したパスワードを使用すると警告します。</translation>
 <translation id="7978018860671536736">3.[パスワードを自動入力] をタップする</translation>
+<translation id="797824194429476746">タブはこのデバイスで引き続き表示されますが、グループは完全に削除されます。</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
 <translation id="7987685713885608670">セキュリティ強化のため、Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
 <translation id="7993619969781047893">一部のサイトで機能を使用できなくなる可能性があります</translation>

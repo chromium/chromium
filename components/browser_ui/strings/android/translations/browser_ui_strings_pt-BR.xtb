@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Impedir que um site salve dados no seu dispositivo</translation>
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="2910701580606108292">Perguntar antes de permitir que sites mostrem conteúdo protegido</translation>
+<translation id="2918484639460781603">Ir a configurações</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2939338015096024043">Quando essa configuração está ativada, os sites podem pedir para rastrear a posição da câmera e saber mais sobre o ambiente à sua volta. Quando está desativada, os sites não podem rastrear a posição da câmera nem saber mais sobre o ambiente à sua volta.</translation>
 <translation id="2968755619301702150">Leitor de certificados</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Sensores de luz ou movimento</translation>
 <translation id="4755971844837804407">Quando essa configuração está ativada, os sites podem mostrar qualquer anúncio para você. Quando está desativada, os sites não podem mostrar anúncios invasivos ou enganosos.</translation>
 <translation id="4779083564647765204">Zoom</translation>
+<translation id="4807122856660838973">Ativar a Navegação segura</translation>
 <translation id="4811450222531576619">Saiba mais sobre a fonte e o tema</translation>
 <translation id="4836046166855586901">Perguntar quando um site quiser saber os momentos em que você está usando este dispositivo</translation>
 <translation id="483914009762354899">Incluir todos os sites neste domínio</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Nenhum contato encontrado</translation>
 <translation id="4996978546172906250">Compartilhar via</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
+<translation id="5007392906805964215">Revisar</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permitir o acesso de sites aos seus sensores de movimento (recomendado)</translation>
 <translation id="5050380848339752099">Este site compartilhará informações com um app fora do modo de navegação anônima.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7368695150573390554">Todos os dados off-line serão excluídos</translation>
 <translation id="7383715096023715447">Configurações de <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7406113532070524618">Essa configuração funciona sem identificar você ou permitir que sites acessem o histórico de navegação. Apesar disso, os sites podem compartilhar uma pequena quantidade de informações como parte da verificação.</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>

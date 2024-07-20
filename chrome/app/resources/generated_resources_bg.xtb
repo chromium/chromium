@@ -972,6 +972,7 @@
 <translation id="169675691788639886">На устройството е конфигуриран SSH сървър. Не влизайте с поверителни профили.</translation>
 <translation id="1697122132646041614">Чрез бутона „Не ми харесва“ се отваря формуляр за изпращане на подробни отзиви за причината, поради която не харесвате съответните резултати.</translation>
 <translation id="1697150536837697295">Изкуство</translation>
+<translation id="1697532407822776718">Готово!</translation>
 <translation id="1697686431566694143">Редактиране на файла</translation>
 <translation id="1698796500103229697">&amp;Начини на плащане</translation>
 <translation id="1698899521169711967">Клавишно сърфиране</translation>
@@ -1402,7 +1403,6 @@
 <translation id="199610894463449797">{0,plural, =1{Затваряне на този потребителски профил}other{Затваряне на този потребителски профил (# прозореца)}}</translation>
 <translation id="1997433994358798851">Chrome се нуждае от разрешение да използва Bluetooth, за да се свърже с устройството ви</translation>
 <translation id="1997616988432401742">Вашите сертификати</translation>
-<translation id="199801374788581808">Можете да опитате отново или да се свържете с администратора си за помощ</translation>
 <translation id="1999115740519098545">При стартиране</translation>
 <translation id="2002109485265116295">В реално време</translation>
 <translation id="2002160221914907025">Експериментален AI</translation>
@@ -2508,6 +2508,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2776560192867872731">Промяна на името на устройството <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Изтриване на този контейнер</translation>
 <translation id="2777525873368474674">Поставете връзка към изображение</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{Намерен е 1 сайт с много известия}other{Намерени са {NUM_SITES} сайта с много известия}}</translation>
 <translation id="2778471504622896352">Добавяйте отдалечени приложения към стартовия панел на ChromeOS</translation>
 <translation id="2779728796406650689">Това дава възможност на Google Асистент да ви предоставя персонализирани отговори, когато задавате въпроси.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2665,7 +2666,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2893180576842394309">Възможно е да използваме историята ви, за да персонализираме търсенето и други услуги на Google</translation>
 <translation id="2893701697603065178">Управлявана среда на програмиране</translation>
 <translation id="2894757982205307093">Нов раздел в групата</translation>
-<translation id="2895730582088342039">Запазване, споделяне и предаване</translation>
 <translation id="289695669188700754">Идентификатор (ИД) на ключ: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Тази персонализирана настройка ще бъде премахната, когато затворите всички прозорци в режим „инкогнито“</translation>
 <translation id="2897878306272793870">Наистина ли искате да отворите <ph name="TAB_COUNT" /> раздела?</translation>
@@ -3453,7 +3453,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3503995387997205657">Можете да възстановите предишните си приложения</translation>
 <translation id="3505100368357440862">Предложения за пазаруване</translation>
 <translation id="3505602163050943406">Когато използвате някои функции, те могат да изпращат до Google части от отворените страници, сродните скорошни страници и URL адресите им</translation>
-<translation id="3505762711681798106">Подготвяме работното ви пространство! Междувременно можете да разглеждате други неща и скоро ще бъдем готови.</translation>
 <translation id="3507132249039706973">Режимът за стандартна защита е включен</translation>
 <translation id="3507888235492474624">Повторно сканиране за устройства с Bluetooth</translation>
 <translation id="3508492320654304609">Данните ви за вход не бяха изтрити</translation>
@@ -5137,7 +5136,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4750185073185658673">Прегледайте още няколко разрешения на телефона си. Уверете се, че сте включили Bluetooth и Wi-Fi на телефона си.</translation>
 <translation id="4750394297954878236">Предложения</translation>
 <translation id="475088594373173692">Първи потребител</translation>
-<translation id="4754167810863682207">Настройването на потребителския ви профил почти завърши</translation>
 <translation id="4756378406049221019">Спиране/презареждане</translation>
 <translation id="4756388243121344051">&amp;История</translation>
 <translation id="4756671452988984333">Текст за аудиото</translation>
@@ -5798,7 +5796,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5247243947166567755">Избиране на <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Браузърът претърпя срив, преди изтеглянето да завърши.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> използва местоположението ви, за да ви предоставя местно съдържание. Можете да промените това от <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5251885976619018662">Създайте ПИН код за възстановяване за Google Мениджър на пароли</translation>
 <translation id="5252496130205799136">Да се използва ли профилът ви в Google за запазване и попълване на пароли?</translation>
 <translation id="5252653240322147470">ПИН кодът трябва да съдържа не повече от <ph name="MAXIMUM" /> цифри</translation>
 <translation id="5253554634804500860">Използване на <ph name="DEVICE_NAME" /></translation>
@@ -7447,7 +7444,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> иска да инсталира следното приложение на това устройство:}other{<ph name="APP_NAME" /> иска да инсталира следните приложения на това устройство:}}</translation>
 <translation id="6508248480704296122">Свързано със <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Приложение: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">Вече можете да използвате потребителския си профил за работа</translation>
 <translation id="6511607461419653612">Рестартирайте своя Chromebook и опитайте отново</translation>
 <translation id="6511827214781912955">Добре е да изтриете „<ph name="FILENAME" />“, така че другите хора, които използват това устройство, да не могат да видят паролите ви</translation>
 <translation id="6512759338201777379">Генерирано изображение <ph name="INDEX" /> с(ъс) <ph name="SUBJECT" /> в настроение „<ph name="MOOD" />“.</translation>
@@ -9583,7 +9579,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8084429490152575036">Настройки за името на точката за достъп (APN) за мобилна мрежа</translation>
 <translation id="8084510406207562688">Възстановяване на всички раздели</translation>
 <translation id="8084628902026812045">Този сайт не използва защитена връзка и файлът може да е компрометиран</translation>
-<translation id="8085701268329068646">Въведете ПИН кода си за Google Мениджър на пароли</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> се конфигурира...</translation>
 <translation id="8086121155774250556">Чрез този раздел се споделя екранът ви</translation>
 <translation id="8086610718778464681">Създаването на резервно копие на файловете и приложенията за Linux не е възможно</translation>
@@ -10415,7 +10410,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8694596275649352090">Заключване при преминаване в спящ режим или затваряне на капака</translation>
 <translation id="8695139659682234808">Добавете родителски контроли след настройването</translation>
 <translation id="8695825812785969222">Отваряне на &amp;местоположение...</translation>
-<translation id="8697753370348182287">Служебният ви потребителски профил е готов</translation>
 <translation id="8698269656364382265">За да се върнете на предишния екран, прекарайте пръст от лявата страна.</translation>
 <translation id="8698432579173128320">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството си или да го замените с друго. Резервното ви копие включва данните от приложенията. Резервните ви копия са качени в Google и са шифровани посредством паролата за профила ви в Google. <ph name="BEGIN_LINK1" />Научете повече за създаването на резервни копия<ph name="BEGIN_LINK1_END" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Меню „Applications“</translation>
@@ -11117,7 +11111,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="920045321358709304">Търсене с/ъс <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Прегледано преди време</translation>
 <translation id="9201220332032049474">Опции за заключване на екрана</translation>
-<translation id="9201762611758697018">ПИН кодът за възстановяване ви помага да осъществявате достъп до запазените от вас ключове за достъп на всяко устройство</translation>
 <translation id="9201842707396338580">Нещо се обърка. Моля, свържете се със собственика или администратора на устройството си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Червено-зелен, нарушено възприемане на зелено (деутераномалия)</translation>
 <translation id="9203398526606335860">&amp;Профилирането е активирано</translation>

@@ -985,6 +985,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="169675691788639886">Sul dispositivo è stato configurato un server SSH. Non accedere con account sensibili.</translation>
 <translation id="1697122132646041614">Non mi piace apre un modulo per inviare un feedback dettagliato sul motivo per cui non ti piacciono questi risultati.</translation>
 <translation id="1697150536837697295">Arte</translation>
+<translation id="1697532407822776718">Ecco fatto!</translation>
 <translation id="1697686431566694143">Modifica file</translation>
 <translation id="1698796500103229697">&amp;Metodi di pagamento</translation>
 <translation id="1698899521169711967">Navigazione con cursore</translation>
@@ -1412,7 +1413,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="199610894463449797">{0,plural, =1{Chiudi questo profilo}other{Chiudi questo profilo (# finestre)}}</translation>
 <translation id="1997433994358798851">Chrome deve avere l'autorizzazione per utilizzare il Bluetooth per connettersi al dispositivo</translation>
 <translation id="1997616988432401742">I tuoi certificati</translation>
-<translation id="199801374788581808">Puoi riprovare o contattare l'amministratore o l'assistenza</translation>
 <translation id="1999115740519098545">All'avvio</translation>
 <translation id="2002109485265116295">In tempo reale</translation>
 <translation id="2002160221914907025">AI sperimentale</translation>
@@ -2521,6 +2521,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2776560192867872731">Cambia il nome del dispositivo per <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Elimina questo container</translation>
 <translation id="2777525873368474674">Incolla link immagine</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{È stato trovato un sito con molte notifiche}other{Sono stati trovati {NUM_SITES} siti con molte notifiche}}</translation>
 <translation id="2778471504622896352">Aggiunta di app remote ad Avvio app di ChromeOS</translation>
 <translation id="2779728796406650689">In questo modo l'Assistente Google potrà fornire risposte personalizzate alle tue domande.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2679,7 +2680,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2893180576842394309">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google</translation>
 <translation id="2893701697603065178">Ambiente di sviluppo gestito</translation>
 <translation id="2894757982205307093">Nuova scheda nel gruppo</translation>
-<translation id="2895730582088342039">Salva, condividi e trasmetti</translation>
 <translation id="289695669188700754">ID chiave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Questa impostazione personalizzata verrà rimossa quando chiuderai tutte le finestre di navigazione in incognito</translation>
 <translation id="2897878306272793870">Aprire <ph name="TAB_COUNT" /> schede?</translation>
@@ -3476,7 +3476,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3503995387997205657">Puoi ripristinare le app precedenti</translation>
 <translation id="3505100368357440862">Suggerimenti per gli acquisti</translation>
 <translation id="3505602163050943406">Quando usi alcune funzionalità, queste possono inviare a Google parti di pagine aperte, pagine recenti correlate e i relativi URL</translation>
-<translation id="3505762711681798106">Stiamo preparando la tua area di lavoro. Nel frattempo, prova a esplorare. Ti ricontatteremo a breve.</translation>
 <translation id="3507132249039706973">È attiva la protezione standard</translation>
 <translation id="3507888235492474624">Ripeti la ricerca di dispositivi Bluetooth</translation>
 <translation id="3508492320654304609">Impossibile eliminare i dati di accesso</translation>
@@ -5169,7 +5168,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4750185073185658673">Controlla altre autorizzazioni dal telefono. Assicurati che il Bluetooth e il Wi-Fi del telefono siano attivi.</translation>
 <translation id="4750394297954878236">Suggerimenti</translation>
 <translation id="475088594373173692">Primo utente</translation>
-<translation id="4754167810863682207">La configurazione del profilo è quasi completata</translation>
 <translation id="4756378406049221019">Interrompi/Ricarica</translation>
 <translation id="4756388243121344051">&amp;Cronologia</translation>
 <translation id="4756671452988984333">Testo per l'audio</translation>
@@ -5838,7 +5836,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5247243947166567755">Seleziona <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Si è verificato un arresto anomalo del browser prima che il download fosse completato.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utilizza la tua posizione per fornirti contenuti locali. Puoi modificare questa preferenza nelle <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5251885976619018662">Crea un PIN di recupero per il Gestore delle password di Google</translation>
 <translation id="5252496130205799136">Usare l'Account Google per salvare e inserire le password?</translation>
 <translation id="5252653240322147470">Il PIN deve contenere meno di <ph name="MAXIMUM" /> cifre</translation>
 <translation id="5253554634804500860">Utilizza <ph name="DEVICE_NAME" /></translation>
@@ -7504,7 +7501,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" vuole installare la seguente app su questo dispositivo:}other{"<ph name="APP_NAME" />" vuole installare le seguenti app su questo dispositivo:}}</translation>
 <translation id="6508248480704296122">Correlata a <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Applicazione: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">Il tuo profilo di lavoro è pronto per l'uso</translation>
 <translation id="6511607461419653612">Riavvia Chromebook e riprova</translation>
 <translation id="6511827214781912955">Ti consigliamo di eliminare il file <ph name="FILENAME" /> per impedire alle altre persone che usano questo dispositivo di vedere le tue password</translation>
 <translation id="6512759338201777379">Immagine generata <ph name="INDEX" /> di <ph name="SUBJECT" />, con stato d'animo <ph name="MOOD" />.</translation>
@@ -9658,7 +9654,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8084429490152575036">Impostazioni APN rete mobile</translation>
 <translation id="8084510406207562688">Ripristina tutt&amp;e le schede</translation>
 <translation id="8084628902026812045">Questo sito non usa una connessione sicura e il file potrebbe essere stato manomesso</translation>
-<translation id="8085701268329068646">Inserisci il PIN per il Gestore delle password di Google</translation>
 <translation id="8086015605808120405">Configurazione di <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Questa scheda sta condividendo il tuo schermo</translation>
 <translation id="8086610718778464681">Impossibile eseguire il backup delle app e dei file di Linux</translation>
@@ -9668,7 +9663,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8090234456044969073">Lettura di un elenco di siti web più visitati</translation>
 <translation id="8090513782447872344">Puoi tornare a consultarla in qualsiasi momento</translation>
 <translation id="8090579562279016251">Riduce le prestazioni, ma rende V8 più resistente agli attacchi</translation>
-<translation id="8090686009202681725">Crea tema con l'IA</translation>
+<translation id="8090686009202681725">Crea tema con l'AI</translation>
 <translation id="8091655032047076676">Sperimentali</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> non risponde</translation>
 <translation id="8094536695728193970">Albicocca</translation>
@@ -10130,7 +10125,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8422787418163030046">Vassoio mancante</translation>
 <translation id="8424250197845498070">Bloccato dalla protezione avanzata</translation>
-<translation id="842501938276307467">Prova le funzionalità dell'IA sperimentale</translation>
+<translation id="842501938276307467">Prova le funzionalità di AI sperimentale</translation>
 <translation id="8425213833346101688">Cambia</translation>
 <translation id="8425492902634685834">Aggiungi alla barra delle applicazioni</translation>
 <translation id="8425768983279799676">Puoi usare il PIN per sbloccare il dispositivo.</translation>
@@ -10495,7 +10490,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8694596275649352090">Blocca quando sospeso o alla chiusura del coperchio</translation>
 <translation id="8695139659682234808">Aggiungi la funzionalità Controllo genitori dopo la configurazione</translation>
 <translation id="8695825812785969222">Apri &amp;percorso...</translation>
-<translation id="8697753370348182287">Il profilo di lavoro è pronto</translation>
 <translation id="8698269656364382265">Per tornare alla schermata precedente, scorri dal lato sinistro.</translation>
 <translation id="8698432579173128320">Esegui il backup su Google Drive. Ripristina i dati o cambia dispositivo in qualsiasi momento e in tutta facilità. Il backup include i dati delle app. I backup vengono caricati su Google e criptati usando la password del tuo Account Google. <ph name="BEGIN_LINK1" />Scopri di più sul backup<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Menu Applicazioni</translation>
@@ -11206,7 +11200,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="920045321358709304">Cerca su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Visualizzato in precedenza</translation>
 <translation id="9201220332032049474">Opzioni di blocco schermo</translation>
-<translation id="9201762611758697018">Un PIN di recupero ti consente di accedere alle passkey salvate su qualsiasi dispositivo</translation>
 <translation id="9201842707396338580">Si è verificato un problema. Contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Rosso-verde, verde debole (deuteranomalia)</translation>
 <translation id="9203398526606335860">&amp;Profiling attivato</translation>

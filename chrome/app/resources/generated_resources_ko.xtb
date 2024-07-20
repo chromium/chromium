@@ -975,6 +975,7 @@
 <translation id="169675691788639886">기기에 SSH 서버가 구성되어 있습니다. 민감한 계정을 사용하여 로그인하지 마세요.</translation>
 <translation id="1697122132646041614">싫어요를 누르면 이러한 결과가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다.</translation>
 <translation id="1697150536837697295">예술</translation>
+<translation id="1697532407822776718">설정 완료</translation>
 <translation id="1697686431566694143">파일 수정</translation>
 <translation id="1698796500103229697">결제 수단</translation>
 <translation id="1698899521169711967">캐럿 브라우징</translation>
@@ -1407,7 +1408,6 @@
 <translation id="199610894463449797">{0,plural, =1{이 프로필 닫기}other{이 프로필 닫기(창 #개)}}</translation>
 <translation id="1997433994358798851">Chrome에서 블루투스를 사용하여 기기에 연결하려면 권한이 필요합니다.</translation>
 <translation id="1997616988432401742">내 인증서</translation>
-<translation id="199801374788581808">다시 시도하거나 관리자에게 문의하여 도움을 요청하세요</translation>
 <translation id="1999115740519098545">시작 그룹</translation>
 <translation id="2002109485265116295">실시간</translation>
 <translation id="2002160221914907025">실험용 AI</translation>
@@ -2514,6 +2514,7 @@
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> 기기 이름 변경</translation>
 <translation id="2777251078198759550">컨테이너 삭제</translation>
 <translation id="2777525873368474674">이미지 링크 붙여넣기</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{알림이 많은 사이트 1개를 찾음}other{알림이 많은 사이트 {NUM_SITES}개를 찾음}}</translation>
 <translation id="2778471504622896352">Chrome OS 런처에 원격 앱 추가</translation>
 <translation id="2779728796406650689">이를 통해 사용자가 질문할 때 Google 어시스턴트가 맞춤형 대답을 제공할 수 있습니다.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2671,7 +2672,6 @@
 <translation id="2893180576842394309">Google에서 내 방문 기록을 사용하여 Google 검색 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="2893701697603065178">관리형 개발 환경</translation>
 <translation id="2894757982205307093">그룹에 새 탭 추가</translation>
-<translation id="2895730582088342039">저장, 공유, 전송</translation>
 <translation id="289695669188700754">키 ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">시크릿 창을 모두 닫으면 맞춤 설정이 삭제됩니다.</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" />개 탭을 여시겠습니까?</translation>
@@ -3459,7 +3459,6 @@
 <translation id="3503995387997205657">이전 앱을 복원할 수 있습니다.</translation>
 <translation id="3505100368357440862">쇼핑 추천</translation>
 <translation id="3505602163050943406">일부 기능을 사용하면 열린 페이지, 관련된 최근 페이지, URL의 일부를 Google에 전송할 수 있습니다.</translation>
-<translation id="3505762711681798106">작업공간이 준비되고 있습니다. 그동안 자유롭게 탐색해 보세요. 곧 준비를 완료하겠습니다</translation>
 <translation id="3507132249039706973">표준 보호 모드를 사용 중입니다.</translation>
 <translation id="3507888235492474624">블루투스 기기 다시 검색</translation>
 <translation id="3508492320654304609">로그인 데이터를 삭제할 수 없음</translation>
@@ -5141,7 +5140,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4750185073185658673">휴대전화에서 몇 가지 권한을 추가로 검토하세요. 휴대전화의 블루투스 및 Wi-Fi가 켜져 있어야 합니다.</translation>
 <translation id="4750394297954878236">추천</translation>
 <translation id="475088594373173692">첫 번째 사용자</translation>
-<translation id="4754167810863682207">프로필 설정이 거의 완료됨</translation>
 <translation id="4756378406049221019">중지/새로고침</translation>
 <translation id="4756388243121344051">방문 기록(&amp;H)</translation>
 <translation id="4756671452988984333">오디오 스크립트</translation>
@@ -5802,7 +5800,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> 선택</translation>
 <translation id="5249624017678798539">다운로드가 완료되기 전에 브라우저가 종료되었습니다.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" />에서 내 위치를 사용하여 지역에 맞는 콘텐츠를 제공합니다. 이 설정은 <ph name="SETTINGS_LINK" />에서 변경할 수 있습니다.</translation>
-<translation id="5251885976619018662">Google 비밀번호 관리자에 사용할 복구 PIN을 만드세요</translation>
 <translation id="5252496130205799136">비밀번호 저장 및 자동 완성에 Google 계정을 사용하시겠습니까?</translation>
 <translation id="5252653240322147470">PIN은 <ph name="MAXIMUM" />자리 미만이어야 합니다.</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> 사용</translation>
@@ -7450,7 +7447,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />"에서 기기에 다음 앱을 설치하려고 합니다.}other{"<ph name="APP_NAME" />"에서 기기에 다음 앱을 설치하려고 합니다.}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> 관련</translation>
 <translation id="6508261954199872201">애플리케이션:<ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">이제 직장 프로필을 사용할 수 있습니다</translation>
 <translation id="6511607461419653612">Chromebook을 다시 시작한 후 다시 시도해 보세요.</translation>
 <translation id="6511827214781912955">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제해 보세요.</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> 분위기로 생성된 <ph name="SUBJECT" />의 이미지 <ph name="INDEX" /></translation>
@@ -9586,7 +9582,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8084429490152575036">셀룰러 APN 설정</translation>
 <translation id="8084510406207562688">모든 탭 복원(&amp;E)</translation>
 <translation id="8084628902026812045">사이트에서 보안 연결을 사용하고 있지 않으며 파일이 조작되었을 수 있습니다.</translation>
-<translation id="8085701268329068646">Google 비밀번호 관리자에 사용할 PIN을 입력하세요</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> 구성 중...</translation>
 <translation id="8086121155774250556">이 탭에서 화면을 공유하는 중입니다</translation>
 <translation id="8086610718778464681">Linux 앱 및 파일을 백업할 수 없음</translation>
@@ -10418,7 +10413,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8694596275649352090">절전 모드일 때 또는 덮개가 닫힌 경우 잠금</translation>
 <translation id="8695139659682234808">설정 완료 후 자녀 보호 기능 추가</translation>
 <translation id="8695825812785969222">위치 열기(&amp;L)...</translation>
-<translation id="8697753370348182287">직장 프로필 설정 완료</translation>
 <translation id="8698269656364382265">이전 화면으로 돌아가려면 왼쪽에서 스와이프하세요.</translation>
 <translation id="8698432579173128320">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />백업에 관해 자세히 알아보기<ph name="BEGIN_LINK1_END" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">애플리케이션 메뉴</translation>
@@ -11120,7 +11114,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> 검색</translation>
 <translation id="9201117361710210082">이전에 확인함</translation>
 <translation id="9201220332032049474">화면 잠금 옵션</translation>
-<translation id="9201762611758697018">복구 PIN을 사용하면 모든 기기에 저장된 패스키에 액세스할 수 있습니다.</translation>
 <translation id="9201842707396338580">문제가 발생했습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="9203296457393252944">적록색약, 녹색약</translation>
 <translation id="9203398526606335860">프로파일링 사용(&amp;P)</translation>

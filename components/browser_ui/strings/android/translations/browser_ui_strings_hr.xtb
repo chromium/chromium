@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Blokiraj web-lokaciju kako ne bi spremala podatke na uređaju</translation>
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="2910701580606108292">Web-lokacije moraju tražiti dopuštenje za reprodukciju zaštićenog sadržaja</translation>
+<translation id="2918484639460781603">Idite na postavke</translation>
 <translation id="2932883381142163287">Prijavi zloupotrebu</translation>
 <translation id="2939338015096024043">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za praćenje položaja kamere i podatke o vašoj okolini. Kad je ta postavka isključena, web-lokacije ne mogu pratiti položaj kamere niti saznati više o vašoj okolini.</translation>
 <translation id="2968755619301702150">Preglednik certifikata</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Senzori pokreta ili osvjetljenja</translation>
 <translation id="4755971844837804407">Kad je ta postavka uključena, web-lokacije mogu vam prikazati bilo koji oglas. Kad je ta postavka isključena, web-lokacije ne mogu prikazivati ometajuće ili obmanjujuće oglase.</translation>
 <translation id="4779083564647765204">Zumiranje</translation>
+<translation id="4807122856660838973">Uključite sigurno pregledavanje</translation>
 <translation id="4811450222531576619">Saznajte više o njenom izvoru i temi</translation>
 <translation id="4836046166855586901">Prikaži upit kad web-lokacija želi znati kad aktivno upotrebljavam ovaj uređaj</translation>
 <translation id="483914009762354899">Uključi sve web-lokacije pod ovom domenom</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
 <translation id="4996978546172906250">Dijeli putem</translation>
 <translation id="5001526427543320409">Kolačići trećih strana</translation>
+<translation id="5007392906805964215">Pregled</translation>
 <translation id="5039804452771397117">Dopusti</translation>
 <translation id="5048398596102334565">Dopuštanje pristupa senzorima kretanja za web-lokacije (preporučeno)</translation>
 <translation id="5050380848339752099">Ova će web-lokacija dijeliti podatke s aplikacijom izvan anonimnog načina.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Dodavanje web-lokacije</translation>
 <translation id="7368695150573390554">Izbrisat će se svi offline podaci</translation>
 <translation id="7383715096023715447">Postavke domene <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Sigurnosna provjera</translation>
 <translation id="7406113532070524618">Ova postavka funkcionira bez identificiranja ili dopuštanja web-lokacijama da vide vašu povijest pregledavanja, no web-lokacije mogu dijeliti malu količinu informacija kao dio potvrde</translation>
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Blokirano je čitanje međuspremnika</translation>

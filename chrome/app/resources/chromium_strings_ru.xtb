@@ -46,7 +46,6 @@
 <translation id="1749104137266986751">Если протокол HTTPS недоступен, Chromium будет использовать незащищенное соединение, не предупреждая вас</translation>
 <translation id="1774152462503052664">Разрешить Chromium работать в фоновом режиме</translation>
 <translation id="1779356040007214683">Чтобы обеспечить безопасность ваших данных, некоторые расширения Chromium были отключены, так как <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений о них, то есть эти компоненты могли быть установлены без вашего ведома.</translation>
-<translation id="1804128559285178512">Выполнив вход, вы можете использовать в Chromium пароли и другую информацию, сохраненную в аккаунте Google.</translation>
 <translation id="1808667845054772817">Переустановить Chromium</translation>
 <translation id="1820835682567584003">Chromium пытается <ph name="AUTHENTICATION_PURPOSE" />.</translation>
 <translation id="18552579716432081">Чтобы удалить данные о работе в браузере с этого устройства, но оставить их в аккаунте Google, <ph name="BEGIN_LINK" />выйдите из Chromium<ph name="END_LINK" />.</translation>

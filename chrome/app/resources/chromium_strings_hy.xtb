@@ -48,7 +48,6 @@
 <translation id="1749104137266986751">Երբ HTTPS հաղորդակարգը հասանելի չէ, Chromium-ը առանց ձեզ զգուշացնելու կօգտագործի ոչ ապահով միացում</translation>
 <translation id="1774152462503052664">Թույլ տալ Chromium-ին աշխատել հետնաշերտում</translation>
 <translation id="1779356040007214683">Chromium-ն ավելի ապահով դարձնելու համար որոշ ընդլայնումներ, որոնք նշված չեն <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ում և կարող են ավելացվել առանց ձեր իմացության, անջատվել են։</translation>
-<translation id="1804128559285178512">Հաշիվ մուտք գործած ժամանակ Chromium-ում դուք կարող եք օգտագործել ձեր գաղտնաբառերն ու մյուս կարգավորումները ձեր Google հաշվից</translation>
 <translation id="1808667845054772817">Նորից տեղադրել Chromium-ը</translation>
 <translation id="1820835682567584003">Chromium-ը փորձում է <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Այցելությունների պատմությունը միայն այս սարքից ջնջելու, սակայն Google հաշվում պահպանելու համար <ph name="BEGIN_LINK" />դուրս եկեք Chromium-ից<ph name="END_LINK" />։</translation>

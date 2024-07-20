@@ -974,6 +974,7 @@
 <translation id="169675691788639886">‏آلہ میں SSH سرور کنفیگر ہو گیا ہے۔ حساس اکاؤنٹس کے ساتھ سائن ان نہ کریں۔</translation>
 <translation id="1697122132646041614">اظہار ناپسندیدگی آپ کو ان نتائج کو ناپسند کرنے کے بارے میں تفصیلی تاثرات جمع کرانے کے لیے ایک فارم کھولتا ہے۔</translation>
 <translation id="1697150536837697295">آرٹ</translation>
+<translation id="1697532407822776718">آپ بالکل ٹھیک ہیں!</translation>
 <translation id="1697686431566694143">فائل میں ترمیم کریں</translation>
 <translation id="1698796500103229697">&amp;ادائیگی کے طریقے</translation>
 <translation id="1698899521169711967">کیرٹ براؤزنگ</translation>
@@ -1396,7 +1397,6 @@
 <translation id="199610894463449797">{0,plural, =1{اس پروفائل کو بند کریں}other{اس پروفائل کو بند کریں (# ونڈوز)}}</translation>
 <translation id="1997433994358798851">‏Chrome کو آپ کے آلے سے منسلک ہونے کے لیے بلوٹوتھ استعمال کرنے کی اجازت درکار ہے</translation>
 <translation id="1997616988432401742">آپ کے سرٹیفیکیٹس</translation>
-<translation id="199801374788581808">آپ دوبارہ کوشش کر سکتے ہیں یا اپنے منتظم یا مدد سے رابطہ کر سکتے ہیں</translation>
 <translation id="1999115740519098545">شروعات میں</translation>
 <translation id="2002109485265116295">ریئل ٹائم</translation>
 <translation id="2002160221914907025">‏تجرباتی AI</translation>
@@ -2501,6 +2501,7 @@
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> کیلئے آلہ کا نام تبدیل کریں</translation>
 <translation id="2777251078198759550">اس کنٹینر کو حذف کریں</translation>
 <translation id="2777525873368474674">تصویری لنک پیسٹ کریں</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{بہت ساری اطلاعات کے ساتھ 1 سائٹ ملی}other{بہت ساری اطلاعات کے ساتھ {NUM_SITES} سائٹس ملیں}}</translation>
 <translation id="2778471504622896352">‏ChromeOS لانچر میں ریموٹ ایپس شامل کریں</translation>
 <translation id="2779728796406650689">‏اس سے Google اسسٹنٹ کو اس وقت خصوصی طور پر تیار کردہ جوابات فراہم کرنے کی اجازت مل جاتی ہے جب آپ سوالات پوچھتے ہیں۔</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2658,7 +2659,6 @@
 <translation id="2893180576842394309">‏تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کے لیے Google آپ کی سرگزشت کا استعمال کر سکتا ہے</translation>
 <translation id="2893701697603065178">نظم کردہ ڈیولپمنٹ ماحول</translation>
 <translation id="2894757982205307093">گروپ میں نیا ٹیب</translation>
-<translation id="2895730582088342039">محفوظ کریں، اشتراک کریں، اور کاسٹ کریں</translation>
 <translation id="289695669188700754">‏کلید ‎ID: <ph name="KEY_ID" />‎</translation>
 <translation id="2897713966423243833">آپ کے اپنی سبھی پوشیدگی ونڈوز بند کرنے پر اس حسب ضرورت ترتیب کو ہٹا دیا جائے گا</translation>
 <translation id="2897878306272793870">کیا آپ واقعی <ph name="TAB_COUNT" /> ٹیبز کھولنا چاہتے ہیں؟</translation>
@@ -3444,7 +3444,6 @@
 <translation id="3503995387997205657">آپ اپنی گزشتہ ایپس کو بحالی کر سکتے ہیں</translation>
 <translation id="3505100368357440862">خریداری کی تجاویز</translation>
 <translation id="3505602163050943406">‏جب آپ کچھ خصوصیات استعمال کرتے ہیں تو وہ کھلے صفحات کے کچھ حصے، متعلقہ حالیہ صفحات اور ان کے URLs ‏Google کو بھیج سکتے ہیں</translation>
-<translation id="3505762711681798106">ہم آپ کے ورک اسپیس کو تیار کر رہے ہیں! بلا جھجھک اس دوران دریافت کریں اور ہم جلد ہی آپ کے لیے تیار ہوں گے۔</translation>
 <translation id="3507132249039706973">معیاری تحفظ آن ہے</translation>
 <translation id="3507888235492474624">بلوٹوتھ آلات کو دوبارہ اسکین کریں</translation>
 <translation id="3508492320654304609">آپ کا سائن ان ڈیٹا حذف نہیں ہو سکا</translation>
@@ -5127,7 +5126,6 @@
 <translation id="4750185073185658673">‏کچھ مزید اجازتوں کا جائزہ لینے کے لیے اپنے فون پر جائیں۔ اس بات کو یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ اور Wi-Fi آن ہیں۔</translation>
 <translation id="4750394297954878236">تجاویز</translation>
 <translation id="475088594373173692">پہلا صارف</translation>
-<translation id="4754167810863682207">آپ کی پروفائل کا سیٹ اپ تقریباً مکمل ہو چکا ہے</translation>
 <translation id="4756378406049221019">بند کریں/دوبارہ لوڈ کریں</translation>
 <translation id="4756388243121344051">&amp;سرگزشت</translation>
 <translation id="4756671452988984333">آڈیو کے لیے ٹیکسٹ</translation>
@@ -5787,7 +5785,6 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> منتخب کریں</translation>
 <translation id="5249624017678798539">ڈاؤن لوڈ مکمل ہونے سے پہلے براؤزر کریش ہو گیا۔</translation>
 <translation id="5250372599208556903">آپ کو مقامی مواد دینے کے لیے <ph name="SEARCH_ENGINE_NAME" /> آپ کے مقام کا استعمال کرتا ہے۔ آپ <ph name="SETTINGS_LINK" /> میں اسے تبدیل کر سکتے ہیں۔</translation>
-<translation id="5251885976619018662">‏‫Google پاس ورڈ مینیجر کے لیے ایک بازیابی PIN تخلیق کریں</translation>
 <translation id="5252496130205799136">‏پاس ورڈز کو محفوظ کرنے اور بھرنے کے لئے اپنے Google اکاؤنٹ کا استعمال کریں؟</translation>
 <translation id="5252653240322147470">‏PIN کا <ph name="MAXIMUM" /> ہندسے سے کم ہونا ضروری ہے</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> استعمال کریں</translation>
@@ -7433,7 +7430,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" اس آلے پر درج ذیل ایپ کو انسٹال کرنا چاہیں گی:}other{"<ph name="APP_NAME" />" اس آلے پر درج ذیل ایپس کو انسٹال کرنا چاہیں گی:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> سے متعلق</translation>
 <translation id="6508261954199872201">ایپ: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">آپ دفتر کے لیے اپنی پروفائل استعمال کرنے کے لیے تیار ہیں</translation>
 <translation id="6511607461419653612">‏اپنا Chromebook دوبارہ شروع کریں اور دوبارہ کوشش کریں</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> کو حذف کرنے پر غور کریں، تاکہ اس آلے کو استعمال کرنے والے دوسرے لوگ آپ کے پاس ورڈز نہ دیکھ سکیں</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> مُوڈ کے ساتھ <ph name="SUBJECT" /> کی تخلیق کردہ تصویر <ph name="INDEX" /></translation>
@@ -9567,7 +9563,6 @@
 <translation id="8084429490152575036">‏سیلولر APN کی ترتیبات</translation>
 <translation id="8084510406207562688">تمام ٹیبز کو بحال کریں</translation>
 <translation id="8084628902026812045">یہ سائٹ محفوظ کنکشن استعمال نہیں کر رہی ہے اور ہو سکتا ہے فائل کے ساتھ چھیڑ چھاڑ کی گئی ہو</translation>
-<translation id="8085701268329068646">‏‫Google پاس ورڈ مینیجر کے لیے اپنا PIN درج کریں</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> کو کنفیگر کیا جا رہا ہے…</translation>
 <translation id="8086121155774250556">یہ ٹیب آپ کی اسکرین کا اشتراک کر رہا ہے</translation>
 <translation id="8086610718778464681">‏Linux ایپس اور فائلز کا بیک اپ نہیں لے سکتے</translation>
@@ -10399,7 +10394,6 @@
 <translation id="8694596275649352090">سوتے وقت یا لِڈ بند ہونے پر مقفل کریں</translation>
 <translation id="8695139659682234808">سیٹ اپ کے بعد پیرنٹل کنٹرولز شامل کریں</translation>
 <translation id="8695825812785969222">&amp;مقام کھولیں…</translation>
-<translation id="8697753370348182287">آپ کی دفتری پروفائل تیار ہے</translation>
 <translation id="8698269656364382265">سابقہ اسکرین پر واپس جانے کے لیے، بائیں طرف سے سوائپ کریں۔</translation>
 <translation id="8698432579173128320">‏‫Google Drive پر بیک اپ لیں۔ آسانی سے کسی بھی وقت اپنا ڈیٹا بحال کریں یا آلہ سوئچ کریں۔ آپ کے بیک اپ میں ایپ کا ڈیٹا شامل ہوتا ہے۔ آپ کے بیک اپس کو Google پر اپ لوڈ کیا جاتا ہے اور آپ کے Google اکاؤنٹ کا پاس ورڈ استعمال کر کے انہیں اینکرپٹ کیا جاتا ہے۔ <ph name="BEGIN_LINK1" />بیک اپ کے بارے میں مزید جانیں<ph name="BEGIN_LINK1_END" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">ایپلیکیشنز مینیو</translation>
@@ -11101,7 +11095,6 @@
 <translation id="920045321358709304">تلاش کریں <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">پہلے دیکھا گیا</translation>
 <translation id="9201220332032049474">اسکرین لاک کے اختیارات</translation>
-<translation id="9201762611758697018">‏ایک بازیابی کا PIN کسی بھی آلے پر آپ کی محفوظ کردہ پاس کیز تک رسائی حاصل کرنے میں آپ کی مدد کرتا ہے</translation>
 <translation id="9201842707396338580">کچھ غلط ہوگیا۔ براہ کرم اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="9203296457393252944">سرخ سبز، سبز کمزور (سرخ اور سبز رنگ دیکھنے کی صلاحیت میں کمی)</translation>
 <translation id="9203398526606335860">&amp;پروفائلنگ فعال ہے</translation>

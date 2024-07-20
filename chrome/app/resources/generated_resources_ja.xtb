@@ -984,6 +984,7 @@
 <translation id="169675691788639886">デバイスに SSH サーバーが設定されています。慎重な取り扱いが必要なアカウントではログインしないでください。</translation>
 <translation id="1697122132646041614">低く評価すると、これらの結果が気に入らなかった理由について詳細なフィードバックを送信するためのフォームが開きます。</translation>
 <translation id="1697150536837697295">アート</translation>
+<translation id="1697532407822776718">設定が完了しました。</translation>
 <translation id="1697686431566694143">ファイルを編集</translation>
 <translation id="1698796500103229697">お支払い方法(&amp;P)</translation>
 <translation id="1698899521169711967">カーソル ブラウジング</translation>
@@ -1409,7 +1410,6 @@
 <translation id="199610894463449797">{0,plural, =1{このプロフィールを閉じる}other{このプロフィールを閉じる（# 個のウィンドウ）}}</translation>
 <translation id="1997433994358798851">Chrome からデバイスに接続するには、Bluetooth の使用を許可する必要があります</translation>
 <translation id="1997616988432401742">ユーザーの証明書</translation>
-<translation id="199801374788581808">もう一度お試しいただくか、管理者またはサポートにお問い合わせください</translation>
 <translation id="1999115740519098545">起動時</translation>
 <translation id="2002109485265116295">リアルタイム</translation>
 <translation id="2002160221914907025">試験運用版 AI</translation>
@@ -2515,6 +2515,7 @@
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> のデバイス名を変更</translation>
 <translation id="2777251078198759550">このコンテナを削除</translation>
 <translation id="2777525873368474674">画像リンクを貼り付ける</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{通知の数が多いサイトが 1 件見つかりました}other{通知の数が多いサイトが {NUM_SITES} 件見つかりました}}</translation>
 <translation id="2778471504622896352">ChromeOS ランチャーにリモートアプリを追加する</translation>
 <translation id="2779728796406650689">質問すると、Google アシスタントからカスタマイズされた回答が提供されるようになります。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2673,7 +2674,6 @@
 <translation id="2893180576842394309">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
 <translation id="2893701697603065178">管理対象の開発環境</translation>
 <translation id="2894757982205307093">グループにタブを追加</translation>
-<translation id="2895730582088342039">保存、共有、キャスト</translation>
 <translation id="289695669188700754">キー ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">このカスタム設定はシークレット ウィンドウをすべて閉じると削除されます</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> 個のタブが開きます。本当によろしいですか？</translation>
@@ -3469,7 +3469,6 @@
 <translation id="3503995387997205657">前回のアプリを復元できます</translation>
 <translation id="3505100368357440862">おすすめのショッピング情報</translation>
 <translation id="3505602163050943406">一部の機能の使用時に、開いているページ、関連する最近のページ、それらの URL の一部が Google に送信されることがあります</translation>
-<translation id="3505762711681798106">ワークスペースを準備しています。もうしばらくお待ちください。</translation>
 <translation id="3507132249039706973">標準保護機能がオンになっています</translation>
 <translation id="3507888235492474624">Bluetooth デバイスを再スキャン</translation>
 <translation id="3508492320654304609">ログインデータを削除できませんでした</translation>
@@ -5159,7 +5158,6 @@
 <translation id="4750185073185658673">スマートフォンでアクセス許可の設定を見直し、スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。</translation>
 <translation id="4750394297954878236">候補</translation>
 <translation id="475088594373173692">最初のユーザー</translation>
-<translation id="4754167810863682207">プロフィールの設定はあと少しで完了です</translation>
 <translation id="4756378406049221019">停止 / 再読み込み</translation>
 <translation id="4756388243121344051">履歴(&amp;H)</translation>
 <translation id="4756671452988984333">音声のテキスト変換</translation>
@@ -5827,7 +5825,6 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> を選択</translation>
 <translation id="5249624017678798539">ダウンロードの完了前にブラウザで問題が発生しました。</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> は、ユーザーの現在地情報を使用して地域のコンテンツを提供します。この設定は [<ph name="SETTINGS_LINK" />] で変更できます。</translation>
-<translation id="5251885976619018662">Google パスワード マネージャーのリカバリ PIN を作成</translation>
 <translation id="5252496130205799136">Google アカウントを使用してパスワードを保存、入力しますか？</translation>
 <translation id="5252653240322147470">PIN は <ph name="MAXIMUM" /> 桁未満で指定してください</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> を使用</translation>
@@ -7494,7 +7491,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」がこのデバイスに次のアプリをインストールしようとしています。}other{「<ph name="APP_NAME" />」がこのデバイスに次のアプリをインストールしようとしています。}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> に関連しています</translation>
 <translation id="6508261954199872201">アプリ: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">仕事用プロフィールの設定が完了しました</translation>
 <translation id="6511607461419653612">Chromebook を再起動してから、もう一度お試しください</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにすることを検討してください</translation>
 <translation id="6512759338201777379">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、ムード: <ph name="MOOD" />。</translation>
@@ -9644,7 +9640,6 @@
 <translation id="8084429490152575036">モバイル APN 設定</translation>
 <translation id="8084510406207562688">すべてのタブを復元(&amp;E)</translation>
 <translation id="8084628902026812045">このサイトは安全な接続を使用していないため、ファイルが改ざんされている可能性があります</translation>
-<translation id="8085701268329068646">Google パスワード マネージャーの PIN を入力</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> を設定しています...</translation>
 <translation id="8086121155774250556">このタブはデスクトップ画面を共有しています</translation>
 <translation id="8086610718778464681">Linux のアプリとファイルをバックアップできません</translation>
@@ -10481,7 +10476,6 @@
 <translation id="8694596275649352090">スリープ状態またはディスプレイを閉じたときにロックする</translation>
 <translation id="8695139659682234808">セットアップ後に保護者による使用制限を設定できます</translation>
 <translation id="8695825812785969222">場所を開く（&amp;L）...</translation>
-<translation id="8697753370348182287">仕事用プロフィールの設定が完了しました</translation>
 <translation id="8698269656364382265">前の画面に戻るには、左端から中央にスワイプします。</translation>
 <translation id="8698432579173128320">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />バックアップの詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">アプリケーション メニュー</translation>
@@ -11192,7 +11186,6 @@
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> で検索</translation>
 <translation id="9201117361710210082">過去に表示</translation>
 <translation id="9201220332032049474">画面ロックの種類</translation>
-<translation id="9201762611758697018">リカバリ PIN を作成すると、他のデバイスからも保存済みのパスキーにアクセスできます</translation>
 <translation id="9201842707396338580">エラーが発生しました。デバイスの所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="9203296457393252944">赤 - 緑、緑色弱（第二色弱）</translation>
 <translation id="9203398526606335860">プロファイル記録の開始(&amp;P)</translation>

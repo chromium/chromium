@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">Aby uzyskać wynik przybliżony, podziel <ph name="CATEGORY_TEXT" /> przez <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Automatycznie resetuje użycie danych co miesiąc w wybrany dzień</translation>
 <translation id="1442433966118452622">Źródło obrazu</translation>
-<translation id="1445573806602812670">Uzyskaj transkrypcję nagrania</translation>
 <translation id="1446954767133808402">szafiru</translation>
 <translation id="1449035143498573192">Otwórz w wyszukiwarce Google</translation>
 <translation id="1451536289672181509">Urządzenie to klawiatura.</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">jezioro</translation>
 <translation id="1720424726586960395">las świetlików</translation>
 <translation id="1726100011689679555">Serwery nazw</translation>
-<translation id="1728792932018505912">Możesz to zmienić w Ustawieniach lub w menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
 <translation id="1738949837603788263">Strefa <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Nie udało się załadować obrazów. Sprawdź połączenie sieciowe lub spróbuj załadować obrazy później.</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2364498172489649528">Zaliczone</translation>
 <translation id="2367335866686097760">Mapowanie klawisza</translation>
-<translation id="2370739752330685659">Może później</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Prześlij zgłoszenie opinii</translation>
 <translation id="2407209115954268704">Stan blokady karty SIM</translation>
@@ -638,6 +635,7 @@
 <translation id="4454245904991689773">Skanuj do</translation>
 <translation id="4456812688969919973">Przycisk Zapisz APN jest teraz wyłączony</translation>
 <translation id="4469288414739283461">Wygaszacz ekranu Ziemia</translation>
+<translation id="4474142134969976028">Brak pasujących wyników</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
 <translation id="4500722292849917410">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza modyfikującego (Ctrl, Alt, Shift lub <ph name="META_KEY" />).</translation>
@@ -755,7 +753,6 @@
 <translation id="5099354524039520280">w górę</translation>
 <translation id="5107243100836678918">Skrót bez klawisza <ph name="META_KEY" /> może być w konflikcie z jakimś skrótem aplikacji. Naciśnij ten skrót ponownie, aby nadal go używać, albo naciśnij nowy skrót z użyciem klawisza <ph name="KEY" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Synonimy:</translation>
-<translation id="5109744590306245079">Dyktafon może tworzyć transkrypcje nagrań z mową. Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</translation>
 <translation id="5130848777448318809">kucyki</translation>
 <translation id="5137451382116112100">Pełne</translation>
 <translation id="5142961317498132443">Uwierzytelnianie</translation>
@@ -917,6 +914,7 @@
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6040852767465482106">Tożsamość anonimowa</translation>
 <translation id="604124094241169006">Automatyczne</translation>
+<translation id="6042308850641462728">Więcej</translation>
 <translation id="6048107060512778456">Niepowodzenie – zacięcie papieru</translation>
 <translation id="6050189528197190982">Skala odcieni szarości</translation>
 <translation id="6054711098834486579">ekspresjonistycznym</translation>
@@ -941,7 +939,6 @@
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certyfikat użytkownika</translation>
-<translation id="6141004321363227868">Gdy ta funkcja jest włączona, podczas nagrywania wyświetlane są też transkrypcje na żywo.</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">fioletowych i różowych</translation>
@@ -1027,7 +1024,6 @@
 <translation id="6543412779435705598">taco</translation>
 <translation id="6551839203326557324">jabłka</translation>
 <translation id="65526652485742171">Przycisk potwierdzenia jest teraz włączony</translation>
-<translation id="6556016675518580850">Jeśli opuścisz tę stronę, bieżące nagrywanie zostanie zakończone.</translation>
 <translation id="6557784757915238407">APN jest typu: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Szyba</translation>
 <translation id="6560196641871357166">Wyrazisty</translation>
@@ -1082,8 +1078,6 @@
 <translation id="6798678288485555829">Nawigacja po tekście</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
-<translation id="6818844233294698434">Nasłuchuję mowę…</translation>
-<translation id="6837645039518471192">Zakończ nagrywanie</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
 <translation id="6866732840889595464">stokrotka</translation>
 <translation id="6871256179359663621">jasnofioletowy</translation>
@@ -1223,6 +1217,7 @@
 <translation id="7528507600602050979">Treść pomocy jest niedostępna</translation>
 <translation id="7535791657097741517">Włącz jasny motyw</translation>
 <translation id="7544126681856613971">zamglony las</translation>
+<translation id="7544853251252956727">Odtwarzaj losowo</translation>
 <translation id="7550715992156305117">Procedury diagnostyczne</translation>
 <translation id="7551123448725492271">To urządzenie typu audio.</translation>
 <translation id="7559239713112547082">Wyświetl podgląd zrzutu ekranu</translation>
@@ -1279,7 +1274,6 @@
 <translation id="7850847810298646851">Tapeta utworzona z wykorzystaniem AI od Google</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Ekran dotykowy Bluetooth</translation>
-<translation id="7857744683152972248">Zezwolić na identyfikowanie mówiących osób przez Dyktafon?</translation>
 <translation id="7859006200041800233">Kwiat kaktusa</translation>
 <translation id="7869143217755017858">Wyłącz tryb ciemny</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1335,7 +1329,6 @@
 <translation id="8162776280680283326">lisy</translation>
 <translation id="8167413449582155132">Tło utworzone z wykorzystaniem AI od Google</translation>
 <translation id="8171020708598805594">Automatycznie twórz transkrypcje, uzyskuj podsumowania nagrań dzięki AI od Google i przeszukuj dźwięk. Nagrywaj nawet wtedy, gdy nie masz połączenia z internetem.</translation>
-<translation id="8174280683348521982">Usunąć bieżące nagranie?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plażę</translation>
 <translation id="819278132617411009">Wykorzystaj sztuczną inteligencję Google, aby zwiększyć swoją produktywność</translation>
@@ -1351,6 +1344,7 @@
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8262870577632766028">1 godzina</translation>
 <translation id="827422111966801947">Indygo</translation>
+<translation id="8281886186245836920">Pomiń</translation>
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>
 <translation id="8291967909914612644">Kraj operatora macierzystego</translation>
 <translation id="8294431847097064396">Źródło</translation>
@@ -1373,9 +1367,6 @@
 <translation id="8372477600026034341">Dodatkowe hosty</translation>
 <translation id="8372667721254470022">oliwkowy</translation>
 <translation id="8373046809163484087">Używaj zestawów kolorów, które pasują do tapety</translation>
-<translation id="8379123594780452422">Jeśli na to zezwolisz, Dyktafon będzie przetwarzać nagrania dźwiękowe za pomocą zaawansowanej analizy dźwięku.
-
-W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation>
 <translation id="8380114448424469341">Zadokuj okno po tej stronie ekranu: <ph name="DIRECTION" /></translation>
 <translation id="8391349326751432483">Aby można było uruchomić test pamięci, co najmniej 500 MB pamięci musi być wolne. Aby zwolnić pamięć, zamknij karty i aplikacje.</translation>
 <translation id="8395584934117017006">Tym urządzeniem (<ph name="DEVICE_TYPE" />) zarządza firma</translation>
@@ -1419,7 +1410,6 @@ W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation
 <translation id="86356131183441916">Jasnofioletowy</translation>
 <translation id="8647595191512746911">Transkrypcja</translation>
 <translation id="8651481478098336970">wycisz</translation>
-<translation id="8652096837042642071">Podsumowanie nagrania z wykorzystaniem AI od Google</translation>
 <translation id="8655295600908251630">Kanał</translation>
 <translation id="8655828773034788261">Udostępnij adres URL:</translation>
 <translation id="8660881923941176839">funty</translation>
@@ -1525,7 +1515,6 @@ W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation
 <translation id="9122602430962285795">Aby połączyć się ponownie, otwórz Ustawienia</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Zapisz kilka stron w 1 pliku PDF</translation>
-<translation id="9129549320890412487">Funkcja transkrypcji</translation>
 <translation id="9133772297793293778">Naciśnij od 1 do 4 modyfikatorów i 1 inny klawisz na klawiaturze. Aby wyjść z trybu edycji, naciśnij Alt + Esc.</translation>
 <translation id="9137526406337347448">Usługi Google</translation>
 <translation id="9138630967333032450">Lewy shift</translation>

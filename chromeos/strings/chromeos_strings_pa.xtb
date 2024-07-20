@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">ਅੰਦਾਜ਼ਨ ਨਤੀਜੇ ਲਈ, <ph name="CATEGORY_TEXT" /> ਮੁੱਲ ਨੂੰ <ph name="CONVERSION_RATE" /> ਨਾਲ ਭਾਗ ਕਰੋ</translation>
 <translation id="1435763214710588005">ਚੁਣੇ ਹੋਏ ਦਿਨ 'ਤੇ, ਹਰ ਮਹੀਨੇ ਡਾਟਾ ਵਰਤੋਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੀਸੈੱਟ ਹੋ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="1442433966118452622">ਚਿੱਤਰ ਸਰੋਤ</translation>
-<translation id="1445573806602812670">ਆਪਣੀ ਰਿਕਾਰਡਿੰਗ ਲਈ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1446954767133808402">ਨੀਲਮ</translation>
 <translation id="1449035143498573192">Google Search ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1451536289672181509">ਡੀਵਾਈਸ ਇੱਕ ਕੀ-ਬੋਰਡ ਹੈ।</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">ਝੀਲ</translation>
 <translation id="1720424726586960395">ਜੁਗਨੂ ਵਾਲਾ ਜੰਗਲ</translation>
 <translation id="1726100011689679555">ਨਾਮ ਸਰਵਰ</translation>
-<translation id="1728792932018505912">ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਜਾਂ <ph name="THREE_DOTS_MENU_ICON" /> ਮੀਨੂ ਵਿੱਚ ਜਾ ਕੇ ਵਿਵਸਥਿਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="1731082422893354635">ਬਲੂਟੁੱਥ ਟੱਚਪੈਡ</translation>
 <translation id="1738949837603788263">ਖੇਤਰ <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">ਚਿੱਤਰ ਲੋਡ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕੇ। ਆਪਣੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ ਚਿੱਤਰਾਂ ਨੂੰ ਦੁਬਾਰਾ ਲੋਡ ਕਰ ਕੇ ਦੇਖੋ।</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2364498172489649528">ਪਾਸ ਕੀਤਾ</translation>
 <translation id="2367335866686097760">ਕੀ-ਮੈਪਿੰਗ ਕੁੰਜੀ</translation>
-<translation id="2370739752330685659">ਸ਼ਾਇਦ ਬਾਅਦ ਵਿੱਚ</translation>
 <translation id="2380886658946992094">ਕਨੂੰਨੀ</translation>
 <translation id="2391082728065870591">ਵਿਚਾਰ ਸੰਬੰਧੀ ਰਿਪੋਰਟ ਭੇਜੋ</translation>
 <translation id="2407209115954268704">ਸਿਮ ਦੀ ਲਾਕ ਸਥਿਤੀ</translation>
@@ -635,6 +632,7 @@
 <translation id="4454245904991689773">ਇਸ ਵਿੱਚ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="4456812688969919973">'APN ਰੱਖਿਅਤ ਕਰੋ' ਬਟਨ ਹੁਣ ਬੰਦ ਹੈ</translation>
 <translation id="4469288414739283461">ਧਰਤੀ ਪ੍ਰਵਾਹ ਦਾ ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
+<translation id="4474142134969976028">ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਨਤੀਜਾ ਨਹੀਂ</translation>
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4483049906298469269">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4500722292849917410">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। ਸੋਧਕ ਕੁੰਜੀ (ctrl, alt, shift ਜਾਂ <ph name="META_KEY" />) ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
@@ -751,7 +749,6 @@
 <translation id="5099354524039520280">ਉੱਪਰ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ਕੁੰਜੀ ਤੋਂ ਬਿਨਾਂ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਕਰਨ 'ਤੇ ਕੁਝ ਐਪਾਂ ਦੇ ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ ਗੜਬੜ ਹੋ ਸਕਦੀ ਹੈ। ਇਸਦੀ ਵਰਤੋਂ ਜਾਰੀ ਰੱਖਣ ਲਈ ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ ਜਾਂ <ph name="KEY" /> ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਕੋਈ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">ਮਿਲਦੇ-ਜੁਲਦੇ:</translation>
-<translation id="5109744590306245079">Recorder ਬੋਲੀ ਵਾਲੀਆਂ ਰਿਕਾਰਡਿੰਗਾਂ ਦੇ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਬਣਾਉਂਦੀ ਹੈ। ਇਹ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਮਾਡਲ (100MB ਤੱਕ) ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ।</translation>
 <translation id="5130848777448318809">ਟੱਟੂ</translation>
 <translation id="5137451382116112100">ਪੂਰੀ ਸਕ੍ਰੀਨ</translation>
 <translation id="5142961317498132443">ਪ੍ਰਮਾਣੀਕਰਨ</translation>
@@ -913,6 +910,7 @@
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6040852767465482106">ਅਨਾਮ ਪਛਾਣ</translation>
 <translation id="604124094241169006">ਆਟੋਮੈਟਿਕ</translation>
+<translation id="6042308850641462728">ਹੋਰ</translation>
 <translation id="6048107060512778456">ਅਸਫਲ ਰਹੀ - ਕਾਗਜ਼ ਫਸ ਗਿਆ ਹੈ</translation>
 <translation id="6050189528197190982">Grayscale</translation>
 <translation id="6054711098834486579">ਪ੍ਰਗਟਾਅਵਾਦੀ</translation>
@@ -937,7 +935,6 @@
 <translation id="6136285399872347291">ਬੈਕਸਪੇਸ</translation>
 <translation id="6137614725462089991">ਸਾਈਬਰਪੰਕ</translation>
 <translation id="6137767437444130246">ਵਰਤੋਂਕਾਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
-<translation id="6141004321363227868">ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਚਾਲੂ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਰਿਕਾਰਡਿੰਗ ਕਰਨ ਦੌਰਾਨ ਲਾਈਵ ਪ੍ਰਤੀਲਿਪੀਆਂ ਨੂੰ ਵੀ ਦਿਖਾਇਆ ਜਾਵੇਗਾ।</translation>
 <translation id="6146993107019042706">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਨਵਾਂ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">ਉਨਾਬੀ ਅਤੇ ਗੁਲਾਬੀ</translation>
@@ -1022,7 +1019,6 @@
 <translation id="6543412779435705598">ਟਾਕੋ</translation>
 <translation id="6551839203326557324">ਸੇਬ</translation>
 <translation id="65526652485742171">'ਤਸਦੀਕ ਕਰੋ' ਬਟਨ ਹੁਣ ਚਾਲੂ ਹੈ</translation>
-<translation id="6556016675518580850">ਇਸ ਪੰਨੇ ਨੂੰ ਛੱਡਣ ਨਾਲ ਤੁਹਾਡੀ ਮੌਜੂਦਾ ਰਿਕਾਰਡਿੰਗ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="6557784757915238407">APN ਦੀ ਕਿਸਮ <ph name="ATTACH" /> ਹੈ।</translation>
 <translation id="65587193855025101">ਫਲੈਟਬੈੱਡ</translation>
 <translation id="6560196641871357166">ਵਾਈਬਰੈਂਟ</translation>
@@ -1077,8 +1073,6 @@
 <translation id="6798678288485555829">ਲਿਖਤ ਨੈਵੀਗੇਸ਼ਨ</translation>
 <translation id="680983167891198932">ਕੁੰਜੀ</translation>
 <translation id="6816797338148849397">ਤੁਹਾਡੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਹੈ। ਪਹੁੰਚ ਕਰਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਵਰਤੋ।</translation>
-<translation id="6818844233294698434">ਬੋਲੀ ਨੂੰ ਸੁਣਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
-<translation id="6837645039518471192">ਰਿਕਾਰਡਿੰਗ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="6853312040151791195">ਡਿਸਚਾਰਜ ਹੋਣ ਦੀ ਦਰ</translation>
 <translation id="6866732840889595464">ਡੇਜ਼ੀ</translation>
 <translation id="6871256179359663621">ਹਲਕਾ ਜਾਮਨੀ</translation>
@@ -1220,6 +1214,7 @@
 <translation id="7528507600602050979">ਮਦਦ ਸਮੱਗਰੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="7535791657097741517">ਹਲਕਾ ਥੀਮ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7544126681856613971">ਧੁੰਦਲਾ ਜੰਗਲ</translation>
+<translation id="7544853251252956727">ਸ਼ੱਫਲ ਕਰੋ</translation>
 <translation id="7550715992156305117">ਤਸ਼ਖੀਸ ਸੰਬੰਧੀ ਨਿਯਮਬੱਧ ਕੰਮ</translation>
 <translation id="7551123448725492271">ਡੀਵਾਈਸ ਇੱਕ ਆਡੀਓ ਡੀਵਾਈਸ ਹੈ।</translation>
 <translation id="7559239713112547082">ਸਕ੍ਰੀਨਸ਼ਾਟ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
@@ -1276,7 +1271,6 @@
 <translation id="7850847810298646851">ਵਾਲਪੇਪਰ Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ ਹੈ</translation>
 <translation id="785170686607360576">ਗੁਲ ਲਾਲਾ</translation>
 <translation id="7856267634822906833">ਬਲੂਟੁੱਥ ਟੱਚਸਕ੍ਰੀਨ</translation>
-<translation id="7857744683152972248">ਕੀ Recorder ਨੂੰ ਸਪੀਕਰਾਂ ਦੀ ਪਛਾਣ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="7859006200041800233">ਕੈਕਟਸ ਦਾ ਫੁੱਲ</translation>
 <translation id="7869143217755017858">ਗੂੜ੍ਹਾ ਮੋਡ ਬੰਦ ਕਰੋ</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1332,7 +1326,6 @@
 <translation id="8162776280680283326">ਲੂੰਬੜੀਆਂ</translation>
 <translation id="8167413449582155132">ਬੈਕਗ੍ਰਾਊਂਡ Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ ਹੈ</translation>
 <translation id="8171020708598805594">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਬਣਾਓ, Google AI ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਰਿਕਾਰਡਿੰਗ ਸਾਰਾਂਸ਼ ਪ੍ਰਾਪਤ ਕਰੋ ਅਤੇ ਆਡੀਓ ਖੋਜੋ। ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਨਾ ਹੋਣ 'ਤੇ ਵੀ ਰਿਕਾਰਡਿੰਗਾਂ ਬਣਾਓ।</translation>
-<translation id="8174280683348521982">ਕੀ ਮੌਜੂਦਾ ਰਿਕਾਰਡਿੰਗ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="8179976553408161302">ਦਰਜ ਕਰੋ</translation>
 <translation id="8183975772394450380">ਬੀਚ</translation>
 <translation id="819278132617411009">ਜ਼ਿਆਦਾ ਬਿਹਤਰ ਤਰੀਕੇ ਨਾਲ ਕੰਮ ਕਰਨ ਲਈ Google AI ਵਰਤੋ</translation>
@@ -1348,6 +1341,7 @@
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
 <translation id="8262870577632766028">1 ਘੰਟਾ</translation>
 <translation id="827422111966801947">ਜਾਮਨੀ ਨੀਲਾ</translation>
+<translation id="8281886186245836920">ਛੱਡੋ</translation>
 <translation id="8286154143153872371">ਵਾਲਪੇਪਰ ਦੇਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ ਅਤੇ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ।</translation>
 <translation id="8291967909914612644">ਹੋਮ ਪ੍ਰਦਾਨਕ ਦੇਸ਼</translation>
 <translation id="8294431847097064396">ਸ੍ਰੋਤ</translation>
@@ -1370,9 +1364,6 @@
 <translation id="8372477600026034341">ਵਾਧੂ ਹੋਸਟ</translation>
 <translation id="8372667721254470022">ਜੈਤੂਨ ਰੰਗਾ</translation>
 <translation id="8373046809163484087">ਆਪਣੇ ਵਾਲਪੇਪਰ ਨਾਲ ਮੇਲ ਖਾਂਦੇ ਰੰਗ ਦੇ ਸੈੱਟਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
-<translation id="8379123594780452422">ਆਗਿਆ ਮਿਲਣ 'ਤੇ, Recorder ਅਡਵਾਂਸ ਆਡੀਓ ਵਿਸ਼ਲੇਸ਼ਣ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਤੁਹਾਡੀਆਂ ਆਡੀਓ ਰਿਕਾਰਡਿੰਗਾਂ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰੇਗੀ।
-
-ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਇਸਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8380114448424469341">ਸਕ੍ਰੀਨ ਦੇ <ph name="DIRECTION" /> ਅੱਧੇ ਹਿੱਸੇ 'ਤੇ ਵਿੰਡੋ ਨੂੰ ਡੌਕ ਕਰੋ</translation>
 <translation id="8391349326751432483">ਮੈਮੋਰੀ ਟੈਸਟ ਚਲਾਉਣ ਲਈ ਤੁਹਾਨੂੰ ਘੱਟੋ-ਘੱਟ 500 MB ਖਾਲੀ ਜਗ੍ਹਾ ਦੀ ਲੋੜ ਹੈ। ਮੈਮੋਰੀ ਖਾਲੀ ਕਰਨ ਲਈ, ਟੈਬਾਂ ਅਤੇ ਐਪਾਂ ਬੰਦ ਕਰੋ।</translation>
 <translation id="8395584934117017006">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
@@ -1520,7 +1511,6 @@
 <translation id="9122602430962285795">ਮੁੜ-ਕਨੈਕਟ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="9122865513525855321">ਜ਼ੇਨ</translation>
 <translation id="9126720536733509015">ਇੱਕ ਤੋਂ ਵੱਧ ਪੰਨਿਆਂ ਨੂੰ ਇੱਕੋ PDF ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
-<translation id="9129549320890412487">ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਵਿਸ਼ੇਸ਼ਤਾ</translation>
 <translation id="9133772297793293778">ਆਪਣੇ ਕੀ-ਬੋਰਡ 'ਤੇ 1-4 ਸੋਧਕਾਂ ਅਤੇ 1 ਹੋਰ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ। ਸੰਪਾਦਨ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ, alt + esc ਦਬਾਓ।</translation>
 <translation id="9137526406337347448">Google ਸੇਵਾਵਾਂ</translation>
 <translation id="9138630967333032450">ਖੱਬੀ Shift ਕੁੰਜੀ</translation>

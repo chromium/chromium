@@ -974,6 +974,7 @@
 <translation id="169675691788639886">डिव्हाइससाठी SSH सर्व्हर काँफिगर केले आहे. संवेदनशील खाती वापरून साइन इन करू नका.</translation>
 <translation id="1697122132646041614">थंब्स डाउन प्रेस केल्यावर एक फॉर्म उघडतो, ज्यामध्ये तुम्हाला परिणाम का आवडले नाहीत याबद्दल तपशीलवार फीडबॅक सबमिट करता येतो.</translation>
 <translation id="1697150536837697295">कला</translation>
+<translation id="1697532407822776718">तुम्ही पूर्णपणे तयार आहात!</translation>
 <translation id="1697686431566694143">फाइल संपादित करा</translation>
 <translation id="1698796500103229697">&amp;पेमेंट पद्धती</translation>
 <translation id="1698899521169711967">कॅरेट ब्राउझिंग</translation>
@@ -1405,7 +1406,6 @@
 <translation id="199610894463449797">{0,plural, =1{ही प्रोफाइल बंद करा}other{या प्रोफाइल बंद करा (# Windows)}}</translation>
 <translation id="1997433994358798851">तुमच्या डिव्हाइसशी कनेक्ट करण्यासाठी ब्लूटूथ वापरण्याकरिता Chrome ला परवानगीची आवश्यकता आहे</translation>
 <translation id="1997616988432401742">तुमची प्रमाणपत्रे</translation>
-<translation id="199801374788581808">तुम्ही पुन्हा प्रयत्न करू शकता किंवा तुमच्या मदतीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा</translation>
 <translation id="1999115740519098545">स्टार्टअप वर</translation>
 <translation id="2002109485265116295">रीअल टाइम</translation>
 <translation id="2002160221914907025">प्रायोगिक AI</translation>
@@ -2511,6 +2511,7 @@
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> या डिव्हाइसचे नाव बदला</translation>
 <translation id="2777251078198759550">हा कंटेनर हटवा</translation>
 <translation id="2777525873368474674">इमेजची लिंक पेस्ट करा</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{खूप सूचनांसह १ साइट मिळाली}other{खूप सूचनांसह {NUM_SITES} साइट मिळाल्या}}</translation>
 <translation id="2778471504622896352">ChromeOS लाँचरमध्ये रिमोट अ‍ॅप्स जोडा</translation>
 <translation id="2779728796406650689">तुम्ही प्रश्न विचारता, तेव्हा हे Google Assistant ला अनुकूल केलेले प्रतिसाद देऊ देते.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2668,7 +2669,6 @@
 <translation id="2893180576842394309">शोध आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google कदाचित तुमच्या इतिहासाचा वापर करू शकते.</translation>
 <translation id="2893701697603065178">व्यवस्थापित विकास पर्यावरण</translation>
 <translation id="2894757982205307093">गटामधील नवीन टॅब</translation>
-<translation id="2895730582088342039">सेव्ह करा, शेअर करा आणि कास्ट करा</translation>
 <translation id="289695669188700754">की आयडी: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">तुम्ही तुमच्या सर्व गुप्त विंडो बंद केल्यास, हे कस्टम सेटिंग काढून टाकले जाईल</translation>
 <translation id="2897878306272793870">तुमची खात्री आहे की तुम्ही <ph name="TAB_COUNT" /> टॅब उघडू इच्छिता?</translation>
@@ -3456,7 +3456,6 @@
 <translation id="3503995387997205657">तुम्ही तुमची आधीची अ‍ॅप्स रिस्टोअर करू शकता</translation>
 <translation id="3505100368357440862">खरेदीशी संबंधित शिफारशी</translation>
 <translation id="3505602163050943406">तुम्ही काही वैशिष्‍ट्ये वापरता, तेव्हा ती उघडलेल्या पेजचे भाग, संबंधित अलीकडील पेज आणि त्यांच्या Google च्या URLs पाठवू शकतात</translation>
-<translation id="3505762711681798106">आम्ही तुमची वर्कस्पेस तयार करत आहोत! दरम्यान एक्सप्लोर करणे मोकळपणाने सुरू ठेवा आणि आम्ही लवकरच तुमच्यासाठी तयार राहू.</translation>
 <translation id="3507132249039706973">मानक संरक्षण सुरू आहे</translation>
 <translation id="3507888235492474624">ब्ल्यूटूथ डिव्हाइस पुन्हा स्कॅन करा</translation>
 <translation id="3508492320654304609">तुमचा साइन इन डेटा हटवला जाऊ शकला नाही</translation>
@@ -5137,7 +5136,6 @@
 <translation id="4750185073185658673">आणखी परवानग्यांचे पुनरावलोकन करण्यासाठी, तुमच्या फोनवर जा. तुमच्या फोनचे ब्लूटूथ आणि वाय-फाय सुरू केले असल्याची खात्री करा.</translation>
 <translation id="4750394297954878236">सूचना</translation>
 <translation id="475088594373173692">प्रथम वापरकर्ता</translation>
-<translation id="4754167810863682207">तुमचा प्रोफाइल सेटअप जवळजवळ पूर्ण झाला आहे</translation>
 <translation id="4756378406049221019">थांबा/पुन्हा लोड करा</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756671452988984333">ऑडिओसाठीचा मजकूर</translation>
@@ -5798,7 +5796,6 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> निवडा</translation>
 <translation id="5249624017678798539">डाउनलोड पूर्ण होण्यापूर्वी ब्राउझर क्रॅश पूर्ण झाला.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> तुमचा स्थानिक आशय देण्यासाठी तुमचे स्थान वापरते. तुम्ही हे <ph name="SETTINGS_LINK" /> मधून बदलू शकता.</translation>
-<translation id="5251885976619018662">Google Password Manager साठी रिकव्‍हरी पिन तयार करा</translation>
 <translation id="5252496130205799136">पासवर्ड सेव्ह करण्यासाठी आणि भरण्यासाठी तुमचे Google खाते वापरायचे का?</translation>
 <translation id="5252653240322147470">पिन <ph name="MAXIMUM" /> अंकांपेक्षा कमी असणे आवश्यक आहे</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> वापरा</translation>
@@ -7447,7 +7444,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ला या डिव्हाइसवर पुढील अ‍ॅप इंस्टॉल करायचे आहे:}other{"<ph name="APP_NAME" />" ला या डिव्हाइसवर पुढील अ‍ॅप्स इंस्टॉल करायची आहेत:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> शी संबंधित</translation>
 <translation id="6508261954199872201">ॲप्लिकेशन: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">तुम्ही कामासाठी तुमची प्रोफाइल वापरण्यासाठी तयार आहात</translation>
 <translation id="6511607461419653612">तुमचे Chromebook रीस्टार्ट करा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> हटवण्याचा विचार करा, जेणेकरून हे डिव्हाइस वापरणारे इतर लोक तुमचे पासवर्ड पाहू शकणार नाहीत</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> मूड असलेली, <ph name="SUBJECT" /> पैकी <ph name="INDEX" /> जनरेट केलेली इमेज.</translation>
@@ -9581,7 +9577,6 @@
 <translation id="8084429490152575036">मोबाइल APN सेटिंग्ज</translation>
 <translation id="8084510406207562688">सर्व टॅब रिस्टोअर करा</translation>
 <translation id="8084628902026812045">ही साइट सुरक्षित कनेक्शन वापरत नाही आणि फाइलमध्ये छेडछाड केली गेली असू शकते</translation>
-<translation id="8085701268329068646">Google Password Manager साठीचा तुमचा पिन एंटर करा</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फिगर करत आहे...</translation>
 <translation id="8086121155774250556">हा टॅब तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="8086610718778464681">Linux अ‍ॅप्स आणि फाइलचा बॅकअप घेऊ शकत नाही</translation>
@@ -10413,7 +10408,6 @@
 <translation id="8694596275649352090">स्लीप मोडमध्ये किंवा लिड बंद केलेली असताना लॉक करा</translation>
 <translation id="8695139659682234808">सेटअप केल्‍यानंतर पालक नियंत्रणे जोडा</translation>
 <translation id="8695825812785969222">&amp;स्थान उघडा...</translation>
-<translation id="8697753370348182287">तुमची कार्य प्रोफाइल तयार आहे</translation>
 <translation id="8698269656364382265">मागील स्क्रीनवर परत जाण्यासाठी, डाव्या बाजूकडून स्वाइप करा.</translation>
 <translation id="8698432579173128320">Google ड्राइव्ह मध्ये बॅकअप घ्या. तुमचा डेटा कधीही सहजपणे रिस्टोअर करा किंवा डिव्हाइस बदला. तुमच्या बॅकअपमध्ये ॲप डेटाचा समावेश असतो. तुमचे बॅकअप Google वर अपलोड केले आहेत आणि ते तुमचा Google खाते पासवर्ड वापरून एंक्रिप्ट केले आहेत. <ph name="BEGIN_LINK1" />बॅकअपबद्दल अधिक जाणून घ्या<ph name="BEGIN_LINK1_END" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">ॲप्लिकेशन मेनू</translation>
@@ -11116,7 +11110,6 @@
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="9201117361710210082">याआधी पाहिला होता</translation>
 <translation id="9201220332032049474">स्क्रीन लॉक पर्याय</translation>
-<translation id="9201762611758697018">रिकव्‍हरी पिनमुळे तुम्हाला कोणत्याही डिव्हाइसवर तुमच्या सेव्ह केलेल्या पासकी अ‍ॅक्सेस करण्यात मदत होते</translation>
 <translation id="9201842707396338580">काहीतरी चूक झाली. कृपया तुमच्या डिव्हाइसच्या मालकाशी किंवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">लाल-हिरवा, हिरव्या रंगाची दृष्टिक्षीणता (द्वितीयवर्ण दृष्टिक्षीणता)</translation>
 <translation id="9203398526606335860">&amp;प्रोफाइलिंग सक्षम</translation>

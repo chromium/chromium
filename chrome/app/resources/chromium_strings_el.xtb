@@ -46,7 +46,6 @@
 <translation id="1749104137266986751">Όταν δεν είναι διαθέσιμο το HTTPS, το Chromium θα χρησιμοποιεί μια μη ασφαλή σύνδεση χωρίς να σας ειδοποιεί</translation>
 <translation id="1774152462503052664">Να επιτρέπεται στο Chromium να εκτελείται στο παρασκήνιο</translation>
 <translation id="1779356040007214683">Για να κάνουμε το Chromium πιο ασφαλές, απενεργοποιήσαμε ορισμένες επεκτάσεις που δεν αναφέρονται στο <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> και ενδέχεται να έχουν προστεθεί εν αγνοία σας.</translation>
-<translation id="1804128559285178512">Ενώ είστε συνδεδεμένοι, μπορείτε να χρησιμοποιήσετε τους κωδικούς πρόσβασής σας και πολλά άλλα από τον Λογαριασμό σας Google στο Chromium</translation>
 <translation id="1808667845054772817">Επανεγκατάσταση του Chromium</translation>
 <translation id="1820835682567584003">Το Chromium προσπαθεί να <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Για να διαγράψετε τα δεδομένα περιήγησης μόνο από αυτή τη συσκευή και να τα διατηρήσετε στον Λογαριασμό σας Google, <ph name="BEGIN_LINK" />αποσυνδεθείτε από το Chromium<ph name="END_LINK" />.</translation>

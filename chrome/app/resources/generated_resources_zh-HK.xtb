@@ -975,6 +975,7 @@
 <translation id="169675691788639886">裝置有已設定的 SSH 伺服器。請勿使用敏感帳戶登入。</translation>
 <translation id="1697122132646041614">㩒一下唔鍾意，系統會顯示意見表格。你可以喺表單度詳細講下點解唔鍾意呢啲結果。</translation>
 <translation id="1697150536837697295">藝術</translation>
+<translation id="1697532407822776718">大功告成！</translation>
 <translation id="1697686431566694143">編輯檔案</translation>
 <translation id="1698796500103229697">付款方法(&amp;P)</translation>
 <translation id="1698899521169711967">鍵盤瀏覽</translation>
@@ -1406,7 +1407,6 @@
 <translation id="199610894463449797">{0,plural, =1{關閉此個人檔案}other{關閉此個人檔案 (# 個視窗)}}</translation>
 <translation id="1997433994358798851">Chrome 需要權限才能透過藍牙連接您的裝置</translation>
 <translation id="1997616988432401742">您的憑證</translation>
-<translation id="199801374788581808">你可以再試一次或聯絡管理員求助</translation>
 <translation id="1999115740519098545">起始螢幕</translation>
 <translation id="2002109485265116295">即時</translation>
 <translation id="2002160221914907025">實驗性 AI</translation>
@@ -2511,6 +2511,7 @@
 <translation id="2776560192867872731">改 <ph name="DEVICE_NAME" /> 嘅裝置名</translation>
 <translation id="2777251078198759550">刪除此容器</translation>
 <translation id="2777525873368474674">貼上圖片連結</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{找到 1 個傳送大量通知的網站}other{找到 {NUM_SITES} 個傳送大量通知的網站}}</translation>
 <translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
 <translation id="2779728796406650689">這可讓「Google 助理」在你提問時提供更貼近需要的回覆。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2668,7 +2669,6 @@
 <translation id="2893180576842394309">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務</translation>
 <translation id="2893701697603065178">受管開發環境</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
-<translation id="2895730582088342039">儲存、分享和投放</translation>
 <translation id="289695669188700754">金鑰識別碼：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">當您關閉所有無痕式視窗時，系統將會移除此自訂設定</translation>
 <translation id="2897878306272793870">您確定要開啟 <ph name="TAB_COUNT" /> 分頁嗎？</translation>
@@ -3454,7 +3454,6 @@
 <translation id="3503995387997205657">您可還原先前的應用程式</translation>
 <translation id="3505100368357440862">購物建議</translation>
 <translation id="3505602163050943406">當你使用部分功能時，網站可能會將已開啟網頁的部分內容、近期相關網頁和網頁的網址傳送給 Google</translation>
-<translation id="3505762711681798106">正在準備你的工作區！在此期間你可以到處探索，工作區很快會準備好。</translation>
 <translation id="3507132249039706973">已開啟「標準保護功能」</translation>
 <translation id="3507888235492474624">重新掃瞄藍牙裝置</translation>
 <translation id="3508492320654304609">無法刪除您的登入資料</translation>
@@ -5130,7 +5129,6 @@
 <translation id="4750185073185658673">在手機上查看其他權限。請確保手機的藍牙和 Wi-Fi 已開啟。</translation>
 <translation id="4750394297954878236">建議</translation>
 <translation id="475088594373173692">第一位使用者</translation>
-<translation id="4754167810863682207">工作設定檔快將完成設定</translation>
 <translation id="4756378406049221019">停止/重新載入</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4756671452988984333">音訊文字</translation>
@@ -5791,7 +5789,6 @@
 <translation id="5247243947166567755">揀 <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">瀏覽器在下載尚未完成時當機。</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> 會使用您的位置資料，為您提供本地內容。您可在<ph name="SETTINGS_LINK" />中變更此設定。</translation>
-<translation id="5251885976619018662">建立「Google 密碼管理工具」的復原 PIN</translation>
 <translation id="5252496130205799136">要使用您的 Google 帳戶儲存和填入密碼嗎？</translation>
 <translation id="5252653240322147470">PIN 不能多於 <ph name="MAXIMUM" /> 位數字</translation>
 <translation id="5253554634804500860">使用<ph name="DEVICE_NAME" /></translation>
@@ -7435,7 +7432,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」要求在此裝置上安裝以下應用程式：}other{「<ph name="APP_NAME" />」要求在此裝置上安裝以下應用程式：}}</translation>
 <translation id="6508248480704296122">同 <ph name="NAME_PH" /> 相關</translation>
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">你的工作設定檔已準備就緒</translation>
 <translation id="6511607461419653612">請重新啟動 Chromebook，然後再試一次</translation>
 <translation id="6511827214781912955">建議刪除「<ph name="FILENAME" />」，讓此裝置的其他使用者無法查看您的密碼</translation>
 <translation id="6512759338201777379">AI 生成的<ph name="SUBJECT" /> 圖片 <ph name="INDEX" />，情境係<ph name="MOOD" />。</translation>
@@ -9570,7 +9566,6 @@
 <translation id="8084429490152575036">流動網絡 APN 設定</translation>
 <translation id="8084510406207562688">還原所有分頁</translation>
 <translation id="8084628902026812045">此網站未使用安全連線，且檔案可能已被篡改</translation>
-<translation id="8085701268329068646">輸入「Google 密碼管理工具」的 PIN</translation>
 <translation id="8086015605808120405">正在設定 <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">此分頁正在共用您的螢幕畫面</translation>
 <translation id="8086610718778464681">無法備份 Linux 應用程式和檔案</translation>
@@ -10402,7 +10397,6 @@
 <translation id="8694596275649352090">在休眠或蓋上螢幕時鎖定</translation>
 <translation id="8695139659682234808">設定完成後新增家長監控設定</translation>
 <translation id="8695825812785969222">開啟位置(&amp;L)…</translation>
-<translation id="8697753370348182287">你的工作設定檔已準備就緒</translation>
 <translation id="8698269656364382265">如要返回上一個畫面，請從左邊向另一邊滑動。</translation>
 <translation id="8698432579173128320">備份至「Google 雲端硬碟」。你可隨時輕鬆還原資料或轉用其他裝置。備份包含應用程式資料。你的備份會上載至 Google，並透過你的 Google 帳戶密碼加密。<ph name="BEGIN_LINK1" />進一步瞭解備份<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">應用程式選單</translation>
@@ -11102,7 +11096,6 @@
 <translation id="920045321358709304">透過 <ph name="SEARCH_ENGINE" /> 搜尋</translation>
 <translation id="9201117361710210082">先前看過</translation>
 <translation id="9201220332032049474">螢幕鎖定選項</translation>
-<translation id="9201762611758697018">你可在所有裝置上使用復原 PIN 存取已儲存的密鑰</translation>
 <translation id="9201842707396338580">發生錯誤。請聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="9203296457393252944">紅 - 綠、綠色弱 (綠色弱視)</translation>
 <translation id="9203398526606335860">分析已啟用(&amp;P)</translation>

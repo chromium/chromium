@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">Ойролцоо дүн гаргахын тулд <ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-д хуваана уу</translation>
 <translation id="1435763214710588005">Дата ашиглалтыг сонгосон өдөр сар бүр автоматаар шинэчилнэ</translation>
 <translation id="1442433966118452622">Зургийн эх сурвалж</translation>
-<translation id="1445573806602812670">Бичлэгтээ сийрүүлэг авах</translation>
 <translation id="1446954767133808402">индраанил</translation>
 <translation id="1449035143498573192">Google Хайлтад нээх</translation>
 <translation id="1451536289672181509">Төхөөрөмж нь гар байна.</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">нуур</translation>
 <translation id="1720424726586960395">гэрэлт цохны ой</translation>
 <translation id="1726100011689679555">Нэрийн сервер</translation>
-<translation id="1728792932018505912">Та үүнийг Тохиргоо эсвэл <ph name="THREE_DOTS_MENU_ICON" /> цэсэд тохируулах боломжтой</translation>
 <translation id="1731082422893354635">Bluetooth мэдрэгч самбар</translation>
 <translation id="1738949837603788263">Бүс <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Зургийг ачаалж чадсангүй. Сүлжээний холболтоо шалгах эсвэл зургуудыг дахин ачаалж үзнэ үү</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2364498172489649528">Давсан</translation>
 <translation id="2367335866686097760">Товч харгалзуулалтын товч</translation>
-<translation id="2370739752330685659">Магадгүй дараа</translation>
 <translation id="2380886658946992094">Хууль ёсны</translation>
 <translation id="2391082728065870591">Санал хүсэлтийн тайлан илгээх</translation>
 <translation id="2407209115954268704">SIM-н түгжээний төлөв</translation>
@@ -635,6 +632,7 @@
 <translation id="4454245904991689773">Дараах руу скан хийх</translation>
 <translation id="4456812688969919973">APN хадгалах товчлуурыг одоо идэвхжүүлсэн</translation>
 <translation id="4469288414739283461">Хөрсний нуралтыг харуулсан дэлгэц амраагч</translation>
+<translation id="4474142134969976028">Таарах ямар ч илэрц байхгүй</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Сүлжээний өгөгдмөл бус гэйтвэйд пин илгээж чадсангүй</translation>
 <translation id="4500722292849917410">Товчлол боломжгүй байна. Тохируулагч товчийг (ctrl, alt, shift эсвэл <ph name="META_KEY" />) ашиглан шинэ товчлолыг дарна уу.</translation>
@@ -751,7 +749,6 @@
 <translation id="5099354524039520280">дээшээ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> товчгүй товчлол нь зарим аппын товчлолтой зөрчилдөж магадгүй. Энэ товчлолыг үргэлжлүүлэн ашиглахын тулд үүнийг дахин дарах эсвэл <ph name="KEY" /> товчийг ашиглан шинэ товчлол дарна уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Төстэй:</translation>
-<translation id="5109744590306245079">Дуу хураагуур яриатай бичлэгт сийрүүлэг үүсгэх боломжтой. Эдгээр сийрүүлгийг авахын тулд сийрүүлгийн загварыг (100МБ хүртэлх) татна уу.</translation>
 <translation id="5130848777448318809">одой морьд</translation>
 <translation id="5137451382116112100">Бүтэн</translation>
 <translation id="5142961317498132443">Баталгаажуулалт</translation>
@@ -913,6 +910,7 @@
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6040852767465482106">Нэрээ нууцалсан байдал</translation>
 <translation id="604124094241169006">Автомат</translation>
+<translation id="6042308850641462728">Илүү их</translation>
 <translation id="6048107060512778456">Амжилтгүй болсон - Цаас гацсан</translation>
 <translation id="6050189528197190982">Хараас цагаан өнгө</translation>
 <translation id="6054711098834486579">экспрессионист</translation>
@@ -937,7 +935,6 @@
 <translation id="6136285399872347291">устгах</translation>
 <translation id="6137614725462089991">киберпанк</translation>
 <translation id="6137767437444130246">Хэрэглэгчийн сертификат</translation>
-<translation id="6141004321363227868">Энэ онцлогийг идэвхжүүлсэн үед таныг бичих явцад шууд сийрүүлгийг мөн харуулна.</translation>
 <translation id="6146993107019042706">Дуусгахын тулд шинэ нууц үгээ оруулна уу</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">элгэн хүрэн болон ягаан</translation>
@@ -1022,7 +1019,6 @@
 <translation id="6543412779435705598">таконууд</translation>
 <translation id="6551839203326557324">алимууд</translation>
 <translation id="65526652485742171">Баталгаажуулах товчлуур одоо идэвхэжсэн</translation>
-<translation id="6556016675518580850">Энэ хуудсыг орхих нь таны одоогийн бичлэгийг дуусгана.</translation>
 <translation id="6557784757915238407">APN нь <ph name="ATTACH" /> төрөл юм.</translation>
 <translation id="65587193855025101">Тавцант</translation>
 <translation id="6560196641871357166">Хурц тод</translation>
@@ -1077,8 +1073,6 @@
 <translation id="6798678288485555829">Текстийн навигац</translation>
 <translation id="680983167891198932">Түлхүүр</translation>
 <translation id="6816797338148849397">Таны сонголттой холбоотой мэдээлэл боломжтой байна. Хандахын тулд Дээш суман товчийг ашиглана уу.</translation>
-<translation id="6818844233294698434">Яриаг сонсож байна...</translation>
-<translation id="6837645039518471192">Бичлэгээс гарах</translation>
 <translation id="6853312040151791195">Цэнэггүй болох хурд</translation>
 <translation id="6866732840889595464">хонин нүдэн цэцэг</translation>
 <translation id="6871256179359663621">цайвар нил ягаан</translation>
@@ -1220,6 +1214,7 @@
 <translation id="7528507600602050979">Тусламжийн контент боломжгүй байна</translation>
 <translation id="7535791657097741517">Цайвар загварыг асаах</translation>
 <translation id="7544126681856613971">манантай ой</translation>
+<translation id="7544853251252956727">Тохиолдлоор тоглуулах</translation>
 <translation id="7550715992156305117">Оношилгооны хэвшил</translation>
 <translation id="7551123448725492271">Төхөөрөмж нь аудио төхөөрөмж байна.</translation>
 <translation id="7559239713112547082">Дэлгэцийн агшныг урьдчилан үзэх</translation>
@@ -1276,7 +1271,6 @@
 <translation id="7850847810298646851">Google AI-аар дэмжигдсэн дэлгэцийн зураг</translation>
 <translation id="785170686607360576">алтанзул цэцэг</translation>
 <translation id="7856267634822906833">Bluetooth мэдрэмтгий дэлгэц</translation>
-<translation id="7857744683152972248">Дуу хураагуурт чанга яригчийг тодорхойлохыг зөвшөөрөх үү?</translation>
 <translation id="7859006200041800233">кактус цэцэг</translation>
 <translation id="7869143217755017858">Бараан горимыг идэвхгүй болгох</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1332,7 +1326,6 @@
 <translation id="8162776280680283326">үнэгнүүд</translation>
 <translation id="8167413449582155132">Google AI-аар дэмжигдсэн дэвсгэр</translation>
 <translation id="8171020708598805594">Google AI-г ашиглан сийрүүлгийг автоматаар үүсгэж, бичлэгийн хураангуйг авч мөн аудио хайгаарай. Та интернэтэд холбогдоогүй үедээ ч бичлэг үүсгээрэй.</translation>
-<translation id="8174280683348521982">Одоогийн бичлэгийг устгах уу?</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8183975772394450380">далайн эрэг</translation>
 <translation id="819278132617411009">Илүү бүтээмжтэй байхын тулд Google AI-г ашиглах</translation>
@@ -1348,6 +1341,7 @@
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8262870577632766028">1 цаг</translation>
 <translation id="827422111966801947">Хөхөвтөр нил ягаан</translation>
+<translation id="8281886186245836920">Алгасах</translation>
 <translation id="8286154143153872371">Дэлгэцийн зургийг үзэхийн тулд сүлжээнд холбогдож, хуудсыг дахин ачаална уу.</translation>
 <translation id="8291967909914612644">Нүүр хуудас бэлтгэх хост</translation>
 <translation id="8294431847097064396">Эх сурвалж</translation>
@@ -1370,9 +1364,6 @@
 <translation id="8372477600026034341">Нэмэлт хост</translation>
 <translation id="8372667721254470022">чидун жимс</translation>
 <translation id="8373046809163484087">Таны дэлгэцийн зурагтай таарах өнгөний багцыг ашиглана уу</translation>
-<translation id="8379123594780452422">Таныг үүнийг зөвшөөрөх үед Дуу хураагуур аудионы дэвшилтэт дүн шинжлэлийг ашиглан таны аудио бичлэгийг боловсруулна.
-
-Та үүнийг Тохиргоонд хүссэн үедээ унтраах боломжтой.</translation>
 <translation id="8380114448424469341">Дэлгэцийн <ph name="DIRECTION" /> талд цонхыг суурилуулах</translation>
 <translation id="8391349326751432483">Санах ойн шалгалт явуулахын тулд танд дор хаяж 500 МБ-ын сул зай шаардлагатай. Санах ойг суллахын тулд таб болон аппуудыг хаана уу.</translation>
 <translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
@@ -1520,7 +1511,6 @@
 <translation id="9122602430962285795">Дахин холбогдохын тулд Тохиргоо руу очно уу</translation>
 <translation id="9122865513525855321">зэн</translation>
 <translation id="9126720536733509015">Олон хуудсыг нэг PDF болгож хадгалах</translation>
-<translation id="9129549320890412487">Сийрүүлгийн онцлог</translation>
 <translation id="9133772297793293778">1-4 засварлагч болон гарынхаа өөр 1 товчийг дарна уу. Засах горимоос гарахын тулд alt + esc-г дарна уу.</translation>
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9138630967333032450">Зүүн талын shift</translation>

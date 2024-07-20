@@ -513,6 +513,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3557336313807607643">Engadir a contactos</translation>
 <translation id="3563767357928833671">Móstranse os contidos do portapapeis</translation>
 <translation id="3566639033325271639">Actualizar configuración</translation>
+<translation id="3568945271227339929">Non hai ningún contrasinal vulnerado</translation>
 <translation id="357465026686164600">Teléfono como chave de seguranza</translation>
 <translation id="3577473026931028326">Produciuse un erro. Téntao de novo.</translation>
 <translation id="3577558748185201054">Xestiona os teus intereses e preferencias</translation>
@@ -946,7 +947,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5698878456427040674">Comproba se se admite a conta seleccionada.</translation>
 <translation id="570347048394355941">Cambiar á pestana</translation>
 <translation id="5715150588940290235">Queres eliminar os códigos de seguranza gardados?</translation>
-<translation id="5718049162805123412">Recomendámosche que os cambies agora</translation>
 <translation id="571930967925877633">Os marcadores, o historial e outros datos de Chrome deixarán de sincronizarse coa túa Conta de Google</translation>
 <translation id="572328651809341494">Pestanas recentes</translation>
 <translation id="5726692708398506830">Facer máis grande todo o contido da páxina</translation>
@@ -1538,7 +1538,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8348430946834215779">Usa HTTPS sempre que sexa posible e recibe advertencias antes de cargar sitios que non admitan este protocolo</translation>
 <translation id="8354977102499939946">Fai buscas rapidamente coa voz. Para editar este atallo, vai a Configuración.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> descargas restauradas</translation>
-<translation id="8367705492654390392">Pregunta o que queiras</translation>
 <translation id="8368001212524806591">Facer seguimento do prezo</translation>
 <translation id="8378850197701296741">Tes os marcadores, o historial e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Verifica a túa identidade</translation>

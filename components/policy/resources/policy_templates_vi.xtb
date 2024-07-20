@@ -835,7 +835,6 @@ Ngưỡng tối thiểu là 1 phút.
 <translation id="1634989431648355062">Cho phép plugin <ph name="FLASH_PLUGIN_NAME" /> trên các trang web này</translation>
 <translation id="1635450837608153975">Tắt tính năng tối ưu hoá JavaScript nâng cao trên mọi trang web</translation>
 <translation id="1635748761015837179">Cho phép ghi vào thiết bị bộ nhớ ngoài</translation>
-<translation id="163653062822010558">Bật: Thuộc tính thu phóng trong CSS tuân theo thông số kỹ thuật tiêu chuẩn.</translation>
 <translation id="1639468541408865385">Bật bộ nhớ đệm xác thực HTTP có phạm vi toàn cầu</translation>
 <translation id="1639673466479276550">Bật trình bảo vệ màn hình trên màn hình đăng nhập.</translation>
 <translation id="1640824698339859203">Bật dịch vụ SSO di động và chuyển trạng thái xác thực dịch vụ web của người dùng sang thiết bị mới</translation>

@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Rhwystro gwefan rhag cadw data ar eich dyfais</translation>
 <translation id="2903493209154104877">Cyfeiriadau</translation>
 <translation id="2910701580606108292">Gofyn cyn caniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
+<translation id="2918484639460781603">Mynd i'r gosodiadau</translation>
 <translation id="2932883381142163287">Rhoi gwybod am gamddefnydd</translation>
 <translation id="2939338015096024043">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am olrhain lleoliad eich camera a dysgu am eich amgylchoedd. Pan fydd wedi'i ddiffodd, ni all gwefannau olrhain lleoliad eich camera na dysgu am eich amgylchoedd.</translation>
 <translation id="2968755619301702150">Gwyliwr tystysgrifau</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Synwyryddion ystumiau/goleuadau</translation>
 <translation id="4755971844837804407">Pan fydd wedi'i droi ymlaen, gall gwefannau ddangos unrhyw hysbyseb i chi. Pan fydd wedi'i ddiffodd, ni all gwefannau ddangos hysbysebion ymwthiol neu gamarweiniol.</translation>
 <translation id="4779083564647765204">Chwyddo</translation>
+<translation id="4807122856660838973">Troi Pori'n Ddiogel ymlaen</translation>
 <translation id="4811450222531576619">Dysgu am ei ffynhonnell a'i bwnc</translation>
 <translation id="4836046166855586901">Gofyn pan fydd gwefan eisiau gwybod pan fyddwch wrthi'n defnyddio'r ddyfais hon</translation>
 <translation id="483914009762354899">Cynnwys pob gwefan o dan y parth hwn</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Ni chanfuwyd unrhyw gysylltiadau</translation>
 <translation id="4996978546172906250">Rhannu drwy</translation>
 <translation id="5001526427543320409">Cwcis trydydd parti</translation>
+<translation id="5007392906805964215">Adolygu</translation>
 <translation id="5039804452771397117">Caniatáu</translation>
 <translation id="5048398596102334565">Caniatáu i wefannau gael mynediad at synwyryddion symudiad (argymhellir)</translation>
 <translation id="5050380848339752099">Mae'r wefan hon ar fin rhannu gwybodaeth ag ap y tu allan i'r modd Anhysbys.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Ychwanegu gwefan</translation>
 <translation id="7368695150573390554">Bydd unrhyw ddata all-lein yn cael eu dileu</translation>
 <translation id="7383715096023715447">Gosodiadau ar gyfer <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Gwiriad Diogelwch</translation>
 <translation id="7406113532070524618">Mae'r gosodiad hwn yn gweithio heb eich adnabod na chaniatáu i wefannau weld eich hanes pori, er y gall gwefannau rannu ychydig i wybodaeth fel rhan o'r dilysiad</translation>
 <translation id="7423098979219808738">Gofyn yn gyntaf</translation>
 <translation id="7423538860840206698">Wedi'i rwystro rhag darllen y clipfwrdd</translation>

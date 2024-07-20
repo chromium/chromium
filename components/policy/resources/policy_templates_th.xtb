@@ -824,7 +824,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="1634989431648355062">อนุญาตปลั๊กอิน <ph name="FLASH_PLUGIN_NAME" /> ในเว็บไซต์เหล่านี้</translation>
 <translation id="1635450837608153975">ปิดใช้การเพิ่มประสิทธิภาพ JavaScript ขั้นสูงในทุกเว็บไซต์</translation>
 <translation id="1635748761015837179">อนุญาตให้เขียนไปยังอุปกรณ์จัดเก็บข้อมูลภายนอก</translation>
-<translation id="163653062822010558">เปิดใช้: การซูม CSS เป็นไปตามข้อกำหนดมาตรฐาน</translation>
 <translation id="1639468541408865385">เปิดใช้แคชการตรวจสอบสิทธิ์ HTTP ที่มีขอบเขตทั่วไป</translation>
 <translation id="1639673466479276550">เปิดใช้โปรแกรมรักษาหน้าจอในหน้าจอการเข้าสู่ระบบ</translation>
 <translation id="1640824698339859203">เปิดใช้ SSO แบบย้ายระหว่างอุปกรณ์ และย้ายการตรวจสอบสิทธิ์การใช้เว็บเซอร์วิสของผู้ใช้ไปยังอุปกรณ์ใหม่</translation>

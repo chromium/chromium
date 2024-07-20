@@ -513,6 +513,7 @@
 <translation id="3557336313807607643">संपर्कांमध्ये जोडा</translation>
 <translation id="3563767357928833671">क्लिपबोर्डचा आशय दाखवला</translation>
 <translation id="3566639033325271639">सेटिंग्ज अपडेट करा</translation>
+<translation id="3568945271227339929">एकही पासवर्ड धोक्यात नाही</translation>
 <translation id="357465026686164600">सिक्युरिटी की म्हणून फोन</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3577558748185201054">तुमची स्वारस्ये आणि प्राधान्ये व्यवस्थापित करा</translation>
@@ -946,7 +947,6 @@
 <translation id="5698878456427040674">निवडलेल्या खात्याला सपोर्ट आहे का हे तपासा.</translation>
 <translation id="570347048394355941">टॅब वर स्विच करा</translation>
 <translation id="5715150588940290235">सेव्ह केलेले सुरक्षा कोड हटवायचे आहेत का?</translation>
-<translation id="5718049162805123412">तुम्ही ते आता बदलले पाहिजेत</translation>
 <translation id="571930967925877633">तुमचे बुकमार्क, इतिहास आणि इतर Chrome डेटा आता तुमच्या Google खात्यामध्ये सिंक केला जाणार नाही</translation>
 <translation id="572328651809341494">अलीकडील टॅब</translation>
 <translation id="5726692708398506830">पृष्ठावरील प्रत्येकगोष्ट आणखी मोठी करा</translation>
@@ -1538,7 +1538,6 @@
 <translation id="8348430946834215779">शक्य असेल, तेव्ह HTTPS वापरा आणि त्याला सपोर्ट न करणारी साइट लोड करण्यापूर्वी चेतावणी मिळवा</translation>
 <translation id="8354977102499939946">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड रिस्टोअर केले</translation>
-<translation id="8367705492654390392">काहीही विचारा</translation>
 <translation id="8368001212524806591">किंमत ट्रॅक करणे</translation>
 <translation id="8378850197701296741">तुमच्याकडे <ph name="FROM_ACCOUNT" /> चे बुकमार्क, इतिहास आणि इतर सेटिंग्ज आहेत.</translation>
 <translation id="8387617938027387193">हे तुम्हीच आहात याची पडताळणी करा</translation>

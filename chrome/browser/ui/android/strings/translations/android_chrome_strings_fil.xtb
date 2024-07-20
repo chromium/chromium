@@ -513,6 +513,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3557336313807607643">Idagdag sa mga contact</translation>
 <translation id="3563767357928833671">Ipinapakita ang mga content ng clipboard</translation>
 <translation id="3566639033325271639">I-update ang mga setting</translation>
+<translation id="3568945271227339929">Walang nakompromisong password</translation>
 <translation id="357465026686164600">Telepono bilang security key</translation>
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="3577558748185201054">Pamahalaan ang iyong mga interes at preference</translation>
@@ -946,7 +947,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5698878456427040674">Tingnan kung sinusuportahan ang napiling account.</translation>
 <translation id="570347048394355941">Lumipat Sa Tab</translation>
 <translation id="5715150588940290235">I-delete ang mga naka-save na panseguridad na code?</translation>
-<translation id="5718049162805123412">Dapat mong palitan ang mga ito ngayon mismo</translation>
 <translation id="571930967925877633">Hindi na isi-sync sa Google Account mo ang iyong mga bookmark, history, at iba pang data ng Chrome</translation>
 <translation id="572328651809341494">Mga kamakailang tab</translation>
 <translation id="5726692708398506830">Palakihin ang lahat ng nasa page</translation>
@@ -1538,7 +1538,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8348430946834215779">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito</translation>
 <translation id="8354977102499939946">Mabilis na maghanap gamit ang iyong boses. Para i-edit ang shortcut na ito, pumunta sa Mga Setting.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> (na) download ang na-restore</translation>
-<translation id="8367705492654390392">Magtanong ng kahit na ano</translation>
 <translation id="8368001212524806591">Subaybayan ang presyo</translation>
 <translation id="8378850197701296741">May mga bookmark, history, at iba pang setting ka mula sa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">I-verify na ikaw ito</translation>

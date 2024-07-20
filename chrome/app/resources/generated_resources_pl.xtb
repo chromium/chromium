@@ -987,6 +987,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="169675691788639886">Urządzenie ma skonfigurowany serwer SSH. Nie loguj się za pomocą poufnych kont.</translation>
 <translation id="1697122132646041614">Opcja Nie lubię otwiera formularz, za pomocą którego możesz przesłać szczegółową opinię o tym, dlaczego te wyniki Ci się nie podobają.</translation>
 <translation id="1697150536837697295">Sztuka</translation>
+<translation id="1697532407822776718">Wszystko gotowe.</translation>
 <translation id="1697686431566694143">Edytuj plik</translation>
 <translation id="1698796500103229697">&amp;Formy płatności</translation>
 <translation id="1698899521169711967">Przeglądanie przy użyciu kursora</translation>
@@ -1410,7 +1411,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="199610894463449797">{0,plural, =1{Zamknij ten profil}few{Zamknij ten profil (# okna)}many{Zamknij ten profil (# okien)}other{Zamknij ten profil (# okna)}}</translation>
 <translation id="1997433994358798851">Aby połączyć się z Twoim urządzeniem, Chrome potrzebuje uprawnień dostępu do Bluetootha</translation>
 <translation id="1997616988432401742">Twoje certyfikaty</translation>
-<translation id="199801374788581808">Możesz spróbować jeszcze raz lub poprosić o pomoc administratora</translation>
 <translation id="1999115740519098545">Po uruchomieniu</translation>
 <translation id="2002109485265116295">W czasie rzeczywistym</translation>
 <translation id="2002160221914907025">Eksperymentalna AI</translation>
@@ -2505,6 +2505,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2776560192867872731">Zmień nazwę urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Usuń ten kontener</translation>
 <translation id="2777525873368474674">Wklej link do obrazu</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{Znaleziono 1 witrynę z dużą liczbą powiadomień}few{Znaleziono {NUM_SITES} witryny z dużą liczbą powiadomień}many{Znaleziono {NUM_SITES} witryn z dużą liczbą powiadomień}other{Znaleziono {NUM_SITES} witryny z dużą liczbą powiadomień}}</translation>
 <translation id="2778471504622896352">Dodaj aplikacje zdalne do Menu z aplikacjami w ChromeOS</translation>
 <translation id="2779728796406650689">Dzięki temu, gdy zadajesz pytania, Asystent Google może udzielać spersonalizowanych odpowiedzi.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2663,7 +2664,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2893180576842394309">Google może korzystać z Twojej historii, by personalizować wyniki wyszukiwania i działanie innych usług.</translation>
 <translation id="2893701697603065178">Zarządzane środowisko programistyczne</translation>
 <translation id="2894757982205307093">Nowa karta w grupie</translation>
-<translation id="2895730582088342039">Zapisuj, udostępniaj i przesyłaj</translation>
 <translation id="289695669188700754">Identyfikator klucza: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Gdy zamkniesz wszystkie okna incognito, to niestandardowe ustawienie zostanie usunięte</translation>
 <translation id="2897878306272793870">Czy na pewno chcesz otworzyć <ph name="TAB_COUNT" /> zakładki?</translation>
@@ -3457,7 +3457,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3503995387997205657">Możesz przywrócić swoje poprzednie aplikacje</translation>
 <translation id="3505100368357440862">Propozycje zakupów</translation>
 <translation id="3505602163050943406">Gdy korzystasz z niektórych funkcji, mogą one wysyłać do Google fragmenty otwartych stron i podobnych stron otwieranych ostatnio oraz ich adresy URL</translation>
-<translation id="3505762711681798106">Przygotowujemy Twój obszar roboczy. W tym czasie możesz zapoznać się z funkcjami. Wkrótce wszystko będzie gotowe.</translation>
 <translation id="3507132249039706973">Włączona jest standardowa ochrona</translation>
 <translation id="3507888235492474624">Skanuj ponownie w poszukiwaniu urządzeń Bluetooth</translation>
 <translation id="3508492320654304609">Nie udało się usunąć Twoich danych logowania</translation>
@@ -5150,7 +5149,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4750185073185658673">Sprawdź więcej uprawnień na telefonie. Sprawdź, czy na telefonie są włączone Bluetooth i Wi-Fi.</translation>
 <translation id="4750394297954878236">Sugestie</translation>
 <translation id="475088594373173692">Pierwszy użytkownik</translation>
-<translation id="4754167810863682207">Konfiguracja profilu jest prawie gotowa</translation>
 <translation id="4756378406049221019">Zatrzymaj / załaduj ponownie</translation>
 <translation id="4756388243121344051">&amp;Historia</translation>
 <translation id="4756671452988984333">Napisy do dźwięku</translation>
@@ -5819,7 +5817,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5247243947166567755">Wybierz: <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Przeglądarka uległa awarii przed zakończeniem pobierania.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> korzysta z informacji o Twojej lokalizacji, by zapewnić Ci lokalne wyniki. Możesz to zmienić na stronie <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5251885976619018662">Utwórz kod PIN przywracania do Menedżera haseł Google</translation>
 <translation id="5252496130205799136">Używać konta Google do zapisywania i uzupełniania haseł?</translation>
 <translation id="5252653240322147470">Liczba cyfr w kodzie PIN musi być mniejsza niż <ph name="MAXIMUM" /></translation>
 <translation id="5253554634804500860">Użyj telefonu <ph name="DEVICE_NAME" /></translation>
@@ -7486,7 +7483,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />” chce zainstalować na tym urządzeniu tę aplikację:}few{„<ph name="APP_NAME" />” chce zainstalować na tym urządzeniu te aplikacje:}many{„<ph name="APP_NAME" />” chce zainstalować na tym urządzeniu te aplikacje:}other{„<ph name="APP_NAME" />” chce zainstalować na tym urządzeniu te aplikacje:}}</translation>
 <translation id="6508248480704296122">Powiązane z: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikacja: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">Możesz już używać swojego profilu służbowego</translation>
 <translation id="6511607461419653612">Uruchom ponownie Chromebooka i spróbuj jeszcze raz</translation>
 <translation id="6511827214781912955">Zastanów się, czy nie usunąć pliku <ph name="FILENAME" />, aby Twoich haseł nie zobaczyły inne osoby korzystające z tego urządzenia</translation>
 <translation id="6512759338201777379">Wygenerowany obraz: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, nastrój: <ph name="MOOD" />.</translation>
@@ -9643,7 +9639,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8084429490152575036">Ustawienia APN sieci komórkowej</translation>
 <translation id="8084510406207562688">&amp;Przywróć wszystkie karty</translation>
 <translation id="8084628902026812045">Ta witryna nie korzysta z bezpiecznego połączenia, a plik mógł zostać zmodyfikowany</translation>
-<translation id="8085701268329068646">Wpisz kod PIN do Menedżera haseł Google</translation>
 <translation id="8086015605808120405">Konfiguruję: <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">Ta karta udostępnia Twój ekran</translation>
 <translation id="8086610718778464681">Nie można utworzyć kopii zapasowej aplikacji i plików Linuksa</translation>
@@ -10480,7 +10475,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8694596275649352090">Zablokuj po uśpieniu urządzenia lub zamknięciu pokrywy</translation>
 <translation id="8695139659682234808">Dodaj kontrolę rodzicielską po konfiguracji</translation>
 <translation id="8695825812785969222">Otwórz &amp;lokalizację</translation>
-<translation id="8697753370348182287">Profil służbowy jest gotowy</translation>
 <translation id="8698269656364382265">Aby wrócić do poprzedniego ekranu, przesuń palcem od lewej.</translation>
 <translation id="8698432579173128320">Kopia zapasowa na Dysku Google W dowolnej chwili możesz w prosty sposób przywrócić dane lub używać ich na innym urządzeniu. Kopia zapasowa zawiera dane aplikacji. Kopie zapasowe są szyfrowane z użyciem hasła do Twojego konta Google i przesyłane do Google. <ph name="BEGIN_LINK1" />Więcej informacji o kopii zapasowej<ph name="BEGIN_LINK1_END" />Więcej informacji<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Menu aplikacji</translation>
@@ -11188,7 +11182,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="920045321358709304">Szukaj w: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Wyświetlono wcześniej</translation>
 <translation id="9201220332032049474">Opcje blokady ekranu</translation>
-<translation id="9201762611758697018">Kod PIN odzyskiwania pomaga uzyskać dostęp do zapisanych kluczy dostępu na dowolnym urządzeniu</translation>
 <translation id="9201842707396338580">Coś poszło nie tak. Skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Czerwono-zielony, słaby zielony (deuteranomalia)</translation>
 <translation id="9203398526606335860">&amp;Profilowanie włączone</translation>

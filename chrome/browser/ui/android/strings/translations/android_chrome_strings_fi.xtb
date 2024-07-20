@@ -513,6 +513,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3557336313807607643">Lisää yhteystietoihin</translation>
 <translation id="3563767357928833671">Leikepöydän sisältö näytetään</translation>
 <translation id="3566639033325271639">Päivitä asetukset</translation>
+<translation id="3568945271227339929">Ei vaarantuneita salasanoja</translation>
 <translation id="357465026686164600">Puhelin suojausavaimena</translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="3577558748185201054">Ylläpidä kiinnostuksen kohteita ja valintoja</translation>
@@ -946,7 +947,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5698878456427040674">Tarkista, tuetaanko valittua tiliä.</translation>
 <translation id="570347048394355941">Vaihda välilehdelle</translation>
 <translation id="5715150588940290235">Poistetaanko tallennetut turvakoodit?</translation>
-<translation id="5718049162805123412">Vaihda nämä nyt</translation>
 <translation id="571930967925877633">Kirjanmerkkejä, historiaa ja muuta Chrome-dataa ei enää synkronoida Google-tilille</translation>
 <translation id="572328651809341494">Hiljattain suljetut välilehdet</translation>
 <translation id="5726692708398506830">Suurenna sivun kaikki sisältö</translation>
@@ -1538,7 +1538,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8348430946834215779">Käytä HTTPS:ää aina kun mahdollista. Saat varoituksen ennen sellaisten sivustojen lataamista, jotka eivät tue sitä.</translation>
 <translation id="8354977102499939946">Hae nopeasti äänikomennoilla. Voit muokata pikakuvaketta asetuksista.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> latausta palautettu</translation>
-<translation id="8367705492654390392">Kysy mitä tahansa</translation>
 <translation id="8368001212524806591">Seuraa hintaa</translation>
 <translation id="8378850197701296741">Tilillä <ph name="FROM_ACCOUNT" /> on kirjanmerkkejä, historiaa ja muita asetuksia.</translation>
 <translation id="8387617938027387193">Todenna henkilöllisyytesi</translation>

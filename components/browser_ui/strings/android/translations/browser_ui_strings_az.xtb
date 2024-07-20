@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Saytın cihazınızda data saxlamasını bloklayın</translation>
 <translation id="2903493209154104877">Ünvanlar</translation>
 <translation id="2910701580606108292">Saytlar qorunan kontenti göstərmədən öncə icazə tələb edilsin</translation>
+<translation id="2918484639460781603">Ayarlara keçin</translation>
 <translation id="2932883381142163287">Sui-istifadəni xəbər verin</translation>
 <translation id="2939338015096024043">Aktiv ediləndə saytlar kamera mövqeyini izləmək və ətrafınız haqqında məlumat əldə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar kamera mövqeyini izləyə və ya ətrafınız haqqında məlumat əldə edə bilməz.</translation>
 <translation id="2968755619301702150">Sertifikat izləyici</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Hərəkət və ışıq sensorları</translation>
 <translation id="4755971844837804407">Aktiv ediləndə saytlar istənilən reklamı göstərə bilər. Deaktiv ediləndə saytlar bezdirici və ya aldadıcı reklam göstərə bilməz.</translation>
 <translation id="4779083564647765204">Zoom</translation>
+<translation id="4807122856660838973">Təhlükəsiz baxışı aktiv edin</translation>
 <translation id="4811450222531576619">Onun mənbəyi və mövzusu haqqında məlumat əldə edin</translation>
 <translation id="4836046166855586901">Sayt bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək istədikdə icazə istəsin</translation>
 <translation id="483914009762354899">Bu domen altında olan bütün saytları daxil edin</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Kontakt tapılmadı</translation>
 <translation id="4996978546172906250">Paylaşma vasitəsi:</translation>
 <translation id="5001526427543320409">Üçüncü tərəf kukiləri</translation>
+<translation id="5007392906805964215">Nəzərdən keçirin</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5048398596102334565">Saytların hərəkət sensorlarınıza daxil olmasına icazə verin (tövsiyə edilir)</translation>
 <translation id="5050380848339752099">Bu sayt Anonim rejimdə olmayan tətbiqlə məlumat paylaşmaq üzrədir.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Sayt əlavə edin</translation>
 <translation id="7368695150573390554">Oflayn data silinəcək</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> üçün ayarlar</translation>
+<translation id="7399802613464275309">Təhlükəsizlik Yoxlanışı</translation>
 <translation id="7406113532070524618">Bu ayar kimliyi müəyyən etmir və ya saytlara brauzer tarixçəsini görmək imkanı vermir. Lakin saytlar doğrulamanın bir hissəsi kimi az miqdarda məlumat paylaşa bilər</translation>
 <translation id="7423098979219808738">Öncə soruşun</translation>
 <translation id="7423538860840206698">Buferdə oxu girişi blok edildi</translation>

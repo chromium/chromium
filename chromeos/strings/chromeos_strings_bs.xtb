@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">Za približan rezultat podijelite vrijednost <ph name="CATEGORY_TEXT" /> s brojem <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Automatski poništava prijenos podataka svakog mjeseca na odabrani dan</translation>
 <translation id="1442433966118452622">Izvor slike</translation>
-<translation id="1445573806602812670">Dobijte transkripciju za snimak</translation>
 <translation id="1446954767133808402">safira</translation>
 <translation id="1449035143498573192">Otvorite u Google Pretraživanju</translation>
 <translation id="1451536289672181509">Uređaj je tastatura.</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">jezero</translation>
 <translation id="1720424726586960395">šuma krijesnica</translation>
 <translation id="1726100011689679555">Postavite naziv servera</translation>
-<translation id="1728792932018505912">Ovo možete podesiti u Postavkama ili na meniju <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="1731082422893354635">Bluetooth dodirna podloga</translation>
 <translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Slike se nisu mogle učitati. Provjerite mrežnu vezu ili ponovo pokušajte učitati slike.</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2364498172489649528">Uspješno</translation>
 <translation id="2367335866686097760">Tipka za mapiranje tipki</translation>
-<translation id="2370739752330685659">Možda kasnije</translation>
 <translation id="2380886658946992094">Pravo</translation>
 <translation id="2391082728065870591">Pošalji izvještaj o povratnim informacijama</translation>
 <translation id="2407209115954268704">Status zaključavanja SIM-a</translation>
@@ -635,6 +632,7 @@
 <translation id="4454245904991689773">Skeniraj u:</translation>
 <translation id="4456812688969919973">Dugme za pohranjivanje APN-a je sada onemogućeno</translation>
 <translation id="4469288414739283461">Čuvar ekrana sa Zemljom</translation>
+<translation id="4474142134969976028">Nema podudarnih rezultata</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Provjera pingom mrežnog pristupnika koji nije zadan nije uspjela</translation>
 <translation id="4500722292849917410">Prečica nije dostupna. Pritisnite novu prečicu koristeći modifikacijsku tipku (Ctrl, Alt, Shift ili tipku <ph name="META_KEY" />).</translation>
@@ -751,7 +749,6 @@
 <translation id="5099354524039520280">gore</translation>
 <translation id="5107243100836678918">Prečica bez tipke "<ph name="META_KEY" />" možda se ne slaže s prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da je nastavite koristiti ili pritisnite novu prečicu pomoću tipke "<ph name="KEY" />". <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Slično:</translation>
-<translation id="5109744590306245079">Diktafon može kreirati transkripcije za snimke s govorom. Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</translation>
 <translation id="5130848777448318809">Poniji</translation>
 <translation id="5137451382116112100">Cijeli ekran</translation>
 <translation id="5142961317498132443">Autentifikacija</translation>
@@ -913,6 +910,7 @@
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6040852767465482106">Anonimni identitet</translation>
 <translation id="604124094241169006">Automatski</translation>
+<translation id="6042308850641462728">Više</translation>
 <translation id="6048107060512778456">Nije uspjelo – papir je zaglavljen</translation>
 <translation id="6050189528197190982">Nijanse sive</translation>
 <translation id="6054711098834486579">ekspresionizam</translation>
@@ -937,7 +935,6 @@
 <translation id="6136285399872347291">brisanje unatrag</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Korisnički certifikat</translation>
-<translation id="6141004321363227868">Uz ovu omogućenu funkciju automatski transkripti će se također prikazivati tokom snimanja.</translation>
 <translation id="6146993107019042706">Unesite novu lozinku da završite</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">kestenjasto-ružičasta</translation>
@@ -1022,7 +1019,6 @@
 <translation id="6543412779435705598">Takosi</translation>
 <translation id="6551839203326557324">Jabuke</translation>
 <translation id="65526652485742171">Dugme za potvrdu je sada omogućeno</translation>
-<translation id="6556016675518580850">Ako napustite ovu stranicu, završit ćete trenutno snimanje.</translation>
 <translation id="6557784757915238407">APN je vrste <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Položeno</translation>
 <translation id="6560196641871357166">Živahno</translation>
@@ -1077,8 +1073,6 @@
 <translation id="6798678288485555829">Kretanje kroz tekst</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije u vezi s vašim odabirom. Pristupite tipkom strelice nagore.</translation>
-<translation id="6818844233294698434">Slušanje govora…</translation>
-<translation id="6837645039518471192">Izađite iz snimanja</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
 <translation id="6866732840889595464">bijela rada</translation>
 <translation id="6871256179359663621">svijetloljubičasta</translation>
@@ -1220,6 +1214,7 @@
 <translation id="7528507600602050979">Sadržaj za pomoć nije dostupan</translation>
 <translation id="7535791657097741517">Uključi svijetlu temu</translation>
 <translation id="7544126681856613971">maglovita šuma</translation>
+<translation id="7544853251252956727">Izmiješaj</translation>
 <translation id="7550715992156305117">Rutine dijagnostike</translation>
 <translation id="7551123448725492271">Uređaj je audio uređaj.</translation>
 <translation id="7559239713112547082">Snimak ekrana pregleda</translation>
@@ -1276,7 +1271,6 @@
 <translation id="7850847810298646851">Pozadinske slike koje omogućava Google AI</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Bluetooth ekran na dodir</translation>
-<translation id="7857744683152972248">Dozvoliti Diktafonu da prepozna govornike?</translation>
 <translation id="7859006200041800233">Cvijet kaktusa</translation>
 <translation id="7869143217755017858">Onemogući tamni način rada</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1332,7 +1326,6 @@
 <translation id="8162776280680283326">Lisice</translation>
 <translation id="8167413449582155132">Pozadinu omogućava Google AI</translation>
 <translation id="8171020708598805594">Automatski kreirajte transkripcije, dobijajte sažetke snimaka putem Google AI-ja i pretražujte audio snimke. Kreirajte snimke čak i kada niste povezani s internetom.</translation>
-<translation id="8174280683348521982">Izbrisati trenutni snimak?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plaža</translation>
 <translation id="819278132617411009">Koristite Google AI da budete produktivniji</translation>
@@ -1348,6 +1341,7 @@
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262870577632766028">1 h</translation>
 <translation id="827422111966801947">Indigo plava</translation>
+<translation id="8281886186245836920">Preskoči</translation>
 <translation id="8286154143153872371">Povežite se s mrežom i ponovo učitajte stranicu da vidite pozadinsku sliku.</translation>
 <translation id="8291967909914612644">Zemlja domaćeg mobilnog operatera</translation>
 <translation id="8294431847097064396">Izvor</translation>
@@ -1370,9 +1364,6 @@
 <translation id="8372477600026034341">Dodatni host računari</translation>
 <translation id="8372667721254470022">maslinaste</translation>
 <translation id="8373046809163484087">Koristite skupove boja koji odgovaraju pozadinskoj slici</translation>
-<translation id="8379123594780452422">Kada ovo dozvolite, Diktafon će obrađivati audio snimke pomoću napredne analize audio snimaka.
-
-Ovo možete bilo kada isključiti u Postavkama.</translation>
 <translation id="8380114448424469341">Priključivanje prozora na <ph name="DIRECTION" /> polovini ekrana</translation>
 <translation id="8391349326751432483">Morate imati slobodno najmanje 500 MB da pokrenete test memorije. Da oslobodite memoriju, zatvorite kartice i aplikacije.</translation>
 <translation id="8395584934117017006">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja preduzeće</translation>
@@ -1520,7 +1511,6 @@ Ovo možete bilo kada isključiti u Postavkama.</translation>
 <translation id="9122602430962285795">Da se ponovo povežete, idite u Postavke</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Sačuvajte više stranica u jedan PDF</translation>
-<translation id="9129549320890412487">Funkcija transkripcije</translation>
 <translation id="9133772297793293778">Pritisnite modifikatore od 1 do 4 i još jednu tipku na tastaturi. Da napustite način rada za uređivanje, pritisnite Alt i Esc.</translation>
 <translation id="9137526406337347448">Googleove usluge</translation>
 <translation id="9138630967333032450">Lijeva tipka Shift</translation>

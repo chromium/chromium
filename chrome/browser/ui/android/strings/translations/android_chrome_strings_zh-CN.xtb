@@ -513,6 +513,7 @@
 <translation id="3557336313807607643">添加到通讯录</translation>
 <translation id="3563767357928833671">已显示剪贴板内容</translation>
 <translation id="3566639033325271639">更新设置</translation>
+<translation id="3568945271227339929">没有任何密码遭泄露</translation>
 <translation id="357465026686164600">将手机用作安全密钥</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577558748185201054">管理您的兴趣和偏好设置</translation>
@@ -946,7 +947,6 @@
 <translation id="5698878456427040674">检查所选账号是否受支持。</translation>
 <translation id="570347048394355941">切换至标签页</translation>
 <translation id="5715150588940290235">删除已保存的安全码？</translation>
-<translation id="5718049162805123412">您应立即更改密码</translation>
 <translation id="571930967925877633">您的书签、历史记录和其他 Chrome 数据将不再同步到您的 Google 账号中</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
 <translation id="5726692708398506830">放大网页上的所有内容</translation>
@@ -1536,7 +1536,6 @@
 <translation id="8348430946834215779">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告</translation>
 <translation id="8354977102499939946">使用语音快速搜索。若要修改该快捷方式，请前往“设置”部分。</translation>
 <translation id="835847953965672673">已恢复 <ph name="NUMBER_OF_DOWNLOADS" /> 项下载内容</translation>
-<translation id="8367705492654390392">请提出任何问题</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8378850197701296741">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录及其他设置。</translation>
 <translation id="8387617938027387193">请验证是您本人在操作</translation>

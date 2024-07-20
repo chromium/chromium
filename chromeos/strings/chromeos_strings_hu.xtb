@@ -90,7 +90,6 @@
 <translation id="1432110487435300883">Hozzávetőleges eredményért ossza el a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Minden hónapban automatikusan visszaállítja az adathasználatot a kiválasztott napon</translation>
 <translation id="1442433966118452622">Kép forrása</translation>
-<translation id="1445573806602812670">Átirat készítése a felvételekről</translation>
 <translation id="1446954767133808402">zafír</translation>
 <translation id="1449035143498573192">Megnyitás a Google Keresőben</translation>
 <translation id="1451536289672181509">Az eszköz egy billentyűzet.</translation>
@@ -152,7 +151,6 @@
 <translation id="1718553040985966377">tó</translation>
 <translation id="1720424726586960395">szentjánosbogár-erdő</translation>
 <translation id="1726100011689679555">Névszerverek</translation>
-<translation id="1728792932018505912">Ezt a Beállításokban vagy a <ph name="THREE_DOTS_MENU_ICON" /> menüben módosíthatja</translation>
 <translation id="1731082422893354635">Bluetooth-érintőpad</translation>
 <translation id="1738949837603788263"><ph name="ZONE_NUMBER" /> zóna</translation>
 <translation id="1745577949879301685">Nem sikerült a képek betöltése. Ellenőrizze a hálózati kapcsolatot, vagy próbálja meg újra betölteni a képeket.</translation>
@@ -288,7 +286,6 @@
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2364498172489649528">Sikeres ellenőrzés</translation>
 <translation id="2367335866686097760">Billentyűzetkiosztás – billentyű</translation>
-<translation id="2370739752330685659">Talán később</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Visszajelzési jelentés küldése</translation>
 <translation id="2407209115954268704">SIM-zárolás állapota</translation>
@@ -635,6 +632,7 @@
 <translation id="4454245904991689773">Beolvasás ide</translation>
 <translation id="4456812688969919973">Az APN mentése gomb mostantól le van tiltva</translation>
 <translation id="4469288414739283461">A Föld mozgása képernyőkímélő</translation>
+<translation id="4474142134969976028">Nincs egyezés</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nem sikerült a nem alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="4500722292849917410">A billentyűparancs nem áll rendelkezésre. Nyomja le az új billentyűparancsot egy módosító billentyű (Ctrl, Alt, Shift vagy <ph name="META_KEY" />) használatával.</translation>
@@ -751,7 +749,6 @@
 <translation id="5099354524039520280">felfelé</translation>
 <translation id="5107243100836678918">A(z) <ph name="META_KEY" /> billentyű nélküli billentyűparancs ütközhet egyes alkalmazások billentyűparancsaival. Ha továbbra is használni szeretné, nyomja le újra ezt a billentyűparancsot, vagy nyomjon le egy új billentyűparancsot a(z) <ph name="KEY" /> billentyű használatával. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Rokon értelmű:</translation>
-<translation id="5109744590306245079">A Hangfelvevő átiratokat készíthet a beszédet tartalmazó felvételekről. Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfeljebb 100 MB).</translation>
 <translation id="5130848777448318809">pónik</translation>
 <translation id="5137451382116112100">Teljes</translation>
 <translation id="5142961317498132443">Hitelesítés</translation>
@@ -913,6 +910,7 @@
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6040852767465482106">Névtelen azonosító</translation>
 <translation id="604124094241169006">Automatikus</translation>
+<translation id="6042308850641462728">Továbbiak</translation>
 <translation id="6048107060512778456">Sikertelen – Papírelakadás</translation>
 <translation id="6050189528197190982">Szürkeárnyalat</translation>
 <translation id="6054711098834486579">expresszionista</translation>
@@ -937,7 +935,6 @@
 <translation id="6136285399872347291">törlés</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Felhasználói tanúsítvány</translation>
-<translation id="6141004321363227868">Ha ez a funkció be van kapcsolva, az azonnali átiratok a felvételek készítése közben is megjelennek.</translation>
 <translation id="6146993107019042706">A befejezéshez adja meg új jelszavát</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">gesztenyebarna és rózsaszín</translation>
@@ -1022,7 +1019,6 @@
 <translation id="6543412779435705598">tacók</translation>
 <translation id="6551839203326557324">almák</translation>
 <translation id="65526652485742171">A Megerősítés gomb mostantól engedélyezve van</translation>
-<translation id="6556016675518580850">Ha elhagyja ezt az oldalt, akkor befejeződik az aktuális felvétel.</translation>
 <translation id="6557784757915238407">Az APN típusa: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Síkágy</translation>
 <translation id="6560196641871357166">Élénk</translation>
@@ -1077,8 +1073,6 @@
 <translation id="6798678288485555829">Szöveges navigáció</translation>
 <translation id="680983167891198932">Kulcs</translation>
 <translation id="6816797338148849397">Rendelkezésre áll információ a kiválasztott elemmel kapcsolatban. A felfelé nyíllal érheti el.</translation>
-<translation id="6818844233294698434">Figyelek a beszédre…</translation>
-<translation id="6837645039518471192">Kilépés a felvételből</translation>
 <translation id="6853312040151791195">Lemerítési sebesség</translation>
 <translation id="6866732840889595464">százszorszép</translation>
 <translation id="6871256179359663621">világoslila</translation>
@@ -1220,6 +1214,7 @@
 <translation id="7528507600602050979">A súgótartalom nem áll rendelkezésre</translation>
 <translation id="7535791657097741517">Világos téma bekapcsolása</translation>
 <translation id="7544126681856613971">ködös erdő</translation>
+<translation id="7544853251252956727">Keverés</translation>
 <translation id="7550715992156305117">Diagnosztikai rutinok</translation>
 <translation id="7551123448725492271">Az eszköz egy audioeszköz.</translation>
 <translation id="7559239713112547082">Képernyőkép előnézete</translation>
@@ -1276,7 +1271,6 @@
 <translation id="7850847810298646851">A háttérképet a Google AI biztosítja</translation>
 <translation id="785170686607360576">tulipán</translation>
 <translation id="7856267634822906833">Bluetooth-érintőképernyő</translation>
-<translation id="7857744683152972248">Engedélyezi a Hangfelvevőnek a beszélő felek azonosítását?</translation>
 <translation id="7859006200041800233">kaktuszvirág</translation>
 <translation id="7869143217755017858">Sötét mód kikapcsolása</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1332,7 +1326,6 @@
 <translation id="8162776280680283326">rókák</translation>
 <translation id="8167413449582155132">A hátteret a Google AI biztosítja</translation>
 <translation id="8171020708598805594">Automatikusan létrehozhat átiratokat, összefoglalót kérhet a felvételekről a Google AI-tól, és kereshet a hangfelvételek között. Akkor is készíthet felvételeket, amikor nincs internetkapcsolata.</translation>
-<translation id="8174280683348521982">Törli a jelenlegi felvételt?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">tengerpart</translation>
 <translation id="819278132617411009">A Google AI használatával hatékonyabb lehet</translation>
@@ -1348,6 +1341,7 @@
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8262870577632766028">1 óra</translation>
 <translation id="827422111966801947">Indigókék</translation>
+<translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8286154143153872371">A háttérkép megtekintése érdekében csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="8291967909914612644">Otthoni szolgáltató országa</translation>
 <translation id="8294431847097064396">Forrás</translation>
@@ -1370,9 +1364,6 @@
 <translation id="8372477600026034341">További gazdagépek</translation>
 <translation id="8372667721254470022">olajzöld</translation>
 <translation id="8373046809163484087">A háttérképhez illeszkedő színkészletek használata</translation>
-<translation id="8379123594780452422">Ha engedélyezi, a Hangfelvevő fejlett hangelemzéssel dolgozza fel a hangfelvételeket.
-
-Ezt a funkciót bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="8380114448424469341">Ablak dokkolása a képernyő <ph name="DIRECTION" /> oldali felén</translation>
 <translation id="8391349326751432483">Legalább 500 MB szabad tárhely szükséges memóriateszt futtatásához. Memória felszabadításához zárjon be lapokat és alkalmazásokat.</translation>
 <translation id="8395584934117017006">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a vállalat felügyeli</translation>
@@ -1520,7 +1511,6 @@ Ezt a funkciót bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="9122602430962285795">Az újracsatlakozáshoz nyissa meg a Beállításokat.</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Több oldal mentése egy PDF-be</translation>
-<translation id="9129549320890412487">Átírási funkció</translation>
 <translation id="9133772297793293778">Nyomja meg a billentyűzeten a kívánt módosítót (1–4) és egy másik billentyűt. A szerkesztési módból az alt + esc billentyűkombináció lenyomásával léphet ki.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Bal oldali Shift</translation>

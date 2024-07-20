@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Blokovat webu ukládání dat do zařízení</translation>
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Před povolením spuštění chráněného obsahu na webu se zeptat</translation>
+<translation id="2918484639460781603">Přejít na nastavení</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
 <translation id="2939338015096024043">Když je tato možnost zapnutá, weby mohou žádat o sledování polohy kamery a o informace o okolí. Když je vypnutá, weby nemohou sledovat polohu kamery ani získat informace o okolí.</translation>
 <translation id="2968755619301702150">Prohlížeč certifikátů</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Senzory pohybu nebo světla</translation>
 <translation id="4755971844837804407">Když je tato možnost zapnutá, weby vám mohou zobrazovat jakékoliv reklamy. Když je vypnutá, weby nemohou zobrazovat rušivé ani zavádějící reklamy.</translation>
 <translation id="4779083564647765204">Lupa</translation>
+<translation id="4807122856660838973">Zapnout Bezpečné prohlížení</translation>
 <translation id="4811450222531576619">Informace o zdroji a tématu</translation>
 <translation id="4836046166855586901">Zeptat se, když chce web zjistit, kdy aktivně používáte toto zařízení</translation>
 <translation id="483914009762354899">Zahrnout všechny weby v této doméně</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Nebyly nalezeny žádné kontakty</translation>
 <translation id="4996978546172906250">Sdílet prostřednictvím</translation>
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
+<translation id="5007392906805964215">Zkontrolovat</translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5048398596102334565">Povolit webům přístup k senzorům pohybu (doporučeno)</translation>
 <translation id="5050380848339752099">Tento web chce sdílet informace s aplikací mimo anonymní režim.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Přidání webu</translation>
 <translation id="7368695150573390554">Všechna offline data budou smazána</translation>
 <translation id="7383715096023715447">Nastavení zařízení <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Bezpečnostní kontrola</translation>
 <translation id="7406113532070524618">Toto nastavení funguje, aniž by webům umožňovalo identifikovat vás nebo zjistit vaši historii prohlížení. Weby však v rámci ověření mohou sdílet malé množství informací</translation>
 <translation id="7423098979219808738">Nejprve se dotázat</translation>
 <translation id="7423538860840206698">Čtení schránky je blokováno</translation>

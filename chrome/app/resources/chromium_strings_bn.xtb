@@ -46,7 +46,6 @@
 <translation id="1749104137266986751">HTTPS উপলভ্য না থাকলে, Chromium আপনাকে সতর্ক না করেই অসুরক্ষিত কানেকশন ব্যবহার করবে</translation>
 <translation id="1774152462503052664">Chromium-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
 <translation id="1779356040007214683">Chromium কে আরও নিরাপদ করতে, আমরা কিছু এক্সটেনশান অক্ষম করেছি যা <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> এ তালিকাবদ্ধ করা হয়নি এবং হয়ত আপনাকে না জানিয়ে যোগ করা হয়েছে৷</translation>
-<translation id="1804128559285178512">আপনি সাইন-ইন করার সময়, Chromium-এ আপনার Google অ্যাকাউন্ট থেকে পাসওয়ার্ড এবং আরও অনেক কিছু ব্যবহার করতে পারবেন</translation>
 <translation id="1808667845054772817">Chromium আবার ইন্সটল করুন</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" />-এর চেষ্টা করছে</translation>
 <translation id="18552579716432081">শুধুমাত্র এই ডিভাইস থেকে ব্রাউজ করা ডেটা মুছে দিতে, তা নিজের Google অ্যাকাউন্টে রেখে দেওয়ার সময়, <ph name="BEGIN_LINK" />Chromium থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>

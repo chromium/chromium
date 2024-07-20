@@ -598,6 +598,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4049507953662678203">Comprueba que tienes una conexión de red y vuelve a intentarlo.</translation>
 <translation id="4054572406751135230">Mantente al día de las noticias, los deportes y más.</translation>
 <translation id="4068959193278821990">Activar protección mejorada...</translation>
+<translation id="4088879333319441249">¿Desagrupar grupo de pestañas?</translation>
 <translation id="4092655288299341041">Mostrar ayuda</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eliminar dirección}other{Eliminar direcciones}}</translation>
 <translation id="4108998448622696017">Detecta y te advierte de los eventos peligrosos cuando suceden.</translation>
@@ -1405,6 +1406,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="7975036700432177008">Probar</translation>
 <translation id="7977451675950311423">Te avisa si usas una contraseña vulnerada en una brecha de seguridad de datos.</translation>
 <translation id="7978018860671536736">3. Toca Autorrellenar contraseñas</translation>
+<translation id="797824194429476746">Las pestañas seguirán abiertas en este dispositivo, pero el grupo se eliminará de forma permanente</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7987685713885608670">Para una mayor seguridad, cifra las contraseñas en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google.</translation>
 <translation id="7993619969781047893">Es posible que las funciones de algunos sitios no funcionen correctamente</translation>

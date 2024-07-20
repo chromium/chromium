@@ -513,6 +513,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3557336313807607643">주소록에 추가</translation>
 <translation id="3563767357928833671">클립보드 콘텐츠 표시됨</translation>
 <translation id="3566639033325271639">설정 업데이트</translation>
+<translation id="3568945271227339929">유출된 비밀번호 없음</translation>
 <translation id="357465026686164600">휴대전화를 보안 키로 사용</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3577558748185201054">관심분야 및 환경설정을 관리합니다</translation>
@@ -946,7 +947,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5698878456427040674">선택한 계정이 지원되는지 확인하세요.</translation>
 <translation id="570347048394355941">탭으로 전환</translation>
 <translation id="5715150588940290235">저장된 보안 코드를 삭제하시겠습니까?</translation>
-<translation id="5718049162805123412">지금 변경해야 합니다</translation>
 <translation id="571930967925877633">북마크, 방문 기록 등의 Chrome 데이터가 더 이상 Google 계정과 동기화되지 않습니다</translation>
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5726692708398506830">페이지의 모든 항목 확대</translation>
@@ -1538,7 +1538,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8348430946834215779">가능하면 항상 HTTPS를 사용하고 이를 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="8354977102499939946">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
-<translation id="8367705492654390392">무엇이든 물어보세요</translation>
 <translation id="8368001212524806591">가격 추적</translation>
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록 및 기타 설정이 있습니다.</translation>
 <translation id="8387617938027387193">본인 인증</translation>

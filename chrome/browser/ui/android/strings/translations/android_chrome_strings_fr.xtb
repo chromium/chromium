@@ -513,6 +513,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
 <translation id="3563767357928833671">Contenu du presse-papiers affiché</translation>
 <translation id="3566639033325271639">Mettre à jour les paramètres</translation>
+<translation id="3568945271227339929">Aucun mot de passe compromis</translation>
 <translation id="357465026686164600">Utiliser le téléphone comme clé de sécurité</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577558748185201054">Gérez vos centres d'intérêt et préférences</translation>
@@ -946,7 +947,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5698878456427040674">Vérifiez si le compte sélectionné est compatible.</translation>
 <translation id="570347048394355941">Ouvrir un autre onglet</translation>
 <translation id="5715150588940290235">Supprimer les codes de sécurité enregistrés ?</translation>
-<translation id="5718049162805123412">Vous devriez les modifier immédiatement</translation>
 <translation id="571930967925877633">Vos favoris, votre historique et d'autres données Chrome ne seront plus synchronisés avec votre compte Google</translation>
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5726692708398506830">Agrandir tous les éléments de la page</translation>
@@ -1538,7 +1538,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8348430946834215779">Utilisez HTTPS autant que possible et recevez un avertissement avant de charger des sites qui ne le prennent pas en charge</translation>
 <translation id="8354977102499939946">Rechercher rapidement par commande vocale. Pour modifier ce raccourci, accédez aux paramètres.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
-<translation id="8367705492654390392">Posez une question</translation>
 <translation id="8368001212524806591">Effectuer le suivi du prix</translation>
 <translation id="8378850197701296741">Vous disposez des favoris, de l'historique et d'autres paramètres de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Confirmez votre identité</translation>

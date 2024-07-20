@@ -975,6 +975,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="169675691788639886">Device has SSH server configured. Do not sign in with sensitive accounts.</translation>
 <translation id="1697122132646041614">Thumbs down opens a form for submitting detailed feedback on why you dislike these results.</translation>
 <translation id="1697150536837697295">Art</translation>
+<translation id="1697532407822776718">You're all set!</translation>
 <translation id="1697686431566694143">Edit file</translation>
 <translation id="1698796500103229697">Payment methods</translation>
 <translation id="1698899521169711967">Caret Browsing</translation>
@@ -1406,7 +1407,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="199610894463449797">{0,plural, =1{Close this profile}other{Close this profile (# windows)}}</translation>
 <translation id="1997433994358798851">Chrome needs permission to use Bluetooth to connect to your device</translation>
 <translation id="1997616988432401742">Your certificates</translation>
-<translation id="199801374788581808">You can try again or contact your administrator or help</translation>
 <translation id="1999115740519098545">On start-up</translation>
 <translation id="2002109485265116295">Real-time</translation>
 <translation id="2002160221914907025">Experimental AI</translation>
@@ -2512,6 +2512,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2776560192867872731">Change device name for <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Delete this container</translation>
 <translation id="2777525873368474674">Paste image link</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{Found 1 site with lots of notifications}other{Found {NUM_SITES} sites with lots of notifications}}</translation>
 <translation id="2778471504622896352">Add remote apps to the ChromeOS launcher</translation>
 <translation id="2779728796406650689">This allows Google Assistant to provide tailored responses when you ask questions.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2669,7 +2670,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2893180576842394309">Google may use your history to personalise Search and other Google services</translation>
 <translation id="2893701697603065178">Managed development environment</translation>
 <translation id="2894757982205307093">New tab in group</translation>
-<translation id="2895730582088342039">Save, share and cast</translation>
 <translation id="289695669188700754">Key ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">This custom setting will be removed when you close all your incognito windows</translation>
 <translation id="2897878306272793870">Are you sure that you want to open <ph name="TAB_COUNT" /> tabs?</translation>
@@ -3457,7 +3457,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3503995387997205657">You can restore your previous apps</translation>
 <translation id="3505100368357440862">Shopping suggestions</translation>
 <translation id="3505602163050943406">When you use some features, they can send parts of open pages, related recent pages, and their URLs to Google</translation>
-<translation id="3505762711681798106">We're getting your workspace ready! Feel free to explore in the meantime and we'll be ready for you soon.</translation>
 <translation id="3507132249039706973">Standard protection is on</translation>
 <translation id="3507888235492474624">Re-scan Bluetooth devices</translation>
 <translation id="3508492320654304609">Your sign-in data couldn't be deleted</translation>
@@ -5140,7 +5139,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4750185073185658673">Go to your phone to review a few more permissions. Make sure that your phone's Bluetooth and Wi-Fi are turned on.</translation>
 <translation id="4750394297954878236">Suggestions</translation>
 <translation id="475088594373173692">First user</translation>
-<translation id="4754167810863682207">Your profile setup is almost done</translation>
 <translation id="4756378406049221019">Stop/Reload</translation>
 <translation id="4756388243121344051">&amp;History</translation>
 <translation id="4756671452988984333">Text for audio</translation>
@@ -5801,7 +5799,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5247243947166567755">Select <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">The browser crashed before the download completed.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> uses your location to give you local content. You can change this in <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5251885976619018662">Create a recovery PIN for Google Password Manager</translation>
 <translation id="5252496130205799136">Use your Google Account to save and fill passwords?</translation>
 <translation id="5252653240322147470">PIN must be less than <ph name="MAXIMUM" /> digits</translation>
 <translation id="5253554634804500860">Use <ph name="DEVICE_NAME" /></translation>
@@ -7449,7 +7446,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" would like to install the following app on this device:}other{"<ph name="APP_NAME" />" would like to install the following apps on this device:}}</translation>
 <translation id="6508248480704296122">Related to <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">You are ready to use your profile for work</translation>
 <translation id="6511607461419653612">Restart your Chromebook and try again</translation>
 <translation id="6511827214781912955">Consider deleting <ph name="FILENAME" />, so that others who use this device can't see your passwords</translation>
 <translation id="6512759338201777379">Generated image <ph name="INDEX" /> of <ph name="SUBJECT" />, with <ph name="MOOD" /> mood.</translation>
@@ -9585,7 +9581,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8084429490152575036">Cellular APN settings</translation>
 <translation id="8084510406207562688">Restore all tabs</translation>
 <translation id="8084628902026812045">This site isn't using a secure connection and the file may have been tampered with</translation>
-<translation id="8085701268329068646">Enter your PIN for Google Password Manager</translation>
 <translation id="8086015605808120405">Configuring <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086121155774250556">This tab is sharing your screen</translation>
 <translation id="8086610718778464681">Can't back up Linux apps and files</translation>
@@ -10417,7 +10412,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8694596275649352090">Lock when sleeping or lid is closed</translation>
 <translation id="8695139659682234808">Add parental controls after setup</translation>
 <translation id="8695825812785969222">Open &amp;Location...</translation>
-<translation id="8697753370348182287">Your work profile is ready</translation>
 <translation id="8698269656364382265">To return to the previous screen, swipe from the left side.</translation>
 <translation id="8698432579173128320">Back up to Google Drive. Easily restore your data or switch devices at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password. <ph name="BEGIN_LINK1" />Learn more about backup<ph name="BEGIN_LINK1_END" />Learn more<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Applications menu</translation>
@@ -11119,7 +11113,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="920045321358709304">Search <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Viewed previously</translation>
 <translation id="9201220332032049474">Screen lock options</translation>
-<translation id="9201762611758697018">A recovery PIN helps you access your saved passkeys on any device</translation>
 <translation id="9201842707396338580">Something went wrong. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Red-green, green weak (deuteranomaly)</translation>
 <translation id="9203398526606335860">&amp;Profiling enabled</translation>

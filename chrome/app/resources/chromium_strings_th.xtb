@@ -46,7 +46,6 @@
 <translation id="1749104137266986751">เมื่อ HTTPS ไม่พร้อมใช้งาน Chromium จะใช้การเชื่อมต่อที่ไม่ปลอดภัยโดยไม่แจ้งเตือนคุณ</translation>
 <translation id="1774152462503052664">ให้ Chromium ทำงานในพื้นหลัง</translation>
 <translation id="1779356040007214683">เพื่อให้ Chromium ปลอดภัยขึ้น เราได้ปิดส่วนขยายบางรายการที่ไม่ได้ระบุไว้ใน <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> และอาจถูกเพิ่มเข้ามาโดยที่คุณไม่รู้ตัว</translation>
-<translation id="1804128559285178512">คุณใช้รหัสผ่านและข้อมูลอื่นๆ จากบัญชี Google ใน Chromium ได้เมื่อลงชื่อเข้าใช้</translation>
 <translation id="1808667845054772817">ติดตั้ง Chromium ใหม่</translation>
 <translation id="1820835682567584003">Chromium กำลังพยายาม<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">หากต้องการลบข้อมูลการท่องเว็บออกจากอุปกรณ์นี้เท่านั้น แต่ยังเก็บข้อมูลดังกล่าวไว้ในบัญชี Google ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chromium<ph name="END_LINK" /></translation>

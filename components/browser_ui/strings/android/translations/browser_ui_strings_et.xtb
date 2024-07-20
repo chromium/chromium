@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Teatud saidi puhul teie seadmesse andmete salvestamise blokeerimine</translation>
 <translation id="2903493209154104877">Aadressid</translation>
 <translation id="2910701580606108292">Küsi enne saitidel kaitstud sisu esitamise lubamist</translation>
+<translation id="2918484639460781603">Ava seaded</translation>
 <translation id="2932883381142163287">Teata väärkasutusest</translation>
 <translation id="2939338015096024043">Kui see on sisse lülitatud, võivad saidid küsida luba teie kaamera asendi jälgimiseks ja teie ümbruse kohta teabe saamiseks. Kui see on välja lülitatud, ei saa saidid teie kaamera asendit jälgida ega teie ümbruse kohta teavet saada.</translation>
 <translation id="2968755619301702150">Sertifikaadikuvaja</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Liikumis- või valgusandurid</translation>
 <translation id="4755971844837804407">Kui see on sisse lülitatud, saavad saidid teile kuvada mis tahes reklaame. Kui see on välja lülitatud, ei saa saidid kuvada sekkuvaid ega eksitavaid reklaame.</translation>
 <translation id="4779083564647765204">Suumi</translation>
+<translation id="4807122856660838973">Google’i ohutu sirvimise sisselülitamine</translation>
 <translation id="4811450222531576619">Teave selle allika ja teema kohta</translation>
 <translation id="4836046166855586901">Küsi, kui sait soovib teada, millal kasutate aktiivselt seda seadet</translation>
 <translation id="483914009762354899">Kaasab kõik sellel domeenil olevad saidid</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">Kontakte ei leitud</translation>
 <translation id="4996978546172906250">Jagamine:</translation>
 <translation id="5001526427543320409">Kolmanda osapoole küpsisefailid</translation>
+<translation id="5007392906805964215">Vaata üle</translation>
 <translation id="5039804452771397117">Luba</translation>
 <translation id="5048398596102334565">Luba saitide jaoks juurdepääs liikumisanduritele (soovitatav)</translation>
 <translation id="5050380848339752099">See sait jagab teavet väljaspool inkognito režiimi oleva rakendusega.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Saidi lisamine</translation>
 <translation id="7368695150573390554">Kõik võrguvälised andmed kustutatakse</translation>
 <translation id="7383715096023715447">Domeeni <ph name="DOMAIN" /> seaded</translation>
+<translation id="7399802613464275309">Ohutuskontroll</translation>
 <translation id="7406113532070524618">See seade toimib ilma teid tuvastamata ega luba saitidel vaadata teie sirvimisajalugu, kuid saidid võivad kontrollimistoimingu käigus jagada väikest hulka teavet</translation>
 <translation id="7423098979219808738">Esmalt küsib</translation>
 <translation id="7423538860840206698">Lõikelaua lugemine on blokeeritud</translation>

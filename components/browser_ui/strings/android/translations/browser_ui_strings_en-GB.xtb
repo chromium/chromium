@@ -113,6 +113,7 @@
 <translation id="2891975107962658722">Block a site from saving data on your device</translation>
 <translation id="2903493209154104877">Addresses</translation>
 <translation id="2910701580606108292">Ask before allowing sites to play protected content</translation>
+<translation id="2918484639460781603">Go to settings</translation>
 <translation id="2932883381142163287">Report abuse</translation>
 <translation id="2939338015096024043">When on, sites can ask to track your camera position and learn about your surroundings. When off, sites can't track your camera position or learn about your surroundings.</translation>
 <translation id="2968755619301702150">Certificate viewer</translation>
@@ -218,6 +219,7 @@
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4755971844837804407">When on, sites can show any ad to you. When off, sites can't show intrusive or misleading ads.</translation>
 <translation id="4779083564647765204">Zoom</translation>
+<translation id="4807122856660838973">Turn on Safe Browsing</translation>
 <translation id="4811450222531576619">Learn about its source and topic</translation>
 <translation id="4836046166855586901">Ask when a site wants to know when you're actively using this device</translation>
 <translation id="483914009762354899">Include all sites under this domain</translation>
@@ -231,6 +233,7 @@
 <translation id="4994033804516042629">No contacts found</translation>
 <translation id="4996978546172906250">Share via</translation>
 <translation id="5001526427543320409">Third-party cookies</translation>
+<translation id="5007392906805964215">Review</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
@@ -389,6 +392,7 @@
 <translation id="7366415735885268578">Add a site</translation>
 <translation id="7368695150573390554">Any offline data will be deleted</translation>
 <translation id="7383715096023715447">Settings for <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Safety check</translation>
 <translation id="7406113532070524618">This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification</translation>
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>

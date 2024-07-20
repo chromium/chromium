@@ -827,7 +827,6 @@ Une "entrée utilisateur" est définie par les API du système d'exploitation et
 <translation id="1634989431648355062">Autoriser le plug-in "<ph name="FLASH_PLUGIN_NAME" />" sur ces sites</translation>
 <translation id="1635450837608153975">Désactiver les optimisations JavaScript avancées sur tous les sites</translation>
 <translation id="1635748761015837179">Autoriser l'écriture sur des périphériques de stockage externes</translation>
-<translation id="163653062822010558">Activé : le zoom CSS suit la spécification standard.</translation>
 <translation id="1639468541408865385">Activer le cache d'authentification HTTP à portée globale</translation>
 <translation id="1639673466479276550">Activez l'économiseur d'écran pour l'écran de connexion.</translation>
 <translation id="1640824698339859203">Activer le SSO flottant et déplacer les authentifications des services Web de l'utilisateur vers un nouvel appareil</translation>

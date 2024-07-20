@@ -969,6 +969,7 @@
 <translation id="169675691788639886">设备已配置了 SSH 服务器。请勿使用敏感账号登录。</translation>
 <translation id="1697122132646041614">选择“不喜欢”会打开一个表单，您可以通过该表单提供详细的反馈，说明您不喜欢这些搜索结果的原因。</translation>
 <translation id="1697150536837697295">艺术</translation>
+<translation id="1697532407822776718">搞定了！</translation>
 <translation id="1697686431566694143">修改文件</translation>
 <translation id="1698796500103229697">付款方式(&amp;P)</translation>
 <translation id="1698899521169711967">光标浏览模式</translation>
@@ -1389,7 +1390,6 @@
 <translation id="199610894463449797">{0,plural, =1{关闭此个人资料}other{关闭此个人资料（# 个窗口）}}</translation>
 <translation id="1997433994358798851">Chrome 需要获得使用蓝牙的权限，才能连接到您的设备</translation>
 <translation id="1997616988432401742">您的证书</translation>
-<translation id="199801374788581808">您可以重试，或者向管理员求助</translation>
 <translation id="1999115740519098545">启动时</translation>
 <translation id="2002109485265116295">实时</translation>
 <translation id="2002160221914907025">实验性 AI</translation>
@@ -2491,6 +2491,7 @@
 <translation id="2776560192867872731">更改“<ph name="DEVICE_NAME" />”的设备名称</translation>
 <translation id="2777251078198759550">删除此容器</translation>
 <translation id="2777525873368474674">粘贴图片链接</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{发现了 1 个向用户发送大量通知的网站}other{发现了 {NUM_SITES} 个向用户发送大量通知的网站}}</translation>
 <translation id="2778471504622896352">将远程应用添加到 ChromeOS 启动器</translation>
 <translation id="2779728796406650689">这样一来，Google 助理便可在您提问时给出量身定制的回答。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2648,7 +2649,6 @@
 <translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="2893701697603065178">代管式开发环境</translation>
 <translation id="2894757982205307093">在组内添加新标签页</translation>
-<translation id="2895730582088342039">保存、分享和投放</translation>
 <translation id="289695669188700754">密钥 ID：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">当您关闭所有无痕式窗口后，系统将会撤消这项自定义设置</translation>
 <translation id="2897878306272793870">是否确实要打开 <ph name="TAB_COUNT" /> 个标签页？</translation>
@@ -3434,7 +3434,6 @@
 <translation id="3503995387997205657">您可以恢复先前用过的应用</translation>
 <translation id="3505100368357440862">购物建议</translation>
 <translation id="3505602163050943406">当您使用某些功能时，相应功能可能会将您当前打开的网页和近期访问过的相关网页的部分内容以及这些网页的网址发送给 Google</translation>
-<translation id="3505762711681798106">我们正在准备您的工作区！在此期间，您可以随意探索，工作区很快就会准备好。</translation>
 <translation id="3507132249039706973">已开启标准保护</translation>
 <translation id="3507888235492474624">重新扫描蓝牙设备</translation>
 <translation id="3508492320654304609">无法删除您的登录数据</translation>
@@ -5116,7 +5115,6 @@
 <translation id="4750185073185658673">请在您的手机上查看另外几项权限。确保手机已开启蓝牙和 Wi-Fi。</translation>
 <translation id="4750394297954878236">建议</translation>
 <translation id="475088594373173692">第 1 位用户</translation>
-<translation id="4754167810863682207">您的个人资料设置即将完成</translation>
 <translation id="4756378406049221019">停止/重新加载</translation>
 <translation id="4756388243121344051">历史记录(&amp;H)</translation>
 <translation id="4756671452988984333">音频的文本</translation>
@@ -5777,7 +5775,6 @@
 <translation id="5247243947166567755">选择“<ph name="BOOKMARK_TITLE" />”</translation>
 <translation id="5249624017678798539">浏览器崩溃了，下载还未完成。</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> 会使用您的位置信息为您提供本地内容。您可以在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
-<translation id="5251885976619018662">为 Google 密码管理工具创建恢复 PIN 码</translation>
 <translation id="5252496130205799136">使用您的 Google 账号保存和填充密码？</translation>
 <translation id="5252653240322147470">PIN 码必须少于 <ph name="MAXIMUM" /> 位数</translation>
 <translation id="5253554634804500860">使用<ph name="DEVICE_NAME" /></translation>
@@ -7421,7 +7418,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{“<ph name="APP_NAME" />”想在此设备上安装以下应用：}other{“<ph name="APP_NAME" />”想在此设备上安装以下应用：}}</translation>
 <translation id="6508248480704296122">已与“<ph name="NAME_PH" />”关联</translation>
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">您现在可以开始使用工作资料了</translation>
 <translation id="6511607461419653612">请重启 Chromebook，然后重试</translation>
 <translation id="6511827214781912955">不妨考虑删除“<ph name="FILENAME" />”，让使用此设备的他人看不到您的密码</translation>
 <translation id="6512759338201777379">生成了第 <ph name="INDEX" /> 张<ph name="SUBJECT" />图片，情感基调是<ph name="MOOD" />。</translation>
@@ -9557,7 +9553,6 @@
 <translation id="8084429490152575036">移动网络 APN 设置</translation>
 <translation id="8084510406207562688">恢复所有标签页(&amp;E)</translation>
 <translation id="8084628902026812045">此网站使用的不是安全连接，该文件可能已被篡改</translation>
-<translation id="8085701268329068646">输入您用于访问 Google 密码管理工具的 PIN 码</translation>
 <translation id="8086015605808120405">正在配置<ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">此标签页正在共享屏幕</translation>
 <translation id="8086610718778464681">无法备份 Linux 应用和文件</translation>
@@ -10389,7 +10384,6 @@
 <translation id="8694596275649352090">在休眠或合盖时锁定</translation>
 <translation id="8695139659682234808">在完成设置后添加家长控制功能</translation>
 <translation id="8695825812785969222">打开位置(&amp;L)...</translation>
-<translation id="8697753370348182287">您的工作资料已创建完毕</translation>
 <translation id="8698269656364382265">要返回到上一个屏幕，请从屏幕左侧向右侧滑动。</translation>
 <translation id="8698432579173128320">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。备份内容包含应用数据。备份内容将上传到 Google 平台并使用您的 Google 账号密码进行加密。<ph name="BEGIN_LINK1" />详细了解备份<ph name="BEGIN_LINK1_END" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">应用菜单</translation>
@@ -11091,7 +11085,6 @@
 <translation id="920045321358709304">在<ph name="SEARCH_ENGINE" />中搜索</translation>
 <translation id="9201117361710210082">之前看过</translation>
 <translation id="9201220332032049474">屏幕锁定选项</translation>
-<translation id="9201762611758697018">恢复 PIN 码可帮助您在任意设备上访问已保存的通行密钥</translation>
 <translation id="9201842707396338580">出了点问题。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="9203296457393252944">红/绿、绿色弱（绿色弱视）</translation>
 <translation id="9203398526606335860">分析已启用(&amp;P)</translation>

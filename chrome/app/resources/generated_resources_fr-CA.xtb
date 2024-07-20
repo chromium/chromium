@@ -975,6 +975,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="169675691788639886">Cet appareil est configuré pour un serveur SSH. Ne vous connectez pas avec un compte sensible.</translation>
 <translation id="1697122132646041614">La mention Je n'aime pas ouvre un formulaire permettant de soumettre des commentaires détaillés sur les raisons pour lesquelles vous n'aimez pas ces résultats.</translation>
 <translation id="1697150536837697295">Art</translation>
+<translation id="1697532407822776718">Vous êtes prêt!</translation>
 <translation id="1697686431566694143">Modifier le fichier</translation>
 <translation id="1698796500103229697">Méthodes de paiement</translation>
 <translation id="1698899521169711967">Navigation au clavier</translation>
@@ -1397,7 +1398,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="199610894463449797">{0,plural, =1{Fermer ce profil}one{Fermer ce profil (# fenêtre)}other{Fermer ce profil (# fenêtres)}}</translation>
 <translation id="1997433994358798851">Chrome a besoin d'une autorisation pour utiliser le Bluetooth afin de se connecter à votre appareil</translation>
 <translation id="1997616988432401742">Vos certificats</translation>
-<translation id="199801374788581808">Vous pouvez réessayer ou communiquer avec votre administrateur pour obtenir de l'aide</translation>
 <translation id="1999115740519098545">Au démarrage</translation>
 <translation id="2002109485265116295">En temps réel</translation>
 <translation id="2002160221914907025">IA expérimentale</translation>
@@ -2500,6 +2500,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2776560192867872731">Modifier le nom de l'appareil pour <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Supprimer ce conteneur</translation>
 <translation id="2777525873368474674">Coller l'image du lien</translation>
+<translation id="2777815813197804919">{NUM_SITES,plural, =1{1 site trouvé contenant de nombreuses notifications}one{{NUM_SITES} site trouvé contenant de nombreuses notifications}other{{NUM_SITES} sites trouvés contenant de nombreuses notifications}}</translation>
 <translation id="2778471504622896352">Ajouter des applications distantes au lanceur ChromeOS</translation>
 <translation id="2779728796406650689">Cette option permet à l'Assistant Google de fournir des réponses personnalisées lorsque vous posez des questions.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -2659,7 +2660,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2893180576842394309">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google</translation>
 <translation id="2893701697603065178">Environnement de développement géré</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
-<translation id="2895730582088342039">Enregistrer, partager et diffuser</translation>
 <translation id="289695669188700754">Identifiant de la clé : <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ce paramètre personnalisé sera retiré lorsque vous fermerez toutes vos fenêtres de navigation privée</translation>
 <translation id="2897878306272793870">Voulez-vous vraiment ouvrir <ph name="TAB_COUNT" /> onglets?</translation>
@@ -3447,7 +3447,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3503995387997205657">Vous pouvez restaurer vos applications précédentes</translation>
 <translation id="3505100368357440862">Suggestions de magasinage</translation>
 <translation id="3505602163050943406">Lorsque vous utilisez certaines fonctionnalités, elles peuvent envoyer des parties des pages ouvertes, des pages récentes associées et leurs URL à Google.</translation>
-<translation id="3505762711681798106">Nous préparons votre espace de travail! En attendant, n'hésitez pas à explorer et nous serons bientôt prêts pour vous.</translation>
 <translation id="3507132249039706973">La protection standard est activée</translation>
 <translation id="3507888235492474624">Relancer la recherche d'appareils Bluetooth</translation>
 <translation id="3508492320654304609">Impossible de supprimer vos données de connexion</translation>
@@ -5130,7 +5129,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4750185073185658673">Accédez à votre téléphone pour passer en revue quelques autorisations supplémentaires. Assurez-vous que le Bluetooth et le Wi-Fi de votre téléphone sont activés.</translation>
 <translation id="4750394297954878236">Suggestions</translation>
 <translation id="475088594373173692">Premier utilisateur</translation>
-<translation id="4754167810863682207">La configuration de votre profil est presque terminée</translation>
 <translation id="4756378406049221019">Arrêter/Actualiser</translation>
 <translation id="4756388243121344051">&amp;Historique</translation>
 <translation id="4756671452988984333">Texte pour le contenu audio</translation>
@@ -5790,7 +5788,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5247243947166567755">Sélectionner <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Le navigateur a planté avant la fin du téléchargement.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utilise votre position pour vous proposer du contenu local. Vous pouvez modifier cette option dans <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5251885976619018662">Créer un NIP de récupération pour le gestionnaire de mots de passe Google</translation>
 <translation id="5252496130205799136">Utiliser votre compte Google pour enregistrer et remplir les mots de passe?</translation>
 <translation id="5252653240322147470">Le NIP doit comporter moins de <ph name="MAXIMUM" /> chiffres</translation>
 <translation id="5253554634804500860">Utiliser <ph name="DEVICE_NAME" /></translation>
@@ -7437,7 +7434,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{« <ph name="APP_NAME" /> » souhaite installer l'application suivante sur cet appareil :}one{« <ph name="APP_NAME" /> » souhaite installer l'application suivante sur cet appareil :}other{« <ph name="APP_NAME" /> » souhaite installer les applications suivantes sur cet appareil :}}</translation>
 <translation id="6508248480704296122">En lien avec <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Application : <ph name="APP_NAME" /></translation>
-<translation id="6509236174479207412">Vous êtes prêt à utiliser votre profil pour le travail</translation>
 <translation id="6511607461419653612">Redémarrez votre Chromebook et réessayez</translation>
 <translation id="6511827214781912955">Envisagez de supprimer <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
 <translation id="6512759338201777379">Image <ph name="INDEX" /> de <ph name="SUBJECT" /> générée, avec l'ambiance <ph name="MOOD" />.</translation>
@@ -9573,7 +9569,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8084429490152575036">Paramètres du nom de point d'accès cellulaire</translation>
 <translation id="8084510406207562688">R&amp;estaurer tous les onglets</translation>
 <translation id="8084628902026812045">Ce site n'utilise pas de connexion sécurisée et le fichier a peut-être été altéré</translation>
-<translation id="8085701268329068646">Entrez votre NIP pour le gestionnaire de mots de passe Google</translation>
 <translation id="8086015605808120405">Configuration de <ph name="PRINTER_NAME" /> en cours</translation>
 <translation id="8086121155774250556">Cet onglet partage votre écran</translation>
 <translation id="8086610718778464681">Impossible de sauvegarder les applications et les fichiers Linux</translation>
@@ -10405,7 +10400,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8694596275649352090">Verrouiller lorsque l'appareil est en veille ou que le couvercle est fermé</translation>
 <translation id="8695139659682234808">Ajouter des contrôles parentaux après la configuration</translation>
 <translation id="8695825812785969222">Atteindre un emp&amp;lacement…</translation>
-<translation id="8697753370348182287">Votre profil professionnel est prêt</translation>
 <translation id="8698269656364382265">Pour revenir à l'écran précédent, balayez l'écran de la gauche vers la droite.</translation>
 <translation id="8698432579173128320">Sauvegarder sur Google Disque. Restaurez facilement vos données ou changez d'appareil à tout moment. Votre sauvegarde inclut les données des applis. Vos sauvegardes sont téléversées dans les serveurs de Google et sont chiffrées en utilisant le mot de passe de votre compte Google. <ph name="BEGIN_LINK1" />En savoir plus sur la sauvegarde<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="869884720829132584">Menu Applications</translation>
@@ -11107,7 +11101,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="920045321358709304">Rechercher <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Consulté précédemment</translation>
 <translation id="9201220332032049474">Options de verrouillage de l'écran</translation>
-<translation id="9201762611758697018">Un NIP de récupération vous aide à accéder à vos clés d'accès enregistrés sur n'importe quel appareil</translation>
 <translation id="9201842707396338580">Une erreur s'est produite. Veuillez communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Rouge-vert, vert faible (Deutéranomalie)</translation>
 <translation id="9203398526606335860">&amp;Profilage activé</translation>
