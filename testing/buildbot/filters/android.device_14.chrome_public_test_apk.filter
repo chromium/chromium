@@ -1,0 +1,5 @@
+# crbug.com/354278364
+-org.chromium.chrome.browser.app.appmenu.TabbedAppMenuTest.*
+
+# crbug.com/354279630
+-org.chromium.components.paintpreview.player.PaintPreviewPlayerTest.overscrollRefreshTest

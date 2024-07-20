@@ -1462,7 +1462,9 @@
         },
       },
       'android-14-arm64-fyi-rel': {
-        'ci_only': True,
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.chrome_public_test_apk.filter',
+        ],
       },
       'android-14-x64-rel': {
         'args': [
@@ -5563,9 +5565,6 @@
         'swarming': {
           'shards': 12,
         },
-      },
-      'android-14-arm64-fyi-rel': {
-        'ci_only': True,
       },
       'android-14-x64-rel': {
         'args': [

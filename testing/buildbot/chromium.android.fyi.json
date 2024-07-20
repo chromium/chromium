@@ -10091,10 +10091,10 @@
       {
         "args": [
           "--git-revision=${got_revision}",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
