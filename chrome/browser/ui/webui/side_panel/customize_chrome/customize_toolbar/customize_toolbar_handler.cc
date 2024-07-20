@@ -34,8 +34,11 @@ MojoActionForChromeAction(actions::ActionId action_id) {
       return side_panel::customize_chrome::mojom::ActionId::kShowReadAnything;
     case kActionSidePanelShowReadingList:
       return side_panel::customize_chrome::mojom::ActionId::kShowReadingList;
-    case kActionSidePanelShowSideSearch:
-      return side_panel::customize_chrome::mojom::ActionId::kShowSideSearch;
+    case kActionSidePanelShowLensOverlayResults:
+      return side_panel::customize_chrome::mojom::ActionId::kShowLensOverlay;
+    case kActionSidePanelShowSearchCompanion:
+      return side_panel::customize_chrome::mojom::ActionId::
+          kShowSearchCompanion;
     case kActionHome:
       return side_panel::customize_chrome::mojom::ActionId::kHome;
     case kActionForward:
@@ -85,8 +88,10 @@ std::optional<actions::ActionId> ChromeActionForMojoAction(
       return kActionSidePanelShowReadAnything;
     case side_panel::customize_chrome::mojom::ActionId::kShowReadingList:
       return kActionSidePanelShowReadingList;
-    case side_panel::customize_chrome::mojom::ActionId::kShowSideSearch:
-      return kActionSidePanelShowSideSearch;
+    case side_panel::customize_chrome::mojom::ActionId::kShowLensOverlay:
+      return kActionSidePanelShowLensOverlayResults;
+    case side_panel::customize_chrome::mojom::ActionId::kShowSearchCompanion:
+      return kActionSidePanelShowSearchCompanion;
     case side_panel::customize_chrome::mojom::ActionId::kHome:
       return kActionHome;
     case side_panel::customize_chrome::mojom::ActionId::kForward:
@@ -229,7 +234,9 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
 
   add_action(kActionPrint,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
-  add_action(kActionSidePanelShowSideSearch,
+  add_action(kActionSidePanelShowLensOverlayResults,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionSidePanelShowSearchCompanion,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionShowTranslate,
              side_panel::customize_chrome::mojom::CategoryId::kTools);

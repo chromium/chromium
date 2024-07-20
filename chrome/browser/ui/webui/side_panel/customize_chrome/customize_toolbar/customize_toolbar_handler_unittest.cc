@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
@@ -15,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/lens/lens_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,6 +90,7 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
   }
 
   void SetUp() override {
+    SetupFeatureList();
     BrowserWithTestWindowTest::SetUp();
 
     mock_pinned_toolbar_actions_model_ =
@@ -116,6 +119,10 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
+  virtual void SetupFeatureList() {
+    feature_list_.InitAndEnableFeature(lens::features::kLensOverlay);
+  }
+
   CustomizeToolbarHandler& handler() { return *handler_; }
   MockPinnedToolbarActionsModel& mock_pinned_toolbar_actions_model() {
     return *mock_pinned_toolbar_actions_model_;
@@ -125,6 +132,7 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<MockPage> mock_page_;
 
   raw_ptr<MockPinnedToolbarActionsModel> mock_pinned_toolbar_actions_model_;
@@ -183,8 +191,8 @@ TEST_F(CustomizeToolbarHandlerTest, ListActions) {
       side_panel::customize_chrome::mojom::ActionId::kShowReadAnything));
   EXPECT_TRUE(contains_action(
       side_panel::customize_chrome::mojom::ActionId::kShowReadingList));
-  // EXPECT_TRUE(contains_action(
-  //     side_panel::customize_chrome::mojom::ActionId::kShowSideSearch));
+  EXPECT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kShowLensOverlay));
   EXPECT_TRUE(
       contains_action(side_panel::customize_chrome::mojom::ActionId::kHome));
   EXPECT_TRUE(
@@ -335,3 +343,37 @@ TEST_F(CustomizeToolbarHandlerTest, ResetToDefault) {
               reset_ids.end());
   }
 }
+
+class CustomizeToolbarHandlerCompanionTest
+    : public CustomizeToolbarHandlerTest {
+ public:
+  CustomizeToolbarHandlerCompanionTest() = default;
+
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitWithFeatures(
+        {companion::features::internal::kSidePanelCompanion},
+        {lens::features::kLensOverlay});
+  }
+};
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+TEST_F(CustomizeToolbarHandlerCompanionTest, ListActionsContainsCompanion) {
+  std::vector<side_panel::customize_chrome::mojom::ActionPtr> actions;
+  base::MockCallback<CustomizeToolbarHandler::ListActionsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(MoveArg(&actions));
+  handler().ListActions(callback.Get());
+
+  const auto contains_action =
+      [&actions](side_panel::customize_chrome::mojom::ActionId id) -> bool {
+    return std::find_if(
+               actions.begin(), actions.end(),
+               [id](side_panel::customize_chrome::mojom::ActionPtr& action) {
+                 return action->id == id;
+               }) != actions.end();
+  };
+
+  EXPECT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kShowSearchCompanion));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
