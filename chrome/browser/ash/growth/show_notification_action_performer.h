@@ -58,15 +58,18 @@ class ShowNotificationActionPerformer : public UiActionPerformer {
            const base::Value::Dict* action_params,
            growth::ActionPerformer::Callback callback) override;
   growth::ActionType ActionType() const override;
+
  private:
   void HandleNotificationClicked(const base::Value::Dict* params,
                                  const std::string& notification_id,
                                  int campaign_id,
                                  std::optional<int> group_id,
+                                 bool should_log_cros_events,
                                  std::optional<int> button_index);
   void HandleNotificationClose(int campaign_id,
                                std::optional<int> group_id,
                                bool should_mark_dismissed,
+                               bool should_log_cros_events,
                                bool by_user);
 
   int current_campaign_id_;

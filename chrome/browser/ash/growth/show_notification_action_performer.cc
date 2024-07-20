@@ -39,6 +39,7 @@ constexpr char kLabelPath[] = "label";
 constexpr char kMarkDismissedPath[] = "shouldMarkDismissed";
 constexpr char kActionPath[] = "action";
 constexpr char kMarkDismissedOnClosePath[] = "shouldMarkDismissOnClose";
+constexpr char kLogCrOSEventsPath[] = "shouldLogCrOSEvents";
 constexpr char kImagePath[] = "image";
 constexpr char kNotificationIdTemplate[] = "growth_campaign_%d";
 
@@ -46,6 +47,7 @@ struct ShowNotificationParams {
   std::string title;
   std::string message;
   bool should_mark_dismissed_on_close = false;
+  bool should_log_cros_events = false;
   raw_ptr<const gfx::VectorIcon> icon = nullptr;
   raw_ptr<const gfx::Image> image = nullptr;
 
@@ -68,6 +70,9 @@ ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
 
   show_notification_params->should_mark_dismissed_on_close =
       params->FindBool(kMarkDismissedOnClosePath).value_or(false);
+
+  show_notification_params->should_log_cros_events =
+      params->FindBool(kLogCrOSEventsPath).value_or(false);
 
   // Set icons if available.
   const auto* icon_value = params->FindDict(kIconPath);
@@ -193,11 +198,12 @@ void ShowNotificationActionPerformer::Run(
               base::BindRepeating(
                   &ShowNotificationActionPerformer::HandleNotificationClicked,
                   weak_ptr_factory_.GetWeakPtr(), params, id, campaign_id,
-                  group_id),
+                  group_id, show_notification_params->should_log_cros_events),
               base::BindRepeating(
                   &ShowNotificationActionPerformer::HandleNotificationClose,
                   weak_ptr_factory_.GetWeakPtr(), campaign_id, group_id,
-                  show_notification_params->should_mark_dismissed_on_close)),
+                  show_notification_params->should_mark_dismissed_on_close,
+                  show_notification_params->should_log_cros_events)),
           *show_notification_params->icon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   auto* message_center = message_center::MessageCenter::Get();
@@ -207,7 +213,8 @@ void ShowNotificationActionPerformer::Run(
                                      /*by_user=*/false);
   message_center->AddNotification(std::move(notification));
 
-  NotifyReadyToLogImpression(campaign_id, group_id);
+  NotifyReadyToLogImpression(campaign_id, group_id,
+                             show_notification_params->should_log_cros_events);
   std::move(callback).Run(growth::ActionResult::kSuccess,
                           /*action_result_reason=*/std::nullopt);
 }
@@ -220,6 +227,7 @@ void ShowNotificationActionPerformer::HandleNotificationClose(
     int campaign_id,
     std::optional<int> group_id,
     bool should_mark_dismissed,
+    bool should_log_cros_events,
     bool by_user) {
   if (!by_user) {
     return;
@@ -227,7 +235,7 @@ void ShowNotificationActionPerformer::HandleNotificationClose(
 
   // Dismiss and marked the notification dismissed as it is by user action.
   NotifyButtonPressed(campaign_id, group_id, CampaignButtonId::kClose,
-                      should_mark_dismissed);
+                      should_mark_dismissed, should_log_cros_events);
 }
 
 void ShowNotificationActionPerformer::HandleNotificationClicked(
@@ -235,6 +243,7 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
     const std::string& notification_id,
     int campaign_id,
     std::optional<int> group_id,
+    bool should_log_cros_events,
     std::optional<int> button_index) {
   if (!button_index) {
     // Notification message body clicked.
@@ -259,7 +268,8 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
 
   const auto should_mark_dismissed =
       button_value.GetDict().FindBool(kMarkDismissedPath).value_or(false);
-  NotifyButtonPressed(campaign_id, group_id, button_id, should_mark_dismissed);
+  NotifyButtonPressed(campaign_id, group_id, button_id, should_mark_dismissed,
+                      should_log_cros_events);
 
   const auto* action_value = button_value.GetDict().FindDict(kActionPath);
   if (!action_value) {
