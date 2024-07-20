@@ -6663,6 +6663,7 @@
     },
 
     'android_14_device_fyi_gtests': {
+      'android_limited_capacity_gtests': {},
       'chrome_public_tests': {},
       'system_webview_shell_instrumentation_tests': {},
       'webview_trichrome_64_cts_tests_suite': {
@@ -6676,7 +6677,6 @@
 
     'android_14_device_gtests': {
       'android_hardware_specific_gtests': {},
-      'android_limited_capacity_gtests': {},
       'android_smoke_tests': {},
       'android_trichrome_smoke_tests': {},
     },
