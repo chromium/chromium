@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -108,6 +109,16 @@ void PerformanceDetectionManager::DiscardTabs(
           std::move(callback).Then(
               base::BindOnce(&PerformanceDetectionManager::OnDiscardComplete,
                              base::Unretained(this)))));
+}
+
+void PerformanceDetectionManager::ForceTabCpuDataRefresh() {
+  PerformanceManager::CallOnGraph(
+      FROM_HERE, base::BindOnce([](performance_manager::Graph* graph) {
+        performance_manager::user_tuning::CpuHealthTracker* const
+            health_tracker = performance_manager::user_tuning::
+                CpuHealthTracker::GetFromGraph(graph);
+        health_tracker->QueryAndProcessTabActionability(std::nullopt);
+      }));
 }
 
 void PerformanceDetectionManager::OnDiscardComplete() {
@@ -236,7 +247,13 @@ void PerformanceDetectionManager::NotifyActionableTabObservers(
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto& actionable_tabs = actionable_tabs_[resource_type];
-  CHECK(actionable_tabs != tabs);
+
+  // It is possible for the same actionable tabs to be surfaced again while in
+  // demo mode.
+  if (!base::FeatureList::IsEnabled(
+          features::kPerformanceInterventionDemoMode)) {
+    CHECK(actionable_tabs != tabs);
+  }
   actionable_tabs = tabs;
   for (auto& obs : actionable_tab_observers_[resource_type]) {
     obs.OnActionableTabListChanged(resource_type,

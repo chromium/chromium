@@ -76,6 +76,11 @@ BASE_DECLARE_FEATURE(kPerformanceIntervention);
 // This enables the performance intervention UI
 BASE_DECLARE_FEATURE(kPerformanceInterventionUI);
 
+// This enables performance intervention to run in demo mode. While in demo
+// mode, performance intervention will ignore rate throttling and CPU thresholds
+// to make it easier to trigger performance intervention for testing purposes.
+BASE_DECLARE_FEATURE(kPerformanceInterventionDemoMode);
+
 bool ShouldUsePerformanceInterventionBackend();
 
 // This represents the version number for the string displayed on the

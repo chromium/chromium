@@ -78,6 +78,8 @@ class PerformanceDetectionManager {
                    base::OnceCallback<void(bool)> post_discard_cb =
                        base::OnceCallback<void(bool)>());
 
+  void ForceTabCpuDataRefresh();
+
   void NotifyActionableTabObserversForTesting(ResourceType resource_type,
                                               const ActionableTabsResult& tabs);
 

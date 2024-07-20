@@ -2951,6 +2951,16 @@ const char kPerformanceInterventionUiDescription[] =
     "When enabled, performance intervention UI will automatically pop up and "
     "suggest tabs to take action on during times of poor performance.";
 
+const char kPerformanceInterventionDemoModeName[] =
+    "Enable performance intervention demo mode.";
+const char kPerformanceInterventionDemoModeDescription[] =
+    "When enabled, CPU thresholds and rate limiting "
+    "will be ignored so performance intervention UI may be easily triggered "
+    "through natural browser usage or force triggered in chrome://discards. "
+    "All suggested actionable tabs will meet the normal discard criteria "
+    "except for needing to stay in the background for a set minimum time. "
+    "Requires chrome://flags/#performance-intervention-ui to be enabled.";
+
 const char kPermissionPredictionsName[] = "Permission Predictions";
 const char kPermissionPredictionsDescription[] =
     "Use the Permission Predictions Service to surface permission requests "

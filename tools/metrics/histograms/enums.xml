@@ -19180,6 +19180,7 @@ from previous Chrome versions.
   <int value="-707508842" label="PolicyMergeMultiSource:disabled"/>
   <int value="-707407907" label="ScanAppMediaLink:enabled"/>
   <int value="-706733351" label="enable-floating-virtual-keyboard:enabled"/>
+  <int value="-706194557" label="PerformanceInterventionDemoMode:disabled"/>
   <int value="-706159808" label="QuickAnswersOnEditableText:disabled"/>
   <int value="-706106753" label="AutofillGranularFillingAvailable:disabled"/>
   <int value="-705746939" label="ChromeDuet:enabled"/>
@@ -20410,6 +20411,7 @@ from previous Chrome versions.
   <int value="-181093956" label="ScrollAnchoring:enabled"/>
   <int value="-180658998" label="ReadLater:disabled"/>
   <int value="-180481252" label="CompositorThreadedScrollbarScrolling:enabled"/>
+  <int value="-180292536" label="PerformanceInterventionDemoMode:enabled"/>
   <int value="-180056644" label="HomeButtonWithText:disabled"/>
   <int value="-179580377" label="CrossOriginOpenerPolicy:enabled"/>
   <int value="-178744239" label="DriveFsMirroring:enabled"/>

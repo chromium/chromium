@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -26,6 +27,23 @@
 #include "url/gurl.h"
 
 namespace performance_manager::user_tuning {
+
+class ActionableTabWaiter
+    : public PerformanceDetectionManager::ActionableTabsObserver {
+ public:
+  void OnActionableTabListChanged(
+      PerformanceDetectionManager::ResourceType resource_type,
+      std::vector<resource_attribution::PageContext> tabs) override {
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
 
 class PerformanceDetectionManagerBrowserTest : public InProcessBrowserTest {
  public:
@@ -173,6 +191,44 @@ IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
   // the contents at index 2 is active.
   EXPECT_TRUE(GetWebContentsAt(1)->WasDiscarded());
   EXPECT_FALSE(GetWebContentsAt(2)->WasDiscarded());
+}
+
+class PerformanceInterventionDemoModeTest
+    : public PerformanceDetectionManagerBrowserTest {
+ public:
+  void SetUp() override {
+    set_open_about_blank_on_browser_launch(true);
+
+    feature_list_.InitWithFeatures(
+        {performance_manager::features::kPerformanceInterventionUI,
+         performance_manager::features::kPerformanceInterventionDemoMode},
+        {});
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionDemoModeTest,
+                       ForceCpuRefreshNotifyObservers) {
+  std::unique_ptr<ActionableTabWaiter> waiter =
+      std::make_unique<ActionableTabWaiter>();
+  manager()->AddActionableTabsObserver(
+      {PerformanceDetectionManager::ResourceType::kCpu}, waiter.get());
+
+  ASSERT_TRUE(AddTabAtIndex(1, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(AddTabAtIndex(2, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  // Force the detection manager to refresh tab CPU data twice because the
+  // first time the data refreshes is to establish a baseline that
+  // subsequent refreshes will use to determine CPU usage.
+  manager()->ForceTabCpuDataRefresh();
+  manager()->ForceTabCpuDataRefresh();
+
+  // The waiter's run loop should stop after it is notified by the performance
+  // detection manager with the updated actionable tab list.
+  waiter->Wait();
 }
 
 }  // namespace performance_manager::user_tuning

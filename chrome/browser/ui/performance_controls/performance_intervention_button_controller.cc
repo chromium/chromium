@@ -170,6 +170,10 @@ void PerformanceInterventionButtonController::MaybeShowUi(
            .Get() &&
       ContainsNonLastActiveProfile(result)) {
     trigger_result = InterventionMessageTriggerResult::kMixedProfile;
+  } else if (base::FeatureList::IsEnabled(
+                 performance_manager::features::
+                     kPerformanceInterventionDemoMode)) {
+    trigger_result = InterventionMessageTriggerResult::kShown;
   } else if (tracker->ShouldTriggerHelpUI(
                  feature_engagement::
                      kIPHPerformanceInterventionDialogFeature)) {

@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/system/sys_info.h"
@@ -34,6 +35,8 @@ CpuHealthTracker::CpuHealthTracker(
       cpu_health_sample_window_size_(
           performance_manager::features::kCPUTimeOverThreshold.Get() /
           performance_manager::features::kCPUSampleFrequency.Get()),
+      is_demo_mode_(base::FeatureList::IsEnabled(
+          features::kPerformanceInterventionDemoMode)),
       recent_resource_measurements_(cpu_health_sample_window_size_,
                                     CpuPercent(0)),
       // scoped_cpu_query_ is initialized to monitor CPU usage. Actual queries
@@ -74,12 +77,28 @@ int CpuHealthTracker::GetTotalCpuPercentUsage(ActionableTabsResult tabs) {
   return total_cpu;
 }
 
+void CpuHealthTracker::QueryAndProcessTabActionability(
+    std::optional<CpuPercent> system_cpu_usage_percentage) {
+  // We must have a value for system CPU usage while not in demo mode to
+  // properly determine tab actionability. In demo mode we ignore CPU thresholds
+  // when determining tab actionability so system CPU usage is irrelevant in
+  // this case.
+  CHECK(system_cpu_usage_percentage.has_value() || is_demo_mode_);
+  resource_attribution::QueryBuilder()
+      .AddResourceType(resource_attribution::ResourceType::kCPUTime)
+      .AddAllContextsOfType<resource_attribution::PageContext>()
+      .QueryOnce(base::BindOnce(&CpuHealthTracker::ProcessQueryResultMap,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                system_cpu_usage_percentage.value_or(
+                                    recent_resource_measurements_.back())));
+}
+
 base::OnceCallback<void(CpuHealthTracker::ActionableTabsResult)>
 CpuHealthTracker::GetStatusAndActionabilityCallback(
     bool did_status_change,
     CpuHealthTracker::HealthLevel health_level) {
   return base::BindOnce(
-      [](StatusChangeCallback status_change,
+      [](bool is_demo_mode, StatusChangeCallback status_change,
          ActionableTabResultCallback actionability_change,
          bool did_status_change, HealthLevel health_level,
          ActionableTabsResult previously_actionable,
@@ -89,12 +108,12 @@ CpuHealthTracker::GetStatusAndActionabilityCallback(
                             !actionable_tabs.empty());
         }
 
-        if (previously_actionable != actionable_tabs) {
+        if (is_demo_mode || (previously_actionable != actionable_tabs)) {
           actionability_change.Run(ResourceType::kCpu, actionable_tabs);
         }
       },
-      status_change_cb_, actionable_tabs_cb_, did_status_change, health_level,
-      actionable_tabs_);
+      is_demo_mode_, status_change_cb_, actionable_tabs_cb_, did_status_change,
+      health_level, actionable_tabs_);
 }
 
 CpuHealthTracker::HealthLevel CpuHealthTracker::GetHealthLevelForMeasurement(
@@ -130,7 +149,7 @@ void CpuHealthTracker::GetFilteredActionableTabs(
 
   ActionableTabsResult actionable_tabs;
   int total_actionable_cpu_percentage = 0;
-  bool take_action_improves_health = false;
+  bool take_action_improves_health = is_demo_mode_;
   const size_t max_actionable_tabs =
       std::min(unfiltered_measurements.size(),
                size_t(features::kCPUMaxActionableTabs.Get()));
@@ -141,9 +160,10 @@ void CpuHealthTracker::GetFilteredActionableTabs(
 
     // Since sorted_measurements is sorted in descending order, we can
     // terminate early as there is no longer any eligible actionable pages.
-    if (measurement.value() <
-        performance_manager::features::kMinimumActionableTabCPUPercentage
-            .Get()) {
+    if (!is_demo_mode_ &&
+        measurement.value() <
+            performance_manager::features::kMinimumActionableTabCPUPercentage
+                .Get()) {
       break;
     }
 
@@ -182,8 +202,11 @@ bool CpuHealthTracker::CanDiscardPage(
       policies::PageDiscardingHelper::GetFromGraph(GetOwningGraph());
   CHECK(discard_helper);
 
+  // While in demo mode, we don't need to use the measurement_window when
+  // determining tab actionability so we can immediately trigger the
+  // intervention UI for testing purposes.
   const base::TimeDelta measurement_window =
-      features::kCPUTimeOverThreshold.Get();
+      is_demo_mode_ ? base::TimeDelta() : features::kCPUTimeOverThreshold.Get();
 
   // We should not discard pages that played audio during the measurement window
   // as it may affect CPU measurements.
@@ -238,12 +261,7 @@ void CpuHealthTracker::ProcessCpuProbeResult(
   if (GetHealthLevelForMeasurement(total_system_cpu_usage) !=
       HealthLevel::kHealthy) {
     // Query for tab CPU usage to determine actionability
-    resource_attribution::QueryBuilder()
-        .AddResourceType(resource_attribution::ResourceType::kCPUTime)
-        .AddAllContextsOfType<resource_attribution::PageContext>()
-        .QueryOnce(base::BindOnce(&CpuHealthTracker::ProcessQueryResultMap,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  total_system_cpu_usage));
+    QueryAndProcessTabActionability(total_system_cpu_usage);
     // We delay recording total_system_cpu_usage for not healthy CPU usage until
     // we get results from the query to ensure that the recorded CPU and
     // resulting health status stays consistent with tab actionability

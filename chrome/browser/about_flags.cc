@@ -11870,6 +11870,11 @@ const FeatureEntry kFeatureEntries[] = {
          performance_manager::features::kPerformanceInterventionUI,
          kPerformanceInterventionStringVariations,
          "PerformanceInterventionUI")},
+    {"performance-intervention-demo-mode",
+     flag_descriptions::kPerformanceInterventionDemoModeName,
+     flag_descriptions::kPerformanceInterventionDemoModeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         performance_manager::features::kPerformanceInterventionDemoMode)},
 #endif
 
 #if BUILDFLAG(IS_WIN)

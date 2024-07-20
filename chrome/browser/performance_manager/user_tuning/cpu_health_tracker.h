@@ -47,6 +47,12 @@ class CpuHealthTracker
 
   int GetTotalCpuPercentUsage(ActionableTabsResult tabs);
 
+  // Queries and process tab CPU data. This data is recorded and may invoke the
+  // status change and actionability change callback if the processed tab CPU
+  // data meets the criteria to be actionable.
+  void QueryAndProcessTabActionability(
+      std::optional<CpuPercent> system_cpu_usage_percentage);
+
  private:
   friend class CpuHealthTrackerTestHelper;
   friend class CpuHealthTrackerTest;
@@ -110,6 +116,8 @@ class CpuHealthTracker
   // Number of samples in a time window being used to consider the new health
   // status.
   const size_t cpu_health_sample_window_size_;
+
+  const bool is_demo_mode_;
 
   // Recent resource measurements used to determine overall resource health.
   base::circular_deque<CpuPercent> recent_resource_measurements_;

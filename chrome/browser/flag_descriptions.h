@@ -1710,6 +1710,9 @@ extern const char kCrosSystemLevelPermissionBlockedWarningsDescription[];
 extern const char kPerformanceInterventionUiName[];
 extern const char kPerformanceInterventionUiDescription[];
 
+extern const char kPerformanceInterventionDemoModeName[];
+extern const char kPerformanceInterventionDemoModeDescription[];
+
 extern const char kPermissionPredictionsName[];
 extern const char kPermissionPredictionsDescription[];
 

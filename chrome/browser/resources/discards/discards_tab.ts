@@ -4,9 +4,11 @@
 
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
+import './strings.m.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -96,10 +98,19 @@ class DiscardsTabElement extends DiscardsTabElementBase {
   static get properties() {
     return {
       tabInfos_: Array,
+      isPerformanceInterventionDemoModeEnabled_: {
+        readOnly: true,
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isPerformanceInterventionDemoModeEnabled');
+        },
+      },
     };
   }
 
   private tabInfos_: TabDiscardsInfo[];
+  private isPerformanceInterventionDemoModeEnabled_: boolean;
 
   /** The current update timer if any. */
   private updateTimer_: number = 0;
@@ -388,6 +399,10 @@ class DiscardsTabElement extends DiscardsTabElementBase {
 
   private toggleBatterySaverMode_(_e: Event) {
     this.discardsDetailsProvider_!.toggleBatterySaverMode();
+  }
+
+  private refreshPerformanceTabCpuMeasurements_(_e: Event) {
+    this.discardsDetailsProvider_!.refreshPerformanceTabCpuMeasurements();
   }
 }
 

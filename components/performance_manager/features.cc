@@ -69,6 +69,10 @@ BASE_FEATURE(kPerformanceInterventionUI,
              "PerformanceInterventionUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPerformanceInterventionDemoMode,
+             "PerformanceInterventionDemoMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool ShouldUsePerformanceInterventionBackend() {
   return base::FeatureList::IsEnabled(kPerformanceIntervention) ||
          base::FeatureList::IsEnabled(kPerformanceInterventionUI);
