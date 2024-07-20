@@ -119,7 +119,10 @@ public class AccountSelectionCoordinator
         @Px
         int avatarSize =
                 context.getResources()
-                        .getDimensionPixelSize(R.dimen.account_selection_account_avatar_size);
+                        .getDimensionPixelSize(
+                                rpMode == RpMode.BUTTON
+                                        ? R.dimen.account_selection_button_mode_sheet_avatar_size
+                                        : R.dimen.account_selection_account_avatar_size);
         mMediator =
                 new AccountSelectionMediator(
                         tab,

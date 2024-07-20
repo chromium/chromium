@@ -58,20 +58,23 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @CalledByNative
-    static int getBrandIconMinimumSize() {
+    static int getBrandIconMinimumSize(@RpMode.EnumType int rpMode) {
         // Icon needs to be big enough for the smallest screen density (1x).
         Resources resources = ContextUtils.getApplicationContext().getResources();
         // Density < 1.0f on ldpi devices. Adjust density to ensure that
         // {@link getBrandIconMinimumSize()} <= {@link getBrandIconIdealSize()}.
         float density = Math.max(resources.getDisplayMetrics().density, 1.0f);
-        return Math.round(getBrandIconIdealSize() / density);
+        return Math.round(getBrandIconIdealSize(rpMode) / density);
     }
 
     @CalledByNative
-    static int getBrandIconIdealSize() {
+    static int getBrandIconIdealSize(@RpMode.EnumType int rpMode) {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         return Math.round(
-                resources.getDimension(R.dimen.account_selection_sheet_icon_size)
+                resources.getDimension(
+                                rpMode == RpMode.BUTTON
+                                        ? R.dimen.account_selection_button_mode_sheet_icon_size
+                                        : R.dimen.account_selection_sheet_icon_size)
                         / MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
     }
 

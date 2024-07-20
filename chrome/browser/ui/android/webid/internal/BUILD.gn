@@ -73,6 +73,7 @@ android_resources("java_resources") {
     "java/res/layout/account_selection_add_account_row_item.xml",
     "java/res/layout/account_selection_button_mode_account_chip.xml",
     "java/res/layout/account_selection_button_mode_account_item.xml",
+    "java/res/layout/account_selection_button_mode_continue_button.xml",
     "java/res/layout/account_selection_button_mode_data_sharing_consent_item.xml",
     "java/res/layout/account_selection_button_mode_header_item.xml",
     "java/res/layout/account_selection_button_mode_sheet.xml",

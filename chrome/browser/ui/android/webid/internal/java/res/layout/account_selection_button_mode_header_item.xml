@@ -11,13 +11,12 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_marginVertical="@dimen/account_selection_button_mode_sheet_item_padding"
     android:orientation="vertical">
 
   <LinearLayout
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
-      android:layout_marginBottom="8dp"
+      android:layout_marginVertical="@dimen/account_selection_button_mode_sheet_icon_padding"
       android:gravity="center"
       android:orientation="horizontal">
 
@@ -34,7 +33,7 @@ found in the LICENSE file.
             android:src="@drawable/arrow_range"
             android:layout_width="@dimen/account_selection_button_mode_sheet_arrow_range_icon_size"
             android:layout_height="@dimen/account_selection_button_mode_sheet_arrow_range_icon_size"
-            android:layout_marginHorizontal="@dimen/account_selection_button_mode_sheet_arrow_range_horizontal_margin"
+            android:layout_marginHorizontal="@dimen/account_selection_button_mode_sheet_icon_padding"
             android:visibility="gone"
             android:focusable="false"
             android:importantForAccessibility="no" />
@@ -54,16 +53,16 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
-      android:paddingTop="10dp"
-      android:paddingBottom="10dp"
+      android:layout_marginVertical="@dimen/account_selection_button_mode_sheet_title_padding"
       android:textAlignment="center"
-      android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+      android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
   <org.chromium.ui.widget.TextViewWithLeading
       android:id="@+id/header_subtitle"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
+      android:layout_marginBottom="@dimen/account_selection_button_mode_sheet_item_padding"
       android:textAlignment="center"
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 </LinearLayout>

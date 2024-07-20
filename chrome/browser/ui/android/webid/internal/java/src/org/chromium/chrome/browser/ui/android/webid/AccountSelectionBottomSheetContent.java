@@ -24,7 +24,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
      * The maximum number of accounts that should be fully visible when the the account picker is
      * displayed.
      */
-    private static final float MAX_VISIBLE_ACCOUNTS = 2.5f;
+    private final float mMaxVisibleAccounts;
 
     private final View mContentView;
     private final Supplier<Integer> mScrollOffsetSupplier;
@@ -39,6 +39,9 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
         mContentView = contentView;
         mScrollOffsetSupplier = scrollOffsetSupplier;
         mRpMode = rpMode;
+        // Button mode UI is generally bigger because it requires user interaction to trigger.
+        // Therefore, we are able to show more accounts at once compared to widget mode.
+        mMaxVisibleAccounts = mRpMode == RpMode.BUTTON ? 3.5f : 2.5f;
     }
 
     /**
@@ -59,17 +62,17 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
         View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
         // When we're in the multi-account chooser and there are more than {@link
-        // MAX_VISIBLE_ACCOUNTS} accounts, resize the list so that only {@link MAX_VISIBLE_ACCOUNTS}
+        // mMaxVisibleAccounts} accounts, resize the list so that only {@link mMaxVisibleAccounts}
         // accounts and part of the next one are visible.
         RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
         int numAccounts = sheetItemListView.getAdapter().getItemCount();
-        if (numAccounts > MAX_VISIBLE_ACCOUNTS) {
+        if (numAccounts > mMaxVisibleAccounts) {
             sheetItemListView.measure(
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
             int measuredHeight = sheetItemListView.getMeasuredHeight();
             int containerHeight =
-                    Math.round(((float) measuredHeight / numAccounts) * MAX_VISIBLE_ACCOUNTS);
+                    Math.round(((float) measuredHeight / numAccounts) * mMaxVisibleAccounts);
             sheetContainer.getLayoutParams().height = containerHeight;
         } else {
             // Need to set the height here in case it was changed by a previous {@link

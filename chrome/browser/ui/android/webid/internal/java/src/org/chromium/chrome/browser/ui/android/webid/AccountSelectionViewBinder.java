@@ -727,7 +727,7 @@ class AccountSelectionViewBinder {
             ColorStateList tint =
                     brandIcon == null
                             ? AppCompatResources.getColorStateList(
-                                    view.getContext(), R.color.default_icon_color_baseline)
+                                    view.getContext(), R.color.baseline_neutral_variant_50)
                             : null;
             headerIconView.setImageTintList(tint);
             arrowRangeIcon.setImageTintList(tint);

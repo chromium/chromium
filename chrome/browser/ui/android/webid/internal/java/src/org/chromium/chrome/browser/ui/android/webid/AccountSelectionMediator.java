@@ -398,7 +398,7 @@ class AccountSelectionMediator {
 
     private void fetchBrandIcon(String brandIconUrl, Callback<Bitmap> callback) {
         if (!TextUtils.isEmpty(brandIconUrl)) {
-            int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
+            int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize(mRpMode);
             ImageFetcher.Params params =
                     ImageFetcher.Params.createNoResizing(
                             new GURL(brandIconUrl),
@@ -418,7 +418,7 @@ class AccountSelectionMediator {
     private boolean isValidBrandIcon(Bitmap bitmap) {
         return bitmap != null
                 && bitmap.getWidth() == bitmap.getHeight()
-                && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize();
+                && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize(mRpMode);
     }
 
     private void updateIdpBrandIcon(Bitmap bitmap) {

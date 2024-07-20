@@ -11,7 +11,6 @@ found in the LICENSE file.
     android:descendantFocusability="blocksDescendants"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="2dp"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -20,14 +19,14 @@ found in the LICENSE file.
       android:layout_width="@dimen/account_selection_button_mode_sheet_add_account_icon_size"
       android:layout_height="@dimen/account_selection_button_mode_sheet_add_account_icon_size"
       android:layout_marginVertical="@dimen/account_selection_button_mode_sheet_item_padding"
-      android:layout_marginHorizontal="@dimen/account_selection_sheet_horizontal_margin"
+      android:layout_marginHorizontal="@dimen/account_selection_button_mode_sheet_plus_icon_horizontal_margin"
       android:importantForAccessibility="no"
       android:layout_gravity="center"/>
 
   <LinearLayout
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
+      android:layout_marginEnd="@dimen/account_selection_button_mode_sheet_item_padding"
       android:layout_weight="1"
       android:orientation="vertical">
 
