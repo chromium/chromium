@@ -20834,6 +20834,21 @@
             ]
         }
     ],
+    "ShareCustomActionsInCCT": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShareCustomActionsInCCT"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShareThisTabDialog": [
         {
             "platforms": [
