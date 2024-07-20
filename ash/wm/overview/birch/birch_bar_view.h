@@ -109,10 +109,15 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // Adds a new chip with given item.
   void AddChip(BirchItem* birch_item);
 
-  void RemoveChip(BirchItem* birch_item);
+  // Removes the chip of `removed_item` and attaches a new chip with
+  // `attached_item` if it's not null.
+  void RemoveChip(BirchItem* removed_item, BirchItem* attached_item = nullptr);
 
   // Gets the maximum height of the bar with full chips.
   int GetMaximumHeight() const;
+
+  // Returns if there are on-going animations.
+  bool IsAnimating();
 
  private:
   friend class OverviewGridTestApi;
@@ -124,6 +129,8 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
     kOneByFour,
     kTwoByTwo,
   };
+
+  void AttachChip(std::unique_ptr<BirchChipButtonBase> chip);
 
   // Remove all current chips.
   void Clear();
@@ -163,6 +170,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // Called after chips fading-out animations are done during shutting down.
   void OnShutdownEnded();
 
+  // Called after the removing chip fade-out animation is done.
+  void OnRemovingChipFadeOutEnded(BirchChipButtonBase* removing_chip);
+
   // Possibly show the privacy nudge about context menu options for
   // controlling suggestion types.
   void MaybeShowPrivacyNudge();
@@ -183,6 +193,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
 
   // The chips are owned by either primary or secondary row.
   std::vector<raw_ptr<BirchChipButtonBase>> chips_;
+
+  // The chip which is waiting to be attached.
+  std::unique_ptr<BirchChipButtonBase> chip_to_attach_;
 
   // Called after relayout.
   RelayoutCallback relayout_callback_;

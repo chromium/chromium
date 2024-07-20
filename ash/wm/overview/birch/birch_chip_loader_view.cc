@@ -26,8 +26,6 @@ constexpr base::TimeDelta kReloadFadeInDuration1_5 = base::Milliseconds(400);
 }  // namespace
 
 BirchChipLoaderView::BirchChipLoaderView() {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
   GetViewAccessibility().SetName(u"Birch Chip Loader View");
 }
 

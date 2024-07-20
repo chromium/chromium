@@ -28,6 +28,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_class_properties.h"
@@ -80,6 +81,19 @@ constexpr base::TimeDelta kFadeOutChipsDurationBeforeReloading =
     base::Milliseconds(200);
 constexpr base::TimeDelta kFadeOutChipsDurationOnHidingByUser =
     base::Milliseconds(100);
+constexpr base::TimeDelta kFadeOutChipDurationOnRemoving =
+    base::Milliseconds(100);
+constexpr base::TimeDelta kSlidingChipsDelayOnRemoving = base::Milliseconds(50);
+constexpr base::TimeDelta kSlidingChipsDurationOnRemoving =
+    base::Milliseconds(300);
+constexpr base::TimeDelta kSlidingChipDelayOnAttachment =
+    base::Milliseconds(50);
+constexpr base::TimeDelta kSlidingChipDurationOnAttachment =
+    base::Milliseconds(300);
+constexpr base::TimeDelta kFadeInChipDelayOnAttachment =
+    base::Milliseconds(200);
+constexpr base::TimeDelta kFadeInChipDurationOnAttachment =
+    base::Milliseconds(150);
 
 // Calculates the space for each chip according to the available space and
 // number of chips.
@@ -328,35 +342,93 @@ void BirchBarView::AddChip(BirchItem* item) {
                   .Init(item)
                   .SetPreferredSize(chip_size_)
                   .Build();
+  AttachChip(std::move(chip));
+}
+
+void BirchBarView::RemoveChip(BirchItem* removed_item,
+                              BirchItem* attached_item) {
+  auto iter = std::find_if(chips_.begin(), chips_.end(),
+                           [removed_item](BirchChipButtonBase* chip) {
+                             return chip->GetItem() == removed_item;
+                           });
+
+  if (iter == chips_.end()) {
+    return;
+  }
+
+  BirchChipButtonBase* removing_chip = *iter;
+  chips_.erase(iter);
+
+  // The removing chip should stop processing events and not be focusable.
+  removing_chip->SetCanProcessEventsWithinSubtree(false);
+  removing_chip->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+
+  // Create a new chip for the attached item.
+  if (attached_item) {
+    chip_to_attach_ = views::Builder<BirchChipButton>()
+                          .Init(attached_item)
+                          .SetPreferredSize(chip_size_)
+                          .Build();
+  }
+
+  // Apply fading-out animation to the chip being removed.
+  views::AnimationBuilder fade_out_animation;
+  fade_out_animation
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&BirchBarView::OnRemovingChipFadeOutEnded,
+                              base::Unretained(this), removing_chip))
+      .Once()
+      .SetDuration(kFadeOutChipDurationOnRemoving)
+      .SetOpacity(removing_chip->layer(), 0.0f);
+}
+
+int BirchBarView::GetMaximumHeight() const {
+  return GetExpectedLayoutType(kMaxChipsNum) == LayoutType::kOneByFour
+             ? kChipHeight
+             : 2 * kChipHeight + kChipSpacing;
+}
+
+bool BirchBarView::IsAnimating() {
+  // Check if there are any layer animations in queue.
+  if (layer()->GetAnimator()->is_animating()) {
+    return true;
+  }
+
+  for (const auto& chip : chips_) {
+    if (chip->layer()->GetAnimator()->is_animating()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void BirchBarView::AttachChip(std::unique_ptr<BirchChipButtonBase> chip) {
+  auto* chip_layer = chip->layer();
+  chip_layer->SetOpacity(0.0f);
 
   // Attach the chip to the secondary row if it is not empty, otherwise, to the
   // primary row.
   chips_.emplace_back((secondary_row_ ? secondary_row_ : primary_row_)
                           ->AddChildView(std::move(chip)));
   Relayout(RelayoutReason::kAddRemoveChip);
-}
 
-void BirchBarView::RemoveChip(BirchItem* item) {
-  auto iter = std::find_if(
-      chips_.begin(), chips_.end(),
-      [item](BirchChipButtonBase* chip) { return chip->GetItem() == item; });
-
-  if (iter == chips_.end()) {
-    return;
-  }
-
-  BirchChipButtonBase* chip = *iter;
-  chips_.erase(iter);
-
-  // Remove the chip from its owner.
-  if (primary_row_->Contains(chip)) {
-    primary_row_->RemoveChildViewT(chip);
-  } else {
-    CHECK(secondary_row_);
-    secondary_row_->RemoveChildViewT(chip);
-  }
-
-  Relayout(RelayoutReason::kAddRemoveChip);
+  // Perform sliding-in and fading-in animation.
+  chip_layer->SetTransform(
+      gfx::Transform::MakeTranslation(kChipSpacing + chip_size_.width(), 0));
+  views::AnimationBuilder sliding_fading_in_animation;
+  sliding_fading_in_animation
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .At(kSlidingChipDelayOnAttachment)
+      .SetDuration(kSlidingChipDurationOnAttachment)
+      .SetTransform(chip_layer, gfx::Transform(),
+                    gfx::Tween::ACCEL_LIN_DECEL_100_3)
+      .At(kFadeInChipDelayOnAttachment)
+      .SetDuration(kFadeInChipDurationOnAttachment)
+      .SetOpacity(chip_layer, 1.0f);
 }
 
 void BirchBarView::Clear() {
@@ -367,14 +439,10 @@ void BirchBarView::Clear() {
     secondary_row_ = nullptr;
   }
 
+  chip_to_attach_.reset();
+
   Relayout(state_ == State::kShuttingDown ? RelayoutReason::kClearOnDisabled
                                           : RelayoutReason::kAddRemoveChip);
-}
-
-int BirchBarView::GetMaximumHeight() const {
-  return GetExpectedLayoutType(kMaxChipsNum) == LayoutType::kOneByFour
-             ? kChipHeight
-             : 2 * kChipHeight + kChipSpacing;
 }
 
 gfx::Size BirchBarView::GetChipSize(aura::Window* root_window) const {
@@ -603,6 +671,43 @@ void BirchBarView::OnSetupEnded() {
     MaybeShowPrivacyNudge();
   }
   SetState(State::kNormal);
+}
+
+void BirchBarView::OnRemovingChipFadeOutEnded(
+    BirchChipButtonBase* removing_chip) {
+  // Cache the old chips' bounds for animation.
+  base::flat_map<BirchChipButtonBase*, gfx::Rect> old_chip_bounds;
+  for (const auto& chip : chips_) {
+    old_chip_bounds[chip] = chip->GetBoundsInScreen();
+  }
+
+  // Remove the chip from its owner.
+  removing_chip->parent()->RemoveChildViewT(removing_chip);
+
+  Relayout(RelayoutReason::kAddRemoveChip);
+
+  if (chip_to_attach_) {
+    AttachChip(std::move(chip_to_attach_));
+  }
+
+  // Apply sliding animations to the remaining chips.
+  for (auto& chip : chips_) {
+    chip->layer()->SetTransform(
+        gfx::TransformBetweenRects(gfx::RectF(chip->GetBoundsInScreen()),
+                                   gfx::RectF(old_chip_bounds[chip])));
+  }
+
+  views::AnimationBuilder sliding_animations;
+  sliding_animations.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+
+  for (auto& chip : chips_) {
+    sliding_animations.Once()
+        .At(kSlidingChipsDelayOnRemoving)
+        .SetDuration(kSlidingChipsDurationOnRemoving)
+        .SetTransform(chip->layer(), gfx::Transform(),
+                      gfx::Tween::Type::ACCEL_LIN_DECEL_100_3);
+  }
 }
 
 void BirchBarView::MaybeShowPrivacyNudge() {

@@ -3307,8 +3307,7 @@ void OverviewGrid::OnBirchBarLayoutChanged(
     return;
   }
 
-  MaybeUpdateBirchBarWidgetBounds();
-  if (scoped_overview_wallpaper_clipper_) {
+  if (MaybeUpdateBirchBarWidgetBounds() && scoped_overview_wallpaper_clipper_) {
     // Perform wallpaper clipping animations according to relayout reason.
     using AnimationType = ScopedOverviewWallpaperClipper::AnimationType;
     using RelayoutReason = BirchBarView::RelayoutReason;
@@ -3329,6 +3328,11 @@ void OverviewGrid::OnBirchBarLayoutChanged(
                            weak_ptr_factory_.GetWeakPtr(), /*by_user=*/true);
         break;
       case RelayoutReason::kAddRemoveChip:
+        // If the last chip was removed, perform hiding bar animation.
+        if (!birch_bar_view_->GetChipsNum()) {
+          animation_type = AnimationType::kHideBirchBarByUser;
+        }
+        break;
       case RelayoutReason::kAvailableSpaceChanged:
         break;
     }
