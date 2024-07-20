@@ -64,7 +64,7 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
 
   GURL GetCanonicalSearchUrl(const GURL& search_suggestion_url) {
     GURL canonical_search_url;
-    EXPECT_TRUE(HasCanoncialPreloadingOmniboxSearchURL(
+    EXPECT_TRUE(HasCanonicalPreloadingOmniboxSearchURL(
         search_suggestion_url, profile(), &canonical_search_url));
     return canonical_search_url;
   }

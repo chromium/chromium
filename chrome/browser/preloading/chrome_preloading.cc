@@ -52,7 +52,7 @@ TemplateURLService* GetTemplateURLServiceFromBrowserContext(
   return nullptr;
 }
 
-bool HasCanoncialPreloadingOmniboxSearchURL(
+bool HasCanonicalPreloadingOmniboxSearchURL(
     const GURL& preloading_url,
     content::BrowserContext* browser_context,
     GURL* canonical_url) {
@@ -85,7 +85,7 @@ bool IsSearchDestinationMatch(const GURL& canonical_preloading_search_url,
     return false;
 
   GURL canonical_navigation_url;
-  return HasCanoncialPreloadingOmniboxSearchURL(navigation_url, browser_context,
+  return HasCanonicalPreloadingOmniboxSearchURL(navigation_url, browser_context,
                                                 &canonical_navigation_url) &&
          (canonical_preloading_search_url == canonical_navigation_url);
 }

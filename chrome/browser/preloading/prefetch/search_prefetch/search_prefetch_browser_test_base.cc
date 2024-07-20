@@ -116,7 +116,7 @@ GURL SearchPrefetchBaseBrowserTest::GetSearchServerQueryURLWithNoQuery(
 GURL SearchPrefetchBaseBrowserTest::GetCanonicalSearchURL(
     const GURL& prefetch_url) {
   GURL canonical_search_url;
-  EXPECT_TRUE(HasCanoncialPreloadingOmniboxSearchURL(
+  EXPECT_TRUE(HasCanonicalPreloadingOmniboxSearchURL(
       prefetch_url, browser()->profile(), &canonical_search_url));
   return canonical_search_url;
 }

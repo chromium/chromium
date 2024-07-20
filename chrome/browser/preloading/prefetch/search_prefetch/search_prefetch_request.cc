@@ -281,7 +281,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
 
       // Check that the search preloading URL has not been altered by a
       // navigation throttle such that its canonical representation has changed.
-      HasCanoncialPreloadingOmniboxSearchURL(resource_request->url, profile,
+      HasCanonicalPreloadingOmniboxSearchURL(resource_request->url, profile,
                                              &new_canonical_search_url);
 
       if (should_defer || new_canonical_search_url != canonical_search_url_ ||

@@ -330,7 +330,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
   ObserveTemplateURLService(template_url_service);
 
   GURL canonical_search_url;
-  bool search_with_terms = HasCanoncialPreloadingOmniboxSearchURL(
+  bool search_with_terms = HasCanonicalPreloadingOmniboxSearchURL(
       url, profile_, &canonical_search_url);
 
   // It is possible that the current page doesn't exist. Don't create
@@ -510,7 +510,7 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
 
   GURL canonical_search_url;
 
-  HasCanoncialPreloadingOmniboxSearchURL(opened_url, profile_,
+  HasCanonicalPreloadingOmniboxSearchURL(opened_url, profile_,
                                          &canonical_search_url);
 
   if (prefetches_.find(canonical_search_url) == prefetches_.end()) {
@@ -708,7 +708,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
         content::PreloadingData::GetOrCreateForWebContents(web_contents);
     SetIsNavigationInDomainCallback(preloading_data);
     GURL canonical_search_url;
-    HasCanoncialPreloadingOmniboxSearchURL(match.destination_url, profile_,
+    HasCanonicalPreloadingOmniboxSearchURL(match.destination_url, profile_,
                                            &canonical_search_url);
 
     content::PreloadingURLMatchCallback same_url_matcher =
@@ -804,7 +804,7 @@ bool SearchPrefetchService::OnNavigationLikely(
   }
 
   GURL canonical_search_url;
-  if (!HasCanoncialPreloadingOmniboxSearchURL(match.destination_url, profile_,
+  if (!HasCanonicalPreloadingOmniboxSearchURL(match.destination_url, profile_,
                                               &canonical_search_url)) {
     return false;
   }
@@ -1133,7 +1133,7 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
   }
 
   GURL canonical_search_url;
-  if (!HasCanoncialPreloadingOmniboxSearchURL(navigation_url, profile_,
+  if (!HasCanonicalPreloadingOmniboxSearchURL(navigation_url, profile_,
                                               &canonical_search_url) ||
       !IsSearchDestinationMatch(canonical_search_url, profile_,
                                 navigation_url)) {

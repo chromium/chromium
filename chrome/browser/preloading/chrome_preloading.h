@@ -202,7 +202,7 @@ std::u16string ExtractSearchTermsFromURL(
 // Returns true if a canonical URL representation of a |preloading_url| can be
 // generated. |canonical_url| is set to the canonical URL representation when
 // this method returns |true|.
-bool HasCanoncialPreloadingOmniboxSearchURL(
+bool HasCanonicalPreloadingOmniboxSearchURL(
     const GURL& preloading_url,
     content::BrowserContext* browser_context,
     GURL* canonical_url);
