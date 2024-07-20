@@ -526,27 +526,41 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
 // Base class for tests of the `WelcomeTourController` which are concerned with
 // the behavior of WelcomeTourV2 experiment arms, parameterized by whether the
 // Welcome Tour V2 feature is enabled.
-class WelcomeTourControllerV2Test : public WelcomeTourControllerTest,
-                                    public ::testing::WithParamInterface<
-                                        /*is_welcome_tour_v2_enabled=*/bool> {
+class WelcomeTourControllerV2Test
+    : public WelcomeTourControllerTest,
+      public ::testing::WithParamInterface<std::tuple<
+          /*is_welcome_tour_v2_enabled=*/bool,
+          /*is_welcome_tour_counterfactually_enabled=*/bool>> {
  public:
   WelcomeTourControllerV2Test() {
-    scoped_feature_list_.InitWithFeatureState(features::kWelcomeTourV2,
-                                              IsWelcomeTourV2Enabled());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kWelcomeTourV2,
+          IsWelcomeTourV2Enabled() && !IsWelcomeTourCounterfactuallyEnabled()},
+         {features::kWelcomeTourCounterfactualArm,
+          IsWelcomeTourCounterfactuallyEnabled()}});
   }
 
  protected:
   // Returns whether the WelcomeTourV2 feature is enabled given test
   // parameterization.
-  bool IsWelcomeTourV2Enabled() const { return GetParam(); }
+  bool IsWelcomeTourV2Enabled() const { return std::get<0>(GetParam()); }
+
+  // Returns whether the WelcomeTour feature is counterfactually enabled given
+  // test parameterization.
+  bool IsWelcomeTourCounterfactuallyEnabled() const {
+    return std::get<1>(GetParam());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WelcomeTourControllerV2Test,
-                         /*is_welcome_tour_v2_enabled=*/testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WelcomeTourControllerV2Test,
+    testing::Combine(
+        /*is_welcome_tour_v2_enabled=*/testing::Bool(),
+        /*is_welcome_tour_counterfactually_enabled=*/testing::Bool()));
 
 // Verifies that `GetTutorialDescription()` returns expected values.
 TEST_P(WelcomeTourControllerV2Test, GetTutorialDescription) {
@@ -810,8 +824,8 @@ class WelcomeTourControllerHoldbackTest
  public:
   WelcomeTourControllerHoldbackTest() {
     if (const auto& is_holdback = IsHoldback()) {
-      scoped_feature_list_.InitWithFeatureState(features::kWelcomeTourHoldback,
-                                                is_holdback.value());
+      scoped_feature_list_.InitWithFeatureState(
+          features::kWelcomeTourHoldbackArm, is_holdback.value());
     }
   }
 

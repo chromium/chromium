@@ -50,6 +50,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kDuringTour"/>
 </enum>
 
+<enum name="WelcomeTourExperimentalArm">
+  <int value="0" label="kHoldback"/>
+  <int value="1" label="kV1"/>
+  <int value="2" label="kV2"/>
+</enum>
+
 <enum name="WelcomeTourInteraction">
   <int value="0" label="kFilesApp"/>
   <int value="1" label="kLauncher"/>
@@ -74,7 +80,6 @@ chromium-metrics-reviews@google.com.
 <enum name="WelcomeTourResult">
   <int value="0" label="kAborted"/>
   <int value="1" label="kCompleted"/>
-  <int value="2" label="kHoldback"/>
 </enum>
 
 <enum name="WelcomeTourStep">

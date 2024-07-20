@@ -42,6 +42,18 @@ enum class ChromeVoxEnabled {
   kMaxValue = kDuringTour,
 };
 
+// Enumeration of the experimental arm in which the user was active when an
+// attempt was made to show the Welcome Tour. These values are persisted to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class ExperimentalArm {
+  kMinValue = 0,
+  kHoldback = kMinValue,
+  kV1 = 1,
+  kV2 = 2,
+  kMaxValue = kV2,
+};
+
 // Enumeration of interactions users may engage in after the Welcome Tour. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused. Be sure to update `kAllInteractionsSet`
@@ -123,14 +135,18 @@ enum class TourResult {
   kMinValue = 0,
   kAborted = kMinValue,
   kCompleted = 1,
-  kHoldback = 2,
-  kMaxValue = kHoldback,
+  // kHoldback = 2, Deprecated.
+  kMaxValue = kCompleted,
 };
 
 // Utilities -------------------------------------------------------------------
 
 // Record the usage of ChromeVox in the Welcome Tour.
 ASH_EXPORT void RecordChromeVoxEnabled(ChromeVoxEnabled when);
+
+// Record the experimental arm in which the user was active when an attempt was
+// made to show the Welcome Tour.
+ASH_EXPORT void RecordExperimentalArm();
 
 // Record that a given `interaction` has occurred.
 ASH_EXPORT void RecordInteraction(Interaction interaction);

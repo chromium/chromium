@@ -50,7 +50,7 @@ class WelcomeTourInteractionMetricsTest
       public ::testing::WithParamInterface<TestVariantsParam> {
  public:
   WelcomeTourInteractionMetricsTest() {
-    scoped_feature_list.InitWithFeatureState(features::kWelcomeTourHoldback,
+    scoped_feature_list.InitWithFeatureState(features::kWelcomeTourHoldbackArm,
                                              IsHoldback());
   }
 

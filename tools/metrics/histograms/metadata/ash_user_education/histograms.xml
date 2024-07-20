@@ -61,6 +61,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.WelcomeTour.ExperimentalArm"
+    enum="WelcomeTourExperimentalArm" expires_after="2025-07-01">
+  <owner>wutao@google.com</owner>
+  <owner>llin@google.com</owner>
+  <summary>
+    Records in which experimental arm the user was active when an attempt was
+    made to show the Welcome Tour.
+  </summary>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.Interaction.Count"
     enum="WelcomeTourInteraction" expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>

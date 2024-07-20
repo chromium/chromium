@@ -542,12 +542,12 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     return;
   }
 
+  welcome_tour_metrics::RecordExperimentalArm();
+
   // Welcome Tour is not supported for holdback experiment arm.
   if (features::IsWelcomeTourHoldbackEnabled()) {
     welcome_tour_metrics::RecordTourPrevented(
         welcome_tour_metrics::PreventedReason::kHoldbackExperimentArm);
-    welcome_tour_metrics::RecordTourResult(
-        welcome_tour_metrics::TourResult::kHoldback);
     return;
   }
 

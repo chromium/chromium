@@ -43,6 +43,31 @@ void RecordChromeVoxEnabled(ChromeVoxEnabled when) {
       when);
 }
 
+void RecordExperimentalArm() {
+  CHECK(features::IsWelcomeTourEnabled());
+
+  std::optional<ExperimentalArm> experimental_arm;
+  if (features::IsWelcomeTourCounterfactuallyEnabled()) {
+    CHECK(!features::IsWelcomeTourHoldbackEnabled());
+    CHECK(!features::IsWelcomeTourV2Enabled());
+    experimental_arm = ExperimentalArm::kV1;
+  } else if (features::IsWelcomeTourHoldbackEnabled()) {
+    CHECK(!features::IsWelcomeTourCounterfactuallyEnabled());
+    CHECK(!features::IsWelcomeTourV2Enabled());
+    experimental_arm = ExperimentalArm::kHoldback;
+  } else if (features::IsWelcomeTourV2Enabled()) {
+    CHECK(!features::IsWelcomeTourCounterfactuallyEnabled());
+    CHECK(!features::IsWelcomeTourHoldbackEnabled());
+    experimental_arm = ExperimentalArm::kV2;
+  }
+
+  if (experimental_arm) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({kWelcomeTourHistogramNamePrefix, "ExperimentalArm"}),
+        experimental_arm.value());
+  }
+}
+
 void RecordInteraction(Interaction interaction) {
   CHECK(features::IsWelcomeTourEnabled());
 
