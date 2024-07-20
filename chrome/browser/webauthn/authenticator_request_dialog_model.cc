@@ -1504,7 +1504,6 @@ AuthenticatorRequestDialogController::OnAccountPreselected(
   const device::AuthenticatorType source = cred->source;
   DCHECK(account_preselected_callback_);
   account_preselected_callback_.Run(*cred);
-  model_->creds.clear();
   model_->preselected_cred = *cred;
 
   if (source != device::AuthenticatorType::kPhone &&

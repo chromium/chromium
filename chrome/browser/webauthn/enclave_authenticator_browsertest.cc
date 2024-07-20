@@ -157,6 +157,10 @@ constexpr uint8_t kTestProtobuf[] = {
     0x70, 0x33, 0xF7, 0x80, 0x75, 0x1D, 0x22, 0x13, 0x37, 0xCD, 0x1F, 0x24,
     0x40, 0xDA, 0x70, 0xA1, 0x03};
 
+base::span<const uint8_t, 16> TestProtobufCredId() {
+  return base::span<const uint8_t>(kTestProtobuf).subspan<20, 16>();
+}
+
 static constexpr char kIsUVPAA[] = R"((() => {
   window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().
     then(result => window.domAutomationController.send('IsUVPAA: ' + result),
@@ -356,6 +360,19 @@ static constexpr char kGetAssertionUvDiscouraged[] = R"((() => {
     timeout: 10000,
     userVerification: 'discouraged',
     allowCredentials: [],
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kGetAssertionUvDiscouragedWithCredId[] = R"((() => {
+  return navigator.credentials.get({ publicKey: {
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+    allowCredentials: [{
+      'type': 'public-key',
+      'transports': ['internal', 'hybrid', 'usb'],
+      'id': Uint8Array.from(atob("$1"), c => c.charCodeAt(0)).buffer}],
   }}).then(c => window.domAutomationController.send('webauthn: OK'),
            e => window.domAutomationController.send('error ' + e));
 })())";
@@ -3249,6 +3266,67 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, Bug_354083161) {
+  // Reproduces the crash from b/354083161
+
+  // Do an assertion to set up the enclave.
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  security_domain_service_->pretend_there_are_members();
+  AddTestPasskeyToModel();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->StoreKeys(kGaiaId,
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  // Do an assertion to trigger the UI pattern that caused the crash.
+  content::ExecuteScriptAsync(
+      web_contents,
+      base::ReplaceStringPlaceholders(
+          kGetAssertionUvDiscouragedWithCredId,
+          {base::Base64Encode(TestProtobufCredId())}, /*offsets=*/nullptr));
+  delegate_observer()->WaitForUI();
+
+  ASSERT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kPreSelectSingleAccount);
+  dialog_model()->OnAccountPreselectedIndex(0);
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
 }  // namespace
