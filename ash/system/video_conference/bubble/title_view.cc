@@ -4,11 +4,13 @@
 
 #include "ash/system/video_conference/bubble/title_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
+#include "ash/system/video_conference/bubble/mic_indicator.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,6 +94,10 @@ TitleView::TitleView() {
                        .SetVisible(VideoConferenceTrayController::Get()
                                        ->GetHasMicrophonePermissions())
                        .Build());
+
+  if (features::IsVcTrayMicIndicatorEnabled()) {
+    mic_test_column->AddChildView(std::make_unique<MicIndicator>());
+  }
 
   sidetone_button_ = mic_test_column->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&TitleView::OnSidetoneButtonClicked,
