@@ -782,6 +782,13 @@ void SplitViewDivider::RefreshStackingOrder() {
 }
 
 void SplitViewDivider::StartObservingTransientChild(aura::Window* transient) {
+  // Confine the bounds of a transient window if the given `transient` is a
+  // bubble dialog or dialog window.
+  if (!window_util::AsBubbleDialogDelegate(transient) &&
+      !window_util::AsDialogDelegate(transient)) {
+    return;
+  }
+
   // Explicitly check and early return if the `transient` is the divider native
   // window.
   if (divider_widget_ && transient == divider_widget_->GetNativeWindow()) {

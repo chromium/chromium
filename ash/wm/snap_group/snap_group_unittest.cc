@@ -127,6 +127,7 @@
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_modality_controller.h"
 #include "ui/wm/core/window_util.h"
@@ -4217,10 +4218,11 @@ TEST_F(SnapGroupDividerTest, DividerStackingOrderWithTwoTransientWindows) {
 }
 
 // Verifies that if the stacking order of the divider window is altered by
-// another transient window, `SplitViewDivider` is able to correct it, placing
-// the divider below the transient window. See http://b/341332379 for more
-// details.
-TEST_F(SnapGroupDividerTest, DividerStackingOrderWithTransientUndoStacking) {
+// another dialog transient window, `SplitViewDivider` is able to correct it,
+// placing the divider below the dialog transient window. See http://b/341332379
+// for more details.
+TEST_F(SnapGroupDividerTest,
+       DividerStackingOrderWithDialogTransientUndoStacking) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true,
@@ -4241,9 +4243,12 @@ TEST_F(SnapGroupDividerTest, DividerStackingOrderWithTransientUndoStacking) {
   ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
   ASSERT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
 
-  std::unique_ptr<aura::Window> w2_transient(
-      CreateTransientChildWindow(w2.get(), gfx::Rect(10, 20, 20, 30)));
-  ASSERT_TRUE(wm::HasTransientAncestor(w2_transient.get(), w2.get()));
+  // Create a dialog widget that's associated with `w1`.
+  views::DialogDelegateView* delegate = new views::DialogDelegateView();
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+      delegate, GetContext(), /*parent=*/w2.get());
+  aura::Window* w2_transient = widget->GetNativeWindow();
+  ASSERT_TRUE(wm::HasTransientAncestor(w2_transient, w2.get()));
   ASSERT_EQ(top_window_parent, w2_transient->parent());
 
   // When stacking a child window relative to a target, only the child is
@@ -4252,8 +4257,8 @@ TEST_F(SnapGroupDividerTest, DividerStackingOrderWithTransientUndoStacking) {
   // `StackChildBelow` to ensure the transient window (`w2_transient`) receives
   // this notification, correcting the stacking order so that the divider stays
   // below it.
-  top_window_parent->StackChildBelow(w2_transient.get(), divider_window);
-  EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w2_transient.get()));
+  top_window_parent->StackChildBelow(w2_transient, divider_window);
+  EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w2_transient));
 }
 
 // Tests that the union bounds of the primary window, secondary window in a snap

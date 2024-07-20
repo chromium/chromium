@@ -751,6 +751,16 @@ views::BubbleDialogDelegate* AsBubbleDialogDelegate(
   return widget->widget_delegate()->AsBubbleDialogDelegate();
 }
 
+views::DialogDelegate* AsDialogDelegate(aura::Window* transient_window) {
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(transient_window);
+  if (!widget || !widget->widget_delegate()) {
+    return nullptr;
+  }
+
+  return widget->widget_delegate()->AsDialogDelegate();
+}
+
 bool ShouldShowForCurrentUser(aura::Window* window) {
   MultiUserWindowManager* multi_user_window_manager =
       MultiUserWindowManagerImpl::Get();
