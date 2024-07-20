@@ -249,13 +249,13 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       // 4. Scroll to the "more"  button lement of the NTP module's header.
       // Modules may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId, ModuleDetails().more_button_query),
-      // 5. Ensure the module's dismiss button exists, and thus, that the module
+      // 5. Click the "more actions" menu button of the NTP module.
+      ClickElement(kNewTabPageElementId, ModuleDetails().more_button_query),
+      // 6. Wait for module's menu dialog to be anchored.
+      WaitForElementStyleSet(ModuleDetails().more_action_menu_query),
+      // 7. Ensure the module's dismiss button exists, and thus, that the module
       // loaded successfully.
       WaitForElementToLoad(ModuleDetails().dismiss_button_query),
-      // 6. Click the "more actions" menu button of the NTP module.
-      ClickElement(kNewTabPageElementId, ModuleDetails().more_button_query),
-      // 7. Wait for module's menu dialog to be anchored.
-      WaitForElementStyleSet(ModuleDetails().more_action_menu_query),
       // 8. Scroll to the dismiss element of the NTP module's header. Modules
       // may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId,
@@ -290,13 +290,13 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       // 4. Scroll to the "more"  button lement of the NTP module's header.
       // Modules may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId, ModuleDetails().more_button_query),
-      // 5. Ensure the module's dismiss button exists, and thus, that the module
+      // 5. Click the "more actions" menu button of the NTP module.
+      ClickElement(kNewTabPageElementId, module_details.more_button_query),
+      // 6. Wait for module's menu dialog to be anchored.
+      WaitForElementStyleSet(module_details.more_action_menu_query),
+      // 7. Ensure the module's dismiss button exists, and thus, that the module
       // loaded successfully.
       WaitForElementToLoad(module_details.disable_button_query),
-      // 6. Click the "more actions" menu button of the NTP module.
-      ClickElement(kNewTabPageElementId, module_details.more_button_query),
-      // 7. Wait for module's menu dialog to be anchored.
-      WaitForElementStyleSet(module_details.more_action_menu_query),
       // 8. Scroll to the disable element of the NTP module's header. Modules
       // may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId,
