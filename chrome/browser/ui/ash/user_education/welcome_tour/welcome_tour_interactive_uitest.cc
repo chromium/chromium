@@ -96,6 +96,8 @@ class WelcomeTourInteractiveUiTest
   WelcomeTourInteractiveUiTest() {
     // NOTE: These tests are not concerned with user eligibility, so explicitly
     // force user eligibility for the Welcome Tour.
+    // Only one of `kWelcomeTourHoldbackArm`, `kWelcomeTourCounterfactualArm`
+    // and `kWelcomeTourV2` can be enabled at a time.
     scoped_feature_list_.InitWithFeatureStates(
         {{ash::features::kWelcomeTour, true},
          {ash::features::kWelcomeTourForceUserEligibility, true},
@@ -103,6 +105,7 @@ class WelcomeTourInteractiveUiTest
           IsWelcomeTourV2Enabled() && !IsWelcomeTourCounterfactuallyEnabled()},
          {ash::features::kWelcomeTourCounterfactualArm,
           IsWelcomeTourCounterfactuallyEnabled()},
+         {ash::features::kWelcomeTourHoldbackArm, false},
          {app_list_features::kAppsCollections, IsAppsCollectionsEnabled()},
          {app_list_features::kForceShowAppsCollections,
           IsAppsCollectionsEnabled()}});

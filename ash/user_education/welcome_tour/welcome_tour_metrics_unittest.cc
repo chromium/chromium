@@ -50,8 +50,11 @@ class WelcomeTourInteractionMetricsTest
       public ::testing::WithParamInterface<TestVariantsParam> {
  public:
   WelcomeTourInteractionMetricsTest() {
-    scoped_feature_list.InitWithFeatureState(features::kWelcomeTourHoldbackArm,
-                                             IsHoldback());
+    // Only one of those features can be enabled at a time.
+    scoped_feature_list.InitWithFeatureStates(
+        {{features::kWelcomeTourHoldbackArm, IsHoldback()},
+         {features::kWelcomeTourV2, false},
+         {features::kWelcomeTourCounterfactualArm, false}});
   }
 
   std::string GetInteractionCountMetricName() const {

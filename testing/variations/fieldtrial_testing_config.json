@@ -4801,9 +4801,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Holdback",
+                    "name": "Enabled",
                     "enable_features": [
-                        "WelcomeTourHoldbackArm"
+                        "WelcomeTourV2"
                     ]
                 },
                 {
@@ -4813,9 +4813,9 @@
                     ]
                 },
                 {
-                    "name": "Enabled",
+                    "name": "Holdback",
                     "enable_features": [
-                        "WelcomeTourV2"
+                        "WelcomeTourHoldbackArm"
                     ]
                 }
             ]

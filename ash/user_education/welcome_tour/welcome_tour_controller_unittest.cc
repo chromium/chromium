@@ -533,11 +533,13 @@ class WelcomeTourControllerV2Test
           /*is_welcome_tour_counterfactually_enabled=*/bool>> {
  public:
   WelcomeTourControllerV2Test() {
+    // Only one of those features can be enabled at a time.
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kWelcomeTourV2,
           IsWelcomeTourV2Enabled() && !IsWelcomeTourCounterfactuallyEnabled()},
          {features::kWelcomeTourCounterfactualArm,
-          IsWelcomeTourCounterfactuallyEnabled()}});
+          IsWelcomeTourCounterfactuallyEnabled()},
+         {features::kWelcomeTourHoldbackArm, false}});
   }
 
  protected:
@@ -823,9 +825,12 @@ class WelcomeTourControllerHoldbackTest
           /*is_holdback=*/std::optional<bool>> {
  public:
   WelcomeTourControllerHoldbackTest() {
+    // Only one of those features can be enabled at a time.
     if (const auto& is_holdback = IsHoldback()) {
-      scoped_feature_list_.InitWithFeatureState(
-          features::kWelcomeTourHoldbackArm, is_holdback.value());
+      scoped_feature_list_.InitWithFeatureStates(
+          {{features::kWelcomeTourHoldbackArm, is_holdback.value()},
+           {features::kWelcomeTourV2, false},
+           {features::kWelcomeTourCounterfactualArm, false}});
     }
   }
 
