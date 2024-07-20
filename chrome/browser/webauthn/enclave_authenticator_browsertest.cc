@@ -377,6 +377,20 @@ static constexpr char kGetAssertionUvDiscouragedWithCredId[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
+static constexpr char
+    kGetAssertionUvDiscouragedWithCredIdAndInternalTransport[] = R"((() => {
+  return navigator.credentials.get({ publicKey: {
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+    allowCredentials: [{
+      'type': 'public-key',
+      'transports': ['internal'],
+      'id': Uint8Array.from(atob("$1"), c => c.charCodeAt(0)).buffer}],
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
 static constexpr char kGetAssertionUvRequired[] = R"((() => {
   return navigator.credentials.get({ publicKey: {
     challenge: new Uint8Array([0]),
@@ -3327,6 +3341,70 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, Bug_354083161) {
 
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       NoSilentOperations) {
+  // Check that the enclave doesn't allow silent operations.
+
+  // Do an assertion to set up the enclave.
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  security_domain_service_->pretend_there_are_members();
+  AddTestPasskeyToModel();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePin);
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->StoreKeys(kGaiaId,
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  // Do an assertion with an allowlist and check that the assertion isn't
+  // immediately run.
+  content::ExecuteScriptAsync(
+      web_contents,
+      base::ReplaceStringPlaceholders(
+          // Setting the transport hint to just `internal` means that there are
+          // no other mechanisms and so the credential will be the priority
+          // mechanism.
+          kGetAssertionUvDiscouragedWithCredIdAndInternalTransport,
+          {base::Base64Encode(TestProtobufCredId())}, /*offsets=*/nullptr));
+  delegate_observer()->WaitForUI();
+
+  // The UI must not be, e.g., kGPMConnecting as that indicates that the
+  // operation is happening without any UI.
+  ASSERT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
 }
 
 }  // namespace

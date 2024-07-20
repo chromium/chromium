@@ -796,7 +796,11 @@ void AuthenticatorRequestDialogController::
          (cred->value().source == device::AuthenticatorType::kTouchID &&
           !ProfileAuthenticatorWillDoUserVerification(
               transport_availability_.user_verification_requirement,
-              transport_availability_.platform_has_biometrics)))) {
+              transport_availability_.platform_has_biometrics)) ||
+         // Never auto-trigger the enclave unless UV will be performed because,
+         // otherwise, there'll not be any UI.
+         (cred->value().source == device::AuthenticatorType::kEnclave &&
+          !enclave_will_do_uv))) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else if (cred != nullptr || !hints_.transport.has_value() ||
                transport_availability_.request_type !=
