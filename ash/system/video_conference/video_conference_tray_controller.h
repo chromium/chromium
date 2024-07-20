@@ -175,6 +175,12 @@ class ASH_EXPORT VideoConferenceTrayController
   bool HasCameraPermission() const;
   bool HasMicrophonePermission() const;
 
+  // Enable or disable input stream ewma power report.
+  void SetEwmaPowerReportEnabled(bool enabled);
+
+  // Return the last reported ewma power.
+  double GetEwmaPower();
+
   // Enable or disable sidetone.
   void SetSidetoneEnabled(bool enabled);
 

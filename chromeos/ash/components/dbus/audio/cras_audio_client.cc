@@ -155,6 +155,13 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr()));
 
     cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface, "EwmaPowerReported",
+        base::BindRepeating(&CrasAudioClientImpl::EwmaPowerReportedReceived,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+
+    cras_proxy_->ConnectToSignal(
         cras::kCrasControlInterface,
         cras::kNumberOfNonChromeOutputStreamsChanged,
         base::BindRepeating(
@@ -490,6 +497,17 @@ class CrasAudioClientImpl : public CrasAudioClient {
   void SetSpeakOnMuteDetection(bool enabled) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kSetSpeakOnMuteDetection);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(enabled);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void SetEwmaPowerReportEnabled(bool enabled) override {
+    dbus::MethodCall method_call(
+        cras::kCrasControlInterface,
+        "SetEwmaPowerReportEnabled");  // TODO change to variable;
     dbus::MessageWriter writer(&method_call);
     writer.AppendBool(enabled);
     cras_proxy_->CallMethod(&method_call,
@@ -962,6 +980,17 @@ class CrasAudioClientImpl : public CrasAudioClient {
   void SpeakOnMuteDetectedReceived(dbus::Signal* signal) {
     for (auto& observer : observers_) {
       observer.SpeakOnMuteDetected();
+    }
+  }
+
+  void EwmaPowerReportedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    double power;
+    if (!reader.PopDouble(&power)) {
+      LOG(ERROR) << "Error reading signal from cras: " << signal->ToString();
+    }
+    for (auto& observer : observers_) {
+      observer.EwmaPowerReported(power);
     }
   }
 
@@ -1507,6 +1536,8 @@ void CrasAudioClient::Observer::SurveyTriggered(
     const base::flat_map<std::string, std::string>& survey_specific_data) {}
 
 void CrasAudioClient::Observer::SpeakOnMuteDetected() {}
+
+void CrasAudioClient::Observer::EwmaPowerReported(double power) {}
 
 void CrasAudioClient::Observer::NumberOfNonChromeOutputStreamsChanged() {}
 

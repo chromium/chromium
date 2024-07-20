@@ -576,6 +576,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Enable or disable sidetone;
   void SetSidetoneEnabled(bool enabled);
 
+  // Enable or disable input stream ewma power report.
+  void SetEwmaPowerReportEnabled(bool enabled);
+
+  // Returns the last reported ewma power.
+  double GetEwmaPower();
+
   // Get whether the sidetone is enabled or not
   bool GetSidetoneEnabled() const;
 
@@ -741,6 +747,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void SurveyTriggered(const base::flat_map<std::string, std::string>&
                            survey_specific_data) override;
   void SpeakOnMuteDetected() override;
+  void EwmaPowerReported(double power) override;
   void NumberOfNonChromeOutputStreamsChanged() override;
   void NumStreamIgnoreUiGains(int32_t num) override;
   void NumberOfArcStreamsChanged() override;
@@ -1152,6 +1159,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Whether the current has sidetone available or not.
   bool sidetone_supported_ = false;
+
+  // Whether the ewma power report is enabled in CRAS.
+  bool ewma_power_report_enabled_ = false;
+
+  // The last reported ewma power.
+  double ewma_power_ = 0;
 
   // Indicates whether the audio selection notification should be displayed.
   bool should_show_notification_ = false;

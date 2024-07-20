@@ -417,6 +417,14 @@ void VideoConferenceTrayController::SetSidetoneEnabled(bool enabled) {
   CrasAudioHandler::Get()->SetSidetoneEnabled(enabled);
 }
 
+void VideoConferenceTrayController::SetEwmaPowerReportEnabled(bool enabled) {
+  CrasAudioHandler::Get()->SetEwmaPowerReportEnabled(enabled);
+}
+
+double VideoConferenceTrayController::GetEwmaPower() {
+  return CrasAudioHandler::Get()->GetEwmaPower();
+}
+
 bool VideoConferenceTrayController::IsCapturingScreen() const {
   return state_.is_capturing_screen;
 }

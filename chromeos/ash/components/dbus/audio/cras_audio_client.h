@@ -78,6 +78,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     // Called when a new speak-on-mute signal is detected.
     virtual void SpeakOnMuteDetected();
 
+    // Called when ewma power reported by cras.
+    virtual void EwmaPowerReported(double power);
+
     // Called when NumberOfNonChromeOutputStreamsChanged is detected.
     virtual void NumberOfNonChromeOutputStreamsChanged();
 
@@ -219,6 +222,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   // Enables or disables CRAS to use speak-on-mute detection.
   virtual void SetSpeakOnMuteDetection(bool enabled) = 0;
+
+  virtual void SetEwmaPowerReportEnabled(bool enabled) = 0;
 
   virtual void SetSidetoneEnabled(bool enabled) = 0;
 

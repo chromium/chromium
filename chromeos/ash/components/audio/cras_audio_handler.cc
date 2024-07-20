@@ -855,6 +855,15 @@ void CrasAudioHandler::SetSpeakOnMuteDetection(bool som_on) {
   speak_on_mute_detection_on_ = som_on;
 }
 
+void CrasAudioHandler::SetEwmaPowerReportEnabled(bool enabled) {
+  CrasAudioClient::Get()->SetEwmaPowerReportEnabled(enabled);
+  ewma_power_report_enabled_ = enabled;
+}
+
+double CrasAudioHandler::GetEwmaPower() {
+  return ewma_power_;
+}
+
 void CrasAudioHandler::SetSidetoneEnabled(bool enabled) {
   CrasAudioClient::Get()->SetSidetoneEnabled(enabled);
   sidetone_enabled_ = enabled;
@@ -1605,6 +1614,10 @@ void CrasAudioHandler::SpeakOnMuteDetected() {
   }
 }
 
+void CrasAudioHandler::EwmaPowerReported(double power) {
+  ewma_power_ = power;
+}
+
 void CrasAudioHandler::NumStreamIgnoreUiGains(int32_t num) {
   num_stream_ignore_ui_gains_ = num;
   for (auto& observer : observers_) {
@@ -1804,6 +1817,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
 
   UpdateSidetoneSupportedState();
   CrasAudioClient::Get()->SetSidetoneEnabled(sidetone_enabled_);
+  CrasAudioClient::Get()->SetEwmaPowerReportEnabled(ewma_power_report_enabled_);
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {

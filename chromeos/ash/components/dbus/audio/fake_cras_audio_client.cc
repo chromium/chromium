@@ -328,6 +328,10 @@ void FakeCrasAudioClient::SetSpeakOnMuteDetection(bool enabled) {
   speak_on_mute_detection_enabled_ = enabled;
 }
 
+void FakeCrasAudioClient::SetEwmaPowerReportEnabled(bool enabled) {
+  ewma_power_report_enabled_ = enabled;
+}
+
 void FakeCrasAudioClient::SetSidetoneEnabled(bool enabled) {
   sidetone_enabled_ = enabled;
 }
