@@ -1,0 +1,4 @@
+rootWebArea htmlTag='#document' language='vi'
+++genericContainer ignored htmlTag='html' language='vi'
+++++genericContainer ignored htmlTag='body' language='vi'
+++++++group htmlTag='div' language='vi' name='Done'
