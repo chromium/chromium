@@ -3130,6 +3130,7 @@ constexpr char kSeaPenInternalName[] = "sea-pen";
 constexpr char kAssistantIphInternalName[] = "assistant-iph";
 constexpr char kGrowthCampaigns[] = "growth-campaigns";
 constexpr char kGrowthCampaignsTestTag[] = "campaigns-test-tag";
+constexpr char kVcTrayMicIndicatorInternalName[] = "vc-tray-mic-indicator";
 constexpr char kVcTrayTitleHeaderInternalName[] = "vc-tray-title-header";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -9899,6 +9900,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kVcTrayMicIndicatorInternalName,
+     flag_descriptions::kVcTrayMicIndicatorName,
+     flag_descriptions::kVcTrayMicIndicatorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kVcTrayMicIndicator)},
     {kVcTrayTitleHeaderInternalName, flag_descriptions::kVcTrayTitleHeaderName,
      flag_descriptions::kVcTrayTitleHeaderDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVcTrayTitleHeader)},

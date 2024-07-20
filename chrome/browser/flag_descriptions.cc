@@ -3776,6 +3776,12 @@ const char kVcSegmentationModelDescription[] =
     "Allows a different segmentation model to be used for blur and relighting, "
     "which may reduce the workload on the GPU.";
 
+const char kVcTrayMicIndicatorName[] = "Adds a mic indicator in VC tray";
+const char kVcTrayMicIndicatorDescription[] =
+    "Displays a pulsing mic indicator that indicates how loud the audio is "
+    "captured by the microphone, after some effects like noise cancellation "
+    "is applied.";
+
 const char kVcTrayTitleHeaderName[] = "Adds a title header segment in VC tray";
 const char kVcTrayTitleHeaderDescription[] =
     "Displays a title header segment in VC Tray that holds an icon, label, "

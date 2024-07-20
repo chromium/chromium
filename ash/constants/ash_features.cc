@@ -3165,6 +3165,11 @@ BASE_FEATURE(kVcSegmentationModel,
              "VCSegmentationModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables mic indicator inside VC tray title header
+BASE_FEATURE(kVcTrayMicIndicator,
+             "VCTrayMicIndicator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables VC tray title header
 BASE_FEATURE(kVcTrayTitleHeader,
              "VCTrayTitleHeader",
@@ -4823,6 +4828,10 @@ bool IsVcPortraitRelightEnabled() {
 
 bool IsVcControlsUiFakeEffectsEnabled() {
   return base::FeatureList::IsEnabled(kVcControlsUiFakeEffects);
+}
+
+bool IsVcTrayMicIndicatorEnabled() {
+  return base::FeatureList::IsEnabled(kVcTrayMicIndicator);
 }
 
 bool IsVcTrayTitleHeaderEnabled() {

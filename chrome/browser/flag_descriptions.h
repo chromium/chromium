@@ -2192,6 +2192,9 @@ extern const char kVcSegmentationInferenceBackendDescription[];
 extern const char kVcSegmentationModelName[];
 extern const char kVcSegmentationModelDescription[];
 
+extern const char kVcTrayMicIndicatorName[];
+extern const char kVcTrayMicIndicatorDescription[];
+
 extern const char kVcTrayTitleHeaderName[];
 extern const char kVcTrayTitleHeaderDescription[];
 

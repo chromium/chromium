@@ -18278,6 +18278,7 @@ from previous Chrome versions.
   <int value="-1093225454" label="FedCmIdPregistration:disabled"/>
   <int value="-1093135462" label="DesktopPWAsAttentionBadgingCrOS:disabled"/>
   <int value="-1092514142" label="JourneysKeywordFiltering:disabled"/>
+  <int value="-1092340892" label="VCTrayMicIndicator:disabled"/>
   <int value="-1092211161" label="BluetoothWbsDogfood:disabled"/>
   <int value="-1092165602"
       label="EnableBoundSessionCredentialsSoftwareKeysForManualTesting:enabled"/>
@@ -23761,6 +23762,7 @@ from previous Chrome versions.
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:disabled"/>
   <int value="1247293682" label="topchrome-md"/>
   <int value="1247309454" label="PasswordGenerationExperiment:enabled"/>
+  <int value="1247679812" label="VCTrayMicIndicator:enabled"/>
   <int value="1248222772" label="ZeroCopyTabCapture:disabled"/>
   <int value="1248486441" label="LauncherOmniboxPublishLogicLog:disabled"/>
   <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>
