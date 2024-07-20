@@ -3012,9 +3012,17 @@ BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
     on_back_button_pressed = controller->GetOnBackButtonPressedCallback();
   }
 
+  views::View* anchor_view =
+      toolbar_button_provider()->GetAnchorView(std::nullopt);
+  if (features::IsToolbarPinningEnabled() &&
+      toolbar()->pinned_toolbar_actions_container()->IsActionPinnedOrPoppedOut(
+          kActionQrCodeGenerator)) {
+    anchor_view = toolbar()->pinned_toolbar_actions_container()->GetButtonFor(
+        kActionQrCodeGenerator);
+  }
+
   auto* bubble = new qrcode_generator::QRCodeGeneratorBubble(
-      toolbar_button_provider()->GetAnchorView(std::nullopt),
-      contents->GetWeakPtr(), std::move(on_closing),
+      anchor_view, contents->GetWeakPtr(), std::move(on_closing),
       std::move(on_back_button_pressed), url);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
