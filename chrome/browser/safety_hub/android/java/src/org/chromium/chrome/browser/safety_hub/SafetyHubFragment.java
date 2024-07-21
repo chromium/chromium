@@ -182,6 +182,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 SafetyHubModuleProperties.UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
+                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                                v -> mDelegate.openGooglePlayStore(getContext()))
+                        .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
                                 v -> mDelegate.openGooglePlayStore(getContext()))
                         .build();
