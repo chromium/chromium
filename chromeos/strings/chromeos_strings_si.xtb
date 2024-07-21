@@ -318,6 +318,7 @@
 <translation id="2538719227433767804">තව +<ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">ලෙමන්</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> පරීක්ෂාව ධාවනය කරමින්...</translation>
+<translation id="2576253868710695442">මෙය 2GBක් දක්වා ආචයනය ලබා ගනු ඇත</translation>
 <translation id="2584547424703650812">ග්ලෝස්කේප්ස්</translation>
 <translation id="2584559707064218956">පිහිටුවීමට, සැකසීම් වෙත යන්න</translation>
 <translation id="2586146417912237930">නිල් සහ ඉණ්ඩිගෝ</translation>
@@ -343,6 +344,7 @@
 <translation id="2712812801627182647">TLS සත්‍යාපන යතුර</translation>
 <translation id="2713444072780614174">සුදු</translation>
 <translation id="2715723665057727940">ගඟ</translation>
+<translation id="271640182849234126">මේ සම්බන්‍ධයෙන් උදවු කළ නොහැක. වෙනත් ඉල්ලීමක් උත්සාහ කරන්න</translation>
 <translation id="2717139507051041123">අඳුරු වර්ණ ප්‍රකාරය සබල කරන්න</translation>
 <translation id="2728460467788544679">මුද්‍රණ ඉතිහාස සියල්ල හිස් කරන්න</translation>
 <translation id="2740531572673183784">හරි</translation>
@@ -606,6 +608,7 @@
 <translation id="4310735698903592804">Google AI මගින් බල ගැන්වෙන මෑත වෝල්පේපර</translation>
 <translation id="4320904097188876154">නියෝන් රෝස</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> යතුර ඔබන ලදි</translation>
+<translation id="4334293042716981313">ඔබට <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />ඔබේම ප්‍රේරකයක් ද ලිවිය හැක<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">යතුර</translation>
 <translation id="4361257691546579041">APN වර්ගය පෙරනිමි වේ.</translation>
 <translation id="437294888293595148">සියලු කෙටිමං යළි සකසන්න</translation>
@@ -652,6 +655,7 @@
 <translation id="456077979087158257">නගර දර්ශනය</translation>
 <translation id="4561801978359312462">SIM අගුලු හරින ලදී</translation>
 <translation id="4562494484721939086">සේවාව නැත</translation>
+<translation id="4570558255126759859">පටිගත කිරීම් සාරාංශ කිරීමට Gemini ආකෘතිය බාගන්න ද?</translation>
 <translation id="4573777384450697571">අසමත් විය - සහතිකය කල් ඉකුත් විය</translation>
 <translation id="458794348635939462">සියලු සත්කාරක විසඳීම අසාර්ථක විය</translation>
 <translation id="4593212453765072419">ප්‍රොක්සි සත්‍යාපනය අවශ්‍යයි</translation>
@@ -973,6 +977,7 @@
 <translation id="6327262166342360252">මෙම වෝල්පේපරය පහත පෙළ භාවිතා කර AI සමග තනා ඇත: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ස්වයංක්‍රිය අඳුරු තේමාව</translation>
 <translation id="6340526405444716530">පුද්ගලායනය</translation>
+<translation id="6348252528297699679">ඔබට සැකසීම් &gt; පෞද්ගලිකත්වය සහ ආරක්‍ෂාව &gt; රහසිගත පාලන &gt; ස්ථාන ප්‍රවේශය තුළ ස්ථානය ක්‍රියා විරහිත කළ හැක. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">පරිශීලක නාමය සහ මුරපදය</translation>
 <translation id="6352210854422428614">වෙනස් ග්‍රහලෝකය</translation>
 <translation id="6359706544163531585">ආලෝක තේමාව අබල කරන්න</translation>
@@ -1156,6 +1161,7 @@
 <translation id="7212547870105584639">ජාල APN සැකසීම් කළමනා කරන්න. APN සෙලියුලර් ජාලයක් සහ අන්තර්ජාලය අතර සම්බන්‍ධතාවක් ඇති කරයි. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">බාහිර උපාංග සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
+<translation id="7223952304612664117">මෙය පද්ධති සේවාවලට ඔබේ ස්ථානය තීරණ කිරීමට ස්ථාන නිරවද්‍යතාව භාවිත කිරීමට ඉඩ දෙයි. ස්ථාන නිරවද්‍යතාවය තක්සේරු කිරීම සඳහා ස්ථාන නිරවද්‍යතාවය රැහැන් රහිත සංඥා සහ සංවේදක පිළිබඳ තොරතුරු භාවිත කරයි.</translation>
 <translation id="7233782086689993269">කෙටිමඟ ප්‍රතිසාධන කළා</translation>
 <translation id="725133483556299729">ඉ-තැපෑල තෝරන්න</translation>
 <translation id="7255187042098209569">රෝස සහ දම්</translation>
@@ -1391,6 +1397,7 @@
 <translation id="8498220429738806196">තදබදය ගණනය කිරීම්</translation>
 <translation id="8503813439785031346">පරිශීලක නාමය</translation>
 <translation id="8503836310948963452">හුදෙක් තව මිනිත්තු කීපයකි...</translation>
+<translation id="8505011850330200833">Gemini ආකෘතියට අනුපත් සැකසීමට සහ සාරාංශ සෑදීමට 2GB ආචයනයක් අවශ්‍ය වේ</translation>
 <translation id="8508640263392900755">APN විස්තර</translation>
 <translation id="8522687886059337719">ඔබට දැන් නව <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />වෝල්පේපර<ph name="END_LINK_WALLPAPER_SUBPAGE" /> සහ <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />තිර සුරැකුම<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> වෙත ප්‍රවේශය ඇත</translation>
 <translation id="8528615187455571738">Crosvm</translation>
