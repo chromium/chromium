@@ -2,18 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mwc/@material/web/dialog/dialog.js';
-import 'chrome://resources/mwc/@material/web/icon/icon.js';
-import 'chrome://resources/mwc/@material/web/iconbutton/filled-icon-button.js';
-import 'chrome://resources/mwc/@material/web/iconbutton/icon-button.js';
-import 'chrome://resources/mwc/@material/web/radio/radio.js';
+import 'chrome://resources/cros_components/menu/menu_separator.js';
 import './cra/cra-icon.js';
+import './cra/cra-menu.js';
+import './cra/cra-menu-item.js';
 
-import {MdDialog} from 'chrome://resources/mwc/@material/web/dialog/dialog.js';
-import {css, html} from 'chrome://resources/mwc/lit/index.js';
+import {Menu} from 'chrome://resources/cros_components/menu/menu.js';
+import {
+  createRef,
+  css,
+  html,
+  map,
+  ref,
+} from 'chrome://resources/mwc/lit/index.js';
 
+import {i18n} from '../core/i18n.js';
+import {useMicrophoneManager} from '../core/lit/context.js';
+import {MicrophoneInfo} from '../core/microphone_manager.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {AudioSource} from '../core/recording_session.js';
 import {settings} from '../core/state/settings.js';
 
 /**
@@ -21,93 +27,67 @@ import {settings} from '../core/state/settings.js';
  */
 export class MicSelectionMenu extends ReactiveLitElement {
   static override styles = css`
-    :host {
-      display: block;
-    }
-
-    .title {
-      flex: 1;
-      font: var(--cros-display-5-font);
-    }
-
-    .column {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5em;
-    }
-
-    .section-title {
-      color: var(--cros-sys-secondary);
-      font: var(--cros-title-2-font);
-    }
-
-    .radio-label {
-      align-items: center;
-      display: flex;
-      font: var(--cros-body-0-font);
-      gap: 1em;
+    cra-menu {
+      --cros-menu-width: 320px;
     }
   `;
 
-  private get dialog(): MdDialog|null {
-    return this.shadowRoot?.querySelector('md-dialog') ?? null;
+  private readonly microphoneManager = useMicrophoneManager();
+
+  private readonly menuRef = createRef<Menu>();
+
+  show(anchorElement: HTMLElement): void {
+    if (this.menuRef.value !== undefined) {
+      const menu = this.menuRef.value;
+      menu.anchorElement = anchorElement;
+      menu.show();
+    }
   }
 
-  show(): void {
-    this.dialog?.show();
-  }
-
-  private onAudioSourceChange(newSource: AudioSource): void {
+  private toggleSystemAudio(): void {
     settings.mutate((d) => {
-      d.audioSource = newSource;
+      d.includeSystemAudio = !d.includeSystemAudio;
     });
   }
 
-  override render(): RenderResult {
-    const {audioSource} = settings.value;
-    const selectUserMedia = () => {
-      this.onAudioSourceChange(AudioSource.USER_MEDIA);
-    };
-    const selectDisplayMedia = () => {
-      this.onAudioSourceChange(AudioSource.DISPLAY_MEDIA);
-    };
-    // TODO(shik): Side sheet seems to be better than dialog, but Material Web
-    // has no side sheet yet.
-    // TODO: b/336963138 - Implement mic selection as in spec.
-    return html`<md-dialog>
-      <div slot="headline">
-        <span class="title">Mic Selection</span>
-        <md-icon-button form="form">
-          <cra-icon name="close"></cra-icon>
-        </md-icon-button>
-      </div>
-      <form id="form" slot="content" method="dialog">
-        <div class="column">
-          <span class="section-title">Audio Source</span>
-          <div class="radio-label">
-            <md-radio
-              id="mic-radio"
-              name="source"
-              ?checked=${audioSource === AudioSource.USER_MEDIA}
-              @change=${selectUserMedia}
-            >
-            </md-radio>
-            <label for="mic-radio">Microphone</label>
-          </div>
+  private renderMicrophone(mic: MicrophoneInfo, selectedMic: string|null):
+    RenderResult {
+    const micIcon = mic.isInternal ? 'mic' : 'mic_external_on';
+    const isSelectedMic = mic.deviceId === selectedMic;
+    // TODO(kamchonlathorn): Get status and render noise cancellation warning.
+    return html`
+      <cra-menu-item
+        headline=${mic.label}
+        itemStart="icon"
+        ?checked=${isSelectedMic}
+        @cros-menu-item-triggered=${() => {
+      this.microphoneManager.setSelectedMicId(mic.deviceId);
+    }}
+      >
+        <cra-icon slot="start" name=${micIcon}></cra-icon>
+      </cra-menu-item>
+    `;
+  }
 
-          <div class="radio-label">
-            <md-radio
-              id="tab-radio"
-              name="source"
-              ?checked=${audioSource === AudioSource.DISPLAY_MEDIA}
-              @change=${selectDisplayMedia}
-            >
-            </md-radio>
-            <label for="tab-radio">Tab or Window</label>
-          </div>
-        </div>
-      </form>
-    </md-dialog>`;
+  override render(): RenderResult {
+    const {includeSystemAudio} = settings.value;
+    const microphones = this.microphoneManager.getMicrophoneList().value;
+    const selectedMic = this.microphoneManager.getSelectedMicId().value;
+
+    return html`<cra-menu ${ref(this.menuRef)}>
+      ${map(microphones, (mic) => this.renderMicrophone(mic, selectedMic))}
+      </cra-menu-item>
+      <cros-menu-separator></cros-menu-separator>
+      <cra-menu-item
+          headline=${i18n.micSelectionMenuChromebookAudioOption}
+          itemStart="icon"
+          itemEnd="switch"
+          .switchSelected=${includeSystemAudio}
+          @cros-menu-item-triggered=${this.toggleSystemAudio}
+        >
+          <cra-icon slot="start" name="laptop_chromebook"></cra-icon>
+        </cra-menu-item>
+    </cra-menu>`;
   }
 }
 

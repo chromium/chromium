@@ -44,34 +44,17 @@ interface RecordingProgress {
   textTokens: TextToken[]|null;
 }
 
-/**
- * The source of the audio stream.
- */
-export enum AudioSource {
-  DISPLAY_MEDIA = 'DISPLAY_MEDIA',
-  USER_MEDIA = 'USER_MEDIA',
-}
-
-function getStreamFromAudioSource(source: AudioSource): Promise<MediaStream> {
-  switch (source) {
-    case AudioSource.USER_MEDIA:
-      return navigator.mediaDevices.getUserMedia({audio: true});
-    case AudioSource.DISPLAY_MEDIA: {
-      // TODO(shik): Handle the case that user cancelled the dialog, or stopped
-      // sharing while recording.
-      return navigator.mediaDevices.getDisplayMedia({
-        video: false,
-        audio: true,
-        systemAudio: 'include',
-      });
-    }
-    default:
-      assertExhaustive(source);
-  }
+function getMicrophoneStream(micId: string): Promise<MediaStream> {
+  return navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: {exact: micId},
+    },
+  });
 }
 
 interface RecordingSessionConfig {
-  source: AudioSource;
+  includeSystemAudio: boolean;
+  micId: string;
   platformHandler: PlatformHandler;
 }
 
@@ -278,18 +261,31 @@ export class RecordingSession {
   static async create(
     config: RecordingSessionConfig,
   ): Promise<RecordingSession> {
-    const stream = await getStreamFromAudioSource(config.source);
-    const mediaRecorder = new MediaRecorder(stream, {
+    const requestingStreams = [getMicrophoneStream(config.micId)];
+    if (config.includeSystemAudio) {
+      requestingStreams.push(config.platformHandler.getSystemAudioMediaStream()
+      );
+    }
+    const streams = await Promise.all(requestingStreams);
+
+    const audioCtx = await getAudioContext();
+    const combinedInput = audioCtx.createMediaStreamDestination();
+    const processor = new AudioWorkletNode(audioCtx, 'audio-processor');
+
+    for (const stream of streams) {
+      const source = audioCtx.createMediaStreamSource(stream);
+      source.connect(combinedInput);
+      source.connect(processor);
+    }
+
+    const combinedStream = combinedInput.stream;
+    const mediaRecorder = new MediaRecorder(combinedStream, {
       mimeType: AUDIO_MIME_TYPE,
     });
-    const audioCtx = await getAudioContext();
-    const source = audioCtx.createMediaStreamSource(stream);
-    const processor = new AudioWorkletNode(audioCtx, 'audio-processor');
-    source.connect(processor);
 
     return new RecordingSession(
       config.platformHandler,
-      stream,
+      combinedStream,
       mediaRecorder,
       processor,
     );

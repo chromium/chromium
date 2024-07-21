@@ -94,4 +94,9 @@ export abstract class PlatformHandler {
    * Shows feedback dialog for AI with the given description pre-filled.
    */
   abstract showAiFeedbackDialog(description: string): void;
+
+  /**
+   * Returns MediaStream capturing the system audio.
+   */
+  abstract getSystemAudioMediaStream(): Promise<MediaStream>;
 }

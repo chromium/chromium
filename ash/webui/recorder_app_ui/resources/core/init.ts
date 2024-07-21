@@ -152,13 +152,13 @@ export async function init(platformHandler: PlatformHandler): Promise<void> {
 
   installRouter();
   initSettings();
-  // TODO: b/344782258 - Put microphoneManager to initContext.
-  await MicrophoneManager.create(
-    (deviceId: string) => platformHandler.getMicrophoneInfo(deviceId),
+  const microphoneManager = await MicrophoneManager.create(
+    (deviceId: string) => platformHandler.getMicrophoneInfo(deviceId)
   );
   dataDir = await DataDir.createFromOpfs();
   const recordingDataManager = await RecordingDataManager.create(dataDir);
   initContext({
+    microphoneManager,
     recordingDataManager,
     platformHandler,
   });

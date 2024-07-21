@@ -172,4 +172,14 @@ export class PlatformHandler extends PlatformHandlerBase {
   override showAiFeedbackDialog(description: string): void {
     this.remote.openAiFeedbackDialog(description);
   }
+
+  override async getSystemAudioMediaStream(): Promise<MediaStream> {
+    return navigator.mediaDevices.getDisplayMedia({
+      // `video: false` can be used here with the special permission
+      // DISPLAY_MEDIA_SYSTEM_AUDIO.
+      video: false,
+      audio: true,
+      systemAudio: 'include',
+    });
+  }
 }

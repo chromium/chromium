@@ -40,13 +40,13 @@ import {
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {computed, Dispose, effect, signal} from '../core/reactive/signal.js';
 import {RecordingCreateParams} from '../core/recording_data_manager.js';
-import {AudioSource, RecordingSession} from '../core/recording_session.js';
+import {RecordingSession} from '../core/recording_session.js';
 import {navigateTo} from '../core/state/route.js';
 import {settings, TranscriptionEnableState} from '../core/state/settings.js';
 import {
   assertExhaustive,
+  assertExists,
   assertInstanceof,
-  checkEnumVariant,
 } from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
 
@@ -301,10 +301,13 @@ export class RecordPage extends ReactiveLitElement {
   `;
 
   static override properties: PropertyDeclarations = {
-    audioSource: {type: String},
+    includeSystemAudio: {type: Boolean},
+    micId: {type: String},
   };
 
-  audioSource: string|null = null;
+  includeSystemAudio: boolean = false;
+
+  micId: string|null = null;
 
   private readonly recordingTitle: string = getDefaultTitle();
 
@@ -344,9 +347,9 @@ export class RecordPage extends ReactiveLitElement {
 
     try {
       session = await RecordingSession.create({
+        micId: assertExists(this.micId),
+        includeSystemAudio: this.includeSystemAudio,
         platformHandler: this.platformHandler,
-        source: checkEnumVariant(AudioSource, this.audioSource) ??
-          AudioSource.USER_MEDIA,
       });
     } catch (e) {
       if (e instanceof DOMException &&

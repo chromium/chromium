@@ -18,11 +18,14 @@ import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
 import {MicSelectionMenu} from '../components/mic-selection-menu.js';
 import {SettingsMenu} from '../components/settings-menu.js';
-import {useRecordingDataManager} from '../core/lit/context.js';
+import {
+  useMicrophoneManager,
+  useRecordingDataManager,
+} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {navigateTo} from '../core/state/route.js';
 import {settings} from '../core/state/settings.js';
-import {assertExists} from '../core/utils/assert.js';
+import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 
 /**
  * Main page of Recorder App.
@@ -79,6 +82,8 @@ export class MainPage extends ReactiveLitElement {
     }
   `;
 
+  private readonly microphoneManager = useMicrophoneManager();
+
   private readonly recordingDataManager = useRecordingDataManager();
 
   private readonly recordingMetadataMap =
@@ -123,28 +128,35 @@ export class MainPage extends ReactiveLitElement {
     dialog.show();
   }
 
+  private onClickRecordButton() {
+    // TODO(shik): Should we let the record page read the store value
+    // directly?
+    const includeSystemAudio = settings.value.includeSystemAudio.toString();
+    const micId = assertExists(
+      this.microphoneManager.getSelectedMicId().value,
+      'There is no selected microphone.'
+    );
+    navigateTo(`/record?includeSystemAudio=${includeSystemAudio}&micId=${micId}`
+    );
+  }
+
   private renderRecordButton() {
-    function onClick() {
-      // TODO(shik): Should we let the record page read the store value
-      // directly?
-      navigateTo(`/record?audioSource=${settings.value.audioSource}`);
-    }
     return html`<cra-icon-button
       id="record-button"
       shape="circle"
-      @click=${onClick}
+      @click=${this.onClickRecordButton}
     >
       <cra-icon slot="icon" name="circle_fill"></cra-icon>
     </cra-icon-button>`;
   }
 
   private renderMicSelectionButton() {
-    const onClick = () => {
-      this.micSelectionMenu?.show();
+    const onClick = (ev: Event) => {
+      this.micSelectionMenu?.show(assertInstanceof(ev.target, HTMLElement));
     };
     // TODO: b/336963138 - This should be a new icon-dropdown component that
     // combines button with a dropdown.
-    return html`<secondary-button @click=${onClick}>
+    return html`<secondary-button @click=${onClick} id="mic-selection-button">
       <cra-icon slot="icon" name="mic"></cra-icon>
     </secondary-button>`;
   }

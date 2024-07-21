@@ -12,6 +12,10 @@ import {css, html, nothing} from 'chrome://resources/mwc/lit/index.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {currentRoute} from '../core/state/route.js';
 
+function getBoolean(search: URLSearchParams, key: string): boolean {
+  return search.get(key) === 'true';
+}
+
 /**
  * Root route of Recorder App.
  */
@@ -65,8 +69,13 @@ export class RecorderApp extends ReactiveLitElement {
       return html`<playback-page .recordingId=${id}></playback-page>`;
     }
     if (path === '/record') {
-      const audioSource = search.get('audioSource');
-      return html`<record-page .audioSource=${audioSource}></record-page>`;
+      const includeSystemAudio = getBoolean(search, 'includeSystemAudio');
+      const micId = search.get('micId');
+      return html`<record-page
+        .includeSystemAudio=${includeSystemAudio}
+        .micId=${micId}
+      >
+      </record-page>`;
     }
     if (path === '/dev') {
       return html`<dev-page></dev-page>`;

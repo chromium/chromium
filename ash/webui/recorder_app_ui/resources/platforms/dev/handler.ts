@@ -386,4 +386,19 @@ export class PlatformHandler extends PlatformHandlerBase {
     console.log('Feedback report dialog requested: ', description);
     window.prompt('fake AI feedback dialog', description);
   }
+
+  override async getSystemAudioMediaStream(): Promise<MediaStream> {
+    // The video stream is required for getDisplayMedia() when
+    // DISPLAY_MEDIA_SYSTEM_AUDIO permission is not granted, so we need to
+    // remove the video tracks manually.
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      audio: true,
+      systemAudio: 'include',
+    });
+    const videoTracks = stream.getVideoTracks();
+    for (const videoTrack of videoTracks) {
+      stream.removeTrack(videoTrack);
+    }
+    return stream;
+  }
 }

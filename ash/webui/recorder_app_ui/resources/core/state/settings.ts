@@ -4,7 +4,6 @@
 
 import {bindSignal} from '../reactive/local_storage.js';
 import {signal} from '../reactive/signal.js';
-import {AudioSource} from '../recording_session.js';
 import * as localStorage from '../utils/local_storage.js';
 import {Infer, z} from '../utils/schema.js';
 
@@ -108,8 +107,8 @@ export const exportSettingsSchema = z.object({
 export type ExportSettings = Infer<typeof exportSettingsSchema>;
 
 export const settingsSchema = z.object({
-  audioSource: z.nativeEnum(AudioSource),
   exportSettings: exportSettingsSchema,
+  includeSystemAudio: z.boolean(),
   onboardingDone: z.boolean(),
   recordingSortType: z.nativeEnum(RecordingSortType),
   transcriptionEnabled: z.nativeEnum(TranscriptionEnableState),
@@ -119,13 +118,13 @@ export const settingsSchema = z.object({
 type Settings = Infer<typeof settingsSchema>;
 
 const defaultSettings: Settings = {
-  audioSource: AudioSource.USER_MEDIA,
   exportSettings: {
     audio: true,
     audioFormat: ExportAudioFormat.WEBM_ORIGINAL,
     transcription: false,
     transcriptionFormat: ExportTranscriptionFormat.TXT,
   },
+  includeSystemAudio: false,
   onboardingDone: false,
   recordingSortType: RecordingSortType.DATE,
   transcriptionEnabled: TranscriptionEnableState.UNKNOWN,
