@@ -461,53 +461,6 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
   if (close_task_handler_) {
     close_task_handler_->SetPage(this);
   }
-
-  if (opener_ != old_page->opener_) {
-    // Both pages should have the same opener, but we're seeing reports where
-    // they don't match. These crash keys help with investigating the case.
-    SCOPED_CRASH_KEY_NUMBER("353579534", "this",
-                            reinterpret_cast<uintptr_t>(this));
-    SCOPED_CRASH_KEY_NUMBER("353579534", "opener_",
-                            reinterpret_cast<uintptr_t>(opener_.Get()));
-    SCOPED_CRASH_KEY_NUMBER(
-        "353579534", "prev_related_page_",
-        reinterpret_cast<uintptr_t>(prev_related_page_.Get()));
-    SCOPED_CRASH_KEY_NUMBER(
-        "353579534", "next_related_page_",
-        reinterpret_cast<uintptr_t>(next_related_page_.Get()));
-    SCOPED_CRASH_KEY_NUMBER("353579534", "old_page",
-                            reinterpret_cast<uintptr_t>(old_page));
-    SCOPED_CRASH_KEY_NUMBER(
-        "353579534", "old_page opener_",
-        reinterpret_cast<uintptr_t>(old_page->opener_.Get()));
-    SCOPED_CRASH_KEY_NUMBER(
-        "353579534", "old_page prev_related_page_",
-        reinterpret_cast<uintptr_t>(old_page->prev_related_page_.Get()));
-    SCOPED_CRASH_KEY_NUMBER(
-        "353579534", "old_page next_related_page_",
-        reinterpret_cast<uintptr_t>(old_page->next_related_page_.Get()));
-    bool old_page_has_openee = false;
-    bool old_page_opener_in_related_pages = false;
-    bool new_page_opener_in_related_pages = false;
-    for (auto page : old_page->RelatedPages()) {
-      if (page->opener_ == old_page) {
-        old_page_has_openee = true;
-      }
-      if (page == old_page->opener_) {
-        old_page_opener_in_related_pages = true;
-      }
-      if (page == opener_) {
-        new_page_opener_in_related_pages = true;
-      }
-    }
-    SCOPED_CRASH_KEY_BOOL("353579534", "old_page_has_openee",
-                          old_page_has_openee);
-    SCOPED_CRASH_KEY_BOOL("353579534", "old_opener_in_related",
-                          old_page_opener_in_related_pages);
-    SCOPED_CRASH_KEY_BOOL("353579534", "new_opener_in_related",
-                          new_page_opener_in_related_pages);
-    base::debug::DumpWithoutCrashing();
-  }
   CHECK_EQ(prev_related_page_, this);
   CHECK_EQ(next_related_page_, this);
 
@@ -530,6 +483,11 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
       page->opener_ = this;
     }
   }
+
+  // Note that we don't update the `opener_` member here, since the
+  // renderer-side opener is only set during construction and might be stale.
+  // When we create the new page, we get the latest opener frame token, so the
+  // new page's opener should be the most up-to-date opener.
 }
 
 LocalFrame* Page::DeprecatedLocalMainFrame() const {
