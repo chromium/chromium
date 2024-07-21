@@ -31,7 +31,7 @@ class ScopedFakeResourceBundleDelegate {
 
     for (const auto& [resource, data] : resources) {
       EXPECT_CALL(delegate_, LoadDataResourceString(resource))
-          .WillOnce(Return(data));
+          .WillRepeatedly(Return(data));
     }
   }
 

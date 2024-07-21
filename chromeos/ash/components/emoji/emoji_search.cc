@@ -63,8 +63,7 @@ std::map<std::string, double, std::less<>> CombineSearchTerms(
 // position in keyword / name.
 void AddDataFromFileToMap(
     const int file_id_in_resources,
-    std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>& map,
-    std::map<std::string, std::string, std::less<>>* names = nullptr) {
+    std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>& map) {
   std::string json_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           file_id_in_resources);
@@ -108,10 +107,38 @@ void AddDataFromFileToMap(
               EmojiSearchEntry{.weighting = 1 * search_term.second,
                                .emoji_string = *emoji_string});
         }
+      }
+    }
+  }
+}
 
-        if (names != nullptr) {
-          names->emplace(*emoji_string, *name);
-        }
+// Convert a JSON file to a map of emoji to name.
+void AddNamesFromFileToMap(
+    const int file_id_in_resources,
+    std::map<std::string, std::string, std::less<>>& names) {
+  std::string json_string =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          file_id_in_resources);
+  // Can be empty in certain test environments.
+  if (json_string.empty()) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  // TODO(b/309343774): switch to JSON reading service
+  std::optional<base::Value> json = base::JSONReader::Read(json_string);
+  CHECK(json) << "parse failed for " << file_id_in_resources << ":"
+              << json_string << "EOF";
+  base::Value::List groups = std::move(*json).TakeList();
+  // TODO(b/309343774): Consider using json_value_converter
+  for (auto& group : groups) {
+    for (const auto& emoji : *group.GetDict().FindList("emoji")) {
+      const base::Value::Dict* base = emoji.GetDict().FindDict("base");
+      const std::string* emoji_string = base->FindString("string");
+      CHECK(emoji_string) << "All emoji should have names";
+      const std::string* name = base->FindString("name");
+      if (name) {
+        names.emplace(*emoji_string, *name);
       }
     }
   }
@@ -195,13 +222,18 @@ EmojiSearchResult::~EmojiSearchResult() = default;
 EmojiSearch::EmojiSearch() {
   // Adds default "en" emoji data on startup.
   AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
-                       emojis_, &names_);
-  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START, emojis_,
-                       &names_);
-  AddDataFromFileToMap(IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON, symbols_,
-                       &names_);
-  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON, emoticons_,
-                       &names_);
+                       emojis_);
+  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+                       emojis_);
+  AddDataFromFileToMap(IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON, symbols_);
+  AddDataFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON, emoticons_);
+
+  AddNamesFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
+                        names_);
+  AddNamesFromFileToMap(IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+                        names_);
+  AddNamesFromFileToMap(IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON, names_);
+  AddNamesFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON, names_);
 }
 
 EmojiSearch::~EmojiSearch() = default;
