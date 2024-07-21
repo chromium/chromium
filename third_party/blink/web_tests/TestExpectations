@@ -6137,7 +6137,7 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-n
 crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-frame.https.sub.html [ Timeout ]
-crbug.com/1462796 [ Win ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-meta-refresh.https.optional.sub.html [ Timeout ]
+crbug.com/1462796 virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-meta-refresh.https.optional.sub.html [ Timeout ]
 
 crbug.com/1431228 media/video-delay-load-event.html [ Failure Pass ]
 
@@ -6958,7 +6958,7 @@ crbug.com/327190607 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fen
 crbug.com/327388802 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-api-denied.https.html [ Failure Pass Timeout ]
 
 # Flaky virtual/keepalive-in-browser-migration tests
-crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/xhr/xhr-timeout-longtask.any.html [ Timeout ]
+crbug.com/327390559 virtual/keepalive-in-browser-migration/external/wpt/xhr/xhr-timeout-longtask.any.html [ Timeout ]
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-img-environment-change.https.sub.html [ Timeout ]
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.html [ Timeout ]
