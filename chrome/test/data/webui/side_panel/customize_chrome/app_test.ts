@@ -233,4 +233,89 @@ suite('AppTest', () => {
       });
     });
   });
+
+  test('isSourceTabFirstPartyNtp should update the cards', async () => {
+    const idsControlledByIsSourceTabFirstPartyNtp = [
+      '#shortcuts',
+      '#modules',
+      '#categoriesPage',
+      '#themesPage',
+      '#wallpaperSearchPage',
+    ];
+
+    const idsNotControlledByIsSourceTabFirstPartyNtp = [
+      '#container',
+      '#overviewPage',
+      '#appearance',
+      '#appearanceElement',
+      '#toolbarButton',
+      '#extensions',
+      '#buttonContainer',
+    ];
+
+    const checkIdsVisibility = (isSourceTabFirstPartyNtp: boolean) => {
+      idsControlledByIsSourceTabFirstPartyNtp.forEach(
+          id => assertEquals(
+              isSourceTabFirstPartyNtp,
+              !!customizeChromeApp.shadowRoot!.querySelector(id)));
+      idsNotControlledByIsSourceTabFirstPartyNtp.forEach(
+          id => assertTrue(!!customizeChromeApp.shadowRoot!.querySelector(id)));
+    };
+
+    await[true, false].forEach(async b => {
+      callbackRouter.attachedTabStateUpdated(b);
+      await microtasksFinished();
+      checkIdsVisibility(b);
+    });
+  });
+
+  test(
+      'page transitions back to overview if not supported by non first party',
+      async () => {
+        // start on the overview page
+        assertTrue(
+            customizeChromeApp.$.overviewPage.classList.contains('selected'));
+        assertEquals(document.body, document.activeElement);
+
+        // Send event for edit theme being clicked.
+        customizeChromeApp.$.appearanceElement.dispatchEvent(
+            new Event('edit-theme-click'));
+        await microtasksFinished();
+        // Current page should now be categories.
+        assertTrue(
+            customizeChromeApp.$.categoriesPage.classList.contains('selected'));
+        assertEquals(customizeChromeApp, document.activeElement);
+
+        callbackRouter.attachedTabStateUpdated(false);
+        await microtasksFinished();
+
+        assertTrue(
+            customizeChromeApp.$.overviewPage.classList.contains('selected'));
+        assertEquals(document.body, document.activeElement);
+      });
+
+  test(
+      'page does not transition back to overview if supported by non first ' +
+          'party',
+      async () => {
+        // start on the overview page
+        assertTrue(
+            customizeChromeApp.$.overviewPage.classList.contains('selected'));
+        assertEquals(document.body, document.activeElement);
+
+        // Send event for toolbar button being clicked.
+        customizeChromeApp.shadowRoot!.querySelector('#toolbarButton')!
+            .dispatchEvent(new Event('click'));
+        await microtasksFinished();
+        // Current page should now be toolbar.
+        assertTrue(customizeChromeApp.shadowRoot!.querySelector('#toolbarPage')!
+                       .classList.contains('selected'));
+
+        callbackRouter.attachedTabStateUpdated(false);
+        await microtasksFinished();
+
+        // Current page should now be toolbar.
+        assertTrue(customizeChromeApp.shadowRoot!.querySelector('#toolbarPage')!
+                       .classList.contains('selected'));
+      });
 });
