@@ -250,7 +250,7 @@ OutputRule.RULES = {
           $description $restriction`,
     },
     [AbstractRole.LIST]: {
-      startOf: `$nameFromNode $role @@list_with_items($setSize)
+      startOf: `$nameFromNode $role $if($setSize, @@list_with_items($setSize))
           $restriction $description`,
       endOf: `@end_of_container($role) @@list_nested_level($listNestedLevel)`,
     },

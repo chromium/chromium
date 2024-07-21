@@ -427,6 +427,32 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'List', async function() {
       o);
 });
 
+AX_TEST_F('ChromeVoxOutputE2ETest', 'ListWithoutSetSize', async function() {
+  const root = await this.runWithLoadedTree(
+      '<ul aria-label="first"><li aria-label="a">a<li>b<li>c</ul>');
+  const el = root.firstChild.firstChild;
+  Object.defineProperty(root.firstChild, 'setSize', {get: () => null});
+
+  const range = CursorRange.fromNode(el);
+  const o = new Output().withSpeechAndBraille(range, null, 'navigate');
+
+  checkSpeechOutput(
+      'a|List item|first|List',
+      [
+        {value: {earcon: EarconId.LIST_ITEM}, start: 0, end: 1},
+        {value: 'name', start: 12, end: 17},
+        {value: 'role', start: 18, end: 22},
+      ],
+      o);
+  checkBrailleOutput(
+      'a lstitm first lst',
+      [
+        {value: new OutputNodeSpan(el), start: 0, end: 8},
+        {value: new OutputNodeSpan(el.parent), start: 9, end: 18},
+      ],
+      o);
+});
+
 AX_TEST_F('ChromeVoxOutputE2ETest', 'Tree', async function() {
   const root = await this.runWithLoadedTree(`
     <ul role="tree" style="list-style-type:none">
