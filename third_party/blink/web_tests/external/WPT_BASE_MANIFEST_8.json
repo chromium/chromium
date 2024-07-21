@@ -287551,8 +287551,47 @@
        {}
       ]
      ],
+     "image-modify-href-1.svg": [
+      "20bc1567eafdbb66ed52ea99fe18e8458878e58c",
+      [
+       null,
+       [
+        [
+         "/svg/embedded/reference/green-rect-100x100.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-modify-href-2.svg": [
+      "0b028ce188dc234ef4750aa27e1fde20259b2b1e",
+      [
+       null,
+       [
+        [
+         "/svg/embedded/reference/green-rect-100x100.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-modify-href-3.svg": [
+      "533a28ebb2b3c7fa3f9fe084891aa5de9770f876",
+      [
+       null,
+       [
+        [
+         "/svg/embedded/reference/green-rect-100x100.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "image-remove-href-1.svg": [
-      "60a1dc72db2769efe9f3b9850648b6a4645cd5ac",
+      "f35fa08f561dc38363d5c83918ec789fbc523b60",
       [
        null,
        [
@@ -287565,7 +287604,20 @@
       ]
      ],
      "image-remove-href-2.svg": [
-      "1a34444baaa06ad10df4dcb72499683239e9c480",
+      "7db8454f3b62fc983cd52505a080b0d33042039e",
+      [
+       null,
+       [
+        [
+         "/svg/embedded/reference/green-rect-100x100.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-remove-href-3.svg": [
+      "885a3baa6e9fd64bc5fae1d2c3404edc2e3ac0fa",
       [
        null,
        [
