@@ -389,7 +389,7 @@ const base::FeatureParam<BorealisZinkGlDriverParam> kBorealisZinkGlDriverParam{
 // Enables client cert caching in ClientCertStoreAsh.
 BASE_FEATURE(kUseKcerClientCertStore,
              "UseKcerClientCertStore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the feature to parameterize glyph for "Campbell" feature.
 BASE_FEATURE(kCampbellGlyph,
