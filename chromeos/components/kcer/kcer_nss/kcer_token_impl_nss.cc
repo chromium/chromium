@@ -372,6 +372,9 @@ void ListCertsOnWorkerThread(
   if (cert_list) {
     for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
          !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
+      if (!CERT_IsUserCert(node->cert)) {
+        continue;
+      }
       result.push_back(net::x509_util::DupCERTCertificate(node->cert));
     }
   }
@@ -931,8 +934,13 @@ scoped_refptr<const Cert> BuildKcerCert(
   Pkcs11Id id_bytes(SECItemToBytes(crypto::MakeNssIdFromSpki(base::make_span(
       nss_cert->derPublicKey.data, nss_cert->derPublicKey.len))));
 
+  std::string nickname;
+  if (nss_cert->nickname) {
+    nickname = nss_cert->nickname;
+  }
+
   return base::MakeRefCounted<Cert>(
-      token, std::move(id_bytes), nss_cert->nickname,
+      token, std::move(id_bytes), std::move(nickname),
       net::x509_util::CreateX509CertificateFromCERTCertificate(nss_cert.get()));
 }
 

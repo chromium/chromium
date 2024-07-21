@@ -1487,6 +1487,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiDirectEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowSplittingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWmModeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseKcerClientCertStore();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldEnterOverviewFromWallpaper();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldOnlyShowNewShortcutApp();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAndroidStagingSmds();

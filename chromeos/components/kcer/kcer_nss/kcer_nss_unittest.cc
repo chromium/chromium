@@ -386,7 +386,7 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
   EXPECT_FALSE(import_pkcs12_cert_waiter.IsReady());
 
   // This should process and fail all the requests.
-  user_token.FailInitialization();
+  user_token.FailTokenInitialization();
 
   ASSERT_FALSE(generate_rsa_waiter.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter.Get().error(),

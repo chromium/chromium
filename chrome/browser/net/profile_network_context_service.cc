@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -106,7 +107,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
+#include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -891,23 +894,29 @@ ProfileNetworkContextService::CreateClientCertStore() {
     use_system_key_slot = true;
   }
 
-  std::string username_hash;
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (user && !user->username_hash().empty()) {
-    username_hash = user->username_hash();
+  if (ash::features::ShouldUseKcerClientCertStore()) {
+    return std::make_unique<ash::ClientCertStoreKcer>(
+        std::move(certificate_provider), kcer::KcerFactory::GetKcer(profile_));
+  } else {
+    std::string username_hash;
+    const user_manager::User* user =
+        ash::ProfileHelper::Get()->GetUserByProfile(profile_);
+    if (user && !user->username_hash().empty()) {
+      username_hash = user->username_hash();
 
-    // Use the device-wide system key slot only if the user is affiliated on
-    // the device.
-    if (user->IsAffiliated()) {
-      use_system_key_slot = true;
+      // Use the device-wide system key slot only if the user is affiliated on
+      // the device.
+      if (user->IsAffiliated()) {
+        use_system_key_slot = true;
+      }
     }
+
+    return std::make_unique<ash::ClientCertStoreAsh>(
+        std::move(certificate_provider), use_system_key_slot, username_hash,
+        base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
+                            kCryptoModulePasswordClientAuth));
   }
 
-  return std::make_unique<ash::ClientCertStoreAsh>(
-      std::move(certificate_provider), use_system_key_slot, username_hash,
-      base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
-                          kCryptoModulePasswordClientAuth));
 #elif BUILDFLAG(USE_NSS_CERTS)
   std::unique_ptr<net::ClientCertStore> store =
       std::make_unique<net::ClientCertStoreNSS>(

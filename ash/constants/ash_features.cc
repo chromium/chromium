@@ -386,6 +386,11 @@ const base::FeatureParam<BorealisZinkGlDriverParam> kBorealisZinkGlDriverParam{
     BorealisZinkGlDriverParam::kZinkEnableRecommended,
     &borealis_zink_gl_driver_options};
 
+// Enables client cert caching in ClientCertStoreAsh.
+BASE_FEATURE(kUseKcerClientCertStore,
+             "UseKcerClientCertStore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the feature to parameterize glyph for "Campbell" feature.
 BASE_FEATURE(kCampbellGlyph,
              "CampbellGlyph",
@@ -4927,6 +4932,10 @@ bool ShouldShowPlayStoreInDemoMode() {
 bool IsFeatureAwareDeviceDemoModeEnabled() {
   return base::FeatureList::IsEnabled(
       kFeatureManagementFeatureAwareDeviceDemoMode);
+}
+
+bool ShouldUseKcerClientCertStore() {
+  return base::FeatureList::IsEnabled(kUseKcerClientCertStore);
 }
 
 bool ShouldUseV1DeviceSync() {

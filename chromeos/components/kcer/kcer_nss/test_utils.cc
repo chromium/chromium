@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/test_future.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,18 +34,44 @@ std::string ToString(const std::optional<chaps::KeyPermissions>& val) {
   return base::StringPrintf("[arc:%d corp:%d]", val->key_usages().arc(),
                             val->key_usages().corporate());
 }
+
+crypto::ScopedPK11Slot CopySlotPtr(PK11SlotInfo* slot) {
+  return crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot));
+}
+
 }  // namespace
 
 TokenHolder::TokenHolder(Token token,
                          HighLevelChapsClient* chaps_client,
-                         bool initialize) {
+                         bool initialize_token) {
+  Initialize(token, chaps_client, initialize_token,
+             crypto::ScopedPK11Slot(PK11_ReferenceSlot(nss_db_.slot())));
+}
+
+TokenHolder::TokenHolder(Token token,
+                         HighLevelChapsClient* chaps_client,
+                         bool initialize_token,
+                         crypto::ScopedPK11Slot nss_slot) {
+  Initialize(token, chaps_client, initialize_token, std::move(nss_slot));
+}
+
+void TokenHolder::Initialize(Token token,
+                             HighLevelChapsClient* chaps_client,
+                             bool initialize,
+                             crypto::ScopedPK11Slot nss_slot) {
+  if (!nss_slot) {
+    return;
+  }
+
   io_token_ = std::make_unique<internal::KcerTokenImplNss>(token, chaps_client);
   io_token_->SetAttributeTranslationForTesting(/*is_enabled=*/true);
   weak_ptr_ = io_token_->GetWeakPtr();
   // After this point `io_token_` should only be used on the IO thread.
 
+  nss_slot_ = std::move(nss_slot);
+
   if (initialize) {
-    Initialize();
+    InitializeToken();
   }
 }
 
@@ -54,7 +81,7 @@ TokenHolder::~TokenHolder() {
                                                  std::move(io_token_));
 }
 
-void TokenHolder::Initialize() {
+void TokenHolder::InitializeToken() {
   CHECK(!is_initialized_);
   is_initialized_ = true;
 
@@ -62,10 +89,10 @@ void TokenHolder::Initialize() {
       FROM_HERE,
       base::BindOnce(
           &internal::KcerToken::InitializeForNss, weak_ptr_,
-          crypto::ScopedPK11Slot(PK11_ReferenceSlot(nss_slot_.slot()))));
+          crypto::ScopedPK11Slot(PK11_ReferenceSlot(nss_slot_.get()))));
 }
 
-void TokenHolder::FailInitialization() {
+void TokenHolder::FailTokenInitialization() {
   CHECK(!is_initialized_);
   is_initialized_ = true;
 
@@ -76,7 +103,38 @@ void TokenHolder::FailInitialization() {
 }
 
 uint32_t TokenHolder::GetSlotId() {
-  return PK11_GetSlotID(nss_slot_.slot());
+  return PK11_GetSlotID(nss_slot_.get());
+}
+
+//==============================================================================
+
+KeyAndCert::KeyAndCert(PublicKey key, scoped_refptr<const Cert> cert)
+    : key(key), cert(cert) {}
+KeyAndCert::KeyAndCert(KeyAndCert&&) = default;
+KeyAndCert& KeyAndCert::operator=(KeyAndCert&&) = default;
+KeyAndCert::~KeyAndCert() = default;
+
+//==============================================================================
+
+TestKcerHolder::TestKcerHolder(PK11SlotInfo* user_slot,
+                               PK11SlotInfo* device_slot)
+    : user_token_(Token::kUser,
+                  /*chaps_client=*/nullptr,
+                  true,
+                  user_slot ? CopySlotPtr(user_slot) : nullptr),
+      device_token_(Token::kDevice,
+                    /*chaps_client=*/nullptr,
+                    true,
+                    device_slot ? CopySlotPtr(device_slot) : nullptr) {
+  kcer_ = std::make_unique<kcer::internal::KcerImpl>();
+  kcer_->Initialize(content::GetIOThreadTaskRunner({}),
+                    user_token_.GetWeakPtr(), device_token_.GetWeakPtr());
+}
+
+TestKcerHolder::~TestKcerHolder() = default;
+
+base::WeakPtr<Kcer> TestKcerHolder::GetKcer() {
+  return kcer_->GetWeakPtr();
 }
 
 //==============================================================================
@@ -195,6 +253,53 @@ std::vector<uint8_t> ReadTestFile(const std::string& file_name) {
     return {};
   }
   return file_data.value();
+}
+
+base::expected<KeyAndCert, Error> ImportTestKeyAndCert(
+    base::WeakPtr<Kcer> kcer,
+    Token token,
+    std::string_view key_filename,
+    std::string_view cert_filename) {
+  CHECK(kcer);
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII(key_filename));
+  if (!key.has_value() || (key->size() == 0)) {
+    return base::unexpected(Error::kUnknownError);
+  }
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII(cert_filename));
+  if (!cert.has_value() || (cert->size() == 0)) {
+    return base::unexpected(Error::kUnknownError);
+  }
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  kcer->ImportKey(Token::kUser, Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                  import_key_waiter.GetCallback());
+  if (!import_key_waiter.Get().has_value()) {
+    return base::unexpected(import_key_waiter.Get().error());
+  }
+
+  base::test::TestFuture<base::expected<void, Error>> import_cert_waiter;
+  kcer->ImportCertFromBytes(Token::kUser, CertDer(std::move(cert.value())),
+                            import_cert_waiter.GetCallback());
+  if (!import_cert_waiter.Get().has_value()) {
+    return base::unexpected(import_cert_waiter.Get().error());
+  }
+
+  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                         base::flat_map<Token, Error>>
+      certs_waiter;
+  kcer->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+  EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
+  const auto& certs =
+      certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>();
+  if (certs.size() != 1u) {
+    return base::unexpected(Error::kUnknownError);
+  }
+
+  return KeyAndCert{std::move(import_key_waiter.Get().value()), certs[0]};
 }
 
 }  // namespace kcer

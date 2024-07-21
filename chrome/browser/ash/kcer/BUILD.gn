@@ -20,6 +20,7 @@ static_library("kcer") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/kcer/nssdb_migration",
+    "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -35,7 +36,13 @@ static_library("kcer") {
     "//crypto",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/kcer/nssdb_migration" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/kcer/nssdb_migration",
+
+    # TODO(crbug.com/351347146): Remove the dependency on crosapi from Kcer and
+    # then this line.
+    "//chrome/browser/ash/platform_keys:platform_keys",
+  ]
 }
 
 source_set("browser_tests") {

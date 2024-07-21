@@ -21,6 +21,7 @@ class CertificateProvider;
 
 namespace ash {
 
+// This class is being deprecated and replaced with ClientCertStoreKcer.
 class ClientCertStoreAsh : public net::ClientCertStore {
  public:
   using PasswordDelegateFactory =
