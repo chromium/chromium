@@ -46,9 +46,12 @@ class EmojiSearch {
   std::vector<std::string> AllResultsForTesting(const std::string& query);
 
  private:
-  std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>> emojis_;
-  std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>> emoticons_;
-  std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>> symbols_;
+  using EntryMap =
+      std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>;
+
+  EntryMap emojis_;
+  EntryMap emoticons_;
+  EntryMap symbols_;
 
   // A mapping of emojis, emoticons, and symbols to their names in English.
   std::map<std::string, std::string, std::less<>> names_;
