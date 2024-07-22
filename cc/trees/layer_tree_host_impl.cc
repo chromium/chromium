@@ -2507,6 +2507,8 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
       frame->render_passes.back()->has_transparent_background;
 #endif
 
+  bool allocate_new_local_surface_id = false;
+
   if (last_draw_render_frame_metadata_) {
     const float last_root_scroll_offset_y =
         last_draw_render_frame_metadata_->root_scroll_offset
@@ -2532,47 +2534,54 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
       if (last_vertical_scroll_direction_ != new_vertical_scroll_direction)
         metadata.new_vertical_scroll_direction = new_vertical_scroll_direction;
     }
-  }
 
-  bool allocate_new_local_surface_id =
+    allocate_new_local_surface_id =
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      last_draw_render_frame_metadata_ &&
-      (last_draw_render_frame_metadata_->top_controls_height !=
-           metadata.top_controls_height ||
-       last_draw_render_frame_metadata_->top_controls_shown_ratio !=
-           metadata.top_controls_shown_ratio);
+        last_draw_render_frame_metadata_->top_controls_height !=
+            metadata.top_controls_height ||
+        last_draw_render_frame_metadata_->top_controls_shown_ratio !=
+            metadata.top_controls_shown_ratio;
 #elif BUILDFLAG(IS_ANDROID)
-      last_draw_render_frame_metadata_ &&
-      (last_draw_render_frame_metadata_->top_controls_height !=
-           metadata.top_controls_height ||
-       last_draw_render_frame_metadata_->bottom_controls_height !=
-           metadata.bottom_controls_height ||
-       last_draw_render_frame_metadata_->selection != metadata.selection ||
-       last_draw_render_frame_metadata_->has_transparent_background !=
-           metadata.has_transparent_background ||
-       last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
-           metadata.bottom_controls_shown_ratio);
+        last_draw_render_frame_metadata_->top_controls_height !=
+            metadata.top_controls_height ||
+        last_draw_render_frame_metadata_->bottom_controls_height !=
+            metadata.bottom_controls_height ||
+        last_draw_render_frame_metadata_->selection != metadata.selection ||
+        last_draw_render_frame_metadata_->has_transparent_background !=
+            metadata.has_transparent_background;
 
-  if (!base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz)) {
-    allocate_new_local_surface_id |=
-        last_draw_render_frame_metadata_ &&
-        (last_draw_render_frame_metadata_->top_controls_shown_ratio !=
-         metadata.top_controls_shown_ratio);
-  }
+    if (!base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz)) {
+      allocate_new_local_surface_id |=
+          last_draw_render_frame_metadata_->top_controls_shown_ratio !=
+              metadata.top_controls_shown_ratio ||
+          last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
+              metadata.bottom_controls_shown_ratio;
+    } else {
+      // When AndroidBrowserControlsInViz is enabled, don't always use
+      // bottom_controls_shown_ratio to determine if surface sync is needed,
+      // because it changes even when there are no bottom controls.
+      bool bottom_controls_exist =
+          metadata.bottom_controls_height != 0 ||
+          last_draw_render_frame_metadata_->bottom_controls_height != 0;
+      allocate_new_local_surface_id |=
+          bottom_controls_exist &&
+          last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
+              metadata.bottom_controls_shown_ratio;
+    }
 #else
-      last_draw_render_frame_metadata_ &&
-      (last_draw_render_frame_metadata_->top_controls_height !=
-           metadata.top_controls_height ||
-       last_draw_render_frame_metadata_->top_controls_shown_ratio !=
-           metadata.top_controls_shown_ratio ||
-       last_draw_render_frame_metadata_->bottom_controls_height !=
-           metadata.bottom_controls_height ||
-       last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
-           metadata.bottom_controls_shown_ratio ||
-       last_draw_render_frame_metadata_->selection != metadata.selection ||
-       last_draw_render_frame_metadata_->has_transparent_background !=
-           metadata.has_transparent_background);
+        last_draw_render_frame_metadata_->top_controls_height !=
+            metadata.top_controls_height ||
+        last_draw_render_frame_metadata_->top_controls_shown_ratio !=
+            metadata.top_controls_shown_ratio ||
+        last_draw_render_frame_metadata_->bottom_controls_height !=
+            metadata.bottom_controls_height ||
+        last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
+            metadata.bottom_controls_shown_ratio ||
+        last_draw_render_frame_metadata_->selection != metadata.selection ||
+        last_draw_render_frame_metadata_->has_transparent_background !=
+            metadata.has_transparent_background;
 #endif
+  }
 
   if (child_local_surface_id_allocator_.GetCurrentLocalSurfaceId().is_valid()) {
     if (allocate_new_local_surface_id)
