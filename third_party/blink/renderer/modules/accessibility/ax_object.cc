@@ -1656,7 +1656,7 @@ void AXObject::SerializeInlineTextBoxAttributes(
 void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) const {
   AXObject* parent = ParentObject();
   if (Language().length()) {
-    // Trim redundant languages.
+    // TODO(chrishall): should we still trim redundant languages off here?
     if (!parent || parent->Language() != Language()) {
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kLanguage, Language());
