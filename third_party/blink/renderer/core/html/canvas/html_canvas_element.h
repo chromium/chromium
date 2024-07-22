@@ -398,8 +398,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool needs_unbuffered_input_ = false;
   bool style_is_visible_ = false;
 
-  // It prevents repeated attempts in allocating resources after the first
-  // attempt failed.
   bool HasResourceProvider() {
     return canvas2d_bridge_ || !!CanvasResourceHost::ResourceProvider();
   }
