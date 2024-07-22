@@ -32,13 +32,13 @@ constexpr base::TimeDelta kServiceAdaptorRetryDelay = base::Seconds(1);
 constexpr size_t kServiceAdaptorRetryMaxTries = 5;
 
 constexpr net::BackoffEntry::Policy kEnqueueRetryBackoffPolicy = {
-    0,          // Number of initial errors to ignore.
-    1000,       // Initial delay in ms.
-    2.0,        // Factor by which the waiting time will be multiplied.
-    0.2,        // Fuzzing percentage.
-    60 * 1000,  // Maximum delay in ms.
-    -1,         // Never discard the entry.
-    true,       // Use initial delay.
+    0,              // Number of initial errors to ignore.
+    1000,           // Initial delay in ms.
+    2.0,            // Factor by which the waiting time will be multiplied.
+    0.2,            // Fuzzing percentage.
+    60 * 1000 * 5,  // Maximum delay in ms.
+    -1,             // Never discard the entry.
+    true,           // Use initial delay.
 };
 
 // List of commands that should be polled frequently. Any commands
@@ -268,15 +268,18 @@ void DataAggregatorService::OnMojoDisconnect() {
 void DataAggregatorService::InitializeLocalSources() {
   // Add local command sources
   for (auto* const cmd : kLocalCommandSourcesFastPoll) {
+    VLOG(1) << "Adding command '" << cmd << "' to sources.";
     AddLocalCommandSource(cmd, kDefaultCommandPollFrequency);
   }
 
   for (auto* const cmd : kLocalCommandSourcesSlowPoll) {
+    VLOG(1) << "Adding command '" << cmd << "' to local sources.";
     AddLocalCommandSource(cmd, kExtendedCommandPollFrequency);
   }
 
   // Add local log file sources
   for (auto* const logfile : kLocalLogSources) {
+    VLOG(1) << "Adding log file '" << logfile << "' to local sources.";
     AddLocalLogSource(logfile);
   }
 }
@@ -396,6 +399,7 @@ void DataAggregatorService::StoreDeviceId(
 
 void DataAggregatorService::StartFetchTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "Artemis started. Listening for data.";
   fetch_timer_.Start(
       FROM_HERE, kFetchFrequency,
       base::BindRepeating(&DataAggregatorService::FetchFromAllSourcesAndEnqueue,
@@ -409,6 +413,8 @@ void DataAggregatorService::FetchFromAllSourcesAndEnqueue() {
   if (enqueue_in_progress_) {
     return;
   }
+
+  VLOG(1) << "Fetching data from " << data_source_map_.size() << " sources.";
 
   for (const auto& data_source : data_source_map_) {
     std::string source_name = data_source.first;
@@ -474,6 +480,7 @@ void DataAggregatorService::AppendEntriesToActivePayload(
   }
 
   if (IsPayloadReadyForUpload()) {
+    VLOG(1) << "Payload is ready to be enqueued. Pushing to wire.";
     EnqueueTransportPayload();
   }
 }
@@ -510,11 +517,16 @@ void DataAggregatorService::EnqueueTransportPayload() {
 
   enqueue_in_progress_ = true;
 
+  // TODO(b/353994195): re-enable uploader call below. Disabling this
+  // path for now and calling callback manually with fake success value.
+  HandleEnqueueResponse(chromeos::cfm::mojom::LoggerStatus::New(
+      chromeos::cfm::mojom::LoggerErrorCode::kOk, ""));
+
   // TODO(b/339455254): have each data source specify a priority instead
   // of assuming kLow for every enqueue.
-  uploader_remote_->Enqueue(active_transport_payload_.SerializeAsString(),
-                            chromeos::cfm::mojom::EnqueuePriority::kLow,
-                            std::move(enqueue_success_callback));
+  // uploader_remote_->Enqueue(active_transport_payload_.SerializeAsString(),
+  //                           chromeos::cfm::mojom::EnqueuePriority::kLow,
+  //                           std::move(enqueue_success_callback));
 }
 
 void DataAggregatorService::HandleEnqueueResponse(
@@ -536,6 +548,7 @@ void DataAggregatorService::HandleEnqueueResponse(
     return;
   }
 
+  VLOG(1) << "Recent enqueue succeeded.";
   enqueue_retry_backoff_.Reset();
 
   // If the enqueue succeeded, Flush() all of the affected data sources so they
@@ -573,6 +586,7 @@ DataAggregatorService::DataAggregatorService()
   local_task_runner_->PostTask(FROM_HERE,
                                base::BindOnce(&PersistentDb::Initialize));
 
+  VLOG(1) << "Starting Artemis...";
   InitializeUploadEndpoint(/*num_tries=*/0);
 }
 

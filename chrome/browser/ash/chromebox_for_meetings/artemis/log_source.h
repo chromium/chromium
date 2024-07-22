@@ -58,6 +58,10 @@ class LogSource : public LocalDataSource {
 
   std::string filepath_;
 
+  // Set to true if we can access the file and false if not.
+  // If false, all future operations are no-ops.
+  bool file_is_accessible_ = true;
+
   // Contains a handle to the log file on disk
   // TODO(b/320996557): this should be a collection of log files
   // after adding rotation support.
