@@ -62,14 +62,15 @@ String PaintArtifact::IdAsString(const DisplayItem::Id& id) const {
 
 std::unique_ptr<JSONArray> PaintArtifact::ToJSON() const {
   auto json = std::make_unique<JSONArray>();
-  AppendChunksAsJSON(0, chunks_.size(), *json, 0);
+  AppendChunksAsJSON(0, chunks_.size(), *json);
   return json;
 }
 
-void PaintArtifact::AppendChunksAsJSON(wtf_size_t start_chunk_index,
-                                       wtf_size_t end_chunk_index,
-                                       JSONArray& json_array,
-                                       unsigned flags) const {
+void PaintArtifact::AppendChunksAsJSON(
+    wtf_size_t start_chunk_index,
+    wtf_size_t end_chunk_index,
+    JSONArray& json_array,
+    DisplayItemList::JsonOption option) const {
   DCHECK_GT(end_chunk_index, start_chunk_index);
   for (auto i = start_chunk_index; i < end_chunk_index; ++i) {
     const auto& chunk = chunks_[i];
@@ -80,11 +81,12 @@ void PaintArtifact::AppendChunksAsJSON(wtf_size_t start_chunk_index,
     json_object->SetString("state", chunk.properties.ToString());
     json_object->SetString("bounds", String(chunk.bounds.ToString()));
 #if DCHECK_IS_ON()
-    if (flags & DisplayItemList::kShowPaintRecords)
+    if (option == DisplayItemList::kShowPaintRecords) {
       json_object->SetString("chunkData", chunk.ToString(*this));
+    }
     json_object->SetArray("displayItems", DisplayItemList::DisplayItemsAsJSON(
                                               *this, chunk.begin_index,
-                                              DisplayItemsInChunk(i), flags));
+                                              DisplayItemsInChunk(i), option));
 #endif
     json_array.PushObject(std::move(json_object));
   }
