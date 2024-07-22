@@ -299,11 +299,12 @@ TEST_F(PDFiumEngineExportsTest, SearchifyBigImage) {
       screen_ai::mojom::VisualAnnotationPtr(const SkBitmap&)>>
       perform_ocr_callback;
   EXPECT_CALL(perform_ocr_callback, Run).WillOnce([](const SkBitmap& bitmap) {
-    EXPECT_EQ(5000, bitmap.width());
-    EXPECT_EQ(5000, bitmap.height());
+    // The returned image is 267x267 as OCR needs at most 300 DPI.
+    EXPECT_EQ(267, bitmap.width());
+    EXPECT_EQ(267, bitmap.height());
     auto annotation = screen_ai::mojom::VisualAnnotation::New();
 
-    constexpr gfx::Rect kRect1(0, 500, 50, 100);
+    constexpr gfx::Rect kRect1(0, 30, 10, 5);
     auto line_box1 = screen_ai::mojom::LineBox::New();
     line_box1->baseline_box = kRect1;
     line_box1->baseline_box_angle = 0;
@@ -316,7 +317,7 @@ TEST_F(PDFiumEngineExportsTest, SearchifyBigImage) {
     line_box1->words.push_back(std::move(word_box1));
     annotation->lines.push_back(std::move(line_box1));
 
-    constexpr gfx::Rect kRect2(4800, 4900, 200, 100);
+    constexpr gfx::Rect kRect2(200, 210, 67, 57);
     auto line_box2 = screen_ai::mojom::LineBox::New();
     line_box2->baseline_box = kRect2;
     line_box2->baseline_box_angle = 0;
@@ -338,17 +339,17 @@ TEST_F(PDFiumEngineExportsTest, SearchifyBigImage) {
       Searchify(*pdf_buffer, perform_ocr_callback.Get());
   ASSERT_FALSE(output_pdf_buffer.empty());
   {
-    constexpr float kFloatTolerance = 0.00001f;
+    constexpr float kFloatTolerance = 0.0001f;
     ScopedLibraryInitializer initializer;
     // The middle 2 positions are for auto-generated "\r\n".
     const std::vector<gfx::RectF> positions =
         GetTextPositions(output_pdf_buffer, 0);
     ASSERT_EQ(4u, positions.size());
-    EXPECT_RECTF_NEAR(gfx::RectF(0, 56.32f, 0.64f, 1.28f), positions[0],
+    EXPECT_RECTF_NEAR(gfx::RectF(0, 55.6105f, 2.397f, 1.1985f), positions[0],
                       kFloatTolerance);
     EXPECT_TRUE(positions[1].IsEmpty());
     EXPECT_TRUE(positions[2].IsEmpty());
-    EXPECT_RECTF_NEAR(gfx::RectF(61.44f, 0, 2.56f, 1.28f), positions[3],
+    EXPECT_RECTF_NEAR(gfx::RectF(47.9401f, 0, 16.0599f, 13.6629f), positions[3],
                       kFloatTolerance);
   }
 }

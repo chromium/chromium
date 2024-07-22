@@ -155,16 +155,7 @@ void AddWordOnImage(FPDF_DOCUMENT document,
     return;
   }
 
-  float left;
-  float bottom;
-  float right;
-  float top;
-  if (!FPDFPageObj_GetBounds(text.get(), &left, &bottom, &right, &top)) {
-    DLOG(ERROR) << "Failed to get the bounding box of text object";
-    return;
-  }
-
-  const gfx::SizeF text_object_size(right - left, top - bottom);
+  const gfx::SizeF text_object_size = GetImageSize(text.get());
   CHECK_GT(text_object_size.width(), 0);
   CHECK_GT(text_object_size.height(), 0);
   const FS_MATRIX text_scale_matrix(

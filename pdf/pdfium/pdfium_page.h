@@ -243,11 +243,12 @@ class PDFiumPage {
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageButtonTest, PopulateButtons);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageChoiceFieldTest, PopulateChoiceFields);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageHighlightTest, PopulateHighlights);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, LowResolutionImage);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, HighResolutionImage);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, RotatedPage);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, NonImage);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, CalculateImages);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, ImageAltText);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageDataTest, ImageData);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageDataTest, ImageDataForNonImage);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageDataTest, RotatedPageImageData);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, AnnotLinkGeneration);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, GetLinkTarget);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, GetUTF8LinkTarget);

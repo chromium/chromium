@@ -525,13 +525,14 @@ TEST_P(PDFiumPageImageTest, ImageAltText) {
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageTest, testing::Bool());
 
-class PDFiumPageImageDataTest : public PDFiumPageImageTest {
+class PDFiumPageImageForOcrTest : public PDFiumPageImageTest {
  public:
-  PDFiumPageImageDataTest() : enable_pdf_ocr_({features::kPdfOcr}) {}
+  PDFiumPageImageForOcrTest() : enable_pdf_ocr_({features::kPdfOcr}) {}
 
-  PDFiumPageImageDataTest(const PDFiumPageImageDataTest&) = delete;
-  PDFiumPageImageDataTest& operator=(const PDFiumPageImageDataTest&) = delete;
-  ~PDFiumPageImageDataTest() override = default;
+  PDFiumPageImageForOcrTest(const PDFiumPageImageForOcrTest&) = delete;
+  PDFiumPageImageForOcrTest& operator=(const PDFiumPageImageForOcrTest&) =
+      delete;
+  ~PDFiumPageImageForOcrTest() override = default;
 
   void SetUp() override {
     PDFiumPageImageTest::SetUp();
@@ -549,7 +550,7 @@ class PDFiumPageImageDataTest : public PDFiumPageImageTest {
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };
 
-TEST_P(PDFiumPageImageDataTest, ImageData) {
+TEST_P(PDFiumPageImageForOcrTest, LowResolutionImage) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("text_with_image.pdf"));
@@ -577,7 +578,27 @@ TEST_P(PDFiumPageImageDataTest, ImageData) {
   EXPECT_EQ(image_bitmap.height(), 50);
 }
 
-TEST_P(PDFiumPageImageDataTest, RotatedPageImageData) {
+TEST_P(PDFiumPageImageForOcrTest, HighResolutionImage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("big_image.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  page.CalculateImages();
+  ASSERT_EQ(1u, page.images_.size());
+
+  SkBitmap image_bitmap = engine->GetImageForOcr(
+      /*page_index=*/0, page.images_[0].page_object_index);
+  EXPECT_FALSE(image_bitmap.drawsNothing());
+  // While the original image is 5000x5000, the returned image is 267x267 as
+  // OCR needs at most 300 DPI.
+  EXPECT_EQ(image_bitmap.width(), 267);
+  EXPECT_EQ(image_bitmap.height(), 267);
+}
+
+TEST_P(PDFiumPageImageForOcrTest, RotatedPage) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rotated_page.pdf"));
@@ -596,7 +617,7 @@ TEST_P(PDFiumPageImageDataTest, RotatedPageImageData) {
   EXPECT_EQ(image_bitmap.height(), 100);
 }
 
-TEST_P(PDFiumPageImageDataTest, ImageDataForNonImage) {
+TEST_P(PDFiumPageImageForOcrTest, NonImage) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("text_with_image.pdf"));
@@ -623,7 +644,7 @@ TEST_P(PDFiumPageImageDataTest, ImageDataForNonImage) {
   EXPECT_EQ(image_bitmap.height(), 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageDataTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageForOcrTest, testing::Bool());
 
 using PDFiumPageTextTest = PDFiumTestBase;
 
