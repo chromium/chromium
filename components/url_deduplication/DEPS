@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/url_formatter",
+  "+net",
+  "+third_party/re2",
+]

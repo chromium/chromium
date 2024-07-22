@@ -352,6 +352,7 @@ test("components_unittests") {
     "//components/unexportable_keys:unit_tests",
     "//components/unified_consent:unit_tests",
     "//components/upload_list:unit_tests",
+    "//components/url_deduplication:unit_tests",
     "//components/url_formatter:unit_tests",
     "//components/url_formatter/spoof_checks/common_words:unit_tests",
     "//components/url_formatter/spoof_checks/top_domains:unit_tests",

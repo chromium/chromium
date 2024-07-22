@@ -6,8 +6,27 @@ static_library("url_deduplication") {
   sources = [
     "deduplication_strategy.cc",
     "deduplication_strategy.h",
+    "docs_url_strip_handler.cc",
+    "docs_url_strip_handler.h",
     "url_strip_handler.h",
   ]
 
-  deps = []
+  deps = [
+    "//base",
+    "//components/url_formatter",
+    "//net",
+    "//third_party/re2",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "docs_url_strip_handler_unittest.cc" ]
+
+  deps = [
+    ":url_deduplication",
+    "//testing/gtest",
+    "//url",
+  ]
 }
