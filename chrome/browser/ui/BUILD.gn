@@ -3373,6 +3373,7 @@ static_library("ui") {
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/browser/chromeos/office_web_app",
+      "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
@@ -3777,6 +3778,7 @@ static_library("ui") {
       "//chrome/browser/ash/tether",
       "//chrome/browser/ash/usb",
       "//chrome/browser/chromeos/extensions/wm",
+      "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/ui/ash",
       "//chrome/browser/ui/ash/accessibility",
       "//chrome/browser/ui/ash/annotator",
@@ -3921,6 +3923,7 @@ static_library("ui") {
       "webui/signin/profile_picker_lacros_sign_in_provider.h",
     ]
     deps += [
+      "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/policy:onc",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
@@ -3930,6 +3933,7 @@ static_library("ui") {
       "//chromeos/ui/wm",
       "//ui/chromeos",
     ]
+    allow_circular_includes_from += [ "//chrome/browser/chromeos/tablet_mode" ]
   } else {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from +=

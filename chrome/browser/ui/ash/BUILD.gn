@@ -181,6 +181,7 @@ static_library("ash") {
     "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/arc",
     "//chrome/browser/chromeos/extensions/vpn_provider",
+    "//chrome/browser/chromeos/tablet_mode",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
     "//chrome/browser/extensions",
     "//chrome/browser/media/router:media_router_feature",

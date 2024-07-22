@@ -171,10 +171,6 @@ source_set("chromeos") {
     "reporting/websites/website_usage_observer.h",
     "reporting/websites/website_usage_telemetry_sampler.cc",
     "reporting/websites/website_usage_telemetry_sampler.h",
-    "tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
-    "tablet_mode/chrome_content_browser_client_tablet_mode_part.h",
-    "tablet_mode/tablet_mode_page_behavior.cc",
-    "tablet_mode/tablet_mode_page_behavior.h",
     "upload_office_to_cloud/upload_office_to_cloud.cc",
     "upload_office_to_cloud/upload_office_to_cloud.h",
     "video_conference/video_conference_manager_client.cc",
@@ -273,6 +269,7 @@ source_set("chromeos") {
     "//chrome/browser/chromeos/enterprise/cloud_storage",
     "//chrome/browser/chromeos/full_restore",
     "//chrome/browser/chromeos/smart_reader",
+    "//chrome/browser/chromeos/tablet_mode",
     "//chrome/browser/chromeos/tast_support",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/favicon",
@@ -399,6 +396,7 @@ source_set("chromeos") {
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/web_app",
+      "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/ui/ash/network",
     ]
     public_deps += [
@@ -495,6 +493,7 @@ source_set("chromeos") {
       "//chromeos/startup",
       "//ui/platform_window",
     ]
+    allow_circular_includes_from += [ "//chrome/browser/chromeos/tablet_mode" ]
   }
 
   if (use_cups) {
@@ -711,7 +710,6 @@ source_set("unit_tests") {
       "extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
       "reporting/websites/website_metrics_retriever_ash_unittest.cc",
       "reporting/websites/website_usage_telemetry_periodic_collector_ash_unittest.cc",
-      "tablet_mode/chrome_content_browser_client_tablet_mode_part_unittest.cc",
     ]
     deps += [
       "//ash:test_support",
@@ -724,6 +722,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/printing:test_support",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/system_web_apps/test_support:test_support",
+      "//chrome/browser/chromeos/tablet_mode:unit_tests",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/ui/ash/system_web_apps:system_web_apps",
       "//chrome/browser/web_applications:web_applications_test_support",

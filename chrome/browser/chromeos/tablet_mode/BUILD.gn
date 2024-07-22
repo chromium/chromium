@@ -1,0 +1,94 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ozone.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+assert(use_ozone)
+
+static_library("tablet_mode") {
+  sources = [
+    "chrome_content_browser_client_tablet_mode_part.cc",
+    "chrome_content_browser_client_tablet_mode_part.h",
+    "tablet_mode_page_behavior.cc",
+    "tablet_mode_page_behavior.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/chromeos/arc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/common:common_constants",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//ui/display",
+  ]
+}
+
+if (is_chromeos_ash) {
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [ "chrome_content_browser_client_tablet_mode_part_unittest.cc" ]
+
+    deps = [
+      ":tablet_mode",
+      "//extensions/common:common_constants",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "chrome_content_browser_client_tablet_mode_part_browsertest.cc",
+      "tablet_mode_page_behavior_browsertest.cc",
+    ]
+
+    deps = [
+      "//chrome/browser",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
+}
+
+if (is_chromeos_lacros) {
+  source_set("lacros_chrome_browsertests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "tablet_mode_page_behavior_browsertest.cc" ]
+
+    deps = [
+      "//chrome/browser",
+      "//chrome/browser/ui",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
+}

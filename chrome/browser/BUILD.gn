@@ -5476,6 +5476,7 @@ static_library("browser") {
       "//chrome/browser/ash/usb",
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper_handlers",
+      "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/chromeos/tast_support",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/nearby_sharing:share_target",
@@ -5842,6 +5843,7 @@ static_library("browser") {
       "//chrome/browser/ash/usb",
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper_handlers",
+      "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/ui/ash",
       "//chrome/browser/ui/ash/accessibility",
       "//chrome/browser/ui/ash/ambient",
@@ -6187,6 +6189,7 @@ static_library("browser") {
       "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/browser/chromeos/office_web_app",
       "//chrome/browser/chromeos/smart_reader",
+      "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/chromeos/tast_support",
       "//chrome/browser/lacros/cros_apps/api/diagnostics",
       "//chrome/common/chromeos/extensions",
@@ -6214,6 +6217,8 @@ static_library("browser") {
       "//ui/platform_window",
       "//ui/strings:ui_strings_grit",
     ]
+
+    allow_circular_includes_from += [ "//chrome/browser/chromeos/tablet_mode" ]
 
     # component builds are not compatible on device.
     assert(!is_chromeos_device || !is_component_build)
