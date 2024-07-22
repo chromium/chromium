@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/env.h"
@@ -271,7 +272,8 @@ WindowOcclusionTracker::ComputeTargetOcclusionForWindow(Window* window) {
   // This doesn't update the occlusion states of any window, so we should only
   // require one pass.
   auto tracked_window_iter = tracked_windows_.find(window);
-  DCHECK(tracked_window_iter != tracked_windows_.end());
+  CHECK(tracked_window_iter != tracked_windows_.end(),
+        base::NotFatalUntil::M130);
 
   base::AutoReset<OcclusionData> auto_reset_occlusion_data(
       &tracked_window_iter->second, OcclusionData());
@@ -758,7 +760,7 @@ void WindowOcclusionTracker::TrackedWindowRemovedFromRoot(Window* window) {
   Window* const root_window = window->GetRootWindow();
   DCHECK(root_window);
   auto root_window_state_it = root_windows_.find(root_window);
-  DCHECK(root_window_state_it != root_windows_.end());
+  CHECK(root_window_state_it != root_windows_.end(), base::NotFatalUntil::M130);
   --root_window_state_it->second.num_tracked_windows;
   if (root_window_state_it->second.num_tracked_windows == 0) {
     RemoveObserverFromWindowAndDescendants(root_window);
@@ -839,7 +841,7 @@ void WindowOcclusionTracker::ForceWindowVisible(Window* window) {
 
 void WindowOcclusionTracker::RemoveForceWindowVisible(Window* window) {
   auto iter = forced_visible_count_map_.find(window);
-  DCHECK(iter != forced_visible_count_map_.end());
+  CHECK(iter != forced_visible_count_map_.end(), base::NotFatalUntil::M130);
   if (--iter->second == 0u) {
     forced_visible_count_map_.erase(iter);
     Window* root_window = window->GetRootWindow();
