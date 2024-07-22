@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Gaia-password-changed"
       summary="(obsolete) Not used since M-122"/>
   <variant name="Gaia-signin"/>
-  <variant name="GeminiIntro"/>
+  <variant name="Gemini-intro"/>
   <variant name="Gesture-navigation"/>
   <variant name="Guest-tos"/>
   <variant name="Hw-data-collection"/>
