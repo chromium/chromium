@@ -2629,7 +2629,6 @@ crbug.com/350122897 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fen
 crbug.com/349903863 [ Mac11-arm64 ] external/wpt/wai-aria/role/listbox-roles.tentative.html [ Failure Timeout ]
 crbug.com/349505546 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-geolocation.https.html [ Timeout ]
 crbug.com/349414749 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--contain--nonpercent-width-nonpercent-height.html [ Failure ]
-crbug.com/349414735 [ Win11-arm64 ] external/wpt/content-security-policy/inheritance/history-iframe.sub.html [ Timeout ]
 crbug.com/348567826 external/wpt/css/css-images/image-orientation/image-orientation-exif-png-3.html [ Failure ]
 crbug.com/348794702 external/wpt/geolocation/tojson.https.window.html [ Timeout ]
 crbug.com/348474007 [ Win11-arm64 ] external/wpt/compression/decompression-buffersource.tentative.any.sharedworker.html [ Failure Timeout ]
