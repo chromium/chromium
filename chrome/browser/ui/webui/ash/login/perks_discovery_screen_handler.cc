@@ -22,6 +22,30 @@ void PerksDiscoveryScreenHandler::Show() {
   ShowInWebUI();
 }
 
+void PerksDiscoveryScreenHandler::SetPerksData(
+    const std::vector<SinglePerkDiscoveryPayload>& perks) {
+  base::Value::List perks_list;
+  for (const auto& perk : perks) {
+    base::Value::Dict perk_dict;
+    perk_dict.Set("perkId", base::Value(perk.id));
+    perk_dict.Set("title", base::Value(perk.title));
+    perk_dict.Set("subtitle", base::Value(perk.subtitle));
+    perk_dict.Set("iconUrl", base::Value(perk.icon_url));
+    if (perk.content.illustration.has_value()) {
+      perk_dict.Set("illustrationUrl", base::Value(perk.content.illustration->url));
+      perk_dict.Set("illustrationWidth", base::Value(perk.content.illustration->width));
+      perk_dict.Set("illustrationHeight",
+                    base::Value(perk.content.illustration->height));
+    }
+    perk_dict.Set("primaryButtonLabel",
+                  base::Value(*perk.primary_button.FindString("label")));
+    perk_dict.Set("secondaryButtonLabel",
+                  base::Value(*perk.secondary_button.FindString("label")));
+    perks_list.Append(std::move(perk_dict));
+  }
+  CallExternalAPI("setPerksData", std::move(perks_list));
+}
+
 base::WeakPtr<PerksDiscoveryScreenView>
 PerksDiscoveryScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

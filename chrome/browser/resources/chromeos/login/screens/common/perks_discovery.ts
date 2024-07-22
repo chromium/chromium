@@ -8,6 +8,7 @@
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
+import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,6 +22,23 @@ import {getTemplate} from './perks_discovery.html.js';
 export const PerksDiscoveryElementBase = OobeDialogHostMixin(
     LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement))));
 
+interface PerkData {
+  perkId: string;
+  title: string;
+  subtitle: string;
+  iconUrl: string;
+  illustrationUrl: string;
+  illustrationWidth: string;
+  illustrationHeight: string;
+  primaryButtonLabel: string;
+  secondaryButtonLabel: string;
+}
+
+enum PerksDiscoveryStep {
+  LOADING = 'loading',
+  OVERVIEW = 'overview',
+}
+
 export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   static get is() {
     return 'perks-discovery-element' as const;
@@ -31,12 +49,44 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
   }
 
   static get properties(): PolymerElementProperties {
-    return {};
+    return {
+      /**
+       * List of perks to display.
+       */
+      perksList: {
+        type: Array,
+        value: [],
+        notify: true,
+      },
+    };
+  }
+
+  private perksList: PerkData[];
+
+
+  override get UI_STEPS() {
+    return PerksDiscoveryStep;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep() {
+    return PerksDiscoveryStep.LOADING;
   }
 
   override ready(): void {
     super.ready();
     this.initializeLoginScreen('PerksDiscoveryScreenScreen');
+  }
+
+  override get EXTERNAL_API(): string[] {
+    return [
+      'setPerksData',
+    ];
+  }
+
+  setPerksData(perksData: PerkData[]): void {
+    assert(perksData !== null);
+    this.perksList = perksData;
   }
 }
 

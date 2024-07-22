@@ -72,7 +72,7 @@ class PerksDiscoveryScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
-  void GetOobePerksPayload();
+  void GetOobePerksPayloadAndShow();
 
   std::vector<SinglePerkDiscoveryPayload> perks_data_;
   base::WeakPtr<PerksDiscoveryScreenView> view_;

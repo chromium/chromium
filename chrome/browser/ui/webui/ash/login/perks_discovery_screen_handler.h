@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_PERKS_DISCOVERY_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_PERKS_DISCOVERY_SCREEN_HANDLER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/screens/perks_discovery_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
@@ -22,6 +25,8 @@ class PerksDiscoveryScreenView {
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+
+  virtual void SetPerksData(const std::vector<SinglePerkDiscoveryPayload>& perks) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<PerksDiscoveryScreenView> AsWeakPtr() = 0;
@@ -46,6 +51,7 @@ class PerksDiscoveryScreenHandler : public BaseScreenHandler,
 
   // PerksDiscoveryScreenView:
   void Show() override;
+  void SetPerksData(const std::vector<SinglePerkDiscoveryPayload>& perks) override;
   base::WeakPtr<PerksDiscoveryScreenView> AsWeakPtr() override;
 
  private:
