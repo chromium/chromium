@@ -841,7 +841,7 @@ bool ExternalCanvasResource::IsValid() const {
   // of origin to access the resource. In that case we will find out
   // whether the resource was dropped later, when we attempt to access the
   // mailbox.
-  return (is_cross_thread() || context_provider_wrapper_) && HasGpuMailbox();
+  return is_cross_thread() || context_provider_wrapper_;
 }
 
 void ExternalCanvasResource::TakeSkImage(sk_sp<SkImage> image) {
@@ -870,10 +870,6 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       std::move(release_callback),
       /*supports_display_compositing=*/true,
       transferable_resource_.is_overlay_candidate);
-}
-
-bool ExternalCanvasResource::HasGpuMailbox() const {
-  return !transferable_resource_.is_empty();
 }
 
 const gpu::SyncToken
