@@ -55,6 +55,19 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
                           const gfx::Rect& autocorrect_bounds) override;
 
  private:
+  struct ContentType {
+    bool operator==(const ContentType& other) const = default;
+    uint32_t content_hint;
+    uint32_t content_purpose;
+  };
+
+  void SendCursorRect(const gfx::Rect& rect);
+  void SendContentType(const ContentType& content_type);
+  void ApplyPendingSetRequests();
+  void ResetPendingSetRequests();
+  void ResetLastSentValues();
+  void Commit();
+
   // zwp_text_input_v3_listener
   static void OnEnter(void* data,
                       struct zwp_text_input_v3* text_input,
@@ -81,6 +94,16 @@ class ZWPTextInputWrapperV3 : public ZWPTextInputWrapper {
   const raw_ptr<WaylandConnection> connection_;
   wl::Object<zwp_text_input_v3> obj_;
   const raw_ptr<ZWPTextInputWrapperClient> client_;
+  uint32_t commit_count_ = 0;
+  uint32_t last_done_serial_ = 0;
+
+  // Pending set requests to be sent to compositor
+  std::optional<gfx::Rect> pending_set_cursor_rect_;
+  std::optional<ContentType> pending_set_content_type_;
+
+  // last sent values
+  gfx::Rect last_sent_cursor_rect_;
+  ContentType last_sent_content_type_;
 };
 
 }  // namespace ui
