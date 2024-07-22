@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.1...chromium-bidi-v0.6.2) (2024-07-22)
+
+
+### Bug Fixes
+
+* only auto-attach to a target once ([#2421](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2421)) ([7118b96](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7118b96f587ce7bb0fd69e72af33f37afff86fc2))
+* support `default` for BeforeUnload prompt ([#2412](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2412)) ([f24ad85](https://github.com/GoogleChromeLabs/chromium-bidi/commit/f24ad85e6232f5f39232db5ca6c9530ae303e1d5))
+* support for cookies in ContinueRequest ([#2370](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2370)) ([0cd7e12](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0cd7e126e8182292701db330f0522b1da50497e1))
+
 ## [0.6.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.0...chromium-bidi-v0.6.1) (2024-07-12)
 
 
