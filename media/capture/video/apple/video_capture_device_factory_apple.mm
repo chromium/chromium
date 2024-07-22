@@ -25,6 +25,7 @@
 #import <IOKit/audio/IOAudioTypes.h>
 
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
+#import "media/capture/video/mac/video_capture_metrics_mac.h"
 #endif
 
 namespace {
@@ -121,6 +122,9 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryApple::CreateDevice(
 
   if (capture_device) {
     LogCaptureDeviceHashedModelId(descriptor);
+#if BUILDFLAG(IS_MAC)
+    LogReactionEffectsGesturesState();
+#endif
   }
 
   return capture_device ? VideoCaptureErrorOrDevice(std::move(capture_device))
