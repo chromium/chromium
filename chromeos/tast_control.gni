@@ -112,7 +112,7 @@ tast_disabled_tests_from_chrome_all = [
   "terminal.SSH@brya",
 
   # b/354218429
-  "crostini.LaunchBrowser.bookworm_stable_lacros@betty-cfi-thin-lto",
+  "crostini.LaunchBrowser.bookworm_stable_lacros@betty",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
