@@ -656,20 +656,6 @@ void FeatureTile::SetDownloadState(DownloadState state, int progress) {
   NotifyDownloadStateChanged();
 }
 
-void FeatureTile::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-  // If the icon is clickable then the main feature tile usually takes the user
-  // to a detailed page (like Network or Bluetooth). Those tiles act more like a
-  // regular button than a toggle button.
-  if (is_togglable_ && !is_icon_clickable_) {
-    node_data->role = ax::mojom::Role::kToggleButton;
-    node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
-                                        : ax::mojom::CheckedState::kFalse);
-  } else {
-    node_data->role = ax::mojom::Role::kButton;
-  }
-}
-
 void FeatureTile::AddLayerToRegion(ui::Layer* layer,
                                    views::LayerRegion region) {
   // This routes background layers to `ink_drop_container_` instead of `this` to

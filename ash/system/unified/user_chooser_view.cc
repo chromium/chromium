@@ -286,6 +286,11 @@ UserItemButton::UserItemButton(PressedCallback callback,
 
   SetTooltipText(GetUserItemAccessibleString(user_index));
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
+
+  // The button for the currently active user is not clickable.
+  GetViewAccessibility().SetRole(user_index_ == 0 ? ax::mojom::Role::kLabelText
+                                                  : ax::mojom::Role::kButton);
+  GetViewAccessibility().SetName(GetUserItemAccessibleString(user_index_));
 }
 
 void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
@@ -320,13 +325,6 @@ std::u16string UserItemButton::GetTooltipText(const gfx::Point& p) const {
     return std::u16string();
   }
   return views::Button::GetTooltipText(p);
-}
-
-void UserItemButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // The button for the currently active user is not clickable.
-  node_data->role =
-      user_index_ == 0 ? ax::mojom::Role::kLabelText : ax::mojom::Role::kButton;
-  node_data->SetName(GetUserItemAccessibleString(user_index_));
 }
 
 BEGIN_METADATA(UserItemButton)

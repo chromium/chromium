@@ -27,6 +27,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -139,7 +140,7 @@ speech::LanguageCode fr_fr() {
 // Returns true if `view` is marked checked for accessibility.
 bool IsCheckedForAccessibility(views::View* view) {
   ui::AXNodeData node_data;
-  view->GetAccessibleNodeData(&node_data);
+  view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   return node_data.GetCheckedState() == ax::mojom::CheckedState::kTrue;
 }
 

@@ -142,6 +142,9 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
     views::FocusRing::Get(this)->SetColorId(
         static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(title_string_id));
 }
 
 ResizeToggleMenu::MenuButtonView::~MenuButtonView() = default;

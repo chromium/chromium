@@ -279,32 +279,11 @@ void HoverHighlightView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (right_view_ && right_view_->GetVisible() &&
       std::string(right_view_->GetClassName()).find("Button") !=
           std::string::npos) {
-    // Allow selection of sub-components.
-    node_data->role = ax::mojom::Role::kGenericContainer;
-
     // Include "press search plus space to activate" when announcing.
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
-
-    node_data->SetName(GetViewAccessibility().GetCachedName());
-    node_data->SetDescription(
-        l10n_util::GetStringUTF16(IDS_ASH_A11Y_ROLE_BUTTON));
   } else {
     views::Button::GetAccessibleNodeData(node_data);
   }
-
-  ax::mojom::CheckedState checked_state;
-
-  if (accessibility_state_ == AccessibilityState::CHECKED_CHECKBOX) {
-    checked_state = ax::mojom::CheckedState::kTrue;
-  } else if (accessibility_state_ == AccessibilityState::UNCHECKED_CHECKBOX) {
-    checked_state = ax::mojom::CheckedState::kFalse;
-  } else {
-    return;  // Not a checkbox
-  }
-
-  // Checkbox
-  node_data->role = ax::mojom::Role::kCheckBox;
-  node_data->SetCheckedState(checked_state);
 }
 
 gfx::Size HoverHighlightView::CalculatePreferredSize(

@@ -41,6 +41,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
@@ -305,6 +306,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   icon_container_view_->layer()->SetOpacity(1.0f);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 SavedDeskItemView::~SavedDeskItemView() {
@@ -402,8 +405,12 @@ void SavedDeskItemView::UpdateSavedDesk(
 }
 
 void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(ComputeAccessibleName());
+  // We must set the updated accessible name directly in the cache to override
+  // the one set in `LabelButton::SetText`. This is temporary.
+  //
+  // TODO(crbug.com/325137417): Remove this once the accessible name is set in
+  // the cache as soon as the name is updated.
+  GetViewAccessibility().SetName(ComputeAccessibleName());
 
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kDescription,

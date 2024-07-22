@@ -15,6 +15,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -75,6 +76,7 @@ TabSliderButton::TabSliderButton(PressedCallback callback,
   views::InstallPillHighlightPathGenerator(this);
 
   SetTooltipText(tooltip_text);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
 }
 
 TabSliderButton::~TabSliderButton() = default;
@@ -106,9 +108,6 @@ SkColor TabSliderButton::GetColorIdOnButtonState() {
 
 void TabSliderButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
-  const std::u16string tooltip = GetTooltipText(gfx::Point());
-  node_data->role = ax::mojom::Role::kToggleButton;
-  node_data->SetName(tooltip);
   node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
                                        : ax::mojom::CheckedState::kFalse);
 }

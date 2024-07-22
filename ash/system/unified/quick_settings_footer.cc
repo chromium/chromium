@@ -142,16 +142,14 @@ QsBatteryInfoViewBase::QsBatteryInfoViewBase(
   SetImageLabelSpacing(kImageLabelSpacing);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *label());
+
+  GetViewAccessibility().SetName(
+      PowerStatus::Get()->GetAccessibleNameString(/*full_description=*/true));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 QsBatteryInfoViewBase::~QsBatteryInfoViewBase() {
   PowerStatus::Get()->RemoveObserver(this);
-}
-
-void QsBatteryInfoViewBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(
-      PowerStatus::Get()->GetAccessibleNameString(/*full_description=*/true));
 }
 
 void QsBatteryInfoViewBase::ChildPreferredSizeChanged(views::View* child) {
@@ -185,6 +183,8 @@ void QsBatteryInfoViewBase::UpdateIconAndText(bool bsm_active) {
   const std::u16string percentage_text =
       PowerStatus::Get()->GetStatusStrings().first;
   SetText(percentage_text);
+  GetViewAccessibility().SetName(
+      PowerStatus::Get()->GetAccessibleNameString(/*full_description=*/true));
   SetVisible(!percentage_text.empty());
 
   if (GetColorProvider()) {

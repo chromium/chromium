@@ -577,17 +577,6 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-void IconButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::ImageButton::GetAccessibleNodeData(node_data);
-  if (is_togglable_) {
-    node_data->role = ax::mojom::Role::kToggleButton;
-    node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
-                                        : ax::mojom::CheckedState::kFalse);
-  } else {
-    node_data->role = ax::mojom::Role::kButton;
-  }
-}
-
 void IconButton::NotifyClick(const ui::Event& event) {
   if (is_togglable_) {
     chromeos::haptics_util::PlayHapticToggleEffect(

@@ -523,15 +523,16 @@ void DeskPreviewView::UpdateAccessibleName() {
                           : IDS_ASH_DESKS_DESK_PREVIEW_INACTIVE,
         desk->name()));
   }
+
+  // Avoid failing accessibility checks if we don't have a name.
+  if (GetViewAccessibility().GetCachedName().empty()) {
+    GetViewAccessibility().SetName(
+        "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
 void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::Button::GetAccessibleNodeData(node_data);
-
-  // Avoid failing accessibility checks if we don't have a name.
-  if (GetViewAccessibility().GetCachedName().empty()) {
-    node_data->SetNameExplicitlyEmpty();
-  }
 
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kRoleDescription,

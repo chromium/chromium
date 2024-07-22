@@ -37,7 +37,6 @@ class ASH_EXPORT Checkbox : public OptionButtonBase {
   // OptionButtonBase::
   const gfx::VectorIcon& GetVectorIcon() const override;
   bool IsIconOnTheLeftSide() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 }  // namespace ash

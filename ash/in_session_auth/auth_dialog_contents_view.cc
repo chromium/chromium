@@ -344,6 +344,8 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     SetPreferredSize(gfx::Size(kContainerPreferredWidth,
                                GetHeightForWidth(kContainerPreferredWidth)));
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   }
 
   bool IsShowingError() const { return is_showing_error_; }
@@ -364,12 +366,6 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     GetViewAccessibility().SetName(error_text);
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
                              true /*send_native_event*/);
-  }
-
-  // views::View
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kStaticText;
-    node_data->SetNameChecked(GetViewAccessibility().GetCachedName());
   }
 
  private:

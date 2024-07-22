@@ -28,7 +28,7 @@ constexpr gfx::Insets kButtonPadding{0};
 
 ProjectorButton::ProjectorButton(views::Button::PressedCallback callback,
                                  const std::u16string& name)
-    : ToggleImageButton(std::move(callback)), name_(name) {
+    : ToggleImageButton(std::move(callback)) {
   SetPreferredSize(gfx::Size(kProjectorButtonSize, kProjectorButtonSize));
   SetBorder(views::CreateEmptyBorder(kButtonPadding));
 
@@ -41,6 +41,9 @@ ProjectorButton::ProjectorButton(views::Button::PressedCallback callback,
                                                /*highlight_on_focus=*/true);
 
   SetTooltipText(name);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetName(name);
 }
 
 void ProjectorButton::OnPaintBackground(gfx::Canvas* canvas) {
@@ -76,11 +79,6 @@ void ProjectorButton::OnThemeChanged() {
   SetHasInkDropActionOnClick(true);
   StyleUtil::ConfigureInkDropAttributes(
       this, StyleUtil::kBaseColor | StyleUtil::kHighlightOpacity);
-}
-
-void ProjectorButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(name_);
 }
 
 BEGIN_METADATA(ProjectorButton)

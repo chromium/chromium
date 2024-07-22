@@ -221,13 +221,13 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
     UpdateImage();
     SetFlipCanvasOnPaintForRTLUI(/*enable=*/false);
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
+
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_COMPLETED_ACCESSIBLE_NAME));
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::ImageButton::GetAccessibleNodeData(node_data);
-
-    node_data->SetName(l10n_util::GetStringUTF16(
-        IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_COMPLETED_ACCESSIBLE_NAME));
 
     const ax::mojom::CheckedState checked_state =
         checked_ ? ax::mojom::CheckedState::kTrue

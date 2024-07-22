@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_class_properties.h"
@@ -29,7 +30,13 @@ namespace ash {
 DeskSwitchButton::DeskSwitchButton()
     : ImageButton(
           base::BindRepeating(&DeskSwitchButton::DeskSwitchButtonPressed,
-                              base::Unretained(this))) {}
+                              base::Unretained(this))) {
+  // Avoid failing accessibility checks if we don't have a name.
+  if (GetViewAccessibility().GetCachedName().empty()) {
+    GetViewAccessibility().SetName(
+        "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
+}
 
 DeskSwitchButton::~DeskSwitchButton() = default;
 
@@ -39,14 +46,6 @@ gfx::Size DeskSwitchButton::CalculatePreferredSize(
                    desk_button_container_->zero_state()
                        ? kDeskButtonSwitchButtonHeightVertical
                        : kDeskButtonSwitchButtonHeightHorizontal);
-}
-
-void DeskSwitchButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Avoid failing accessibility checks if we don't have a name.
-  views::ImageButton::GetAccessibleNodeData(node_data);
-  if (GetViewAccessibility().GetCachedName().empty()) {
-    node_data->SetNameExplicitlyEmpty();
-  }
 }
 
 void DeskSwitchButton::OnMouseEvent(ui::MouseEvent* event) {

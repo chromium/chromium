@@ -47,7 +47,6 @@ class UserItemButton : public views::Button {
 
   // views::Button:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   const int user_index_;

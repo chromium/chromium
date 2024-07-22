@@ -35,7 +35,6 @@ class ASH_EXPORT DeskSwitchButton : public views::ImageButton {
   // views::ImageButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void StateChanged(ButtonState old_state) override;

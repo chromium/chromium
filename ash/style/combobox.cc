@@ -130,6 +130,8 @@ class ComboboxMenuOptionGroup : public RadioButtonGroup {
                          kMenuItemInnerPadding,
                          kCheckmarkLabelSpacing) {
     GetViewAccessibility().SetProperties(ax::mojom::Role::kListBox);
+    GetViewAccessibility().SetName(
+        "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
 
   // RadioButtonGroup:
@@ -141,11 +143,6 @@ class ComboboxMenuOptionGroup : public RadioButtonGroup {
     button->set_delegate(this);
     buttons_.push_back(button);
     return button;
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    RadioButtonGroup::GetAccessibleNodeData(node_data);
-    node_data->SetNameExplicitlyEmpty();
   }
 };
 
