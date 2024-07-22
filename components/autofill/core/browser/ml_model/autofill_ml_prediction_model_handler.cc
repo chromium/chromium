@@ -22,6 +22,26 @@
 
 namespace autofill {
 
+namespace {
+
+// Creates the model metadata and specifies the model input version to
+// ensure client-server version compatibility while loading the model.
+std::optional<optimization_guide::proto::Any> CreateModelMetadata() {
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "AutofillFieldClassificationModelMetadata");
+  optimization_guide::proto::AutofillFieldClassificationModelMetadata
+      model_metadata;
+  model_metadata.set_input_version(
+      AutofillMlPredictionModelHandler::kAutofillModelInputVersion);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+  return any_metadata;
+}
+
+}  // anonymous namespace
+
 AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider)
     : optimization_guide::ModelHandler<
@@ -34,7 +54,7 @@ AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
           /*model_inference_timeout=*/std::nullopt,
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-          /*model_metadata=*/std::nullopt) {
+          CreateModelMetadata()) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since we query predictions very regularly.
   // TODO(crbug.com/40276177): Maybe change both back to default behavior if we
