@@ -135,8 +135,6 @@ void Canvas2DLayerBridge::Hibernate() {
   // non-complementary stats. Each HibernationScheduled event is paired with
   // exactly one failure or exit event.
   resource_host_->FlushRecording(FlushReason::kHibernating);
-  SkPaint copy_paint;
-  copy_paint.setBlendMode(SkBlendMode::kSrc);
   scoped_refptr<StaticBitmapImage> snapshot =
       resource_host_->ResourceProvider()->Snapshot(FlushReason::kHibernating);
   if (!snapshot) {
