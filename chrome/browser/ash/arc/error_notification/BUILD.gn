@@ -16,6 +16,7 @@ static_library("error_notification") {
 
   deps = [
     "//ash/components/arc",
+    "//ash/components/arc/vector_icons",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//base",

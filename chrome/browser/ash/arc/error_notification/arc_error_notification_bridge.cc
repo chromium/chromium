@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/memory/singleton.h"
@@ -110,8 +111,7 @@ void ArcErrorNotificationBridge::SendErrorDetails(
       message_center::RichNotificationData() /* optional_fields */,
       base::MakeRefCounted<ErrorNotificationDelegate>(
           weak_ptr_factory_.GetWeakPtr(), std::move(action_handler)),
-      // TODO(b/332459217): correct icon.
-      ash::kSystemMenuUpdateIcon /* small_image */,
+      kErrorNotificationIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
 
   std::vector<message_center::ButtonInfo> buttons;
