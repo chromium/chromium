@@ -636,7 +636,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(GCM_NATIVE_BACKGROUND_TASK, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             newCachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
-    public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, false);
+    public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMostVisitedTilesSelectExistingTab =
             newCachedFlag(MOST_VISITED_TILES_SELECT_EXISTING_TAB, false);

@@ -39,7 +39,7 @@ public class LogoUtils {
     private static final String LOGO_POLISH_MEDIUM_SIZE_PARAM = "polish_logo_size_medium";
     public static final BooleanCachedFieldTrialParameter LOGO_POLISH_MEDIUM_SIZE =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_MEDIUM_SIZE_PARAM, false);
+                    ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_MEDIUM_SIZE_PARAM, true);
 
     /** Returns whether logo polish flag is enabled in the given context. */
     public static boolean isLogoPolishEnabled() {

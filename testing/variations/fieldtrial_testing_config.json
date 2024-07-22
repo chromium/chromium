@@ -5022,25 +5022,6 @@
             ]
         }
     ],
-    "ClankLogoPolish": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Large_Logo_Size",
-                    "params": {
-                        "polish_logo_size_large": "true",
-                        "polish_logo_size_medium": "false"
-                    },
-                    "enable_features": [
-                        "LogoPolish"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClankTabResumpton": [
         {
             "platforms": [
