@@ -132,8 +132,11 @@
     </message>
 
     <!-- Settings strings -->
-    <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
+    <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="The label for the link in settings to manage plus addresses" translateable="false">
       Plus Address
+    </message>
+    <message name="IDS_PLUS_ADDRESS_SETTINGS_SUBLABEL" desc="The description of the link in settings to manage plus addresses" translateable="false">
+      Manage plus addresses you've created
     </message>
 
     <!-- Suggestion strings -->

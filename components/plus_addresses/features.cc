@@ -78,6 +78,14 @@ BASE_FEATURE(kPlusAddressRefresh,
              "PlusAddressRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// When enabled, plus address settings on Desktop are nested under address
+// autofill and the label for the autofill settings entry gains a subtitle.
+BASE_FEATURE(kPlusAddressSettingsRefreshDesktop,
+             "PlusAddressSettingsRefreshDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // When enabled, the plus address creation dialogs or bottom sheets include
 // extended feature description and usage notice.
 BASE_FEATURE(kPlusAddressUserOnboardingEnabled,

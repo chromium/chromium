@@ -1236,6 +1236,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"managePasskeysSubTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE_WIN},
 #endif
       {"plusAddressSettings", IDS_PLUS_ADDRESS_SETTINGS_LABEL},
+      {"plusAddressSettingsSublabel", IDS_PLUS_ADDRESS_SETTINGS_SUBLABEL},
       {"cvcTagForCreditCardListEntry",
        IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
       {"benefitsTermsTagForCreditCardListEntry",
@@ -1346,6 +1347,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString(
       "plusAddressManagementUrl",
       plus_addresses::features::kPlusAddressManagementUrl.Get());
+  html_source->AddBoolean(
+      "plusAddressSettingInAddressSection",
+      base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressSettingsRefreshDesktop));
 
   html_source->AddBoolean(
       "requireValidLocalCards",

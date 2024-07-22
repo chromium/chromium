@@ -71,9 +71,10 @@ export class SettingsAutofillPageElement extends
           return map;
         },
       },
-      isPlusAddressSettingEnabled_: {
+      isPlusAddressAutofillLevelSettingEnabled_: {
         type: Boolean,
-        value: () => !!loadTimeData.getString('plusAddressManagementUrl'),
+        value: () => !!loadTimeData.getString('plusAddressManagementUrl') &&
+            !loadTimeData.getBoolean('plusAddressSettingInAddressSection'),
       },
       plusAddressIcon_: {
         type: String,

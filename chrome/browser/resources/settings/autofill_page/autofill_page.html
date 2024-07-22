@@ -15,7 +15,8 @@
             role-description="$i18n{subpageArrowRoleDescription}"
             start-icon="cr20:password" external>
         </cr-link-row>
-        <template is="dom-if" if="[[isPlusAddressSettingEnabled_]]">
+        <template is="dom-if"
+            if="[[isPlusAddressAutofillLevelSettingEnabled_]]">
           <cr-link-row id="plusAddressManagerButton"
               label="$i18n{plusAddressSettings}"
               on-click="onPlusAddressClick_"
