@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer:
+transferBackFromGPUTexture-disallows-transfer-back-after-draw</h1>
+
+<p>WebGPU access does not allow transferring back after drawing to the canvas.
+</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_canvas_disallows_transfer_back_after_draw(
+                 device,
+                 document.getElementById('c'));
+    });
+  },
+  'transferBackFromGPUTexture() should disallow transferring back after a draw.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_canvas_disallows_transfer_back_after_draw(
+                 device,
+                 new OffscreenCanvas(50, 50));
+    });
+  },
+  'transferBackFromGPUTexture() on an offscreen canvas should disallow ' +
+  'transferring back after a draw.'
+);
+
+</script>

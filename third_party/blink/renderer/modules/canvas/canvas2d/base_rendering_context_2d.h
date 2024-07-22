@@ -351,12 +351,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // Replaces the canvas' back-buffer texture with the passed-in GPUTexture.
   // The GPUTexture immediately becomes inaccessible to WebGPU.
   // A GPUValidationError will occur if the GPUTexture is used after
-  // endWebGPUAccess is called.
+  // `transferBackFromGPUTexture` is called.
   void transferBackFromGPUTexture(ExceptionState& exception_state);
 
-  // Returns the format of the GPUTexture that beginWebGPUAccess will return.
-  // This is useful if you need to create the WebGPU render pipeline before
-  // beginWebGPUAccess is first called.
+  // Returns the format of the GPUTexture that `transferToGPUTexture` will
+  // return. This is useful if you need to create the WebGPU render pipeline
+  // before `transferToGPUTexture` is first called.
   V8GPUTextureFormat getTextureFormat() const;
 
   virtual bool OriginClean() const = 0;
@@ -847,6 +847,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // Cache of recently used colors. Maintains LRU semantics.
   HeapLinkedHashSet<Member<CachedColor>, CachedColorTraits> color_cache_;
   Member<GPUTexture> webgpu_access_texture_ = nullptr;
+  std::unique_ptr<CanvasResourceProvider> resource_provider_from_webgpu_access_;
 };
 
 namespace {
