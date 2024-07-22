@@ -158,6 +158,8 @@ suite('ProductSpecificationsTableTest', () => {
       assertEquals(2, images.length);
       assertEquals('https://1', images[0]!.autoSrc);
       assertEquals('https://0', images[1]!.autoSrc);
+      assertStyle(first, 'order', '0');
+      assertStyle(second, 'order', '0');
     });
   });
 
@@ -198,6 +200,8 @@ suite('ProductSpecificationsTableTest', () => {
       assertEquals('https://1', images[0]!.autoSrc);
       assertEquals('https://0', images[1]!.autoSrc);
       assertEquals('https://2', images[2]!.autoSrc);
+      assertStyle(first, 'order', '0');
+      assertStyle(second, 'order', '0');
     });
   });
 
@@ -252,6 +256,11 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals('https://2', images[1]!.autoSrc);
     assertEquals('https://3', images[2]!.autoSrc);
     assertEquals('https://0', images[3]!.autoSrc);
+    assertStyle(first, 'order', '0');
+    assertStyle(second, 'order', '0');
+    assertStyle(third, 'order', '0');
+    assertStyle(fourth, 'order', '0');
+
   });
 
   test('swap the same two columns back-to-back', async () => {
@@ -312,6 +321,8 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals(2, images.length);
     assertEquals('https://0', images[0]!.autoSrc);
     assertEquals('https://1', images[1]!.autoSrc);
+    assertStyle(first, 'order', '0');
+    assertStyle(second, 'order', '0');
   });
 
   test('cancel drop after dragover', async () => {
@@ -330,7 +341,7 @@ suite('ProductSpecificationsTableTest', () => {
     assertNotDragging();
 
     assertStyle(first, 'order', '0');
-    assertStyle(second, 'order', '1');
+    assertStyle(second, 'order', '0');
   });
 
   [true, false].forEach(dropNotEnd => {

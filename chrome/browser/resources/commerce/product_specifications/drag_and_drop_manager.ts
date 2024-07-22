@@ -32,9 +32,9 @@ import {$$} from './utils.js';
  * Leaving the table mid-drag drops the dragging column at the position where
  * the 'dragleave' event was triggered.
  *
- * If a drop fails or is cancelled, column positions are restored to their
- * original state in the DOM to ensure the visual layout matches the underlying
- * data structure.
+ * Once drag-and-drop ends regardless of its outcome (success, failure, or
+ * cancellation), each column's CSS 'order' property is removed, to ensure the
+ * visual layout matches the underlying data structure.
  */
 
 function getColumnByComposedPath(path?: EventTarget[]): HTMLElement|null {
@@ -61,6 +61,12 @@ function syncVisualOrderWithDOM(columnElements: HTMLElement[]) {
     // `is-first-column` ensures the first column has necessary styling.
     column.toggleAttribute('is-first-column', index === 0);
     column.style.order = `${index}`;
+  });
+}
+
+function resetVisualOrder(columnElements: HTMLElement[]) {
+  columnElements.forEach((column) => {
+    column.style.order = '';
   });
 }
 
@@ -132,6 +138,7 @@ export class DragAndDropManager {
   // Swaps the visual order of the dragging column with the adjacent column it
   // drags over.
   // Note: DOM node positions are unaffected.
+  // TODO(b/354729553): Handle fast column drags.
   private dragOver_(e: DragEvent) {
     e.preventDefault();
 
@@ -181,24 +188,18 @@ export class DragAndDropManager {
       this.tableElement_.moveColumnOnDrop(fromIndex, toIndex);
     }
 
-    // Since drag-and-drop only works for adjacent columns, a drop is considered
-    // successful regardless of whether `toIndex` and `fromIndex` don't match.
-    // If they do match, the 'order' CSS property of each column should already
-    // match its DOM position.
-    this.tableElement_.draggingColumn = null;
+    this.dragEnd_();
   }
 
   // Called when drag-and-drop is finished, even if canceled.
-  // If cancelled, the 'order' CSS property of each column is reset to match its
-  // DOM position, to ensure the visual layout matches the underlying data
-  // structure.
   private dragEnd_() {
     if (!this.tableElement_.draggingColumn) {
       return;
     }
 
     this.tableElement_.draggingColumn = null;
-    // Ensure each column's CSS 'order' property aligns with its DOM position.
-    syncVisualOrderWithDOM(this.columnElements_);
+    // Remove each column's CSS 'order' property, to ensure the visual
+    // layout matches the underlying data structure.
+    resetVisualOrder(this.columnElements_);
   }
 }
