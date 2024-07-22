@@ -22,31 +22,28 @@ namespace blink {
 namespace {
 
 constexpr char kCloseDelimiterSuffix[] = "--\r\n";
-constexpr size_t kCloseDelimiterSuffixSize =
-    std::size(kCloseDelimiterSuffix) - 1u;
 constexpr size_t kDashBoundaryOffset = 2u;  // The length of "\r\n".
 constexpr char kDelimiterSuffix[] = "\r\n";
-constexpr size_t kDelimiterSuffixSize = std::size(kDelimiterSuffix) - 1u;
 
 }  // namespace
 
 MultipartParser::Matcher::Matcher() = default;
 
-MultipartParser::Matcher::Matcher(const char* data,
-                                  size_t num_matched_bytes,
-                                  size_t size)
-    : data_(data), num_matched_bytes_(num_matched_bytes), size_(size) {}
+MultipartParser::Matcher::Matcher(base::span<const char> match_data,
+                                  size_t num_matched_bytes)
+    : match_data_(match_data), num_matched_bytes_(num_matched_bytes) {}
 
-bool MultipartParser::Matcher::Match(const char* first, const char* last) {
-  while (first < last) {
-    if (!Match(*first++))
+bool MultipartParser::Matcher::Match(base::span<const char> data) {
+  for (const char c : data) {
+    if (!Match(c)) {
       return false;
+    }
   }
   return true;
 }
 
 void MultipartParser::Matcher::SetNumMatchedBytes(size_t num_matched_bytes) {
-  DCHECK_LE(num_matched_bytes, size_);
+  DCHECK_LE(num_matched_bytes, match_data_.size());
   num_matched_bytes_ = num_matched_bytes;
 }
 
@@ -130,8 +127,9 @@ bool MultipartParser::AppendData(const char* bytes, size_t size) {
             // bytes instead of being delimiter bytes. Additionally,
             // some of the matched bytes are from the previous call and
             // are therefore not in the range [octetsBegin, bytesEnd[.
-            client_->PartDataInMultipartReceived(matcher_.Data(),
-                                                 matcher_.NumMatchedBytes());
+            auto matched_data = matcher_.MatchedData();
+            client_->PartDataInMultipartReceived(matched_data.data(),
+                                                 matched_data.size());
             if (state_ != State::kParsingPartOctets)
               break;
             octets_begin = bytes;
@@ -222,8 +220,9 @@ bool MultipartParser::Finish() {
         // Since the matched bytes did not form a complete delimiter,
         // the matched bytes turned out to be octet bytes instead of being
         // delimiter bytes.
-        client_->PartDataInMultipartReceived(matcher_.Data(),
-                                             matcher_.NumMatchedBytes());
+        auto matched_data = matcher_.MatchedData();
+        client_->PartDataInMultipartReceived(matched_data.data(),
+                                             matched_data.size());
       }
       return false;
     case State::kParsingCloseDelimiterSuffix:
@@ -238,17 +237,16 @@ bool MultipartParser::Finish() {
 }
 
 MultipartParser::Matcher MultipartParser::CloseDelimiterSuffixMatcher() const {
-  return Matcher(kCloseDelimiterSuffix, 0u, kCloseDelimiterSuffixSize);
+  return Matcher(base::span_from_cstring(kCloseDelimiterSuffix), 0u);
 }
 
 MultipartParser::Matcher MultipartParser::DelimiterMatcher(
     size_t num_already_matched_bytes) const {
-  return Matcher(delimiter_.data(), num_already_matched_bytes,
-                 delimiter_.size());
+  return Matcher(delimiter_, num_already_matched_bytes);
 }
 
 MultipartParser::Matcher MultipartParser::DelimiterSuffixMatcher() const {
-  return Matcher(kDelimiterSuffix, 0u, kDelimiterSuffixSize);
+  return Matcher(base::span_from_cstring(kDelimiterSuffix), 0u);
 }
 
 void MultipartParser::ParseDataAndDelimiter(const char** bytes_pointer,
@@ -261,20 +259,22 @@ void MultipartParser::ParseDataAndDelimiter(const char** bytes_pointer,
   if (delimiter_begin != bytes_end) {
     // A complete delimiter was found. The bytes before that are octet
     // bytes.
-    const char* const delimiter_end = delimiter_begin + delimiter_.size();
-    const bool matched = matcher_.Match(delimiter_begin, delimiter_end);
+    const bool matched =
+        matcher_.Match(base::span(delimiter_begin, delimiter_.size()));
     DCHECK(matched);
     DCHECK(matcher_.IsMatchComplete());
-    *bytes_pointer = delimiter_end;
+    *bytes_pointer = delimiter_begin + delimiter_.size();
   } else {
     // Search for a partial delimiter in the end of the bytes.
     const size_t size = static_cast<size_t>(bytes_end - *bytes_pointer);
-    for (delimiter_begin =
-             bytes_end -
-             std::min(static_cast<size_t>(delimiter_.size() - 1u), size);
-         delimiter_begin < bytes_end; ++delimiter_begin) {
-      if (matcher_.Match(delimiter_begin, bytes_end))
+    auto remaining_bytes = base::span(*bytes_pointer, size);
+    auto maybe_delimiter_span = remaining_bytes.last(std::min(
+        static_cast<size_t>(delimiter_.size() - 1u), remaining_bytes.size()));
+    while (!maybe_delimiter_span.empty()) {
+      if (matcher_.Match(maybe_delimiter_span)) {
         break;
+      }
+      maybe_delimiter_span = maybe_delimiter_span.subspan(1u);
       matcher_.SetNumMatchedBytes(0u);
     }
     // If a partial delimiter was found in the end of bytes, the bytes
