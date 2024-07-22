@@ -5168,6 +5168,8 @@ static_library("browser") {
       "//ash/public/cpp/external_arc",
       "//ash/webui/annotator",
       "//ash/webui/annotator/mojom:annotator_mojo_bindings",
+      "//ash/webui/boca_ui",
+      "//ash/webui/boca_ui/mojom",
       "//ash/webui/camera_app_ui",
       "//ash/webui/camera_app_ui:mojo_bindings",
       "//ash/webui/color_internals",
