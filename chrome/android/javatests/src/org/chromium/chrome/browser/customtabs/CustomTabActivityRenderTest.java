@@ -173,6 +173,15 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    public void testCCTToolbarWithTitle() throws IOException {
+        mIntent.putExtra(
+                CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
+        startActivityAndRenderToolbar("cct_toolbar_with_title_with_https_" + mRunWithHttps);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
     @EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
     public void testCCTToolbarWithMinimizeButton() throws IOException {
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
