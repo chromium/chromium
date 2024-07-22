@@ -186,6 +186,8 @@ void AndroidBatteryMetrics::InitializeOnSequence() {
       base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
   base::PowerMonitor::AddPowerThermalObserver(this);
   content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
+  // TODO(b/339859756): Update this call to take into account the unknown battery
+  // status.
   UpdateMetricsEnabled();
 }
 
