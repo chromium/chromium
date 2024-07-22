@@ -322,34 +322,28 @@ void EmulationHandler::GetOverriddenSensorInformation(
       std::move(callback)));
 }
 
-void EmulationHandler::SetSensorOverrideEnabled(
+Response EmulationHandler::SetSensorOverrideEnabled(
     bool enabled,
     const Emulation::SensorType& type,
-    Maybe<Emulation::SensorMetadata> metadata,
-    std::unique_ptr<SetSensorOverrideEnabledCallback> callback) {
+    Maybe<Emulation::SensorMetadata> metadata) {
   if (!host_) {
-    callback->sendFailure(Response::InternalError());
-    return;
+    return Response::InternalError();
   }
 
   device::mojom::SensorType sensor_type;
   if (auto response = ConvertSensorType(type, &sensor_type);
       !response.IsSuccess()) {
-    callback->sendFailure(response);
-    return;
+    return response;
   }
 
   if (enabled) {
     auto virtual_sensor_metadata = ParseSensorMetadata(metadata);
     if (!virtual_sensor_metadata.has_value()) {
-      callback->sendFailure(virtual_sensor_metadata.error());
-      return;
+      return virtual_sensor_metadata.error();
     }
 
     if (sensor_overrides_.contains(sensor_type)) {
-      callback->sendFailure(
-          Response::InvalidParams(kSensorIsAlreadyOverridden));
-      return;
+      return Response::InvalidParams(kSensorIsAlreadyOverridden);
     }
 
     auto virtual_sensor =
@@ -357,15 +351,13 @@ void EmulationHandler::SetSensorOverrideEnabled(
             ->CreateVirtualSensorForDevTools(
                 sensor_type, std::move(virtual_sensor_metadata.value()));
     if (!virtual_sensor) {
-      callback->sendFailure(
-          Response::InvalidParams(kSensorIsAlreadyOverridden));
-      return;
+      return Response::InvalidParams(kSensorIsAlreadyOverridden);
     }
     sensor_overrides_[sensor_type] = std::move(virtual_sensor);
   } else {
     sensor_overrides_.erase(sensor_type);
   }
-  callback->sendSuccess();
+  return Response::Success();
 }
 
 void EmulationHandler::SetSensorOverrideReadings(
