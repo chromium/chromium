@@ -12,6 +12,9 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace {
 
@@ -47,6 +50,7 @@ AbandonReason DiscardReasonToAbandonReason(
       return AbandonReason::kOther;
   }
 }
+
 }  // namespace
 
 namespace internal {
@@ -299,6 +303,86 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
             suffix,
         milestone);
   }
+
+  ukm::SourceId source_id =
+      ukm::ConvertToSourceId(navigation_id_, ukm::SourceIdType::NAVIGATION_ID);
+  ukm::builders::AbandonedNavigation builder(source_id);
+  builder.SetAbandonReason(static_cast<int>(abandon_reason));
+  builder.SetLastMilestoneBeforeAbandon(static_cast<int>(milestone));
+
+  const base::TimeTicks navigation_start_time =
+      GetDelegate().GetNavigationStart();
+  builder.SetAbandonTimingFromNavigationStart(
+      (event_time - navigation_start_time).InMilliseconds());
+  builder.SetAbandonTimingFromLastMilestone(
+      (event_time - relative_start_time).InMilliseconds());
+  if (!first_backgrounded_timestamp_.is_null()) {
+    builder.SetPreviousBackgroundedTime(
+        (first_backgrounded_timestamp_ - navigation_start_time)
+            .InMilliseconds());
+  }
+  if (!first_hidden_timestamp_.is_null()) {
+    builder.SetPreviousHiddenTime(
+        (first_hidden_timestamp_ - navigation_start_time).InMilliseconds());
+  }
+
+  if (!latest_navigation_handle_timing_.loader_start_time.is_null()) {
+    builder.SetLoaderStartTime(
+        (latest_navigation_handle_timing_.loader_start_time -
+         navigation_start_time)
+            .InMilliseconds());
+  }
+
+  if (latest_navigation_handle_timing_.first_loader_callback_time !=
+          latest_navigation_handle_timing_
+              .non_redirect_response_loader_callback_time &&
+      !latest_navigation_handle_timing_.first_loader_callback_time.is_null()) {
+    builder.SetFirstRedirectResponseReceived(true);
+    if (!latest_navigation_handle_timing_.first_request_start_time.is_null()) {
+      builder.SetFirstRedirectedRequestStartTime(
+          (latest_navigation_handle_timing_.first_request_start_time -
+           navigation_start_time)
+              .InMilliseconds());
+    }
+  } else {
+    builder.SetFirstRedirectResponseReceived(false);
+  }
+
+  builder.SetNonRedirectResponseReceived(
+      latest_navigation_handle_timing_
+          .non_redirect_response_loader_callback_time.is_null());
+  if (!latest_navigation_handle_timing_.non_redirected_request_start_time
+           .is_null()) {
+    builder.SetNonRedirectedRequestStartTime(
+        (latest_navigation_handle_timing_.non_redirected_request_start_time -
+         navigation_start_time)
+            .InMilliseconds());
+  }
+
+  if (!latest_navigation_handle_timing_.navigation_commit_sent_time.is_null()) {
+    builder.SetCommitSentTime(
+        (latest_navigation_handle_timing_.navigation_commit_sent_time -
+         navigation_start_time)
+            .InMilliseconds());
+  }
+
+  for (const auto& loading_milestone : loading_milestones_) {
+    if (loading_milestone.first == NavigationMilestone::kParseStart) {
+      builder.SetParseStartTime(loading_milestone.second.InMilliseconds());
+    } else if (loading_milestone.first ==
+               NavigationMilestone::kDOMContentLoaded) {
+      builder.SetDOMContentLoadedTime(
+          loading_milestone.second.InMilliseconds());
+    } else if (loading_milestone.first ==
+               NavigationMilestone::kFirstContentfulPaint) {
+      builder.SetFirstContentfulPaintTime(
+          loading_milestone.second.InMilliseconds());
+    }
+  }
+
+  // TODO(https://crbug.com/347706997): Record more milestones, including
+  // loading milestones.
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void AbandonedPageLoadMetricsObserver::LogLoadingMilestone(
@@ -313,6 +397,8 @@ AbandonedPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
+  navigation_id_ = navigation_handle->GetNavigationId();
+
   page_load_metrics::PageLoadMetricsObserver::ObservePolicy
       navigation_handling_result = OnNavigationEvent(navigation_handle);
   if (navigation_handling_result != CONTINUE_OBSERVING) {

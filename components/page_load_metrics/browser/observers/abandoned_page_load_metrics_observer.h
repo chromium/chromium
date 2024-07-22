@@ -178,6 +178,9 @@ class AbandonedPageLoadMetricsObserver
       content::NavigationHandle* navigation_handle);
   virtual bool IsAllowedToLogMetrics() const;
 
+  // The ID of the navigation being tracked.
+  int64_t navigation_id_ = 0;
+
   // Set to true if we see the navigation involves non-SRP URL, which will be
   // specially marked in the logged metrics.
   bool did_request_non_srp_ = false;

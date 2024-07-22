@@ -18,6 +18,150 @@ be describing additional metrics about the same event.
 
 <ukm-configuration>
 
+<event name="AbandonedNavigation" singular="True">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Metrics recorded each time a navigation/page load is abandoned.
+  </summary>
+  <metric name="AbandonReason">
+    <summary>
+      The reason the navigation/page load gets abandoned.
+    </summary>
+  </metric>
+  <metric name="AbandonTimingFromLastMilestone">
+    <summary>
+      The time when the navigation/page load is abandoned, relative to the last
+      milestone.
+    </summary>
+  </metric>
+  <metric name="AbandonTimingFromNavigationStart">
+    <summary>
+      The time when the navigation/page load is abandoned, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="AFTEndTime">
+    <summary>
+      The timestamp of the AFT End event for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="AFTStartTime">
+    <summary>
+      The timestamp of the AFT Start event for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="BodyChunkTime">
+    <summary>
+      The time when the body chunk is processed for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="CommitReceivedTime">
+    <summary>
+      The time when the CommitNavigation IPC for the navigation is received in
+      the renderer process, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="CommitSentTime">
+    <summary>
+      The time when the CommitNavigation IPC for the navigation is sent from the
+      browser process, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="DidCommitTime">
+    <summary>
+      The time when the DidCommit IPC for the navigation is received, relative
+      to navigation start.
+    </summary>
+  </metric>
+  <metric name="DOMContentLoadedTime">
+    <summary>
+      The timestamp of when the &quot;DOMContentLoaded&quot; event is fired for
+      the page load, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="FirstContentfulPaintTime">
+    <summary>
+      The timestamp of the first contentful paint for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="FirstRedirectedRequestStartTime">
+    <summary>
+      The time when the first network request that got redirected for the
+      navigation started, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="FirstRedirectResponseReceived">
+    <summary>
+      Whether the first redirect response is received yet.
+    </summary>
+  </metric>
+  <metric name="LargestContentfulPaintTime">
+    <summary>
+      The timestamp of the largest contentful paint for the page load, relative
+      to navigation start.
+    </summary>
+  </metric>
+  <metric name="LastMilestoneBeforeAbandon">
+    <summary>
+      The last milestone before the navigation is abandoned.
+    </summary>
+  </metric>
+  <metric name="LoaderStartTime">
+    <summary>
+      The time when the URLLoader for the navigation started, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="LoadEventStartedTime">
+    <summary>
+      The timestamp of when the &quot;load&quot; event is fired for the page
+      load, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="NonRedirectedRequestStartTime">
+    <summary>
+      The time when the final network request that didn't got redirected for the
+      navigation started, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="NonRedirectResponseReceived">
+    <summary>
+      Whether the non-redirect/final response is received yet.
+    </summary>
+  </metric>
+  <metric name="ParseStartTime">
+    <summary>
+      The time when the parsing of the HTTP response body started, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="PreviousBackgroundedTime">
+    <summary>
+      If we've experienced backgrounding while the navigation/page load is
+      running before this abandonment event happened, this will have the time
+      when the backgrounding happened, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="PreviousHiddenTime">
+    <summary>
+      If we've experienced hiding while the navigation/page load is running
+      before this abandonment event happened, this will have the time when the
+      hiding happened, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="RendererProcessInitTime">
+    <summary>
+      The time when the final renderer process for the navigation is
+      initialized, relative to navigation start.
+    </summary>
+  </metric>
+</event>
+
 <event name="AboutThisSiteStatus">
   <owner>olesiamarukhnno@google.com</owner>
   <summary>
