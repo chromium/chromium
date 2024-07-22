@@ -243,7 +243,34 @@ void ChromeComposeClient::ShowComposeDialog(
     std::optional<autofill::AutofillClient::PopupScreenLocation>
         popup_screen_location,
     ComposeCallback callback) {
-  CreateOrUpdateSession(ui_entry_point, trigger_field, std::move(callback));
+  active_compose_ids_ = std::make_optional<FieldIdentifier>(
+      trigger_field.global_id(), trigger_field.renderer_form_id());
+
+  // The selected text received from Autofill is a UTF-16 string truncated using
+  // substr, which will result in a rendered invalid character in the Compose
+  // dialog if it splits a surrogate pair character. Ensure that any invalid
+  // characters are removed.
+  std::string selected_text =
+      base::UTF16ToUTF8(RemoveLastCharIfInvalid(trigger_field.selected_text()));
+
+  // We only want to resume if there is an existing session and the popup was
+  // clicked or the selection is empty. If the context menu is clicked with a
+  // selection we start a new session using the selection.
+  bool popup_clicked = ui_entry_point == EntryPoint::kAutofillPopup;
+  bool resume_current_session = HasSession(active_compose_ids_.value().first) &&
+                                (popup_clicked || selected_text.empty());
+
+  if (resume_current_session) {
+    PrepareToResumeExistingSession(std::move(callback),
+                                   /*has_selection=*/!selected_text.empty(),
+                                   popup_clicked);
+  } else {
+    CreateNewSession(std::move(callback), trigger_field, selected_text,
+                     popup_clicked);
+  }
+  last_popup_trigger_source_ =
+      autofill::AutofillSuggestionTriggerSource::kUnspecified;
+
   if (!skip_show_dialog_for_test_) {
     // The bounds given by autofill are relative to the top level frame. Here we
     // offset by the WebContents container to make up for that.
@@ -370,103 +397,107 @@ void ChromeComposeClient::UpdateAllSessionsWithFirstRunComplete() {
   }
 }
 
-void ChromeComposeClient::CreateOrUpdateSession(
-    EntryPoint ui_entry_point,
+void ChromeComposeClient::PrepareToResumeExistingSession(
+    ComposeCallback callback,
+    bool has_selection,
+    bool popup_clicked) {
+  ComposeSession* current_session = GetSessionForActiveComposeField();
+  CHECK(current_session);
+  current_session->set_compose_callback(std::move(callback));
+  // Update the msbb state which can change while the session is hidden.
+  current_session->set_current_msbb_state(GetMSBBStateFromPrefs());
+  current_session->MaybeRefreshPageContext(has_selection);
+
+  if (popup_clicked) {
+    if (last_popup_trigger_source_ ==
+        autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus) {
+      compose::LogResumeSessionEntryPoint(
+          compose::ComposeEntryPoint::kSavedStateNotification);
+    } else {
+      compose::LogResumeSessionEntryPoint(
+          compose::ComposeEntryPoint::kSavedStateNudge);
+    }
+  } else {
+    compose::LogResumeSessionEntryPoint(
+        compose::ComposeEntryPoint::kContextMenu);
+  }
+}
+
+void ChromeComposeClient::CreateNewSession(
+    ComposeCallback callback,
     const autofill::FormFieldData& trigger_field,
-    ComposeCallback callback) {
-  active_compose_ids_ = std::make_optional<FieldIdentifier>(
-      trigger_field.global_id(), trigger_field.renderer_form_id());
-  // The selected text received from Autofill is a UTF-16 string truncated using
-  // substr, which will result in a rendered invalid character in the Compose
-  // dialog if it splits a surrogate pair character. Ensure that any invalid
-  // characters are removed.
-  std::string selected_text =
-      base::UTF16ToUTF8(RemoveLastCharIfInvalid(trigger_field.selected_text()));
-
+    std::string_view selected_text,
+    bool popup_clicked) {
   ComposeSession* current_session;
-
-  // We only want to resume if there is an existing session and the popup was
-  // clicked or the selection is empty. If the context menu is clicked with a
-  // selection we start a new session using the selection.
   bool has_session = HasSession(active_compose_ids_.value().first);
-  bool resume_current_session =
-      has_session &&
-      (ui_entry_point == EntryPoint::kAutofillPopup || selected_text.empty());
-
-  if (resume_current_session) {
+  if (has_session) {
+    // Set the final state for the existing session which will be closed to
+    // start a new one.
+    base::RecordAction(base::UserMetricsAction(
+        "Compose.EndedSession.NewSessionWithSelectedText"));
+    SetSessionCloseReason(
+        compose::ComposeSessionCloseReason::kReplacedWithNewSession);
+    // Set the equivalent close reason if the existing session was in a
+    // consent state.
     auto it = sessions_.find(active_compose_ids_.value().first);
     current_session = it->second.get();
-    current_session->set_compose_callback(std::move(callback));
-  } else {
-    if (has_session) {
-      // We have a session already, and we are going to close it and create a
-      // new one, which will require a close reason.
-      base::RecordAction(base::UserMetricsAction(
-          "Compose.EndedSession.NewSessionWithSelectedText"));
-      SetSessionCloseReason(
-          compose::ComposeSessionCloseReason::kReplacedWithNewSession);
-      // Set the equivalent close reason if the existing session was in a
-      // consent state.
-      auto it = sessions_.find(active_compose_ids_.value().first);
-      current_session = it->second.get();
-      if (!current_session->get_fre_complete()) {
-        SetFirstRunSessionCloseReason(
-            compose::ComposeFreOrMsbbSessionCloseReason::
-                kReplacedWithNewSession);
-      }
-      if (!current_session->get_current_msbb_state()) {
-        SetMSBBSessionCloseReason(compose::ComposeFreOrMsbbSessionCloseReason::
-                                      kReplacedWithNewSession);
-      }
+    if (!current_session->get_fre_complete()) {
+      SetFirstRunSessionCloseReason(
+          compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession);
     }
-    // Now create and set up a new session.
-    auto new_session = std::make_unique<ComposeSession>(
-        &GetWebContents(), GetModelExecutor(), GetSessionId(),
-        GetInnerTextProvider(), trigger_field.global_id(),
-        IsPageLanguageSupported(), this, std::move(callback));
-    current_session = new_session.get();
-    sessions_.insert_or_assign(active_compose_ids_.value().first,
-                               std::move(new_session));
-
-    // Set the FRE state of the new session.
-    auto fre_state =
-        pref_service_->GetBoolean(prefs::kPrefHasCompletedComposeFRE);
-    current_session->set_fre_complete(fre_state);
-
-    // Record the UI state that new sessions are created in.
-    if (!fre_state) {
-      base::RecordAction(
-          base::UserMetricsAction("Compose.DialogSeen.FirstRunDisclaimer"));
-    } else if (!GetMSBBStateFromPrefs()) {
-      base::RecordAction(
-          base::UserMetricsAction("Compose.DialogSeen.FirstRunMSBB"));
-    } else {
-      base::RecordAction(
-          base::UserMetricsAction("Compose.DialogSeen.MainDialog"));
+    if (!current_session->get_current_msbb_state()) {
+      SetMSBBSessionCloseReason(
+          compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession);
     }
-
-    // Only record the selection length for new sessions.
-    auto utf8_chars = base::CountUnicodeCharacters(selected_text);
-    compose::LogComposeDialogSelectionLength(
-        utf8_chars.has_value() ? utf8_chars.value() : 0);
-  }  // End of create new session.
-
-  current_session->set_current_msbb_state(GetMSBBStateFromPrefs());
-
-  if (resume_current_session) {
-    current_session->MaybeRefreshPageContext(
-        /*has_selection=*/!selected_text.empty());
-  } else {
-    current_session->InitializeWithText(selected_text);
   }
 
-  if (!has_session && ui_entry_point == EntryPoint::kAutofillPopup) {
-    // If this is a new session from the popup then the proactive nudge was
-    // clicked. Record nudge ctr metric.
-    compose::LogComposeProactiveNudgeCtr(
-        compose::ComposeProactiveNudgeCtrEvent::kDialogOpened);
+  // Now create and set up a new session.
+  auto new_session = std::make_unique<ComposeSession>(
+      &GetWebContents(), GetModelExecutor(), GetSessionId(),
+      GetInnerTextProvider(), trigger_field.global_id(),
+      IsPageLanguageSupported(), this, std::move(callback));
+  current_session = new_session.get();
+  sessions_.insert_or_assign(active_compose_ids_.value().first,
+                             std::move(new_session));
+
+  // Set the FRE state of the new session.
+  auto fre_state =
+      pref_service_->GetBoolean(prefs::kPrefHasCompletedComposeFRE);
+  current_session->set_fre_complete(fre_state);
+
+  // Set the MSBB state of the new session.
+  current_session->set_current_msbb_state(GetMSBBStateFromPrefs());
+
+  current_session->InitializeWithText(selected_text);
+
+  // Record the UI state that new sessions are created in.
+  if (!fre_state) {
+    base::RecordAction(
+        base::UserMetricsAction("Compose.DialogSeen.FirstRunDisclaimer"));
+  } else if (!GetMSBBStateFromPrefs()) {
+    base::RecordAction(
+        base::UserMetricsAction("Compose.DialogSeen.FirstRunMSBB"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("Compose.DialogSeen.MainDialog"));
+  }
+
+  // Only record the selection length for new sessions.
+  auto utf8_chars = base::CountUnicodeCharacters(selected_text);
+  compose::LogComposeDialogSelectionLength(
+      utf8_chars.has_value() ? utf8_chars.value() : 0);
+
+  if (popup_clicked) {
+    // Set proactive nudge clicked metrics and state.
     current_session->set_started_with_proactive_nudge();
     page_ukm_tracker_->ProactiveNudgeOpened();
+    compose::LogComposeProactiveNudgeCtr(
+        compose::ComposeProactiveNudgeCtrEvent::kDialogOpened);
+    compose::LogStartSessionEntryPoint(
+        compose::ComposeEntryPoint::kProactiveNudge);
+  } else {
+    compose::LogStartSessionEntryPoint(
+        compose::ComposeEntryPoint::kContextMenu);
   }
 }
 
@@ -605,7 +636,11 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   bool ongoing_session = HasSession(form_field_data.global_id());
 
   if (ongoing_session) {
-    return compose_enabling_->ShouldTriggerSavedStatePopup(trigger_source);
+    if (compose_enabling_->ShouldTriggerSavedStatePopup(trigger_source)) {
+      last_popup_trigger_source_ = trigger_source;
+      return true;
+    }
+    return false;
   }
 
   auto proactive_nudge_status = compose_enabling_->ShouldTriggerNoStatePopup(
@@ -638,8 +673,12 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   nudge_signals.field = form_field_data;
   nudge_signals.page_change_time = page_change_time_;
   // ProactiveNudgeRequestedForFormField logs metrics for showing the nudge.
-  return nudge_tracker_.ProactiveNudgeRequestedForFormField(
-      std::move(nudge_signals));
+  if (nudge_tracker_.ProactiveNudgeRequestedForFormField(
+          std::move(nudge_signals))) {
+    last_popup_trigger_source_ = trigger_source;
+    return true;
+  }
+  return false;
 }
 
 bool ChromeComposeClient::IsPopupTimerRunning() {

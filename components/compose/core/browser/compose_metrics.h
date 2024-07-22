@@ -41,6 +41,8 @@ extern const char kComposeContextMenuCtr[];
 extern const char kComposeProactiveNudgeCtr[];
 extern const char kComposeProactiveNudgeShowStatus[];
 extern const char kOpenComposeDialogResult[];
+extern const char kComposeStartSessionEntryPoint[];
+extern const char kComposeResumeSessionEntryPoint[];
 
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -170,6 +172,18 @@ enum class ComposeProactiveNudgeCtrEvent {
   kUserDisabledSite = 3,
   kOpenSettings = 4,
   kMaxValue = kOpenSettings,
+};
+
+// Enum for recording the entry point for starting or resuming a Compose
+// session. Keep in sync with ComposeEntryPoint in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeEntryPoint {
+  kContextMenu = 0,
+  kProactiveNudge = 1,
+  kSelectionNudge = 2,
+  kSavedStateNudge = 3,
+  kSavedStateNotification = 4,
+  kMaxValue = kSavedStateNotification,
 };
 
 enum class EvalLocation : int {
@@ -405,6 +419,9 @@ void LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent event);
 void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status);
 
 void LogOpenComposeDialogResult(OpenComposeDialogResult result);
+
+void LogStartSessionEntryPoint(ComposeEntryPoint entry_point);
+void LogResumeSessionEntryPoint(ComposeEntryPoint entry_point);
 
 void LogComposeRequestReason(ComposeRequestReason reason);
 void LogComposeRequestReason(EvalLocation eval_location,

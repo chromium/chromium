@@ -31,6 +31,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Menu item clicked"/>
 </enum>
 
+<enum name="ComposeEntryPoint">
+  <int value="0" label="Context Menu"/>
+  <int value="1" label="Proactive Nudge"/>
+  <int value="2" label="Selection Nudge"/>
+  <int value="3" label="Resume Nudge">
+    Shown on field focus when a sessions exists
+  </int>
+  <int value="4" label="Resume Notification">
+    Shown when the dialog closes but the session is still open
+  </int>
+</enum>
+
 <enum name="ComposeFreOrMsbbSessionCloseReasonType">
   <int value="0" label="Abandoned">
     The FRE/MSBB wasn't acknowledged/accepted and was abandoned, often by web
