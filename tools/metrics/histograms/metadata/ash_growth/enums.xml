@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="User pref service not available"/>
   <int value="38" label="User pref value type mismatched"/>
   <int value="39" label="Invalid user pref"/>
+  <int value="40" label="Invalid user pref targeting"/>
 </enum>
 
 </enums>
