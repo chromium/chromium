@@ -7337,6 +7337,10 @@ crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-s
 crbug.com/324111880 external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Failure ]
 crbug.com/324111880 fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 
+# SidewaysWritingModes
+crbug.com/40501131 external/wpt/css/css-flexbox/flexbox-writing-mode-slr-row-mix.html [ Failure ]
+crbug.com/40501131 external/wpt/css/css-flexbox/flexbox-writing-mode-slr.html [ Failure ]
+
 # Temporarily disabled to unblock https://crrev.com/c/5701110
 crbug.com/41433391 http/tests/devtools/console/console-clear-function.js [ Failure Pass ]
 crbug.com/41433391 http/tests/devtools/console/console-command-clear.js [ Failure Pass ]
