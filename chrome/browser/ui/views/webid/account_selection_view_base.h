@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
@@ -125,7 +127,7 @@ class BrandIconImageView : public views::ImageView {
 };
 
 // Base class for interacting with FedCM account selection dialog.
-class AccountSelectionViewBase {
+class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
  public:
   // Used to observe changes to the account selection dialog.
   class Observer {
@@ -182,7 +184,10 @@ class AccountSelectionViewBase {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::u16string rp_for_display);
   AccountSelectionViewBase();
-  virtual ~AccountSelectionViewBase();
+  ~AccountSelectionViewBase() override;
+
+  // PictureInPictureOcclusionObserver:
+  void OnOcclusionStateChanged(bool occluded) override;
 
   // Creates and sets the appropriate dialog widget, depending on whether the
   // dialog is bubble or modal.
@@ -261,6 +266,8 @@ class AccountSelectionViewBase {
   // Virtual for testing purposes.
   virtual bool CanFitInWebContents();
 
+  bool IsOccluded() const { return is_occluded_; }
+
  protected:
   void SetLabelProperties(views::Label* label);
 
@@ -311,6 +318,11 @@ class AccountSelectionViewBase {
 
   // The description of the RP to be used in the dialog.
   std::u16string rp_for_display_;
+
+  // Whether the widget is occluded (and therefore we should ignore inputs.
+  bool is_occluded_{false};
+
+  ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
 
   // Used to ensure that callbacks are not run if the AccountSelectionViewBase
   // is destroyed.
