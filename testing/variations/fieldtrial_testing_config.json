@@ -8631,7 +8631,7 @@
             ]
         }
     ],
-    "EnablePixDetectionWithDomContentLoadedStudy": [
+    "EnablePixPayflow": [
         {
             "platforms": [
                 "android"
@@ -8640,8 +8640,11 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AutofillEnableSyncingOfPixBankAccounts",
                         "EnablePixDetection",
-                        "EnablePixDetectionOnDomContentLoaded"
+                        "EnablePixDetectionOnCopyEvent",
+                        "EnablePixDetectionOnDomContentLoaded",
+                        "EnablePixPayments"
                     ]
                 }
             ]
