@@ -3484,8 +3484,8 @@ void LayoutBox::UpdateHasSubpixelVisualEffectOutsets(
     return;
   }
   overflow_->visual_overflow->SetHasSubpixelVisualEffectOutsets(
-      !IsIntegerValue(outsets.top) || !IsIntegerValue(outsets.right) ||
-      !IsIntegerValue(outsets.bottom) || !IsIntegerValue(outsets.left));
+      !outsets.top.IsInteger() || !outsets.right.IsInteger() ||
+      !outsets.bottom.IsInteger() || !outsets.left.IsInteger());
 }
 
 void LayoutBox::SetVisualOverflow(const PhysicalRect& self,

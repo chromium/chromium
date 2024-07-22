@@ -220,6 +220,7 @@ class PLATFORM_EXPORT LayoutUnit {
   constexpr bool HasFraction() const {
     return RawValue() % kFixedPointDenominator;
   }
+  constexpr bool IsInteger() const { return !HasFraction(); }
 
   LayoutUnit Fraction() const {
     // Compute fraction using the mod operator to preserve the sign of the value
@@ -758,10 +759,6 @@ inline int CeilToInt(LayoutUnit value) {
 
 inline LayoutUnit AbsoluteValue(const LayoutUnit& value) {
   return value.Abs();
-}
-
-inline bool IsIntegerValue(const LayoutUnit value) {
-  return value.ToInt() == value;
 }
 
 inline std::optional<LayoutUnit> LayoutUnit::NullOptIf(

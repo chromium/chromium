@@ -126,7 +126,7 @@ Vector<LayoutUnit> FrameSetLayoutAlgorithm::LayoutAxis(
   for (auto i : fixed_indices) {
     sizes[i] =
         IntLayoutUnit(grid[i].Value() * effective_zoom).ClampNegativeToZero();
-    DCHECK(IsIntegerValue(sizes[i]));
+    DCHECK(sizes[i].IsInteger());
     total_fixed += sizes[i].ToInt();
   }
 
@@ -134,7 +134,7 @@ Vector<LayoutUnit> FrameSetLayoutAlgorithm::LayoutAxis(
   for (auto i : percent_indices) {
     sizes[i] = IntLayoutUnit(grid[i].Value() * available_length / 100.0)
                    .ClampNegativeToZero();
-    DCHECK(IsIntegerValue(sizes[i])) << sizes[i];
+    DCHECK(sizes[i].IsInteger()) << sizes[i];
     total_percent += sizes[i].ToInt();
   }
 
