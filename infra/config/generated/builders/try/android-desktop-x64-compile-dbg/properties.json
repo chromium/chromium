@@ -42,7 +42,8 @@
           "builder": "android-desktop-x64-compile-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-desktop-x64-compile-dbg/targets"
     }
   },
   "$build/reclient": {

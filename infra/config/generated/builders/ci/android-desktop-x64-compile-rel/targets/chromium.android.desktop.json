@@ -1,5 +1,5 @@
 {
-  "android-desktop-arm64-compile-dbg": {
+  "android-desktop-x64-compile-rel": {
     "additional_compile_targets": [
       "all"
     ]
