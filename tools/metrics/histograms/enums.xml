@@ -33834,6 +33834,7 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="University user on unmanaged device"/>
   <int value="3" label="Nonprofit user on unmanaged device"/>
   <int value="4" label="Enterprise user on unmanaged device"/>
+  <int value="65533" label="Demo Mode on an unmanaged device"/>
   <int value="65534" label="Kiosk app on unmanaged device"/>
 <!--
     There is no value for Managed Guest Session on Unmanaged device because that
