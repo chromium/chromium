@@ -221,9 +221,9 @@ class GraphImplDml final : public WebNNGraphImpl {
   // this method may take long time to compile shaders (if not cached before),
   // this method should run on a background thread rather than the current GPU
   // main thread to avoid blocking.
-  static Microsoft::WRL::ComPtr<IDMLCompiledOperator> CompileOnBackgroundThread(
-      GraphBuilderDml graph_builder,
-      bool pass_dml_execution_disable_meta_commands);
+  static base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT>
+  CompileOnBackgroundThread(GraphBuilderDml graph_builder,
+                            bool pass_dml_execution_disable_meta_commands);
 
   // After the CompileOnBackgroundThread task is completed on a background
   // thread, the OnCompilationComplete method should run back on the GPU main
@@ -247,7 +247,8 @@ class GraphImplDml final : public WebNNGraphImpl {
       std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
       GraphBufferBindingInfo graph_buffer_binding_info,
       ComputeResourceInfo compute_resource_info,
-      Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator);
+      base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT>
+          compilation_result);
 
   // Create the GraphImplDml instance and bind it to the mojom::WebNNGraph
   // receiver, then run callback to send the pending remote to the

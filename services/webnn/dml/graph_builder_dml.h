@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/types/expected.h"
 #include "services/webnn/dml/tensor_desc.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
 
@@ -178,9 +179,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderDml final {
   uint32_t CreateOutputEdge(const NodeOutput* node_output);
 
   // Notice that IDMLDevice1::CompileGraph may take a long time to compile
-  // shaders (if not cached before), so this method may block the current
-  // thread. Consider posting this method to the thread pool to avoid blocking.
-  Microsoft::WRL::ComPtr<IDMLCompiledOperator> Compile(
+  // shaders (if not cached before), so this method should be called on a
+  // background thread to avoid blocking the current thread.
+  base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT> Compile(
       DML_EXECUTION_FLAGS flags) const;
 
  private:

@@ -87,7 +87,7 @@ TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorRelu) {
       graph_builder.CreateNodeOutput(relu_node, std::move(input_tensor_desc));
 
   EXPECT_EQ(graph_builder.CreateOutputEdge(output), 0u);
-  EXPECT_NE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).Get(), nullptr);
+  EXPECT_TRUE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).has_value());
 }
 
 // Test building a DML graph with single operator conv2d which has multiple
@@ -145,7 +145,7 @@ TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildSingleOperatorConv2d) {
       graph_builder.CreateNodeOutput(conv_node, std::move(output_tensor_desc));
 
   EXPECT_EQ(graph_builder.CreateOutputEdge(output), 0u);
-  EXPECT_NE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).Get(), nullptr);
+  EXPECT_TRUE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).has_value());
 }
 
 // Test building a DML graph with single operator split which has multiple
@@ -194,7 +194,7 @@ TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorSplit) {
   EXPECT_EQ(graph_builder.CreateOutputEdge(output0), 0u);
   EXPECT_EQ(graph_builder.CreateOutputEdge(output1), 1u);
   EXPECT_EQ(graph_builder.CreateOutputEdge(output2), 2u);
-  EXPECT_NE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).Get(), nullptr);
+  EXPECT_TRUE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).has_value());
 }
 
 // Test building a DML graph with two operators: relu and conv2d.
@@ -268,7 +268,7 @@ TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildGraphWithReluAndConv2d) {
       graph_builder.CreateNodeOutput(conv_node, std::move(output_tensor_desc));
 
   EXPECT_EQ(graph_builder.CreateOutputEdge(output), 0u);
-  EXPECT_NE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).Get(), nullptr);
+  EXPECT_TRUE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).has_value());
 }
 
 }  // namespace webnn::dml

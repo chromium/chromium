@@ -253,7 +253,7 @@ struct UploadAndDefaultBuffers {
 // `buffer_variant` for both constants uploading and binding. For GPU doesn't
 // support UMA, pass a upload buffer and a default buffer via `buffer_variant`
 // for uploading and binding separately.
-std::optional<std::map<uint64_t, DML_BUFFER_BINDING>>
+base::expected<std::map<uint64_t, DML_BUFFER_BINDING>, HRESULT>
 UploadAndCreateConstantBufferBinding(
     CommandRecorder* command_recorder,
     const base::flat_map<uint64_t, mojo_base::BigBuffer>& key_to_buffer_map,
@@ -283,12 +283,7 @@ UploadAndCreateConstantBufferBinding(
   CHECK(buffer_to_map);
   CHECK(buffer_to_bind);
 
-  HRESULT hr = buffer_to_map->Map(0, nullptr, &mapped_buffer);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "[WebNN] Failed to map buffer for inputs: "
-               << logging::SystemErrorCodeToString(hr);
-    return std::nullopt;
-  }
+  RETURN_UNEXPECTED_IF_FAILED(buffer_to_map->Map(0, nullptr, &mapped_buffer));
 
   std::map<uint64_t, DML_BUFFER_BINDING> key_to_buffer_binding_map;
   for (auto& [key, buffer] : key_to_buffer_map) {
@@ -5324,7 +5319,8 @@ GraphImplDml::GraphImplDml(
 //  queued work to complete before destructing itself.
 GraphImplDml::~GraphImplDml() = default;
 
-ComPtr<IDMLCompiledOperator> GraphImplDml::CompileOnBackgroundThread(
+base::expected<ComPtr<IDMLCompiledOperator>, HRESULT>
+GraphImplDml::CompileOnBackgroundThread(
     GraphBuilderDml graph_builder,
     const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CompileOnBackgroundThread");
@@ -5354,7 +5350,7 @@ void GraphImplDml::OnCompilationComplete(
     std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
     GraphBufferBindingInfo graph_buffer_binding_info,
     ComputeResourceInfo compute_resource_info,
-    ComPtr<IDMLCompiledOperator> compiled_operator) {
+    base::expected<ComPtr<IDMLCompiledOperator>, HRESULT> compilation_result) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnCompilationComplete");
 
   if (!context) {
@@ -5364,11 +5360,24 @@ void GraphImplDml::OnCompilationComplete(
     return;
   }
 
-  if (!compiled_operator) {
-    std::move(callback).Run(base::unexpected(CreateError(
-        mojom::Error::Code::kUnknownError, "Failed to compile the graph.")));
+  if (!compilation_result.has_value()) {
+    // Handle the unsupported error on NPU gracefully since it's expected.
+    if (adapter->IsNPU() &&
+        compilation_result.error() == DXGI_ERROR_UNSUPPORTED) {
+      LOG(ERROR)
+          << "[WebNN] Failed to compile graph on NPU. Model is not supported.";
+      std::move(callback).Run(base::unexpected(CreateError(
+          mojom::Error::Code::kUnknownError,
+          "Failed to compile graph on NPU. Model is not supported.")));
+    } else {
+      HandleGraphCreationFailure("Failed to compile the graph.",
+                                 std::move(callback), context.get(),
+                                 compilation_result.error());
+    }
     return;
   }
+  ComPtr<IDMLCompiledOperator> compiled_operator =
+      std::move(compilation_result.value());
 
   CommandQueue* command_queue = adapter->IsNPU()
                                     ? adapter->init_command_queue_for_npu()
@@ -5463,19 +5472,18 @@ void GraphImplDml::OnCompilationComplete(
                                   .default_buffer = std::move(default_buffer)};
     }
 
-    auto constant_buffer_binding = UploadAndCreateConstantBufferBinding(
-        initialization_command_recorder.get(), constant_id_to_buffer_map,
-        aligned_byte_length_of_constants.value(), std::move(buffer_variant));
-    if (!constant_buffer_binding) {
-      std::move(callback).Run(base::unexpected(
-          CreateError(mojom::Error::Code::kUnknownError,
-                      "Failed to upload constant weight data.")));
-      return;
-    }
+    ASSIGN_OR_RETURN(
+        (std::map<uint64_t, DML_BUFFER_BINDING> constant_buffer_binding),
+        UploadAndCreateConstantBufferBinding(
+            initialization_command_recorder.get(), constant_id_to_buffer_map,
+            aligned_byte_length_of_constants.value(),
+            std::move(buffer_variant)),
+        &HandleGraphCreationFailure, "Failed to upload constant weight data.",
+        std::move(callback), context.get());
+
     // The constant tensor must be bound to the binding table during operator
     // initialization, and not during execution.
-    for (auto& [constant_id, buffer_binding] :
-         constant_buffer_binding.value()) {
+    for (auto& [constant_id, buffer_binding] : constant_buffer_binding) {
       // Get the graph input index with the constant id.
       const auto graph_input_index_iterator =
           constant_id_to_input_index_map.find(constant_id);

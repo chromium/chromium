@@ -179,8 +179,8 @@ uint32_t GraphBuilderDml::CreateOutputEdge(const NodeOutput* node_output) {
   return graph_output_index;
 }
 
-Microsoft::WRL::ComPtr<IDMLCompiledOperator> GraphBuilderDml::Compile(
-    DML_EXECUTION_FLAGS flags) const {
+base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT>
+GraphBuilderDml::Compile(DML_EXECUTION_FLAGS flags) const {
   TRACE_EVENT0("gpu", "dml::GraphBuilderDml::Compile");
 
   SCOPED_UMA_HISTOGRAM_TIMER("WebNN.DML.TimingMs.Compilation");
@@ -229,11 +229,10 @@ Microsoft::WRL::ComPtr<IDMLCompiledOperator> GraphBuilderDml::Compile(
       .IntermediateEdges = dml_intermediate_edges.data()};
 
   Microsoft::WRL::ComPtr<IDMLDevice1> dml_device1;
-  RETURN_NULL_IF_FAILED(
-      dml_device_->QueryInterface(IID_PPV_ARGS(&dml_device1)));
+  CHECK_EQ(dml_device_->QueryInterface(IID_PPV_ARGS(&dml_device1)), S_OK);
 
   Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator;
-  RETURN_NULL_IF_FAILED(dml_device1->CompileGraph(
+  RETURN_UNEXPECTED_IF_FAILED(dml_device1->CompileGraph(
       &dml_graph_desc, flags, IID_PPV_ARGS(&compiled_operator)));
   return compiled_operator;
 }
